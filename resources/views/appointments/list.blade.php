@@ -1,12 +1,31 @@
 @extends('layouts.app')
 
 @section('content')
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: #fff;
+            z-index: 9999;
+            display: none;
+        }
+
+        .notification.success {
+            background-color: #4CAF50;
+        }
+
+        .notification.error {
+            background-color: #f44336;
+        }
+    </style>
+
     <div class="appointments-container">
         <div class="appointments-header">
             <h1>Записи</h1>
-            <div id="notification" class="notification">
-                <!-- Уведомления будут появляться здесь -->
-            </div>
+            <div id="notification"></div>
             <div class="header-actions">
                 <div class="view-switcher">
                     <button class="btn-view-switch {{ $viewType === 'list' ? 'active' : '' }}" data-view="list">
@@ -284,7 +303,13 @@
             notification.className = `notification ${type}`;
             notification.style.display = 'block';
 
-            setTimeout(() => {
+            // Очищаем предыдущий таймер, если он есть
+            if (notification.hideTimeout) {
+                clearTimeout(notification.hideTimeout);
+            }
+
+            // Устанавливаем новый таймер
+            notification.hideTimeout = setTimeout(() => {
                 notification.style.display = 'none';
             }, 3000);
         }
@@ -1388,17 +1413,68 @@
                 if (data.success) {
                     showNotification('Запись успешно создана');
                     closeAppointmentModal();
-                    window.location.reload(); // Перезагружаем страницу для отображения новой записи
-                } else if (data.errors) {
-                    displayErrors(data.errors, 'appointmentForm');
-                } else {
-                    throw new Error(data.message || 'Ошибка при создании записи');
+                    
+                    // Добавляем новую запись в таблицу без перезагрузки
+                    const appointment = data.appointment;
+                    const tbody = document.querySelector('#appointmentsTable tbody');
+                    
+                    if (tbody) {
+                        const newRow = document.createElement('tr');
+                        newRow.setAttribute('data-appointment-id', appointment.id);
+                        
+                        newRow.innerHTML = `
+                            <td>${new Date(appointment.date).toLocaleDateString('ru-RU')}</td>
+                            <td>${escapeHtml(appointment.time)}</td>
+                            <td>
+                                ${escapeHtml(appointment.client.name)}
+                                ${appointment.client.instagram ? `
+                                    (<a href="https://instagram.com/${escapeHtml(appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">
+                                        <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    ${escapeHtml(appointment.client.instagram)}
+                                </a>)` 
+                            : ''}
+                        </td>
+                        <td>${escapeHtml(appointment.service.name)}</td>
+                        <td>${parseFloat(appointment.price).toFixed(2)} грн</td>
+                        <td>
+                            <div class="appointment-actions actions-cell">
+                                <button class="btn-view" data-appointment-id="${appointment.id}" title="Просмотр">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Просмотр
+                                </button>
+                                <button class="btn-edit" data-appointment-id="${appointment.id}" title="Редактировать">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                    Ред.
+                                </button>
+                                <button class="btn-delete" data-appointment-id="${appointment.id}" title="Удалить">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Удалить
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    
+                    tbody.insertBefore(newRow, tbody.firstChild);
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                showNotification(error.message || 'Ошибка при создании записи', 'error');
+            } else if (data.errors) {
+                displayErrors(data.errors, 'appointmentForm');
+            } else {
+                throw new Error(data.message || 'Ошибка при создании записи');
             }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification(error.message || 'Ошибка при создании записи', 'error');
         }
+    }
 
         function confirmDeleteAppointment(event, id) {
             event.preventDefault();
@@ -1419,10 +1495,8 @@
 
                 const data = await response.json();
 
-                if (response.ok || response.status === 404) {
-                    // Успех или запись уже удалена (404)
-                    const message = data.message || 'Запись успешно удалена';
-                    showNotification(message);
+                if (response.ok) {
+                    showNotification('Запись успешно удалена');
                     document.querySelector(`tr[data-appointment-id="${id}"]`)?.remove();
 
                     // Закрываем модальное окно просмотра, если оно открыто
