@@ -1,0 +1,1013 @@
+
+    /* Общие стили для контейнеров */
+.clients-container,
+.products-container,
+.warehouse-container,
+.purchases-container,
+.sales-container,
+.services-container,
+.appointments-container{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Общие стили для заголовков */
+.clients-header,
+.products-header,
+.warehouse-header,
+.purchases-header,
+.sales-header,
+.services-header,
+.appointments-header{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.clients-header h1,
+.products-header h1,
+.warehouse-header h1,
+.purchases-header h1,
+.sales-header h1,
+.services-header h1,
+.appointments-header h1{
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+/* Общие стили для действий в заголовке */
+.header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .header-actions {
+        width: auto;
+    }
+}
+
+/* Общие стили для кнопок добавления */
+.btn-add-client,
+.btn-add-product,
+.btn-add-purchase,
+.btn-add-sale,
+.btn-add-service,
+.btn-add-appointment{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-add-client:hover,
+.btn-add-product:hover,
+.btn-add-purchase:hover{
+    background-color: #2563eb;
+}
+
+/* Общие стили для поля поиска */
+.search-box {
+    position: relative;
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 18px;
+    width: 18px;
+    color: #9ca3af;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 16px 10px 40px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Общие стили для таблиц */
+.table-wrapper {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.clients-table,
+.products-table,
+.warehouse-table,
+.purchase-table,
+.sale-table,
+.services-table,
+.appointments-table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.clients-table thead,
+.products-table thead,
+.warehouse-table thead,
+.purchase-table thead,
+.sale-table thead,
+.services-table thead,
+.appointments-table thead{
+    background-color: #e0e4e9 !important;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.clients-table th,
+.products-table th,
+.warehouse-table th,
+.purchase-table th,
+.sale-table th,
+.services-table th,
+.appointments-table th{
+    padding: 16px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.clients-table td,
+.products-table td,
+.warehouse-table td,
+.purchase-table td,
+.sale-table td,
+.services-table td,
+.appointments-table td{
+    padding: 14px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+    color: #4b5563;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.clients-table tr:last-child td,
+.products-table tr:last-child td,
+.warehouse-table tr:last-child td,
+.purchase-table tr:last-child td,
+.services-table tr:last-child td,
+.appointments-table th:last-child td{
+    border-bottom: none;
+}
+
+.clients-table tr:hover,
+.products-table tr:hover,
+.warehouse-table tr:hover,
+.services-table tr:hover{
+    background-color: #f9fafb;
+}
+
+/* Общие стили для кнопок действий */
+.actions-cell {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    padding: 23px !important;
+}
+
+.btn-view,
+.btn-edit,
+.btn-delete {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-view {
+    background-color: #e0f7fa;
+    color: #00acc1;
+}
+
+.btn-view:hover {
+    background-color: #b2ebf2;
+}
+
+.btn-edit {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.btn-edit:hover {
+    background-color: #bfdbfe;
+}
+
+.btn-delete {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.btn-delete:hover {
+    background-color: #fecaca;
+}
+
+/* Общие стили для иконок */
+.icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Общие стили для модальных окон */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: auto;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.close {
+    color: #6b7280;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close:hover {
+    color: #111827;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+/* Общие стили для форм */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-cancel,
+.btn-submit {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-cancel {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: none;
+}
+
+.btn-cancel:hover {
+    background-color: #e5e7eb;
+}
+
+.btn-submit {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+}
+
+.btn-submit:hover {
+    background-color: #2563eb;
+}
+
+.btn-edit:disabled,
+.btn-delete:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Общие стили для уведомлений */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: -400px;
+    padding: 15px 25px;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.notification.show {
+    right: 20px;
+}
+
+.notification-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.notification.success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.notification.error {
+    background-color: #f8d7da !important;
+    border-color: #f5c6cb !important;
+}
+
+/* Общие стили для лоадера */
+.loader {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Общие стили для ошибок валидации */
+.has-error input,
+.has-error select,
+.has-error textarea {
+    border-color: #f44336 !important;
+}
+
+.error-message {
+    color: #721c24 !important;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+/* Общие анимации для полей с ошибками */
+@keyframes shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    20%,
+    60% {
+        transform: translateX(-5px);
+    }
+    40%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+.has-error {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Общие стили для модального окна подтверждения */
+.confirmation-modal {
+    display: none;
+    position: fixed;
+    z-index: 1100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.confirmation-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 80%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.confirmation-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.confirm-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Уникальные стили для клиентов */
+.client-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.client-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.client-name {
+    font-weight: 500;
+    color: #111827;
+}
+
+.client-status {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+.instagram-link {
+    align-items: center;
+    gap: 6px;
+    color: #3b82f6;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.instagram-link:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.instagram-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Уникальные стили для товаров */
+.product-photo {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.no-photo {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f4f6;
+    border-radius: 4px;
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+/* Стили для текущего фото в форме редактирования */
+.current-photo {
+    max-width: 100px;
+    max-height: 100px;
+    margin-top: 10px;
+    border-radius: 4px;
+}
+
+.remove-photo-btn {
+    margin-top: 5px;
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.remove-photo-btn:hover {
+    background-color: #fecaca;
+}
+    /* public/css/app.css */
+    .warehouse-container {
+        padding: 20px;
+    }
+
+    .product-photo {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .no-photo {
+        width: 50px;
+        height: 50px;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        color: #999;
+        margin: 0 auto;
+    }
+
+    .actions-cell {
+        white-space: nowrap;
+    }
+
+    .btn-edit, .btn-delete {
+        padding: 6px 12px;
+        margin: 0 3px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .btn-edit {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .btn-delete {
+        background-color: #dc3545;
+        color: white;
+    }
+
+
+
+    .purchases-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .purchase-item {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .purchase-header {
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .purchase-header:hover {
+        background-color: #e9ecef;
+    }
+
+    .purchase-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .purchase-date {
+        font-weight: bold;
+        min-width: 100px;
+    }
+
+    .purchase-supplier {
+        flex-grow: 1;
+    }
+
+    .purchase-total {
+        font-weight: bold;
+        color: #28a745;
+        min-width: 120px;
+        text-align: right;
+    }
+
+    .purchase-actions {
+        display: flex;
+        gap: 10px;
+        margin-left: 20px;
+    }
+
+    .purchase-details {
+        padding: 20px;
+    }
+
+    .purchase-notes {
+        margin-bottom: 15px;
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    .items-container {
+        margin-bottom: 20px;
+    }
+
+    .item-row {
+        margin-bottom: 15px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+        align-items: flex-end;
+    }
+
+    .form-group {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+
+    .btn-remove-item {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-remove-item:hover {
+        background-color: #c82333;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .btn-add-item {
+        background-color: #17a2b8;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-add-item:hover {
+        background-color: #138496;
+    }
+
+    .row-deleting {
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+    }
+
+    .icon {
+        width: 16px;
+        height: 16px;
+        vertical-align: middle;
+    }
+
+    .loader {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    .product-search-container {
+        position: relative;
+    }
+
+    .product-dropdown {
+        position: absolute;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        z-index: 1000;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .product-dropdown-item {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .product-dropdown-item:hover {
+        background-color: #f5f5f5;
+    }
+
+    .product-dropdown-item.selected {
+        background-color: #e9ecef;
+    }
+    .sales-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .sale-item {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    .sale-info {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-grow: 1;
+    }
+
+    .sale-date {
+        font-weight: bold;
+        min-width: 100px;
+    }
+
+    .sale-client {
+        flex-grow: 1;
+    }
+
+    .sale-total {
+        font-weight: bold;
+        color: #28a745;
+        min-width: 120px;
+        text-align: right;
+    }
+
+    .sale-actions {
+        display: flex;
+        gap: 10px;
+        margin-left: 20px;
+    }
+
+    .sale-details {
+        padding: 20px;
+    }
+
+    .sale-notes {
+        margin-bottom: 15px;
+        color: #6c757d;
+        font-style: italic;
+    }
+    .client-search-container {
+        position: relative;
+    }
+
+    .client-dropdown {
+        position: absolute;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        z-index: 1000;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .client-dropdown-item {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    .client-dropdown-item:hover {
+        background-color: #f5f5f5;
+    }
+
+    .client-dropdown-item.selected {
+        background-color: #e9ecef;
+    }
+    .view-switcher {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-view-switch {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        background-color: #f1f1f1;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn-view-switch.active {
+        background-color: #e0e0e0;
+        font-weight: 500;
+    }
+
+    .btn-view-switch svg {
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+    }
+    .appointment-details {
+        padding: 20px;
+    }
+
+    .detail-row {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    .detail-label {
+        font-weight: bold;
+        width: 100px;
+    }
+
+    .services-section, .products-section {
+        margin: 20px 0;
+    }
+
+    .service-item, .product-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .products-table {
+        width: 100%;
+        margin: 10px 0;
+        border-collapse: collapse;
+    }
+
+    .products-table th, .products-table td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .total-amount {
+        margin-top: 20px;
+        padding-top: 10px;
+        border-top: 2px solid #333;
+        font-size: 1.2em;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .btn-add-product {
+        margin-top: 10px;
+        padding: 8px 15px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    #addProductForm {
+        margin-top: 15px;
+        padding: 15px;
+        background: #f5f5f5;
+        border-radius: 4px;
+    }
+
+    #addProductForm select, #addProductForm input {
+        margin-bottom: 10px;
+        width: 100%;
+    }
