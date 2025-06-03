@@ -65,7 +65,7 @@
                             <td>{{ number_format($item->wholesale_price, 2) }} грн</td>
                             <td>{{ number_format($item->retail_price, 2) }} грн</td>
                             <td>{{ $item->quantity }}</td>
-                            <td>{{ number_format($item->total, 2) }} грн</td>
+                            <td>{{ number_format($item->retail_price * $item->quantity, 2) }} грн</td>
                             <td>
                                 <div class="sale-actions">
                                     <button class="btn-edit" onclick="editSale(event, {{ $sale->id }})" title="Редактировать">
@@ -787,28 +787,67 @@
             const items = [];
 
             // Собираем данные о товарах
-            document.querySelectorAll('#editItemsContainer .item-row:not(.template)').forEach((row, index) => {
-                const select = row.querySelector('.product-select');
+            const itemRows = document.querySelectorAll('#editItemsContainer .item-row:not(.template)');
+
+            // Проверяем, что есть хотя бы один товар
+            if (itemRows.length === 0) {
+                showNotification('Добавьте хотя бы один товар', 'error');
+                return;
+            }
+
+            // Формируем массив товаров
+            itemRows.forEach((row, index) => {
+                // Получаем элементы формы
+                const productSelect = row.querySelector('select[name*="[product_id]"]');
+                const wholesaleInput = row.querySelector('input[name*="[wholesale_price]"]');
+                const retailInput = row.querySelector('input[name*="[retail_price]"]');
+                const quantityInput = row.querySelector('input[name*="[quantity]"]');
+
+                // Проверяем, что все поля заполнены
+                if (!productSelect || !productSelect.value ||
+                    !wholesaleInput || !wholesaleInput.value ||
+                    !retailInput || !retailInput.value ||
+                    !quantityInput || !quantityInput.value) {
+                    showNotification('Заполните все поля для товара #' + (index + 1), 'error');
+                    return;
+                }
+
+                // Создаём объект товара
                 const item = {
-                    product_id: select.value,
-                    wholesale_price: parseFloat(row.querySelector('[name*="wholesale_price"]').value),
-                    retail_price: parseFloat(row.querySelector('[name*="retail_price"]').value),
-                    quantity: parseInt(row.querySelector('[name*="quantity"]').value)
+                    product_id: productSelect.value,
+                    wholesale_price: parseFloat(wholesaleInput.value),
+                    retail_price: parseFloat(retailInput.value),
+                    quantity: parseInt(quantityInput.value)
                 };
+
+                // Проверяем валидность цен
+                if (isNaN(item.wholesale_price)) {
+                    showNotification('Некорректная оптовая цена для товара #' + (index + 1), 'error');
+                    return;
+                }
+                if (isNaN(item.retail_price)) {
+                    showNotification('Некорректная розничная цена для товара #' + (index + 1), 'error');
+                    return;
+                }
+
                 items.push(item);
             });
 
-            // Собираем все данные формы
+            // Формируем данные для отправки
             const formData = {
-                _method: 'PUT', // Для Laravel чтобы обработать как PUT запрос
+                _method: 'PUT',
                 date: form.querySelector('[name="date"]').value,
                 client_id: form.querySelector('[name="client_id"]').value,
                 notes: form.querySelector('[name="notes"]').value,
                 items: items
             };
 
+            // Добавляем логирование перед отправкой
+            console.log('Отправляемые данные:', formData);
+
+            // Отправляем данные на сервер
             fetch(`/sales/${id}`, {
-                method: 'POST', // Используем POST с _method=PUT для Laravel
+                method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json',
@@ -828,20 +867,15 @@
                         closeEditSaleModal();
                         updateSaleInTable(data.sale);
                     } else {
+                        showNotification(data.message || 'Ошибка при обновлении продажи', 'error');
                         if (data.errors) {
                             displayErrors(data.errors, 'editSaleForm');
-                        } else {
-                            showNotification(data.message || 'Ошибка при обновлении продажи', 'error');
                         }
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    if (error.errors) {
-                        displayErrors(error.errors, 'editSaleForm');
-                    } else {
-                        showNotification(error.message || 'Ошибка при обновлении продажи', 'error');
-                    }
+                    console.error('Ошибка:', error);
+                    showNotification(error.message || 'Ошибка при обновлении продажи', 'error');
                 });
         }
 
@@ -878,7 +912,7 @@
             <td>${parseFloat(item.wholesale_price).toFixed(2)} грн</td>
             <td>${parseFloat(item.retail_price).toFixed(2)} грн</td>
             <td>${item.quantity}</td>
-            <td>${(parseFloat(item.retail_price) * parseInt(item.quantity).toFixed(2))} грн</td>
+            <td>${(parseFloat(item.retail_price) * parseInt(item.quantity)).toFixed(2)} грн</td>
             <td>
                 <div class="sale-actions">
                     <button class="btn-edit" onclick="editSale(event, ${sale.id})" title="Редактировать">
@@ -898,6 +932,7 @@
                 // Вставляем новую строку в начало таблицы
                 tbody.insertBefore(row, tbody.firstChild);
             });
+            console.log('Отправляемые данные:', formData);
         }
 
 

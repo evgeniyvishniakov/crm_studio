@@ -116,6 +116,7 @@ class SaleController extends Controller
             'client_id' => 'required|exists:clients,id',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
+            'items.*.retail_price' => 'required|numeric',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
