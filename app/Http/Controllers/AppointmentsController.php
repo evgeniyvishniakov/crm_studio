@@ -85,14 +85,27 @@ class AppointmentsController extends Controller
                 'client_id' => 'required|exists:clients,id',
                 'date' => 'required|date',
                 'time' => 'required',
-                'price' => 'nullable|numeric',
-                'products' => 'sometimes|array'
+                'price' => 'required|numeric|min:0',
+                'products' => 'sometimes|array',
+                'products.*.product_id' => 'required|exists:products,id',
+                'products.*.quantity' => 'required|integer|min:1',
+                'products.*.price' => 'required|numeric|min:0',
+                'products.*.wholesale_price' => 'required|numeric|min:0'
             ]);
 
-            DB::transaction(function () use ($appointment, $validated, $request) {
-                $appointment->update($validated);
+            DB::beginTransaction();
 
-                // Удаляем старые продажи и возвращаем товары на склад
+            try {
+                // Update appointment
+                $appointment->update([
+                    'service_id' => $validated['service_id'],
+                    'client_id' => $validated['client_id'],
+                    'date' => $validated['date'],
+                    'time' => $validated['time'],
+                    'price' => $validated['price']
+                ]);
+
+                // Delete old sales and return products to warehouse
                 foreach ($appointment->sales as $sale) {
                     foreach ($sale->items as $item) {
                         if ($item->product && $item->product->warehouse) {
@@ -103,9 +116,8 @@ class AppointmentsController extends Controller
                     $sale->delete();
                 }
 
-                // Создаем новую продажу с товарами
-                $products = $request->get('products', []);
-                if (!empty($products)) {
+                // Create new sales with products if they exist
+                if (!empty($validated['products'])) {
                     $sale = Sale::create([
                         'appointment_id' => $appointment->id,
                         'client_id' => $appointment->client_id,
@@ -114,36 +126,53 @@ class AppointmentsController extends Controller
                     ]);
 
                     $totalAmount = 0;
-                    foreach ($products as $product) {
+                    foreach ($validated['products'] as $product) {
                         $productModel = Product::with('warehouse')->findOrFail($product['product_id']);
 
+                        // Check warehouse availability
                         if (!$productModel->warehouse || $productModel->warehouse->quantity < $product['quantity']) {
                             throw new \Exception("Недостаточно товара на складе: {$productModel->name}");
                         }
 
+                        // Create sale item
                         SaleItem::create([
                             'sale_id' => $sale->id,
                             'product_id' => $product['product_id'],
                             'quantity' => $product['quantity'],
                             'retail_price' => $product['price'],
-                            'wholesale_price' => $product['wholesale_price'] ?? $productModel->warehouse->purchase_price ?? 0,
+                            'wholesale_price' => $product['wholesale_price'],
                             'total' => $product['quantity'] * $product['price']
                         ]);
 
+                        // Update total amount
                         $totalAmount += $product['quantity'] * $product['price'];
+
+                        // Decrease warehouse quantity
                         $productModel->warehouse->decrement('quantity', $product['quantity']);
                     }
 
+                    // Update sale total amount
                     $sale->update(['total_amount' => $totalAmount]);
                 }
-            });
 
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Запись успешно обновлена',
+                    'appointment' => $appointment->fresh(['client', 'service', 'sales.items.product.warehouse'])
+                ]);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
-                'success' => true,
-                'message' => 'Запись успешно обновлена',
-                'appointment' => $appointment->fresh(['sales.items.product.warehouse'])
-            ]);
-
+                'success' => false,
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -153,15 +182,30 @@ class AppointmentsController extends Controller
     }
 
 
-    public function destroy(Appointment $appointment)
+    public function destroy($id)
     {
         try {
+            $appointment = Appointment::with('sales.items')->find($id);
+
+            if (!$appointment) {
+                return response()->json([
+                    'success' => true, // Все равно считаем успехом, так как запись уже удалена
+                    'message' => 'Запись не найдена (возможно, уже удалена)'
+                ]);
+            }
+
             DB::transaction(function () use ($appointment) {
                 // Возвращаем товары на склад перед удалением
                 foreach ($appointment->sales as $sale) {
-                    Warehouse::increaseQuantity($sale->product_id, $sale->quantity);
+                    foreach ($sale->items as $item) {
+                        if ($item->product && $item->product->warehouse) {
+                            $item->product->warehouse->increment('quantity', $item->quantity);
+                        }
+                    }
+                    $sale->items()->delete();
                 }
 
+                $appointment->sales()->delete();
                 $appointment->delete();
             });
 

@@ -1419,9 +1419,16 @@
 
                 const data = await response.json();
 
-                if (data.success) {
-                    showNotification('Запись успешно удалена');
+                if (response.ok || response.status === 404) {
+                    // Успех или запись уже удалена (404)
+                    const message = data.message || 'Запись успешно удалена';
+                    showNotification(message);
                     document.querySelector(`tr[data-appointment-id="${id}"]`)?.remove();
+
+                    // Закрываем модальное окно просмотра, если оно открыто
+                    if (currentAppointmentId === id) {
+                        closeViewAppointmentModal();
+                    }
                 } else {
                     throw new Error(data.message || 'Ошибка при удалении записи');
                 }
@@ -1430,6 +1437,7 @@
                 showNotification(error.message || 'Ошибка при удалении записи', 'error');
             }
         }
+
 
         // Вспомогательные функции
         function escapeHtml(unsafe) {
@@ -1561,21 +1569,19 @@
                 return;
             }
 
-            // Получаем данные из модального окна
+            // Get basic appointment data
             const dateText = modal.querySelector('.detail-row:nth-child(1) .detail-value')?.textContent;
             const time = modal.querySelector('.detail-row:nth-child(2) .detail-value')?.textContent;
             const clientName = modal.querySelector('.detail-row:nth-child(3) .detail-value')?.textContent;
             const serviceName = modal.querySelector('.service-item span:first-child')?.textContent;
             const priceText = modal.querySelector('.service-item span:nth-child(2)')?.textContent;
-
-            // Извлекаем числовое значение цены (удаляем "грн" и пробелы)
             const price = parseFloat(priceText?.replace('грн', '').trim()) || 0;
 
-            // Находим ID клиента и услуги
+            // Find client and service IDs
             const client = allClients.find(c => c.name === clientName);
             const service = allServices.find(s => s.name === serviceName);
 
-            // Форматируем дату (из формата dd.mm.yyyy в yyyy-mm-dd)
+            // Format date
             let formattedDate = '';
             if (dateText) {
                 const [day, month, year] = dateText.split('.');
@@ -1592,19 +1598,17 @@
                 return;
             }
 
-            // Подготавливаем данные для отправки - фильтруем товары с корректными ID
-            const productsPayload = temporaryProducts
-                .filter(p => p.product_id) // Фильтруем только товары с ID
-                .map(p => {
-                    const product = allProducts.find(prod => prod.id == p.product_id) || {};
-                    return {
-                        product_id: p.product_id,
-                        quantity: parseInt(p.quantity) || 1,
-                        name: p.name || product.name || 'Неизвестный товар',
-                        price: parseFloat(p.price) || 0,
-                        wholesale_price: parseFloat(product.warehouse?.purchase_price)
-                    };
-                });
+            // Prepare products data
+            const productsPayload = temporaryProducts.map(p => {
+                const product = allProducts.find(prod => prod.id == p.product_id) || {};
+                return {
+                    product_id: p.product_id,
+                    quantity: parseInt(p.quantity) || 1,
+                    price: parseFloat(p.price) || 0,
+                    wholesale_price: parseFloat(p.purchase_price) ||
+                        parseFloat(product.warehouse?.purchase_price) || 0
+                };
+            });
 
             const payload = {
                 service_id: service.id,
@@ -1615,34 +1619,30 @@
                 products: productsPayload
             };
 
-            // Валидация перед отправкой
-            if (!payload.service_id || !payload.client_id || !payload.date || !payload.time || isNaN(payload.price)) {
-                showNotification('Заполните все обязательные поля', 'error');
-                return;
-            }
-
             try {
                 const response = await fetch(`/appointments/${appointmentId}`, {
-                    method: 'PUT',
+                    method: 'POST', // Laravel needs POST for PUT method with _method parameter
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        ...payload,
+                        _method: 'PUT' // Laravel way to simulate PUT request
+                    })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `Ошибка сервера: ${response.status}`);
-                }
-
                 const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || `Ошибка сервера: ${response.status}`);
+                }
 
                 if (data.success) {
                     showNotification('Изменения сохранены');
                     toggleModal('viewAppointmentModal', false);
-
                     window.location.reload();
                 } else {
                     showNotification(data.message || 'Ошибка сохранения', 'error');
