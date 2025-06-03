@@ -6,7 +6,8 @@
 .purchases-container,
 .sales-container,
 .services-container,
-.appointments-container{
+.appointments-container,
+.expenses-container{
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
@@ -20,7 +21,8 @@
 .purchases-header,
 .sales-header,
 .services-header,
-.appointments-header{
+.appointments-header,
+.expenses-header{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -35,7 +37,8 @@
 .purchases-header h1,
 .sales-header h1,
 .services-header h1,
-.appointments-header h1{
+.appointments-header h1,
+.expenses-header h1{
     font-size: 24px;
     font-weight: 600;
     color: #333;
@@ -62,7 +65,8 @@
 .btn-add-purchase,
 .btn-add-sale,
 .btn-add-service,
-.btn-add-appointment{
+.btn-add-appointment,
+.btn-add-expense{
     display: flex;
     align-items: center;
     gap: 8px;
@@ -78,7 +82,8 @@
 
 .btn-add-client:hover,
 .btn-add-product:hover,
-.btn-add-purchase:hover{
+.btn-add-purchase:hover,
+.btn-add-expense:hover{
     background-color: #2563eb;
 }
 
@@ -128,7 +133,8 @@
 .purchase-table,
 .sale-table,
 .services-table,
-.appointments-table{
+.appointments-table,
+.expenses-table{
     width: 100%;
     border-collapse: collapse;
 }
@@ -139,7 +145,7 @@
 .purchase-table thead,
 .sale-table thead,
 .services-table thead,
-.appointments-table thead{
+.expenses-table thead{
     background-color: #e0e4e9 !important;
     border-bottom: 1px solid #e5e7eb;
 }
@@ -150,7 +156,8 @@
 .purchase-table th,
 .sale-table th,
 .services-table th,
-.appointments-table th{
+.appointments-table th,
+.expenses-table th{
     padding: 16px;
     text-align: center;
     font-size: 14px;
@@ -166,7 +173,8 @@
 .purchase-table td,
 .sale-table td,
 .services-table td,
-.appointments-table td{
+.appointments-table td,
+.expenses-table td{
     padding: 14px;
     border-bottom: 1px solid #e5e7eb;
     font-size: 14px;
@@ -180,7 +188,8 @@
 .warehouse-table tr:last-child td,
 .purchase-table tr:last-child td,
 .services-table tr:last-child td,
-.appointments-table th:last-child td{
+.appointments-table th:last-child td,
+.expenses-table th:last-child td{
     border-bottom: none;
 }
 
@@ -695,12 +704,15 @@
         text-align: right;
     }
 
-    .purchase-actions {
+    .purchase-actions,
+    .expense-actions,
+    .sale-actions {
         display: flex;
         gap: 10px;
         margin-left: 20px;
+        justify-content: center;
     }
-
+   
     .purchase-details {
         padding: 20px;
     }
@@ -874,11 +886,6 @@
         text-align: right;
     }
 
-    .sale-actions {
-        display: flex;
-        gap: 10px;
-        margin-left: 20px;
-    }
 
     .sale-details {
         padding: 20px;

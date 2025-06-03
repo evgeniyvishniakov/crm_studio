@@ -243,18 +243,39 @@ class AppointmentsController extends Controller
     public function view($id)
     {
         try {
-            $appointment = Appointment::with([
-                'client:id,name,instagram,phone,email',
-                'service:id,name,price',
-                'sales.items.product.warehouse:id,product_id,quantity,retail_price'
-            ])->findOrFail($id);
+            $appointment = Appointment::with(['client', 'service'])->findOrFail($id);
+            
+            // Получаем все продажи для этого клиента на эту дату
+            $sales = Sale::with(['items.product'])
+                ->where('client_id', $appointment->client_id)
+                ->whereDate('date', $appointment->date)
+                ->get();
+
+            // Получаем все товары из продаж
+            $saleItems = [];
+            foreach ($sales as $sale) {
+                foreach ($sale->items as $item) {
+                    if ($item->product) {
+                        $saleItems[] = [
+                            'product_id' => $item->product_id,
+                            'name' => $item->product->name,
+                            'quantity' => $item->quantity,
+                            'price' => $item->retail_price,
+                            'purchase_price' => $item->wholesale_price
+                        ];
+                    }
+                }
+            }
 
             return response()->json([
                 'success' => true,
                 'appointment' => $appointment,
+                'sales' => $saleItems,
                 'products' => Product::with('warehouse')->get()
             ]);
+
         } catch (\Exception $e) {
+            \Log::error('Error in view appointment: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка при загрузке данных: ' . $e->getMessage()

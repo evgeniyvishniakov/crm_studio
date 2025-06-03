@@ -240,6 +240,10 @@
 
         // Функции для работы с модальными окнами
         function openPurchaseModal() {
+            document.getElementById('purchaseForm').reset();
+            // Устанавливаем текущую дату
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelector('#purchaseForm [name="date"]').value = today;
             document.getElementById('purchaseModal').style.display = 'block';
         }
 

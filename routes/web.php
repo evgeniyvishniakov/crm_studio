@@ -5,6 +5,7 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\ExpensesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -69,3 +70,12 @@ Route::delete('/appointments/{appointment}/delete-product/{sale}', [Appointments
 Route::post('/appointments/{appointment}/add-procedure', [AppointmentsController::class, 'addProcedure']);
 Route::post('/appointments/{appointment}/remove-product', [AppointmentsController::class, 'removeProduct'])
     ->name('appointments.remove-product');
+
+// Маршруты для работы с расходами
+Route::prefix('expenses')->group(function () {
+    Route::get('/', [ExpensesController::class, 'index'])->name('expenses.index');
+    Route::post('/', [ExpensesController::class, 'store'])->name('expenses.store');
+    Route::get('/{expense}/edit', [ExpensesController::class, 'edit'])->name('expenses.edit');
+    Route::put('/{expense}', [ExpensesController::class, 'update'])->name('expenses.update');
+    Route::delete('/{expense}', [ExpensesController::class, 'destroy'])->name('expenses.destroy');
+});

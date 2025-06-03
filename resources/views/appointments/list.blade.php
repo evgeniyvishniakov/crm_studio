@@ -352,17 +352,8 @@
         }
 
         function renderViewAppointmentModal(data, modalBody) {
-            const { appointment, products = [] } = data;
-            const sales = appointment.sales || [];
+            const { appointment, sales = [], products = [] } = data;
             temporaryProducts = [...sales]; // Инициализируем временный список товаров
-
-            temporaryProducts = sales.map(sale => ({
-                product_id: sale.product_id,
-                name: sale.product?.name || sale.name || 'Неизвестный товар',
-                quantity: sale.quantity,
-                price: sale.price,
-                purchase_price: sale.purchase_price || sale.product?.purchase_price || 0
-            }));
 
             const servicePrice = parseFloat(appointment.price) || 0;
             const productsTotal = temporaryProducts.reduce((sum, sale) => {
@@ -374,7 +365,7 @@
 
             modalBody.innerHTML = `
         <input type="hidden" id="appointmentId" value="${appointment.id}">
-        <input type="hidden" name="date" value="{{ $appointment->date }}">
+        <input type="hidden" name="date" value="${appointment.date}">
         <div class="appointment-details">
             <div class="detail-row">
                 <span class="detail-label">Дата:</span>
@@ -395,40 +386,11 @@
                     <span>${escapeHtml(appointment.service.name)}</span>
                     <span>${servicePrice.toFixed(2)} грн</span>
                 </div>
-
             </div>
-            <button class="btn-add-service" id="showAddServiceFormBtn">
-    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-    </svg>
-    Добавить процедуру
-</button>
 
-<div id="addServiceForm" style="display: none; margin-top: 10px;">
-    <div class="form-row">
-        <div class="form-group">
-            <label>Процедура *</label>
-            <select id="serviceSelect" class="form-control">
-                <option value="">Выберите процедуру</option>
-                ${allServices.map(s => `
-                    <option value="${s.id}" data-price="${s.price}">${s.name} (${s.price} грн)</option>
-                `).join('')}
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Цена (грн) *</label>
-            <input type="number" id="servicePrice" class="form-control" step="0.01" min="0">
-        </div>
-    </div>
-    <div class="form-actions">
-        <button type="button" class="btn-cancel" id="cancelAddService">Отмена</button>
-        <button type="button" class="btn-submit" id="submitAddService">Добавить</button>
-    </div>
-</div>
-
-            <h3>Товары</h3>
+            <h3>Товары клиента на эту дату</h3>
             <div class="products-section">
-                ${renderProductsList(temporaryProducts, products)}
+                ${renderProductsList(temporaryProducts)}
                 <button class="btn-add-product" id="showAddProductFormBtn">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
@@ -480,51 +442,45 @@
             setupProductHandlers();
         }
 
-        function renderProductsList(sales, products) {
+        function renderProductsList(sales) {
             if (!sales || sales.length === 0) return '<p>Товары не добавлены</p>';
 
             return `
-    <table class="products-table">
-        <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Количество</th>
-                <th>Розничная цена</th>
-                <th>Оптовая цена</th>
-                <th>Сумма</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${sales.map((sale, index) => {
-                const product = products.find(p => p.id == sale.product_id) || {};
-                const productName = sale.name || product.name || 'Неизвестный товар';
-                const retailPrice = parseFloat(sale.price || 0);
-                const purchasePrice = parseFloat(product.warehouse?.purchase_price);
-                const quantity = parseInt(sale.quantity) || 0;
-                const total = quantity * retailPrice;
-
-                return `
-                <tr data-index="${index}">
-                    <td>${escapeHtml(productName)}</td>
-                    <td>${quantity}</td>
-                    <td>${retailPrice.toFixed(2)} грн</td>
-                    <td>${purchasePrice.toFixed(2)} грн</td>
-                    <td>${total.toFixed(2)} грн</td>
-                    <td>
-                        <button class="btn-delete btn-delete-product"
-                                data-product-id="${sale.product_id}"
-                                title="Удалить">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                    </td>
-                </tr>
-                `;
-            }).join('')}
-        </tbody>
-    </table>`;
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Количество</th>
+                        <th>Розничная цена</th>
+                        <th>Оптовая цена</th>
+                        <th>Сумма</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${sales.map((sale, index) => {
+                        const total = sale.quantity * sale.price;
+                        return `
+                        <tr data-index="${index}">
+                            <td>${escapeHtml(sale.name)}</td>
+                            <td>${sale.quantity}</td>
+                            <td>${parseFloat(sale.price).toFixed(2)} грн</td>
+                            <td>${parseFloat(sale.purchase_price).toFixed(2)} грн</td>
+                            <td>${total.toFixed(2)} грн</td>
+                            <td>
+                                <button class="btn-delete btn-delete-product"
+                                        data-product-id="${sale.product_id}"
+                                        title="Удалить">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>`;
         }
 
 

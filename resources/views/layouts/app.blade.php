@@ -100,7 +100,7 @@
                     <a href="{{ route('sales.index') }}"> <i class="menu-icon fa fa-money"></i>Продажи</a>
                 </li>
                 <li>
-                    <a href="{{ route('clients.list') }}"> <i class="menu-icon fa fa-money"></i>Расходы</a>
+                    <a href="{{ route('expenses.index') }}"> <i class="menu-icon fa fa-money"></i>Расходы</a>
                 </li>
                 <li>
                     <a href="{{ route('clients.list') }}"> <i class="menu-icon fa fa-tasks"></i>Отчеты</a>

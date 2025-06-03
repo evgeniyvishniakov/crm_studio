@@ -286,6 +286,10 @@
 
         // Функции для работы с модальными окнами
         function openSaleModal() {
+            document.getElementById('saleForm').reset();
+            // Устанавливаем текущую дату
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelector('#saleForm [name="date"]').value = today;
             document.getElementById('saleModal').style.display = 'block';
         }
 
