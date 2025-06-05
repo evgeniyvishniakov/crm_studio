@@ -735,7 +735,7 @@
             if (!productsSection) return;
 
             // Получаем все товары из базы данных для отображения актуальной информации
-            const allProducts = @json($products);
+            // Используем существующую переменную allProducts
 
             productsSection.innerHTML = `
         ${renderProductsList(temporaryProducts, allProducts)}
@@ -845,9 +845,12 @@
 
 
         // Функции для поиска товаров
-        function searchProducts(input) {
-            const searchTerm = input.value.toLowerCase();
-            const dropdown = input.nextElementSibling;
+        function searchProducts(inputElement) {
+            const searchTerm = inputElement.value.trim().toLowerCase();
+            console.log('Поисковый запрос:', searchTerm);
+            console.log('Доступные товары:', allProducts);
+
+            const dropdown = inputElement.nextElementSibling;
             const dropdownList = dropdown.querySelector('.product-dropdown-list');
 
             if (searchTerm.length === 0) {
@@ -857,93 +860,57 @@
 
             const filteredProducts = allProducts.filter(product => {
                 const nameMatch = product.name?.toLowerCase().includes(searchTerm) || false;
-                const quantity = product.warehouse?.quantity || 0;
-                return nameMatch && quantity > 0;
-            });
+                console.log('Проверяем товар:', product.name, 'Совпадение:', nameMatch);
+                return nameMatch;
+            }).slice(0, 5);
 
-            if (filteredProducts.length === 0) {
-                dropdownList.innerHTML = '<div class="product-dropdown-item">Товары не найдены</div>';
-            } else {
+            console.log('Найденные товары:', filteredProducts);
+
+            if (filteredProducts.length > 0) {
                 dropdownList.innerHTML = filteredProducts.map(product => {
-                    const retailPrice = parseFloat(product.warehouse?.retail_price) || 0;
-                    const purchasePrice = parseFloat(product.warehouse?.purchase_price) || 0;
-                    const formattedRetailPrice = !isNaN(retailPrice) ? retailPrice.toFixed(2) : '0.00';
-                    const formattedPurchasePrice = !isNaN(purchasePrice) ? purchasePrice.toFixed(2) : '0.00';
-                    const quantity = product.warehouse?.quantity || 0;
+                    const name = escapeHtml(product.name || '');
 
                     return `
-                <div class="product-dropdown-item"
-                     onclick="selectProduct(this, '${escapeHtml(product.name)}', ${product.id}, ${retailPrice}, ${purchasePrice})">
-                    ${escapeHtml(product.name)} (${quantity} шт, розн: ${formattedRetailPrice} грн, опт: ${formattedPurchasePrice} грн)
-                </div>
+            <div class="product-dropdown-item"
+                 data-product-id="${product.id}"
+                 data-price="${product.price}"
+                 onclick="selectProduct(this, '${product.id}', '${name}', ${product.price})">
+                ${name} (${product.quantity} шт)
+            </div>
             `;
                 }).join('');
-            }
-
-            dropdown.style.display = 'block';
-        }
-
-
-        function showProductDropdown(input) {
-            if (input.value.length > 0) {
-                searchProducts(input);
+                dropdown.style.display = 'block';
             } else {
-                const dropdown = input.nextElementSibling;
-                const dropdownList = dropdown.querySelector('.product-dropdown-list');
-
-                const availableProducts = allProducts.filter(p => {
-                    const quantity = p.warehouse?.quantity || 0;
-                    return quantity > 0;
-                });
-
-                if (availableProducts.length === 0) {
-                    dropdownList.innerHTML = '<div class="product-dropdown-item">Нет доступных товаров</div>';
-                } else {
-                    dropdownList.innerHTML = availableProducts.map(product => {
-                        // Safely get and format the price
-                        const price = parseFloat(product.warehouse?.retail_price) || 0;
-                        const formattedPrice = !isNaN(price) ? price.toFixed(2) : '0.00';
-                        const quantity = product.warehouse?.quantity || 0;
-
-                        return `
-                    <div class="product-dropdown-item"
-                         onclick="selectProduct(this, '${escapeHtml(product.name)}', ${product.id}, ${price})">
-                        ${escapeHtml(product.name)} (${quantity} шт, ${formattedPrice} грн)
-                    </div>
-                `;
-                    }).join('');
-                }
+                dropdownList.innerHTML = '<div class="product-dropdown-item no-results">Товары не найдены</div>';
                 dropdown.style.display = 'block';
             }
         }
 
-        function selectProduct(element, productName, productId, retailPrice, purchasePrice) {
+        function selectProduct(element, productId, productName, price) {
             const container = element.closest('.product-search-container');
             const input = container.querySelector('.product-search-input');
             const dropdown = container.querySelector('.product-dropdown');
-            const productIdInput = container.querySelector('#selectedProductId');
-            const priceInput = document.getElementById('productPrice');
+            
+            input.value = productName;
+            dropdown.style.display = 'none';
 
-            if (input && productIdInput && priceInput) {
-                input.value = productName;
-                productIdInput.value = productId;
-                priceInput.value = retailPrice;
-                dropdown.style.display = 'none';
-
-                // Сохраняем оптовую цену в data-атрибут для последующего использования
-                element.dataset.purchasePrice = purchasePrice;
-
-                // Установка максимального количества
-                const product = allProducts.find(p => p.id === productId);
-                const maxQuantity = product?.warehouse?.quantity || 0;
-                const quantityInput = document.getElementById('productQuantity');
-                if (quantityInput) {
-                    quantityInput.max = maxQuantity;
-                    quantityInput.value = Math.min(1, maxQuantity);
-                }
+            // Добавляем товар в список
+            const product = allProducts.find(p => p.id == productId);
+            if (product) {
+                temporaryProducts.push({
+                    product_id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    purchase_price: product.purchase_price,
+                    quantity: 1
+                });
+                updateProductsList();
             }
         }
 
+        function formatPrice(price) {
+            return parseFloat(price).toFixed(2);
+        }
 
         // Закрытие выпадающего списка при клике вне его
         document.addEventListener('click', function(e) {
@@ -1116,7 +1083,7 @@
                 const phoneMatch = client.phone?.includes(searchTerm) || false;
 
                 return nameMatch || instagramMatch || emailMatch || phoneMatch;
-            });
+            }).slice(0, 5); // Ограничиваем до 5 результатов
 
             if (filteredClients.length > 0) {
                 dropdownList.innerHTML = filteredClients.map(client => {
@@ -1520,7 +1487,11 @@
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
             // Обработчики кнопок
-            document.getElementById('addAppointmentBtn')?.addEventListener('click', () => toggleModal('appointmentModal'));
+            document.getElementById('addAppointmentBtn')?.addEventListener('click', () => {
+                const today = new Date().toISOString().split('T')[0];
+                document.querySelector('#appointmentModal input[name="date"]').value = today;
+                toggleModal('appointmentModal');
+            });
             document.getElementById('cancelDelete')?.addEventListener('click', () => toggleModal('confirmationModal', false));
             document.getElementById('confirmDeleteBtn')?.addEventListener('click', async () => {
                 if (isDeletingAppointment) {
@@ -1696,6 +1667,40 @@
                 // Format: yyyy-mm-dd (already correct)
                 return dateString;
             }
+        }
+
+        function showProductDropdown(input) {
+    console.log('showProductDropdown вызван');
+    console.log('Все товары:', allProducts);
+
+    const dropdown = input.nextElementSibling;
+    const dropdownList = dropdown.querySelector('.product-dropdown-list');
+
+    if (input.value.length > 0) {
+        searchProducts(input);
+    } else {
+        // Показываем первые 5 товаров
+        const availableProducts = allProducts.slice(0, 5);
+        console.log('Доступные товары:', availableProducts);
+
+        if (availableProducts.length === 0) {
+            dropdownList.innerHTML = '<div class="product-dropdown-item">Нет доступных товаров</div>';
+        } else {
+            dropdownList.innerHTML = availableProducts.map(product => {
+                const name = escapeHtml(product.name || '');
+
+                return `
+                <div class="product-dropdown-item"
+                     data-product-id="${product.id}"
+                     data-price="${product.price}"
+                     onclick="selectProduct(this, '${product.id}', '${name}', ${product.price})">
+                    ${name} (${product.quantity} шт)
+                </div>
+                `;
+            }).join('');
+        }
+        dropdown.style.display = 'block';
+    }
         }
 
     </script>

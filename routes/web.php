@@ -60,8 +60,16 @@ Route::prefix('sales')->group(function () {
     Route::delete('/{sale}/items/{item}', [SaleController::class, 'deleteItem'])->name('sales.items.delete');});
 
 Route::resource('services', ServiceController::class);
+
+// Маршруты календаря
+Route::get('/appointments/calendar-events', [AppointmentsController::class, 'calendarEvents'])->name('appointments.calendar-events');
+Route::get('/appointments/events', [AppointmentsController::class, 'getEvents'])->name('appointments.events');
+
+// Основные маршруты для записей
 Route::resource('appointments', AppointmentsController::class);
 Route::get('/appointments/{id}/view', [AppointmentsController::class, 'view']);
+Route::post('/appointments/{appointment}/update-sales', [AppointmentsController::class, 'updateSales'])
+    ->name('appointments.update-sales');
 Route::post('/appointments/{appointment}/save-products', [AppointmentsController::class, 'saveProducts'])
     ->name('appointments.save-products');
 Route::post('/appointments/{appointment}/add-product', [AppointmentsController::class, 'addProduct'])
@@ -78,4 +86,11 @@ Route::prefix('expenses')->group(function () {
     Route::get('/{expense}/edit', [ExpensesController::class, 'edit'])->name('expenses.edit');
     Route::put('/{expense}', [ExpensesController::class, 'update'])->name('expenses.update');
     Route::delete('/{expense}', [ExpensesController::class, 'destroy'])->name('expenses.destroy');
+});
+
+Route::get('/check-session', function () {
+    return response()->json([
+        'authenticated' => auth()->check(),
+        'csrf_token' => csrf_token()
+    ]);
 });

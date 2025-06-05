@@ -82,12 +82,21 @@
                     @csrf
                     <div class="form-group">
                         <label>Товар *</label>
-                        <select id="productSelect" name="product_id" required>
-                            <option value="">Выберите товар</option>
-                            @foreach($products as $product)
-                                <option value="{{ $product->id }}">{{ $product->name }}</option>
-                            @endforeach
-                        </select>
+                        <div class="product-search-container">
+                            <input type="text" class="product-search-input form-control"
+                                   placeholder="Начните вводить название товара..."
+                                   oninput="searchProducts(this)"
+                                   onfocus="showProductDropdown(this)">
+                            <div class="product-dropdown" style="display: none;">
+                                <div class="product-dropdown-list"></div>
+                            </div>
+                            <select id="productSelect" name="product_id" class="form-control product-select" style="display: none;" required>
+                                <option value="">Выберите товар</option>
+                                @foreach($products as $product)
+                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Закупочная цена *</label>
@@ -160,6 +169,85 @@
     </div>
 
     <script>
+        let allProducts = @json($products);
+        
+        function searchProducts(input) {
+            const searchTerm = input.value.toLowerCase();
+            const dropdown = input.nextElementSibling;
+            const dropdownList = dropdown.querySelector('.product-dropdown-list');
+
+            if (searchTerm.length === 0) {
+                // Показываем первые 5 товаров при пустом поиске
+                showFirstProducts(dropdownList);
+                dropdown.style.display = 'block';
+                return;
+            }
+
+            const filteredProducts = allProducts.filter(product => {
+                return product.name.toLowerCase().includes(searchTerm);
+            }).slice(0, 5); // Ограничиваем результаты первыми 5 товарами
+
+            if (filteredProducts.length === 0) {
+                dropdownList.innerHTML = '<div class="product-dropdown-item">Товары не найдены</div>';
+            } else {
+                dropdownList.innerHTML = filteredProducts.map(product => `
+                    <div class="product-dropdown-item" 
+                         onclick="selectProduct('${escapeHtml(product.name)}', ${product.id})">
+                        ${escapeHtml(product.name)}
+                    </div>
+                `).join('');
+            }
+
+            dropdown.style.display = 'block';
+        }
+
+        function showFirstProducts(dropdownList) {
+            const firstProducts = allProducts.slice(0, 5);
+            dropdownList.innerHTML = firstProducts.map(product => `
+                <div class="product-dropdown-item" 
+                     onclick="selectProduct('${escapeHtml(product.name)}', ${product.id})">
+                    ${escapeHtml(product.name)}
+                </div>
+            `).join('');
+        }
+
+        function showProductDropdown(input) {
+            const dropdown = input.nextElementSibling;
+            const dropdownList = dropdown.querySelector('.product-dropdown-list');
+            showFirstProducts(dropdownList);
+            dropdown.style.display = 'block';
+        }
+
+        function selectProduct(productName, productId) {
+            const container = document.querySelector('.product-search-container');
+            const input = container.querySelector('.product-search-input');
+            const select = container.querySelector('#productSelect');
+            const dropdown = container.querySelector('.product-dropdown');
+
+            input.value = productName;
+            select.value = productId;
+            dropdown.style.display = 'none';
+        }
+
+        // Закрытие выпадающего списка при клике вне его
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.product-search-container')) {
+                document.querySelectorAll('.product-dropdown').forEach(dropdown => {
+                    dropdown.style.display = 'none';
+                });
+            }
+        });
+
+        function escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return unsafe.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
         }
@@ -296,9 +384,9 @@
                         // Update the table row
                         const row = document.getElementById(`warehouse-${id}`);
                         if (row) {
-                            row.querySelector('.purchase-price').textContent = parseFloat(data.warehouse.purchase_price).toFixed(2);
-                            row.querySelector('.retail-price').textContent = parseFloat(data.warehouse.retail_price).toFixed(2);
-                            row.querySelector('.quantity').textContent = data.warehouse.quantity;
+                            row.querySelector('.purchase-price').textContent = parseFloat(data.warehouse.purchase_price).toFixed(2) + ' грн';
+                            row.querySelector('.retail-price').textContent = parseFloat(data.warehouse.retail_price).toFixed(2) + ' грн';
+                            row.querySelector('.quantity').textContent = data.warehouse.quantity + ' шт';
                         }
                         closeEditModal();
                         showNotification('success', 'Изменения успешно сохранены');
@@ -433,19 +521,33 @@
         }
 
         // Поиск товаров
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('#warehouseTableBody tr');
 
             rows.forEach(row => {
-                const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                if (name.includes(searchTerm)) {
+                const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                const purchasePrice = row.querySelector('.purchase-price').textContent.toLowerCase();
+                const retailPrice = row.querySelector('.retail-price').textContent.toLowerCase();
+                const quantity = row.querySelector('.quantity').textContent.toLowerCase();
+
+                if (productName.includes(searchText) || 
+                    purchasePrice.includes(searchText) || 
+                    retailPrice.includes(searchText) || 
+                    quantity.includes(searchText)) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';
                 }
             });
         });
+
+        // Очистка поиска при закрытии модальных окон
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            const rows = document.querySelectorAll('#warehouseTableBody tr');
+            rows.forEach(row => row.style.display = '');
+        }
 
         // Обработчик формы добавления
         document.getElementById('addForm').addEventListener('submit', function(e) {
@@ -573,53 +675,50 @@
                     submitBtn.disabled = false;
                 });
         });
-
-        function submitEditForm(form) {
-            const formData = new FormData(form);
-            const id = formData.get('id');
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-
-            submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
-            submitBtn.disabled = true;
-
-            fetch(`/warehouse/${id}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                    'X-HTTP-Method-Override': 'PUT'
-                },
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => Promise.reject(err));
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        // Update the table row
-                        const row = document.getElementById(`warehouse-${id}`);
-                        if (row) {
-                            row.querySelector('.purchase-price').textContent = parseFloat(data.warehouse.purchase_price).toFixed(2);
-                            row.querySelector('.retail-price').textContent = parseFloat(data.warehouse.retail_price).toFixed(2);
-                            row.querySelector('.quantity').textContent = data.warehouse.quantity;
-                        }
-                        closeEditModal();
-                        showNotification('success', 'Изменения успешно сохранены');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('error', error.message || 'Ошибка при сохранении изменений');
-                })
-                .finally(() => {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                });
-        }
     </script>
+
+    <style>
+        .product-search-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .product-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .product-dropdown-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .product-dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .product-search-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .product-search-input:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+    </style>
 @endsection

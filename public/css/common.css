@@ -388,15 +388,25 @@
 .notification {
     position: fixed;
     top: 20px;
-    right: -400px;
-    padding: 15px 25px;
+    right: 20px;
+    padding: 15px 20px;
     border-radius: 4px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    color: #fff;
+    z-index: 9999999; /* Увеличиваем z-index */
+    display: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+    max-width: 450px;
+    font-weight: 500;
+}
+
+.notification.success {
+    background-color: #4CAF50;
+}
+
+.notification.error {
+    background-color: #eb6157;
+    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
 }
 
 .notification.show {
@@ -408,16 +418,6 @@
     height: 20px;
 }
 
-.notification.success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-}
-
-.notification.error {
-    background-color: #f8d7da !important;
-    border-color: #f5c6cb !important;
-}
 
 /* Общие стили для лоадера */
 .loader {

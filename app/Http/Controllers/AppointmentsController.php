@@ -11,6 +11,7 @@ use App\Models\Service;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AppointmentsController extends Controller
 {
@@ -34,7 +35,20 @@ class AppointmentsController extends Controller
         });
 
         $services = Service::all();
-        $products = Product::with('warehouse')->get();
+        $products = Product::with('warehouse')
+            ->whereHas('warehouse', function($query) {
+                $query->where('quantity', '>', 0);
+            })
+            ->get()
+            ->map(function($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->warehouse->retail_price,
+                    'purchase_price' => $product->warehouse->purchase_price,
+                    'quantity' => $product->warehouse->quantity
+                ];
+            });
 
         return view('appointments.list', compact(
             'appointments',
@@ -244,7 +258,7 @@ class AppointmentsController extends Controller
     {
         try {
             $appointment = Appointment::with(['client', 'service'])->findOrFail($id);
-            
+
             // Получаем все продажи для этого клиента на эту дату
             $sales = Sale::with(['items.product'])
                 ->where('client_id', $appointment->client_id)
@@ -271,7 +285,20 @@ class AppointmentsController extends Controller
                 'success' => true,
                 'appointment' => $appointment,
                 'sales' => $saleItems,
-                'products' => Product::with('warehouse')->get()
+                'products' => Product::with('warehouse')
+                    ->whereHas('warehouse', function($query) {
+                        $query->where('quantity', '>', 0);
+                    })
+                    ->get()
+                    ->map(function($product) {
+                        return [
+                            'id' => $product->id,
+                            'name' => $product->name,
+                            'price' => $product->warehouse->retail_price,
+                            'purchase_price' => $product->warehouse->purchase_price,
+                            'quantity' => $product->warehouse->quantity
+                        ];
+                    })
             ]);
 
         } catch (\Exception $e) {
@@ -414,6 +441,197 @@ class AppointmentsController extends Controller
         $appointment->products()->detach($validated['product_id']);
 
         return response()->json(['success' => true]);
+    }
+
+    public function calendarEvents(Request $request)
+    {
+        try {
+            \Log::info('calendarEvents method started');
+            \Log::info('Request data:', $request->all());
+
+            $appointments = Appointment::with(['client', 'service'])
+                ->when($request->start, function($query) use ($request) {
+                    \Log::info('Filtering by start date: ' . $request->start);
+                    return $query->whereDate('date', '>=', Carbon::parse($request->start));
+                })
+                ->when($request->end, function($query) use ($request) {
+                    \Log::info('Filtering by end date: ' . $request->end);
+                    return $query->whereDate('date', '<=', Carbon::parse($request->end));
+                })
+                ->get();
+
+            \Log::info('Found appointments count: ' . $appointments->count());
+
+            $events = $appointments->map(function($appointment) {
+                try {
+                    \Log::info('Processing appointment:', ['id' => $appointment->id, 'date' => $appointment->date, 'time' => $appointment->time]);
+
+                    // Правильное форматирование даты и времени
+                    $date = Carbon::parse($appointment->date)->format('Y-m-d');
+                    $startDateTime = Carbon::parse($date . ' ' . $appointment->time);
+                    $endDateTime = $startDateTime->copy()->addMinutes($appointment->service->duration ?? 60);
+
+                    $event = [
+                        'id' => $appointment->id,
+                        'title' => $appointment->client->name . ' - ' . $appointment->service->name,
+                        'start' => $startDateTime->format('Y-m-d\TH:i:s'),
+                        'end' => $endDateTime->format('Y-m-d\TH:i:s'),
+                        'backgroundColor' => '#4CAF50',
+                        'borderColor' => '#4CAF50',
+                        'textColor' => '#ffffff',
+                        'extendedProps' => [
+                            'client' => $appointment->client->name,
+                            'service' => $appointment->service->name,
+                            'price' => $appointment->price,
+                            'notes' => $appointment->notes
+                        ]
+                    ];
+
+                    \Log::info('Created event:', $event);
+                    return $event;
+
+                } catch (\Exception $e) {
+                    \Log::error('Error processing appointment: ' . $e->getMessage(), [
+                        'appointment_id' => $appointment->id,
+                        'date' => $appointment->date,
+                        'time' => $appointment->time
+                    ]);
+                    return null;
+                }
+            })->filter()->values();
+
+            \Log::info('Final events count: ' . $events->count());
+            return response()->json($events);
+
+        } catch (\Exception $e) {
+            \Log::error('Error in calendarEvents: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Ошибка при загрузке событий: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getEvents()
+    {
+        $appointments = Appointment::with(['client', 'service'])->get();
+
+        $events = $appointments->map(function($appointment) {
+            $start = $appointment->date->format('Y-m-d') . ' ' . $appointment->time;
+
+            // Предполагаем, что услуга длится 1 час, если не указано иное
+            $end = date('Y-m-d H:i:s', strtotime($start . ' +1 hour'));
+
+            return [
+                'id' => $appointment->id,
+                'title' => $appointment->client->name . ' - ' . $appointment->service->name,
+                'start' => $start,
+                'end' => $end,
+                'className' => 'bg-info',
+                'description' => $appointment->notes,
+                'extendedProps' => [
+                    'client_id' => $appointment->client_id,
+                    'service_id' => $appointment->service_id,
+                    'price' => $appointment->price,
+                    'notes' => $appointment->notes
+                ]
+            ];
+        });
+
+        return response()->json($events);
+    }
+
+    public function show($id)
+    {
+        try {
+            $appointment = Appointment::with(['client', 'service', 'sales.items.product.warehouse'])
+                ->findOrFail($id);
+
+            return response()->json([
+                'success' => true,
+                'appointment' => $appointment
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при загрузке записи: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateSales(Request $request, Appointment $appointment)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Получаем текущие продажи
+            $currentSales = $appointment->sales()->with('items')->get();
+
+            // Удаляем старые продажи и возвращаем товары на склад
+            foreach ($currentSales as $sale) {
+                foreach ($sale->items as $item) {
+                    if ($item->product && $item->product->warehouse) {
+                        $item->product->warehouse->increment('quantity', $item->quantity);
+                    }
+                }
+                $sale->items()->delete();
+                $sale->delete();
+            }
+
+            // Создаем новую продажу
+            if (!empty($request->sales)) {
+                $sale = Sale::create([
+                    'appointment_id' => $appointment->id,
+                    'client_id' => $appointment->client_id,
+                    'date' => $appointment->date,
+                    'total_amount' => 0
+                ]);
+
+                $totalAmount = 0;
+
+                foreach ($request->sales as $saleData) {
+                    $product = Product::with('warehouse')->findOrFail($saleData['product_id']);
+
+                    // Проверяем наличие на складе
+                    if (!$product->warehouse || $product->warehouse->quantity < $saleData['quantity']) {
+                        throw new \Exception("Недостаточно товара на складе: {$product->name}");
+                    }
+
+                    // Создаем позицию продажи
+                    SaleItem::create([
+                        'sale_id' => $sale->id,
+                        'product_id' => $saleData['product_id'],
+                        'quantity' => $saleData['quantity'],
+                        'retail_price' => $saleData['price'],
+                        'wholesale_price' => $saleData['purchase_price'],
+                        'total' => $saleData['quantity'] * $saleData['price']
+                    ]);
+
+                    // Обновляем общую сумму
+                    $totalAmount += $saleData['quantity'] * $saleData['price'];
+
+                    // Уменьшаем количество на складе
+                    $product->warehouse->decrement('quantity', $saleData['quantity']);
+                }
+
+                // Обновляем общую сумму продажи
+                $sale->update(['total_amount' => $totalAmount]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Продажи успешно обновлены',
+                'appointment' => $appointment->fresh(['client', 'service', 'sales.items.product'])
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при обновлении продаж: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 }
