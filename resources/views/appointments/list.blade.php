@@ -759,11 +759,30 @@
             const price = modal.querySelector('#productPrice')?.value;
             const productName = modal.querySelector('#productSearchInput')?.value;
 
-            console.log('Adding product:', { productId, quantity, price, productName });
+            console.log('Добавление товара:', { productId, quantity, price, productName });
 
-            // Проверки
+            // Проверяем, не добавлен ли уже этот товар
+            const isProductAdded = temporaryProducts.some(p => String(p.product_id) === String(productId));
+            if (isProductAdded) {
+                showNotification('Этот товар уже добавлен в список', 'error');
+                return;
+            }
+
             if (!productId || productId === '') {
-                showNotification('Пожалуйста, выберите товар', 'error');
+                showNotification('Пожалуйста, выберите товар из списка', 'error');
+                const searchInput = modal.querySelector('#productSearchInput');
+                if (searchInput) {
+                    searchInput.focus();
+                    if (searchInput.value.trim()) {
+                        searchProducts(searchInput);
+                    }
+                }
+                return;
+            }
+
+            const selectedProduct = allProducts.find(p => String(p.id) === String(productId));
+            if (!selectedProduct || selectedProduct.name !== productName) {
+                showNotification('Пожалуйста, выберите товар из списка', 'error');
                 return;
             }
 
@@ -772,34 +791,33 @@
                 return;
             }
 
+            // Проверяем доступное количество на складе
+            const requestedQuantity = parseInt(quantity);
+            const availableQuantity = parseInt(selectedProduct.quantity) || 0;
+
+            if (requestedQuantity > availableQuantity) {
+                showNotification(`Недостаточно товара на складе! Доступное количество: ${availableQuantity} шт.`, 'error');
+                return;
+            }
+
             if (!price || parseFloat(price) <= 0) {
                 showNotification('Укажите корректную цену', 'error');
                 return;
             }
 
-            // Находим товар
-            const product = allProducts.find(p => p.id == productId);
-            if (!product) {
-                showNotification('Товар не найден', 'error');
-                return;
-            }
-
-            // Добавляем товар в список
             temporaryProducts.push({
                 product_id: productId,
-                name: product.name,
+                name: selectedProduct.name,
                 price: parseFloat(price),
-                purchase_price: product.purchase_price || 0,
-                quantity: parseInt(quantity)
+                purchase_price: selectedProduct.purchase_price || 0,
+                quantity: requestedQuantity
             });
 
-            // Обновляем отображение
+            console.log('Товары после добавления:', temporaryProducts);
+
             updateProductsList();
-            
-            // Очищаем форму
             resetProductForm();
-            
-            // Скрываем форму и показываем кнопку добавления
+
             const form = modal.querySelector('#addProductForm');
             const btn = modal.querySelector('#showAddProductFormBtn');
             if (form && btn) {
@@ -933,7 +951,6 @@
         function searchProducts(inputElement) {
             const searchTerm = inputElement.value.trim().toLowerCase();
             console.log('Поисковый запрос:', searchTerm);
-            console.log('Доступные товары:', allProducts);
 
             const dropdown = inputElement.nextElementSibling;
             const dropdownList = dropdown.querySelector('.product-dropdown-list');
@@ -943,13 +960,29 @@
                 return;
             }
 
+            // Получаем ID уже добавленных товаров и преобразуем их в строки
+            const addedProductIds = temporaryProducts.map(p => String(p.product_id));
+            console.log('Уже добавленные товары:', addedProductIds, temporaryProducts);
+
+            // Фильтруем товары, исключая уже добавленные
             const filteredProducts = allProducts.filter(product => {
                 const nameMatch = product.name?.toLowerCase().includes(searchTerm) || false;
-                console.log('Проверяем товар:', product.name, 'Совпадение:', nameMatch);
-                return nameMatch;
+                const productIdStr = String(product.id);
+                const notAdded = !addedProductIds.includes(productIdStr);
+                
+                console.log('Проверяем товар:', {
+                    name: product.name,
+                    id: product.id,
+                    idType: typeof product.id,
+                    isInAdded: addedProductIds.includes(productIdStr),
+                    nameMatch: nameMatch,
+                    notAdded: notAdded
+                });
+                
+                return nameMatch && notAdded;
             }).slice(0, 5);
 
-            console.log('Найденные товары:', filteredProducts);
+            console.log('Отфильтрованные товары:', filteredProducts);
 
             if (filteredProducts.length > 0) {
                 dropdownList.innerHTML = filteredProducts.map(product => {
@@ -982,6 +1015,7 @@
             const searchInput = form.querySelector('#productSearchInput');
             const hiddenInput = form.querySelector('#selectedProductId');
             const priceInput = form.querySelector('#productPrice');
+            const quantityInput = form.querySelector('#productQuantity');
             const dropdown = form.querySelector('.product-dropdown');
             
             if (searchInput) searchInput.value = name;
@@ -993,12 +1027,19 @@
             if (product && priceInput) {
                 // Заполняем цену
                 priceInput.value = product.price || product.retail_price || 0;
+                // Показываем доступное количество в placeholder
+                if (quantityInput) {
+                    quantityInput.placeholder = `Доступно: ${product.quantity || 0} шт.`;
+                    quantityInput.value = '1';
+                }
             }
 
             console.log('Selected product:', { productId, name, price, formValues: {
                 searchInput: searchInput?.value,
                 hiddenInput: hiddenInput?.value,
-                priceInput: priceInput?.value
+                priceInput: priceInput?.value,
+                quantityInput: quantityInput?.value,
+                maxQuantity: product?.quantity
             }});
         }
 
