@@ -728,36 +728,42 @@
             const modal = document.getElementById('viewAppointmentModal');
             if (!modal) return;
 
-            const searchInput = modal.querySelector('#productSearchInput');
-            const productIdInput = modal.querySelector('#selectedProductId');
-            const quantityInput = modal.querySelector('#productQuantity');
-            const priceInput = modal.querySelector('#productPrice');
+            const form = modal.querySelector('#addProductForm');
+            if (form) {
+                const searchInput = form.querySelector('#productSearchInput');
+                const productIdInput = form.querySelector('#selectedProductId');
+                const quantityInput = form.querySelector('#productQuantity');
+                const priceInput = form.querySelector('#productPrice');
 
-            if (searchInput) searchInput.value = '';
-            if (productIdInput) productIdInput.value = '';
-            if (quantityInput) quantityInput.value = '1';
-            if (priceInput) priceInput.value = '';
+                if (searchInput) searchInput.value = '';
+                if (productIdInput) productIdInput.value = '';
+                if (quantityInput) quantityInput.value = '1';
+                if (priceInput) priceInput.value = '';
+
+                // Скрываем выпадающий список
+                const dropdown = form.querySelector('.product-dropdown');
+                if (dropdown) dropdown.style.display = 'none';
+            }
         }
 
         // Функции для работы с товарами
-        async function addProductToAppointment() {
+        function addProductToAppointment() {
             const modal = document.getElementById('viewAppointmentModal');
-            if (!modal) return;
+            if (!modal) {
+                showNotification('Модальное окно не найдено', 'error');
+                return;
+            }
 
             const productId = modal.querySelector('#selectedProductId')?.value;
             const quantity = modal.querySelector('#productQuantity')?.value;
             const price = modal.querySelector('#productPrice')?.value;
             const productName = modal.querySelector('#productSearchInput')?.value;
 
-            // Проверки
-            if (!productId) {
-                showNotification('Пожалуйста, выберите товар', 'error');
-                return;
-            }
+            console.log('Adding product:', { productId, quantity, price, productName });
 
-            const realProduct = allProducts.find(p => p.id == productId);
-            if (!realProduct) {
-                showNotification('Некорректный товар. Выберите товар из выпадающего списка.', 'error');
+            // Проверки
+            if (!productId || productId === '') {
+                showNotification('Пожалуйста, выберите товар', 'error');
                 return;
             }
 
@@ -771,20 +777,37 @@
                 return;
             }
 
-            // Получаем оптовую цену из продукта
-            const purchasePrice = parseFloat(realProduct.purchase_price || realProduct.purchasePrice || 0);
+            // Находим товар
+            const product = allProducts.find(p => p.id == productId);
+            if (!product) {
+                showNotification('Товар не найден', 'error');
+                return;
+            }
 
-            // Добавляем товар с названием и оптовой ценой
+            // Добавляем товар в список
             temporaryProducts.push({
                 product_id: productId,
-                name: productName || realProduct.name, // Сохраняем название товара
-                quantity: quantity,
-                price: price,
-                purchase_price: purchasePrice // Сохраняем оптовую цену
+                name: product.name,
+                price: parseFloat(price),
+                purchase_price: product.purchase_price || 0,
+                quantity: parseInt(quantity)
             });
 
-            resetProductForm();
+            // Обновляем отображение
             updateProductsList();
+            
+            // Очищаем форму
+            resetProductForm();
+            
+            // Скрываем форму и показываем кнопку добавления
+            const form = modal.querySelector('#addProductForm');
+            const btn = modal.querySelector('#showAddProductFormBtn');
+            if (form && btn) {
+                form.style.display = 'none';
+                btn.style.display = 'inline-block';
+            }
+
+            showNotification('Товар успешно добавлен');
         }
 
 
@@ -950,26 +973,33 @@
         }
 
         function selectProduct(element, productId, name, price) {
-            const container = element.closest('.product-search-container');
-            const input = container.querySelector('.product-search-input');
-            const dropdown = container.querySelector('.product-dropdown');
+            const modal = document.getElementById('viewAppointmentModal');
+            if (!modal) return;
+
+            const form = modal.querySelector('#addProductForm');
+            if (!form) return;
+
+            const searchInput = form.querySelector('#productSearchInput');
+            const hiddenInput = form.querySelector('#selectedProductId');
+            const priceInput = form.querySelector('#productPrice');
+            const dropdown = form.querySelector('.product-dropdown');
             
-            input.value = name;
-            dropdown.style.display = 'none';
+            if (searchInput) searchInput.value = name;
+            if (hiddenInput) hiddenInput.value = productId;
+            if (dropdown) dropdown.style.display = 'none';
 
             // Находим товар в списке всех товаров
             const product = allProducts.find(p => p.id == productId);
-            if (product) {
-                // Добавляем товар в список
-                temporaryProducts.push({
-                    product_id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    purchase_price: product.purchase_price,
-                    quantity: 1
-                });
-                updateProductsList();
+            if (product && priceInput) {
+                // Заполняем цену
+                priceInput.value = product.price || product.retail_price || 0;
             }
+
+            console.log('Selected product:', { productId, name, price, formValues: {
+                searchInput: searchInput?.value,
+                hiddenInput: hiddenInput?.value,
+                priceInput: priceInput?.value
+            }});
         }
 
         function formatPrice(price) {
@@ -1663,50 +1693,33 @@
                 return;
             }
 
-            // Prepare products data
-            const productsPayload = temporaryProducts.map(p => {
-                const product = allProducts.find(prod => prod.id == p.product_id) || {};
-                return {
-                    product_id: p.product_id,
-                    quantity: parseInt(p.quantity) || 1,
-                    price: parseFloat(p.price) || 0,
-                    wholesale_price: parseFloat(p.purchase_price) ||
-                        parseFloat(product.warehouse?.purchase_price) || 0
-                };
-            });
-
-            const payload = {
-                service_id: service.id,
-                client_id: client.id,
-                date: formattedDate,
-                time: time,
-                price: price,
-                products: productsPayload
-            };
-
             try {
                 const response = await fetch(`/appointments/${appointmentId}`, {
-                    method: 'POST', // Laravel needs POST for PUT method with _method parameter
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        ...payload,
-                        _method: 'PUT' // Laravel way to simulate PUT request
+                        date: formattedDate,
+                        time: time,
+                        client_id: client.id,
+                        service_id: service.id,
+                        price: price,
+                        sales: temporaryProducts.map(p => ({
+                            product_id: p.product_id,
+                            quantity: parseInt(p.quantity),
+                            price: parseFloat(p.price),
+                            purchase_price: parseFloat(p.purchase_price || 0)
+                        }))
                     })
                 });
 
                 const data = await response.json();
 
-                if (!response.ok) {
-                    throw new Error(data.message || `Ошибка сервера: ${response.status}`);
-                }
-
                 if (data.success) {
-                    showNotification('Изменения сохранены');
+                    showNotification('Изменения успешно сохранены');
                     toggleModal('viewAppointmentModal', false);
 
                     // Обновляем данные в строке таблицы
@@ -1787,7 +1800,10 @@
         }
 
         function updateProductsTable() {
-            const tableContainer = document.querySelector('.products-section');
+            const modal = document.getElementById('viewAppointmentModal');
+            if (!modal) return;
+
+            const tableContainer = modal.querySelector('.products-section');
             if (!tableContainer) return;
 
             // Создаем структуру таблицы
@@ -1835,19 +1851,65 @@
                     </svg>
                     Добавить товар
                 </button>
+                <div id="addProductForm" style="display: none; margin-top: 20px;">
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label>Товар *</label>
+                            <div class="product-search-container">
+                                <input type="text" class="product-search-input form-control"
+                                       id="productSearchInput"
+                                       placeholder="Начните вводить название товара..."
+                                       oninput="searchProducts(this)"
+                                       onfocus="showProductDropdown(this)">
+                                <div class="product-dropdown" style="display: none;">
+                                    <div class="product-dropdown-list"></div>
+                                </div>
+                                <input type="hidden" id="selectedProductId" name="product_id">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Количество *</label>
+                            <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Цена *</label>
+                            <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
+                        <button type="button" class="btn-submit" id="submitAddProduct">Добавить</button>
+                    </div>
+                </div>
             `;
 
             // Обновляем общую сумму
             updateTotalAmount();
 
-            // Добавляем обработчики событий для новой кнопки
-            const btnAdd = document.getElementById('showAddProductFormBtn');
-            const form = document.getElementById('addProductForm');
-            
+            // Добавляем обработчики событий
+            const btnAdd = modal.querySelector('#showAddProductFormBtn');
+            const form = modal.querySelector('#addProductForm');
+            const cancelBtn = modal.querySelector('#cancelAddProduct');
+            const submitBtn = modal.querySelector('#submitAddProduct');
+
             if (btnAdd && form) {
                 btnAdd.addEventListener('click', () => {
                     btnAdd.style.display = 'none';
                     form.style.display = 'block';
+                });
+            }
+
+            if (cancelBtn && form && btnAdd) {
+                cancelBtn.addEventListener('click', () => {
+                    form.style.display = 'none';
+                    btnAdd.style.display = 'inline-block';
+                    resetProductForm();
+                });
+            }
+
+            if (submitBtn) {
+                submitBtn.addEventListener('click', () => {
+                    addProductToAppointment();
                 });
             }
         }
@@ -1855,6 +1917,18 @@
         function deleteProduct(index) {
             temporaryProducts.splice(index, 1);
             updateProductsTable();
+            
+            // После удаления товара сбрасываем форму и показываем кнопку добавления
+            const modal = document.getElementById('viewAppointmentModal');
+            if (modal) {
+                const btnAdd = modal.querySelector('#showAddProductFormBtn');
+                const form = modal.querySelector('#addProductForm');
+                if (btnAdd && form) {
+                    resetProductForm();
+                    form.style.display = 'none';
+                    btnAdd.style.display = 'inline-block';
+                }
+            }
         }
 
         function updateProductQuantity(index, newQuantity) {
@@ -1864,5 +1938,48 @@
             }
         }
 
+        function checkFormState() {
+            const modal = document.getElementById('viewAppointmentModal');
+            if (!modal) return;
+
+            const form = modal.querySelector('#addProductForm');
+            if (!form) return;
+
+            const searchInput = form.querySelector('#productSearchInput');
+            const hiddenInput = form.querySelector('#selectedProductId');
+            const priceInput = form.querySelector('#productPrice');
+            const quantityInput = form.querySelector('#productQuantity');
+
+            console.log('Form state:', {
+                searchInput: searchInput?.value,
+                hiddenInput: hiddenInput?.value,
+                priceInput: priceInput?.value,
+                quantityInput: quantityInput?.value
+            });
+        }
+
+        // Добавляем проверку состояния формы после каждого важного действия
+        const originalResetProductForm = resetProductForm;
+        resetProductForm = function() {
+            originalResetProductForm();
+            console.log('After reset:');
+            checkFormState();
+        };
+
+        const originalSelectProduct = selectProduct;
+        selectProduct = function(...args) {
+            originalSelectProduct.apply(this, args);
+            console.log('After select:');
+            checkFormState();
+        };
+
+        const originalAddProductToAppointment = addProductToAppointment;
+        addProductToAppointment = function() {
+            console.log('Before add:');
+            checkFormState();
+            originalAddProductToAppointment();
+            console.log('After add:');
+            checkFormState();
+        };
     </script>
 @endsection
