@@ -758,7 +758,24 @@
                     height: 'auto',
                     selectable: true,
                     editable: true,
-                    events: '/appointments/calendar-events',
+                    events: function(info, successCallback, failureCallback) {
+                        console.log('=== Загрузка событий календаря ===');
+                        fetch('/appointments/calendar-events')
+                            .then(response => response.json())
+                            .then(events => {
+                                console.log('Загруженные события:', events);
+                                // Проверяем формат ID у первого события
+                                if (events.length > 0) {
+                                    console.log('Пример ID первого события:', events[0].id);
+                                    console.log('Тип ID:', typeof events[0].id);
+                                }
+                                successCallback(events);
+                            })
+                            .catch(error => {
+                                console.error('Ошибка загрузки событий:', error);
+                                failureCallback(error);
+                            });
+                    },
                     eventTimeFormat: {
                         hour: '2-digit',
                         minute: '2-digit',
@@ -1016,9 +1033,15 @@
 
                             if (data.success) {
                                 // Удаляем событие из календаря
+                                console.log('Удаляем событие с id:', id);
                                 const event = calendar.getEventById(id);
+                                console.log('calendar.getEventById(id):', event);
+
                                 if (event) {
                                     event.remove();
+                                } else {
+                                    // Если событие не найдено, обновим весь календарь
+                                    calendar.refetchEvents();
                                 }
                                 tooltip.style.display = 'none';
                                 showNotification('Запись успешно удалена', 'success');
@@ -1294,15 +1317,20 @@
     });
 
 
-    document.getElementById('confirmDeleteBtn')?.addEventListener('click', () => {
-        if (isDeletingAppointment) {
-            deleteAppointment(currentDeleteId);
-        } else {
-            deleteProductFromAppointment(); // ✅ Только тут вызывается
-        }
+    document.getElementById('confirmDeleteBtn')?.addEventListener('click', async (e) => {
+            e.stopPropagation(); // Предотвращаем всплытие события
+            if (isDeletingAppointment) {
+                await deleteAppointment(currentDeleteId);
+            } else {
+                await deleteProductFromAppointment();
+            }
+            toggleModal('confirmationModal', false);
+        });
 
-        toggleModal('confirmationModal', false);
-    });
+        document.getElementById('cancelDelete')?.addEventListener('click', (e) => {
+            e.stopPropagation(); // Предотвращаем всплытие события
+            toggleModal('confirmationModal', false);
+        });
 
     function closeAppointmentModal() {
         toggleModal('appointmentModal', false);
@@ -1390,25 +1418,25 @@
         <input type="hidden" id="appointmentId" value="${appointment.id}">
         <input type="hidden" name="date" value="${appointment.date}">
         <div class="appointment-details">
-            <div class="detail-row-appointment">
+            <div class="detail-row">
                 <div class="detail-row-no-flex">
                     <span class="detail-label">Дата:</span>
                     <span class="detail-value">${new Date(appointment.date).toLocaleDateString('ru-RU')}</span>
                 </div>
-                <div class="detail-roww-no-flex">
+                <div class="detail-row-no-flex">
                     <span class="detail-label">Время:</span>
                     <span class="detail-value">${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</span>
                 </div>
-                <div class="detail-roww-no-flex">
+                <div class="detail-row-no-flex">
                     <span class="detail-label">Клиент:</span>
-                    <span class="detail-value">${escapeHtml(appointment.client.name)}</span>
+                    <span class="detail-value client-name">${escapeHtml(appointment.client.name)}${appointment.client.instagram ? ` (@${escapeHtml(appointment.client.instagram)})` : ''}</span>
                 </div>
             </div>
             <h3>Процедура</h3>
             <div class="services-section">
                 <div class="service-item">
-                    <span>${escapeHtml(appointment.service.name)}</span>
-                    <span>${servicePrice.toFixed(2)} грн</span>
+                    <span class="service-name">${escapeHtml(appointment.service.name)}</span>
+                    <span class="service-price">${servicePrice.toFixed(2)} грн</span>
                 </div>
             </div>
 
@@ -1449,9 +1477,12 @@
                         </div>
                         <div class="form-actions">
                             <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
-                            <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                    </svg>Добавить</button>
+                            <button type="button" class="btn-submit" id="submitAddProduct">
+                                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                                Добавить
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1463,7 +1494,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">Закрыть</button>
-                <button type="button" class="btn-submit " id="saveAppointmentChanges">Сохранить изменения</button>
+                <button type="button" class="btn-submit" id="saveAppointmentChanges">Сохранить изменения</button>
             </div>
         </div>`;
 
@@ -2178,11 +2209,12 @@
         modalBody.innerHTML = `
             <form id="editAppointmentForm">
                 @csrf
-            @method('PUT')
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Дата *</label>
-                    <input type="date" name="date" value="${formatDateForInput(appointment.date)}" required class="form-control">
+                @method('PUT')
+                <input type="hidden" name="id" value="${appointment.id}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Дата *</label>
+                        <input type="date" name="date" value="${formatDateForInput(appointment.date)}" required class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Время *</label>
@@ -2252,16 +2284,17 @@
         });
     }
 
-    async function submitEditAppointmentForm(form, appointmentId) {
+    async function submitEditAppointmentForm(form) {
         clearErrors('editAppointmentForm');
         const formData = new FormData(form);
+        const appointmentId = formData.get('id');
 
         try {
-            // Add the _method field for Laravel to recognize it as PUT
+            // Добавляем _method поле для Laravel
             formData.append('_method', 'PUT');
 
             const response = await fetch(`/appointments/${appointmentId}`, {
-                method: 'POST', // Still use POST as the HTTP method
+                method: 'POST', // Оставляем POST, но добавляем _method: PUT для Laravel
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json'
@@ -2274,9 +2307,16 @@
             if (data.success) {
                 showNotification('Запись успешно обновлена');
                 closeEditAppointmentModal();
-                updateAppointmentRow(data.appointment);
-                calendar.refetchEvents();
-                calendar.refetchEvents();
+
+                // Обновляем календарь если он существует
+                if (typeof calendar !== 'undefined' && calendar) {
+                    calendar.refetchEvents();
+                }
+
+                // Обновляем строку в таблице если она существует
+                if (data.appointment) {
+                    updateAppointmentRow(data.appointment);
+                }
             } else if (data.errors) {
                 displayErrors(data.errors, 'editAppointmentForm');
             } else {
@@ -2356,7 +2396,10 @@
             if (data.success) {
                 showNotification('Запись успешно создана');
                 closeAppointmentModal();
-                calendar.refetchEvents();
+
+                if (typeof calendar !== 'undefined' && calendar) {
+                    calendar.refetchEvents();
+                }
 
                 // Добавляем новую запись в таблицу без перезагрузки
                 const appointment = data.appointment;
@@ -2440,13 +2483,24 @@
             const data = await response.json();
 
             if (response.ok) {
-                showNotification('Запись успешно удалена');
-                document.querySelector(`tr[data-appointment-id="${id}"]`)?.remove();
-
-                // Закрываем модальное окно просмотра, если оно открыто
-                if (currentAppointmentId === id) {
-                    closeViewAppointmentModal();
+                // Обновляем календарь если он существует
+                if (typeof calendar !== 'undefined' && calendar) {
+                    calendar.refetchEvents();
                 }
+
+                // Удаляем строку из таблицы если она существует
+                const row = document.querySelector(`tr[data-appointment-id="${id}"]`);
+                if (row) {
+                    row.remove();
+                }
+
+                // Закрываем модальные окна
+                toggleModal('confirmationModal', false);
+                if (currentAppointmentId === id) {
+                    toggleModal('viewAppointmentModal', false);
+                }
+
+                showNotification('Запись успешно удалена');
             } else {
                 throw new Error(data.message || 'Ошибка при удалении записи');
             }
@@ -2593,15 +2647,30 @@
 
         // Get basic appointment data
         const dateText = modal.querySelector('.detail-row:nth-child(1) .detail-value')?.textContent;
-        const time = modal.querySelector('.detail-row:nth-child(2) .detail-value')?.textContent;
-        const clientName = modal.querySelector('.detail-row:nth-child(3) .detail-value')?.textContent;
-        const serviceName = modal.querySelector('.service-item span:first-child')?.textContent;
-        const priceText = modal.querySelector('.service-item span:nth-child(2)')?.textContent;
-        const price = parseFloat(priceText?.replace('грн', '').trim()) || 0;
+        const timeElement = modal.querySelector('.detail-row-no-flex:nth-child(2) .detail-value');
+        const time = timeElement?.textContent?.trim();
 
-        // Find client and service IDs
-        const client = allClients.find(c => c.name === clientName);
-        const service = allServices.find(s => s.name === serviceName);
+        console.log('Debug time:', {
+            timeElement,
+            timeText: timeElement?.textContent,
+            time
+        });
+        
+        // Получаем имя клиента из правильного элемента
+        const clientElement = modal.querySelector('.client-name');
+        const clientNameWithInstagram = clientElement?.textContent?.trim() || '';
+        
+        // Извлекаем только имя клиента, обрабатывая оба случая
+        const clientName = clientNameWithInstagram.includes('(@') 
+            ? clientNameWithInstagram.split('(@')[0].trim()
+            : clientNameWithInstagram.trim();
+
+        // Получаем имя услуги из правильного элемента
+        const serviceElement = modal.querySelector('.service-name');
+        const serviceName = serviceElement?.textContent?.trim();
+
+        const priceText = modal.querySelector('.service-price')?.textContent;
+        const price = parseFloat(priceText?.replace('грн', '').trim()) || 0;
 
         // Format date
         let formattedDate = '';
@@ -2610,15 +2679,42 @@
             formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
         }
 
-        if (!client || !client.id) {
-            showNotification('Не удалось определить клиента', 'error');
+        // Find client and service IDs with improved error handling
+        const client = clientName ? allClients.find(c => c.name.trim() === clientName) : null;
+        const service = serviceName ? allServices.find(s => s.name.trim() === serviceName) : null;
+
+        // Подробная проверка данных перед отправкой
+        const validationErrors = [];
+
+        if (!formattedDate) validationErrors.push('Дата не указана');
+        if (!time) validationErrors.push('Время не указано');
+        if (!clientName) validationErrors.push('Имя клиента не найдено в форме');
+        if (!client || !client.id) validationErrors.push(`Не удалось найти клиента "${clientName}" в списке`);
+        if (!serviceName) validationErrors.push('Название услуги не найдено в форме');
+        if (!service || !service.id) validationErrors.push(`Не удалось найти услугу "${serviceName}" в списке`);
+        if (isNaN(price) || price < 0) validationErrors.push('Некорректная цена');
+
+        if (validationErrors.length > 0) {
+            showNotification('Ошибки валидации:\n' + validationErrors.join('\n'), 'error');
             return;
         }
 
-        if (!service || !service.id) {
-            showNotification('Не удалось определить услугу', 'error');
-            return;
-        }
+        // Подготавливаем данные для отправки
+        const requestData = {
+            date: formattedDate,
+            time: time,
+            client_id: client.id,
+            service_id: service.id,
+            price: price,
+            sales: temporaryProducts.map(p => ({
+                product_id: p.product_id,
+                quantity: parseInt(p.quantity),
+                price: parseFloat(p.price),
+                purchase_price: parseFloat(p.purchase_price || 0)
+            }))
+        };
+
+        console.log('Отправляемые данные:', requestData);
 
         try {
             const response = await fetch(`/appointments/${appointmentId}`, {
@@ -2628,50 +2724,41 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({
-                    date: formattedDate,
-                    time: time,
-                    client_id: client.id,
-                    service_id: service.id,
-                    price: price,
-                    sales: temporaryProducts.map(p => ({
-                        product_id: p.product_id,
-                        quantity: parseInt(p.quantity),
-                        price: parseFloat(p.price),
-                        purchase_price: parseFloat(p.purchase_price || 0)
-                    }))
-                })
+                body: JSON.stringify(requestData)
             });
 
             const data = await response.json();
 
+            if (!response.ok) {
+                console.error('Ответ сервера:', data);
+                if (data.errors) {
+                    const errorMessages = Object.entries(data.errors)
+                        .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+                        .join('\n');
+                    throw new Error(`Ошибки валидации:\n${errorMessages}`);
+                }
+                throw new Error(data.message || `Ошибка сохранения (${response.status})`);
+            }
+
             if (data.success) {
                 showNotification('Изменения успешно сохранены');
                 toggleModal('viewAppointmentModal', false);
-                calendar.refetchEvents();
 
-                // Обновляем данные в строке таблицы
-                const appointment = data.appointment;
-                const row = document.querySelector(`tr[data-appointment-id="${appointment.id}"]`);
+                // Обновляем календарь если он существует
+                if (typeof calendar !== 'undefined' && calendar) {
+                    calendar.refetchEvents();
+                }
 
-                if (row) {
-                    // Обновляем дату
-                    row.querySelector('td:nth-child(1)').textContent = new Date(appointment.date).toLocaleDateString('ru-RU');
-                    // Обновляем время
-                    row.querySelector('td:nth-child(2)').textContent = appointment.time;
-                    // Обновляем клиента
-                    row.querySelector('td:nth-child(3)').textContent = appointment.client.name;
-                    // Обновляем услугу
-                    row.querySelector('td:nth-child(4)').textContent = appointment.service.name;
-                    // Обновляем цену
-                    row.querySelector('td:nth-child(5)').textContent = `${parseFloat(appointment.price).toFixed(2)} грн`;
+                // Обновляем строку в таблице если она существует
+                if (data.appointment) {
+                    updateAppointmentRow(data.appointment);
                 }
             } else {
-                showNotification(data.message || 'Ошибка сохранения', 'error');
+                throw new Error(data.message || 'Ошибка сохранения');
             }
         } catch (error) {
             console.error('Error:', error);
-            showNotification('Ошибка при сохранении: ' + error.message, 'error');
+            showNotification(error.message || 'Ошибка при сохранении', 'error');
         }
     }
 
@@ -2795,15 +2882,13 @@
                                 <input type="hidden" id="selectedProductId" name="product_id">
                             </div>
                         </div>
-                        <div class="form-group-flex">
-                            <div class="form-group-appointment">
-                                <label>Количество *</label>
-                                <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
-                            </div>
-                            <div class="form-group-appointment">
-                                <label>Цена *</label>
-                                <input type="number" step="0.01" id="productPrice" class="form-control" required>
-                            </div>
+                        <div class="form-group-appointment">
+                            <label>Количество *</label>
+                            <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                        </div>
+                        <div class="form-group-appointment">
+                            <label>Цена *</label>
+                            <input type="number" step="0.01" id="productPrice" class="form-control" required>
                         </div>
                     </div>
                     <div class="form-actions">
