@@ -61,22 +61,6 @@
         height: 1.25rem;
     }
 
-    .btn-add-product {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background-color: #3b82f6;
-        color: white;
-        border: none;
-        border-radius: 0.375rem;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .btn-add-product:hover {
-        background-color: #2563eb;
-    }
 
     .btn-add-product .icon {
         width: 1.25rem;
@@ -96,6 +80,41 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
+    }
+
+    .calendar-view-switcher {
+        display: flex;
+        gap: 10px;
+    }
+
+    .view-switch-btn {
+        padding: 8px 16px;
+        border: 1px solid #e9ecef;
+        background: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #6c757d;
+        transition: all 0.3s ease;
+    }
+
+    .view-switch-btn:hover {
+        background: #e9ecef;
+    }
+
+    .view-switch-btn.active {
+        background: #2196f3;
+        color: #fff;
+        border-color: #2196f3;
+    }
+
+    .today-button {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .today-button:hover {
+        background: #218838;
     }
 
     .calendar-title {
@@ -133,15 +152,16 @@
         margin-top: 20px;
     }
 
-    .fc-event {
-        border: none;
-        padding: 2px 4px;
-        margin: 1px 0;
-        cursor: pointer;
+    .fc-toolbar {
+        display: none !important;
     }
 
-    .fc-day-grid-event {
-        border-radius: 4px;
+    .fc-event {
+        border: none !important;
+        padding: 2px 4px !important;
+        margin: 1px 0 !important;
+        cursor: pointer;
+        border-radius: 4px !important;
     }
 
     .fc-time-grid-event {
@@ -150,24 +170,24 @@
     }
 
     .fc-time {
-        font-weight: bold;
+        font-weight: bold !important;
     }
 
     .fc-title {
-        font-size: 0.9em;
+        font-size: 0.9em !important;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
     .fc-day-header {
-        font-weight: 600;
-        padding: 8px 0;
+        font-weight: 600 !important;
+        padding: 8px 0 !important;
     }
 
     .fc-day-number {
-        padding: 8px;
-        font-weight: 600;
+        padding: 8px !important;
+        font-weight: 600 !important;
     }
 
     .fc-today {
@@ -459,6 +479,56 @@
         color: #2196f3;
         font-weight: 600;
     }
+
+    /* Стили для переключателя видов */
+    .calendar-view-switcher {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .view-switch-btn {
+        padding: 8px 16px;
+        border: 1px solid #e9ecef;
+        background: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #6c757d;
+        transition: all 0.3s ease;
+    }
+
+    .view-switch-btn.active {
+        background: #2196f3;
+        color: #fff;
+        border-color: #2196f3;
+    }
+
+    .today-button {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .today-button:hover {
+        background: #218838;
+    }
+
+    /* Стили для календаря */
+    #calendar {
+        margin-top: 20px;
+    }
+
+    .fc-toolbar {
+        display: none !important;
+    }
+
+    .fc-event {
+        border: none !important;
+        padding: 2px 4px !important;
+        margin: 1px 0 !important;
+        cursor: pointer;
+        border-radius: 4px !important;
+    }
 </style>
 
 <div class="appointments-container">
@@ -555,32 +625,113 @@
         </table>
     </div>
     @else
-    <div id="calendarView" class="calendar-view">
-        <!-- Календарь будет здесь -->
-        <div id="calendarView">
-                <div class="calendar-wrapper">
-                    <div class="calendar-header">
-                        <div class="calendar-view-switcher">
-                            <button class="view-switch-btn today-button">Сегодня</button>
-                            <button class="view-switch-btn" data-view="timeGridDay">День</button>
-                            <button class="view-switch-btn" data-view="timeGridWeek">Неделя</button>
-                            <button class="view-switch-btn active" data-view="dayGridMonth">Месяц</button>
-                        </div>
-                        <div class="calendar-nav">
-                            <button class="calendar-nav-btn prev-button">
-                                <i class="fa fa-chevron-left"></i>
-                            </button>
-                            <span id="currentMonthYear" class="calendar-title">Декабрь 2023</span>
-                            <button class="calendar-nav-btn next-button">
-                                <i class="fa fa-chevron-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="calendar"></div>
+    <div id="calendarView">
+        <div class="calendar-wrapper">
+            <div class="calendar-header">
+                <div class="calendar-view-switcher">
+                    <button class="view-switch-btn today-button">Сегодня</button>
+                    <button class="view-switch-btn" data-view="timeGridDay">День</button>
+                    <button class="view-switch-btn" data-view="timeGridWeek">Неделя</button>
+                    <button class="view-switch-btn active" data-view="dayGridMonth">Месяц</button>
+                </div>
+                <div class="calendar-nav">
+                    <button class="calendar-nav-btn prev-button">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <span id="currentMonthYear" class="calendar-title">Декабрь 2023</span>
+                    <button class="calendar-nav-btn next-button">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
+            <div id="calendar"></div>
+        </div>
     </div>
-    @endif
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('calendar')) {
+                var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: false,
+                    locale: 'ru',
+                    height: 'auto',
+                    selectable: true,
+                    editable: true,
+                    events: '/appointments/calendar-events',
+                    eventTimeFormat: {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    },
+                    slotMinTime: '08:00:00',
+                    slotMaxTime: '20:00:00',
+                    allDaySlot: false,
+                    slotDuration: '00:30:00',
+
+                    eventClick: function(info) {
+                        viewAppointment(info.event.id);
+                    },
+
+                    dateClick: function(info) {
+                        createAppointment(info.dateStr);
+                    }
+                });
+
+                calendar.render();
+
+                // Функция обновления заголовка
+                function updateTitle() {
+                    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                                    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+                    const date = calendar.getDate();
+                    const month = monthNames[date.getMonth()];
+                    const year = date.getFullYear();
+                    document.getElementById('currentMonthYear').textContent = `${month} ${year}`;
+                }
+
+                // Обработчики кнопок навигации
+                document.querySelector('.prev-button').addEventListener('click', function() {
+                    calendar.prev();
+                    updateTitle();
+                });
+
+                document.querySelector('.next-button').addEventListener('click', function() {
+                    calendar.next();
+                    updateTitle();
+                });
+
+                // Обработчики кнопок переключения вида
+                document.querySelectorAll('.view-switch-btn[data-view]').forEach(button => {
+                    button.addEventListener('click', function() {
+                        // Удаляем активный класс у всех кнопок
+                        document.querySelectorAll('.view-switch-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        // Добавляем активный класс текущей кнопке
+                        this.classList.add('active');
+                        // Переключаем вид календаря
+                        calendar.changeView(this.dataset.view);
+                    });
+                });
+
+                // Обработчик кнопки "Сегодня"
+                document.querySelector('.today-button').addEventListener('click', function() {
+                    calendar.today();
+                    updateTitle();
+                });
+
+                // Обновляем заголовок при изменении даты
+                calendar.on('datesSet', function() {
+                    updateTitle();
+                });
+
+                // Инициализация заголовка
+                updateTitle();
+            }
+        });
+    </script>
+@endif
 </div>
 
 <!-- Модальное окно добавления записи -->
@@ -827,19 +978,20 @@
         <input type="hidden" id="appointmentId" value="${appointment.id}">
         <input type="hidden" name="date" value="${appointment.date}">
         <div class="appointment-details">
-            <div class="detail-row">
-                <span class="detail-label">Дата:</span>
-                <span class="detail-value">${new Date(appointment.date).toLocaleDateString('ru-RU')}</span>
+            <div class="detail-row-appointment">
+                <div class="detail-row-no-flex">
+                    <span class="detail-label">Дата:</span>
+                    <span class="detail-value">${new Date(appointment.date).toLocaleDateString('ru-RU')}</span>
+                </div>
+                <div class="detail-roww-no-flex">
+                    <span class="detail-label">Время:</span>
+                    <span class="detail-value">${escapeHtml(appointment.time)}</span>
+                </div>
+                <div class="detail-roww-no-flex">
+                    <span class="detail-label">Клиент:</span>
+                    <span class="detail-value">${escapeHtml(appointment.client.name)}</span>
+                </div>
             </div>
-            <div class="detail-row">
-                <span class="detail-label">Время:</span>
-                <span class="detail-value">${escapeHtml(appointment.time)}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Клиент:</span>
-                <span class="detail-value">${escapeHtml(appointment.client.name)}</span>
-            </div>
-
             <h3>Процедуры</h3>
             <div class="services-section">
                 <div class="service-item">
@@ -848,17 +1000,17 @@
                 </div>
             </div>
 
-            <h3>Товары клиента на эту дату</h3>
+            <h3>Продажи</h3>
             <div class="products-section">
                 ${renderProductsList(temporaryProducts)}
                 <button class="btn-add-product" id="showAddProductFormBtn">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
-                    Добавить товар
+                    Добавить
                 </button>
                 <div id="addProductForm" style="display: none; margin-top: 20px;">
-                    <div class="form-row">
+                    <div class="form-row-appointment">
                         <div class="form-group" style="flex: 2;">
                             <label>Товар *</label>
                             <div class="product-search-container">
@@ -872,18 +1024,22 @@
                                 </div>
                                 <input type="hidden" id="selectedProductId" name="product_id">
                             </div>
-                            <div class="form-group">
-                                <label>Количество *</label>
-                                <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Цена *</label>
-                                <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                            <div class="form-group-flex">
+                                <div class="form-group-appointment">
+                                    <label>Количество *</label>
+                                    <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                                </div>
+                                <div class="form-group-appointment">
+                                    <label>Цена *</label>
+                                    <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                                </div>
                             </div>
                         </div>
                         <div class="form-actions">
                             <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
-                            <button type="button" class="btn-submit" id="submitAddProduct">Добавить</button>
+                            <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>Добавить</button>
                         </div>
                     </div>
                 </div>
@@ -895,7 +1051,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">Закрыть</button>
-                <button type="button" class="btn-submit" id="saveAppointmentChanges">Сохранить изменения</button>
+                <button type="button" class="btn-submit " id="saveAppointmentChanges">Сохранить изменения</button>
             </div>
         </div>`;
 
@@ -1226,10 +1382,10 @@
             <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
             </svg>
-            Добавить товар
+            Добавить
         </button>
         <div id="addProductForm" style="display: none; margin-top: 20px;">
-            <div class="form-row">
+            <div class="form-row-appointment">
                 <div class="form-group" style="flex: 2;">
                     <label>Товар *</label>
                     <div class="product-search-container">
@@ -1244,18 +1400,20 @@
                         <input type="hidden" id="selectedProductId" name="product_id">
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group-appointment">
                     <label>Количество *</label>
                     <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group-appointment">
                     <label>Цена *</label>
                     <input type="number" step="0.01" id="productPrice" class="form-control" required>
                 </div>
             </div>
             <div class="form-actions">
                 <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
-                <button type="button" class="btn-submit" id="submitAddProduct">Добавить</button>
+                <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>Добавить</button>
             </div>
         </div>
     `;
@@ -2247,10 +2405,10 @@
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
-                    Добавить товар
+                    Добавить
                 </button>
                 <div id="addProductForm" style="display: none; margin-top: 20px;">
-                    <div class="form-row">
+                    <div class="form-row-appointment">
                         <div class="form-group" style="flex: 2;">
                             <label>Товар *</label>
                             <div class="product-search-container">
@@ -2265,18 +2423,22 @@
                                 <input type="hidden" id="selectedProductId" name="product_id">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label>Количество *</label>
-                            <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Цена *</label>
-                            <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                        <div class="form-group-flex">
+                            <div class="form-group-appointment">
+                                <label>Количество *</label>
+                                <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                            </div>
+                            <div class="form-group-appointment">
+                                <label>Цена *</label>
+                                <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                            </div>
                         </div>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
-                        <button type="button" class="btn-submit" id="submitAddProduct">Добавить</button>
+                        <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>Добавить</button>
                     </div>
                 </div>
             `;

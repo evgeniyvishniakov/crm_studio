@@ -61,7 +61,6 @@
 
 /* Общие стили для кнопок добавления */
 .btn-add-client,
-.btn-add-product,
 .btn-add-purchase,
 .btn-add-sale,
 .btn-add-service,
@@ -81,7 +80,6 @@
 }
 
 .btn-add-client:hover,
-.btn-add-product:hover,
 .btn-add-purchase:hover,
 .btn-add-expense:hover{
     background-color: #2563eb;
@@ -369,13 +367,15 @@
 }
 
 .btn-submit {
-    background-color: #3b82f6;
-    color: white;
+    color: #fff;
+    background-color: #28a745;
     border: none;
 }
-
-.btn-submit:hover {
-    background-color: #2563eb;
+    .btn-add-product:hover,
+    .btn-submit:hover {
+    color: #fff;
+    background-color: #218838;
+    border: none;
 }
 
 .btn-edit:disabled,
@@ -712,7 +712,7 @@
         margin-left: 20px;
         justify-content: center;
     }
-   
+
     .purchase-details {
         padding: 20px;
     }
@@ -739,6 +739,14 @@
         gap: 15px;
         align-items: flex-end;
     }
+    .form-row-appointment {
+        gap: 15px;
+        align-items: flex-end;
+    }
+    .form-group-flex{
+        display: flex;
+        justify-content: space-between;
+    }
 
     .form-group {
         flex: 1;
@@ -758,6 +766,15 @@
         padding: 8px 12px;
         border: 1px solid #ced4da;
         border-radius: 4px;
+    }
+    .detail-row-appointment{
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #eee;
+        padding: 8px 0;
+    }
+    .appointment-details h3{
+        margin-top: 40px;
     }
 
     .btn-remove-item {
@@ -989,7 +1006,7 @@
 
     .total-amount {
         margin-top: 20px;
-        padding-top: 10px;
+        padding-top: 20px;
         border-top: 2px solid #333;
         font-size: 1.2em;
         font-weight: bold;
@@ -1000,8 +1017,8 @@
     .btn-add-product {
         margin-top: 10px;
         padding: 8px 15px;
-        background-color: #4CAF50;
-        color: white;
+        color: #fff;
+        background-color: #28a745;
         border: none;
         border-radius: 4px;
         cursor: pointer;
