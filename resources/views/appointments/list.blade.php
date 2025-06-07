@@ -78,7 +78,6 @@
     .calendar-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
         margin-bottom: 20px;
     }
 
@@ -86,7 +85,9 @@
         display: flex;
         gap: 10px;
     }
-
+    .fc-daygrid-day{
+        cursor: pointer;
+    }
     .view-switch-btn {
         padding: 8px 16px;
         border: 1px solid #e9ecef;
@@ -129,7 +130,7 @@
     }
 
     .calendar-nav {
-        display: flex;
+    
         gap: 10px;
     }
 
@@ -686,19 +687,46 @@
                     const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
                                     'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
                     const date = calendar.getDate();
-                    const month = monthNames[date.getMonth()];
-                    const year = date.getFullYear();
-                    document.getElementById('currentMonthYear').textContent = `${month} ${year}`;
+                    const view = calendar.view.type;
+                    let title = '';
+
+                    if (view === 'timeGridDay') {
+                        // Для дневного вида показываем дату в формате "1 января 2024"
+                        title = `${date.getDate()} ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
+                    } else if (view === 'timeGridWeek') {
+                        // Для недельного вида показываем номер недели
+                        const weekNumber = Math.ceil((date.getDate() + new Date(date.getFullYear(), date.getMonth(), 1).getDay()) / 7);
+                        title = `${weekNumber}-я неделя ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
+                    } else {
+                        // Для месячного вида оставляем как есть
+                        title = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+                    }
+                    
+                    document.getElementById('currentMonthYear').textContent = title;
                 }
 
                 // Обработчики кнопок навигации
                 document.querySelector('.prev-button').addEventListener('click', function() {
-                    calendar.prev();
+                    const view = calendar.view.type;
+                    if (view === 'timeGridDay') {
+                        calendar.prev(); // Переход на предыдущий день
+                    } else if (view === 'timeGridWeek') {
+                        calendar.prev(); // Переход на предыдущую неделю
+                    } else {
+                        calendar.prev(); // Переход на предыдущий месяц
+                    }
                     updateTitle();
                 });
 
                 document.querySelector('.next-button').addEventListener('click', function() {
-                    calendar.next();
+                    const view = calendar.view.type;
+                    if (view === 'timeGridDay') {
+                        calendar.next(); // Переход на следующий день
+                    } else if (view === 'timeGridWeek') {
+                        calendar.next(); // Переход на следующую неделю
+                    } else {
+                        calendar.next(); // Переход на следующий месяц
+                    }
                     updateTitle();
                 });
 
