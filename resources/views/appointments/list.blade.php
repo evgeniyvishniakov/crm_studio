@@ -723,10 +723,20 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Функция подтверждения удаления записи
+    async function confirmDeleteAppointment(e, id) {
+        e.preventDefault();
+        if (confirm('Вы уверены, что хотите удалить эту запись?')) {
+            await deleteAppointment(id);
+        }
+    }
+
+    let calendar; // Делаем переменную глобальной
+    let activeEvent = null;
+    const tooltip = document.getElementById('appointmentTooltip');
+
+    document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('calendar')) {
-                let activeEvent = null;
-                const tooltip = document.getElementById('appointmentTooltip');
 
                 // Добавляем обработчики для самой подсказки
                 tooltip.addEventListener('mouseenter', () => {
@@ -741,7 +751,7 @@
                     }
                 });
 
-                var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+                calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
                     initialView: 'dayGridMonth',
                     headerToolbar: false,
                     locale: 'ru',
@@ -818,9 +828,10 @@
                             tooltip.style.display = 'none';
                             editAppointment(e, event.id);
                         };
-                        deleteBtn.onclick = () => {
+                        deleteBtn.onclick = (e) => {
                             activeEvent = null;
-                            deleteAppointment(event.id);
+                            tooltip.style.display = 'none';
+                            confirmDeleteAppointment(e, event.id);
                         };
                     },
 
@@ -835,7 +846,8 @@
                         }, 100);
                     },
 
-                    eventClick: function(info) {
+                    eventMouseEnter: function(info) {
+                        activeEvent = info.event;
                         const event = info.event;
                         const tooltipContent = tooltip.querySelector('.appointment-tooltip-content');
                         const editBtn = tooltip.querySelector('.tooltip-btn-edit');
@@ -892,6 +904,88 @@
                             tooltip.style.display = 'none';
                             editAppointment(e, event.id);
                         };
+                        deleteBtn.onclick = (e) => {
+                            activeEvent = null;
+                            tooltip.style.display = 'none';
+                            confirmDeleteAppointment(e, event.id);
+                        };
+                    },
+
+                    eventMouseEnter: function(info) {
+                        activeEvent = info.event;
+                        const event = info.event;
+                        const tooltipContent = tooltip.querySelector('.appointment-tooltip-content');
+                        const editBtn = tooltip.querySelector('.tooltip-btn-edit');
+                        const deleteBtn = tooltip.querySelector('.tooltip-btn-delete');
+
+                        // Форматируем время
+                        const startTime = event.start ? new Date(event.start).toLocaleTimeString('ru-RU', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) : '';
+
+                        // Формируем содержимое всплывающей подсказки
+                        tooltipContent.innerHTML = `
+                            <p><strong>Время:</strong> ${startTime}</p>
+                            <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
+                            <p><strong>Процедура:</strong> ${event.extendedProps.service}</p>
+                            <p><strong>Цена:</strong> ${event.extendedProps.price} грн</p>
+                        `;
+
+                        // Позиционируем всплывающую подсказку
+                        const eventEl = info.el;
+                        const rect = eventEl.getBoundingClientRect();
+
+                        // Получаем размеры окна
+                        const windowWidth = window.innerWidth;
+                        const windowHeight = window.innerHeight;
+
+                        // Получаем размеры подсказки
+                        const tooltipWidth = 250; // ширина подсказки
+                        const tooltipHeight = tooltip.offsetHeight;
+
+                        // Рассчитываем позицию
+                        let left = rect.right + 5; // 5px отступ от события
+                        let top = rect.top;
+
+                        // Проверяем, не выходит ли подсказка за пределы экрана справа
+                        if (left + tooltipWidth > windowWidth) {
+                            left = rect.left - tooltipWidth - 5; // Размещаем слева от события
+                        }
+
+                        // Проверяем, не выходит ли подсказка за пределы экрана снизу
+                        if (top + tooltipHeight > windowHeight) {
+                            top = windowHeight - tooltipHeight - 5; // 5px отступ снизу
+                        }
+
+                        // Применяем позицию
+                        tooltip.style.top = `${top}px`;
+                        tooltip.style.left = `${left}px`;
+                        tooltip.style.display = 'block';
+
+                        // Добавляем обработчики для кнопок
+                        editBtn.onclick = (e) => {
+                            activeEvent = null;
+                            tooltip.style.display = 'none';
+                            editAppointment(e, event.id);
+                        };
+                        deleteBtn.onclick = (e) => {
+                            activeEvent = null;
+                            tooltip.style.display = 'none';
+                            confirmDeleteAppointment(e, event.id);
+                        };
+                    },
+
+                    eventClick: function(info) {
+                        tooltip.style.display = 'none';
+                        viewAppointment(info.event.id);
+
+                        // Добавляем обработчики для кнопок
+                        editBtn.onclick = (e) => {
+                            activeEvent = null;
+                            tooltip.style.display = 'none';
+                            editAppointment(e, event.id);
+                        };
 
                         deleteBtn.onclick = (e) => {
                             activeEvent = null;
@@ -909,7 +1003,6 @@
 
                 // Функция удаления записи
                 async function deleteAppointment(id) {
-                    if (confirm('Вы уверены, что хотите удалить эту запись?')) {
                         try {
                             const response = await fetch(`/appointments/${id}`, {
                                 method: 'DELETE',
@@ -927,7 +1020,9 @@
                                 if (event) {
                                     event.remove();
                                 }
+                                tooltip.style.display = 'none';
                                 showNotification('Запись успешно удалена', 'success');
+                                toggleModal('confirmationModal', false);
                             } else {
                                 throw new Error(data.message || 'Ошибка при удалении записи');
                             }
@@ -935,7 +1030,8 @@
                             console.error('Error:', error);
                             showNotification(error.message || 'Ошибка при удалении записи', 'error');
                         }
-                    }
+                        currentDeleteId = null;
+                        isDeletingAppointment = false;
                 }
 
                 // Функция создания записи при клике на дату
@@ -2179,6 +2275,8 @@
                 showNotification('Запись успешно обновлена');
                 closeEditAppointmentModal();
                 updateAppointmentRow(data.appointment);
+                calendar.refetchEvents();
+                calendar.refetchEvents();
             } else if (data.errors) {
                 displayErrors(data.errors, 'editAppointmentForm');
             } else {
@@ -2258,6 +2356,7 @@
             if (data.success) {
                 showNotification('Запись успешно создана');
                 closeAppointmentModal();
+                calendar.refetchEvents();
 
                 // Добавляем новую запись в таблицу без перезагрузки
                 const appointment = data.appointment;
@@ -2549,6 +2648,7 @@
             if (data.success) {
                 showNotification('Изменения успешно сохранены');
                 toggleModal('viewAppointmentModal', false);
+                calendar.refetchEvents();
 
                 // Обновляем данные в строке таблицы
                 const appointment = data.appointment;
