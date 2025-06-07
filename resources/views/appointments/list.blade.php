@@ -682,6 +682,14 @@
 
                 calendar.render();
 
+                // Функция создания записи при клике на дату
+                function createAppointment(dateStr) {
+                    // Устанавливаем выбранную дату в поле формы
+                    document.querySelector('#appointmentModal input[name="date"]').value = dateStr;
+                    // Открываем модальное окно
+                    toggleModal('appointmentModal');
+                }
+
                 // Функция обновления заголовка
                 function updateTitle() {
                     const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
@@ -759,6 +767,22 @@
                 updateTitle();
             }
         });
+
+        // Функция для открытия/закрытия модальных окон
+        function toggleModal(modalId, show = true) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            
+            if (show) {
+                modal.style.display = 'block';
+                modal.classList.add('show');
+                document.body.classList.add('modal-open');
+            } else {
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                document.body.classList.remove('modal-open');
+            }
+        }
     </script>
 @endif
 </div>
@@ -892,9 +916,16 @@
     // Основные функции работы с модальными окнами
     function toggleModal(modalId, show = true) {
         const modal = document.getElementById(modalId);
-        if (modal) {
-            modal.style.display = show ? 'block' : 'none';
-            document.body.style.overflow = show ? 'hidden' : '';
+        if (!modal) return;
+        
+        if (show) {
+            modal.style.display = 'block';
+            modal.classList.add('show');
+            document.body.classList.add('modal-open');
+        } else {
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+            document.body.classList.remove('modal-open');
         }
     }
 
