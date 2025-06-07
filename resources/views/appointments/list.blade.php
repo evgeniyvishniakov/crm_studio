@@ -163,6 +163,7 @@
         margin: 1px 0 !important;
         cursor: pointer;
         border-radius: 4px !important;
+        position: relative;
     }
 
     .fc-time-grid-event {
@@ -530,6 +531,59 @@
         cursor: pointer;
         border-radius: 4px !important;
     }
+
+    /* Стили для всплывающей подсказки */
+    .appointment-tooltip {
+        position: fixed;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+        display: none;
+        width: 250px;
+    }
+
+    .tooltip-btn {
+        pointer-events: auto; /* Включаем события только для кнопок */
+    }
+
+    .appointment-tooltip-content {
+        margin-bottom: 10px;
+    }
+
+    .appointment-tooltip-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .tooltip-btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+    }
+
+    .tooltip-btn-edit {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .tooltip-btn-delete {
+        background-color: #f44336;
+        color: white;
+    }
+
+    .tooltip-btn .icon {
+        width: 16px;
+        height: 16px;
+    }
 </style>
 
 <div class="appointments-container">
@@ -629,6 +683,24 @@
     @else
     <div id="calendarView">
         <div class="calendar-wrapper">
+            <!-- Шаблон для всплывающей подсказки -->
+            <div id="appointmentTooltip" class="appointment-tooltip">
+                <div class="appointment-tooltip-content"></div>
+                <div class="appointment-tooltip-actions">
+                    <button class="tooltip-btn tooltip-btn-edit">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                        </svg>
+                        Редактировать
+                    </button>
+                    <button class="tooltip-btn tooltip-btn-delete">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        Удалить
+                    </button>
+                </div>
+            </div>
             <div class="calendar-header">
                 <div class="calendar-view-switcher">
                     <button class="view-switch-btn today-button">Сегодня</button>
@@ -653,6 +725,22 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('calendar')) {
+                let activeEvent = null;
+                const tooltip = document.getElementById('appointmentTooltip');
+
+                // Добавляем обработчики для самой подсказки
+                tooltip.addEventListener('mouseenter', () => {
+                    if (activeEvent) {
+                        tooltip.style.display = 'block';
+                    }
+                });
+
+                tooltip.addEventListener('mouseleave', () => {
+                    if (!activeEvent) {
+                        tooltip.style.display = 'none';
+                    }
+                });
+
                 var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
                     initialView: 'dayGridMonth',
                     headerToolbar: false,
@@ -671,6 +759,81 @@
                     allDaySlot: false,
                     slotDuration: '00:30:00',
 
+                    // Обработчик наведения на событие
+                    eventMouseEnter: function(info) {
+                        activeEvent = info.event;
+                        const event = info.event;
+                        const tooltipContent = tooltip.querySelector('.appointment-tooltip-content');
+                        const editBtn = tooltip.querySelector('.tooltip-btn-edit');
+                        const deleteBtn = tooltip.querySelector('.tooltip-btn-delete');
+
+                        // Форматируем время
+                        const startTime = event.start ? new Date(event.start).toLocaleTimeString('ru-RU', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) : '';
+
+                        // Формируем содержимое всплывающей подсказки
+                        tooltipContent.innerHTML = `
+                            <p><strong>Время:</strong> ${startTime}</p>
+                            <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
+                            <p><strong>Процедура:</strong> ${event.extendedProps.service}</p>
+                            <p><strong>Цена:</strong> ${event.extendedProps.price} грн</p>
+                        `;
+
+                        // Позиционируем всплывающую подсказку
+                        const eventEl = info.el;
+                        const rect = eventEl.getBoundingClientRect();
+
+                        // Получаем размеры окна
+                        const windowWidth = window.innerWidth;
+                        const windowHeight = window.innerHeight;
+
+                        // Получаем размеры подсказки
+                        const tooltipWidth = 250; // ширина подсказки
+                        const tooltipHeight = tooltip.offsetHeight;
+
+                        // Рассчитываем позицию
+                        let left = rect.right + 5; // 5px отступ от события
+                        let top = rect.top;
+
+                        // Проверяем, не выходит ли подсказка за пределы экрана справа
+                        if (left + tooltipWidth > windowWidth) {
+                            left = rect.left - tooltipWidth - 5; // Размещаем слева от события
+                        }
+
+                        // Проверяем, не выходит ли подсказка за пределы экрана снизу
+                        if (top + tooltipHeight > windowHeight) {
+                            top = windowHeight - tooltipHeight - 5; // 5px отступ снизу
+                        }
+
+                        // Применяем позицию
+                        tooltip.style.top = `${top}px`;
+                        tooltip.style.left = `${left}px`;
+                        tooltip.style.display = 'block';
+
+                        // Добавляем обработчики для кнопок
+                        editBtn.onclick = () => {
+                            activeEvent = null;
+                            viewAppointment(event.id);
+                        };
+                        deleteBtn.onclick = () => {
+                            activeEvent = null;
+                            deleteAppointment(event.id);
+                        };
+                    },
+
+                    // Скрываем всплывающую подсказку при уходе курсора
+                    eventMouseLeave: function() {
+                        activeEvent = null;
+                        // Даем небольшую задержку, чтобы можно было навести на подсказку
+                        setTimeout(() => {
+                            if (!activeEvent && !tooltip.matches(':hover')) {
+                                tooltip.style.display = 'none';
+                            }
+                        }, 100);
+                    },
+
                     eventClick: function(info) {
                         viewAppointment(info.event.id);
                     },
@@ -681,6 +844,37 @@
                 });
 
                 calendar.render();
+
+                // Функция удаления записи
+                async function deleteAppointment(id) {
+                    if (confirm('Вы уверены, что хотите удалить эту запись?')) {
+                        try {
+                            const response = await fetch(`/appointments/${id}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'Accept': 'application/json'
+                                }
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                                // Удаляем событие из календаря
+                                const event = calendar.getEventById(id);
+                                if (event) {
+                                    event.remove();
+                                }
+                                showNotification('Запись успешно удалена', 'success');
+                            } else {
+                                throw new Error(data.message || 'Ошибка при удалении записи');
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            showNotification(error.message || 'Ошибка при удалении записи', 'error');
+                        }
+                    }
+                }
 
                 // Функция создания записи при клике на дату
                 function createAppointment(dateStr) {

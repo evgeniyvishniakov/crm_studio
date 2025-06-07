@@ -642,42 +642,30 @@ class AppointmentsController extends Controller
             }
 
             // Создаем новую продажу
-            if (!empty($request->sales)) {
+            if ($request->has('sales')) {
                 $sale = Sale::create([
                     'appointment_id' => $appointment->id,
-                    'client_id' => $appointment->client_id,
-                    'date' => $appointment->date,
                     'total_amount' => 0
                 ]);
 
                 $totalAmount = 0;
 
                 foreach ($request->sales as $saleData) {
-                    $product = Product::with('warehouse')->findOrFail($saleData['product_id']);
-
-                    // Проверяем наличие на складе
-                    if (!$product->warehouse || $product->warehouse->quantity < $saleData['quantity']) {
-                        throw new \Exception("Недостаточно товара на складе: {$product->name}");
-                    }
-
-                    // Создаем позицию продажи
-                    SaleItem::create([
-                        'sale_id' => $sale->id,
+                    $item = $sale->items()->create([
                         'product_id' => $saleData['product_id'],
                         'quantity' => $saleData['quantity'],
-                        'retail_price' => $saleData['price'],
-                        'wholesale_price' => $saleData['purchase_price'],
-                        'total' => $saleData['quantity'] * $saleData['price']
+                        'price' => $saleData['price'],
+                        'purchase_price' => $saleData['purchase_price']
                     ]);
 
-                    // Обновляем общую сумму
-                    $totalAmount += $saleData['quantity'] * $saleData['price'];
+                    // Уменьшаем количество товара на складе
+                    if ($item->product && $item->product->warehouse) {
+                        $item->product->warehouse->decrement('quantity', $item->quantity);
+                    }
 
-                    // Уменьшаем количество на складе
-                    $product->warehouse->decrement('quantity', $saleData['quantity']);
+                    $totalAmount += $saleData['price'] * $saleData['quantity'];
                 }
 
-                // Обновляем общую сумму продажи
                 $sale->update(['total_amount' => $totalAmount]);
             }
 
