@@ -813,9 +813,10 @@
                         tooltip.style.display = 'block';
 
                         // Добавляем обработчики для кнопок
-                        editBtn.onclick = () => {
+                        editBtn.onclick = (e) => {
                             activeEvent = null;
-                            viewAppointment(event.id);
+                            tooltip.style.display = 'none';
+                            editAppointment(e, event.id);
                         };
                         deleteBtn.onclick = () => {
                             activeEvent = null;
@@ -835,7 +836,68 @@
                     },
 
                     eventClick: function(info) {
-                        viewAppointment(info.event.id);
+                        const event = info.event;
+                        const tooltipContent = tooltip.querySelector('.appointment-tooltip-content');
+                        const editBtn = tooltip.querySelector('.tooltip-btn-edit');
+                        const deleteBtn = tooltip.querySelector('.tooltip-btn-delete');
+
+                        // Форматируем время
+                        const startTime = event.start ? new Date(event.start).toLocaleTimeString('ru-RU', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) : '';
+
+                        // Формируем содержимое всплывающей подсказки
+                        tooltipContent.innerHTML = `
+                            <p><strong>Время:</strong> ${startTime}</p>
+                            <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
+                            <p><strong>Процедура:</strong> ${event.extendedProps.service}</p>
+                            <p><strong>Цена:</strong> ${event.extendedProps.price} грн</p>
+                        `;
+
+                        // Позиционируем всплывающую подсказку
+                        const eventEl = info.el;
+                        const rect = eventEl.getBoundingClientRect();
+
+                        // Получаем размеры окна
+                        const windowWidth = window.innerWidth;
+                        const windowHeight = window.innerHeight;
+
+                        // Получаем размеры подсказки
+                        const tooltipWidth = 250; // ширина подсказки
+                        const tooltipHeight = tooltip.offsetHeight;
+
+                        // Рассчитываем позицию
+                        let left = rect.right + 5; // 5px отступ от события
+                        let top = rect.top;
+
+                        // Проверяем, не выходит ли подсказка за пределы экрана справа
+                        if (left + tooltipWidth > windowWidth) {
+                            left = rect.left - tooltipWidth - 5; // Размещаем слева от события
+                        }
+
+                        // Проверяем, не выходит ли подсказка за пределы экрана снизу
+                        if (top + tooltipHeight > windowHeight) {
+                            top = windowHeight - tooltipHeight - 5; // 5px отступ снизу
+                        }
+
+                        // Применяем позицию
+                        tooltip.style.top = `${top}px`;
+                        tooltip.style.left = `${left}px`;
+                        tooltip.style.display = 'block';
+
+                        // Добавляем обработчики для кнопок
+                        editBtn.onclick = (e) => {
+                            activeEvent = null;
+                            tooltip.style.display = 'none';
+                            editAppointment(e, event.id);
+                        };
+
+                        deleteBtn.onclick = (e) => {
+                            activeEvent = null;
+                            tooltip.style.display = 'none';
+                            confirmDeleteAppointment(e, event.id);
+                        };
                     },
 
                     dateClick: function(info) {
