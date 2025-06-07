@@ -582,10 +582,11 @@
             @foreach($appointments as $appointment)
             <tr data-appointment-id="{{ $appointment->id }}">
                 <td>{{ \Carbon\Carbon::parse($appointment->date)->format('d.m.Y') }}</td>
-                <td>{{ $appointment->time }}</td>
+                <td>{{ \Carbon\Carbon::parse($appointment->time)->format('H:i') }}</td>
                 <td>
                     {{ $appointment->client->name }}
                     @if($appointment->client->instagram)
+                        <br />
                     (<a href="https://instagram.com/{{ $appointment->client->instagram }}" class="instagram-link" target="_blank" rel="noopener noreferrer">
                         <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor">
                             <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
@@ -595,7 +596,7 @@
                     @endif
                 </td>
                 <td>{{ $appointment->service->name }}</td>
-                <td>{{ number_format($appointment->price, 2) }} грн</td>
+                <td>{{ number_format($appointment->price) }} грн</td>
                 <td>
                     <div class="appointment-actions actions-cell">
                         <button class="btn-view" data-appointment-id="{{ $appointment->id }}" title="Просмотр">
@@ -985,14 +986,14 @@
                 </div>
                 <div class="detail-roww-no-flex">
                     <span class="detail-label">Время:</span>
-                    <span class="detail-value">${escapeHtml(appointment.time)}</span>
+                    <span class="detail-value">${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</span>
                 </div>
                 <div class="detail-roww-no-flex">
                     <span class="detail-label">Клиент:</span>
                     <span class="detail-value">${escapeHtml(appointment.client.name)}</span>
                 </div>
             </div>
-            <h3>Процедуры</h3>
+            <h3>Процедура</h3>
             <div class="services-section">
                 <div class="service-item">
                     <span>${escapeHtml(appointment.service.name)}</span>
@@ -1232,50 +1233,6 @@
             }
         });
     }
-
-    async function addProcedureToAppointment() {
-        const appointmentId = document.getElementById('appointmentId').value;
-        const serviceId = document.getElementById('serviceSelect').value;
-        const price = document.getElementById('servicePrice').value;
-
-        if (!serviceId || !price) {
-            showNotification('Заполните процедуру и цену', 'error');
-            return;
-        }
-
-        const response = await fetch(`/appointments/${appointmentId}/add-procedure`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ service_id: serviceId, price })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            // Визуально вставляем в список
-            const servicesSection = document.querySelector('.services-section');
-            const service = allServices.find(s => s.id == serviceId);
-            const el = document.createElement('div');
-            el.classList.add('service-item');
-            el.innerHTML = `<span>${service.name}</span><span>${parseFloat(price).toFixed(2)} грн</span>`;
-            servicesSection.appendChild(el);
-
-            // Сброс формы
-            document.getElementById('addServiceForm').style.display = 'none';
-            document.getElementById('showAddServiceFormBtn').style.display = 'inline-block';
-            document.getElementById('serviceSelect').value = '';
-            document.getElementById('servicePrice').value = '';
-
-            updateTotalAmount();
-            showNotification('Процедура добавлена');
-        } else {
-            showNotification(data.message || 'Ошибка добавления процедуры', 'error');
-        }
-    }
-
 
 
     function resetProductForm() {
@@ -1932,7 +1889,7 @@
             // Обновляем время
             const timeCell = row.querySelector('td:nth-child(2)');
             if (timeCell && appointmentData.time) {
-                timeCell.textContent = appointmentData.time;
+                timeCell.textContent = appointmentData.time.split(':').slice(0, 2).join(':');
             }
 
             // Обновляем клиента
@@ -1997,7 +1954,7 @@
 
                     newRow.innerHTML = `
                             <td>${new Date(appointment.date).toLocaleDateString('ru-RU')}</td>
-                            <td>${escapeHtml(appointment.time)}</td>
+                            <td>${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</td>
                             <td>
                                 ${escapeHtml(appointment.client.name)}
                                 ${appointment.client.instagram ? `
