@@ -821,12 +821,12 @@
                         const tooltipHeight = tooltip.offsetHeight;
 
                         // Рассчитываем позицию
-                        let left = rect.right + 5; // 5px отступ от события
+                        let left = rect.left - tooltipWidth - 5; // Всегда размещаем слева от события с отступом 5px
                         let top = rect.top;
 
-                        // Проверяем, не выходит ли подсказка за пределы экрана справа
-                        if (left + tooltipWidth > windowWidth) {
-                            left = rect.left - tooltipWidth - 5; // Размещаем слева от события
+                        // Если подсказка выходит за левый край экрана, размещаем её справа от события
+                        if (left < 0) {
+                            left = rect.right + 5;
                         }
 
                         // Проверяем, не выходит ли подсказка за пределы экрана снизу
@@ -897,12 +897,12 @@
                         const tooltipHeight = tooltip.offsetHeight;
 
                         // Рассчитываем позицию
-                        let left = rect.right + 5; // 5px отступ от события
+                        let left = rect.left - tooltipWidth - 5; // Всегда размещаем слева от события с отступом 5px
                         let top = rect.top;
 
-                        // Проверяем, не выходит ли подсказка за пределы экрана справа
-                        if (left + tooltipWidth > windowWidth) {
-                            left = rect.left - tooltipWidth - 5; // Размещаем слева от события
+                        // Если подсказка выходит за левый край экрана, размещаем её справа от события
+                        if (left < 0) {
+                            left = rect.right + 5;
                         }
 
                         // Проверяем, не выходит ли подсказка за пределы экрана снизу
@@ -962,12 +962,12 @@
                         const tooltipHeight = tooltip.offsetHeight;
 
                         // Рассчитываем позицию
-                        let left = rect.right + 5; // 5px отступ от события
+                        let left = rect.left - tooltipWidth - 5; // Всегда размещаем слева от события с отступом 5px
                         let top = rect.top;
 
-                        // Проверяем, не выходит ли подсказка за пределы экрана справа
-                        if (left + tooltipWidth > windowWidth) {
-                            left = rect.left - tooltipWidth - 5; // Размещаем слева от события
+                        // Если подсказка выходит за левый край экрана, размещаем её справа от события
+                        if (left < 0) {
+                            left = rect.right + 5;
                         }
 
                         // Проверяем, не выходит ли подсказка за пределы экрана снизу
