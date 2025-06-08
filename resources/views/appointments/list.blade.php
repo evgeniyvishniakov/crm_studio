@@ -932,21 +932,14 @@
 
                             const data = await response.json();
 
-                            if (data.success) {
-                                // Удаляем событие из календаря
-                                console.log('Удаляем событие с id:', id);
-                                const event = calendar.getEventById(id);
-                                console.log('calendar.getEventById(id):', event);
-
-                                if (event) {
-                                    event.remove();
-                                } else {
-                                    // Если событие не найдено, обновим весь календарь
-                                    calendar.refetchEvents();
-                                }
-                                tooltip.style.display = 'none';
-                                showNotification('Запись успешно удалена', 'success');
-                                toggleModal('confirmationModal', false);
+                                        if (data.success) {
+                // Обновляем календарь
+                if (typeof calendar !== 'undefined' && calendar) {
+                    calendar.refetchEvents();
+                }
+                tooltip.style.display = 'none';
+                showNotification('Запись успешно удалена', 'success');
+                toggleModal('confirmationModal', false);
                             } else {
                                 throw new Error(data.message || 'Ошибка при удалении записи');
                             }
@@ -2258,6 +2251,11 @@
                 showNotification('Запись успешно обновлена');
                 closeEditAppointmentModal();
                 
+                // Обновляем календарь
+                if (typeof calendar !== 'undefined' && calendar) {
+                    calendar.refetchEvents();
+                }
+                
                 // Обновляем строку в таблице
                 const row = document.querySelector(`tr[data-appointment-id="${data.appointment.id}"]`);
                 if (row) {
@@ -3003,6 +3001,11 @@
             if (data.success) {
                 showNotification('Запись успешно обновлена');
                 closeEditAppointmentModal();
+                
+                // Обновляем календарь
+                if (typeof calendar !== 'undefined' && calendar) {
+                    calendar.refetchEvents();
+                }
                 
                 // Обновляем строку в таблице
                 const row = document.querySelector(`tr[data-appointment-id="${data.appointment.id}"]`);
