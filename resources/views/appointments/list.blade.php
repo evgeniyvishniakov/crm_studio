@@ -21,6 +21,35 @@
         background-color: #f44336;
     }
 
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-weight: 500;
+        display: inline-block;
+        text-align: center;
+        min-width: 100px;
+    }
+
+    .status-pending {
+        background-color: #FFC107;
+        color: #000;
+    }
+
+    .status-completed {
+        background-color: #4CAF50;
+        color: #fff;
+    }
+
+    .status-cancelled {
+        background-color: #F44336;
+        color: #fff;
+    }
+
+    .status-rescheduled {
+        background-color: #FF9800;
+        color: #fff;
+    }
+
     .products-table {
         width: 100%;
         border-collapse: collapse;
@@ -630,6 +659,7 @@
                 <th>Клиент</th>
                 <th>Процедура</th>
                 <th>Стоимость</th>
+                <th>Статус</th>
                 <th>Действия</th>
             </tr>
             </thead>
@@ -652,6 +682,19 @@
                 </td>
                 <td>{{ $appointment->service->name }}</td>
                 <td>{{ number_format($appointment->price) }} грн</td>
+                <td>
+                    <span class="status-badge status-{{ $appointment->status }}">
+                        @php
+                            $statusNames = [
+                                'pending' => 'Ожидается',
+                                'completed' => 'Завершено',
+                                'cancelled' => 'Отменено',
+                                'rescheduled' => 'Перенесено'
+                            ];
+                        @endphp
+                        {{ $statusNames[$appointment->status] ?? 'Ожидается' }}
+                    </span>
+                </td>
                 <td>
                     <div class="appointment-actions actions-cell">
                         <button class="btn-view" data-appointment-id="{{ $appointment->id }}" title="Просмотр">
@@ -806,6 +849,7 @@
                             <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
                             <p><strong>Процедура:</strong> ${event.extendedProps.service}</p>
                             <p><strong>Цена:</strong> ${event.extendedProps.price} грн</p>
+                            <p><strong>Статус:</strong> ${getStatusName(event.extendedProps.status)}</p>
                         `;
 
                         // Позиционируем всплывающую подсказку
@@ -843,7 +887,7 @@
                         editBtn.onclick = (e) => {
                             activeEvent = null;
                             tooltip.style.display = 'none';
-                            editAppointment(e, event.id);
+                            editAppointment(event.id);
                         };
                         deleteBtn.onclick = (e) => {
                             activeEvent = null;
@@ -863,152 +907,9 @@
                         }, 100);
                     },
 
-                    eventMouseEnter: function(info) {
-                        activeEvent = info.event;
-                        const event = info.event;
-                        const tooltipContent = tooltip.querySelector('.appointment-tooltip-content');
-                        const editBtn = tooltip.querySelector('.tooltip-btn-edit');
-                        const deleteBtn = tooltip.querySelector('.tooltip-btn-delete');
-
-                        // Форматируем время
-                        const startTime = event.start ? new Date(event.start).toLocaleTimeString('ru-RU', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        }) : '';
-
-                        // Формируем содержимое всплывающей подсказки
-                        tooltipContent.innerHTML = `
-                            <p><strong>Время:</strong> ${startTime}</p>
-                            <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
-                            <p><strong>Процедура:</strong> ${event.extendedProps.service}</p>
-                            <p><strong>Цена:</strong> ${event.extendedProps.price} грн</p>
-                        `;
-
-                        // Позиционируем всплывающую подсказку
-                        const eventEl = info.el;
-                        const rect = eventEl.getBoundingClientRect();
-
-                        // Получаем размеры окна
-                        const windowWidth = window.innerWidth;
-                        const windowHeight = window.innerHeight;
-
-                        // Получаем размеры подсказки
-                        const tooltipWidth = 250; // ширина подсказки
-                        const tooltipHeight = tooltip.offsetHeight;
-
-                        // Рассчитываем позицию
-                        let left = rect.left - tooltipWidth - 5; // Всегда размещаем слева от события с отступом 5px
-                        let top = rect.top;
-
-                        // Если подсказка выходит за левый край экрана, размещаем её справа от события
-                        if (left < 0) {
-                            left = rect.right + 5;
-                        }
-
-                        // Проверяем, не выходит ли подсказка за пределы экрана снизу
-                        if (top + tooltipHeight > windowHeight) {
-                            top = windowHeight - tooltipHeight - 5; // 5px отступ снизу
-                        }
-
-                        // Применяем позицию
-                        tooltip.style.top = `${top}px`;
-                        tooltip.style.left = `${left}px`;
-                        tooltip.style.display = 'block';
-
-                        // Добавляем обработчики для кнопок
-                        editBtn.onclick = (e) => {
-                            activeEvent = null;
-                            tooltip.style.display = 'none';
-                            editAppointment(e, event.id);
-                        };
-                        deleteBtn.onclick = (e) => {
-                            activeEvent = null;
-                            tooltip.style.display = 'none';
-                            confirmDeleteAppointment(e, event.id);
-                        };
-                    },
-
-                    eventMouseEnter: function(info) {
-                        activeEvent = info.event;
-                        const event = info.event;
-                        const tooltipContent = tooltip.querySelector('.appointment-tooltip-content');
-                        const editBtn = tooltip.querySelector('.tooltip-btn-edit');
-                        const deleteBtn = tooltip.querySelector('.tooltip-btn-delete');
-
-                        // Форматируем время
-                        const startTime = event.start ? new Date(event.start).toLocaleTimeString('ru-RU', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        }) : '';
-
-                        // Формируем содержимое всплывающей подсказки
-                        tooltipContent.innerHTML = `
-                            <p><strong>Время:</strong> ${startTime}</p>
-                            <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
-                            <p><strong>Процедура:</strong> ${event.extendedProps.service}</p>
-                            <p><strong>Цена:</strong> ${event.extendedProps.price} грн</p>
-                        `;
-
-                        // Позиционируем всплывающую подсказку
-                        const eventEl = info.el;
-                        const rect = eventEl.getBoundingClientRect();
-
-                        // Получаем размеры окна
-                        const windowWidth = window.innerWidth;
-                        const windowHeight = window.innerHeight;
-
-                        // Получаем размеры подсказки
-                        const tooltipWidth = 250; // ширина подсказки
-                        const tooltipHeight = tooltip.offsetHeight;
-
-                        // Рассчитываем позицию
-                        let left = rect.left - tooltipWidth - 5; // Всегда размещаем слева от события с отступом 5px
-                        let top = rect.top;
-
-                        // Если подсказка выходит за левый край экрана, размещаем её справа от события
-                        if (left < 0) {
-                            left = rect.right + 5;
-                        }
-
-                        // Проверяем, не выходит ли подсказка за пределы экрана снизу
-                        if (top + tooltipHeight > windowHeight) {
-                            top = windowHeight - tooltipHeight - 5; // 5px отступ снизу
-                        }
-
-                        // Применяем позицию
-                        tooltip.style.top = `${top}px`;
-                        tooltip.style.left = `${left}px`;
-                        tooltip.style.display = 'block';
-
-                        // Добавляем обработчики для кнопок
-                        editBtn.onclick = (e) => {
-                            activeEvent = null;
-                            tooltip.style.display = 'none';
-                            editAppointment(e, event.id);
-                        };
-                        deleteBtn.onclick = (e) => {
-                            activeEvent = null;
-                            tooltip.style.display = 'none';
-                            confirmDeleteAppointment(e, event.id);
-                        };
-                    },
-
                     eventClick: function(info) {
                         tooltip.style.display = 'none';
                         viewAppointment(info.event.id);
-
-                        // Добавляем обработчики для кнопок
-                        editBtn.onclick = (e) => {
-                            activeEvent = null;
-                            tooltip.style.display = 'none';
-                            editAppointment(e, event.id);
-                        };
-
-                        deleteBtn.onclick = (e) => {
-                            activeEvent = null;
-                            tooltip.style.display = 'none';
-                            confirmDeleteAppointment(e, event.id);
-                        };
                     },
 
                     dateClick: function(info) {
@@ -1229,6 +1130,16 @@
                     <textarea name="notes" rows="2" class="form-control"></textarea>
                 </div>
 
+                <div class="form-group">
+                    <label>Статус</label>
+                    <select name="status" class="form-control">
+                        <option value="pending">Ожидается</option>
+                        <option value="completed">Завершено</option>
+                        <option value="cancelled">Отменено</option>
+                        <option value="rescheduled">Перенесено</option>
+                    </select>
+                </div>
+
                 <div class="form-actions">
                     <button type="button" class="btn-cancel" onclick="closeAppointmentModal()">Отмена</button>
                     <button type="submit" class="btn-submit">Сохранить запись</button>
@@ -1432,6 +1343,15 @@
                     <span class="detail-value client-name">${escapeHtml(appointment.client.name)}${appointment.client.instagram ? ` (@${escapeHtml(appointment.client.instagram)})` : ''}</span>
                 </div>
             </div>
+            <div class="detail-row">
+                <span class="detail-label">Статус:</span>
+                <span class="detail-value">
+                    <span class="status-badge status-${appointment.status}">
+                        ${getStatusName(appointment.status)}
+                    </span>
+                </span>
+            </div>
+
             <h3>Процедура</h3>
             <div class="services-section">
                 <div class="service-item">
@@ -2186,8 +2106,12 @@
     }
 
     // Функции для работы с записями
-    async function editAppointment(event, id) {
-        event.preventDefault();
+    async function editAppointment(id) {
+        if (!id) {
+            showNotification('Ошибка: ID записи не указан', 'error');
+            return;
+        }
+
         currentAppointmentId = id;
         toggleModal('editAppointmentModal');
         const modalBody = document.getElementById('editAppointmentModalBody');
@@ -2206,11 +2130,10 @@
             }
 
             const data = await response.json();
-
             if (data.success) {
                 renderEditAppointmentForm(data.appointment);
             } else {
-                throw new Error(data.message || 'Ошибка загрузки данных');
+                throw new Error(data.message || 'Ошибка при загрузке записи');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -2280,6 +2203,16 @@
                     <textarea name="notes" rows="2" class="form-control">${escapeHtml(appointment.notes || '')}</textarea>
                 </div>
 
+                <div class="form-group">
+                    <label>Статус</label>
+                    <select name="status" class="form-control">
+                        <option value="pending" ${appointment.status === 'pending' ? 'selected' : ''}>Ожидается</option>
+                        <option value="completed" ${appointment.status === 'completed' ? 'selected' : ''}>Завершено</option>
+                        <option value="cancelled" ${appointment.status === 'cancelled' ? 'selected' : ''}>Отменено</option>
+                        <option value="rescheduled" ${appointment.status === 'rescheduled' ? 'selected' : ''}>Перенесено</option>
+                    </select>
+                </div>
+
                 <div class="form-actions">
                     <button type="button" class="btn-cancel" onclick="closeEditAppointmentModal()">Отмена</button>
                     <button type="submit" class="btn-submit">Сохранить изменения</button>
@@ -2303,17 +2236,15 @@
         });
     }
 
-    async function submitEditAppointmentForm(form) {
+    async function submitEditAppointmentForm(form, appointmentId) {
         clearErrors('editAppointmentForm');
         const formData = new FormData(form);
-        const appointmentId = formData.get('id');
 
         try {
-            // Добавляем _method поле для Laravel
             formData.append('_method', 'PUT');
 
             const response = await fetch(`/appointments/${appointmentId}`, {
-                method: 'POST', // Оставляем POST, но добавляем _method: PUT для Laravel
+                method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json'
@@ -2326,15 +2257,49 @@
             if (data.success) {
                 showNotification('Запись успешно обновлена');
                 closeEditAppointmentModal();
-
-                // Обновляем календарь если он существует
-                if (typeof calendar !== 'undefined' && calendar) {
-                    calendar.refetchEvents();
-                }
-
-                // Обновляем строку в таблице если она существует
-                if (data.appointment) {
-                    updateAppointmentRow(data.appointment);
+                
+                // Обновляем строку в таблице
+                const row = document.querySelector(`tr[data-appointment-id="${data.appointment.id}"]`);
+                if (row) {
+                    row.innerHTML = `
+                        <td>${new Date(data.appointment.date).toLocaleDateString('ru-RU')}</td>
+                        <td>${escapeHtml(data.appointment.time.split(':').slice(0, 2).join(':'))}</td>
+                        <td>
+                            ${escapeHtml(data.appointment.client.name)}
+                            ${data.appointment.client.instagram ? `
+                                (<a href="https://instagram.com/${escapeHtml(data.appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(data.appointment.client.instagram)}</a>)` : ''}
+                        </td>
+                        <td>${escapeHtml(data.appointment.service.name)}</td>
+                        <td>${parseFloat(data.appointment.price).toFixed(2)} грн</td>
+                        <td>
+                            <span class="status-badge status-${data.appointment.status}">
+                                ${getStatusName(data.appointment.status)}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="appointment-actions actions-cell">
+                                <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Просмотр
+                                </button>
+                                <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="Редактировать">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                    Ред.
+                                </button>
+                                <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Удалить
+                                </button>
+                            </div>
+                        </td>
+                    `;
                 }
             } else if (data.errors) {
                 displayErrors(data.errors, 'editAppointmentForm');
@@ -2347,139 +2312,14 @@
         }
     }
 
-    function updateAppointmentRow(appointmentData) {
-        try {
-            const row = document.querySelector(`tr[data-appointment-id="${appointmentData.id}"]`);
-            if (!row) return;
-
-            // Обновляем дату
-            const dateCell = row.querySelector('td:nth-child(1)');
-            if (dateCell && appointmentData.date) {
-                dateCell.textContent = new Date(appointmentData.date).toLocaleDateString('ru-RU');
-            }
-
-            // Обновляем время
-            const timeCell = row.querySelector('td:nth-child(2)');
-            if (timeCell && appointmentData.time) {
-                timeCell.textContent = appointmentData.time.split(':').slice(0, 2).join(':');
-            }
-
-            // Обновляем клиента
-            const clientCell = row.querySelector('td:nth-child(3)');
-            if (clientCell && appointmentData.client) {
-                const client = appointmentData.client;
-                let clientHtml = escapeHtml(client.name);
-                if (client.instagram) {
-                    clientHtml += ` (<a href="https://instagram.com/${escapeHtml(client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">
-                        <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
-                        </svg>
-                        ${escapeHtml(client.instagram)}
-                    </a>)`;
-                }
-                clientCell.innerHTML = clientHtml;
-            }
-
-            // Обновляем процедуру
-            const serviceCell = row.querySelector('td:nth-child(4)');
-            if (serviceCell && appointmentData.service) {
-                serviceCell.textContent = appointmentData.service.name;
-            }
-
-            // Обновляем стоимость
-            const priceCell = row.querySelector('td:nth-child(5)');
-            if (priceCell && appointmentData.price !== undefined) {
-                priceCell.textContent = parseFloat(appointmentData.price).toFixed(2) + ' грн';
-            }
-        } catch (error) {
-            console.error('Ошибка при обновлении строки записи:', error);
-        }
-    }
-
-    async function submitAppointmentForm(form) {
-        clearErrors('appointmentForm');
-        const formData = new FormData(form);
-
-        try {
-            const response = await fetch('/appointments', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                showNotification('Запись успешно создана');
-                closeAppointmentModal();
-
-                if (typeof calendar !== 'undefined' && calendar) {
-                    calendar.refetchEvents();
-                }
-
-                // Добавляем новую запись в таблицу без перезагрузки
-                const appointment = data.appointment;
-                const tbody = document.querySelector('#appointmentsTable tbody');
-
-                if (tbody) {
-                    const newRow = document.createElement('tr');
-                    newRow.setAttribute('data-appointment-id', appointment.id);
-
-                    newRow.innerHTML = `
-                            <td>${new Date(appointment.date).toLocaleDateString('ru-RU')}</td>
-                            <td>${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</td>
-                            <td>
-                                ${escapeHtml(appointment.client.name)}
-                                ${appointment.client.instagram ? `
-                                    (<a href="https://instagram.com/${escapeHtml(appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">
-                                        <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        ${escapeHtml(appointment.client.instagram)}
-                                    </a>)`
-                        : ''}
-                            </td>
-                            <td>${escapeHtml(appointment.service.name)}</td>
-                            <td>${parseFloat(appointment.price).toFixed(2)} грн</td>
-                            <td>
-                                <div class="appointment-actions actions-cell">
-                                    <button class="btn-view" data-appointment-id="${appointment.id}" title="Просмотр">
-                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-                                        </svg>
-                                        Просмотр
-                                    </button>
-                                    <button class="btn-edit" data-appointment-id="${appointment.id}" title="Редактировать">
-                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                        </svg>
-                                        Ред.
-                                    </button>
-                                    <button class="btn-delete" data-appointment-id="${appointment.id}" title="Удалить">
-                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                        Удалить
-                                    </button>
-                                </div>
-                            </td>
-                        `;
-
-                    tbody.insertBefore(newRow, tbody.firstChild);
-                }
-            } else if (data.errors) {
-                displayErrors(data.errors, 'appointmentForm');
-            } else {
-                throw new Error(data.message || 'Ошибка при создании записи');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification(error.message || 'Ошибка при создании записи', 'error');
-        }
+    function getStatusName(status) {
+        const statusNames = {
+            'pending': 'Ожидается',
+            'completed': 'Завершено',
+            'cancelled': 'Отменено',
+            'rescheduled': 'Перенесено'
+        };
+        return statusNames[status] || 'Ожидается';
     }
 
     function confirmDeleteAppointment(event, id) {
@@ -2629,14 +2469,20 @@
 
         // Делегирование событий
         document.addEventListener('click', function(e) {
-            if (e.target.closest('.btn-view')) {
-                viewAppointment(e.target.closest('.btn-view').dataset.appointmentId);
+            const target = e.target.closest('button');
+            if (!target) return;
+
+            if (target.classList.contains('btn-view')) {
+                e.preventDefault();
+                viewAppointment(target.dataset.appointmentId);
             }
-            if (e.target.closest('.btn-edit')) {
-                editAppointment(e, e.target.closest('.btn-edit').dataset.appointmentId);
+            if (target.classList.contains('btn-edit')) {
+                e.preventDefault();
+                editAppointment(target.dataset.appointmentId);
             }
-            if (e.target.closest('.btn-delete')) {
-                confirmDeleteAppointment(e, e.target.closest('.btn-delete').dataset.appointmentId);
+            if (target.classList.contains('btn-delete')) {
+                e.preventDefault();
+                confirmDeleteAppointment(e, target.dataset.appointmentId);
             }
             if (e.target == document.getElementById('appointmentModal')) {
                 toggleModal('appointmentModal', false);
@@ -2918,10 +2764,10 @@
                         <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
                         <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                    </svg>Добавить</button>
-                    </div>
-                </div>
-            `;
+            </svg>Добавить</button>
+            </div>
+        </div>
+    `;
 
         // Обновляем общую сумму
         updateTotalAmount();
@@ -3021,5 +2867,205 @@
         console.log('After add:');
         checkFormState();
     };
+
+    function escapeHtml(text) {
+        return text.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]);
+    }
+
+    function getStatusName(status) {
+        const statusNames = {
+            'pending': 'Ожидается',
+            'completed': 'Завершено',
+            'cancelled': 'Отменено',
+            'rescheduled': 'Перенесено'
+        };
+        return statusNames[status] || 'Ожидается';
+    }
+
+    function toggleModal(modalId, show = true) {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+
+        if (show) {
+            modal.style.display = 'block';
+            modal.classList.add('show');
+            document.body.classList.add('modal-open');
+        } else {
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+            document.body.classList.remove('modal-open');
+        }
+    }
+
+    async function submitAppointmentForm(form) {
+        clearErrors('appointmentForm');
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch('/appointments', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('Запись успешно создана');
+                closeAppointmentModal();
+
+                if (typeof calendar !== 'undefined' && calendar) {
+                    calendar.refetchEvents();
+                }
+
+                // Добавляем новую запись в таблицу без перезагрузки
+                const appointment = data.appointment;
+                const tbody = document.querySelector('#appointmentsTable tbody');
+
+                if (tbody) {
+                    const newRow = document.createElement('tr');
+                    newRow.setAttribute('data-appointment-id', appointment.id);
+
+                    newRow.innerHTML = `
+                        <td>${new Date(appointment.date).toLocaleDateString('ru-RU')}</td>
+                        <td>${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</td>
+                        <td>
+                            ${escapeHtml(appointment.client.name)}
+                            ${appointment.client.instagram ? `
+                                (<a href="https://instagram.com/${escapeHtml(appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(appointment.client.instagram)}</a>)` : ''}
+                        </td>
+                        <td>${escapeHtml(appointment.service.name)}</td>
+                        <td>${parseFloat(appointment.price).toFixed(2)} грн</td>
+                        <td>
+                            <span class="status-badge status-${appointment.status}">
+                                ${getStatusName(appointment.status)}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="appointment-actions actions-cell">
+                                <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Просмотр
+                                </button>
+                                <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="Редактировать">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                    Ред.
+                                </button>
+                                <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Удалить
+                                </button>
+                            </div>
+                        </td>
+                    `;
+
+                    tbody.insertBefore(newRow, tbody.firstChild);
+                }
+            } else if (data.errors) {
+                displayErrors(data.errors, 'appointmentForm');
+            } else {
+                throw new Error(data.message || 'Ошибка при создании записи');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification(error.message || 'Ошибка при создании записи', 'error');
+        }
+    }
+
+    async function submitEditAppointmentForm(form, appointmentId) {
+        clearErrors('editAppointmentForm');
+        const formData = new FormData(form);
+
+        try {
+            formData.append('_method', 'PUT');
+
+            const response = await fetch(`/appointments/${appointmentId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showNotification('Запись успешно обновлена');
+                closeEditAppointmentModal();
+                
+                // Обновляем строку в таблице
+                const row = document.querySelector(`tr[data-appointment-id="${data.appointment.id}"]`);
+                if (row) {
+                    row.innerHTML = `
+                        <td>${new Date(data.appointment.date).toLocaleDateString('ru-RU')}</td>
+                        <td>${escapeHtml(data.appointment.time.split(':').slice(0, 2).join(':'))}</td>
+                        <td>
+                            ${escapeHtml(data.appointment.client.name)}
+                            ${data.appointment.client.instagram ? `
+                                (<a href="https://instagram.com/${escapeHtml(data.appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(data.appointment.client.instagram)}</a>)` : ''}
+                        </td>
+                        <td>${escapeHtml(data.appointment.service.name)}</td>
+                        <td>${parseFloat(data.appointment.price).toFixed(2)} грн</td>
+                        <td>
+                            <span class="status-badge status-${data.appointment.status}">
+                                ${getStatusName(data.appointment.status)}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="appointment-actions actions-cell">
+                                <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Просмотр
+                                </button>
+                                <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="Редактировать">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                    Ред.
+                                </button>
+                                <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Удалить
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                }
+            } else if (data.errors) {
+                displayErrors(data.errors, 'editAppointmentForm');
+            } else {
+                throw new Error(data.message || 'Ошибка при обновлении записи');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification(error.message || 'Ошибка при обновлении записи', 'error');
+        }
+    }
+
+    function getStatusName(status) {
+        const statusNames = {
+            'pending': 'Ожидается',
+            'completed': 'Завершено',
+            'cancelled': 'Отменено',
+            'rescheduled': 'Перенесено'
+        };
+        return statusNames[status] || 'Ожидается';
+    }
 </script>
 @endsection

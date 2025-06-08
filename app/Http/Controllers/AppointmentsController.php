@@ -68,7 +68,8 @@ class AppointmentsController extends Controller
                 'date' => 'required|date',
                 'time' => 'required',
                 'price' => 'nullable|numeric|min:0',
-                'notes' => 'nullable|string'
+                'notes' => 'nullable|string',
+                'status' => 'nullable|string|in:pending,completed,cancelled,rescheduled'
             ]);
 
             $appointment = Appointment::create($validated);
@@ -100,6 +101,7 @@ class AppointmentsController extends Controller
                 'client_id' => 'required|exists:clients,id',
                 'service_id' => 'required|exists:services,id',
                 'price' => 'required|numeric|min:0',
+                'status' => 'nullable|string|in:pending,completed,cancelled,rescheduled',
                 'sales' => 'array',
                 'sales.*.product_id' => 'required|exists:products,id',
                 'sales.*.quantity' => 'required|integer|min:1',
@@ -118,7 +120,8 @@ class AppointmentsController extends Controller
                     'time' => $validated['time'],
                     'client_id' => $validated['client_id'],
                     'service_id' => $validated['service_id'],
-                    'price' => $validated['price']
+                    'price' => $validated['price'],
+                    'status' => $validated['status'] ?? $appointment->status
                 ]);
 
                 // Удаляем старые продажи и возвращаем товары на склад
@@ -547,7 +550,8 @@ class AppointmentsController extends Controller
                             'client' => $appointment->client->name,
                             'service' => $appointment->service->name,
                             'price' => $appointment->price,
-                            'notes' => $appointment->notes
+                            'notes' => $appointment->notes,
+                            'status' => $appointment->status
                         ]
                     ];
 
