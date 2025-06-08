@@ -1464,26 +1464,30 @@
                                 </div>
                                 <input type="hidden" id="selectedProductId" name="product_id">
                             </div>
-                            <div class="form-group-flex">
-                                <div class="form-group-appointment">
-                                    <label>Количество *</label>
-                                    <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
-                                </div>
-                                <div class="form-group-appointment">
-                                    <label>Цена *</label>
-                                    <input type="number" step="0.01" id="productPrice" class="form-control" required>
-                                </div>
-                            </div>
                         </div>
-                        <div class="form-actions">
-                            <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
-                            <button type="button" class="btn-submit" id="submitAddProduct">
-                                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                                </svg>
-                                Добавить
-                            </button>
+                    </div>
+                    <div id="productDetails" class="form-row-appointment" style="display: none; margin-top: 15px;">
+                        <div class="form-group-appointment">
+                            <label>Количество *</label>
+                            <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
                         </div>
+                        <div class="form-group-appointment">
+                            <label>Опт</label>
+                            <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
+                        </div>
+                        <div class="form-group-appointment">
+                            <label>Цена *</label>
+                            <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-actions" style="margin-top: 15px;">
+                        <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
+                        <button type="button" class="btn-submit" id="submitAddProduct">
+                            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            Добавить
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1687,11 +1691,15 @@
             const productIdInput = form.querySelector('#selectedProductId');
             const quantityInput = form.querySelector('#productQuantity');
             const priceInput = form.querySelector('#productPrice');
+            const wholesaleInput = form.querySelector('#productWholesale');
+            const productDetails = form.querySelector('#productDetails');
 
             if (searchInput) searchInput.value = '';
             if (productIdInput) productIdInput.value = '';
             if (quantityInput) quantityInput.value = '1';
             if (priceInput) priceInput.value = '';
+            if (wholesaleInput) wholesaleInput.value = '';
+            if (productDetails) productDetails.style.display = 'none';
 
             // Скрываем выпадающий список
             const dropdown = form.querySelector('.product-dropdown');
@@ -1802,6 +1810,10 @@
                 <div class="form-group-appointment">
                     <label>Количество *</label>
                     <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                </div>
+                <div class="form-group-appointment">
+                    <label>Опт</label>
+                    <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
                 </div>
                 <div class="form-group-appointment">
                     <label>Цена *</label>
@@ -1937,7 +1949,9 @@
         const searchInput = form.querySelector('#productSearchInput');
         const hiddenInput = form.querySelector('#selectedProductId');
         const priceInput = form.querySelector('#productPrice');
+        const wholesaleInput = form.querySelector('#productWholesale');
         const dropdown = form.querySelector('.product-dropdown');
+        const productDetails = form.querySelector('#productDetails');
 
         if (searchInput) searchInput.value = name;
         if (hiddenInput) hiddenInput.value = productId;
@@ -1945,15 +1959,20 @@
 
         // Находим товар в списке всех товаров
         const product = allProducts.find(p => p.id == productId);
-        if (product && priceInput) {
-            // Заполняем цену
-            priceInput.value = product.price || product.retail_price || 0;
+        if (product) {
+            // Заполняем цены
+            if (priceInput) priceInput.value = product.price || product.retail_price || 0;
+            if (wholesaleInput) wholesaleInput.value = product.purchase_price || 0;
+            
+            // Показываем детали товара
+            if (productDetails) productDetails.style.display = 'flex';
         }
 
         console.log('Selected product:', { productId, name, price, formValues: {
                 searchInput: searchInput?.value,
                 hiddenInput: hiddenInput?.value,
-                priceInput: priceInput?.value
+                priceInput: priceInput?.value,
+                wholesaleInput: wholesaleInput?.value
             }});
     }
 
@@ -2655,13 +2674,13 @@
             timeText: timeElement?.textContent,
             time
         });
-        
+
         // Получаем имя клиента из правильного элемента
         const clientElement = modal.querySelector('.client-name');
         const clientNameWithInstagram = clientElement?.textContent?.trim() || '';
-        
+
         // Извлекаем только имя клиента, обрабатывая оба случая
-        const clientName = clientNameWithInstagram.includes('(@') 
+        const clientName = clientNameWithInstagram.includes('(@')
             ? clientNameWithInstagram.split('(@')[0].trim()
             : clientNameWithInstagram.trim();
 
@@ -2885,6 +2904,10 @@
                         <div class="form-group-appointment">
                             <label>Количество *</label>
                             <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                        </div>
+                        <div class="form-group-appointment">
+                            <label>Опт</label>
+                            <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
                         </div>
                         <div class="form-group-appointment">
                             <label>Цена *</label>
