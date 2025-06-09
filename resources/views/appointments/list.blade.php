@@ -1321,7 +1321,7 @@
             <div class="services-section">
                 <div class="service-item">
                     <span class="service-name">${escapeHtml(appointment.service.name)}</span>
-                    <span class="service-price">${servicePrice.toFixed(2)} грн</span>
+                    <span class="service-price">${Number(servicePrice) % 1 === 0 ? Number(servicePrice) : servicePrice.toFixed(2)} грн</span>
                 </div>
             </div>
 
@@ -1379,7 +1379,7 @@
 
             <div class="total-amount">
                 <span class="total-label">Итого:</span>
-                <span class="total-value">${totalAmount.toFixed(2)} грн</span>
+                <span class="total-value">${Number(totalAmount) % 1 === 0 ? Number(totalAmount) : totalAmount.toFixed(2)} грн</span>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">Закрыть</button>
@@ -1412,9 +1412,9 @@
                         <tr data-index="${index}">
                             <td>${escapeHtml(sale.name)}</td>
                             <td>${sale.quantity}</td>
-                            <td>${parseFloat(sale.price).toFixed(2)} грн</td>
-                            <td>${parseFloat(sale.purchase_price).toFixed(2)} грн</td>
-                            <td>${total.toFixed(2)} грн</td>
+                            <td>${Number(sale.price) % 1 === 0 ? Number(sale.price) : Number(sale.price).toFixed(2)} грн</td>
+                            <td>${Number(sale.purchase_price) % 1 === 0 ? Number(sale.purchase_price) : Number(sale.purchase_price).toFixed(2)} грн</td>
+                            <td>${Number(total) % 1 === 0 ? Number(total) : Number(total).toFixed(2)} грн</td>
                             <td>
                                 <button class="btn-delete btn-delete-product"
                                         data-product-id="${sale.product_id}"
@@ -1757,7 +1757,7 @@
 
         const totalElement = document.querySelector('.total-value');
         if (totalElement) {
-            totalElement.textContent = `${totalAmount.toFixed(2)} грн`;
+            totalElement.textContent = `${formatPrice(totalAmount)} грн`;
         }
     }
 
@@ -1844,7 +1844,8 @@
     }
 
     function formatPrice(price) {
-        return parseFloat(price).toFixed(2);
+        const parsedPrice = parseFloat(price);
+        return parsedPrice % 1 === 0 ? parsedPrice.toString() : parsedPrice.toFixed(2);
     }
 
     // Закрытие выпадающего списка при клике вне его
@@ -1863,48 +1864,23 @@
                 <select id="productSelect" class="form-control">
                     <option value="">Выберите товар</option>
                     ${products.map(p => {
-            const quantity = p.warehouse?.quantity || 0;
-            if (quantity <= 0) return '';
+                        const quantity = p.warehouse?.quantity || 0;
+                        if (quantity <= 0) return '';
 
-            const retailPrice = parseFloat(p.warehouse?.retail_price || 0);
-            const wholesalePrice = parseFloat(p.warehouse?.wholesale_price || 0);
-            return `
-                        <option value="${p.id}"
-                                data-quantity="${quantity}"
-                                data-retail-price="${retailPrice}"
-                                data-wholesale-price="${wholesalePrice}"
-                                data-name="${escapeHtml(p.name)}">
-                            ${escapeHtml(p.name)} (${retailPrice.toFixed(2)} грн, остаток: ${quantity})
-                        </option>
-                    `;
-        }).join('')}
+                        const retailPrice = parseFloat(p.warehouse?.retail_price || 0);
+                        const wholesalePrice = parseFloat(p.warehouse?.wholesale_price || 0);
+                        return `
+                            <option value="${p.id}"
+                                    data-quantity="${quantity}"
+                                    data-retail-price="${retailPrice}"
+                                    data-wholesale-price="${wholesalePrice}"
+                                    data-name="${escapeHtml(p.name)}">
+                                ${escapeHtml(p.name)} (${formatPrice(retailPrice)} грн, остаток: ${quantity})
+                            </option>
+                        `;
+                    }).join('')}
                 </select>
-            </div>
-
-            <div class="form-group">
-                <label>Название товара</label>
-                <input type="text" id="productNameDisplay" class="form-control" readonly>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Оптовая цена (грн)</label>
-                    <input type="number" step="0.01" id="productWholesalePrice" class="form-control" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Розничная цена (грн) *</label>
-                    <input type="number" step="0.01" id="productRetailPrice" class="form-control" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Количество *</label>
-                <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
-            </div>
-
-            <button class="btn-submit" id="submitAddProduct">Добавить товар</button>
-            <button class="btn-cancel" id="cancelAddProduct">Отмена</button>
-        `;
+            </div>`;
     }
 
     function setupAddProductHandlers() {
@@ -2142,7 +2118,7 @@
 
                 <div class="form-group">
                     <label>Стоимость (Грн)</label>
-                    <input type="number" step="0.01" name="price" value="${parseFloat(appointment.price).toFixed(2)}" class="form-control" min="0">
+                    <input type="number" step="0.01" name="price" value="${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)}" class="form-control" min="0">
                 </div>
 
                 <div class="form-group">
@@ -2650,9 +2626,9 @@
                                 <tr data-index="${index}">
                                     <td>${product.name}</td>
                                     <td>${quantity}</td>
-                                    <td>${retailPrice.toFixed(2)} грн</td>
-                                    <td>${wholesalePrice.toFixed(2)} грн</td>
-                                    <td>${total.toFixed(2)} грн</td>
+                                    <td>${Number(retailPrice) % 1 === 0 ? Number(retailPrice) : retailPrice.toFixed(2)} грн</td>
+                                    <td>${Number(wholesalePrice) % 1 === 0 ? Number(wholesalePrice) : wholesalePrice.toFixed(2)} грн</td>
+                                    <td>${Number(total) % 1 === 0 ? Number(total) : total.toFixed(2)} грн</td>
                                     <td>
                                         <button class="btn-delete btn-delete-product" onclick="deleteProduct(${index})" data-product-id="${product.product_id}" title="Удалить">
                                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -2869,7 +2845,7 @@
                                 (<a href="https://instagram.com/${escapeHtml(appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(appointment.client.instagram)}</a>)` : ''}
                         </td>
                         <td>${escapeHtml(appointment.service.name)}</td>
-                        <td>${parseFloat(appointment.price).toFixed(2)} грн</td>
+                        <td>${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)} грн</td>
                         <td>
                             <span class="status-badge status-${appointment.status}">
                                 ${getStatusName(appointment.status)}
@@ -2892,7 +2868,7 @@
                                 </button>
                                 <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                     </svg>
                                     Удалить
                                 </button>
@@ -2975,7 +2951,7 @@
                                 </button>
                                 <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                     </svg>
                                     Удалить
                                 </button>
@@ -3002,6 +2978,86 @@
             'rescheduled': 'Перенесено'
         };
         return statusNames[status] || 'Ожидается';
+    }
+
+    function renderProductsTable() {
+        return `
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Количество</th>
+                        <th>Розничная цена</th>
+                        <th>Оптовая цена</th>
+                        <th>Итого</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${temporaryProducts.map((product, index) => {
+                        const retailPrice = parseFloat(product.price);
+                        const wholesalePrice = parseFloat(product.wholesale_price || 0);
+                        const quantity = parseInt(product.quantity);
+                        const total = retailPrice * quantity;
+
+                        return `
+                            <tr data-index="${index}">
+                                <td>${product.name}</td>
+                                <td>${quantity}</td>
+                                <td>${formatPrice(retailPrice)} грн</td>
+                                <td>${formatPrice(wholesalePrice)} грн</td>
+                                <td>${formatPrice(total)} грн</td>
+                                <td>
+                                    <button class="btn-delete btn-delete-product" onclick="deleteProduct(${index})" data-product-id="${product.product_id}" title="Удалить">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>`;
+    }
+
+    function renderAppointmentsList(appointments) {
+        return appointments.map(appointment => `
+            <tr data-appointment-id="${appointment.id}">
+                <td>${appointment.client ? appointment.client.name : 'Клиент удален'}</td>
+                <td>${appointment.service ? appointment.service.name : 'Услуга удалена'}</td>
+                <td>${formatDate(appointment.date)}</td>
+                <td>${appointment.time}</td>
+                <td>${formatPrice(appointment.price)} грн</td>
+                <td>
+                    <div class="appointment-actions actions-cell">
+                        <button class="btn-view" data-appointment-id="${appointment.id}" title="Просмотр">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Просмотр
+                        </button>
+                        <button class="btn-edit" data-appointment-id="${appointment.id}" title="Редактировать">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                            </svg>
+                            Ред.
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function updateProductDetails(productId) {
+        const product = allProducts.find(p => p.id == productId);
+        if (product) {
+            document.getElementById('productNameDisplay').value = product.name;
+            document.getElementById('productWholesalePrice').value = formatPrice(product.wholesale_price || 0);
+            document.getElementById('productRetailPrice').value = formatPrice(product.retail_price || product.price || 0);
+            document.getElementById('productQuantity').max = product.quantity || 0;
+        }
     }
 </script>
 @endsection
