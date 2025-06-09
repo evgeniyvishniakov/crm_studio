@@ -1283,15 +1283,15 @@
                         </div>
                     </div>
                     <div id="productDetails" class="form-row-appointment" style="display: none; margin-top: 15px;">
-                        <div class="form-group-appointment">
+                        <div class="form-group-appointment" style="display: none;">
                             <label>Количество *</label>
                             <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
                         </div>
-                        <div class="form-group-appointment">
+                        <div class="form-group-appointment" style="display: none;">
                             <label>Опт</label>
                             <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
                         </div>
-                        <div class="form-group-appointment">
+                        <div class="form-group-appointment" style="display: none;">
                             <label>Цена *</label>
                             <input type="number" step="0.01" id="productPrice" class="form-control" required>
                         </div>
@@ -1502,6 +1502,12 @@
             // Скрываем выпадающий список
             const dropdown = form.querySelector('.product-dropdown');
             if (dropdown) dropdown.style.display = 'none';
+
+            // Скрываем все остальные поля формы
+            const otherFields = form.querySelectorAll('.form-group-appointment');
+            otherFields.forEach(field => {
+                field.style.display = 'none';
+            });
         }
     }
 
@@ -1605,15 +1611,15 @@
                         <input type="hidden" id="selectedProductId" name="product_id">
                     </div>
                 </div>
-                <div class="form-group-appointment">
+                <div class="form-group-appointment" style="display: none;">
                     <label>Количество *</label>
                     <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
                 </div>
-                <div class="form-group-appointment">
+                <div class="form-group-appointment" style="display: none;">
                     <label>Опт</label>
                     <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
                 </div>
-                <div class="form-group-appointment">
+                <div class="form-group-appointment" style="display: none;">
                     <label>Цена *</label>
                     <input type="number" step="0.01" id="productPrice" class="form-control" required>
                 </div>
@@ -1646,6 +1652,7 @@
             btnAdd.addEventListener('click', () => {
                 btnAdd.style.display = 'none';
                 form.style.display = 'block';
+                resetProductForm();
             });
         }
 
@@ -1772,6 +1779,7 @@
                 priceInput: priceInput?.value,
                 wholesaleInput: wholesaleInput?.value
             }});
+        showProductFields();
     }
 
     function formatPrice(price) {
@@ -2509,15 +2517,15 @@
                                 <input type="hidden" id="selectedProductId" name="product_id">
                             </div>
                         </div>
-                        <div class="form-group-appointment">
+                        <div class="form-group-appointment" style="display: none;">
                             <label>Количество *</label>
                             <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
                         </div>
-                        <div class="form-group-appointment">
+                        <div class="form-group-appointment" style="display: none;">
                             <label>Опт</label>
                             <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
                         </div>
-                        <div class="form-group-appointment">
+                        <div class="form-group-appointment" style="display: none;">
                             <label>Цена *</label>
                             <input type="number" step="0.01" id="productPrice" class="form-control" required>
                         </div>
@@ -2544,6 +2552,7 @@
             btnAdd.addEventListener('click', () => {
                 btnAdd.style.display = 'none';
                 form.style.display = 'block';
+                resetProductForm(); // <-- добавьте эту строку!
             });
         }
 
@@ -2842,7 +2851,7 @@
                                 <td>
                                     <button class="btn-delete btn-delete-product" onclick="deleteProduct(${index})" data-product-id="${product.product_id}" title="Удалить">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                         </svg>
                                     </button>
                                 </td>
@@ -2889,6 +2898,16 @@
             document.getElementById('productWholesalePrice').value = formatPrice(product.wholesale_price || 0);
             document.getElementById('productRetailPrice').value = formatPrice(product.retail_price || product.price || 0);
             document.getElementById('productQuantity').max = product.quantity || 0;
+        }
+    }
+
+    function showProductFields() {
+        const form = document.querySelector('#addProductForm');
+        if (form) {
+            const otherFields = form.querySelectorAll('.form-group-appointment');
+            otherFields.forEach(field => {
+                field.style.display = 'block';
+            });
         }
     }
 </script>
