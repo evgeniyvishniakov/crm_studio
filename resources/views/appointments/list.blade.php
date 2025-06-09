@@ -624,8 +624,8 @@
                 <th>Время</th>
                 <th>Клиент</th>
                 <th>Процедура</th>
-                <th>Стоимость</th>
                 <th>Статус</th>
+                <th>Стоимость</th>
                 <th>Действия</th>
             </tr>
             </thead>
@@ -647,7 +647,6 @@
                     @endif
                 </td>
                 <td>{{ $appointment->service->name }}</td>
-                <td>{{ number_format($appointment->price) }} грн</td>
                 <td>
                     <span class="status-badge status-{{ $appointment->status }}">
                         @php
@@ -661,6 +660,7 @@
                         {{ $statusNames[$appointment->status] ?? 'Ожидается' }}
                     </span>
                 </td>
+                <td>{{ number_format($appointment->price) }} грн</td>
                 <td>
                     <div class="appointment-actions actions-cell">
                         <button class="btn-view" data-appointment-id="{{ $appointment->id }}" title="Просмотр">
@@ -2707,12 +2707,8 @@
                                 (<a href="https://instagram.com/${escapeHtml(appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(appointment.client.instagram)}</a>)` : ''}
                         </td>
                         <td>${escapeHtml(appointment.service.name)}</td>
+                        <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
                         <td>${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)} грн</td>
-                        <td>
-                            <span class="status-badge status-${appointment.status}">
-                                ${getStatusName(appointment.status)}
-                            </span>
-                        </td>
                         <td>
                             <div class="appointment-actions actions-cell">
                                 <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
@@ -2790,12 +2786,8 @@
                                 (<a href="https://instagram.com/${escapeHtml(data.appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(data.appointment.client.instagram)}</a>)` : ''}
                         </td>
                         <td>${escapeHtml(data.appointment.service.name)}</td>
+                        <td><span class="status-badge status-${data.appointment.status}">${getStatusName(data.appointment.status)}</span></td>
                         <td>${parseFloat(data.appointment.price).toFixed(2)} грн</td>
-                        <td>
-                            <span class="status-badge status-${data.appointment.status}">
-                                ${getStatusName(data.appointment.status)}
-                            </span>
-                        </td>
                         <td>
                             <div class="appointment-actions actions-cell">
                                 <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
@@ -2880,6 +2872,7 @@
                 <td>${appointment.service ? appointment.service.name : 'Услуга удалена'}</td>
                 <td>${formatDate(appointment.date)}</td>
                 <td>${appointment.time}</td>
+                <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
                 <td>${formatPrice(appointment.price)} грн</td>
                 <td>
                     <div class="appointment-actions actions-cell">
