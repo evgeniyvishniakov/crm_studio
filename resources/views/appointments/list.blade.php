@@ -1611,17 +1611,19 @@
                         <input type="hidden" id="selectedProductId" name="product_id">
                     </div>
                 </div>
-                <div class="form-group-appointment" style="display: none;">
-                    <label>Количество *</label>
-                    <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
-                </div>
-                <div class="form-group-appointment" style="display: none;">
-                    <label>Опт</label>
-                    <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
-                </div>
-                <div class="form-group-appointment" style="display: none;">
-                    <label>Цена *</label>
-                    <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                <div id="productDetails" class="form-row-appointment" style="display: flex; margin-top: 15px;">
+                    <div class="form-group-appointment" style="display: none;">
+                        <label>Количество *</label>
+                        <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                    </div>
+                    <div class="form-group-appointment" style="display: none;">
+                        <label>Опт</label>
+                        <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
+                    </div>
+                    <div class="form-group-appointment" style="display: none;">
+                        <label>Цена *</label>
+                        <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                    </div>
                 </div>
             </div>
             <div class="form-actions">

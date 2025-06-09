@@ -742,6 +742,7 @@
     .form-row-appointment {
         gap: 15px;
         align-items: flex-end;
+        justify-content: space-between;
     }
     .form-group-flex{
         display: flex;
