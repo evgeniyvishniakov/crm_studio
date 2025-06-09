@@ -688,6 +688,15 @@
             @endforeach
             </tbody>
         </table>
+        <div class="calendar-nav" id="appointmentsPagination" style="justify-content: center; margin-top: 20px;">
+            <button class="calendar-nav-btn prev-button" id="prevPageBtn" type="button">
+                <i class="fa fa-chevron-left"></i>
+            </button>
+            <span id="currentPageInfo" class="calendar-title">Страница 1 из 1</span>
+            <button class="calendar-nav-btn next-button" id="nextPageBtn" type="button">
+                <i class="fa fa-chevron-right"></i>
+            </button>
+        </div>
     </div>
     @else
     <div id="calendarView">
@@ -1613,16 +1622,16 @@
                 </div>
                 <div id="productDetails" class="form-row-appointment" style="display: flex; margin-top: 15px;">
                     <div class="form-group-appointment" style="display: none;">
-                        <label>Количество *</label>
-                        <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
-                    </div>
+                    <label>Количество *</label>
+                    <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                </div>
                     <div class="form-group-appointment" style="display: none;">
-                        <label>Опт</label>
-                        <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
-                    </div>
+                    <label>Опт</label>
+                    <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
+                </div>
                     <div class="form-group-appointment" style="display: none;">
-                        <label>Цена *</label>
-                        <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                    <label>Цена *</label>
+                    <input type="number" step="0.01" id="productPrice" class="form-control" required>
                     </div>
                 </div>
             </div>
@@ -1805,21 +1814,21 @@
                 <select id="productSelect" class="form-control">
                     <option value="">Выберите товар</option>
                     ${products.map(p => {
-                        const quantity = p.warehouse?.quantity || 0;
-                        if (quantity <= 0) return '';
+            const quantity = p.warehouse?.quantity || 0;
+            if (quantity <= 0) return '';
 
-                        const retailPrice = parseFloat(p.warehouse?.retail_price || 0);
-                        const wholesalePrice = parseFloat(p.warehouse?.wholesale_price || 0);
-                        return `
-                            <option value="${p.id}"
-                                    data-quantity="${quantity}"
-                                    data-retail-price="${retailPrice}"
-                                    data-wholesale-price="${wholesalePrice}"
-                                    data-name="${escapeHtml(p.name)}">
+            const retailPrice = parseFloat(p.warehouse?.retail_price || 0);
+            const wholesalePrice = parseFloat(p.warehouse?.wholesale_price || 0);
+            return `
+                        <option value="${p.id}"
+                                data-quantity="${quantity}"
+                                data-retail-price="${retailPrice}"
+                                data-wholesale-price="${wholesalePrice}"
+                                data-name="${escapeHtml(p.name)}">
                                 ${escapeHtml(p.name)} (${formatPrice(retailPrice)} грн, остаток: ${quantity})
-                            </option>
-                        `;
-                    }).join('')}
+                        </option>
+                    `;
+        }).join('')}
                 </select>
             </div>`;
     }
@@ -2912,5 +2921,45 @@
             });
         }
     }
+
+    // Пагинация для списка записей
+    (function() {
+        const pageSize = 10;
+        let currentPage = 1;
+        let rows = Array.from(document.querySelectorAll('#appointmentsTable tbody tr'));
+        let totalPages = Math.ceil(rows.length / pageSize);
+
+        function renderPage(page) {
+            rows.forEach((row, idx) => {
+                row.style.display = (idx >= (page-1)*pageSize && idx < page*pageSize) ? '' : 'none';
+            });
+            document.getElementById('currentPageInfo').textContent = `Страница ${page} из ${totalPages}`;
+            document.getElementById('prevPageBtn').disabled = page === 1;
+            document.getElementById('nextPageBtn').disabled = page === totalPages;
+        }
+
+        function updateRows() {
+            rows = Array.from(document.querySelectorAll('#appointmentsTable tbody tr'));
+            totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+            if (currentPage > totalPages) currentPage = totalPages;
+            renderPage(currentPage);
+        }
+
+        document.getElementById('prevPageBtn').addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderPage(currentPage);
+            }
+        });
+        document.getElementById('nextPageBtn').addEventListener('click', function() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderPage(currentPage);
+            }
+        });
+
+        // Если записи динамически меняются, можно вызвать updateRows()
+        updateRows();
+    })();
 </script>
 @endsection
