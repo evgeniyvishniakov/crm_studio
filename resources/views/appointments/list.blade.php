@@ -615,88 +615,88 @@
         </div>
     </div>
 
-    @if($viewType === 'list')
-    <div class="appointments-list table-wrapper" id="appointmentsList">
-        <table class="table-striped appointments-table" id="appointmentsTable">
-            <thead>
-            <tr>
-                <th>Дата</th>
-                <th>Время</th>
-                <th>Клиент</th>
-                <th>Процедура</th>
-                <th>Статус</th>
-                <th>Стоимость</th>
-                <th>Действия</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($appointments as $appointment)
-            <tr data-appointment-id="{{ $appointment->id }}">
-                <td>{{ \Carbon\Carbon::parse($appointment->date)->format('d.m.Y') }}</td>
-                <td>{{ \Carbon\Carbon::parse($appointment->time)->format('H:i') }}</td>
-                <td>
-                    {{ $appointment->client->name }}
-                    @if($appointment->client->instagram)
-                        <br />
-                    (<a href="https://instagram.com/{{ $appointment->client->instagram }}" class="instagram-link" target="_blank" rel="noopener noreferrer">
-                        <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
-                        </svg>
-                        {{ $appointment->client->instagram }}
-                    </a>)
-                    @endif
-                </td>
-                <td>{{ $appointment->service->name }}</td>
-                <td>
-                    <span class="status-badge status-{{ $appointment->status }}">
-                        @php
-                            $statusNames = [
-                                'pending' => 'Ожидается',
-                                'completed' => 'Завершено',
-                                'cancelled' => 'Отменено',
-                                'rescheduled' => 'Перенесено'
-                            ];
-                        @endphp
-                        {{ $statusNames[$appointment->status] ?? 'Ожидается' }}
-                    </span>
-                </td>
-                <td>{{ number_format($appointment->price) }} грн</td>
-                <td>
-                    <div class="appointment-actions actions-cell">
-                        <button class="btn-view" data-appointment-id="{{ $appointment->id }}" title="Просмотр">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+    <div id="appointmentsList" style="{{ $viewType === 'calendar' ? 'display:none;' : '' }}">
+        <div class="appointments-list table-wrapper">
+            <table class="table-striped appointments-table" id="appointmentsTable">
+                <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Время</th>
+                    <th>Клиент</th>
+                    <th>Процедура</th>
+                    <th>Статус</th>
+                    <th>Стоимость</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($appointments as $appointment)
+                <tr data-appointment-id="{{ $appointment->id }}">
+                    <td>{{ \Carbon\Carbon::parse($appointment->date)->format('d.m.Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($appointment->time)->format('H:i') }}</td>
+                    <td>
+                        {{ $appointment->client->name }}
+                        @if($appointment->client->instagram)
+                            <br />
+                        (<a href="https://instagram.com/{{ $appointment->client->instagram }}" class="instagram-link" target="_blank" rel="noopener noreferrer">
+                            <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
                             </svg>
-                        </button>
-                        <button class="btn-edit" data-appointment-id="{{ $appointment->id }}" title="Редактировать">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                            </svg>
-                        </button>
-                        <button class="btn-delete" data-appointment-id="{{ $appointment->id }}"  title="Удалить">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-            @endforeach
-            </tbody>
-        </table>
-        <div class="calendar-nav" id="appointmentsPagination" style="justify-content: center; margin-top: 20px;">
-            <button class="calendar-nav-btn prev-button" id="prevPageBtn" type="button">
-                <i class="fa fa-chevron-left"></i>
-            </button>
-            <span id="currentPageInfo" class="calendar-title">Страница 1 из 1</span>
-            <button class="calendar-nav-btn next-button" id="nextPageBtn" type="button">
-                <i class="fa fa-chevron-right"></i>
-            </button>
+                            {{ $appointment->client->instagram }}
+                        </a>)
+                        @endif
+                    </td>
+                    <td>{{ $appointment->service->name }}</td>
+                    <td>
+                        <span class="status-badge status-{{ $appointment->status }}">
+                            @php
+                                $statusNames = [
+                                    'pending' => 'Ожидается',
+                                    'completed' => 'Завершено',
+                                    'cancelled' => 'Отменено',
+                                    'rescheduled' => 'Перенесено'
+                                ];
+                            @endphp
+                            {{ $statusNames[$appointment->status] ?? 'Ожидается' }}
+                        </span>
+                    </td>
+                    <td>{{ number_format($appointment->price) }} грн</td>
+                    <td>
+                        <div class="appointment-actions actions-cell">
+                            <button class="btn-view" data-appointment-id="{{ $appointment->id }}" title="Просмотр">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                            <button class="btn-edit" data-appointment-id="{{ $appointment->id }}" title="Редактировать">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-delete" data-appointment-id="{{ $appointment->id }}"  title="Удалить">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+                </tbody>
+            </table>
+            <div class="calendar-nav" id="appointmentsPagination" style="justify-content: center; margin-top: 20px;">
+                <button class="calendar-nav-btn list-prev-button" id="prevListPageBtn" type="button">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
+                <span id="currentPageInfo" class="calendar-title">Страница 1 из 1</span>
+                <button class="calendar-nav-btn list-next-button" id="nextListPageBtn" type="button">
+                    <i class="fa fa-chevron-right"></i>
+                </button>
+            </div>
         </div>
     </div>
-    @else
-    <div id="calendarView">
+    <div id="calendarView" style="{{ $viewType === 'list' ? 'display:none;' : '' }}">
         <div class="calendar-wrapper">
             <!-- Шаблон для всплывающей подсказки -->
             <div id="appointmentTooltip" class="appointment-tooltip">
@@ -724,11 +724,11 @@
                     <button class="view-switch-btn active" data-view="dayGridMonth">Месяц</button>
                 </div>
                 <div class="calendar-nav">
-                    <button class="calendar-nav-btn prev-button">
+                    <button class="calendar-nav-btn calendar-prev-button">
                         <i class="fa fa-chevron-left"></i>
                     </button>
                     <span id="currentMonthYear" class="calendar-title">Декабрь 2023</span>
-                    <button class="calendar-nav-btn next-button">
+                    <button class="calendar-nav-btn calendar-next-button">
                         <i class="fa fa-chevron-right"></i>
                     </button>
                 </div>
@@ -834,1638 +834,503 @@
                         let top = rect.top;
 
                         // Если подсказка выходит за левый край экрана, размещаем её справа от события
-                        if (left < 0) {
-                            left = rect.right + 5;
-                        }
-
-                        // Проверяем, не выходит ли подсказка за пределы экрана снизу
-                        if (top + tooltipHeight > windowHeight) {
-                            top = windowHeight - tooltipHeight - 5; // 5px отступ снизу
-                        }
-
-                        // Применяем позицию
-                        tooltip.style.top = `${top}px`;
-                        tooltip.style.left = `${left}px`;
-                        tooltip.style.display = 'block';
-
-                        // Добавляем обработчики для кнопок
-                        editBtn.onclick = (e) => {
-                            activeEvent = null;
-                            tooltip.style.display = 'none';
-                            editAppointment(event.id);
-                        };
-                        deleteBtn.onclick = (e) => {
-                            activeEvent = null;
-                            tooltip.style.display = 'none';
-                            confirmDeleteAppointment(e, event.id);
-                        };
-                    },
-
-                    // Скрываем всплывающую подсказку при уходе курсора
-                    eventMouseLeave: function() {
-                        activeEvent = null;
-                        // Даем небольшую задержку, чтобы можно было навести на подсказку
-                        setTimeout(() => {
-                            if (!activeEvent && !tooltip.matches(':hover')) {
-                                tooltip.style.display = 'none';
+                            // Если подсказка выходит за левый край экрана, размещаем её справа от события
+                            if (left < 0) {
+                                left = rect.right + 5;
                             }
-                        }, 100);
-                    },
 
-                    eventClick: function(info) {
-                        tooltip.style.display = 'none';
-                        viewAppointment(info.event.id);
-                    },
+                            // Проверяем, не выходит ли подсказка за пределы экрана снизу
+                            if (top + tooltipHeight > windowHeight) {
+                                top = windowHeight - tooltipHeight - 5; // 5px отступ снизу
+                            }
 
-                    dateClick: function(info) {
-                        createAppointment(info.dateStr);
-                    }
-                });
+                            // Применяем позицию
+                            tooltip.style.top = `${top}px`;
+                            tooltip.style.left = `${left}px`;
+                            tooltip.style.display = 'block';
 
-                calendar.render();
+                            // Добавляем обработчики для кнопок
+                            editBtn.onclick = (e) => {
+                                activeEvent = null;
+                                tooltip.style.display = 'none';
+                                editAppointment(event.id);
+                            };
+                            deleteBtn.onclick = (e) => {
+                                activeEvent = null;
+                                tooltip.style.display = 'none';
+                                confirmDeleteAppointment(e, event.id);
+                            };
+                        },
 
-                // Функция создания записи при клике на дату
-                function createAppointment(dateStr) {
-                    // Устанавливаем выбранную дату в поле формы
-                    document.querySelector('#appointmentModal input[name="date"]').value = dateStr;
-                    // Открываем модальное окно
-                    toggleModal('appointmentModal');
-                }
+                        // Скрываем всплывающую подсказку при уходе курсора
+                        eventMouseLeave: function() {
+                            activeEvent = null;
+                            // Даем небольшую задержку, чтобы можно было навести на подсказку
+                            setTimeout(() => {
+                                if (!activeEvent && !tooltip.matches(':hover')) {
+                                    tooltip.style.display = 'none';
+                                }
+                            }, 100);
+                        },
 
-                // Функция обновления заголовка
-                function updateTitle() {
-                    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-                                    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-                    const date = calendar.getDate();
-                    const view = calendar.view.type;
-                    let title = '';
+                        eventClick: function(info) {
+                            tooltip.style.display = 'none';
+                            viewAppointment(info.event.id);
+                        },
 
-                    if (view === 'timeGridDay') {
-                        // Для дневного вида показываем дату в формате "1 января 2024"
-                        title = `${date.getDate()} ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
-                    } else if (view === 'timeGridWeek') {
-                        // Для недельного вида показываем номер недели
-                        const weekNumber = Math.ceil((date.getDate() + new Date(date.getFullYear(), date.getMonth(), 1).getDay()) / 7);
-                        title = `${weekNumber}-я неделя ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
-                    } else {
-                        // Для месячного вида оставляем как есть
-                        title = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-                    }
-
-                    document.getElementById('currentMonthYear').textContent = title;
-                }
-
-                // Обработчики кнопок навигации
-                document.querySelector('.prev-button').addEventListener('click', function() {
-                    const view = calendar.view.type;
-                    if (view === 'timeGridDay') {
-                        calendar.prev(); // Переход на предыдущий день
-                    } else if (view === 'timeGridWeek') {
-                        calendar.prev(); // Переход на предыдущую неделю
-                    } else {
-                        calendar.prev(); // Переход на предыдущий месяц
-                    }
-                    updateTitle();
-                });
-
-                document.querySelector('.next-button').addEventListener('click', function() {
-                    const view = calendar.view.type;
-                    if (view === 'timeGridDay') {
-                        calendar.next(); // Переход на следующий день
-                    } else if (view === 'timeGridWeek') {
-                        calendar.next(); // Переход на следующую неделю
-                    } else {
-                        calendar.next(); // Переход на следующий месяц
-                    }
-                    updateTitle();
-                });
-
-                // Обработчики кнопок переключения вида
-                document.querySelectorAll('.view-switch-btn[data-view]').forEach(button => {
-                    button.addEventListener('click', function() {
-                        // Удаляем активный класс у всех кнопок
-                        document.querySelectorAll('.view-switch-btn').forEach(btn => {
-                            btn.classList.remove('active');
-                        });
-                        // Добавляем активный класс текущей кнопке
-                        this.classList.add('active');
-                        // Переключаем вид календаря
-                        calendar.changeView(this.dataset.view);
+                        dateClick: function(info) {
+                            createAppointment(info.dateStr);
+                        }
                     });
-                });
 
-                // Обработчик кнопки "Сегодня"
-                document.querySelector('.today-button').addEventListener('click', function() {
-                    calendar.today();
+                    calendar.render();
+
+                    // Функция создания записи при клике на дату
+                    function createAppointment(dateStr) {
+                        // Устанавливаем выбранную дату в поле формы
+                        document.querySelector('#appointmentModal input[name="date"]').value = dateStr;
+                        // Открываем модальное окно
+                        toggleModal('appointmentModal');
+                    }
+
+                    // Функция обновления заголовка
+                    function updateTitle() {
+                        const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                                        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+                        const date = calendar.getDate();
+                        const view = calendar.view.type;
+                        let title = '';
+
+                        if (view === 'timeGridDay') {
+                            // Для дневного вида показываем дату в формате "1 января 2024"
+                            title = `${date.getDate()} ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
+                        } else if (view === 'timeGridWeek') {
+                            // Для недельного вида показываем номер недели
+                            const weekNumber = Math.ceil((date.getDate() + new Date(date.getFullYear(), date.getMonth(), 1).getDay()) / 7);
+                            title = `${weekNumber}-я неделя ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
+                        } else {
+                            // Для месячного вида оставляем как есть
+                            title = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+                        }
+
+                        document.getElementById('currentMonthYear').textContent = title;
+                    }
+
+                    // Обработчики кнопок навигации
+                    document.querySelector('.calendar-prev-button').addEventListener('click', function() {
+                        const view = calendar.view.type;
+                        if (view === 'timeGridDay') {
+                            calendar.prev();
+                        } else if (view === 'timeGridWeek') {
+                            calendar.prev();
+                        } else {
+                            calendar.prev();
+                        }
+                        updateTitle();
+                    });
+
+                    document.querySelector('.calendar-next-button').addEventListener('click', function() {
+                        const view = calendar.view.type;
+                        if (view === 'timeGridDay') {
+                            calendar.next();
+                        } else if (view === 'timeGridWeek') {
+                            calendar.next();
+                        } else {
+                            calendar.next();
+                        }
+                        updateTitle();
+                    });
+
+                    // Обработчики кнопок переключения вида
+                    document.querySelectorAll('.view-switch-btn[data-view]').forEach(button => {
+                        button.addEventListener('click', function() {
+                            // Удаляем активный класс у всех кнопок
+                            document.querySelectorAll('.view-switch-btn').forEach(btn => {
+                                btn.classList.remove('active');
+                            });
+                            // Добавляем активный класс текущей кнопке
+                            this.classList.add('active');
+                            // Переключаем вид календаря
+                            calendar.changeView(this.dataset.view);
+                        });
+                    });
+
+                    // Обработчик кнопки "Сегодня"
+                    document.querySelector('.today-button').addEventListener('click', function() {
+                        calendar.today();
+                        updateTitle();
+                    });
+
+                    // Обновляем заголовок при изменении даты
+                    calendar.on('datesSet', function() {
+                        updateTitle();
+                    });
+
+                    // Инициализация заголовка
                     updateTitle();
-                });
+                }
+            });
 
-                // Обновляем заголовок при изменении даты
-                calendar.on('datesSet', function() {
-                    updateTitle();
-                });
+        </script>
+    </div>
 
-                // Инициализация заголовка
-                updateTitle();
-            }
-        });
-
-    </script>
-@endif
-</div>
-
-<!-- Модальное окно добавления записи -->
-<div id="appointmentModal" class="modal">
-    <div class="modal-content" style="width: 80%; max-width: 900px;">
-        <div class="modal-header">
-            <h2>Добавить запись</h2>
-            <span class="close" onclick="closeAppointmentModal()">&times;</span>
-        </div>
-        <div class="modal-body">
-            <form id="appointmentForm">
-                @csrf
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Дата *</label>
-                        <input type="date" name="date" required class="form-control">
+    <!-- Модальное окно добавления записи -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content" style="width: 80%; max-width: 900px;">
+            <div class="modal-header">
+                <h2>Добавить запись</h2>
+                <span class="close" onclick="closeAppointmentModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="appointmentForm">
+                    @csrf
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Дата *</label>
+                            <input type="date" name="date" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Время *</label>
+                            <input type="time" name="time" required class="form-control">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Время *</label>
-                        <input type="time" name="time" required class="form-control">
-                    </div>
-                </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Клиент *</label>
-                        <div class="client-search-container">
-                            <input type="text" class="client-search-input form-control"
-                                   placeholder="Начните вводить имя, инстаграм или email клиента..."
-                                   oninput="searchClients(this)"
-                                   onfocus="searchClients(this)">
-                            <div class="client-dropdown" style="display: none;">
-                                <div class="client-dropdown-list"></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Клиент *</label>
+                            <div class="client-search-container">
+                                <input type="text" class="client-search-input form-control"
+                                       placeholder="Начните вводить имя, инстаграм или email клиента..."
+                                       oninput="searchClients(this)"
+                                       onfocus="searchClients(this)">
+                                <div class="client-dropdown" style="display: none;">
+                                    <div class="client-dropdown-list"></div>
+                                </div>
+                                <select name="client_id" class="form-control client-select" style="display: none;" required>
+                                    <option value="">Выберите клиента</option>
+                                    @foreach($clients as $client)
+                                    <option value="{{ $client['id'] }}">
+                                        {{ $client['name'] }}
+                                        @if($client['instagram']) ({{ $client['instagram'] }}) @endif
+                                        @if($client['phone']) - {{ $client['phone'] }} @endif
+                                    </option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <select name="client_id" class="form-control client-select" style="display: none;" required>
-                                <option value="">Выберите клиента</option>
-                                @foreach($clients as $client)
-                                <option value="{{ $client['id'] }}">
-                                    {{ $client['name'] }}
-                                    @if($client['instagram']) ({{ $client['instagram'] }}) @endif
-                                    @if($client['phone']) - {{ $client['phone'] }} @endif
+                        </div>
+                        <div class="form-group">
+                            <label>Процедура *</label>
+                            <select name="service_id" class="form-control" required>
+                                <option value="">Выберите процедуру</option>
+                                @foreach($services as $service)
+                                <option value="{{ $service->id }}" data-price="{{ $service->price }}">
+                                    {{ $service->name }}
                                 </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
+
                     <div class="form-group">
-                        <label>Процедура *</label>
-                        <select name="service_id" class="form-control" required>
-                            <option value="">Выберите процедуру</option>
-                            @foreach($services as $service)
-                            <option value="{{ $service->id }}" data-price="{{ $service->price }}">
-                                {{ $service->name }}
-                            </option>
-                            @endforeach
+                        <label>Стоимость (Грн)</label> <!-- Убрал * -->
+                        <input type="number" step="0.01" name="price" class="form-control" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Примечания</label>
+                        <textarea name="notes" rows="2" class="form-control"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Статус</label>
+                        <select name="status" class="form-control">
+                            <option value="pending">Ожидается</option>
+                            <option value="completed">Завершено</option>
+                            <option value="cancelled">Отменено</option>
+                            <option value="rescheduled">Перенесено</option>
                         </select>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label>Стоимость (Грн)</label> <!-- Убрал * -->
-                    <input type="number" step="0.01" name="price" class="form-control" min="0">
-                </div>
-
-                <div class="form-group">
-                    <label>Примечания</label>
-                    <textarea name="notes" rows="2" class="form-control"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Статус</label>
-                    <select name="status" class="form-control">
-                        <option value="pending">Ожидается</option>
-                        <option value="completed">Завершено</option>
-                        <option value="cancelled">Отменено</option>
-                        <option value="rescheduled">Перенесено</option>
-                    </select>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="closeAppointmentModal()">Отмена</button>
-                    <button type="submit" class="btn-submit">Сохранить запись</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно редактирования записи -->
-<div id="editAppointmentModal" class="modal">
-    <div class="modal-content" style="width: 80%; max-width: 900px;">
-        <div class="modal-header">
-            <h2>Редактировать запись</h2>
-            <span class="close" onclick="closeEditAppointmentModal()">&times;</span>
-        </div>
-        <div class="modal-body" id="editAppointmentModalBody">
-            <!-- Контент будет загружен динамически -->
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно подтверждения удаления -->
-<div id="confirmationModal" class="confirmation-modal">
-    <div class="confirmation-content">
-        <h3>Подтверждение удаления</h3>
-        <p>Вы уверены, что хотите удалить эту запись?</p>
-        <div class="confirmation-buttons">
-            <button class="cancel-btn" id="cancelDelete">Отмена</button>
-            <button class="confirm-btn" id="confirmDeleteBtn">Удалить</button>
-        </div>
-    </div>
-</div>
-
-<!-- Модальное окно просмотра записи -->
-<div id="viewAppointmentModal" class="modal">
-    <div class="modal-content" style="width: 80%; max-width: 900px;">
-        <div class="modal-header">
-            <h2>Детали записи</h2>
-            <span class="close" onclick="closeViewAppointmentModal()">&times;</span>
-        </div>
-        <div class="modal-body" id="viewAppointmentModalBody">
-            <!-- Контент будет загружен динамически -->
-        </div>
-    </div>
-</div>
-
-<script>
-    // Глобальные переменные
-    let currentDeleteId = null;
-    let allClients = @json($clients->toArray());
-    let allServices = @json($services);
-    let currentAppointmentId = null;
-    let allProducts = @json($products);
-    let temporaryProducts = [];
-    let isDeletingAppointment = false;
-    let currentDeleteIndex = null;
-    let currentDeleteProductId = null;
-
-    // Общие функции
-    function escapeHtml(text) {
-        if (!text) return '';
-        return text.toString()
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-    function getStatusName(status) {
-        const statusNames = {
-            'pending': 'Ожидается',
-            'completed': 'Завершено',
-            'cancelled': 'Отменено',
-            'rescheduled': 'Перенесено'
-        };
-        return statusNames[status] || 'Ожидается';
-    }
-
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.btn-delete-product')) {
-            const btn = e.target.closest('.btn-delete-product');
-            currentDeleteProductId = parseInt(btn.dataset.productId);
-            isDeletingAppointment = false;
-
-            toggleModal('confirmationModal');
-            document.querySelector('#confirmationModal p').textContent = 'Вы уверены, что хотите удалить этот товар?';
-        }
-    });
-
-
-
-
-    function closeAppointmentModal() {
-        toggleModal('appointmentModal', false);
-        document.getElementById('appointmentForm').reset();
-        clearErrors('appointmentForm');
-    }
-
-    function closeEditAppointmentModal() {
-        toggleModal('editAppointmentModal', false);
-    }
-
-    function closeViewAppointmentModal() {
-        toggleModal('viewAppointmentModal', false);
-    }
-
-    function showNotification(message, type = 'success') {
-        const notification = document.getElementById('notification');
-        if (!notification) return;
-
-        notification.textContent = message;
-        notification.className = `notification ${type}`;
-        notification.style.display = 'block';
-
-        // Очищаем предыдущий таймер, если он есть
-        if (notification.hideTimeout) {
-            clearTimeout(notification.hideTimeout);
-        }
-
-        // Устанавливаем новый таймер
-        notification.hideTimeout = setTimeout(() => {
-            notification.style.display = 'none';
-        }, 3000);
-    }
-
-    // Функции для работы с записями
-    async function viewAppointment(id) {
-        currentAppointmentId = id;
-        toggleModal('viewAppointmentModal');
-        const modalBody = document.getElementById('viewAppointmentModalBody');
-        modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
-
-        try {
-            const response = await fetch(`/appointments/${id}/view`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            if (data.success) {
-                renderViewAppointmentModal(data, modalBody);
-            } else {
-                throw new Error(data.message || 'Ошибка загрузки данных');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            modalBody.innerHTML = `
-                <div class="alert alert-danger">
-                    Ошибка: ${escapeHtml(error.message)}
-                </div>
-                <button class="btn-cancel" onclick="toggleModal('viewAppointmentModal', false)">Закрыть</button>
-            `;
-        }
-    }
-
-    function renderViewAppointmentModal(data, modalBody) {
-        const { appointment, sales = [], products = [] } = data;
-        temporaryProducts = [...sales]; // Инициализируем временный список товаров
-
-        const servicePrice = parseFloat(appointment.price) || 0;
-        const productsTotal = temporaryProducts.reduce((sum, sale) => {
-            const price = parseFloat(sale.price || 0);
-            return sum + (parseInt(sale.quantity) * price);
-        }, 0);
-
-        const totalAmount = servicePrice + productsTotal;
-
-        modalBody.innerHTML = `
-        <input type="hidden" id="appointmentId" value="${appointment.id}">
-        <input type="hidden" name="date" value="${appointment.date}">
-        <div class="appointment-details">
-            <div class="detail-row">
-                <div class="detail-row-no-flex">
-                    <span class="detail-label">Дата:</span>
-                    <span class="detail-value">${new Date(appointment.date).toLocaleDateString('ru-RU')}</span>
-                </div>
-                <div class="detail-row-no-flex">
-                    <span class="detail-label">Время:</span>
-                    <span class="detail-value">${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</span>
-                </div>
-                <div class="detail-row-no-flex">
-                    <span class="detail-label">Клиент:</span>
-                    <span class="detail-value client-name">${escapeHtml(appointment.client.name)}${appointment.client.instagram ? ` (@${escapeHtml(appointment.client.instagram)})` : ''}</span>
-                </div>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Статус:</span>
-                <span class="detail-value">
-                    <span class="status-badge status-${appointment.status}">
-                        ${getStatusName(appointment.status)}
-                    </span>
-                </span>
-            </div>
-
-            <h3>Процедура</h3>
-            <div class="services-section">
-                <div class="service-item">
-                    <span class="service-name">${escapeHtml(appointment.service.name)}</span>
-                    <span class="service-price">${Number(servicePrice) % 1 === 0 ? Number(servicePrice) : servicePrice.toFixed(2)} грн</span>
-                </div>
-            </div>
-
-            <h3>Продажи</h3>
-            <div class="products-section">
-                ${renderProductsList(temporaryProducts)}
-                <button class="btn-add-product" id="showAddProductFormBtn">
-                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                    </svg>
-                    Добавить
-                </button>
-                <div id="addProductForm" style="display: none; margin-top: 20px;">
-                    <div class="form-row-appointment">
-                        <div class="form-group" style="flex: 2;">
-                            <label>Товар *</label>
-                            <div class="product-search-container">
-                                <input type="text" class="product-search-input form-control"
-                                       id="productSearchInput"
-                                       placeholder="Начните вводить название товара..."
-                                       oninput="searchProducts(this)"
-                                       onfocus="showProductDropdown(this)">
-                                <div class="product-dropdown" style="display: none;">
-                                    <div class="product-dropdown-list"></div>
-                                </div>
-                                <input type="hidden" id="selectedProductId" name="product_id">
-                            </div>
-                        </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeAppointmentModal()">Отмена</button>
+                        <button type="submit" class="btn-submit">Сохранить запись</button>
                     </div>
-                    <div id="productDetails" class="form-row-appointment" style="display: none; margin-top: 15px;">
-                        <div class="form-group-appointment" style="display: none;">
-                            <label>Количество *</label>
-                            <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
-                        </div>
-                        <div class="form-group-appointment" style="display: none;">
-                            <label>Опт</label>
-                            <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
-                        </div>
-                        <div class="form-group-appointment" style="display: none;">
-                            <label>Цена *</label>
-                            <input type="number" step="0.01" id="productPrice" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="form-actions" style="margin-top: 15px;">
-                        <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
-                        <button type="button" class="btn-submit" id="submitAddProduct">
-                            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                            </svg>
-                            Добавить
-                        </button>
-                    </div>
-                </div>
+                </form>
             </div>
+        </div>
+    </div>
 
-            <div class="total-amount">
-                <span class="total-label">Итого:</span>
-                <span class="total-value">${Number(totalAmount) % 1 === 0 ? Number(totalAmount) : totalAmount.toFixed(2)} грн</span>
+    <!-- Модальное окно редактирования записи -->
+    <div id="editAppointmentModal" class="modal">
+        <div class="modal-content" style="width: 80%; max-width: 900px;">
+            <div class="modal-header">
+                <h2>Редактировать запись</h2>
+                <span class="close" onclick="closeEditAppointmentModal()">&times;</span>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">Закрыть</button>
-                <button type="button" class="btn-submit" id="saveAppointmentChanges">Сохранить изменения</button>
+            <div class="modal-body" id="editAppointmentModalBody">
+                <!-- Контент будет загружен динамически -->
             </div>
-        </div>`;
+        </div>
+    </div>
 
-        setupProductHandlers();
-    }
+    <!-- Модальное окно подтверждения удаления -->
+    <div id="confirmationModal" class="confirmation-modal">
+        <div class="confirmation-content">
+            <h3>Подтверждение удаления</h3>
+            <p>Вы уверены, что хотите удалить эту запись?</p>
+            <div class="confirmation-buttons">
+                <button class="cancel-btn" id="cancelDelete">Отмена</button>
+                <button class="confirm-btn" id="confirmDeleteBtn">Удалить</button>
+            </div>
+        </div>
+    </div>
 
-    function renderProductsList(sales) {
-        if (!sales || sales.length === 0) return '<p>Товары не добавлены</p>';
+    <!-- Модальное окно просмотра записи -->
+    <div id="viewAppointmentModal" class="modal">
+        <div class="modal-content" style="width: 80%; max-width: 900px;">
+            <div class="modal-header">
+                <h2>Детали записи</h2>
+                <span class="close" onclick="closeViewAppointmentModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="viewAppointmentModalBody">
+                <!-- Контент будет загружен динамически -->
+            </div>
+        </div>
+    </div>
 
-        return `
-            <table class="products-table">
-                <thead>
-                    <tr>
-                        <th>Товар</th>
-                        <th>Количество</th>
-                        <th>Розничная цена</th>
-                        <th>Оптовая цена</th>
-                        <th>Сумма</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${sales.map((sale, index) => {
-            const total = sale.quantity * sale.price;
-            return `
-                        <tr data-index="${index}">
-                            <td>${escapeHtml(sale.name)}</td>
-                            <td>${sale.quantity}</td>
-                            <td>${Number(sale.price) % 1 === 0 ? Number(sale.price) : Number(sale.price).toFixed(2)} грн</td>
-                            <td>${Number(sale.purchase_price) % 1 === 0 ? Number(sale.purchase_price) : Number(sale.purchase_price).toFixed(2)} грн</td>
-                            <td>${Number(total) % 1 === 0 ? Number(total) : Number(total).toFixed(2)} грн</td>
-                            <td>
-                                <button class="btn-delete btn-delete-product"
-                                        data-product-id="${sale.product_id}"
-                                        title="Удалить">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                </button>
-                            </td>
-                        </tr>
-                        `;
-        }).join('')}
-                </tbody>
-            </table>`;
-    }
+    <script>
+        // Глобальные переменные
+        let currentDeleteId = null;
+        let allClients = @json($clients->toArray());
+        let allServices = @json($services);
+        let currentAppointmentId = null;
+        let allProducts = @json($products);
+        let temporaryProducts = [];
+        let isDeletingAppointment = false;
+        let currentDeleteIndex = null;
+        let currentDeleteProductId = null;
 
-
-    async function addNewProcedureToAppointment() {
-        const appointmentId = document.getElementById('appointmentId').value;
-        const selectedServiceId = prompt("Введите ID новой процедуры:");
-        const newPrice = prompt("Введите цену для новой процедуры:");
-
-        if (!selectedServiceId || !newPrice) {
-            alert("Процедура и цена обязательны");
-            return;
+        // Общие функции
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
-        const response = await fetch(`/appointments/${appointmentId}/add-procedure`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            },
-            body: JSON.stringify({
-                service_id: selectedServiceId,
-                price: newPrice,
-            }),
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            alert("Процедура добавлена как новая запись");
-        } else {
-            alert("Ошибка: " + result.message);
+        function getStatusName(status) {
+            const statusNames = {
+                'pending': 'Ожидается',
+                'completed': 'Завершено',
+                'cancelled': 'Отменено',
+                'rescheduled': 'Перенесено'
+            };
+            return statusNames[status] || 'Ожидается';
         }
-    }
 
-
-
-
-    function setupProductHandlers() {
-        // Используем делегирование событий для динамически создаваемых элементов
         document.addEventListener('click', function(e) {
-            const modal = document.getElementById('viewAppointmentModal');
-            if (!modal) return;
-
-            // Показать/скрыть форму добавления товара
-            if (e.target && e.target.id === 'showAddProductFormBtn') {
-                const form = modal.querySelector('#addProductForm');
-                const btn = modal.querySelector('#showAddProductFormBtn');
-                if (form && btn) {
-                    form.style.display = 'block';
-                    btn.style.display = 'none';
-                }
-                return;
-            }
-
-            // Отмена добавления товара
-            if (e.target && e.target.id === 'cancelAddProduct') {
-                const form = modal.querySelector('#addProductForm');
-                const btn = modal.querySelector('#showAddProductFormBtn');
-                if (form && btn) {
-                    form.style.display = 'none';
-                    btn.style.display = 'block';
-                    resetProductForm();
-                }
-                return;
-            }
-
-            // Добавление товара
-            if (e.target && e.target.id === 'submitAddProduct') {
-                e.preventDefault();
-                addProductToAppointment();
-                return;
-            }
-
-            // Удаление товара
             if (e.target.closest('.btn-delete-product')) {
-                e.preventDefault();
                 const btn = e.target.closest('.btn-delete-product');
-                currentDeleteProductId = btn.dataset.productId;
-                currentDeleteIndex = btn.closest('tr')?.dataset.index;
+                currentDeleteProductId = parseInt(btn.dataset.productId);
                 isDeletingAppointment = false;
 
                 toggleModal('confirmationModal');
                 document.querySelector('#confirmationModal p').textContent = 'Вы уверены, что хотите удалить этот товар?';
             }
-            if (e.target && e.target.id === 'showAddServiceFormBtn') {
-                document.getElementById('addServiceForm').style.display = 'block';
-                e.target.style.display = 'none';
+        });
+
+
+
+
+        function closeAppointmentModal() {
+            toggleModal('appointmentModal', false);
+            document.getElementById('appointmentForm').reset();
+            clearErrors('appointmentForm');
+        }
+
+        function closeEditAppointmentModal() {
+            toggleModal('editAppointmentModal', false);
+        }
+
+        function closeViewAppointmentModal() {
+            toggleModal('viewAppointmentModal', false);
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            if (!notification) return;
+
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+
+            // Очищаем предыдущий таймер, если он есть
+            if (notification.hideTimeout) {
+                clearTimeout(notification.hideTimeout);
             }
 
-            // Отмена
-            if (e.target && e.target.id === 'cancelAddService') {
-                document.getElementById('addServiceForm').style.display = 'none';
-                document.getElementById('showAddServiceFormBtn').style.display = 'inline-block';
-            }
-
-            // Сохранить
-            if (e.target && e.target.id === 'submitAddService') {
-                addProcedureToAppointment();
-            }
-        });
-
-        document.getElementById('cancelDelete')?.addEventListener('click', function() {
-            toggleModal('confirmationModal', false);
-            currentDeleteId = null;
-            currentDeleteIndex = null;
-            isDeletingAppointment = false;
-        });
-
-
-
-        // Сохранение изменений
-        document.addEventListener('click', function(e) {
-            if (e.target && e.target.id === 'saveAppointmentChanges') {
-                saveAppointmentChanges();
-            }
-        });
-    }
-
-
-    function resetProductForm() {
-        const modal = document.getElementById('viewAppointmentModal');
-        if (!modal) return;
-
-        const form = modal.querySelector('#addProductForm');
-        if (form) {
-            const searchInput = form.querySelector('#productSearchInput');
-            const productIdInput = form.querySelector('#selectedProductId');
-            const quantityInput = form.querySelector('#productQuantity');
-            const priceInput = form.querySelector('#productPrice');
-            const wholesaleInput = form.querySelector('#productWholesale');
-            const productDetails = form.querySelector('#productDetails');
-
-            if (searchInput) searchInput.value = '';
-            if (productIdInput) productIdInput.value = '';
-            if (quantityInput) quantityInput.value = '1';
-            if (priceInput) priceInput.value = '';
-            if (wholesaleInput) wholesaleInput.value = '';
-            if (productDetails) productDetails.style.display = 'none';
-
-            // Скрываем выпадающий список
-            const dropdown = form.querySelector('.product-dropdown');
-            if (dropdown) dropdown.style.display = 'none';
-
-            // Скрываем все остальные поля формы
-            const otherFields = form.querySelectorAll('.form-group-appointment');
-            otherFields.forEach(field => {
-                field.style.display = 'none';
-            });
-        }
-    }
-
-    // Функции для работы с товарами
-    function addProductToAppointment() {
-        const modal = document.getElementById('viewAppointmentModal');
-        if (!modal) {
-            showNotification('Модальное окно не найдено', 'error');
-            return;
+            // Устанавливаем новый таймер
+            notification.hideTimeout = setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
         }
 
-        const productId = modal.querySelector('#selectedProductId')?.value;
-        const quantity = modal.querySelector('#productQuantity')?.value;
-        const price = modal.querySelector('#productPrice')?.value;
-        const productName = modal.querySelector('#productSearchInput')?.value;
+        // Функции для работы с записями
+        async function viewAppointment(id) {
+            currentAppointmentId = id;
+            toggleModal('viewAppointmentModal');
+            const modalBody = document.getElementById('viewAppointmentModalBody');
+            modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
 
-        console.log('Adding product:', { productId, quantity, price, productName });
-
-        // Проверки
-        if (!productId || productId === '') {
-            showNotification('Пожалуйста, выберите товар', 'error');
-            return;
-        }
-
-        if (!quantity || parseInt(quantity) <= 0) {
-            showNotification('Укажите корректное количество', 'error');
-            return;
-        }
-
-        if (!price || parseFloat(price) <= 0) {
-            showNotification('Укажите корректную цену', 'error');
-            return;
-        }
-
-        // Находим товар
-        const product = allProducts.find(p => p.id == productId);
-        if (!product) {
-            showNotification('Товар не найден', 'error');
-            return;
-        }
-
-        // Добавляем товар в список
-        temporaryProducts.push({
-            product_id: productId,
-            name: product.name,
-            price: parseFloat(price),
-            purchase_price: product.purchase_price || 0,
-            quantity: parseInt(quantity)
-        });
-
-        // Обновляем отображение
-        updateProductsList();
-
-        // Очищаем форму
-        resetProductForm();
-
-        // Скрываем форму и показываем кнопку добавления
-        const form = modal.querySelector('#addProductForm');
-        const btn = modal.querySelector('#showAddProductFormBtn');
-        if (form && btn) {
-            form.style.display = 'none';
-            btn.style.display = 'inline-block';
-        }
-
-        showNotification('Товар успешно добавлен');
-    }
-
-
-
-    function updateProductsList() {
-        const modal = document.getElementById('viewAppointmentModal');
-        if (!modal) return;
-
-        const productsSection = modal.querySelector('.products-section');
-        if (!productsSection) return;
-
-        // Получаем все товары из базы данных для отображения актуальной информации
-        // Используем существующую переменную allProducts
-
-        productsSection.innerHTML = `
-        ${renderProductsList(temporaryProducts, allProducts)}
-        <button class="btn-add-product" id="showAddProductFormBtn">
-            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-            </svg>
-            Добавить
-        </button>
-        <div id="addProductForm" style="display: none; margin-top: 20px;">
-            <div class="form-row-appointment">
-                <div class="form-group" style="flex: 2;">
-                    <label>Товар *</label>
-                    <div class="product-search-container">
-                        <input type="text" class="product-search-input form-control"
-                               id="productSearchInput"
-                               placeholder="Начните вводить название товара..."
-                               oninput="searchProducts(this)"
-                               onfocus="showProductDropdown(this)">
-                        <div class="product-dropdown" style="display: none;">
-                            <div class="product-dropdown-list"></div>
-                        </div>
-                        <input type="hidden" id="selectedProductId" name="product_id">
-                    </div>
-                </div>
-                <div id="productDetails" class="form-row-appointment" style="display: flex; margin-top: 15px;">
-                    <div class="form-group-appointment" style="display: none;">
-                    <label>Количество *</label>
-                    <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
-                </div>
-                    <div class="form-group-appointment" style="display: none;">
-                    <label>Опт</label>
-                    <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
-                </div>
-                    <div class="form-group-appointment" style="display: none;">
-                    <label>Цена *</label>
-                    <input type="number" step="0.01" id="productPrice" class="form-control" required>
-                    </div>
-                </div>
-            </div>
-            <div class="form-actions">
-                <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
-                <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-            </svg>Добавить</button>
-            </div>
-        </div>
-    `;
-
-        updateTotalAmount();
-
-        const btnAdd = modal.querySelector('#showAddProductFormBtn');
-        const form = modal.querySelector('#addProductForm');
-        const cancelBtn = modal.querySelector('#cancelAddProduct');
-        const submitBtn = modal.querySelector('#submitAddProduct');
-
-        // ✅ ПРИ ЗАГРУЗКЕ: если форма скрыта — кнопка появляется
-        if (btnAdd && form) {
-            // Показываем кнопку, если форма скрыта
-            if (form.style.display === 'none') {
-                btnAdd.style.display = 'inline-block';
-            } else {
-                btnAdd.style.display = 'none';
-            }
-
-            btnAdd.addEventListener('click', () => {
-                btnAdd.style.display = 'none';
-                form.style.display = 'block';
-                resetProductForm();
-            });
-        }
-
-        // Отмена добавления товара
-        if (cancelBtn && form && btnAdd) {
-            cancelBtn.addEventListener('click', () => {
-                form.style.display = 'none';
-                btnAdd.style.display = 'inline-block';
-                resetProductForm();
-            });
-        }
-
-        // Подтвердить добавление
-        if (submitBtn) {
-            submitBtn.addEventListener('click', () => {
-                addProductToAppointment();
-            });
-        }
-
-
-        if (btnAdd && form) {
-            btnAdd.addEventListener('click', () => {
-                btnAdd.style.display = 'none';
-                form.style.display = 'block';
-            });
-        }
-
-        updateTotalAmount();
-    }
-
-
-    document.querySelector('.modal-footer')?.appendChild(document.getElementById('saveAppointmentChanges'));
-
-    function updateTotalAmount() {
-        const servicePrice = parseFloat(document.querySelector('.service-item span:nth-child(2)')?.textContent || '0');
-        const productsTotal = temporaryProducts.reduce((sum, product) => {
-            return sum + (parseInt(product.quantity) * parseFloat(product.price));
-        }, 0);
-        const totalAmount = servicePrice + productsTotal;
-
-        const totalElement = document.querySelector('.total-value');
-        if (totalElement) {
-            totalElement.textContent = `${formatPrice(totalAmount)} грн`;
-        }
-    }
-
-
-
-    // Функции для поиска товаров
-    function searchProducts(inputElement) {
-        const searchTerm = inputElement.value.trim().toLowerCase();
-        console.log('Поисковый запрос:', searchTerm);
-        console.log('Доступные товары:', allProducts);
-
-        const dropdown = inputElement.nextElementSibling;
-        const dropdownList = dropdown.querySelector('.product-dropdown-list');
-
-        if (searchTerm.length === 0) {
-            dropdown.style.display = 'none';
-            return;
-        }
-
-        const filteredProducts = allProducts.filter(product => {
-            const nameMatch = product.name?.toLowerCase().includes(searchTerm) || false;
-            console.log('Проверяем товар:', product.name, 'Совпадение:', nameMatch);
-            return nameMatch;
-        }).slice(0, 5);
-
-        console.log('Найденные товары:', filteredProducts);
-
-        if (filteredProducts.length > 0) {
-            dropdownList.innerHTML = filteredProducts.map(product => {
-                const name = escapeHtml(product.name || '');
-                const price = product.retail_price || product.price || 0;
-
-                return `
-                        <div class="product-dropdown-item"
-                             data-product-id="${product.id}"
-                             data-price="${price}"
-                             onclick="selectProduct(this, '${product.id}', '${name}', ${price})">
-                            ${name} (${product.quantity || 0} шт)
-                        </div>
-                    `;
-            }).join('');
-            dropdown.style.display = 'block';
-        } else {
-            dropdownList.innerHTML = '<div class="product-dropdown-item no-results">Товары не найдены</div>';
-            dropdown.style.display = 'block';
-        }
-    }
-
-    function selectProduct(element, productId, name, price) {
-        const modal = document.getElementById('viewAppointmentModal');
-        if (!modal) return;
-
-        const form = modal.querySelector('#addProductForm');
-        if (!form) return;
-
-        const searchInput = form.querySelector('#productSearchInput');
-        const hiddenInput = form.querySelector('#selectedProductId');
-        const priceInput = form.querySelector('#productPrice');
-        const wholesaleInput = form.querySelector('#productWholesale');
-        const dropdown = form.querySelector('.product-dropdown');
-        const productDetails = form.querySelector('#productDetails');
-
-        if (searchInput) searchInput.value = name;
-        if (hiddenInput) hiddenInput.value = productId;
-        if (dropdown) dropdown.style.display = 'none';
-
-        // Находим товар в списке всех товаров
-        const product = allProducts.find(p => p.id == productId);
-        if (product) {
-            // Заполняем цены
-            if (priceInput) priceInput.value = product.price || product.retail_price || 0;
-            if (wholesaleInput) wholesaleInput.value = product.purchase_price || 0;
-
-            // Показываем детали товара
-            if (productDetails) productDetails.style.display = 'flex';
-        }
-
-        console.log('Selected product:', { productId, name, price, formValues: {
-                searchInput: searchInput?.value,
-                hiddenInput: hiddenInput?.value,
-                priceInput: priceInput?.value,
-                wholesaleInput: wholesaleInput?.value
-            }});
-        showProductFields();
-    }
-
-    function formatPrice(price) {
-        const parsedPrice = parseFloat(price);
-        return parsedPrice % 1 === 0 ? parsedPrice.toString() : parsedPrice.toFixed(2);
-    }
-
-    // Закрытие выпадающего списка при клике вне его
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.product-search-container')) {
-            document.querySelectorAll('.product-dropdown').forEach(dropdown => {
-                dropdown.style.display = 'none';
-            });
-        }
-    });
-
-    function renderAddProductForm(products) {
-        return `
-            <div class="form-group">
-                <label>Товар</label>
-                <select id="productSelect" class="form-control">
-                    <option value="">Выберите товар</option>
-                    ${products.map(p => {
-            const quantity = p.warehouse?.quantity || 0;
-            if (quantity <= 0) return '';
-
-            const retailPrice = parseFloat(p.warehouse?.retail_price || 0);
-            const wholesalePrice = parseFloat(p.warehouse?.wholesale_price || 0);
-            return `
-                        <option value="${p.id}"
-                                data-quantity="${quantity}"
-                                data-retail-price="${retailPrice}"
-                                data-wholesale-price="${wholesalePrice}"
-                                data-name="${escapeHtml(p.name)}">
-                                ${escapeHtml(p.name)} (${formatPrice(retailPrice)} грн, остаток: ${quantity})
-                        </option>
-                    `;
-        }).join('')}
-                </select>
-            </div>`;
-    }
-
-    function setupAddProductHandlers() {
-        document.getElementById('productSelect')?.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            if (selectedOption?.value) {
-                const maxQuantity = parseInt(selectedOption.dataset.quantity);
-                document.getElementById('productQuantity').max = maxQuantity;
-                document.getElementById('productQuantity').value = Math.min(1, maxQuantity);
-                document.getElementById('productNameDisplay').value = selectedOption.dataset.name || '';
-                document.getElementById('productWholesalePrice').value = selectedOption.dataset.wholesalePrice || '';
-                document.getElementById('productRetailPrice').value = selectedOption.dataset.retailPrice || '';
-            } else {
-                document.getElementById('productNameDisplay').value = '';
-                document.getElementById('productWholesalePrice').value = '';
-                document.getElementById('productRetailPrice').value = '';
-            }
-        });
-
-        document.querySelector('.btn-add-product')?.addEventListener('click', function() {
-            document.getElementById('addProductForm').style.display = 'block';
-            this.style.display = 'none';
-        });
-
-        document.getElementById('cancelAddProduct')?.addEventListener('click', function() {
-            document.getElementById('addProductForm').style.display = 'none';
-            document.querySelector('.btn-add-product').style.display = 'block';
-        });
-
-        document.getElementById('submitAddProduct')?.addEventListener('click', async function() {
-            await addProductToAppointment();
-        });
-
-        // Обработчик удаления товара
-        document.querySelectorAll('.btn-delete-product').forEach(btn => {
-            btn.addEventListener('click', async function() {
-                const saleId = this.dataset.saleId;
-                await deleteProductFromAppointment(saleId);
-            });
-        });
-        document.getElementById('saveAppointmentChanges')?.addEventListener('click', async function() {
-            // Здесь можно добавить логику для сохранения всех изменений
-            showNotification('Изменения сохранены');
-            closeViewAppointmentModal();
-            // При необходимости обновите данные на странице
-        });
-
-    }
-
-
-    async function deleteProductFromAppointment() {
-        try {
-            const appointmentId = document.getElementById('appointmentId')?.value;
-            if (!appointmentId) {
-                showNotification('Не удалось определить запись', 'error');
-                return;
-            }
-
-            // Если это временный товар (еще не сохраненный)
-            if (currentDeleteIndex !== null) {
-                temporaryProducts.splice(currentDeleteIndex, 1);
-                updateProductsList();
-                updateTotalAmount();
-                showNotification('Товар удален');
-                return;
-            }
-
-            // Если товар уже сохранен в базе
-            if (currentDeleteProductId) {
-                const response = await fetch(`/appointments/${appointmentId}/remove-product`, { // Измените URL на правильный
-                    method: 'POST', // Используйте POST вместо DELETE, если нужно
+            try {
+                const response = await fetch(`/appointments/${id}/view`, {
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ product_id: currentDeleteProductId })
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
                 });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const data = await response.json();
-                if (!data.success) throw new Error(data.message || 'Ошибка удаления с сервера');
 
-                // После успешного удаления перезагружаем данные записи
-                await viewAppointment(appointmentId);
-                showNotification('Товар успешно удален');
-            }
-        } catch (err) {
-            console.error(err);
-            showNotification(err.message || 'Ошибка при удалении товара', 'error');
-        } finally {
-            currentDeleteProductId = null;
-            currentDeleteIndex = null;
-        }
-    }
-
-    // Функции для работы с клиентами
-    function searchClients(inputElement) {
-        const searchTerm = inputElement.value.trim().toLowerCase();
-        const dropdown = inputElement.nextElementSibling;
-        const dropdownList = dropdown.querySelector('.client-dropdown-list');
-
-        if (searchTerm.length === 0) {
-            dropdown.style.display = 'none';
-            return;
-        }
-
-        const filteredClients = allClients.filter(client => {
-            const nameMatch = client.name?.toLowerCase().includes(searchTerm) || false;
-            const instagramMatch = client.instagram?.toLowerCase().includes(searchTerm) || false;
-            const emailMatch = client.email?.toLowerCase().includes(searchTerm) || false;
-            const phoneMatch = client.phone?.includes(searchTerm) || false;
-
-            return nameMatch || instagramMatch || emailMatch || phoneMatch;
-        }).slice(0, 5); // Ограничиваем до 5 результатов
-
-        if (filteredClients.length > 0) {
-            dropdownList.innerHTML = filteredClients.map(client => {
-                const name = escapeHtml(client.name || '');
-                const instagram = client.instagram ? `(@${escapeHtml(client.instagram)})` : '';
-                const phone = client.phone ? ` - ${escapeHtml(client.phone)}` : '';
-
-                return `
-                    <div class="client-dropdown-item"
-                         data-client-id="${client.id}"
-                         onclick="selectClient(this, '${client.id}', '${name} ${instagram}')">
-                        ${name} ${instagram} ${phone}
+                if (data.success) {
+                    renderViewAppointmentModal(data, modalBody);
+                } else {
+                    throw new Error(data.message || 'Ошибка загрузки данных');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalBody.innerHTML = `
+                    <div class="alert alert-danger">
+                        Ошибка: ${escapeHtml(error.message)}
                     </div>
+                    <button class="btn-cancel" onclick="toggleModal('viewAppointmentModal', false)">Закрыть</button>
                 `;
-            }).join('');
-            dropdown.style.display = 'block';
-        } else {
-            dropdownList.innerHTML = '<div class="client-dropdown-item no-results">Клиенты не найдены</div>';
-            dropdown.style.display = 'block';
-        }
-    }
-
-    function selectClient(element, clientId, clientName) {
-        const container = element.closest('.client-search-container');
-        const input = container.querySelector('.client-search-input');
-        const select = container.querySelector('.client-select');
-        const dropdown = container.querySelector('.client-dropdown');
-
-        input.value = clientName.trim();
-        select.value = clientId;
-        dropdown.style.display = 'none';
-    }
-
-    // Функции для работы с записями
-    async function editAppointment(id) {
-        if (!id) {
-            showNotification('Ошибка: ID записи не указан', 'error');
-            return;
+            }
         }
 
-        currentAppointmentId = id;
-        toggleModal('editAppointmentModal');
-        const modalBody = document.getElementById('editAppointmentModalBody');
-        modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+        function renderViewAppointmentModal(data, modalBody) {
+            const { appointment, sales = [], products = [] } = data;
+            temporaryProducts = [...sales]; // Инициализируем временный список товаров
 
-        try {
-            const response = await fetch(`/appointments/${id}/edit`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            });
+            const servicePrice = parseFloat(appointment.price) || 0;
+            const productsTotal = temporaryProducts.reduce((sum, sale) => {
+                const price = parseFloat(sale.price || 0);
+                return sum + (parseInt(sale.quantity) * price);
+            }, 0);
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            const totalAmount = servicePrice + productsTotal;
 
-            const data = await response.json();
-            if (data.success) {
-                renderEditAppointmentForm(data.appointment);
-            } else {
-                throw new Error(data.message || 'Ошибка при загрузке записи');
-            }
-        } catch (error) {
-            console.error('Error:', error);
             modalBody.innerHTML = `
-                <div class="alert alert-danger">
-                    Ошибка: ${escapeHtml(error.message)}
-                </div>
-                <button class="btn-cancel" onclick="toggleModal('editAppointmentModal', false)">Закрыть</button>
-            `;
-        }
-    }
-
-    function renderEditAppointmentForm(appointment) {
-        const modalBody = document.getElementById('editAppointmentModalBody');
-        modalBody.innerHTML = `
-            <form id="editAppointmentForm">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="id" value="${appointment.id}">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Дата *</label>
-                        <input type="date" name="date" value="${formatDateForInput(appointment.date)}" required class="form-control">
+            <input type="hidden" id="appointmentId" value="${appointment.id}">
+            <input type="hidden" name="date" value="${appointment.date}">
+            <div class="appointment-details">
+                <div class="detail-row">
+                    <div class="detail-row-no-flex">
+                        <span class="detail-label">Дата:</span>
+                        <span class="detail-value">${new Date(appointment.date).toLocaleDateString('ru-RU')}</span>
                     </div>
-                    <div class="form-group">
-                        <label>Время *</label>
-                        <input type="time" name="time" value="${escapeHtml(appointment.time)}" required class="form-control">
+                    <div class="detail-row-no-flex">
+                        <span class="detail-label">Время:</span>
+                        <span class="detail-value">${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</span>
+                    </div>
+                    <div class="detail-row-no-flex">
+                        <span class="detail-label">Клиент:</span>
+                        <span class="detail-value client-name">${escapeHtml(appointment.client.name)}${appointment.client.instagram ? ` (@${escapeHtml(appointment.client.instagram)})` : ''}</span>
                     </div>
                 </div>
+                <div class="detail-row">
+                    <span class="detail-label">Статус:</span>
+                    <span class="detail-value">
+                        <span class="status-badge status-${appointment.status}">
+                            ${getStatusName(appointment.status)}
+                        </span>
+                    </span>
+                </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Клиент *</label>
-                        <select name="client_id" class="form-control" required>
-                            <option value="">Выберите клиента</option>
-                            ${allClients.map(client => `
-                                <option value="${client.id}" ${client.id == appointment.client_id ? 'selected' : ''}>
-                                    ${escapeHtml(client.name)}
-                                    ${client.instagram ? `(${escapeHtml(client.instagram)})` : ''}
-                                    ${client.phone ? ` - ${escapeHtml(client.phone)}` : ''}
-                                </option>
-                            `).join('')}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Процедура *</label>
-                        <select name="service_id" class="form-control" required>
-                            <option value="">Выберите процедуру</option>
-                            ${allServices.map(service => `
-                                <option value="${service.id}"
-                                        data-price="${service.price}"
-                                        ${service.id == appointment.service_id ? 'selected' : ''}>
-                                    ${escapeHtml(service.name)}
-                                </option>
-                            `).join('')}
-                        </select>
+                <h3>Процедура</h3>
+                <div class="services-section">
+                    <div class="service-item">
+                        <span class="service-name">${escapeHtml(appointment.service.name)}</span>
+                        <span class="service-price">${Number(servicePrice) % 1 === 0 ? Number(servicePrice) : servicePrice.toFixed(2)} грн</span>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Стоимость (Грн)</label>
-                    <input type="number" step="0.01" name="price" value="${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)}" class="form-control" min="0">
-                </div>
-
-                <div class="form-group">
-                    <label>Примечания</label>
-                    <textarea name="notes" rows="2" class="form-control">${escapeHtml(appointment.notes || '')}</textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Статус</label>
-                    <select name="status" class="form-control">
-                        <option value="pending" ${appointment.status === 'pending' ? 'selected' : ''}>Ожидается</option>
-                        <option value="completed" ${appointment.status === 'completed' ? 'selected' : ''}>Завершено</option>
-                        <option value="cancelled" ${appointment.status === 'cancelled' ? 'selected' : ''}>Отменено</option>
-                        <option value="rescheduled" ${appointment.status === 'rescheduled' ? 'selected' : ''}>Перенесено</option>
-                    </select>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="closeEditAppointmentModal()">Отмена</button>
-                    <button type="submit" class="btn-submit">Сохранить изменения</button>
-                </div>
-            </form>
-        `;
-
-        // Обработчик изменения выбора процедуры
-        document.querySelector('#editAppointmentModal [name="service_id"]')?.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const priceInput = document.querySelector('#editAppointmentModal [name="price"]');
-            if (selectedOption?.dataset.price) {
-                priceInput.value = selectedOption.dataset.price;
-            }
-        });
-
-        // Обработчик формы редактирования
-        document.getElementById('editAppointmentForm')?.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            await submitEditAppointmentForm(this, currentAppointmentId);
-        });
-    }
-
-    function confirmDeleteAppointment(event, id) {
-        event.preventDefault();
-        currentDeleteId = id;
-        isDeletingAppointment = true; // Добавляем флаг
-        toggleModal('confirmationModal');
-    }
-
-    async function deleteAppointment(id) {
-        try {
-            const response = await fetch(`/appointments/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                }
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Обновляем календарь если он существует
-                if (typeof calendar !== 'undefined' && calendar) {
-                    calendar.refetchEvents();
-                }
-
-                // Удаляем строку из таблицы если она существует
-                const row = document.querySelector(`tr[data-appointment-id="${id}"]`);
-                if (row) {
-                    row.remove();
-                }
-
-                // Закрываем модальные окна
-                toggleModal('confirmationModal', false);
-                if (currentAppointmentId === id) {
-                    toggleModal('viewAppointmentModal', false);
-                }
-
-                showNotification('Запись успешно удалена');
-            } else {
-                throw new Error(data.message || 'Ошибка при удалении записи');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification(error.message || 'Ошибка при удалении записи', 'error');
-        }
-    }
-
-    function formatDateForInput(dateString) {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    function clearErrors(formId) {
-        const form = document.getElementById(formId);
-        if (!form) return;
-
-        const errorElements = form.querySelectorAll('.error-message');
-        errorElements.forEach(el => el.remove());
-
-        const errorInputs = form.querySelectorAll('.is-invalid');
-        errorInputs.forEach(el => el.classList.remove('is-invalid'));
-    }
-
-    function displayErrors(errors, formId) {
-        clearErrors(formId);
-        const form = document.getElementById(formId);
-        if (!form) return;
-
-        for (const [field, messages] of Object.entries(errors)) {
-            const input = form.querySelector(`[name="${field}"]`);
-            if (input) {
-                input.classList.add('is-invalid');
-                const errorElement = document.createElement('div');
-                errorElement.className = 'error-message';
-                errorElement.textContent = messages.join(', ');
-                input.parentNode.insertBefore(errorElement, input.nextSibling);
-            }
-        }
-    }
-
-    // Инициализация при загрузке страницы
-    document.addEventListener('DOMContentLoaded', function() {
-        // Обработчики кнопок
-        document.getElementById('addAppointmentBtn')?.addEventListener('click', () => {
-            const today = new Date().toISOString().split('T')[0];
-            document.querySelector('#appointmentModal input[name="date"]').value = today;
-            toggleModal('appointmentModal');
-        });
-
-        // Единый обработчик для кнопки отмены
-        document.getElementById('cancelDelete')?.addEventListener('click', (e) => {
-            e.stopPropagation(); // Предотвращаем всплытие события
-            toggleModal('confirmationModal', false);
-        });
-
-        // Единый обработчик для кнопки подтверждения удаления
-        document.getElementById('confirmDeleteBtn')?.addEventListener('click', async (e) => {
-            e.stopPropagation(); // Предотвращаем всплытие события
-            if (isDeletingAppointment) {
-                await deleteAppointment(currentDeleteId);
-            } else {
-                await deleteProductFromAppointment();
-            }
-            toggleModal('confirmationModal', false);
-        });
-
-        // Обработчик формы добавления записи
-        document.getElementById('appointmentForm')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            submitAppointmentForm(this);
-        });
-
-        // Обработчик изменения выбора процедуры
-        document.querySelector('[name="service_id"]')?.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const priceInput = document.querySelector('[name="price"]');
-            if (selectedOption?.dataset.price) {
-                priceInput.value = selectedOption.dataset.price;
-            }
-        });
-
-        // Обработчик переключения между видами
-        document.querySelectorAll('.btn-view-switch').forEach(btn => {
-            btn.addEventListener('click', function() {
-                window.location.href = `/appointments?view=${this.dataset.view}`;
-            });
-        });
-
-        // Поиск по таблице
-        document.getElementById('searchInput')?.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            document.querySelectorAll('#appointmentsTable tbody tr').forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(searchTerm) ? '' : 'none';
-            });
-        });
-
-        // Делегирование событий
-        document.addEventListener('click', function(e) {
-            const target = e.target.closest('button');
-            if (!target) return;
-
-            if (target.classList.contains('btn-view')) {
-                e.preventDefault();
-                viewAppointment(target.dataset.appointmentId);
-            }
-            if (target.classList.contains('btn-edit')) {
-                e.preventDefault();
-                editAppointment(target.dataset.appointmentId);
-            }
-            if (target.classList.contains('btn-delete')) {
-                e.preventDefault();
-                confirmDeleteAppointment(e, target.dataset.appointmentId);
-            }
-            if (e.target == document.getElementById('appointmentModal')) {
-                toggleModal('appointmentModal', false);
-            }
-            if (e.target == document.getElementById('editAppointmentModal')) {
-                toggleModal('editAppointmentModal', false);
-            }
-            if (e.target == document.getElementById('viewAppointmentModal')) {
-                toggleModal('viewAppointmentModal', false);
-            }
-            if (e.target == document.getElementById('confirmationModal')) {
-                toggleModal('confirmationModal', false);
-            }
-            if (e.target && e.target.id === 'saveAppointmentChanges') {
-                saveAppointmentChanges();
-            }
-        });
-    });
-    async function saveAppointmentChanges() {
-        const modal = document.getElementById('viewAppointmentModal');
-        const appointmentId = modal.querySelector('#appointmentId')?.value;
-
-        if (!appointmentId) {
-            showNotification('ID записи не найден', 'error');
-            return;
-        }
-
-        // Get basic appointment data
-        const dateText = modal.querySelector('.detail-row:nth-child(1) .detail-value')?.textContent;
-        const timeElement = modal.querySelector('.detail-row-no-flex:nth-child(2) .detail-value');
-        const time = timeElement?.textContent?.trim();
-
-        console.log('Debug time:', {
-            timeElement,
-            timeText: timeElement?.textContent,
-            time
-        });
-
-        // Получаем имя клиента из правильного элемента
-        const clientElement = modal.querySelector('.client-name');
-        const clientNameWithInstagram = clientElement?.textContent?.trim() || '';
-
-        // Извлекаем только имя клиента, обрабатывая оба случая
-        const clientName = clientNameWithInstagram.includes('(@')
-            ? clientNameWithInstagram.split('(@')[0].trim()
-            : clientNameWithInstagram.trim();
-
-        // Получаем имя услуги из правильного элемента
-        const serviceElement = modal.querySelector('.service-name');
-        const serviceName = serviceElement?.textContent?.trim();
-
-        const priceText = modal.querySelector('.service-price')?.textContent;
-        const price = parseFloat(priceText?.replace('грн', '').trim()) || 0;
-
-        // Format date
-        let formattedDate = '';
-        if (dateText) {
-            const [day, month, year] = dateText.split('.');
-            formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        }
-
-        // Find client and service IDs with improved error handling
-        const client = clientName ? allClients.find(c => c.name.trim() === clientName) : null;
-        const service = serviceName ? allServices.find(s => s.name.trim() === serviceName) : null;
-
-        // Подробная проверка данных перед отправкой
-        const validationErrors = [];
-
-        if (!formattedDate) validationErrors.push('Дата не указана');
-        if (!time) validationErrors.push('Время не указано');
-        if (!clientName) validationErrors.push('Имя клиента не найдено в форме');
-        if (!client || !client.id) validationErrors.push(`Не удалось найти клиента "${clientName}" в списке`);
-        if (!serviceName) validationErrors.push('Название услуги не найдено в форме');
-        if (!service || !service.id) validationErrors.push(`Не удалось найти услугу "${serviceName}" в списке`);
-        if (isNaN(price) || price < 0) validationErrors.push('Некорректная цена');
-
-        if (validationErrors.length > 0) {
-            showNotification('Ошибки валидации:\n' + validationErrors.join('\n'), 'error');
-            return;
-        }
-
-        // Подготавливаем данные для отправки
-        const requestData = {
-            date: formattedDate,
-            time: time,
-            client_id: client.id,
-            service_id: service.id,
-            price: price,
-            sales: temporaryProducts.map(p => ({
-                product_id: p.product_id,
-                quantity: parseInt(p.quantity),
-                price: parseFloat(p.price),
-                purchase_price: parseFloat(p.purchase_price || 0)
-            }))
-        };
-
-        console.log('Отправляемые данные:', requestData);
-
-        try {
-            const response = await fetch(`/appointments/${appointmentId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                console.error('Ответ сервера:', data);
-                if (data.errors) {
-                    const errorMessages = Object.entries(data.errors)
-                        .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
-                        .join('\n');
-                    throw new Error(`Ошибки валидации:\n${errorMessages}`);
-                }
-                throw new Error(data.message || `Ошибка сохранения (${response.status})`);
-            }
-
-            if (data.success) {
-                showNotification('Изменения успешно сохранены');
-                toggleModal('viewAppointmentModal', false);
-
-                // Обновляем календарь если он существует
-                if (typeof calendar !== 'undefined' && calendar) {
-                    calendar.refetchEvents();
-                }
-
-                // Обновляем строку в таблице если она существует
-                if (data.appointment) {
-                    updateAppointmentRow(data.appointment);
-                }
-            } else {
-                throw new Error(data.message || 'Ошибка сохранения');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification(error.message || 'Ошибка при сохранении', 'error');
-        }
-    }
-
-
-    function formatDateForPayload(dateString) {
-        if (!dateString) return '';
-        // Try both possible date formats (from table view and modal view)
-        if (dateString.includes('.')) {
-            // Format: dd.mm.yyyy
-            const [day, month, year] = dateString.split('.');
-            return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        } else {
-            // Format: yyyy-mm-dd (already correct)
-            return dateString;
-        }
-    }
-
-    function showProductDropdown(input) {
-        console.log('showProductDropdown вызван');
-        console.log('Все товары:', allProducts);
-
-        const dropdown = input.nextElementSibling;
-        const dropdownList = dropdown.querySelector('.product-dropdown-list');
-
-        if (input.value.length > 0) {
-            searchProducts(input);
-        } else {
-            // Показываем первые 5 товаров
-            const availableProducts = allProducts.slice(0, 5);
-            console.log('Доступные товары:', availableProducts);
-
-            if (availableProducts.length === 0) {
-                dropdownList.innerHTML = '<div class="product-dropdown-item">Нет доступных товаров</div>';
-            } else {
-                dropdownList.innerHTML = availableProducts.map(product => {
-                    const name = escapeHtml(product.name || '');
-                    const retailPrice = product.price || 0;
-                    const wholesalePrice = product.purchase_price || 0;
-
-                    return `
-                            <div class="product-dropdown-item"
-                                 data-product-id="${product.id}"
-                                 data-retail-price="${retailPrice}"
-                                 data-wholesale-price="${wholesalePrice}"
-                                 onclick="selectProduct(this, '${product.id}', '${name}', ${retailPrice})">
-                                ${name} (${product.quantity} шт)
+                <h3>Продажи</h3>
+                <div class="products-section">
+                    ${renderProductsList(temporaryProducts)}
+                    <button class="btn-add-product" id="showAddProductFormBtn">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        Добавить
+                    </button>
+                    <div id="addProductForm" style="display: none; margin-top: 20px;">
+                        <div class="form-row-appointment">
+                            <div class="form-group" style="flex: 2;">
+                                <label>Товар *</label>
+                                <div class="product-search-container">
+                                    <input type="text" class="product-search-input form-control"
+                                           id="productSearchInput"
+                                           placeholder="Начните вводить название товара..."
+                                           oninput="searchProducts(this)"
+                                           onfocus="showProductDropdown(this)">
+                                    <div class="product-dropdown" style="display: none;">
+                                        <div class="product-dropdown-list"></div>
+                                    </div>
+                                    <input type="hidden" id="selectedProductId" name="product_id">
+                                </div>
                             </div>
-                        `;
-                }).join('');
-            }
-            dropdown.style.display = 'block';
+                        </div>
+                        <div id="productDetails" class="form-row-appointment" style="display: none; margin-top: 15px;">
+                            <div class="form-group-appointment" style="display: none;">
+                                <label>Количество *</label>
+                                <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                            </div>
+                            <div class="form-group-appointment" style="display: none;">
+                                <label>Опт</label>
+                                <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
+                            </div>
+                            <div class="form-group-appointment" style="display: none;">
+                                <label>Цена *</label>
+                                <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-actions" style="margin-top: 15px;">
+                            <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
+                            <button type="button" class="btn-submit" id="submitAddProduct">
+                                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                                Добавить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="total-amount">
+                    <span class="total-label">Итого:</span>
+                    <span class="total-value">${Number(totalAmount) % 1 === 0 ? Number(totalAmount) : totalAmount.toFixed(2)} грн</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">Закрыть</button>
+                    <button type="button" class="btn-submit" id="saveAppointmentChanges">Сохранить изменения</button>
+                </div>
+            </div>`;
+
+            setupProductHandlers();
         }
-    }
 
-    function updateProductsTable() {
-        const modal = document.getElementById('viewAppointmentModal');
-        if (!modal) return;
+        function renderProductsList(sales) {
+            if (!sales || sales.length === 0) return '<p>Товары не добавлены</p>';
 
-        const tableContainer = modal.querySelector('.products-section');
-        if (!tableContainer) return;
-
-        // Создаем структуру таблицы
-        tableContainer.innerHTML = `
+            return `
                 <table class="products-table">
                     <thead>
                         <tr>
@@ -2478,13 +1343,1160 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${temporaryProducts.map((product, index) => {
-            const retailPrice = parseFloat(product.price);
-            const wholesalePrice = parseFloat(product.purchase_price);
-            const quantity = parseInt(product.quantity);
-            const total = retailPrice * quantity;
+                        ${sales.map((sale, index) => {
+                const total = sale.quantity * sale.price;
+                return `
+                            <tr data-index="${index}">
+                                <td>${escapeHtml(sale.name)}</td>
+                                <td>${sale.quantity}</td>
+                                <td>${Number(sale.price) % 1 === 0 ? Number(sale.price) : Number(sale.price).toFixed(2)} грн</td>
+                                <td>${Number(sale.purchase_price) % 1 === 0 ? Number(sale.purchase_price) : Number(sale.purchase_price).toFixed(2)} грн</td>
+                                <td>${Number(total) % 1 === 0 ? Number(total) : Number(total).toFixed(2)} грн</td>
+                                <td>
+                                    <button class="btn-delete btn-delete-product"
+                                            data-product-id="${sale.product_id}"
+                                            title="Удалить">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+                            `;
+            }).join('')}
+                    </tbody>
+                </table>`;
+        }
 
+
+        async function addNewProcedureToAppointment() {
+            const appointmentId = document.getElementById('appointmentId').value;
+            const selectedServiceId = prompt("Введите ID новой процедуры:");
+            const newPrice = prompt("Введите цену для новой процедуры:");
+
+            if (!selectedServiceId || !newPrice) {
+                alert("Процедура и цена обязательны");
+                return;
+            }
+
+            const response = await fetch(`/appointments/${appointmentId}/add-procedure`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                },
+                body: JSON.stringify({
+                    service_id: selectedServiceId,
+                    price: newPrice,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert("Процедура добавлена как новая запись");
+            } else {
+                alert("Ошибка: " + result.message);
+            }
+        }
+
+
+
+
+        function setupProductHandlers() {
+            // Используем делегирование событий для динамически создаваемых элементов
+            document.addEventListener('click', function(e) {
+                const modal = document.getElementById('viewAppointmentModal');
+                if (!modal) return;
+
+                // Показать/скрыть форму добавления товара
+                if (e.target && e.target.id === 'showAddProductFormBtn') {
+                    const form = modal.querySelector('#addProductForm');
+                    const btn = modal.querySelector('#showAddProductFormBtn');
+                    if (form && btn) {
+                        form.style.display = 'block';
+                        btn.style.display = 'none';
+                    }
+                    return;
+                }
+
+                // Отмена добавления товара
+                if (e.target && e.target.id === 'cancelAddProduct') {
+                    const form = modal.querySelector('#addProductForm');
+                    const btn = modal.querySelector('#showAddProductFormBtn');
+                    if (form && btn) {
+                        form.style.display = 'none';
+                        btn.style.display = 'block';
+                        resetProductForm();
+                    }
+                    return;
+                }
+
+                // Добавление товара
+                if (e.target && e.target.id === 'submitAddProduct') {
+                    e.preventDefault();
+                    addProductToAppointment();
+                    return;
+                }
+
+                // Удаление товара
+                if (e.target.closest('.btn-delete-product')) {
+                    e.preventDefault();
+                    const btn = e.target.closest('.btn-delete-product');
+                    currentDeleteProductId = btn.dataset.productId;
+                    currentDeleteIndex = btn.closest('tr')?.dataset.index;
+                    isDeletingAppointment = false;
+
+                    toggleModal('confirmationModal');
+                    document.querySelector('#confirmationModal p').textContent = 'Вы уверены, что хотите удалить этот товар?';
+                }
+                if (e.target && e.target.id === 'showAddServiceFormBtn') {
+                    document.getElementById('addServiceForm').style.display = 'block';
+                    e.target.style.display = 'none';
+                }
+
+                // Отмена
+                if (e.target && e.target.id === 'cancelAddService') {
+                    document.getElementById('addServiceForm').style.display = 'none';
+                    document.getElementById('showAddServiceFormBtn').style.display = 'inline-block';
+                }
+
+                // Сохранить
+                if (e.target && e.target.id === 'submitAddService') {
+                    addProcedureToAppointment();
+                }
+            });
+
+            document.getElementById('cancelDelete')?.addEventListener('click', function() {
+                toggleModal('confirmationModal', false);
+                currentDeleteId = null;
+                currentDeleteIndex = null;
+                isDeletingAppointment = false;
+            });
+
+
+
+            // Сохранение изменений
+            document.addEventListener('click', function(e) {
+                if (e.target && e.target.id === 'saveAppointmentChanges') {
+                    saveAppointmentChanges();
+                }
+            });
+        }
+
+
+        function resetProductForm() {
+            const modal = document.getElementById('viewAppointmentModal');
+            if (!modal) return;
+
+            const form = modal.querySelector('#addProductForm');
+            if (form) {
+                const searchInput = form.querySelector('#productSearchInput');
+                const productIdInput = form.querySelector('#selectedProductId');
+                const quantityInput = form.querySelector('#productQuantity');
+                const priceInput = form.querySelector('#productPrice');
+                const wholesaleInput = form.querySelector('#productWholesale');
+                const productDetails = form.querySelector('#productDetails');
+
+                if (searchInput) searchInput.value = '';
+                if (productIdInput) productIdInput.value = '';
+                if (quantityInput) quantityInput.value = '1';
+                if (priceInput) priceInput.value = '';
+                if (wholesaleInput) wholesaleInput.value = '';
+                if (productDetails) productDetails.style.display = 'none';
+
+                // Скрываем выпадающий список
+                const dropdown = form.querySelector('.product-dropdown');
+                if (dropdown) dropdown.style.display = 'none';
+
+                // Скрываем все остальные поля формы
+                const otherFields = form.querySelectorAll('.form-group-appointment');
+                otherFields.forEach(field => {
+                    field.style.display = 'none';
+                });
+            }
+        }
+
+        // Функции для работы с товарами
+        function addProductToAppointment() {
+            const modal = document.getElementById('viewAppointmentModal');
+            if (!modal) {
+                showNotification('Модальное окно не найдено', 'error');
+                return;
+            }
+
+            const productId = modal.querySelector('#selectedProductId')?.value;
+            const quantity = modal.querySelector('#productQuantity')?.value;
+            const price = modal.querySelector('#productPrice')?.value;
+            const productName = modal.querySelector('#productSearchInput')?.value;
+
+            console.log('Adding product:', { productId, quantity, price, productName });
+
+            // Проверки
+            if (!productId || productId === '') {
+                showNotification('Пожалуйста, выберите товар', 'error');
+                return;
+            }
+
+            if (!quantity || parseInt(quantity) <= 0) {
+                showNotification('Укажите корректное количество', 'error');
+                return;
+            }
+
+            if (!price || parseFloat(price) <= 0) {
+                showNotification('Укажите корректную цену', 'error');
+                return;
+            }
+
+            // Находим товар
+            const product = allProducts.find(p => p.id == productId);
+            if (!product) {
+                showNotification('Товар не найден', 'error');
+                return;
+            }
+
+            // Добавляем товар в список
+            temporaryProducts.push({
+                product_id: productId,
+                name: product.name,
+                price: parseFloat(price),
+                purchase_price: product.purchase_price || 0,
+                quantity: parseInt(quantity)
+            });
+
+            // Обновляем отображение
+            updateProductsList();
+
+            // Очищаем форму
+            resetProductForm();
+
+            // Скрываем форму и показываем кнопку добавления
+            const form = modal.querySelector('#addProductForm');
+            const btn = modal.querySelector('#showAddProductFormBtn');
+            if (form && btn) {
+                form.style.display = 'none';
+                btn.style.display = 'inline-block';
+            }
+
+            showNotification('Товар успешно добавлен');
+        }
+
+
+
+        function updateProductsList() {
+            const modal = document.getElementById('viewAppointmentModal');
+            if (!modal) return;
+
+            const productsSection = modal.querySelector('.products-section');
+            if (!productsSection) return;
+
+            // Получаем все товары из базы данных для отображения актуальной информации
+            // Используем существующую переменную allProducts
+
+            productsSection.innerHTML = `
+            ${renderProductsList(temporaryProducts, allProducts)}
+            <button class="btn-add-product" id="showAddProductFormBtn">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                Добавить
+            </button>
+            <div id="addProductForm" style="display: none; margin-top: 20px;">
+                <div class="form-row-appointment">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Товар *</label>
+                        <div class="product-search-container">
+                            <input type="text" class="product-search-input form-control"
+                                   id="productSearchInput"
+                                   placeholder="Начните вводить название товара..."
+                                   oninput="searchProducts(this)"
+                                   onfocus="showProductDropdown(this)">
+                            <div class="product-dropdown" style="display: none;">
+                                <div class="product-dropdown-list"></div>
+                            </div>
+                            <input type="hidden" id="selectedProductId" name="product_id">
+                        </div>
+                    </div>
+                    <div id="productDetails" class="form-row-appointment" style="display: flex; margin-top: 15px;">
+                        <div class="form-group-appointment" style="display: none;">
+                        <label>Количество *</label>
+                        <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                    </div>
+                        <div class="form-group-appointment" style="display: none;">
+                        <label>Опт</label>
+                        <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
+                    </div>
+                        <div class="form-group-appointment" style="display: none;">
+                        <label>Цена *</label>
+                        <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
+                    <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>Добавить</button>
+                </div>
+            </div>
+        `;
+
+            updateTotalAmount();
+
+            const btnAdd = modal.querySelector('#showAddProductFormBtn');
+            const form = modal.querySelector('#addProductForm');
+            const cancelBtn = modal.querySelector('#cancelAddProduct');
+            const submitBtn = modal.querySelector('#submitAddProduct');
+
+            // ✅ ПРИ ЗАГРУЗКЕ: если форма скрыта — кнопка появляется
+            if (btnAdd && form) {
+                // Показываем кнопку, если форма скрыта
+                if (form.style.display === 'none') {
+                    btnAdd.style.display = 'inline-block';
+                } else {
+                    btnAdd.style.display = 'none';
+                }
+
+                btnAdd.addEventListener('click', () => {
+                    btnAdd.style.display = 'none';
+                    form.style.display = 'block';
+                    resetProductForm();
+                });
+            }
+
+            // Отмена добавления товара
+            if (cancelBtn && form && btnAdd) {
+                cancelBtn.addEventListener('click', () => {
+                    form.style.display = 'none';
+                    btnAdd.style.display = 'inline-block';
+                    resetProductForm();
+                });
+            }
+
+            // Подтвердить добавление
+            if (submitBtn) {
+                submitBtn.addEventListener('click', () => {
+                    addProductToAppointment();
+                });
+            }
+
+
+            if (btnAdd && form) {
+                btnAdd.addEventListener('click', () => {
+                    btnAdd.style.display = 'none';
+                    form.style.display = 'block';
+                });
+            }
+
+            updateTotalAmount();
+        }
+
+
+        document.querySelector('.modal-footer')?.appendChild(document.getElementById('saveAppointmentChanges'));
+
+        function updateTotalAmount() {
+            const servicePrice = parseFloat(document.querySelector('.service-item span:nth-child(2)')?.textContent || '0');
+            const productsTotal = temporaryProducts.reduce((sum, product) => {
+                return sum + (parseInt(product.quantity) * parseFloat(product.price));
+            }, 0);
+            const totalAmount = servicePrice + productsTotal;
+
+            const totalElement = document.querySelector('.total-value');
+            if (totalElement) {
+                totalElement.textContent = `${formatPrice(totalAmount)} грн`;
+            }
+        }
+
+
+
+        // Функции для поиска товаров
+        function searchProducts(inputElement) {
+            const searchTerm = inputElement.value.trim().toLowerCase();
+            console.log('Поисковый запрос:', searchTerm);
+            console.log('Доступные товары:', allProducts);
+
+            const dropdown = inputElement.nextElementSibling;
+            const dropdownList = dropdown.querySelector('.product-dropdown-list');
+
+            if (searchTerm.length === 0) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            const filteredProducts = allProducts.filter(product => {
+                const nameMatch = product.name?.toLowerCase().includes(searchTerm) || false;
+                console.log('Проверяем товар:', product.name, 'Совпадение:', nameMatch);
+                return nameMatch;
+            }).slice(0, 5);
+
+            console.log('Найденные товары:', filteredProducts);
+
+            if (filteredProducts.length > 0) {
+                dropdownList.innerHTML = filteredProducts.map(product => {
+                    const name = escapeHtml(product.name || '');
+                    const price = product.retail_price || product.price || 0;
+
+                    return `
+                            <div class="product-dropdown-item"
+                                 data-product-id="${product.id}"
+                                 data-price="${price}"
+                                 onclick="selectProduct(this, '${product.id}', '${name}', ${price})">
+                            ${name} (${product.quantity || 0} шт)
+                        </div>
+                    `;
+                }).join('');
+                dropdown.style.display = 'block';
+            } else {
+                dropdownList.innerHTML = '<div class="product-dropdown-item no-results">Товары не найдены</div>';
+                dropdown.style.display = 'block';
+            }
+        }
+
+        function selectProduct(element, productId, name, price) {
+            const modal = document.getElementById('viewAppointmentModal');
+            if (!modal) return;
+
+            const form = modal.querySelector('#addProductForm');
+            if (!form) return;
+
+            const searchInput = form.querySelector('#productSearchInput');
+            const hiddenInput = form.querySelector('#selectedProductId');
+            const priceInput = form.querySelector('#productPrice');
+            const wholesaleInput = form.querySelector('#productWholesale');
+            const dropdown = form.querySelector('.product-dropdown');
+            const productDetails = form.querySelector('#productDetails');
+
+            if (searchInput) searchInput.value = name;
+            if (hiddenInput) hiddenInput.value = productId;
+            if (dropdown) dropdown.style.display = 'none';
+
+            // Находим товар в списке всех товаров
+            const product = allProducts.find(p => p.id == productId);
+            if (product) {
+                // Заполняем цены
+                if (priceInput) priceInput.value = product.price || product.retail_price || 0;
+                if (wholesaleInput) wholesaleInput.value = product.purchase_price || 0;
+
+                // Показываем детали товара
+                if (productDetails) productDetails.style.display = 'flex';
+            }
+
+            console.log('Selected product:', { productId, name, price, formValues: {
+                    searchInput: searchInput?.value,
+                    hiddenInput: hiddenInput?.value,
+                    priceInput: priceInput?.value,
+                    wholesaleInput: wholesaleInput?.value
+                }});
+            showProductFields();
+        }
+
+        function formatPrice(price) {
+            const parsedPrice = parseFloat(price);
+            return parsedPrice % 1 === 0 ? parsedPrice.toString() : parsedPrice.toFixed(2);
+        }
+
+        // Закрытие выпадающего списка при клике вне его
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.product-search-container')) {
+                document.querySelectorAll('.product-dropdown').forEach(dropdown => {
+                    dropdown.style.display = 'none';
+                });
+            }
+        });
+
+        function renderAddProductForm(products) {
             return `
+                <div class="form-group">
+                    <label>Товар</label>
+                    <select id="productSelect" class="form-control">
+                        <option value="">Выберите товар</option>
+                        ${products.map(p => {
+                const quantity = p.warehouse?.quantity || 0;
+                if (quantity <= 0) return '';
+
+                const retailPrice = parseFloat(p.warehouse?.retail_price || 0);
+                const wholesalePrice = parseFloat(p.warehouse?.wholesale_price || 0);
+                return `
+                            <option value="${p.id}"
+                                    data-quantity="${quantity}"
+                                    data-retail-price="${retailPrice}"
+                                    data-wholesale-price="${wholesalePrice}"
+                                    data-name="${escapeHtml(p.name)}">
+                                    ${escapeHtml(p.name)} (${formatPrice(retailPrice)} грн, остаток: ${quantity})
+                            </option>
+                        `;
+            }).join('')}
+                    </select>
+                </div>`;
+        }
+
+        function setupAddProductHandlers() {
+            document.getElementById('productSelect')?.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption?.value) {
+                    const maxQuantity = parseInt(selectedOption.dataset.quantity);
+                    document.getElementById('productQuantity').max = maxQuantity;
+                    document.getElementById('productQuantity').value = Math.min(1, maxQuantity);
+                    document.getElementById('productNameDisplay').value = selectedOption.dataset.name || '';
+                    document.getElementById('productWholesalePrice').value = selectedOption.dataset.wholesalePrice || '';
+                    document.getElementById('productRetailPrice').value = selectedOption.dataset.retailPrice || '';
+                } else {
+                    document.getElementById('productNameDisplay').value = '';
+                    document.getElementById('productWholesalePrice').value = '';
+                    document.getElementById('productRetailPrice').value = '';
+                }
+            });
+
+            document.querySelector('.btn-add-product')?.addEventListener('click', function() {
+                document.getElementById('addProductForm').style.display = 'block';
+                this.style.display = 'none';
+            });
+
+            document.getElementById('cancelAddProduct')?.addEventListener('click', function() {
+                document.getElementById('addProductForm').style.display = 'none';
+                document.querySelector('.btn-add-product').style.display = 'block';
+            });
+
+            document.getElementById('submitAddProduct')?.addEventListener('click', async function() {
+                await addProductToAppointment();
+            });
+
+            // Обработчик удаления товара
+            document.querySelectorAll('.btn-delete-product').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const saleId = this.dataset.saleId;
+                    await deleteProductFromAppointment(saleId);
+                });
+            });
+            document.getElementById('saveAppointmentChanges')?.addEventListener('click', async function() {
+                // Здесь можно добавить логику для сохранения всех изменений
+                showNotification('Изменения сохранены');
+                closeViewAppointmentModal();
+                // При необходимости обновите данные на странице
+            });
+
+        }
+
+
+        async function deleteProductFromAppointment() {
+            try {
+                const appointmentId = document.getElementById('appointmentId')?.value;
+                if (!appointmentId) {
+                    showNotification('Не удалось определить запись', 'error');
+                    return;
+                }
+
+                // Если это временный товар (еще не сохраненный)
+                if (currentDeleteIndex !== null) {
+                    temporaryProducts.splice(currentDeleteIndex, 1);
+                    updateProductsList();
+                    updateTotalAmount();
+                    showNotification('Товар удален');
+                    return;
+                }
+
+                // Если товар уже сохранен в базе
+                if (currentDeleteProductId) {
+                    const response = await fetch(`/appointments/${appointmentId}/remove-product`, { // Измените URL на правильный
+                        method: 'POST', // Используйте POST вместо DELETE, если нужно
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ product_id: currentDeleteProductId })
+                    });
+
+                    const data = await response.json();
+                    if (!data.success) throw new Error(data.message || 'Ошибка удаления с сервера');
+
+                    // После успешного удаления перезагружаем данные записи
+                    await viewAppointment(appointmentId);
+                    showNotification('Товар успешно удален');
+                }
+            } catch (err) {
+                console.error(err);
+                showNotification(err.message || 'Ошибка при удалении товара', 'error');
+            } finally {
+                currentDeleteProductId = null;
+                currentDeleteIndex = null;
+            }
+        }
+
+        // Функции для работы с клиентами
+        function searchClients(inputElement) {
+            const searchTerm = inputElement.value.trim().toLowerCase();
+            const dropdown = inputElement.nextElementSibling;
+            const dropdownList = dropdown.querySelector('.client-dropdown-list');
+
+            if (searchTerm.length === 0) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            const filteredClients = allClients.filter(client => {
+                const nameMatch = client.name?.toLowerCase().includes(searchTerm) || false;
+                const instagramMatch = client.instagram?.toLowerCase().includes(searchTerm) || false;
+                const emailMatch = client.email?.toLowerCase().includes(searchTerm) || false;
+                const phoneMatch = client.phone?.includes(searchTerm) || false;
+
+                return nameMatch || instagramMatch || emailMatch || phoneMatch;
+            }).slice(0, 5); // Ограничиваем до 5 результатов
+
+            if (filteredClients.length > 0) {
+                dropdownList.innerHTML = filteredClients.map(client => {
+                    const name = escapeHtml(client.name || '');
+                    const instagram = client.instagram ? `(@${escapeHtml(client.instagram)})` : '';
+                    const phone = client.phone ? ` - ${escapeHtml(client.phone)}` : '';
+
+                    return `
+                        <div class="client-dropdown-item"
+                             data-client-id="${client.id}"
+                             onclick="selectClient(this, '${client.id}', '${name} ${instagram}')">
+                        ${name} ${instagram} ${phone}
+                    </div>
+                `;
+            }).join('');
+                dropdown.style.display = 'block';
+            } else {
+                dropdownList.innerHTML = '<div class="client-dropdown-item no-results">Клиенты не найдены</div>';
+                dropdown.style.display = 'block';
+            }
+        }
+
+        function selectClient(element, clientId, clientName) {
+            const container = element.closest('.client-search-container');
+            const input = container.querySelector('.client-search-input');
+            const select = container.querySelector('.client-select');
+            const dropdown = container.querySelector('.client-dropdown');
+
+            input.value = clientName.trim();
+            select.value = clientId;
+            dropdown.style.display = 'none';
+        }
+
+        // Функции для работы с записями
+        async function editAppointment(id) {
+            if (!id) {
+                showNotification('Ошибка: ID записи не указан', 'error');
+                return;
+            }
+
+            currentAppointmentId = id;
+            toggleModal('editAppointmentModal');
+            const modalBody = document.getElementById('editAppointmentModalBody');
+            modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+
+            try {
+                const response = await fetch(`/appointments/${id}/edit`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    renderEditAppointmentForm(data.appointment);
+                } else {
+                    throw new Error(data.message || 'Ошибка при загрузке записи');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalBody.innerHTML = `
+                    <div class="alert alert-danger">
+                        Ошибка: ${escapeHtml(error.message)}
+                    </div>
+                    <button class="btn-cancel" onclick="toggleModal('editAppointmentModal', false)">Закрыть</button>
+                `;
+            }
+        }
+
+        function renderEditAppointmentForm(appointment) {
+            const modalBody = document.getElementById('editAppointmentModalBody');
+            modalBody.innerHTML = `
+                <form id="editAppointmentForm">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="id" value="${appointment.id}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Дата *</label>
+                            <input type="date" name="date" value="${formatDateForInput(appointment.date)}" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Время *</label>
+                            <input type="time" name="time" value="${escapeHtml(appointment.time)}" required class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Клиент *</label>
+                            <select name="client_id" class="form-control" required>
+                                <option value="">Выберите клиента</option>
+                                ${allClients.map(client => `
+                                    <option value="${client.id}" ${client.id == appointment.client_id ? 'selected' : ''}>
+                                        ${escapeHtml(client.name)}
+                                        ${client.instagram ? `(${escapeHtml(client.instagram)})` : ''}
+                                        ${client.phone ? ` - ${escapeHtml(client.phone)}` : ''}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Процедура *</label>
+                            <select name="service_id" class="form-control" required>
+                                <option value="">Выберите процедуру</option>
+                                ${allServices.map(service => `
+                                    <option value="${service.id}"
+                                            data-price="${service.price}"
+                                            ${service.id == appointment.service_id ? 'selected' : ''}>
+                                        ${escapeHtml(service.name)}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Стоимость (Грн)</label>
+                        <input type="number" step="0.01" name="price" value="${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)}" class="form-control" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Примечания</label>
+                        <textarea name="notes" rows="2" class="form-control">${escapeHtml(appointment.notes || '')}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Статус</label>
+                        <select name="status" class="form-control">
+                            <option value="pending" ${appointment.status === 'pending' ? 'selected' : ''}>Ожидается</option>
+                            <option value="completed" ${appointment.status === 'completed' ? 'selected' : ''}>Завершено</option>
+                            <option value="cancelled" ${appointment.status === 'cancelled' ? 'selected' : ''}>Отменено</option>
+                            <option value="rescheduled" ${appointment.status === 'rescheduled' ? 'selected' : ''}>Перенесено</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeEditAppointmentModal()">Отмена</button>
+                        <button type="submit" class="btn-submit">Сохранить изменения</button>
+                    </div>
+                </form>
+            `;
+
+            // Обработчик изменения выбора процедуры
+            document.querySelector('#editAppointmentModal [name="service_id"]')?.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const priceInput = document.querySelector('#editAppointmentModal [name="price"]');
+                if (selectedOption?.dataset.price) {
+                    priceInput.value = selectedOption.dataset.price;
+                }
+            });
+
+            // Обработчик формы редактирования
+            document.getElementById('editAppointmentForm')?.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                await submitEditAppointmentForm(this, currentAppointmentId);
+            });
+        }
+
+        function confirmDeleteAppointment(event, id) {
+            event.preventDefault();
+            currentDeleteId = id;
+            isDeletingAppointment = true; // Добавляем флаг
+            toggleModal('confirmationModal');
+        }
+
+        async function deleteAppointment(id) {
+            try {
+                const response = await fetch(`/appointments/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Обновляем календарь если он существует
+                    if (typeof calendar !== 'undefined' && calendar) {
+                        calendar.refetchEvents();
+                    }
+
+                    // Удаляем строку из таблицы если она существует
+                    const row = document.querySelector(`tr[data-appointment-id="${id}"]`);
+                    if (row) {
+                        row.remove();
+                    }
+
+                    // Закрываем модальные окна
+                    toggleModal('confirmationModal', false);
+                    if (currentAppointmentId === id) {
+                        toggleModal('viewAppointmentModal', false);
+                    }
+
+                    showNotification('Запись успешно удалена');
+                } else {
+                    throw new Error(data.message || 'Ошибка при удалении записи');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(error.message || 'Ошибка при удалении записи', 'error');
+            }
+        }
+
+        function formatDateForInput(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function clearErrors(formId) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+
+            const errorElements = form.querySelectorAll('.error-message');
+            errorElements.forEach(el => el.remove());
+
+            const errorInputs = form.querySelectorAll('.is-invalid');
+            errorInputs.forEach(el => el.classList.remove('is-invalid'));
+        }
+
+        function displayErrors(errors, formId) {
+            clearErrors(formId);
+            const form = document.getElementById(formId);
+            if (!form) return;
+
+            for (const [field, messages] of Object.entries(errors)) {
+                const input = form.querySelector(`[name="${field}"]`);
+                if (input) {
+                    input.classList.add('is-invalid');
+                    const errorElement = document.createElement('div');
+                    errorElement.className = 'error-message';
+                    errorElement.textContent = messages.join(', ');
+                    input.parentNode.insertBefore(errorElement, input.nextSibling);
+                }
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Обработчики кнопок
+            document.getElementById('addAppointmentBtn')?.addEventListener('click', () => {
+                const today = new Date().toISOString().split('T')[0];
+                document.querySelector('#appointmentModal input[name="date"]').value = today;
+                toggleModal('appointmentModal');
+            });
+
+            // Единый обработчик для кнопки отмены
+            document.getElementById('cancelDelete')?.addEventListener('click', (e) => {
+                e.stopPropagation(); // Предотвращаем всплытие события
+                toggleModal('confirmationModal', false);
+            });
+
+            // Единый обработчик для кнопки подтверждения удаления
+            document.getElementById('confirmDeleteBtn')?.addEventListener('click', async (e) => {
+                e.stopPropagation(); // Предотвращаем всплытие события
+                if (isDeletingAppointment) {
+                    await deleteAppointment(currentDeleteId);
+                } else {
+                    await deleteProductFromAppointment();
+                }
+                toggleModal('confirmationModal', false);
+            });
+
+            // Обработчик формы добавления записи
+            document.getElementById('appointmentForm')?.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitAppointmentForm(this);
+            });
+
+            // Обработчик изменения выбора процедуры
+            document.querySelector('[name="service_id"]')?.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const priceInput = document.querySelector('[name="price"]');
+                if (selectedOption?.dataset.price) {
+                    priceInput.value = selectedOption.dataset.price;
+                }
+            });
+
+            // Обработчик переключения между видами
+            document.querySelectorAll('.btn-view-switch').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.btn-view-switch').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const view = this.dataset.view;
+                    if (view === 'list') {
+                        document.getElementById('appointmentsList').style.display = '';
+                        document.getElementById('calendarView').style.display = 'none';
+                    } else if (view === 'calendar') {
+                        document.getElementById('appointmentsList').style.display = 'none';
+                        document.getElementById('calendarView').style.display = '';
+                        if (typeof calendar !== 'undefined' && calendar) {
+                            setTimeout(() => calendar.updateSize(), 100);
+                        }
+                    }
+                });
+            });
+
+            // Поиск по таблице
+            document.getElementById('searchInput')?.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                document.querySelectorAll('#appointmentsTable tbody tr').forEach(row => {
+                    row.style.display = row.textContent.toLowerCase().includes(searchTerm) ? '' : 'none';
+                });
+            });
+
+            // Делегирование событий
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('button');
+                if (!target) return;
+
+                if (target.classList.contains('btn-view')) {
+                    e.preventDefault();
+                    viewAppointment(target.dataset.appointmentId);
+                }
+                if (target.classList.contains('btn-edit')) {
+                    e.preventDefault();
+                    editAppointment(target.dataset.appointmentId);
+                }
+                if (target.classList.contains('btn-delete')) {
+                    e.preventDefault();
+                    confirmDeleteAppointment(e, target.dataset.appointmentId);
+                }
+                if (e.target == document.getElementById('appointmentModal')) {
+                    toggleModal('appointmentModal', false);
+                }
+                if (e.target == document.getElementById('editAppointmentModal')) {
+                    toggleModal('editAppointmentModal', false);
+                }
+                if (e.target == document.getElementById('viewAppointmentModal')) {
+                    toggleModal('viewAppointmentModal', false);
+                }
+                if (e.target == document.getElementById('confirmationModal')) {
+                    toggleModal('confirmationModal', false);
+                }
+                if (e.target && e.target.id === 'saveAppointmentChanges') {
+                    saveAppointmentChanges();
+                }
+            });
+        });
+        async function saveAppointmentChanges() {
+            const modal = document.getElementById('viewAppointmentModal');
+            const appointmentId = modal.querySelector('#appointmentId')?.value;
+
+            if (!appointmentId) {
+                showNotification('ID записи не найден', 'error');
+                return;
+            }
+
+            // Get basic appointment data
+            const dateText = modal.querySelector('.detail-row:nth-child(1) .detail-value')?.textContent;
+            const timeElement = modal.querySelector('.detail-row-no-flex:nth-child(2) .detail-value');
+            const time = timeElement?.textContent?.trim();
+
+            console.log('Debug time:', {
+                timeElement,
+                timeText: timeElement?.textContent,
+                time
+            });
+
+            // Получаем имя клиента из правильного элемента
+            const clientElement = modal.querySelector('.client-name');
+            const clientNameWithInstagram = clientElement?.textContent?.trim() || '';
+
+            // Извлекаем только имя клиента, обрабатывая оба случая
+            const clientName = clientNameWithInstagram.includes('(@')
+                ? clientNameWithInstagram.split('(@')[0].trim()
+                : clientNameWithInstagram.trim();
+
+            // Получаем имя услуги из правильного элемента
+            const serviceElement = modal.querySelector('.service-name');
+            const serviceName = serviceElement?.textContent?.trim();
+
+            const priceText = modal.querySelector('.service-price')?.textContent;
+            const price = parseFloat(priceText?.replace('грн', '').trim()) || 0;
+
+            // Format date
+            let formattedDate = '';
+            if (dateText) {
+                const [day, month, year] = dateText.split('.');
+                formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            }
+
+            // Find client and service IDs with improved error handling
+            const client = clientName ? allClients.find(c => c.name.trim() === clientName) : null;
+            const service = serviceName ? allServices.find(s => s.name.trim() === serviceName) : null;
+
+            // Подробная проверка данных перед отправкой
+            const validationErrors = [];
+
+            if (!formattedDate) validationErrors.push('Дата не указана');
+            if (!time) validationErrors.push('Время не указано');
+            if (!clientName) validationErrors.push('Имя клиента не найдено в форме');
+            if (!client || !client.id) validationErrors.push(`Не удалось найти клиента "${clientName}" в списке`);
+            if (!serviceName) validationErrors.push('Название услуги не найдено в форме');
+            if (!service || !service.id) validationErrors.push(`Не удалось найти услугу "${serviceName}" в списке`);
+            if (isNaN(price) || price < 0) validationErrors.push('Некорректная цена');
+
+            if (validationErrors.length > 0) {
+                showNotification('Ошибки валидации:\n' + validationErrors.join('\n'), 'error');
+                return;
+            }
+
+            // Подготавливаем данные для отправки
+            const requestData = {
+                date: formattedDate,
+                time: time,
+                client_id: client.id,
+                service_id: service.id,
+                price: price,
+                sales: temporaryProducts.map(p => ({
+                    product_id: p.product_id,
+                    quantity: parseInt(p.quantity),
+                    price: parseFloat(p.price),
+                    purchase_price: parseFloat(p.purchase_price || 0)
+                }))
+            };
+
+            console.log('Отправляемые данные:', requestData);
+
+            try {
+                const response = await fetch(`/appointments/${appointmentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    console.error('Ответ сервера:', data);
+                    if (data.errors) {
+                        const errorMessages = Object.entries(data.errors)
+                            .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
+                            .join('\n');
+                        throw new Error(`Ошибки валидации:\n${errorMessages}`);
+                    }
+                    throw new Error(data.message || `Ошибка сохранения (${response.status})`);
+                }
+
+                if (data.success) {
+                    showNotification('Изменения успешно сохранены');
+                    toggleModal('viewAppointmentModal', false);
+
+                    // Обновляем календарь если он существует
+                    if (typeof calendar !== 'undefined' && calendar) {
+                        calendar.refetchEvents();
+                    }
+
+                    // Обновляем строку в таблице если она существует
+                    if (data.appointment) {
+                        updateAppointmentRow(data.appointment);
+                    }
+                } else {
+                    throw new Error(data.message || 'Ошибка сохранения');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(error.message || 'Ошибка при сохранении', 'error');
+            }
+        }
+
+
+        function formatDateForPayload(dateString) {
+            if (!dateString) return '';
+            // Try both possible date formats (from table view and modal view)
+            if (dateString.includes('.')) {
+                // Format: dd.mm.yyyy
+                const [day, month, year] = dateString.split('.');
+                return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            } else {
+                // Format: yyyy-mm-dd (already correct)
+                return dateString;
+            }
+        }
+
+        function showProductDropdown(input) {
+            console.log('showProductDropdown вызван');
+            console.log('Все товары:', allProducts);
+
+            const dropdown = input.nextElementSibling;
+            const dropdownList = dropdown.querySelector('.product-dropdown-list');
+
+            if (input.value.length > 0) {
+                searchProducts(input);
+            } else {
+                // Показываем первые 5 товаров
+                const availableProducts = allProducts.slice(0, 5);
+                console.log('Доступные товары:', availableProducts);
+
+                if (availableProducts.length === 0) {
+                    dropdownList.innerHTML = '<div class="product-dropdown-item">Нет доступных товаров</div>';
+                } else {
+                    dropdownList.innerHTML = availableProducts.map(product => {
+                        const name = escapeHtml(product.name || '');
+                        const retailPrice = product.price || 0;
+                        const wholesalePrice = product.purchase_price || 0;
+
+                        return `
+                                <div class="product-dropdown-item"
+                                     data-product-id="${product.id}"
+                                     data-retail-price="${retailPrice}"
+                                     data-wholesale-price="${wholesalePrice}"
+                                     onclick="selectProduct(this, '${product.id}', '${name}', ${retailPrice})">
+                                ${name} (${product.quantity} шт)
+                            </div>
+                        `;
+                    }).join('');
+                }
+                dropdown.style.display = 'block';
+            }
+        }
+
+        function updateProductsTable() {
+            const modal = document.getElementById('viewAppointmentModal');
+            if (!modal) return;
+
+            const tableContainer = modal.querySelector('.products-section');
+            if (!tableContainer) return;
+
+            // Создаем структуру таблицы
+            tableContainer.innerHTML = `
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Товар</th>
+                                <th>Количество</th>
+                                <th>Розничная цена</th>
+                                <th>Оптовая цена</th>
+                                <th>Сумма</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${temporaryProducts.map((product, index) => {
+                const retailPrice = parseFloat(product.price);
+                const wholesalePrice = parseFloat(product.purchase_price);
+                const quantity = parseInt(product.quantity);
+                const total = retailPrice * quantity;
+
+                return `
                                 <tr data-index="${index}">
                                     <td>${product.name}</td>
                                     <td>${quantity}</td>
@@ -2494,459 +2506,459 @@
                                     <td>
                                         <button class="btn-delete btn-delete-product" onclick="deleteProduct(${index})" data-product-id="${product.product_id}" title="Удалить">
                                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                             </svg>
                                         </button>
                                     </td>
                                 </tr>
                             `;
-        }).join('')}
-                    </tbody>
-                </table>
-                <button class="btn-add-product" id="showAddProductFormBtn">
-                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                    </svg>
-                    Добавить
-                </button>
-                <div id="addProductForm" style="display: none; margin-top: 20px;">
-                    <div class="form-row-appointment">
-                        <div class="form-group" style="flex: 2;">
-                            <label>Товар *</label>
-                            <div class="product-search-container">
-                                <input type="text" class="product-search-input form-control"
-                                       id="productSearchInput"
-                                       placeholder="Начните вводить название товара..."
-                                       oninput="searchProducts(this)"
-                                       onfocus="showProductDropdown(this)">
-                                <div class="product-dropdown" style="display: none;">
-                                    <div class="product-dropdown-list"></div>
+            }).join('')}
+                        </tbody>
+                    </table>
+                    <button class="btn-add-product" id="showAddProductFormBtn">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        Добавить
+                    </button>
+                    <div id="addProductForm" style="display: none; margin-top: 20px;">
+                        <div class="form-row-appointment">
+                            <div class="form-group" style="flex: 2;">
+                                <label>Товар *</label>
+                                <div class="product-search-container">
+                                    <input type="text" class="product-search-input form-control"
+                                           id="productSearchInput"
+                                           placeholder="Начните вводить название товара..."
+                                           oninput="searchProducts(this)"
+                                           onfocus="showProductDropdown(this)">
+                                    <div class="product-dropdown" style="display: none;">
+                                        <div class="product-dropdown-list"></div>
+                                    </div>
+                                    <input type="hidden" id="selectedProductId" name="product_id">
                                 </div>
-                                <input type="hidden" id="selectedProductId" name="product_id">
+                            </div>
+                            <div class="form-group-appointment" style="display: none;">
+                                <label>Количество *</label>
+                                <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                            </div>
+                            <div class="form-group-appointment" style="display: none;">
+                                <label>Опт</label>
+                                <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
+                            </div>
+                            <div class="form-group-appointment" style="display: none;">
+                                <label>Цена *</label>
+                                <input type="number" step="0.01" id="productPrice" class="form-control" required>
                             </div>
                         </div>
-                        <div class="form-group-appointment" style="display: none;">
-                            <label>Количество *</label>
-                            <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
-                        </div>
-                        <div class="form-group-appointment" style="display: none;">
-                            <label>Опт</label>
-                            <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
-                        </div>
-                        <div class="form-group-appointment" style="display: none;">
-                            <label>Цена *</label>
-                            <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
+                            <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>Добавить</button>
                         </div>
                     </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
-                        <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-            </svg>Добавить</button>
-            </div>
-        </div>
-    `;
+                `;
 
-        // Обновляем общую сумму
-        updateTotalAmount();
+            // Обновляем общую сумму
+            updateTotalAmount();
 
-        // Добавляем обработчики событий
-        const btnAdd = modal.querySelector('#showAddProductFormBtn');
-        const form = modal.querySelector('#addProductForm');
-        const cancelBtn = modal.querySelector('#cancelAddProduct');
-        const submitBtn = modal.querySelector('#submitAddProduct');
-
-        if (btnAdd && form) {
-            btnAdd.addEventListener('click', () => {
-                btnAdd.style.display = 'none';
-                form.style.display = 'block';
-                resetProductForm(); // <-- добавьте эту строку!
-            });
-        }
-
-        if (cancelBtn && form && btnAdd) {
-            cancelBtn.addEventListener('click', () => {
-                form.style.display = 'none';
-                btnAdd.style.display = 'inline-block';
-                resetProductForm();
-            });
-        }
-
-        if (submitBtn) {
-            submitBtn.addEventListener('click', () => {
-                addProductToAppointment();
-            });
-        }
-    }
-
-    function deleteProduct(index) {
-        temporaryProducts.splice(index, 1);
-        updateProductsTable();
-
-        // После удаления товара сбрасываем форму и показываем кнопку добавления
-        const modal = document.getElementById('viewAppointmentModal');
-        if (modal) {
+            // Добавляем обработчики событий
             const btnAdd = modal.querySelector('#showAddProductFormBtn');
             const form = modal.querySelector('#addProductForm');
+            const cancelBtn = modal.querySelector('#cancelAddProduct');
+            const submitBtn = modal.querySelector('#submitAddProduct');
+
             if (btnAdd && form) {
-                resetProductForm();
-                form.style.display = 'none';
-                btnAdd.style.display = 'inline-block';
+                btnAdd.addEventListener('click', () => {
+                    btnAdd.style.display = 'none';
+                    form.style.display = 'block';
+                    resetProductForm(); // <-- добавьте эту строку!
+                });
+            }
+
+            if (cancelBtn && form && btnAdd) {
+                cancelBtn.addEventListener('click', () => {
+                    form.style.display = 'none';
+                    btnAdd.style.display = 'inline-block';
+                    resetProductForm();
+                });
+            }
+
+            if (submitBtn) {
+                submitBtn.addEventListener('click', () => {
+                    addProductToAppointment();
+                });
             }
         }
-    }
 
-    function updateProductQuantity(index, newQuantity) {
-        if (index >= 0 && index < temporaryProducts.length) {
-            temporaryProducts[index].quantity = parseInt(newQuantity) || 1;
+        function deleteProduct(index) {
+            temporaryProducts.splice(index, 1);
             updateProductsTable();
-        }
-    }
 
-    function checkFormState() {
-        const modal = document.getElementById('viewAppointmentModal');
-        if (!modal) return;
-
-        const form = modal.querySelector('#addProductForm');
-        if (!form) return;
-
-        const searchInput = form.querySelector('#productSearchInput');
-        const hiddenInput = form.querySelector('#selectedProductId');
-        const priceInput = form.querySelector('#productPrice');
-        const quantityInput = form.querySelector('#productQuantity');
-
-        console.log('Form state:', {
-            searchInput: searchInput?.value,
-            hiddenInput: hiddenInput?.value,
-            priceInput: priceInput?.value,
-            quantityInput: quantityInput?.value
-        });
-    }
-
-    // Добавляем проверку состояния формы после каждого важного действия
-    const originalResetProductForm = resetProductForm;
-    resetProductForm = function() {
-        originalResetProductForm();
-        console.log('After reset:');
-        checkFormState();
-    };
-
-    const originalSelectProduct = selectProduct;
-    selectProduct = function(...args) {
-        originalSelectProduct.apply(this, args);
-        console.log('After select:');
-        checkFormState();
-    };
-
-    const originalAddProductToAppointment = addProductToAppointment;
-    addProductToAppointment = function() {
-        console.log('Before add:');
-        checkFormState();
-        originalAddProductToAppointment();
-        console.log('After add:');
-        checkFormState();
-    };
-
-
-    function toggleModal(modalId, show = true) {
-        const modal = document.getElementById(modalId);
-        if (!modal) return;
-
-        if (show) {
-            modal.style.display = 'block';
-            modal.classList.add('show');
-            document.body.classList.add('modal-open');
-        } else {
-            modal.style.display = 'none';
-            modal.classList.remove('show');
-            document.body.classList.remove('modal-open');
-        }
-    }
-
-    async function submitAppointmentForm(form) {
-        clearErrors('appointmentForm');
-        const formData = new FormData(form);
-
-        try {
-            const response = await fetch('/appointments', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                showNotification('Запись успешно создана');
-                closeAppointmentModal();
-
-                if (typeof calendar !== 'undefined' && calendar) {
-                    calendar.refetchEvents();
+            // После удаления товара сбрасываем форму и показываем кнопку добавления
+            const modal = document.getElementById('viewAppointmentModal');
+            if (modal) {
+                const btnAdd = modal.querySelector('#showAddProductFormBtn');
+                const form = modal.querySelector('#addProductForm');
+                if (btnAdd && form) {
+                    resetProductForm();
+                    form.style.display = 'none';
+                    btnAdd.style.display = 'inline-block';
                 }
-
-                // Добавляем новую запись в таблицу без перезагрузки
-                const appointment = data.appointment;
-                const tbody = document.querySelector('#appointmentsTable tbody');
-
-                if (tbody) {
-                    const newRow = document.createElement('tr');
-                    newRow.setAttribute('data-appointment-id', appointment.id);
-
-                    newRow.innerHTML = `
-                        <td>${new Date(appointment.date).toLocaleDateString('ru-RU')}</td>
-                        <td>${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</td>
-                        <td>
-                            ${escapeHtml(appointment.client.name)}
-                            ${appointment.client.instagram ? `
-                                (<a href="https://instagram.com/${escapeHtml(appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(appointment.client.instagram)}</a>)` : ''}
-                        </td>
-                        <td>${escapeHtml(appointment.service.name)}</td>
-                        <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
-                        <td>${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)} грн</td>
-                        <td>
-                            <div class="appointment-actions actions-cell">
-                                <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                </button>
-                                <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="Редактировать">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                    </svg>
-                                </button>
-                                <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-
-                    tbody.insertBefore(newRow, tbody.firstChild);
-                }
-            } else if (data.errors) {
-                displayErrors(data.errors, 'appointmentForm');
-            } else {
-                throw new Error(data.message || 'Ошибка при создании записи');
             }
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification(error.message || 'Ошибка при создании записи', 'error');
         }
-    }
 
-    async function submitEditAppointmentForm(form, appointmentId) {
-        clearErrors('editAppointmentForm');
-        const formData = new FormData(form);
-
-        try {
-            formData.append('_method', 'PUT');
-
-            const response = await fetch(`/appointments/${appointmentId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                showNotification('Запись успешно обновлена');
-                closeEditAppointmentModal();
-
-                // Обновляем календарь
-                if (typeof calendar !== 'undefined' && calendar) {
-                    calendar.refetchEvents();
-                }
-
-                // Обновляем строку в таблице
-                const row = document.querySelector(`tr[data-appointment-id="${data.appointment.id}"]`);
-                if (row) {
-                    row.innerHTML = `
-                        <td>${new Date(data.appointment.date).toLocaleDateString('ru-RU')}</td>
-                        <td>${escapeHtml(data.appointment.time.split(':').slice(0, 2).join(':'))}</td>
-                        <td>
-                            ${escapeHtml(data.appointment.client.name)}
-                            ${data.appointment.client.instagram ? `
-                                (<a href="https://instagram.com/${escapeHtml(data.appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(data.appointment.client.instagram)}</a>)` : ''}
-                        </td>
-                        <td>${escapeHtml(data.appointment.service.name)}</td>
-                        <td><span class="status-badge status-${data.appointment.status}">${getStatusName(data.appointment.status)}</span></td>
-                        <td>${parseFloat(data.appointment.price).toFixed(2)} грн</td>
-                        <td>
-                            <div class="appointment-actions actions-cell">
-                                <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                </button>
-                                <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="Редактировать">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                    </svg>
-                                </button>
-                                <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                }
-            } else if (data.errors) {
-                displayErrors(data.errors, 'editAppointmentForm');
-            } else {
-                throw new Error(data.message || 'Ошибка при обновлении записи');
+        function updateProductQuantity(index, newQuantity) {
+            if (index >= 0 && index < temporaryProducts.length) {
+                temporaryProducts[index].quantity = parseInt(newQuantity) || 1;
+                updateProductsTable();
             }
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification(error.message || 'Ошибка при обновлении записи', 'error');
         }
-    }
 
-    function renderProductsTable() {
-        return `
-            <table class="products-table">
-                <thead>
-                    <tr>
-                        <th>Название</th>
-                        <th>Количество</th>
-                        <th>Розничная цена</th>
-                        <th>Оптовая цена</th>
-                        <th>Итого</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${temporaryProducts.map((product, index) => {
-                        const retailPrice = parseFloat(product.price);
-                        const wholesalePrice = parseFloat(product.wholesale_price || 0);
-                        const quantity = parseInt(product.quantity);
-                        const total = retailPrice * quantity;
+        function checkFormState() {
+            const modal = document.getElementById('viewAppointmentModal');
+            if (!modal) return;
 
-                        return `
-                            <tr data-index="${index}">
-                                <td>${product.name}</td>
-                                <td>${quantity}</td>
-                                <td>${formatPrice(retailPrice)} грн</td>
-                                <td>${formatPrice(wholesalePrice)} грн</td>
-                                <td>${formatPrice(total)} грн</td>
-                                <td>
-                                    <button class="btn-delete btn-delete-product" onclick="deleteProduct(${index})" data-product-id="${product.product_id}" title="Удалить">
+            const form = modal.querySelector('#addProductForm');
+            if (!form) return;
+
+            const searchInput = form.querySelector('#productSearchInput');
+            const hiddenInput = form.querySelector('#selectedProductId');
+            const priceInput = form.querySelector('#productPrice');
+            const quantityInput = form.querySelector('#productQuantity');
+
+            console.log('Form state:', {
+                searchInput: searchInput?.value,
+                hiddenInput: hiddenInput?.value,
+                priceInput: priceInput?.value,
+                quantityInput: quantityInput?.value
+            });
+        }
+
+        // Добавляем проверку состояния формы после каждого важного действия
+        const originalResetProductForm = resetProductForm;
+        resetProductForm = function() {
+            originalResetProductForm();
+            console.log('After reset:');
+            checkFormState();
+        };
+
+        const originalSelectProduct = selectProduct;
+        selectProduct = function(...args) {
+            originalSelectProduct.apply(this, args);
+            console.log('After select:');
+            checkFormState();
+        };
+
+        const originalAddProductToAppointment = addProductToAppointment;
+        addProductToAppointment = function() {
+            console.log('Before add:');
+            checkFormState();
+            originalAddProductToAppointment();
+            console.log('After add:');
+            checkFormState();
+        };
+
+
+        function toggleModal(modalId, show = true) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+
+            if (show) {
+                modal.style.display = 'block';
+                modal.classList.add('show');
+                document.body.classList.add('modal-open');
+            } else {
+                modal.style.display = 'none';
+                modal.classList.remove('show');
+                document.body.classList.remove('modal-open');
+            }
+        }
+
+        async function submitAppointmentForm(form) {
+            clearErrors('appointmentForm');
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/appointments', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('Запись успешно создана');
+                    closeAppointmentModal();
+
+                    if (typeof calendar !== 'undefined' && calendar) {
+                        calendar.refetchEvents();
+                    }
+
+                    // Добавляем новую запись в таблицу без перезагрузки
+                    const appointment = data.appointment;
+                    const tbody = document.querySelector('#appointmentsTable tbody');
+
+                    if (tbody) {
+                        const newRow = document.createElement('tr');
+                        newRow.setAttribute('data-appointment-id', appointment.id);
+
+                        newRow.innerHTML = `
+                            <td>${new Date(appointment.date).toLocaleDateString('ru-RU')}</td>
+                            <td>${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</td>
+                            <td>
+                                ${escapeHtml(appointment.client.name)}
+                                ${appointment.client.instagram ? `
+                                    (<a href="https://instagram.com/${escapeHtml(appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(appointment.client.instagram)}</a>)` : ''}
+                            </td>
+                            <td>${escapeHtml(appointment.service.name)}</td>
+                            <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
+                            <td>${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)} грн</td>
+                            <td>
+                                <div class="appointment-actions actions-cell">
+                                    <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="Редактировать">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                         </svg>
                                     </button>
-                                </td>
-                            </tr>
+                                </div>
+                            </td>
                         `;
-                    }).join('')}
-                </tbody>
-            </table>`;
-    }
 
-    function renderAppointmentsList(appointments) {
-        return appointments.map(appointment => `
-            <tr data-appointment-id="${appointment.id}">
-                <td>${appointment.client ? appointment.client.name : 'Клиент удален'}</td>
-                <td>${appointment.service ? appointment.service.name : 'Услуга удалена'}</td>
-                <td>${formatDate(appointment.date)}</td>
-                <td>${appointment.time}</td>
-                <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
-                <td>${formatPrice(appointment.price)} грн</td>
-                <td>
-                    <div class="appointment-actions actions-cell">
-                        <button class="btn-view" data-appointment-id="${appointment.id}" title="Просмотр">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                        <button class="btn-edit" data-appointment-id="${appointment.id}" title="Редактировать">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                            </svg>
-                        </button>
-                        <button class="btn-delete" data-appointment-id="${appointment.id}"  title="Удалить">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `).join('');
-    }
-
-    function updateProductDetails(productId) {
-        const product = allProducts.find(p => p.id == productId);
-        if (product) {
-            document.getElementById('productNameDisplay').value = product.name;
-            document.getElementById('productWholesalePrice').value = formatPrice(product.wholesale_price || 0);
-            document.getElementById('productRetailPrice').value = formatPrice(product.retail_price || product.price || 0);
-            document.getElementById('productQuantity').max = product.quantity || 0;
-        }
-    }
-
-    function showProductFields() {
-        const form = document.querySelector('#addProductForm');
-        if (form) {
-            const otherFields = form.querySelectorAll('.form-group-appointment');
-            otherFields.forEach(field => {
-                field.style.display = 'block';
-            });
-        }
-    }
-
-    // Пагинация для списка записей
-    (function() {
-        const pageSize = 10;
-        let currentPage = 1;
-        let rows = Array.from(document.querySelectorAll('#appointmentsTable tbody tr'));
-        let totalPages = Math.ceil(rows.length / pageSize);
-
-        function renderPage(page) {
-            rows.forEach((row, idx) => {
-                row.style.display = (idx >= (page-1)*pageSize && idx < page*pageSize) ? '' : 'none';
-            });
-            document.getElementById('currentPageInfo').textContent = `Страница ${page} из ${totalPages}`;
-            document.getElementById('prevPageBtn').disabled = page === 1;
-            document.getElementById('nextPageBtn').disabled = page === totalPages;
+                        tbody.insertBefore(newRow, tbody.firstChild);
+                    }
+                } else if (data.errors) {
+                    displayErrors(data.errors, 'appointmentForm');
+                } else {
+                    throw new Error(data.message || 'Ошибка при создании записи');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(error.message || 'Ошибка при создании записи', 'error');
+            }
         }
 
-        function updateRows() {
-            rows = Array.from(document.querySelectorAll('#appointmentsTable tbody tr'));
-            totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
-            if (currentPage > totalPages) currentPage = totalPages;
-            renderPage(currentPage);
+        async function submitEditAppointmentForm(form, appointmentId) {
+            clearErrors('editAppointmentForm');
+            const formData = new FormData(form);
+
+            try {
+                formData.append('_method', 'PUT');
+
+                const response = await fetch(`/appointments/${appointmentId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('Запись успешно обновлена');
+                    closeEditAppointmentModal();
+
+                    // Обновляем календарь
+                    if (typeof calendar !== 'undefined' && calendar) {
+                        calendar.refetchEvents();
+                    }
+
+                    // Обновляем строку в таблице
+                    const row = document.querySelector(`tr[data-appointment-id="${data.appointment.id}"]`);
+                    if (row) {
+                        row.innerHTML = `
+                            <td>${new Date(data.appointment.date).toLocaleDateString('ru-RU')}</td>
+                            <td>${escapeHtml(data.appointment.time.split(':').slice(0, 2).join(':'))}</td>
+                            <td>
+                                ${escapeHtml(data.appointment.client.name)}
+                                ${data.appointment.client.instagram ? `
+                                    (<a href="https://instagram.com/${escapeHtml(data.appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(data.appointment.client.instagram)}</a>)` : ''}
+                            </td>
+                            <td>${escapeHtml(data.appointment.service.name)}</td>
+                            <td><span class="status-badge status-${data.appointment.status}">${getStatusName(data.appointment.status)}</span></td>
+                            <td>${parseFloat(data.appointment.price).toFixed(2)} грн</td>
+                            <td>
+                                <div class="appointment-actions actions-cell">
+                                    <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="Редактировать">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        `;
+                    }
+                } else if (data.errors) {
+                    displayErrors(data.errors, 'editAppointmentForm');
+                } else {
+                    throw new Error(data.message || 'Ошибка при обновлении записи');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification(error.message || 'Ошибка при обновлении записи', 'error');
+            }
         }
 
-        document.getElementById('prevPageBtn').addEventListener('click', function() {
-            if (currentPage > 1) {
-                currentPage--;
+        function renderProductsTable() {
+            return `
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Количество</th>
+                            <th>Розничная цена</th>
+                            <th>Оптовая цена</th>
+                            <th>Итого</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${temporaryProducts.map((product, index) => {
+                            const retailPrice = parseFloat(product.price);
+                            const wholesalePrice = parseFloat(product.wholesale_price || 0);
+                            const quantity = parseInt(product.quantity);
+                            const total = retailPrice * quantity;
+
+                            return `
+                                <tr data-index="${index}">
+                                    <td>${product.name}</td>
+                                    <td>${quantity}</td>
+                                    <td>${formatPrice(retailPrice)} грн</td>
+                                    <td>${formatPrice(wholesalePrice)} грн</td>
+                                    <td>${formatPrice(total)} грн</td>
+                                    <td>
+                                        <button class="btn-delete btn-delete-product" onclick="deleteProduct(${index})" data-product-id="${product.product_id}" title="Удалить">
+                                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>`;
+        }
+
+        function renderAppointmentsList(appointments) {
+            return appointments.map(appointment => `
+                <tr data-appointment-id="${appointment.id}">
+                    <td>${appointment.client ? appointment.client.name : 'Клиент удален'}</td>
+                    <td>${appointment.service ? appointment.service.name : 'Услуга удалена'}</td>
+                    <td>${formatDate(appointment.date)}</td>
+                    <td>${appointment.time}</td>
+                    <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
+                    <td>${formatPrice(appointment.price)} грн</td>
+                    <td>
+                        <div class="appointment-actions actions-cell">
+                            <button class="btn-view" data-appointment-id="${appointment.id}" title="Просмотр">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                            <button class="btn-edit" data-appointment-id="${appointment.id}" title="Редактировать">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-delete" data-appointment-id="${appointment.id}"  title="Удалить">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateProductDetails(productId) {
+            const product = allProducts.find(p => p.id == productId);
+            if (product) {
+                document.getElementById('productNameDisplay').value = product.name;
+                document.getElementById('productWholesalePrice').value = formatPrice(product.wholesale_price || 0);
+                document.getElementById('productRetailPrice').value = formatPrice(product.retail_price || product.price || 0);
+                document.getElementById('productQuantity').max = product.quantity || 0;
+            }
+        }
+
+        function showProductFields() {
+            const form = document.querySelector('#addProductForm');
+            if (form) {
+                const otherFields = form.querySelectorAll('.form-group-appointment');
+                otherFields.forEach(field => {
+                    field.style.display = 'block';
+                });
+            }
+        }
+
+        // Пагинация для списка записей
+        (function() {
+            const pageSize = 10;
+            let currentPage = 1;
+            let rows = Array.from(document.querySelectorAll('#appointmentsTable tbody tr'));
+            let totalPages = Math.ceil(rows.length / pageSize);
+
+            function renderPage(page) {
+                rows.forEach((row, idx) => {
+                    row.style.display = (idx >= (page-1)*pageSize && idx < page*pageSize) ? '' : 'none';
+                });
+                document.getElementById('currentPageInfo').textContent = `Страница ${page} из ${totalPages}`;
+                document.getElementById('prevListPageBtn').disabled = page === 1;
+                document.getElementById('nextListPageBtn').disabled = page === totalPages;
+            }
+
+            function updateRows() {
+                rows = Array.from(document.querySelectorAll('#appointmentsTable tbody tr'));
+                totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+                if (currentPage > totalPages) currentPage = totalPages;
                 renderPage(currentPage);
             }
-        });
-        document.getElementById('nextPageBtn').addEventListener('click', function() {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderPage(currentPage);
-            }
-        });
 
-        // Если записи динамически меняются, можно вызвать updateRows()
-        updateRows();
-    })();
-</script>
+            document.getElementById('prevListPageBtn').addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderPage(currentPage);
+                }
+            });
+            document.getElementById('nextListPageBtn').addEventListener('click', function() {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderPage(currentPage);
+                }
+            });
+
+            // Если записи динамически меняются, можно вызвать updateRows()
+            updateRows();
+        })();
+    </script>
 @endsection
