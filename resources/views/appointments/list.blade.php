@@ -113,6 +113,7 @@
     .calendar-view-switcher {
         display: flex;
         gap: 10px;
+        margin-bottom: 20px;
     }
     .fc-daygrid-day{
         cursor: pointer;
@@ -342,42 +343,7 @@
         }
     }
 
-    /* Стили для переключателя видов */
-    .calendar-view-switcher {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
 
-    .view-switch-btn {
-        padding: 8px 16px;
-        border: 1px solid #e9ecef;
-        background: #fff;
-        border-radius: 8px;
-        cursor: pointer;
-        color: #6c757d;
-        transition: all 0.3s ease;
-    }
-
-    .view-switch-btn.active {
-        background: #2196f3;
-        color: #fff;
-        border-color: #2196f3;
-    }
-
-    .today-button {
-        padding: 8px 16px;
-        border: 1px solid #e9ecef;
-        background: #fff;
-        border-radius: 8px;
-        cursor: pointer;
-        color: #6c757d;
-        transition: all 0.3s ease;
-    }
-
-    .today-button:hover {
-        background: #e9ecef;
-    }
 
     /* Стили для записей в календаре */
     .appointment-dot {
@@ -1192,7 +1158,17 @@
     let currentDeleteIndex = null;
     let currentDeleteProductId = null;
 
-    // Основные функции работы с модальными окнами
+    // Общие функции
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.toString()
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
     function toggleModal(modalId, show = true) {
         const modal = document.getElementById(modalId);
         if (!modal) return;
@@ -1208,6 +1184,15 @@
         }
     }
 
+    function getStatusName(status) {
+        const statusNames = {
+            'pending': 'Ожидается',
+            'completed': 'Завершено',
+            'cancelled': 'Отменено',
+            'rescheduled': 'Перенесено'
+        };
+        return statusNames[status] || 'Ожидается';
+    }
 
     document.addEventListener('click', function(e) {
         if (e.target.closest('.btn-delete-product')) {
@@ -1221,20 +1206,7 @@
     });
 
 
-    document.getElementById('confirmDeleteBtn')?.addEventListener('click', async (e) => {
-            e.stopPropagation(); // Предотвращаем всплытие события
-            if (isDeletingAppointment) {
-                await deleteAppointment(currentDeleteId);
-            } else {
-                await deleteProductFromAppointment();
-            }
-            toggleModal('confirmationModal', false);
-        });
 
-        document.getElementById('cancelDelete')?.addEventListener('click', (e) => {
-            e.stopPropagation(); // Предотвращаем всплытие события
-            toggleModal('confirmationModal', false);
-        });
 
     function closeAppointmentModal() {
         toggleModal('appointmentModal', false);
@@ -1565,25 +1537,7 @@
             isDeletingAppointment = false;
         });
 
-        // Обработчик кнопки подтверждения удаления в модальном окне
-        document.getElementById('confirmDeleteBtn')?.addEventListener('click', () => {
-            if (currentDeleteId !== null) {
-                if (isDeletingAppointment) {
-                    deleteAppointment(currentDeleteId); // Удаление записи
-                } else {
-                    deleteProductFromAppointment(currentDeleteId); // Удаление товара
-                }
-                toggleModal('confirmationModal', false);
-                currentDeleteId = null;
-                isDeletingAppointment = false;
-            }
-        });
 
-        // Обработчик кнопки отмены в модальном окне
-        document.getElementById('cancelDelete')?.addEventListener('click', function() {
-            toggleModal('confirmationModal', false);
-            currentDeleteId = null;
-        });
 
         // Сохранение изменений
         document.addEventListener('click', function(e) {
@@ -1876,7 +1830,7 @@
             // Заполняем цены
             if (priceInput) priceInput.value = product.price || product.retail_price || 0;
             if (wholesaleInput) wholesaleInput.value = product.purchase_price || 0;
-            
+
             // Показываем детали товара
             if (productDetails) productDetails.style.display = 'flex';
         }
@@ -2250,12 +2204,12 @@
             if (data.success) {
                 showNotification('Запись успешно обновлена');
                 closeEditAppointmentModal();
-                
+
                 // Обновляем календарь
                 if (typeof calendar !== 'undefined' && calendar) {
                     calendar.refetchEvents();
                 }
-                
+
                 // Обновляем строку в таблице
                 const row = document.querySelector(`tr[data-appointment-id="${data.appointment.id}"]`);
                 if (row) {
@@ -2310,16 +2264,6 @@
         }
     }
 
-    function getStatusName(status) {
-        const statusNames = {
-            'pending': 'Ожидается',
-            'completed': 'Завершено',
-            'cancelled': 'Отменено',
-            'rescheduled': 'Перенесено'
-        };
-        return statusNames[status] || 'Ожидается';
-    }
-
     function confirmDeleteAppointment(event, id) {
         event.preventDefault();
         currentDeleteId = id;
@@ -2368,16 +2312,7 @@
     }
 
 
-    // Вспомогательные функции
-    function escapeHtml(unsafe) {
-        if (!unsafe) return '';
-        return unsafe.toString()
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
+
 
     function formatDateForInput(dateString) {
         if (!dateString) return '';
@@ -2424,8 +2359,16 @@
             document.querySelector('#appointmentModal input[name="date"]').value = today;
             toggleModal('appointmentModal');
         });
-        document.getElementById('cancelDelete')?.addEventListener('click', () => toggleModal('confirmationModal', false));
-        document.getElementById('confirmDeleteBtn')?.addEventListener('click', async () => {
+
+        // Единый обработчик для кнопки отмены
+        document.getElementById('cancelDelete')?.addEventListener('click', (e) => {
+            e.stopPropagation(); // Предотвращаем всплытие события
+            toggleModal('confirmationModal', false);
+        });
+
+        // Единый обработчик для кнопки подтверждения удаления
+        document.getElementById('confirmDeleteBtn')?.addEventListener('click', async (e) => {
+            e.stopPropagation(); // Предотвращаем всплытие события
             if (isDeletingAppointment) {
                 await deleteAppointment(currentDeleteId);
             } else {
@@ -2433,7 +2376,6 @@
             }
             toggleModal('confirmationModal', false);
         });
-
 
         // Обработчик формы добавления записи
         document.getElementById('appointmentForm')?.addEventListener('submit', function(e) {
@@ -2870,15 +2812,6 @@
         return text.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]);
     }
 
-    function getStatusName(status) {
-        const statusNames = {
-            'pending': 'Ожидается',
-            'completed': 'Завершено',
-            'cancelled': 'Отменено',
-            'rescheduled': 'Перенесено'
-        };
-        return statusNames[status] || 'Ожидается';
-    }
 
     function toggleModal(modalId, show = true) {
         const modal = document.getElementById(modalId);
@@ -3001,12 +2934,12 @@
             if (data.success) {
                 showNotification('Запись успешно обновлена');
                 closeEditAppointmentModal();
-                
+
                 // Обновляем календарь
                 if (typeof calendar !== 'undefined' && calendar) {
                     calendar.refetchEvents();
                 }
-                
+
                 // Обновляем строку в таблице
                 const row = document.querySelector(`tr[data-appointment-id="${data.appointment.id}"]`);
                 if (row) {
