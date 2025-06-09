@@ -732,13 +732,6 @@
     </div>
 
     <script>
-        // Функция подтверждения удаления записи
-    async function confirmDeleteAppointment(e, id) {
-        e.preventDefault();
-        if (confirm('Вы уверены, что хотите удалить эту запись?')) {
-            await deleteAppointment(id);
-        }
-    }
 
     let calendar; // Делаем переменную глобальной
     let activeEvent = null;
@@ -885,38 +878,6 @@
 
                 calendar.render();
 
-                // Функция удаления записи
-                async function deleteAppointment(id) {
-                        try {
-                            const response = await fetch(`/appointments/${id}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                                    'Accept': 'application/json'
-                                }
-                            });
-
-                            const data = await response.json();
-
-                                        if (data.success) {
-                // Обновляем календарь
-                if (typeof calendar !== 'undefined' && calendar) {
-                    calendar.refetchEvents();
-                }
-                tooltip.style.display = 'none';
-                showNotification('Запись успешно удалена', 'success');
-                toggleModal('confirmationModal', false);
-                            } else {
-                                throw new Error(data.message || 'Ошибка при удалении записи');
-                            }
-                        } catch (error) {
-                            console.error('Error:', error);
-                            showNotification(error.message || 'Ошибка при удалении записи', 'error');
-                        }
-                        currentDeleteId = null;
-                        isDeletingAppointment = false;
-                }
-
                 // Функция создания записи при клике на дату
                 function createAppointment(dateStr) {
                     // Устанавливаем выбранную дату в поле формы
@@ -1003,21 +964,6 @@
             }
         });
 
-        // Функция для открытия/закрытия модальных окон
-        function toggleModal(modalId, show = true) {
-            const modal = document.getElementById(modalId);
-            if (!modal) return;
-
-            if (show) {
-                modal.style.display = 'block';
-                modal.classList.add('show');
-                document.body.classList.add('modal-open');
-            } else {
-                modal.style.display = 'none';
-                modal.classList.remove('show');
-                document.body.classList.remove('modal-open');
-            }
-        }
     </script>
 @endif
 </div>
@@ -1167,21 +1113,6 @@
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
-    }
-
-    function toggleModal(modalId, show = true) {
-        const modal = document.getElementById(modalId);
-        if (!modal) return;
-
-        if (show) {
-            modal.style.display = 'block';
-            modal.classList.add('show');
-            document.body.classList.add('modal-open');
-        } else {
-            modal.style.display = 'none';
-            modal.classList.remove('show');
-            document.body.classList.remove('modal-open');
-        }
     }
 
     function getStatusName(status) {
@@ -2159,87 +2090,6 @@
         });
     }
 
-    async function submitEditAppointmentForm(form, appointmentId) {
-        clearErrors('editAppointmentForm');
-        const formData = new FormData(form);
-
-        try {
-            formData.append('_method', 'PUT');
-
-            const response = await fetch(`/appointments/${appointmentId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                showNotification('Запись успешно обновлена');
-                closeEditAppointmentModal();
-
-                // Обновляем календарь
-                if (typeof calendar !== 'undefined' && calendar) {
-                    calendar.refetchEvents();
-                }
-
-                // Обновляем строку в таблице
-                const row = document.querySelector(`tr[data-appointment-id="${data.appointment.id}"]`);
-                if (row) {
-                    row.innerHTML = `
-                        <td>${new Date(data.appointment.date).toLocaleDateString('ru-RU')}</td>
-                        <td>${escapeHtml(data.appointment.time.split(':').slice(0, 2).join(':'))}</td>
-                        <td>
-                            ${escapeHtml(data.appointment.client.name)}
-                            ${data.appointment.client.instagram ? `
-                                (<a href="https://instagram.com/${escapeHtml(data.appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(data.appointment.client.instagram)}</a>)` : ''}
-                        </td>
-                        <td>${escapeHtml(data.appointment.service.name)}</td>
-                        <td>${parseFloat(data.appointment.price).toFixed(2)} грн</td>
-                        <td>
-                            <span class="status-badge status-${data.appointment.status}">
-                                ${getStatusName(data.appointment.status)}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="appointment-actions actions-cell">
-                                <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Просмотр
-                                </button>
-                                <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="Редактировать">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                    </svg>
-                                    Ред.
-                                </button>
-                                <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Удалить
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                }
-            } else if (data.errors) {
-                displayErrors(data.errors, 'editAppointmentForm');
-            } else {
-                throw new Error(data.message || 'Ошибка при обновлении записи');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showNotification(error.message || 'Ошибка при обновлении записи', 'error');
-        }
-    }
-
     function confirmDeleteAppointment(event, id) {
         event.preventDefault();
         currentDeleteId = id;
@@ -2286,9 +2136,6 @@
             showNotification(error.message || 'Ошибка при удалении записи', 'error');
         }
     }
-
-
-
 
     function formatDateForInput(dateString) {
         if (!dateString) return '';
@@ -2544,7 +2391,6 @@
     }
 
 
-
     function formatDateForPayload(dateString) {
         if (!dateString) return '';
         // Try both possible date formats (from table view and modal view)
@@ -2784,10 +2630,6 @@
         checkFormState();
     };
 
-    function escapeHtml(text) {
-        return text.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[c]);
-    }
-
 
     function toggleModal(modalId, show = true) {
         const modal = document.getElementById(modalId);
@@ -2968,16 +2810,6 @@
             console.error('Error:', error);
             showNotification(error.message || 'Ошибка при обновлении записи', 'error');
         }
-    }
-
-    function getStatusName(status) {
-        const statusNames = {
-            'pending': 'Ожидается',
-            'completed': 'Завершено',
-            'cancelled': 'Отменено',
-            'rescheduled': 'Перенесено'
-        };
-        return statusNames[status] || 'Ожидается';
     }
 
     function renderProductsTable() {
