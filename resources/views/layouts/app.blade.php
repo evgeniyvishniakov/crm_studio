@@ -10,14 +10,14 @@
     <meta name="description" content="CRM Studio - Система управления салоном красоты">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
+
     <!-- Favicon -->
     <link rel="apple-touch-icon" href="">
     <link rel="shortcut icon" href="">
 
     <!-- Base Styles -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
@@ -27,8 +27,7 @@
 
     <!-- Base Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/min/moment.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/ru.global.min.js'></script>
@@ -80,71 +79,84 @@
                 <li class="active">
                     <a href="index.html"><i class="menu-icon fa fa-laptop"></i>Dashboard </a>
                 </li>
-                <li class="menu-title">UI elements</li><!-- /.menu-title -->
+                <li class="menu-title">Работа с клиентами</li><!-- /.menu-title -->
+
                 <li>
                     <a href="{{ route('clients.list') }}"> <i class="menu-icon fa fa-users"></i>Клиенты</a>
                 </li>
                 <li>
                     <a href="{{ route('appointments.index') }}"> <i class="menu-icon fa fa-calendar"></i>Записи</a>
                 </li>
+                
+                <li class="menu-title">Товарооборот</li>
+
+            
                 <li>
-                    <a href="{{ route('services.index') }}"> <i class="menu-icon fa fa-dollar"></i>Услуги</a>
-                </li>
-                <li class="menu-title">Финансы</li>
-                <li>
-                    <a href="{{ route('products.index') }}"> <i class="menu-icon fa fa-list-alt"></i>Список товаров</a>
-                </li>
-                <li>
-                    <a href="{{ route('warehouse.index') }}"> <i class="menu-icon fa fa-dropbox"></i>Склад</a>
+                    <a href="{{ route('warehouse.index') }}"><i class="menu-icon fa fa-dropbox"></i>Склад</a>
                 </li>
                 <li>
-                    <a href="{{ route('purchases.index') }}"> <i class="menu-icon fa fa-money"></i>Закупки</a>
+                    <a href="{{ route('purchases.index') }}"><i class="menu-icon fa fa-cart-plus"></i>Закупки</a>
                 </li>
                 <li>
-                    <a href="{{ route('sales.index') }}"> <i class="menu-icon fa fa-money"></i>Продажи</a>
+                    <a href="{{ route('sales.index') }}"><i class="menu-icon fa fa-shopping-basket"></i>Продажи</a>
                 </li>
                 <li>
-                    <a href="{{ route('expenses.index') }}"> <i class="menu-icon fa fa-money"></i>Расходы</a>
+                    <a href="{{ route('expenses.index') }}"><i class="menu-icon fa fa-credit-card"></i>Расходы</a>
                 </li>
                 <li>
-                    <a href="{{ route('clients.list') }}"> <i class="menu-icon fa fa-tasks"></i>Отчеты</a>
+                    <a href=""><i class="menu-icon fa fa-archive"></i>Инвентаризация</a>
+                </li>
+                <li>
+                    <a href="{{ route('clients.list') }}"><i class="menu-icon fa fa-bar-chart"></i>Отчеты</a>
                 </li>
 
-                <li class="menu-title">Icons</li><!-- /.menu-title -->
+                <li class="menu-title">Сервисы</li>
 
                 <li class="menu-item-has-children dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Icons</a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="menu-icon fa fa-book"></i>Справочники
+                    </a>
                     <ul class="sub-menu children dropdown-menu">
-                        <li><i class="menu-icon fa fa-fort-awesome"></i><a href="font-fontawesome.html">Font Awesome</a></li>
-                        <li><i class="menu-icon ti-themify-logo"></i><a href="font-themify.html">Themefy Icons</a></li>
+                        <li>
+                            <i class="fa fa-briefcase"></i>
+                            <a href="{{ route('services.index') }}">Услуги</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-cube"></i>
+                            <a href="{{ route('products.index') }}">Товары</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-folder-open"></i>
+                            <a href="">Категории товаров</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-certificate"></i>
+                            <a href="">Бренды товаров</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-truck"></i>
+                            <a href="">Поставщики</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-id-badge"></i>
+                            <a href="">Типы клиентов</a>
+                        </li>
+                        <li>
+                            <i class="fa fa-users"></i>
+                            <a href="">Мастера</a>
+                        </li>
                     </ul>
                 </li>
-                <li>
-                    <a href="widgets.html"> <i class="menu-icon ti-email"></i>Widgets </a>
-                </li>
                 <li class="menu-item-has-children dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-bar-chart"></i>Charts</a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="menu-icon fa fa-cogs"></i>Настройки
+                    </a>
                     <ul class="sub-menu children dropdown-menu">
-                        <li><i class="menu-icon fa fa-line-chart"></i><a href="charts-chartjs.html">Chart JS</a></li>
-                        <li><i class="menu-icon fa fa-area-chart"></i><a href="charts-flot.html">Flot Chart</a></li>
-                        <li><i class="menu-icon fa fa-pie-chart"></i><a href="charts-peity.html">Peity Chart</a></li>
-                    </ul>
-                </li>
-
-                <li class="menu-item-has-children dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-area-chart"></i>Maps</a>
-                    <ul class="sub-menu children dropdown-menu">
-                        <li><i class="menu-icon fa fa-map-o"></i><a href="maps-gmap.html">Google Maps</a></li>
-                        <li><i class="menu-icon fa fa-street-view"></i><a href="maps-vector.html">Vector Maps</a></li>
-                    </ul>
-                </li>
-                <li class="menu-title">Extras</li><!-- /.menu-title -->
-                <li class="menu-item-has-children dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-glass"></i>Pages</a>
-                    <ul class="sub-menu children dropdown-menu">
-                        <li><i class="menu-icon fa fa-sign-in"></i><a href="page-login.html">Login</a></li>
-                        <li><i class="menu-icon fa fa-sign-in"></i><a href="page-register.html">Register</a></li>
-                        <li><i class="menu-icon fa fa-paper-plane"></i><a href="pages-forget.html">Forget Pass</a></li>
+                        <li><i class="fa fa-users"></i><a href="">Пользователи</a></li>
+                        <li><i class="fa fa-lock"></i><a href="">Роли и доступы</a></li>
+                        <li><i class="fa fa-cog"></i><a href="">Общие настройки</a></li>
+                        <li><i class="fa fa-envelope"></i><a href="">Email-шаблоны</a></li>
+                        <li><i class="fa fa-shield"></i><a href="">Безопасность</a></li>
                     </ul>
                 </li>
             </ul>
