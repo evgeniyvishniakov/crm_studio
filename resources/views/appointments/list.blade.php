@@ -91,9 +91,30 @@
     }
 
 
+    .btn-add-product {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 18px;
+        border-radius: 6px;
+        background: #2196f3;
+        color: #fff;
+        font-size: 1rem;
+        font-weight: 500;
+        border: none;
+        margin-top: 14px;
+        cursor: pointer;
+        transition: background 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 16px rgba(33,150,243,0.18), 0 1.5px 4px rgba(33,150,243,0.10);
+    }
     .btn-add-product .icon {
-        width: 1.25rem;
-        height: 1.25rem;
+        width: 1.1em;
+        height: 1.1em;
+        margin-right: 7px;
+        vertical-align: middle;
+    }
+    .btn-add-product:hover {
+        background: #1976d2;
+        box-shadow: 0 8px 24px rgba(33,150,243,0.22), 0 2px 8px rgba(33,150,243,0.13);
     }
     /* Стили для календаря */
     .calendar-wrapper {
@@ -579,6 +600,118 @@
         width: 16px;
         height: 16px;
     }
+
+    /* --- Новый стиль для модального окна просмотра --- */
+    .appointment-details-modal {
+        padding: 24px 16px 0 16px;
+        font-size: 1.05rem;
+    }
+    .details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 18px;
+    }
+    .client-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .client-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.7rem;
+        color: #2196f3;
+    }
+    .client-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    .status-block {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        color: #fff;
+    }
+    .status-pending { background: #FFC107; color: #222; }
+    .status-completed { background: #4CAF50; }
+    .status-cancelled { background: #F44336; }
+    .status-rescheduled { background: #FF9800; }
+    .details-row {
+        display: flex;
+        gap: 32px;
+        margin-bottom: 18px;
+    }
+    .details-label {
+        color: #888;
+        font-weight: 500;
+        margin-right: 4px;
+    }
+    .card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        padding: 18px 20px;
+        margin-bottom: 18px;
+    }
+    .card-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        color: #2196f3;
+    }
+    .procedure-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.08rem;
+    }
+    .procedure-price {
+        font-weight: 600;
+        color: #4CAF50;
+        font-size: 1.1rem;
+    }
+    .sales-card .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #bbb;
+        font-size: 1rem;
+        padding: 18px 0 8px 0;
+    }
+    .sales-card .empty-state svg {
+        width: 38px;
+        height: 38px;
+        margin-bottom: 8px;
+        opacity: 0.5;
+    }
+    .details-footer {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 12px;
+        border-top: 1px solid #eee;
+        padding: 18px 0 0 0;
+        margin-top: 10px;
+        font-size: 1.1rem;
+    }
+    .details-footer span {
+        margin-right: auto;
+        font-weight: 600;
+    }
+    @media (max-width: 600px) {
+        .details-header, .details-row, .details-footer { flex-direction: column; gap: 8px; align-items: flex-start; }
+        .card { padding: 12px 8px; }
+    } 
 </style>
 
 <div class="appointments-container">
@@ -1217,115 +1350,113 @@
 
         function renderViewAppointmentModal(data, modalBody) {
             const { appointment, sales = [], products = [] } = data;
-            temporaryProducts = [...sales]; // Инициализируем временный список товаров
-
+            temporaryProducts = [...sales];
             const servicePrice = parseFloat(appointment.price) || 0;
             const productsTotal = temporaryProducts.reduce((sum, sale) => {
                 const price = parseFloat(sale.price || 0);
                 return sum + (parseInt(sale.quantity) * price);
             }, 0);
-
             const totalAmount = servicePrice + productsTotal;
-
+            const statusNames = {
+                'pending': 'Ожидается',
+                'completed': 'Завершено',
+                'cancelled': 'Отменено',
+                'rescheduled': 'Перенесено'
+            };
             modalBody.innerHTML = `
-            <input type="hidden" id="appointmentId" value="${appointment.id}">
-            <input type="hidden" name="date" value="${appointment.date}">
-            <div class="appointment-details">
-                <div class="detail-row">
-                    <div class="detail-row-no-flex">
-                        <span class="detail-label">Дата:</span>
-                        <span class="detail-value">${new Date(appointment.date).toLocaleDateString('ru-RU')}</span>
-                    </div>
-                    <div class="detail-row-no-flex">
-                        <span class="detail-label">Время:</span>
-                        <span class="detail-value">${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</span>
-                    </div>
-                    <div class="detail-row-no-flex">
-                        <span class="detail-label">Клиент:</span>
-                        <span class="detail-value client-name">${escapeHtml(appointment.client.name)}${appointment.client.instagram ? ` (@${escapeHtml(appointment.client.instagram)})` : ''}</span>
-                    </div>
+    <input type="hidden" id="appointmentId" value="${appointment.id}">
+    <input type="hidden" name="date" value="${appointment.date}">
+    <div class="appointment-details-modal">
+        <div class="details-header">
+            <div class="client-info">
+                <div class="client-avatar">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32"><path d="M12 12c2.7 0 4.5-1.8 4.5-4.5S14.7 3 12 3 7.5 4.8 7.5 7.5 9.3 12 12 12zm0 2c-3 0-9 1.5-9 4.5V21h18v-2.5c0-3-6-4.5-9-4.5z"/></svg>
                 </div>
-                <div class="detail-row">
-                    <span class="detail-label">Статус:</span>
-                    <span class="detail-value">
-                        <span class="status-badge status-${appointment.status}">
-                            ${getStatusName(appointment.status)}
-                        </span>
-                    </span>
+                <div>
+                    <div class="client-name">${escapeHtml(appointment.client.name)}</div>
+                    ${appointment.client.instagram ? `<a href="https://instagram.com/${escapeHtml(appointment.client.instagram)}" target="_blank" style="color:#2196f3;">@${escapeHtml(appointment.client.instagram)}</a>` : ''}
                 </div>
-
-                <h3>Процедура</h3>
-                <div class="services-section">
-                    <div class="service-item">
-                        <span class="service-name">${escapeHtml(appointment.service.name)}</span>
-                        <span class="service-price">${Number(servicePrice) % 1 === 0 ? Number(servicePrice) : servicePrice.toFixed(2)} грн</span>
-                    </div>
-                </div>
-
-                <h3>Продажи</h3>
-                <div class="products-section">
-                    ${renderProductsList(temporaryProducts)}
-                    <button class="btn-add-product" id="showAddProductFormBtn">
-                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                        </svg>
-                        Добавить
-                    </button>
-                    <div id="addProductForm" style="display: none; margin-top: 20px;">
-                        <div class="form-row-appointment">
-                            <div class="form-group" style="flex: 2;">
-                                <label>Товар *</label>
-                                <div class="product-search-container">
-                                    <input type="text" class="product-search-input form-control"
-                                           id="productSearchInput"
-                                           placeholder="Начните вводить название товара..."
-                                           oninput="searchProducts(this)"
-                                           onfocus="showProductDropdown(this)">
-                                    <div class="product-dropdown" style="display: none;">
-                                        <div class="product-dropdown-list"></div>
-                                    </div>
-                                    <input type="hidden" id="selectedProductId" name="product_id">
+            </div>
+            <div class="status-block status-${appointment.status}">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><circle cx="9" cy="9" r="8"/></svg>
+                <span>${statusNames[appointment.status] || 'Ожидается'}</span>
+            </div>
+        </div>
+        <div class="details-row">
+            <div><span class="details-label">Дата:</span> ${new Date(appointment.date).toLocaleDateString('ru-RU')}</div>
+            <div><span class="details-label">Время:</span> ${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</div>
+        </div>
+        <div class="card procedure-card">
+            <div class="card-title">Процедура</div>
+            <div class="procedure-info">
+                <span class="service-name">${escapeHtml(appointment.service.name)}</span>
+                <span class="procedure-price">${Number(servicePrice) % 1 === 0 ? Number(servicePrice) : servicePrice.toFixed(2)} грн</span>
+            </div>
+        </div>
+        <div class="card sales-card">
+            <div class="card-title">Продажи</div>
+            <div class="products-section">
+                ${temporaryProducts.length === 0 ? `<div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z"/></svg>
+                    <div>Товары не добавлены</div>
+                </div>` : renderProductsList(temporaryProducts)}
+                <button class="btn-add-product" id="showAddProductFormBtn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    Добавить
+                </button>
+                <div id="addProductForm" style="display: none; margin-top: 20px;">
+                    <div class="form-row-appointment">
+                        <div class="form-group" style="flex: 2;">
+                            <label>Товар *</label>
+                            <div class="product-search-container">
+                                <input type="text" class="product-search-input form-control"
+                                       id="productSearchInput"
+                                       placeholder="Начните вводить название товара..."
+                                       oninput="searchProducts(this)"
+                                       onfocus="showProductDropdown(this)">
+                                <div class="product-dropdown" style="display: none;">
+                                    <div class="product-dropdown-list"></div>
                                 </div>
+                                <input type="hidden" id="selectedProductId" name="product_id">
                             </div>
-                        </div>
-                        <div id="productDetails" class="form-row-appointment" style="display: none; margin-top: 15px;">
-                            <div class="form-group-appointment" style="display: none;">
-                                <label>Количество *</label>
-                                <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
-                            </div>
-                            <div class="form-group-appointment" style="display: none;">
-                                <label>Опт</label>
-                                <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
-                            </div>
-                            <div class="form-group-appointment" style="display: none;">
-                                <label>Цена *</label>
-                                <input type="number" step="0.01" id="productPrice" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="form-actions" style="margin-top: 15px;">
-                            <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
-                            <button type="button" class="btn-submit" id="submitAddProduct">
-                                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                                </svg>
-                                Добавить
-                            </button>
                         </div>
                     </div>
+                    <div id="productDetails" class="form-row-appointment" style="display: none; margin-top: 15px;">
+                        <div class="form-group-appointment" style="display: none;">
+                            <label>Количество *</label>
+                            <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
+                        </div>
+                        <div class="form-group-appointment" style="display: none;">
+                            <label>Опт</label>
+                            <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
+                        </div>
+                        <div class="form-group-appointment" style="display: none;">
+                            <label>Цена *</label>
+                            <input type="number" step="0.01" id="productPrice" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-actions" style="margin-top: 15px;">
+                        <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
+                        <button type="button" class="btn-submit" id="submitAddProduct">
+                            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            Добавить
+                        </button>
+                    </div>
                 </div>
-
-                <div class="total-amount">
-                    <span class="total-label">Итого:</span>
-                    <span class="total-value">${Number(totalAmount) % 1 === 0 ? Number(totalAmount) : totalAmount.toFixed(2)} грн</span>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">Закрыть</button>
-                    <button type="button" class="btn-submit" id="saveAppointmentChanges">Сохранить изменения</button>
-                </div>
-            </div>`;
-
-            setupProductHandlers();
-        }
+            </div>
+        </div>
+        <div class="details-footer">
+            <span>Итого: <b>${Number(totalAmount) % 1 === 0 ? Number(totalAmount) : totalAmount.toFixed(2)} грн</b></span>
+            <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">Закрыть</button>
+            <button type="button" class="btn-submit" id="saveAppointmentChanges">Сохранить изменения</button>
+        </div>
+    </div>`;
+    setupProductHandlers();
+}
 
         function renderProductsList(sales) {
             if (!sales || sales.length === 0) return '<p>Товары не добавлены</p>';
@@ -1695,15 +1826,24 @@
         document.querySelector('.modal-footer')?.appendChild(document.getElementById('saveAppointmentChanges'));
 
         function updateTotalAmount() {
-            const servicePrice = parseFloat(document.querySelector('.service-item span:nth-child(2)')?.textContent || '0');
+            const modal = document.getElementById('viewAppointmentModal');
+            if (!modal) return;
+
+            // Получаем цену услуги
+            const priceText = modal.querySelector('.procedure-price')?.textContent;
+            const servicePrice = parseFloat(priceText?.replace('грн', '').trim()) || 0;
+
+            // Сумма товаров
             const productsTotal = temporaryProducts.reduce((sum, product) => {
                 return sum + (parseInt(product.quantity) * parseFloat(product.price));
             }, 0);
+
             const totalAmount = servicePrice + productsTotal;
 
-            const totalElement = document.querySelector('.total-value');
+            // Обновляем итог в футере
+            const totalElement = modal.querySelector('.details-footer span b');
             if (totalElement) {
-                totalElement.textContent = `${formatPrice(totalAmount)} грн`;
+                totalElement.textContent = `${Number(totalAmount) % 1 === 0 ? Number(totalAmount) : totalAmount.toFixed(2)} грн`;
             }
         }
 
@@ -2302,15 +2442,26 @@
             }
 
             // Get basic appointment data
-            const dateText = modal.querySelector('.detail-row:nth-child(1) .detail-value')?.textContent;
-            const timeElement = modal.querySelector('.detail-row-no-flex:nth-child(2) .detail-value');
-            const time = timeElement?.textContent?.trim();
-
-            console.log('Debug time:', {
-                timeElement,
-                timeText: timeElement?.textContent,
-                time
-            });
+            // Получаем дату и время из нового дизайна (текст после первого <span> внутри каждого div)
+                let time = '';
+                let dateText = '';
+                const detailsRow = modal.querySelector('.details-row');
+                if (detailsRow) {
+                    const divs = detailsRow.querySelectorAll('div');
+                    if (divs.length > 1) {
+                        // Дата
+                        const dateLabel = divs[0].querySelector('span');
+                        if (dateLabel && dateLabel.nextSibling) {
+                            dateText = dateLabel.nextSibling.textContent.trim();
+                        }
+                        // Время
+                        const timeLabel = divs[1].querySelector('span');
+                        if (timeLabel && timeLabel.nextSibling) {
+                            time = timeLabel.nextSibling.textContent.trim();
+                        }
+                    }
+                }
+                console.log('Debug time:', { time, dateText });
 
             // Получаем имя клиента из правильного элемента
             const clientElement = modal.querySelector('.client-name');
@@ -2325,7 +2476,7 @@
             const serviceElement = modal.querySelector('.service-name');
             const serviceName = serviceElement?.textContent?.trim();
 
-            const priceText = modal.querySelector('.service-price')?.textContent;
+            const priceText = modal.querySelector('.procedure-price')?.textContent;
             const price = parseFloat(priceText?.replace('грн', '').trim()) || 0;
 
             // Format date
@@ -2405,10 +2556,7 @@
                         calendar.refetchEvents();
                     }
 
-                    // Обновляем строку в таблице если она существует
-                    if (data.appointment) {
-                        updateAppointmentRow(data.appointment);
-                    }
+                
                 } else {
                     throw new Error(data.message || 'Ошибка сохранения');
                 }
