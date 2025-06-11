@@ -87,10 +87,10 @@
                 <li>
                     <a href="{{ route('appointments.index') }}"> <i class="menu-icon fa fa-calendar"></i>Записи</a>
                 </li>
-                
+
                 <li class="menu-title">Товарооборот</li>
 
-            
+
                 <li>
                     <a href="{{ route('warehouse.index') }}"><i class="menu-icon fa fa-dropbox"></i>Склад</a>
                 </li>
@@ -127,24 +127,20 @@
                         </li>
                         <li>
                             <i class="fa fa-folder-open"></i>
-                            <a href="">Категории товаров</a>
+                            <a href="{{ route('product-categories.index') }}">Категории товаров</a>
                         </li>
                         <li>
                             <i class="fa fa-certificate"></i>
-                            <a href="">Бренды товаров</a>
-                        </li>
-                        <li>
+                            <a href="{{ route('product-brands.index') }}">Бренды товаров</a>
+                </li>
+                <li>
                             <i class="fa fa-truck"></i>
-                            <a href="">Поставщики</a>
-                        </li>
+                            <a href="{{ route('suppliers.index') }}">Поставщики</a>
+                </li>
                         <li>
                             <i class="fa fa-id-badge"></i>
-                            <a href="">Типы клиентов</a>
-                        </li>
-                        <li>
-                            <i class="fa fa-users"></i>
-                            <a href="">Мастера</a>
-                        </li>
+                            <a href="{{ route('client-types.index') }}">Типы клиентов</a>
+                </li>
                     </ul>
                 </li>
                 <li class="menu-item-has-children dropdown">

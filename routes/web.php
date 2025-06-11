@@ -94,3 +94,12 @@ Route::get('/check-session', function () {
         'csrf_token' => csrf_token()
     ]);
 });
+
+Route::resource('product-categories', \App\Http\Controllers\ProductCategoryController::class)
+    ->except(['create', 'show']);
+Route::resource('product-brands', \App\Http\Controllers\ProductBrandController::class)
+    ->except(['create', 'show']);
+Route::resource('suppliers', \App\Http\Controllers\SupplierController::class)
+    ->except(['create', 'show']);
+Route::resource('client-types', \App\Http\Controllers\ClientTypeController::class)
+    ->except(['create', 'show']);

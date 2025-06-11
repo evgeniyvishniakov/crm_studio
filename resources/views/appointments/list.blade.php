@@ -711,7 +711,7 @@
     @media (max-width: 600px) {
         .details-header, .details-row, .details-footer { flex-direction: column; gap: 8px; align-items: flex-start; }
         .card { padding: 12px 8px; }
-    } 
+    }
 </style>
 
 <div class="appointments-container">
@@ -2556,7 +2556,7 @@
                         calendar.refetchEvents();
                     }
 
-                
+
                 } else {
                     throw new Error(data.message || 'Ошибка сохранения');
                 }
