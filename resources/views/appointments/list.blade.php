@@ -2,24 +2,6 @@
 
 @section('content')
 <style>
-    .notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 20px;
-        border-radius: 4px;
-        color: #fff;
-        z-index: 9999;
-        display: none;
-    }
-
-    .notification.success {
-        background-color: #4CAF50;
-    }
-
-    .notification.error {
-        background-color: #f44336;
-    }
 
     .status-badge {
         padding: 6px 12px;
@@ -793,7 +775,7 @@
                             {{ $statusNames[$appointment->status] ?? 'Ожидается' }}
                         </span>
                     </td>
-                    <td>{{ number_format($appointment->price) }} грн</td>
+                    <td>{{ rtrim(rtrim(number_format($appointment->price, 2, '.', ''), '0'), '.') }} грн</td>
                     <td>
                         <div class="appointment-actions actions-cell">
                             <button class="btn-view" data-appointment-id="{{ $appointment->id }}" title="Просмотр">
@@ -1932,7 +1914,8 @@
 
         function formatPrice(price) {
             const parsedPrice = parseFloat(price);
-            return parsedPrice % 1 === 0 ? parsedPrice.toString() : parsedPrice.toFixed(2);
+            if (isNaN(parsedPrice)) return price;
+            return Number.isInteger(parsedPrice) ? parsedPrice.toString() : parsedPrice.toFixed(2);
         }
 
         // Закрытие выпадающего списка при клике вне его
