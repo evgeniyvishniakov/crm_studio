@@ -65,7 +65,8 @@
 .btn-add-sale,
 .btn-add-service,
 .btn-add-appointment,
-.btn-add-expense{
+.btn-add-expense,
+.btn-add-product{
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1018,16 +1019,6 @@
         font-weight: bold;
         display: flex;
         justify-content: space-between;
-    }
-
-    .btn-add-product {
-        margin-top: 10px;
-        padding: 8px 15px;
-        color: #fff;
-        background-color: #28a745;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
     }
 
     #addProductForm {

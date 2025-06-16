@@ -2,6 +2,11 @@
 
 @section('content')
     <div class="warehouse-container">
+        <!-- Модальное окно для увеличенного изображения -->
+        <div id="imageModal" class="modal image-modal" onclick="closeImageModal()">
+            <img id="modalImage" class="modal-image-content" onclick="event.stopPropagation()">
+        </div>
+
         <div class="warehouse-header">
             <h1>Склад</h1>
             <div id="notification" class="notification">
@@ -722,3 +727,61 @@
         }
     </style>
 @endsection
+
+<style>
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9);
+    cursor: pointer;
+}
+
+.modal-image-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 90vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: default;
+}
+
+.product-photo {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.product-photo:hover {
+    transform: scale(1.1);
+}
+</style>
+
+<script>
+function openImageModal(imgElement) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    modalImg.src = imgElement.src;
+    modal.style.display = "block";
+}
+
+function closeImageModal() {
+    document.getElementById('imageModal').style.display = "none";
+}
+
+// Добавляем обработчики для всех изображений товаров
+document.addEventListener('DOMContentLoaded', function() {
+    const productImages = document.querySelectorAll('.product-photo');
+    productImages.forEach(img => {
+        img.onclick = function() {
+            openImageModal(this);
+        };
+    });
+});
+</script>

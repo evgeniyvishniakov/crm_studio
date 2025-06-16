@@ -10,7 +10,9 @@ class WarehouseController extends Controller
 {
     public function index()
     {
-        $warehouseItems = Warehouse::with('product')->get();
+        $warehouseItems = Warehouse::with('product')
+            ->where('quantity', '>', 0)
+            ->get();
         $products = Product::select('id', 'name', 'photo')->get();
         return view('warehouse.index', compact('warehouseItems', 'products'));
     }
