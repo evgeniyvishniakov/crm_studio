@@ -17,7 +17,12 @@ class ClientType extends Model
     ];
 
     protected $casts = [
-        'status' => 'boolean',
-        'discount' => 'decimal:2'
+        'discount' => 'decimal:2',
+        'status' => 'boolean'
     ];
+
+    public function clients()
+    {
+        return $this->hasMany(Client::class);
+    }
 }

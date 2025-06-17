@@ -103,3 +103,12 @@ Route::resource('suppliers', \App\Http\Controllers\SupplierController::class)
     ->except(['create', 'show']);
 Route::resource('client-types', \App\Http\Controllers\ClientTypeController::class)
     ->except(['create', 'show']);
+
+// Маршруты для типов клиентов
+Route::prefix('client-types')->group(function () {
+    Route::get('/', [ClientTypeController::class, 'index'])->name('client-types.index');
+    Route::post('/', [ClientTypeController::class, 'store'])->name('client-types.store');
+    Route::get('/{id}', [ClientTypeController::class, 'show'])->name('client-types.show');
+    Route::put('/{id}', [ClientTypeController::class, 'update'])->name('client-types.update');
+    Route::delete('/{id}', [ClientTypeController::class, 'destroy'])->name('client-types.destroy');
+});

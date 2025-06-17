@@ -5,12 +5,7 @@
     <div class="clients-container">
         <div class="clients-header">
             <h1>Клиенты</h1>
-            <div id="notification">
-                <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                </svg>
-                <span class="notification-message">Клиент успешно добавлен!</span>
-            </div>
+            <div id="notification"></div>
             <div class="header-actions">
                 <button class="btn-add-client" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -74,7 +69,18 @@
                             </div>
                         </td>
                         <td>
-                            <div class="client-status">{{ $client->status ?? 'Новый клиент' }}</div>
+                            <div class="client-status">
+                                @if($client->client_type_id)
+                                    <span class="client-type-badge" style="background-color: {{ $client->clientType->color ?? '#e5e7eb' }}">
+                                        {{ $client->clientType->name }}
+                                        @if($client->clientType->discount)
+                                            <span class="discount-badge">-{{ $client->clientType->discount }}%</span>
+                                        @endif
+                                    </span>
+                                @else
+                                    <span class="client-type-badge">Новый клиент</span>
+                                @endif
+                            </div>
                         </td>
                         <td class="actions-cell" style="vertical-align: middle;">
                             <button class="btn-view">
@@ -131,12 +137,19 @@
                         <input type="email" id="clientEmail" name="email">
                     </div>
                     <div class="form-group">
-                        <label for="clientStatus">Статус</label>
-                        <select id="clientStatus" name="status" class="form-control">
-                            <option value="new">Новый клиент</option>
-                            <option value="regular">Постоянный клиент</option>
-                            <option value="vip">VIP клиент</option>
+                        <label class="form-label">Тип клиента</label>
+                        <select class="form-control" name="client_type_id">
+                            <option value="">Выберите тип</option>
+                            @foreach($clientTypes as $type)
+                            <option value="{{ $type->id }}" data-discount="{{ $type->discount }}" data-description="{{ $type->description }}">
+                                {{ $type->name }}
+                                @if($type->discount)
+                                (Скидка: {{ $type->discount }}%)
+                                @endif
+                            </option>
+                            @endforeach
                         </select>
+                        <small class="form-text text-muted type-description"></small>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeModal()">Отмена</button>
@@ -188,12 +201,19 @@
                         <input type="email" id="editClientEmail" name="email">
                     </div>
                     <div class="form-group">
-                        <label for="editClientStatus">Статус</label>
-                        <select id="editClientStatus" name="status" class="form-control">
-                            <option value="new">Новый клиент</option>
-                            <option value="regular">Постоянный клиент</option>
-                            <option value="vip">VIP клиент</option>
+                        <label class="form-label">Тип клиента</label>
+                        <select class="form-control" name="client_type_id" id="editClientType">
+                            <option value="">Выберите тип</option>
+                            @foreach($clientTypes as $type)
+                            <option value="{{ $type->id }}" data-discount="{{ $type->discount }}" data-description="{{ $type->description }}">
+                                {{ $type->name }}
+                                @if($type->discount)
+                                (Скидка: {{ $type->discount }}%)
+                                @endif
+                            </option>
+                            @endforeach
                         </select>
+                        <small class="form-text text-muted edit-type-description"></small>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeEditModal()">Отмена</button>
@@ -203,6 +223,152 @@
             </div>
         </div>
     </div>
+
+    <!-- Модальное окно для просмотра клиента -->
+    <div id="viewClientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Информация о клиенте</h2>
+                <span class="close" onclick="closeViewModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="client-view-info">
+                    <div class="client-view-header">
+                        <div class="client-view-avatar" id="viewClientAvatar"></div>
+                        <div class="client-view-name" id="viewClientName"></div>
+                    </div>
+                    
+                    <div class="client-view-section">
+                        <h3>Тип клиента</h3>
+                        <div class="client-view-type" id="viewClientType"></div>
+                    </div>
+
+                    <div class="client-view-section">
+                        <h3>Контактная информация</h3>
+                        <div class="client-view-contacts" id="viewClientContacts"></div>
+                    </div>
+
+                    <div class="client-view-section">
+                        <h3>Социальные сети</h3>
+                        <div class="client-view-social" id="viewClientSocial"></div>
+                    </div>
+
+                    <div class="client-view-section">
+                        <h3>Дополнительная информация</h3>
+                        <div class="client-view-notes" id="viewClientNotes"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .client-type-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #1f2937;
+            background-color: #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .client-type-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .discount-badge {
+            margin-left: 4px;
+            padding: 2px 6px;
+            border-radius: 8px;
+            background-color: #10b981;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .client-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .client-view-info {
+            padding: 20px;
+        }
+
+        .client-view-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .client-view-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .client-view-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .client-view-section {
+            margin-bottom: 24px;
+        }
+
+        .client-view-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 12px;
+        }
+
+        .client-view-type {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f2937;
+            background-color: #e5e7eb;
+        }
+
+        .client-view-contacts,
+        .client-view-social,
+        .client-view-notes {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .client-view-contacts div,
+        .client-view-social div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4b5563;
+        }
+
+        .client-view-contacts i,
+        .client-view-social i {
+            width: 20px;
+            color: #6b7280;
+        }
+    </style>
 
     <script>
         // Функции для работы с модальным окном
@@ -313,7 +479,7 @@
             submitBtn.innerHTML = '<span class="loader"></span> Добавление...';
             submitBtn.disabled = true;
 
-            fetch("{{ route('clients.store') }}", {
+            fetch("/clients", {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -343,12 +509,12 @@
                         if (data.client.instagram) {
                             instagramLink = `
                     <a href="https://instagram.com/${data.client.instagram}" target="_blank" class="instagram-link">
-                        <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
-                        </svg>
-                        @${data.client.instagram}
-                    </a>
-                `;
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                                    </svg>
+                                    ${data.client.instagram}
+                                </a>
+                            `;
                         }
 
                         // Создаем HTML для новой строки
@@ -568,8 +734,7 @@
         });
         // Функции для работы с модальным окном редактирования
         function openEditModal(clientId) {
-            // Загружаем данные клиента
-            fetch(`/clients/${clientId}/edit`)
+            fetch(`/clients/${clientId}`)
                 .then(response => response.json())
                 .then(client => {
                     document.getElementById('editClientId').value = client.id;
@@ -577,13 +742,19 @@
                     document.getElementById('editClientInstagram').value = client.instagram || '';
                     document.getElementById('editClientPhone').value = client.phone || '';
                     document.getElementById('editClientEmail').value = client.email || '';
-                    document.getElementById('editClientStatus').value = client.status || 'new';
-
+                    document.getElementById('editClientType').value = client.client_type_id || '';
+                    
+                    // Обновляем описание типа клиента
+                    const typeSelect = document.getElementById('editClientType');
+                    const selectedOption = typeSelect.options[typeSelect.selectedIndex];
+                    const description = selectedOption.dataset.description;
+                    document.querySelector('.edit-type-description').textContent = description || '';
+                    
                     document.getElementById('editClientModal').style.display = 'block';
                 })
                 .catch(error => {
-                    console.error('Ошибка загрузки данных:', error);
-                    showNotification('error', 'Не удалось загрузить данные клиента');
+                    console.error('Ошибка при получении данных клиента:', error);
+                    showNotification('Ошибка при загрузке данных клиента', 'error');
                 });
         }
 
@@ -664,36 +835,49 @@
                 initials.textContent = getInitials(client.name);
             }
 
-            // Обновляем имя и статус
-            const nameElement = row.querySelector('.client-name');
-            if (nameElement) nameElement.textContent = client.name;
-
-            const statusElement = row.querySelector('.client-status');
-            if (statusElement) {
-                statusElement.textContent =
-                    client.status === 'new' ? 'Новый клиент' :
-                        client.status === 'regular' ? 'Постоянный клиент' : 'VIP клиент';
-            }
+            // Обновляем имя
+            const nameCell = row.querySelector('.client-name');
+            if (nameCell) nameCell.textContent = client.name;
 
             // Обновляем Instagram
-            const instagramCell = row.querySelector('td:nth-child(2)');
+            const instagramCell = row.querySelector('.instagram-link');
             if (instagramCell) {
-                instagramCell.innerHTML = client.instagram ? `
-            <a href="https://instagram.com/${client.instagram}" target="_blank" class="instagram-link">
-                <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
-                </svg>
-                @${client.instagram}
-            </a>
-        ` : '';
+                if (client.instagram) {
+                    instagramCell.href = `https://instagram.com/${client.instagram}`;
+                    instagramCell.textContent = client.instagram;
+                    instagramCell.style.display = 'inline-flex';
+                } else {
+                    instagramCell.style.display = 'none';
+                }
             }
 
-            // Обновляем телефон и email
-            const phoneCell = row.querySelector('td:nth-child(3)');
-            if (phoneCell) phoneCell.textContent = client.phone || '';
+            // Обновляем контакты
+            const contactsCell = row.querySelector('.contacts-details');
+            if (contactsCell) {
+                let contactsHtml = '';
+                if (client.phone) {
+                    contactsHtml += `<div class="phone"><i class="fa fa-phone"></i> ${client.phone}</div>`;
+                }
+                if (client.email) {
+                    contactsHtml += `<div class="email"><i class="fa fa-envelope"></i> ${client.email}</div>`;
+                }
+                contactsCell.innerHTML = contactsHtml;
+            }
 
-            const emailCell = row.querySelector('td:nth-child(4)');
-            if (emailCell) emailCell.textContent = client.email || '';
+            // Обновляем тип клиента
+            const typeCell = row.querySelector('.client-status');
+            if (typeCell) {
+                if (client.client_type) {
+                    typeCell.innerHTML = `
+                        <span class="client-type-badge" style="background-color: ${client.client_type.color || '#e5e7eb'}">
+                            ${client.client_type.name}
+                            ${client.client_type.discount ? `<span class="discount-badge">-${client.client_type.discount}%</span>` : ''}
+                        </span>
+                    `;
+                } else {
+                    typeCell.innerHTML = '<span class="client-type-badge">Новый клиент</span>';
+                }
+            }
         }
 
         // Обновите функцию showErrors для работы с формой редактирования
@@ -725,6 +909,115 @@
             }
         }
 
+        // Добавляем обработчик изменения типа клиента
+        document.querySelectorAll('select[name="client_type_id"]').forEach(select => {
+            select.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const description = selectedOption.dataset.description;
+                const descriptionElement = this.parentElement.querySelector('.type-description');
+                
+                if (description) {
+                    descriptionElement.textContent = description;
+                } else {
+                    descriptionElement.textContent = '';
+                }
+            });
+        });
 
+        // Обработчик изменения типа клиента в форме добавления
+        document.querySelector('select[name="client_type_id"]').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const description = selectedOption.dataset.description;
+            document.querySelector('.type-description').textContent = description || '';
+        });
+
+        // Обработчик изменения типа клиента в форме редактирования
+        document.querySelector('#editClientType').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const description = selectedOption.dataset.description;
+            document.querySelector('.edit-type-description').textContent = description || '';
+        });
+
+        // Функция для открытия модального окна просмотра
+        function openViewModal(clientId) {
+            fetch(`/clients/${clientId}`)
+                .then(response => response.json())
+                .then(client => {
+                    // Устанавливаем имя и аватар
+                    document.getElementById('viewClientName').textContent = client.name;
+                    const avatar = document.getElementById('viewClientAvatar');
+                    avatar.textContent = getInitials(client.name);
+                    avatar.style.backgroundColor = getAvatarColor(client.name);
+                    avatar.style.color = getAvatarTextColor(client.name);
+
+                    // Устанавливаем тип клиента
+                    const typeContainer = document.getElementById('viewClientType');
+                    if (client.client_type) {
+                        typeContainer.innerHTML = `
+                            <span class="client-type-badge" style="background-color: ${client.client_type.color || '#e5e7eb'}">
+                                ${client.client_type.name}
+                                ${client.client_type.discount ? `<span class="discount-badge">-${client.client_type.discount}%</span>` : ''}
+                            </span>
+                            ${client.client_type.description ? `<div class="type-description">${client.client_type.description}</div>` : ''}
+                        `;
+                    } else {
+                        typeContainer.innerHTML = '<span class="client-type-badge">Новый клиент</span>';
+                    }
+
+                    // Устанавливаем контактную информацию
+                    const contactsContainer = document.getElementById('viewClientContacts');
+                    contactsContainer.innerHTML = '';
+                    if (client.phone) {
+                        contactsContainer.innerHTML += `<div><i class="fa fa-phone"></i> ${client.phone}</div>`;
+                    }
+                    if (client.email) {
+                        contactsContainer.innerHTML += `<div><i class="fa fa-envelope"></i> ${client.email}</div>`;
+                    }
+
+                    // Устанавливаем социальные сети
+                    const socialContainer = document.getElementById('viewClientSocial');
+                    socialContainer.innerHTML = '';
+                    if (client.instagram) {
+                        socialContainer.innerHTML += `
+                            <div>
+                                <i class="fa fa-instagram"></i>
+                                <a href="https://instagram.com/${client.instagram}" target="_blank">${client.instagram}</a>
+                            </div>
+                        `;
+                    }
+                    if (client.telegram) {
+                        socialContainer.innerHTML += `
+                            <div>
+                                <i class="fa fa-telegram"></i>
+                                <a href="https://t.me/${client.telegram}" target="_blank">${client.telegram}</a>
+                            </div>
+                        `;
+                    }
+
+                    // Устанавливаем дополнительные заметки
+                    const notesContainer = document.getElementById('viewClientNotes');
+                    notesContainer.innerHTML = client.notes || 'Нет дополнительной информации';
+
+                    // Открываем модальное окно
+                    document.getElementById('viewClientModal').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Ошибка при получении данных клиента:', error);
+                    showNotification('Ошибка при загрузке данных клиента', 'error');
+                });
+        }
+
+        // Функция для закрытия модального окна просмотра
+        function closeViewModal() {
+            document.getElementById('viewClientModal').style.display = 'none';
+        }
+
+        // Обновляем обработчики кнопок просмотра
+        document.querySelectorAll('.btn-view').forEach(button => {
+            button.addEventListener('click', function() {
+                const clientId = this.closest('tr').id.split('-')[1];
+                openViewModal(clientId);
+            });
+        });
     </script>
 @endsection

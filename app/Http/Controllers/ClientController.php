@@ -4,18 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Client;
+use App\Models\ClientType;
+use Illuminate\Support\Facades\Validator;
+
 class ClientController extends Controller
 {
     public function index()
     {
-        $clients = Client::all(); // или пагинация: Client::paginate(10);
-        return view('clients.list', compact('clients'));
+        $clients = Client::with('clientType')->get();
+        $clientTypes = ClientType::where('status', true)->get();
+        return view('clients.list', compact('clients', 'clientTypes'));
     }
 
     public function show($id)
     {
-        $client = Client::findOrFail($id);
-        return view('clients.show', compact('client'));
+        $client = Client::with(['clientType', 'sales', 'appointments'])->findOrFail($id);
+        return response()->json($client);
     }
 
     public function create()
@@ -25,128 +29,101 @@ class ClientController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'instagram' => 'nullable|string|max:255',
-                'phone' => 'nullable|string|max:20',
-                'email' => 'nullable|email|max:255',
-                'status' => 'nullable|string|in:new,regular,vip'
-            ], [
-                'name.required' => 'Поле "Имя" обязательно для заполнения.',
-                'email.email' => 'Укажите корректный email.',
-                'status.in' => 'Недопустимый статус.'
-            ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'instagram' => 'nullable|string|max:255',
+            'telegram' => 'nullable|string|max:255',
+            'client_type_id' => 'nullable|exists:client_types,id',
+            'birth_date' => 'nullable|date',
+            'notes' => 'nullable|string'
+        ]);
 
-            // Проверка уникальности только для заполненных полей
-            $errors = [];
-
-            if (!empty($validated['instagram'])) {
-                $exists = Client::where('instagram', $validated['instagram'])
-                    ->whereNotNull('instagram')
-                    ->exists();
-                if ($exists) {
-                    $errors['instagram'] = ['Этот Instagram уже используется'];
-                }
-            }
-
-            if (!empty($validated['phone'])) {
-                $exists = Client::where('phone', $validated['phone'])
-                    ->whereNotNull('phone')
-                    ->exists();
-                if ($exists) {
-                    $errors['phone'] = ['Этот номер телефона уже используется'];
-                }
-            }
-
-            if (!empty($validated['email'])) {
-                $exists = Client::where('email', $validated['email'])
-                    ->whereNotNull('email')
-                    ->exists();
-                if ($exists) {
-                    $errors['email'] = ['Этот email уже используется'];
-                }
-            }
-
-            if (!empty($errors)) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => $errors
-                ], 422);
-            }
-
-            $client = Client::create($validated);
-
-            return response()->json([
-                'success' => true,
-                'client' => $client
-            ]);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $e->errors()
+                'message' => 'Ошибка валидации',
+                'errors' => $validator->errors()
             ], 422);
+        }
+
+        try {
+            $client = Client::create($request->all());
+            $client = Client::with('clientType')->find($client->id);
+            return response()->json([
+                'success' => true,
+                'message' => 'Клиент успешно добавлен',
+                'client' => $client
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Произошла ошибка: ' . $e->getMessage()
+                'message' => 'Ошибка при добавлении клиента: ' . $e->getMessage()
             ], 500);
         }
     }
-    public function destroy(Client $client)
+
+    public function destroy($id)
     {
         try {
+            $client = Client::findOrFail($id);
             $client->delete();
-
             return response()->json([
                 'success' => true,
                 'message' => 'Клиент успешно удален'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка при удалении клиента'
+                'message' => 'Ошибка при удалении клиента: ' . $e->getMessage()
             ], 500);
         }
     }
+
     public function edit(Client $client)
     {
         return response()->json($client);
     }
-    public function update(Request $request, Client $client)
+
+    public function update(Request $request, $id)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'instagram' => 'nullable|string|max:255|unique:clients,instagram,'.$client->id,
-            'phone' => 'nullable|string|max:20|unique:clients,phone,'.$client->id,
-            'email' => 'nullable|email|max:255|unique:clients,email,'.$client->id,
-            'status' => 'nullable|string|in:new,regular,vip'
-        ], [
-            'name.required' => 'Поле "Имя" обязательно для заполнения.',
-            'email.email' => 'Укажите корректный email.',
-            'instagram.unique' => 'Этот Instagram уже используется.',
-            'phone.unique' => 'Этот номер телефона уже используется.',
-            'email.unique' => 'Этот email уже используется.',
-            'status.in' => 'Недопустимый статус.'
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'instagram' => 'nullable|string|max:255',
+            'telegram' => 'nullable|string|max:255',
+            'client_type_id' => 'nullable|exists:client_types,id',
+            'birth_date' => 'nullable|date',
+            'notes' => 'nullable|string'
         ]);
 
-        try {
-            $client->update($validated);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
+        try {
+            $client = Client::findOrFail($id);
+            $client->update($request->all());
+            $client = Client::with('clientType')->find($id);
             return response()->json([
                 'success' => true,
+                'message' => 'Клиент успешно обновлен',
                 'client' => $client
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка при обновлении клиента'
+                'message' => 'Ошибка при обновлении клиента: ' . $e->getMessage()
             ], 500);
         }
     }
+
     public function checkExisting(Request $request)
     {
         $field = $request->query('field');
@@ -164,5 +141,9 @@ class ClientController extends Controller
         return response()->json(['exists' => $exists]);
     }
 
-
+    public function history($id)
+    {
+        $client = Client::with(['sales', 'appointments'])->findOrFail($id);
+        return view('clients.history', compact('client'));
+    }
 }

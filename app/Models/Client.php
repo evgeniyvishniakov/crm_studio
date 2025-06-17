@@ -11,10 +11,38 @@ class Client extends Model
 
     protected $fillable = [
         'name',
-        'instagram',
         'phone',
         'email',
+        'instagram',
         'telegram',
-        'status'
+        'client_type_id',
+        'notes',
+        'birth_date',
+        'is_active'
     ];
+
+    protected $casts = [
+        'birth_date' => 'date',
+        'is_active' => 'boolean'
+    ];
+
+    public function clientType()
+    {
+        return $this->belongsTo(ClientType::class);
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function getDiscountAttribute()
+    {
+        return $this->clientType ? $this->clientType->discount : 0;
+    }
 }
