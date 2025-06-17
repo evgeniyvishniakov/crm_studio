@@ -226,36 +226,63 @@
 
     <!-- Модальное окно для просмотра клиента -->
     <div id="viewClientModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
                 <h2>Информация о клиенте</h2>
                 <span class="close" onclick="closeViewModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <div class="client-view-info">
-                    <div class="client-view-header">
-                        <div class="client-view-avatar" id="viewClientAvatar"></div>
-                        <div class="client-view-name" id="viewClientName"></div>
-                    </div>
-                    
-                    <div class="client-view-section">
-                        <h3>Тип клиента</h3>
-                        <div class="client-view-type" id="viewClientType"></div>
-                    </div>
-
-                    <div class="client-view-section">
-                        <h3>Контактная информация</h3>
-                        <div class="client-view-contacts" id="viewClientContacts"></div>
-                    </div>
-
-                    <div class="client-view-section">
-                        <h3>Социальные сети</h3>
-                        <div class="client-view-social" id="viewClientSocial"></div>
+                <div class="appointment-details-modal">
+                    <div class="details-header">
+                        <div class="client-info">
+                            <div class="client-avatar" id="viewClientAvatar">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+                                    <path d="M12 12c2.7 0 4.5-1.8 4.5-4.5S14.7 3 12 3 7.5 4.8 7.5 7.5 9.3 12 12 12zm0 2c-3 0-9 1.5-9 4.5V21h18v-2.5c0-3-6-4.5-9-4.5z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="client-name" id="viewClientName"></div>
+                                <div id="viewClientInstagram"></div>
+                            </div>
+                        </div>
+                        <div class="client-type-block" id="viewClientType"></div>
                     </div>
 
-                    <div class="client-view-section">
-                        <h3>Дополнительная информация</h3>
-                        <div class="client-view-notes" id="viewClientNotes"></div>
+                    <div class="details-row" id="viewClientContacts">
+                        <!-- Контактная информация будет добавлена через JavaScript -->
+                    </div>
+
+                    <div class="card procedures-card">
+                        <div class="card-title accordion-header" onclick="toggleAccordion('proceduresAccordion')">
+                            Процедуры
+                            <svg class="accordion-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </div>
+                        <div class="accordion-content" id="proceduresAccordion">
+                            <div class="procedures-list" id="viewClientProcedures">
+                                <!-- Список процедур будет добавлен через JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card sales-card">
+                        <div class="card-title accordion-header" onclick="toggleAccordion('salesAccordion')">
+                            Продажи
+                            <svg class="accordion-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7 10l5 5 5-5z"/>
+                            </svg>
+                        </div>
+                        <div class="accordion-content" id="salesAccordion">
+                            <div class="products-section" id="viewClientProducts">
+                                <!-- Список товаров будет добавлен через JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="details-footer">
+                        <span>Итого: <b id="viewClientTotal">0 грн</b></span>
+                        <button type="button" class="btn-cancel" onclick="closeViewModal()">Закрыть</button>
                     </div>
                 </div>
             </div>
@@ -368,6 +395,349 @@
             width: 20px;
             color: #6b7280;
         }
+
+        .appointment-details-modal {
+            padding: 20px;
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .client-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .client-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e5e7eb;
+        }
+
+        .client-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .client-type-block {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .details-row {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .accordion-icon {
+            width: 24px;
+            height: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-header.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 16px 0;
+        }
+
+        .accordion-content.active {
+            display: block;
+        }
+
+        .procedures-list, .products-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .procedure-item, .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .details-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn-cancel, .btn-submit {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-submit {
+            background: #2563eb;
+            color: white;
+            border: none;
+        }
+
+        .btn-cancel:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-submit:hover {
+            background: #1d4ed8;
+        }
+
+        .procedure-item {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .procedure-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .procedure-name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 16px;
+        }
+
+        .procedure-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .procedure-status.completed {
+            background-color: #dcfce7;
+            color: #059669;
+        }
+
+        .procedure-status.pending {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .procedure-status.cancelled {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .procedure-status.rescheduled {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+
+        .procedure-details {
+            display: flex;
+            gap: 16px;
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .procedure-date, .procedure-price {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .procedure-notes {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .procedure-notes .icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            color: #9ca3af;
+        }
+
+        .sale-item {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .sale-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .sale-date {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .sale-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .sale-status.completed {
+            background-color: #dcfce7;
+            color: #059669;
+        }
+
+        .sale-status.pending {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .sale-status.cancelled {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .sale-status.refunded {
+            background-color: #dbeafe;
+            color: #2563eb;
+        }
+
+        .sale-products {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: #ffffff;
+            border-radius: 6px;
+        }
+
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .product-name {
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .product-quantity {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .product-price {
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .sale-notes {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .sale-notes .icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
     </style>
 
     <script>
@@ -391,6 +761,8 @@
 
         // Функция для генерации цвета аватара
         function getAvatarColor(name) {
+            if (!name) return '#e5e7eb';
+
             const colors = ['#dbeafe', '#f3e8ff', '#fce7f3', '#fef3c7', '#dcfce7', '#e0f2fe'];
             const hash = name.split('').reduce((acc, char) => char.charCodeAt(0) + acc, 0);
             return colors[hash % colors.length];
@@ -398,6 +770,8 @@
 
         // Функция для генерации цвета текста аватара
         function getAvatarTextColor(name) {
+            if (!name) return '#6b7280';
+
             const colors = ['#2563eb', '#7c3aed', '#db2777', '#d97706', '#059669', '#0369a1'];
             const hash = name.split('').reduce((acc, char) => char.charCodeAt(0) + acc, 0);
             return colors[hash % colors.length];
@@ -405,10 +779,31 @@
 
         // Функция для получения инициалов
         function getInitials(name) {
+            if (!name) return '??';
+
             const parts = name.split(' ');
             return parts.length >= 2
                 ? `${parts[0][0]}${parts[1][0]}`.toUpperCase()
                 : name.substring(0, 2).toUpperCase();
+        }
+
+        // Функция для инициализации аватара
+        function initializeAvatar(avatar) {
+            if (!avatar) return;
+
+            const name = avatar.dataset.name;
+            if (!name) return;
+
+            try {
+                avatar.style.backgroundColor = getAvatarColor(name);
+                const initials = avatar.querySelector('span');
+                if (initials) {
+                    initials.style.color = getAvatarTextColor(name);
+                    initials.textContent = getInitials(name);
+                }
+            } catch (error) {
+                console.error('Ошибка при инициализации аватара:', error);
+            }
         }
 
         // Функция для показа уведомлений
@@ -587,10 +982,7 @@
 
         // Инициализация аватаров клиентов
         document.querySelectorAll('.client-avatar').forEach(avatar => {
-            const name = avatar.dataset.name;
-            avatar.style.backgroundColor = getAvatarColor(name);
-            avatar.querySelector('span').style.color = getAvatarTextColor(name);
-            avatar.querySelector('span').textContent = getInitials(name);
+            initializeAvatar(avatar);
         });
 
         // Проверка существующих данных при вводе (on blur)
@@ -726,12 +1118,12 @@
 
         // Закрытие модального окна при клике вне его
         window.addEventListener('click', function(event) {
-            if (event.target === document.getElementById('confirmationModal')) {
-                document.getElementById('confirmationModal').style.display = 'none';
-                currentDeleteRow = null;
-                currentDeleteId = null;
+            const modal = document.getElementById('viewClientModal');
+            if (event.target === modal) {
+                closeViewModal();
             }
         });
+
         // Функции для работы с модальным окном редактирования
         function openEditModal(clientId) {
             fetch(`/clients/${clientId}`)
@@ -743,13 +1135,13 @@
                     document.getElementById('editClientPhone').value = client.phone || '';
                     document.getElementById('editClientEmail').value = client.email || '';
                     document.getElementById('editClientType').value = client.client_type_id || '';
-                    
+
                     // Обновляем описание типа клиента
                     const typeSelect = document.getElementById('editClientType');
                     const selectedOption = typeSelect.options[typeSelect.selectedIndex];
                     const description = selectedOption.dataset.description;
                     document.querySelector('.edit-type-description').textContent = description || '';
-                    
+
                     document.getElementById('editClientModal').style.display = 'block';
                 })
                 .catch(error => {
@@ -915,7 +1307,7 @@
                 const selectedOption = this.options[this.selectedIndex];
                 const description = selectedOption.dataset.description;
                 const descriptionElement = this.parentElement.querySelector('.type-description');
-                
+
                 if (description) {
                     descriptionElement.textContent = description;
                 } else {
@@ -940,84 +1332,356 @@
 
         // Функция для открытия модального окна просмотра
         function openViewModal(clientId) {
+            if (!clientId) {
+                console.error('ID клиента не указан');
+                return;
+            }
+
+            const modal = document.getElementById('viewClientModal');
+            if (!modal) {
+                console.error('Модальное окно не найдено');
+                return;
+            }
+
+            modal.style.display = 'block';
+
             fetch(`/clients/${clientId}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(client => {
+                    if (!client) {
+                        throw new Error('Данные клиента не получены');
+                    }
+
+                    console.log('Client data:', client);
+                    console.log('Appointments:', client.appointments);
+                    console.log('Sales:', client.sales);
+
                     // Устанавливаем имя и аватар
-                    document.getElementById('viewClientName').textContent = client.name;
+                    const nameElement = document.getElementById('viewClientName');
                     const avatar = document.getElementById('viewClientAvatar');
-                    avatar.textContent = getInitials(client.name);
-                    avatar.style.backgroundColor = getAvatarColor(client.name);
-                    avatar.style.color = getAvatarTextColor(client.name);
+
+                    if (nameElement && client.name) {
+                        nameElement.textContent = client.name;
+                    }
+
+                    if (avatar) {
+                        const initials = getInitials(client.name || '');
+                        const bgColor = getAvatarColor(client.name);
+                        const textColor = getAvatarTextColor(client.name);
+
+                        avatar.innerHTML = `<span style="color: ${textColor};">${initials}</span>`;
+                        avatar.style.backgroundColor = bgColor;
+                    }
+
+                    // Устанавливаем Instagram
+                    const instagramContainer = document.getElementById('viewClientInstagram');
+                    if (instagramContainer) {
+                        if (client.instagram) {
+                            instagramContainer.innerHTML = `
+                                <a href="https://instagram.com/${client.instagram}" target="_blank" style="color:#2196f3;">
+                                    @${client.instagram}
+                                </a>
+                            `;
+                        } else {
+                            instagramContainer.innerHTML = '';
+                        }
+                    }
 
                     // Устанавливаем тип клиента
                     const typeContainer = document.getElementById('viewClientType');
-                    if (client.client_type) {
-                        typeContainer.innerHTML = `
-                            <span class="client-type-badge" style="background-color: ${client.client_type.color || '#e5e7eb'}">
-                                ${client.client_type.name}
-                                ${client.client_type.discount ? `<span class="discount-badge">-${client.client_type.discount}%</span>` : ''}
-                            </span>
-                            ${client.client_type.description ? `<div class="type-description">${client.client_type.description}</div>` : ''}
-                        `;
-                    } else {
-                        typeContainer.innerHTML = '<span class="client-type-badge">Новый клиент</span>';
+                    if (typeContainer) {
+                        if (client.client_type) {
+                            typeContainer.innerHTML = `
+                                <span class="client-type-badge" style="background-color: ${client.client_type.color || '#e5e7eb'}">
+                                    ${client.client_type.name}
+                                    ${client.client_type.discount ? `<span class="discount-badge">-${client.client_type.discount}%</span>` : ''}
+                                </span>
+                            `;
+                        } else {
+                            typeContainer.innerHTML = '<span class="client-type-badge">Новый клиент</span>';
+                        }
                     }
 
                     // Устанавливаем контактную информацию
                     const contactsContainer = document.getElementById('viewClientContacts');
-                    contactsContainer.innerHTML = '';
-                    if (client.phone) {
-                        contactsContainer.innerHTML += `<div><i class="fa fa-phone"></i> ${client.phone}</div>`;
-                    }
-                    if (client.email) {
-                        contactsContainer.innerHTML += `<div><i class="fa fa-envelope"></i> ${client.email}</div>`;
-                    }
-
-                    // Устанавливаем социальные сети
-                    const socialContainer = document.getElementById('viewClientSocial');
-                    socialContainer.innerHTML = '';
-                    if (client.instagram) {
-                        socialContainer.innerHTML += `
-                            <div>
-                                <i class="fa fa-instagram"></i>
-                                <a href="https://instagram.com/${client.instagram}" target="_blank">${client.instagram}</a>
-                            </div>
-                        `;
-                    }
-                    if (client.telegram) {
-                        socialContainer.innerHTML += `
-                            <div>
-                                <i class="fa fa-telegram"></i>
-                                <a href="https://t.me/${client.telegram}" target="_blank">${client.telegram}</a>
-                            </div>
-                        `;
+                    if (contactsContainer) {
+                        let contactsHtml = '';
+                        if (client.phone) {
+                            contactsHtml += `
+                                <div class="contact-item">
+                                    <span class="contact-label">Телефон:</span>
+                                    <span class="contact-value">${client.phone}</span>
+                                </div>
+                            `;
+                        }
+                        if (client.email) {
+                            contactsHtml += `
+                                <div class="contact-item">
+                                    <span class="contact-label">Email:</span>
+                                    <span class="contact-value">${client.email}</span>
+                                </div>
+                            `;
+                        }
+                        contactsContainer.innerHTML = contactsHtml;
                     }
 
-                    // Устанавливаем дополнительные заметки
-                    const notesContainer = document.getElementById('viewClientNotes');
-                    notesContainer.innerHTML = client.notes || 'Нет дополнительной информации';
+                    // Устанавливаем процедуры
+                    const proceduresContainer = document.getElementById('viewClientProcedures');
+                    if (proceduresContainer) {
+                        if (client.appointments && client.appointments.length > 0) {
+                            let proceduresHtml = '';
+                            client.appointments.forEach(appointment => {
+                                console.log('Processing appointment:', appointment);
 
-                    // Открываем модальное окно
-                    document.getElementById('viewClientModal').style.display = 'block';
+                                // Форматируем дату и время
+                                let formattedDate = 'Дата не указана';
+                                let formattedTime = '';
+
+                                if (appointment.date) {
+                                    try {
+                                        // Пробуем разные форматы даты
+                                        let date;
+                                        if (appointment.date.includes('T')) {
+                                            // Формат ISO
+                                            date = new Date(appointment.date);
+                                        } else if (appointment.date.includes('-')) {
+                                            // Формат YYYY-MM-DD
+                                            const [year, month, day] = appointment.date.split('-');
+                                            date = new Date(year, month - 1, day);
+                                        } else if (appointment.date.includes('.')) {
+                                            // Формат DD.MM.YYYY
+                                            const [day, month, year] = appointment.date.split('.');
+                                            date = new Date(year, month - 1, day);
+                                        }
+
+                                        if (date && !isNaN(date.getTime())) {
+                                            formattedDate = date.toLocaleDateString('ru-RU');
+                                        }
+                                    } catch (error) {
+                                        console.error('Error parsing date:', error);
+                                    }
+                                }
+
+                                if (appointment.time) {
+                                    try {
+                                        // Форматируем время
+                                        const timeParts = appointment.time.split(':');
+                                        if (timeParts.length >= 2) {
+                                            const hours = timeParts[0].padStart(2, '0');
+                                            const minutes = timeParts[1].padStart(2, '0');
+                                            formattedTime = `${hours}:${minutes}`;
+                                        }
+                                    } catch (error) {
+                                        console.error('Error parsing time:', error);
+                                    }
+                                }
+
+                                proceduresHtml += `
+                                    <div class="procedure-item">
+                                        <div class="procedure-info">
+                                            <div class="procedure-header">
+                                                <span class="procedure-name">${appointment.service ? appointment.service.name : 'Неизвестная услуга'}</span>
+                                                <span class="procedure-status ${appointment.status || 'pending'}">${getStatusText(appointment.status)}</span>
+                                            </div>
+                                            <div class="procedure-details">
+                                                <span class="procedure-date">
+                                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    ${formattedDate} ${formattedTime ? formattedTime : ''}
+                                                </span>
+                                                <span class="procedure-price">
+                                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    ${appointment.price || 0} грн
+                                                </span>
+                                            </div>
+                                            ${appointment.notes ? `
+                                                <div class="procedure-notes">
+                                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    ${appointment.notes}
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            proceduresContainer.innerHTML = proceduresHtml;
+                        } else {
+                            proceduresContainer.innerHTML = `
+                                <div class="empty-state">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z"/>
+                                    </svg>
+                                    <div>Нет выполненных процедур</div>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    // Устанавливаем продажи
+                    const productsContainer = document.getElementById('viewClientProducts');
+                    if (productsContainer) {
+                        if (client.sales && client.sales.length > 0) {
+                            let productsHtml = '';
+                            let totalAmount = 0;
+
+                            client.sales.forEach(sale => {
+                                console.log('Processing sale:', sale);
+
+                                // Форматируем дату продажи
+                                let formattedDate = 'Дата не указана';
+                                if (sale.created_at) {
+                                    try {
+                                        const date = new Date(sale.created_at);
+                                        if (!isNaN(date.getTime())) {
+                                            formattedDate = date.toLocaleDateString('ru-RU');
+                                        }
+                                    } catch (error) {
+                                        console.error('Error parsing sale date:', error);
+                                    }
+                                }
+
+                                totalAmount += sale.total_amount || 0;
+
+                                productsHtml += `
+                                    <div class="sale-item">
+                                        <div class="sale-header">
+                                            <span class="sale-date">
+                                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                                </svg>
+                                                ${formattedDate}
+                                            </span>
+                                            <span class="sale-status ${sale.status || 'completed'}">${getSaleStatusText(sale.status)}</span>
+                                        </div>
+                                        <div class="sale-products">
+                                            ${sale.items ? sale.items.map(item => `
+                                                <div class="product-item">
+                                                    <div class="product-info">
+                                                        <span class="product-name">${item.product ? item.product.name : 'Неизвестный товар'}</span>
+                                                        <span class="product-quantity">${item.quantity || 1} шт.</span>
+                                                    </div>
+                                                    <span class="product-price">${(item.retail_price || 0) * (item.quantity || 1)} грн</span>
+                                                </div>
+                                            `).join('') : ''}
+                                        </div>
+                                        ${sale.notes ? `
+                                            <div class="sale-notes">
+                                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                                </svg>
+                                                ${sale.notes}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            });
+
+                            productsContainer.innerHTML = productsHtml;
+                            const totalElement = document.getElementById('viewClientTotal');
+                            if (totalElement) {
+                                totalElement.textContent = `${totalAmount} грн`;
+                            }
+                        } else {
+                            productsContainer.innerHTML = `
+                                <div class="empty-state">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z"/>
+                                    </svg>
+                                    <div>Нет продаж</div>
+                                </div>
+                            `;
+                            const totalElement = document.getElementById('viewClientTotal');
+                            if (totalElement) {
+                                totalElement.textContent = '0 грн';
+                            }
+                        }
+                    }
                 })
                 .catch(error => {
                     console.error('Ошибка при получении данных клиента:', error);
-                    showNotification('Ошибка при загрузке данных клиента', 'error');
+                    showNotification('error', 'Ошибка при загрузке данных клиента');
                 });
         }
 
-        // Функция для закрытия модального окна просмотра
-        function closeViewModal() {
-            document.getElementById('viewClientModal').style.display = 'none';
+        // Функция для переключения аккордеона
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const header = content?.previousElementSibling;
+
+            if (content && header) {
+                content.classList.toggle('active');
+                header.classList.toggle('active');
+            }
         }
 
-        // Обновляем обработчики кнопок просмотра
-        document.querySelectorAll('.btn-view').forEach(button => {
-            button.addEventListener('click', function() {
-                const clientId = this.closest('tr').id.split('-')[1];
-                openViewModal(clientId);
-            });
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Инициализация аватаров клиентов
+                const avatars = document.querySelectorAll('.client-avatar');
+                if (avatars) {
+                    avatars.forEach(avatar => {
+                        initializeAvatar(avatar);
+                    });
+                }
+
+                // Инициализация кнопок просмотра
+                const viewButtons = document.querySelectorAll('.btn-view');
+                if (viewButtons) {
+                    viewButtons.forEach(button => {
+                        button.addEventListener('click', function() {
+                            const row = this.closest('tr');
+                            if (row) {
+                                const clientId = row.id.split('-')[1];
+                                if (clientId) {
+                                    openViewModal(clientId);
+                                }
+                            }
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error('Ошибка при инициализации:', error);
+            }
         });
+
+        // Функция для закрытия модального окна
+        function closeViewModal() {
+            const modal = document.getElementById('viewClientModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function getSaleStatusText(status) {
+            const statusMap = {
+                'completed': 'Выполнено',
+                'pending': 'Ожидает',
+                'cancelled': 'Отменено',
+                'refunded': 'Возвращено'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'completed': 'Выполнено',
+                'pending': 'Ожидает',
+                'cancelled': 'Отменено',
+                'rescheduled': 'Перенесено'
+            };
+            return statusMap[status] || status;
+        }
     </script>
 @endsection

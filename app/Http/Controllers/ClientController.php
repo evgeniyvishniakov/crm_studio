@@ -18,7 +18,19 @@ class ClientController extends Controller
 
     public function show($id)
     {
-        $client = Client::with(['clientType', 'sales', 'appointments'])->findOrFail($id);
+        $client = Client::with([
+            'clientType',
+            'appointments' => function($query) {
+                $query->orderBy('date', 'desc')
+                      ->orderBy('time', 'desc');
+            },
+            'appointments.service',
+            'sales' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            },
+            'sales.items.product'
+        ])->findOrFail($id);
+        
         return response()->json($client);
     }
 
