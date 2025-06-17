@@ -559,30 +559,32 @@
         }
 
         .procedure-status {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 4px;
             font-weight: 500;
+            display: inline-block;
+            text-align: center;
+            min-width: 100px;
         }
 
         .procedure-status.completed {
-            background-color: #dcfce7;
-            color: #059669;
+            background-color: #4CAF50;
+            color: #fff;
         }
 
         .procedure-status.pending {
-            background-color: #fef3c7;
-            color: #d97706;
+            background-color: #FFC107;
+            color: #000;
         }
 
         .procedure-status.cancelled {
-            background-color: #fee2e2;
-            color: #dc2626;
+            background-color: #F44336;
+            color: #fff;
         }
 
         .procedure-status.rescheduled {
-            background-color: #dbeafe;
-            color: #2563eb;
+            background-color: #FF9800;
+            color: #fff;
         }
 
         .procedure-details {
@@ -1467,7 +1469,6 @@
                             let proceduresHtml = '';
                             client.appointments.forEach(appointment => {
                                 console.log('Processing appointment:', appointment);
-                                totalProceduresAmount += parseFloat(appointment.price || 0);
 
                                 // Форматируем дату и время
                                 let formattedDate = 'Дата не указана';
@@ -1517,14 +1518,13 @@
                                         <div class="procedure-info">
                                             <div class="procedure-details">
                                                 <span class="procedure-date">
-
                                                     ${formattedDate} ${formattedTime ? formattedTime : ''}
                                                 </span>
                                                 <span class="procedure-status ${appointment.status || 'pending'}">${getStatusText(appointment.status)}</span>
                                             </div>
                                             <div class="procedure-header">
                                                 <span class="procedure-name">${appointment.service ? appointment.service.name : 'Неизвестная услуга'}</span>
-                                                <span class="procedure-price">${appointment.price || 0} грн</span>
+                                                <span class="procedure-price">${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)} грн</span>
                                             </div>
 
                                             ${appointment.notes ? `
@@ -1538,6 +1538,11 @@
                                         </div>
                                     </div>
                                 `;
+
+                                // Суммируем стоимость только завершенных процедур
+                                if (appointment.status === 'completed') {
+                                    totalProceduresAmount += parseFloat(appointment.price) || 0;
+                                }
                             });
                             proceduresContainer.innerHTML = proceduresHtml;
                         } else {
@@ -1706,8 +1711,8 @@
 
         function getStatusText(status) {
             const statusMap = {
-                'completed': 'Выполнено',
-                'pending': 'Ожидает',
+                'completed': 'Завершено',
+                'pending': 'Ожидается',
                 'cancelled': 'Отменено',
                 'rescheduled': 'Перенесено'
             };
