@@ -29,7 +29,7 @@
         </div>
 
         <div class="table-wrapper">
-            <table class="clients-table">
+            <table class="table-striped clients-table">
                 <thead>
                 <tr>
                     <th>Имя</th>

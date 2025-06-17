@@ -29,7 +29,7 @@
         </div>
 
         <div class="table-wrapper">
-            <table class="products-table">
+            <table class="table-striped products-table">
                 <thead>
                 <tr>
                     <th>Фото</th>

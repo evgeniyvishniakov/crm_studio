@@ -29,7 +29,7 @@
         </div>
 
         <div class="table-wrapper">
-            <table class="services-table">
+            <table class=" table-striped services-table">
                 <thead>
                 <tr>
                     <th>Название</th>

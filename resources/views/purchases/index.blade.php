@@ -49,7 +49,7 @@
                     </div>
                     <div class="purchase-details" id="details-{{ $purchase->id }}" style="display: none;">
                         <div class="purchase-notes">{{ $purchase->notes }}</div>
-                        <table class="purchase-table">
+                        <table class="table-striped purchase-table">
                             <thead>
                             <tr>
                                 <th>Фото</th>

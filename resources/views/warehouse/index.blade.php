@@ -29,7 +29,7 @@
         </div>
 
         <div class="table-wrapper">
-            <table class="warehouse-table">
+            <table class="table-striped warehouse-table">
                 <thead>
                 <tr>
                     <th>Фото</th>
@@ -175,7 +175,7 @@
 
     <script>
         let allProducts = @json($products);
-        
+
         function searchProducts(input) {
             const searchTerm = input.value.toLowerCase();
             const dropdown = input.nextElementSibling;
@@ -196,7 +196,7 @@
                 dropdownList.innerHTML = '<div class="product-dropdown-item">Товары не найдены</div>';
             } else {
                 dropdownList.innerHTML = filteredProducts.map(product => `
-                    <div class="product-dropdown-item" 
+                    <div class="product-dropdown-item"
                          onclick="selectProduct('${escapeHtml(product.name)}', ${product.id})">
                         ${escapeHtml(product.name)}
                     </div>
@@ -209,7 +209,7 @@
         function showFirstProducts(dropdownList) {
             const firstProducts = allProducts.slice(0, 5);
             dropdownList.innerHTML = firstProducts.map(product => `
-                <div class="product-dropdown-item" 
+                <div class="product-dropdown-item"
                      onclick="selectProduct('${escapeHtml(product.name)}', ${product.id})">
                     ${escapeHtml(product.name)}
                 </div>
@@ -536,9 +536,9 @@
                 const retailPrice = row.querySelector('.retail-price').textContent.toLowerCase();
                 const quantity = row.querySelector('.quantity').textContent.toLowerCase();
 
-                if (productName.includes(searchText) || 
-                    purchasePrice.includes(searchText) || 
-                    retailPrice.includes(searchText) || 
+                if (productName.includes(searchText) ||
+                    purchasePrice.includes(searchText) ||
+                    retailPrice.includes(searchText) ||
                     quantity.includes(searchText)) {
                     row.style.display = '';
                 } else {
