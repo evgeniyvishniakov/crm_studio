@@ -252,7 +252,7 @@
 
                     <div class="card procedures-card">
                         <div class="card-title accordion-header" onclick="toggleAccordion('proceduresAccordion')">
-                            Процедуры
+                            <span>Процедуры (<span id="proceduresCount">0</span>)</span>
                             <svg class="accordion-icon" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M7 10l5 5 5-5z"/>
                             </svg>
@@ -266,7 +266,7 @@
 
                     <div class="card sales-card">
                         <div class="card-title accordion-header" onclick="toggleAccordion('salesAccordion')">
-                            Продажи
+                            <span>Продажи (<span id="salesCount">0</span>)</span>
                             <svg class="accordion-icon" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M7 10l5 5 5-5z"/>
                             </svg>
@@ -289,20 +289,21 @@
 
     <style>
         .client-type-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 4px;
             font-weight: 500;
-            color: #1f2937;
-            background-color: #e5e7eb;
-            transition: all 0.2s ease;
+            display: inline-block;
+            text-align: center;
+            min-width: 100px;
+            background-color: #999da5!important;
+            color: #fff;
+            margin-left: 8px;
         }
 
-        .client-type-badge:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .client-type-badge svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
         }
 
         .discount-badge {
@@ -316,7 +317,6 @@
         }
 
         .client-status {
-            display: flex;
             align-items: center;
             gap: 8px;
         }
@@ -465,12 +465,21 @@
             padding: 12px;
             background: #f9fafb;
             border-radius: 8px;
+            gap: 8px;
+        }
+
+        .accordion-header .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
         }
 
         .accordion-icon {
             width: 24px;
             height: 24px;
             transition: transform 0.3s ease;
+            flex-shrink: 0;
         }
 
         .accordion-header.active .accordion-icon {
@@ -479,7 +488,6 @@
 
         .accordion-content {
             display: none;
-            padding: 16px 0;
         }
 
         .accordion-content.active {
@@ -660,30 +668,32 @@
         }
 
         .sale-status {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 4px;
             font-weight: 500;
+            display: inline-block;
+            text-align: center;
+            min-width: 100px;
         }
 
         .sale-status.completed {
-            background-color: #dcfce7;
-            color: #059669;
+            background-color: #4CAF50;
+            color: #fff;
         }
 
         .sale-status.pending {
-            background-color: #fef3c7;
-            color: #d97706;
+            background-color: #FFC107;
+            color: #000;
         }
 
         .sale-status.cancelled {
-            background-color: #fee2e2;
-            color: #dc2626;
+            background-color: #F44336;
+            color: #fff;
         }
 
         .sale-status.refunded {
-            background-color: #dbeafe;
-            color: #2563eb;
+            background-color: #FF9800;
+            color: #fff;
         }
 
         .sale-products {
@@ -1594,7 +1604,6 @@
                                                 </svg>
                                                 ${formattedDate}
                                             </span>
-                                            <span class="sale-status ${sale.status || 'completed'}">${getSaleStatusText(sale.status)}</span>
                                         </div>
                                         <div class="sale-products">
                                             ${sale.items ? sale.items.map(item => `
@@ -1642,6 +1651,10 @@
                             totalElement.textContent = formatAmount(totalAmount);
                         }
                     }
+
+                    // Обновляем количество процедур и продаж
+                    document.getElementById('proceduresCount').textContent = client.appointments ? client.appointments.length : 0;
+                    document.getElementById('salesCount').textContent = client.sales ? client.sales.length : 0;
                 })
                 .catch(error => {
                     console.error('Ошибка при получении данных клиента:', error);
@@ -1701,12 +1714,12 @@
 
         function getSaleStatusText(status) {
             const statusMap = {
-                'completed': 'Выполнено',
-                'pending': 'Ожидает',
+                'completed': 'Завершено',
+                'pending': 'Ожидается',
                 'cancelled': 'Отменено',
                 'refunded': 'Возвращено'
             };
-            return statusMap[status] || status;
+            return statusMap[status] || 'Завершено';
         }
 
         function getStatusText(status) {
