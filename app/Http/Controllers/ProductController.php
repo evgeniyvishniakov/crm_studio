@@ -10,23 +10,29 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::all();
-        return view('products.list', compact('products'));
+        $products = Product::with(['category', 'brand'])->get();
+        $categories = \App\Models\ProductCategory::orderBy('name')->get();
+        $brands = \App\Models\ProductBrand::orderBy('name')->get();
+        return view('products.list', compact('products', 'categories', 'brands'));
     }
 
     public function edit(Product $product)
     {
         try {
             return response()->json([
-                'id' => $product->id,
-                'name' => $product->name,
-                'category' => $product->category,
-                'brand' => $product->brand,
-                'photo' => $product->photo
+                'success' => true,
+                'product' => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'category_id' => $product->category_id,
+                    'brand_id' => $product->brand_id,
+                    'photo' => $product->photo
+                ]
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Failed to load product data'
+                'success' => false,
+                'message' => 'Ошибка загрузки данных товара'
             ], 500);
         }
     }
@@ -35,8 +41,8 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'brand' => 'required|string|max:255',
+            'category_id' => 'required|exists:product_categories,id',
+            'brand_id' => 'required|exists:product_brands,id',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -49,7 +55,7 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            'product' => $product
+            'product' => $product->load(['category', 'brand'])
         ]);
     }
 
@@ -57,8 +63,8 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'brand' => 'required|string|max:255',
+            'category_id' => 'required|exists:product_categories,id',
+            'brand_id' => 'required|exists:product_brands,id',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
@@ -74,7 +80,7 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            'product' => $product
+            'product' => $product->load(['category', 'brand'])
         ]);
     }
 

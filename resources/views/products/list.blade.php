@@ -50,8 +50,8 @@
                             @endif
                         </td>
                         <td>{{ $product->name }}</td>
-                        <td>{{ $product->category }}</td>
-                        <td>{{ $product->brand }}</td>
+                        <td>{{ $product->category->name ?? '—' }}</td>
+                        <td>{{ $product->brand->name ?? '—' }}</td>
                         <td class="actions-cell">
                             <button class="btn-edit">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -89,11 +89,21 @@
                     </div>
                     <div class="form-group">
                         <label for="productCategory">Категория *</label>
-                        <input type="text" id="productCategory" name="category" required>
+                        <select id="productCategory" name="category_id" required class="form-control">
+                            <option value="">Выберите категорию</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="productBrand">Бренд *</label>
-                        <input type="text" id="productBrand" name="brand" required>
+                        <select id="productBrand" name="brand_id" required class="form-control">
+                            <option value="">Выберите бренд</option>
+                            @foreach($brands as $brand)
+                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="productPhoto">Фото</label>
@@ -139,11 +149,21 @@
                     </div>
                     <div class="form-group">
                         <label for="editProductCategory">Категория *</label>
-                        <input type="text" id="editProductCategory" name="category" required>
+                        <select id="editProductCategory" name="category_id" required class="form-control">
+                            <option value="">Выберите категорию</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="editProductBrand">Бренд *</label>
-                        <input type="text" id="editProductBrand" name="brand" required>
+                        <select id="editProductBrand" name="brand_id" required class="form-control">
+                            <option value="">Выберите бренд</option>
+                            @foreach($brands as $brand)
+                                <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="editProductPhoto">Фото</label>
@@ -291,8 +311,8 @@
                         newRow.innerHTML = `
                             <td>${photoHtml}</td>
                             <td>${data.product.name}</td>
-                            <td>${data.product.category}</td>
-                            <td>${data.product.brand}</td>
+                            <td>${data.product.category?.name ?? '—'}</td>
+                            <td>${data.product.brand?.name ?? '—'}</td>
                             <td class="actions-cell">
                                 <button class="btn-edit">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -405,104 +425,6 @@
                 });
         }
 
-        // Функции для работы с модальным окном редактирования
-        function openEditModal(productId) {
-            const modal = document.getElementById('editProductModal');
-            const modalBody = modal.querySelector('.modal-body');
-
-            // Показываем модальное окно и лоадер
-            modal.style.display = 'block';
-            modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
-
-            fetch(`/products/${productId}/edit`, {
-                headers: { 'Accept': 'application/json' }
-            })
-                .then(response => {
-                    if (!response.ok) throw new Error('Ошибка сети');
-                    return response.json();
-                })
-                .then(product => {
-                    // Создаем HTML формы
-                    const formHtml = `
-            <form id="editProductForm" enctype="multipart/form-data">
-                @csrf
-                    @method('PUT')
-                    <input type="hidden" id="editProductId" name="id" value="${product.id}">
-                <div class="form-group">
-                    <label for="editProductName">Название *</label>
-                    <input type="text" id="editProductName" name="name" value="${(product.name || '').replace(/"/g, '&quot;')}" required>
-                </div>
-                <div class="form-group">
-                    <label for="editProductCategory">Категория *</label>
-                    <input type="text" id="editProductCategory" name="category" value="${product.category || ''}" required>
-                </div>
-                <div class="form-group">
-                    <label for="editProductBrand">Бренд *</label>
-                    <input type="text" id="editProductBrand" name="brand" value="${product.brand || ''}" required>
-                </div>
-                <div class="form-group">
-                    <label for="editProductPhoto">Фото</label>
-                    <input type="file" id="editProductPhoto" name="photo" accept="image/jpeg,image/png,image/jpg">
-                    <small class="form-text text-muted">Максимальный размер: 2MB. Допустимые форматы: JPEG, PNG, JPG</small>
-                    <div id="currentPhotoContainer" class="mt-2">
-                        ${product.photo ? `
-                            <div>
-                                <p>Текущее фото:</p>
-                                <img src="/storage/${product.photo}" alt="${product.name}" class="current-photo">
-                                <button type="button" class="remove-photo-btn" onclick="removePhoto(${product.id})">Удалить фото</button>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Отмена</button>
-                    <button type="submit" class="btn-submit">Сохранить</button>
-                </div>
-            </form>
-        `;
-
-                    // Вставляем форму в модальное окно
-                    modalBody.innerHTML = formHtml;
-
-                    // Назначаем обработчик события
-                    document.getElementById('editProductForm').addEventListener('submit', function(e) {
-                        e.preventDefault();
-                        submitEditForm(this);
-                    });
-                })
-                .catch(error => {
-                    console.error('Ошибка загрузки данных:', error);
-                    modalBody.innerHTML = '<p class="text-danger">Ошибка загрузки данных товара</p>';
-                });
-        }
-
-
-
-        // Функция для удаления фото товара
-        function removePhoto(productId) {
-            if (confirm('Вы уверены, что хотите удалить фото товара?')) {
-                fetch(`/products/${productId}/remove-photo`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            document.getElementById('currentPhotoContainer').innerHTML = '';
-                            showNotification('success', 'Фото товара успешно удалено');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Ошибка:', error);
-                        showNotification('error', 'Не удалось удалить фото товара');
-                    });
-            }
-        }
-
         // Обработчик клика по кнопке редактирования
         document.addEventListener('click', function(e) {
             const editBtn = e.target.closest('.btn-edit');
@@ -511,93 +433,88 @@
                 if (row) {
                     const productId = row.id.split('-')[1];
                     if (productId) {
-                        openEditModal(productId);
+                        editProduct(productId);
                     }
                 }
             }
         });
 
-        // Обработчик отправки формы редактирования
-        async function submitEditForm(form) {
-            const formData = new FormData(form);
-            const productId = formData.get('id');
-            const submitBtn = form.querySelector('.btn-submit');
-            const originalText = submitBtn.innerHTML;
+        // Функция для редактирования товара
+        function editProduct(id) {
+            fetch(`/products/${id}/edit`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const product = data.product;
+                        document.getElementById('editProductId').value = product.id;
+                        document.getElementById('editProductName').value = product.name;
+                        document.getElementById('editProductCategory').value = product.category_id;
+                        document.getElementById('editProductBrand').value = product.brand_id;
 
-            submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
-            submitBtn.disabled = true;
+                        // Показываем текущее фото
+                        const photoContainer = document.getElementById('currentPhotoContainer');
+                        if (product.photo) {
+                            photoContainer.innerHTML = `
+                                <img src="/storage/${product.photo}" alt="Текущее фото" style="max-width: 200px; margin-top: 10px;">
+                            `;
+                        } else {
+                            photoContainer.innerHTML = '<p>Нет фото</p>';
+                        }
 
-            try {
-                const response = await fetch(`/products/${productId}`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'X-HTTP-Method-Override': 'PUT',
-                        'Accept': 'application/json',
-                    },
-                    body: formData,
+                        document.getElementById('editProductModal').style.display = 'block';
+                    } else {
+                        showNotification('error', data.message || 'Ошибка загрузки данных товара');
+                    }
+                })
+                .catch(error => {
+                    showNotification('error', 'Ошибка загрузки данных товара');
                 });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => null);
-                    throw new Error(
-                        errorData?.message ||
-                        `Ошибка сервера: ${response.status} ${response.statusText}`
-                    );
-                }
-
-                const data = await response.json();
-
-                if (data.success) {
-                    updateProductRow(data.product);
-                    showNotification('success', '✅ Изменения сохранены');
-                    closeEditModal();
-                } else {
-                    throw new Error(data.message || 'Неизвестная ошибка сервера');
-                }
-            } catch (error) {
-                console.error('Ошибка:', error);
-                showNotification('error', `❌ ${error.message || 'Ошибка сети или сервера'}`);
-            } finally {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
         }
 
-            // Функция для обновления строки товара в таблице
-            function updateProductRow(product) {
-                const row = document.getElementById(`product-${product.id}`);
-                if (!row) return;
+        // Обработчик отправки формы редактирования
+        document.getElementById('editProductForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const productId = formData.get('id');
 
-                // Обновляем фото
-                const photoCell = row.querySelector('td:first-child');
-                if (photoCell) {
-                    photoCell.innerHTML = product.photo
-                        ? `<img src="/storage/${product.photo}" alt="${product.name}" class="product-photo">`
-                        : '<div class="no-photo">Нет фото</div>';
+            fetch(`/products/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-HTTP-Method-Override': 'PUT',
+                    'Accept': 'application/json',
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('success', 'Товар успешно обновлен');
+                    closeEditModal();
+                    // Обновляем строку в таблице
+                    const row = document.getElementById(`product-${productId}`);
+                    if (row) {
+                        // Обновляем фото
+                        const photoCell = row.querySelector('td:first-child');
+                        if (data.product.photo) {
+                            photoCell.innerHTML = `<img src="/storage/${data.product.photo}" alt="${data.product.name}" class="product-photo">`;
+                        } else {
+                            photoCell.innerHTML = '<div class="no-photo">Нет фото</div>';
+                        }
+                        // Обновляем название
+                        row.querySelector('td:nth-child(2)').textContent = data.product.name;
+                        // Обновляем категорию
+                        row.querySelector('td:nth-child(3)').textContent = data.product.category?.name ?? '—';
+                        // Обновляем бренд
+                        row.querySelector('td:nth-child(4)').textContent = data.product.brand?.name ?? '—';
+                    }
+                } else {
+                    showNotification('error', data.message || 'Ошибка обновления товара');
                 }
-
-                // Обновляем название
-                const nameCell = row.querySelector('td:nth-child(2)');
-                if (nameCell) nameCell.textContent = product.name;
-
-                // Обновляем категорию
-                const categoryCell = row.querySelector('td:nth-child(3)');
-                if (categoryCell) categoryCell.textContent = product.category;
-
-                // Обновляем бренд
-                const brandCell = row.querySelector('td:nth-child(4)');
-                if (brandCell) brandCell.textContent = product.brand;
-            }
-
-            // Обработчик для кнопки просмотра (можно добавить функционал по необходимости)
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.btn-view')) {
-                    const row = e.target.closest('tr');
-                    const productId = row.id.split('-')[1];
-                    // Здесь можно реализовать просмотр деталей товара
-                    alert('Просмотр товара с ID: ' + productId);
-                }
+            })
+            .catch(error => {
+                showNotification('error', 'Ошибка обновления товара');
+            });
         });
 
         // Поиск товаров

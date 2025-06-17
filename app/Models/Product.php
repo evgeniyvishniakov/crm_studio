@@ -12,8 +12,8 @@ class Product extends Model
 
     protected $fillable = [
         'name',
-        'category',
-        'brand',
+        'category_id',
+        'brand_id',
         'photo'
     ];
 
@@ -50,5 +50,15 @@ class Product extends Model
     public function warehouse()
     {
         return $this->hasOne(Warehouse::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(ProductCategory::class);
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(ProductBrand::class);
     }
 }
