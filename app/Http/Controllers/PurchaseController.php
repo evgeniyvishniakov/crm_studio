@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
 use App\Models\Warehouse;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -14,109 +15,95 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-        $purchases = Purchase::with('items.product')
-            ->orderBy('date', 'desc')
-            ->get()
-            ->map(function ($purchase) {
-                $purchase->formatted_date = $purchase->date->format('d.m.Y');
-                return $purchase;
-            });
-
-        $products = Product::select('id', 'name', 'photo')->get();
-        return view('purchases.index', compact('purchases', 'products'));
+        $purchases = Purchase::with(['supplier', 'items.product'])->get();
+        $products = Product::all();
+        $suppliers = Supplier::orderBy('name')->get();
+        return view('purchases.index', compact('purchases', 'products', 'suppliers'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'date' => 'required|date',
-            'supplier' => 'required|string|max:255',
+            'supplier_id' => 'required|exists:suppliers,id',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.purchase_price' => 'required|numeric|min:0.01',
             'items.*.retail_price' => 'required|numeric|min:0.01',
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.quantity' => 'required|integer|min:1'
         ]);
 
-        DB::beginTransaction();
+        $purchase = Purchase::create([
+            'date' => $validated['date'],
+            'supplier_id' => $validated['supplier_id'],
+            'notes' => $validated['notes'],
+            'total_amount' => 0
+        ]);
 
-        try {
-            $purchase = Purchase::create([
-                'date' => $validated['date'],
-                'supplier' => $validated['supplier'],
-                'notes' => $validated['notes'] ?? null,
-                'total_amount' => 0
+        $totalAmount = 0;
+
+        foreach ($validated['items'] as $item) {
+            $itemTotal = $item['purchase_price'] * $item['quantity'];
+            $totalAmount += $itemTotal;
+
+            $purchase->items()->create([
+                'product_id' => $item['product_id'],
+                'purchase_price' => $item['purchase_price'],
+                'retail_price' => $item['retail_price'],
+                'quantity' => $item['quantity'],
+                'total' => $itemTotal
             ]);
-
-            $totalAmount = 0;
-
-            foreach ($validated['items'] as $item) {
-                $itemTotal = $item['purchase_price'] * $item['quantity'];
-                $totalAmount += $itemTotal;
-
-                PurchaseItem::create([
-                    'purchase_id' => $purchase->id,
-                    'product_id' => $item['product_id'],
-                    'purchase_price' => $item['purchase_price'],
-                    'retail_price' => $item['retail_price'],
-                    'quantity' => $item['quantity'],
-                    'total' => $itemTotal
-                ]);
-
-                // Обновляем склад
-                $warehouseItem = Warehouse::firstOrNew(['product_id' => $item['product_id']]);
-
-                if ($warehouseItem->exists) {
-                    $warehouseItem->quantity += $item['quantity'];
-                } else {
-                    $warehouseItem->quantity = $item['quantity'];
-                }
-
-                $warehouseItem->purchase_price = $item['purchase_price'];
-                $warehouseItem->retail_price = $item['retail_price'];
-                $warehouseItem->save();
-            }
-
-            $purchase->total_amount = $totalAmount;
-            $purchase->save();
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'purchase' => $purchase->load('items.product')
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Ошибка при создании закупки',
-                'error' => $e->getMessage()
-            ], 500);
         }
+
+        // Обновляем общую сумму закупки
+        $purchase->update(['total_amount' => $totalAmount]);
+
+        return response()->json([
+            'success' => true,
+            'purchase' => $purchase->load(['supplier', 'items.product'])
+        ]);
     }
 
     public function edit(Purchase $purchase)
     {
-        return response()->json([
-            'success' => true,
-            'purchase' => $purchase->load('items.product'),
-            'products' => Product::select('id', 'name')->get()
-        ]);
+        try {
+            return response()->json([
+                'success' => true,
+                'purchase' => [
+                    'id' => $purchase->id,
+                    'date' => $purchase->date->format('Y-m-d'),
+                    'supplier_id' => $purchase->supplier_id,
+                    'notes' => $purchase->notes,
+                    'items' => $purchase->items->map(function($item) {
+                        return [
+                            'product_id' => $item->product_id,
+                            'purchase_price' => $item->purchase_price,
+                            'retail_price' => $item->retail_price,
+                            'quantity' => $item->quantity
+                        ];
+                    })
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка загрузки данных закупки'
+            ], 500);
+        }
     }
 
     public function update(Request $request, Purchase $purchase)
     {
         $validated = $request->validate([
             'date' => 'required|date',
-            'supplier' => 'required|string|max:255',
+            'supplier_id' => 'required|exists:suppliers,id',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.purchase_price' => 'required|numeric|min:0.01',
             'items.*.retail_price' => 'required|numeric|min:0.01',
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.quantity' => 'required|integer|min:1'
         ]);
 
         DB::beginTransaction();
@@ -125,26 +112,23 @@ class PurchaseController extends Controller
             // Сохраняем старые данные для корректировки склада
             $oldItems = $purchase->items;
 
-            // Обновляем закупку
             $purchase->update([
                 'date' => $validated['date'],
-                'supplier' => $validated['supplier'],
-                'notes' => $validated['notes'] ?? null,
-                'total_amount' => 0
+                'supplier_id' => $validated['supplier_id'],
+                'notes' => $validated['notes']
             ]);
 
-            // Удаляем старые позиции
+            // Удаляем старые товары
             $purchase->items()->delete();
 
             $totalAmount = 0;
 
-            // Добавляем новые позиции
+            // Добавляем новые товары
             foreach ($validated['items'] as $item) {
                 $itemTotal = $item['purchase_price'] * $item['quantity'];
                 $totalAmount += $itemTotal;
 
-                PurchaseItem::create([
-                    'purchase_id' => $purchase->id,
+                $purchase->items()->create([
                     'product_id' => $item['product_id'],
                     'purchase_price' => $item['purchase_price'],
                     'retail_price' => $item['retail_price'],
@@ -192,21 +176,20 @@ class PurchaseController extends Controller
                 }
             }
 
-            $purchase->total_amount = $totalAmount;
-            $purchase->save();
+            // Обновляем общую сумму закупки
+            $purchase->update(['total_amount' => $totalAmount]);
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'purchase' => $purchase->load('items.product')
+                'purchase' => $purchase->load(['supplier', 'items.product'])
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка при обновлении закупки',
-                'error' => $e->getMessage()
+                'message' => 'Ошибка при обновлении закупки: ' . $e->getMessage()
             ], 500);
         }
     }

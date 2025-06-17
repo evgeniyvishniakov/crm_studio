@@ -8,9 +8,9 @@ class Purchase extends Model
 {
     protected $fillable = [
         'date',
-        'supplier',
-        'total_amount',
-        'notes'
+        'supplier_id',
+        'notes',
+        'total_amount'
     ];
 
     // Option 1: Using $dates (for Laravel < 7)
@@ -26,8 +26,13 @@ class Purchase extends Model
         return $this->hasMany(PurchaseItem::class);
     }
 
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
     public function getFormattedDateAttribute()
     {
-        return $this->date ? $this->date->format('d.m.Y') : null;
+        return $this->date->format('d.m.Y');
     }
 }

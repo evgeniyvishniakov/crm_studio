@@ -29,7 +29,7 @@
                     <div class="purchase-header" onclick="togglePurchaseDetails({{ $purchase->id }})">
                         <div class="purchase-info">
                             <span class="purchase-date">{{ $purchase->formatted_date }}</span>
-                            <span class="purchase-supplier">{{ $purchase->supplier }}</span>
+                            <span class="purchase-supplier">{{ $purchase->supplier->name ?? '—' }}</span>
                             <span class="purchase-total">{{ number_format($purchase->total_amount, 2) }} грн</span>
                         </div>
                         <div class="purchase-actions">
@@ -102,7 +102,12 @@
                         </div>
                         <div class="form-group">
                             <label>Поставщик *</label>
-                            <input type="text" name="supplier" required class="form-control">
+                            <select name="supplier_id" required class="form-control">
+                                <option value="">Выберите поставщика</option>
+                                @foreach($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -348,237 +353,157 @@
         // Функция для редактирования закупки
         function editPurchase(event, id) {
             event.stopPropagation();
-
-            const modal = document.getElementById('editPurchaseModal');
-            const modalBody = document.getElementById('editPurchaseModalBody');
-
-            modal.style.display = 'block';
-            modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
-
-            fetch(`/purchases/${id}/edit`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
+            fetch(`/purchases/${id}/edit`)
+                .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const productOptions = data.products.map(product =>
-                            `<option value="${product.id}">${product.name}</option>`
-                        ).join('');
-
-                        modalBody.innerHTML = `
-    <form id="editPurchaseForm" novalidate>
-        @csrf
-                        @method('PUT')
-                        <input type="hidden" name="id" value="${data.purchase.id}">
-        <div class="form-row">
-            <div class="form-group">
-                <label>Дата *</label>
-                <input type="date" name="date" value="${formatDateForInput(data.purchase.date)}" required class="form-control">
-            </div>
-            <div class="form-group">
-                <label>Поставщик *</label>
-                <input type="text" name="supplier" value="${data.purchase.supplier}" required class="form-control">
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Примечания</label>
-            <textarea name="notes" rows="2" class="form-control">${data.purchase.notes || ''}</textarea>
-        </div>
-
-        <div class="items-container" id="editItemsContainer">
-            <h3>Товары</h3>
-            <div class="item-row template" style="display: none;">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Товар *</label>
-                        <div class="product-search-container">
-                            <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
-                                   oninput="searchProducts(this)"
-                                   onfocus="showProductDropdown(this)">
-                            <div class="product-dropdown" style="display: none;">
-                                <div class="product-dropdown-list"></div>
-                            </div>
-                            <select name="items[0][product_id]" class="form-control product-select" style="display: none;">
-                                <option value="">Выберите товар</option>
-                                ${data.products.map(product =>
-                            `<option value="${product.id}">${product.name}</option>`
-                        ).join('')}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Закупочная цена *</label>
-                        <input type="number" step="0.01" name="items[0][purchase_price]" required class="form-control" min="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Розничная цена *</label>
-                        <input type="number" step="0.01" name="items[0][retail_price]" required class="form-control" min="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Количество *</label>
-                        <input type="number" name="items[0][quantity]" required class="form-control" min="1" value="1">
-                    </div>
-                    <div class="form-group">
-                        <button type="button" class="btn-remove-item" onclick="removeEditItemRow(this)">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            ${data.purchase.items.map((item, index) => `
-                <div class="item-row">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Товар *</label>
-                            <div class="product-search-container">
-                                <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
-                                       value="${item.product.name}"
-                                       oninput="searchProducts(this)"
-                                       onfocus="showProductDropdown(this)">
-                                <div class="product-dropdown" style="display: none;">
-                                    <div class="product-dropdown-list"></div>
+                        const purchase = data.purchase;
+                        const modalBody = document.getElementById('editPurchaseModalBody');
+                        
+                        // Создаем форму редактирования
+                        const formHtml = `
+                            <form id="editPurchaseForm">
+                                @csrf
+                                @method('PUT')
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Дата *</label>
+                                        <input type="date" name="date" required class="form-control" value="${purchase.date}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Поставщик *</label>
+                                        <select name="supplier_id" required class="form-control">
+                                            <option value="">Выберите поставщика</option>
+                                            @foreach($suppliers as $supplier)
+                                                <option value="{{ $supplier->id }}" ${purchase.supplier_id == {{ $supplier->id }} ? 'selected' : ''}>
+                                                    {{ $supplier->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
-                                <select name="items[${index}][product_id]" class="form-control product-select" style="display: none;">
-                                    <option value="">Выберите товар</option>
-                                    ${data.products.map(product =>
-                            `<option value="${product.id}" ${item.product_id == product.id ? 'selected' : ''}>${product.name}</option>`
-                        ).join('')}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Закупочная цена *</label>
-                            <input type="number" step="0.01" name="items[${index}][purchase_price]" value="${item.purchase_price}" required class="form-control" min="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label>Розничная цена *</label>
-                            <input type="number" step="0.01" name="items[${index}][retail_price]" value="${item.retail_price}" required class="form-control" min="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label>Количество *</label>
-                            <input type="number" name="items[${index}][quantity]" value="${item.quantity}" required class="form-control" min="1">
-                        </div>
-                        <div class="form-group">
-                            <button type="button" class="btn-remove-item" onclick="removeEditItemRow(this)">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-        <div class="form-actions">
-            <button type="button" class="btn-add-item" onclick="addEditItemRow()">
-                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                </svg>
-                Добавить товар
-            </button>
-            <button type="button" class="btn-cancel" onclick="closeEditPurchaseModal()">Отмена</button>
-            <button type="submit" class="btn-submit">Сохранить изменения</button>
-        </div>
-    </form>
-`;
-
-                        // Инициализация обработчика формы
+                                <div class="form-group">
+                                    <label>Примечания</label>
+                                    <textarea name="notes" rows="2" class="form-control">${purchase.notes || ''}</textarea>
+                                </div>
+                                <div class="items-container" id="editItemsContainer">
+                                    <h3>Товары</h3>
+                                    ${purchase.items.map((item, index) => `
+                                        <div class="item-row">
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label>Товар *</label>
+                                                    <select name="items[${index}][product_id]" required class="form-control">
+                                                        <option value="">Выберите товар</option>
+                                                        @foreach($products as $product)
+                                                            <option value="{{ $product->id }}" ${item.product_id == {{ $product->id }} ? 'selected' : ''}>
+                                                                {{ $product->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Закупочная цена *</label>
+                                                    <input type="number" step="0.01" name="items[${index}][purchase_price]" required class="form-control" value="${item.purchase_price}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Розничная цена *</label>
+                                                    <input type="number" step="0.01" name="items[${index}][retail_price]" required class="form-control" value="${item.retail_price}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Количество *</label>
+                                                    <input type="number" name="items[${index}][quantity]" required class="form-control" value="${item.quantity}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <button type="button" class="btn-remove-item" onclick="removeItemRow(this)">
+                                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn-add-item" onclick="addItemRow('editItemsContainer')">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                        </svg>
+                                        Добавить товар
+                                    </button>
+                                    <button type="button" class="btn-cancel" onclick="closeEditPurchaseModal()">Отмена</button>
+                                    <button type="submit" class="btn-submit">Сохранить изменения</button>
+                                </div>
+                            </form>
+                        `;
+                        
+                        modalBody.innerHTML = formHtml;
+                        document.getElementById('editPurchaseModal').style.display = 'block';
+                        
+                        // Добавляем обработчик отправки формы
                         document.getElementById('editPurchaseForm').addEventListener('submit', function(e) {
                             e.preventDefault();
-                            submitEditPurchaseForm(this);
+                            const formData = new FormData(this);
+                            const items = [];
+                            
+                            // Собираем данные о товарах
+                            const itemRows = this.querySelectorAll('.item-row');
+                            itemRows.forEach((row, index) => {
+                                items.push({
+                                    product_id: row.querySelector(`[name="items[${index}][product_id]"]`).value,
+                                    purchase_price: row.querySelector(`[name="items[${index}][purchase_price]"]`).value,
+                                    retail_price: row.querySelector(`[name="items[${index}][retail_price]"]`).value,
+                                    quantity: row.querySelector(`[name="items[${index}][quantity]"]`).value
+                                });
+                            });
+                            
+                            // Отправляем запрос на обновление
+                            fetch(`/purchases/${id}`, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    _method: 'PUT',
+                                    date: formData.get('date'),
+                                    supplier_id: formData.get('supplier_id'),
+                                    notes: formData.get('notes'),
+                                    items: items
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    showNotification('success', 'Закупка успешно обновлена');
+                                    closeEditPurchaseModal();
+                                    // Обновляем данные на странице
+                                    const purchaseElement = document.getElementById(`purchase-${id}`);
+                                    if (purchaseElement) {
+                                        const purchaseInfo = purchaseElement.querySelector('.purchase-info');
+                                        purchaseInfo.innerHTML = `
+                                            <span class="purchase-date">${data.purchase.formatted_date}</span>
+                                            <span class="purchase-supplier">${data.purchase.supplier?.name ?? '—'}</span>
+                                            <span class="purchase-total">${Number(data.purchase.total_amount).toFixed(2)} грн</span>
+                                        `;
+                                    }
+                                } else {
+                                    showNotification('error', data.message || 'Ошибка обновления закупки');
+                                }
+                            })
+                            .catch(error => {
+                                showNotification('error', 'Ошибка обновления закупки');
+                            });
                         });
                     } else {
-                        throw new Error(data.error || 'Unknown error');
+                        showNotification('error', data.message || 'Ошибка загрузки данных закупки');
                     }
                 })
-
-
                 .catch(error => {
-                    console.error('Error:', error);
-                    modalBody.innerHTML = `
-                        <div class="alert alert-danger">
-                            Ошибка загрузки данных: ${error.message}
-                        </div>
-                        <button class="btn-cancel" onclick="closeEditPurchaseModal()">Закрыть</button>
-                    `;
+                    showNotification('error', 'Ошибка загрузки данных закупки');
                 });
-            function formatDateForInput(dateString) {
-                if (!dateString) return '';
-                const date = new Date(dateString);
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
-            }
-        }
-
-        function addEditItemRow() {
-            const container = document.getElementById('editItemsContainer');
-            const template = container.querySelector('.template');
-            const newRow = template.cloneNode(true);
-
-            newRow.style.display = 'block';
-            newRow.classList.remove('template');
-
-            // Получаем текущее количество рядов (не включая шаблон)
-            const currentRows = container.querySelectorAll('.item-row:not(.template)');
-            const newIndex = currentRows.length;
-
-            // Обновляем индексы в именах полей
-            const inputs = newRow.querySelectorAll('input, select');
-            inputs.forEach(input => {
-                const name = input.name.replace(/\[\d+\]/, `[${newIndex}]`);
-                input.name = name;
-                if (input.tagName === 'SELECT') {
-                    input.selectedIndex = 0;
-                } else if (input.type === 'number') {
-                    input.value = input.name.includes('quantity') ? '1' : '';
-                } else {
-                    input.value = '';
-                }
-            });
-
-            // Инициализируем поиск для нового ряда
-            const searchContainer = newRow.querySelector('.product-search-container');
-            if (searchContainer) {
-                const searchInput = searchContainer.querySelector('.product-search-input');
-                searchInput.id = `product-search-edit-${newIndex}`;
-                searchInput.value = '';
-
-                const select = searchContainer.querySelector('.product-select');
-                select.name = `items[${newIndex}][product_id]`;
-                select.selectedIndex = 0;
-            }
-
-            container.insertBefore(newRow, container.querySelector('.form-actions'));
-        }
-
-        function removeEditItemRow(button) {
-            const row = button.closest('.item-row');
-            if (document.querySelectorAll('#editItemsContainer .item-row:not(.template)').length > 1) {
-                row.remove();
-            } else {
-                // Если это последний ряд, просто очищаем его
-                const inputs = row.querySelectorAll('input, select');
-                inputs.forEach(input => {
-                    if (input.tagName === 'SELECT') {
-                        input.selectedIndex = 0;
-                    } else {
-                        input.value = input.name.includes('quantity') ? '1' : '';
-                    }
-                });
-            }
         }
 
         // Функции для подтверждения удаления
@@ -650,7 +575,7 @@
             // Собираем основные данные формы
             const formData = {
                 date: form.querySelector('[name="date"]').value,
-                supplier: form.querySelector('[name="supplier"]').value,
+                supplier_id: form.querySelector('[name="supplier_id"]').value,
                 notes: form.querySelector('[name="notes"]').value,
                 items: items
             };
@@ -690,71 +615,6 @@
                         displayErrors(error.errors, 'purchaseForm');
                     } else {
                         showNotification(error.message || 'Ошибка при добавлении закупки', 'error');
-                    }
-                });
-        }
-
-        function submitEditPurchaseForm(form) {
-            clearErrors('editPurchaseForm');
-
-            const id = form.querySelector('[name="id"]').value;
-            const items = [];
-
-            // Собираем данные о товарах
-            document.querySelectorAll('#editItemsContainer .item-row:not(.template)').forEach((row, index) => {
-                const select = row.querySelector('.product-select');
-                const item = {
-                    product_id: select.value,
-                    purchase_price: parseFloat(row.querySelector('[name*="purchase_price"]').value),
-                    retail_price: parseFloat(row.querySelector('[name*="retail_price"]').value),
-                    quantity: parseInt(row.querySelector('[name*="quantity"]').value)
-                };
-                items.push(item);
-            });
-
-            // Собираем все данные формы
-            const formData = {
-                _method: 'PUT', // Для Laravel чтобы обработать как PUT запрос
-                date: form.querySelector('[name="date"]').value,
-                supplier: form.querySelector('[name="supplier"]').value,
-                notes: form.querySelector('[name="notes"]').value,
-                items: items
-            };
-
-            fetch(`/purchases/${id}`, {
-                method: 'POST', // Используем POST с _method=PUT для Laravel
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => Promise.reject(err));
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        showNotification('Закупка успешно обновлена', 'success');
-                        closeEditPurchaseModal();
-                        updatePurchaseInDOM(data.purchase);
-                    } else {
-                        if (data.errors) {
-                            displayErrors(data.errors, 'editPurchaseForm');
-                        } else {
-                            showNotification(data.message || 'Ошибка при обновлении закупки', 'error');
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    if (error.errors) {
-                        displayErrors(error.errors, 'editPurchaseForm');
-                    } else {
-                        showNotification(error.message || 'Ошибка при обновлении закупки', 'error');
                     }
                 });
         }
@@ -845,8 +705,6 @@
             purchasesList.insertAdjacentHTML('afterbegin', purchaseHTML);
         }
 
-
-
         function updatePurchaseInDOM(purchase) {
             const formattedDate = new Date(purchase.date).toLocaleDateString('ru-RU', {
                 day: '2-digit',
@@ -923,7 +781,7 @@
         }
 
         // Вспомогательные функции
-        function showNotification(message, type) {
+        function showNotification(type, message) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
             notification.className = `notification ${type}`;

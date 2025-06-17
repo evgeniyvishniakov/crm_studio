@@ -24,4 +24,9 @@ class Supplier extends Model
     protected $casts = [
         'status' => 'boolean'
     ];
+
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
 }
