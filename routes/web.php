@@ -104,3 +104,34 @@ Route::get('/inventories/{id}/edit', [InventoryController::class, 'edit'])->name
 Route::put('/inventories/{id}', [InventoryController::class, 'update'])->name('inventories.update');
 Route::delete('/inventories/{id}', [InventoryController::class, 'destroy'])->name('inventories.destroy');
 Route::get('/inventories/{id}/items', [InventoryController::class, 'items'])->name('inventories.items');
+
+// Маршруты для раздела "Настройки"
+Route::prefix('users')->group(function () {
+    Route::get('/', function () {
+        return '<h1>Пользователи</h1><p>Раздел в разработке</p>';
+    })->name('users.index');
+});
+
+Route::prefix('roles')->group(function () {
+    Route::get('/', function () {
+        return '<h1>Роли и доступы</h1><p>Раздел в разработке</p>';
+    })->name('roles.index');
+});
+
+Route::prefix('settings')->group(function () {
+    Route::get('/', function () {
+        return '<h1>Общие настройки</h1><p>Раздел в разработке</p>';
+    })->name('settings.index');
+});
+
+Route::prefix('email-templates')->group(function () {
+    Route::get('/', function () {
+        return '<h1>Email-шаблоны</h1><p>Раздел в разработке</p>';
+    })->name('email-templates.index');
+});
+
+Route::prefix('security')->group(function () {
+    Route::get('/', function () {
+        return '<h1>Безопасность</h1><p>Раздел в разработке</p>';
+    })->name('security.index');
+});

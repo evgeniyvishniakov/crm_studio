@@ -77,6 +77,44 @@
         #cellPaiChart{
             height: 160px;
         }
+        
+        /* Одинаковый светло-синий цвет для активного родителя и дочернего пункта */
+        .menu-item-has-children.active > a,
+        .sub-menu li.active > a,
+        .menu-item-has-children.active > a .menu-icon,
+        .sub-menu li.active > i {
+            color: #03a9f3 !important;
+            background: none !important;
+            font-weight: normal !important;
+        }
+        
+        /* Принудительно показываем подменю для активных пунктов */
+        .menu-item-has-children.active .sub-menu {
+            display: block !important;
+            position: static !important;
+            float: none !important;
+            width: auto !important;
+            margin-top: 0 !important;
+            background-color: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+        
+        /* Предотвращаем закрытие активного меню и сохраняем видимость */
+        .menu-item-has-children.active .dropdown-toggle {
+            pointer-events: none;
+            color: #03a9f3 !important;
+            background: none !important;
+        }
+        
+        /* Обеспечиваем видимость текста в активном меню */
+        .menu-item-has-children.active .dropdown-toggle,
+        .menu-item-has-children.active .dropdown-toggle:hover,
+        .menu-item-has-children.active .dropdown-toggle:focus {
+            color: #03a9f3 !important;
+            background: none !important;
+            text-decoration: none !important;
+        }
     </style>
 </head>
 
@@ -86,83 +124,110 @@
     <nav class="navbar navbar-expand-sm navbar-default">
         <div id="main-menu" class="main-menu collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active">
-                    <a href="index.html"><i class="menu-icon fa fa-laptop"></i>Dashboard </a>
+                <li class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('dashboard') }}"><i class="menu-icon fa fa-laptop"></i>Dashboard </a>
                 </li>
                 <li class="menu-title">Работа с клиентами</li><!-- /.menu-title -->
 
-                <li>
+                <li class="{{ request()->routeIs('clients.*') ? 'active' : '' }}">
                     <a href="{{ route('clients.list') }}"> <i class="menu-icon fa fa-users"></i>Клиенты</a>
                 </li>
-                <li>
+                <li class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}">
                     <a href="{{ route('appointments.index') }}"> <i class="menu-icon fa fa-calendar"></i>Записи</a>
                 </li>
 
                 <li class="menu-title">Товарооборот</li>
 
-
-                <li>
+                <li class="{{ request()->routeIs('warehouse.*') ? 'active' : '' }}">
                     <a href="{{ route('warehouse.index') }}"><i class="menu-icon fa fa-dropbox"></i>Склад</a>
                 </li>
-                <li>
+                <li class="{{ request()->routeIs('purchases.*') ? 'active' : '' }}">
                     <a href="{{ route('purchases.index') }}"><i class="menu-icon fa fa-cart-plus"></i>Закупки</a>
                 </li>
-                <li>
+                <li class="{{ request()->routeIs('sales.*') ? 'active' : '' }}">
                     <a href="{{ route('sales.index') }}"><i class="menu-icon fa fa-shopping-basket"></i>Продажи</a>
                 </li>
-                <li>
+                <li class="{{ request()->routeIs('expenses.*') ? 'active' : '' }}">
                     <a href="{{ route('expenses.index') }}"><i class="menu-icon fa fa-credit-card"></i>Расходы</a>
                 </li>
-                <li>
+                <li class="{{ request()->routeIs('inventories.*') ? 'active' : '' }}">
                     <a href="{{ route('inventories.index') }}"><i class="menu-icon fa fa-archive"></i>Инвентаризация</a>
                 </li>
-                <li>
+                <li class="{{ request()->routeIs('clients.list') ? 'active' : '' }}">
                     <a href="{{ route('clients.list') }}"><i class="menu-icon fa fa-bar-chart"></i>Отчеты</a>
                 </li>
 
                 <li class="menu-title">Сервисы</li>
 
-                <li class="menu-item-has-children dropdown">
+                <li class="menu-item-has-children dropdown {{ 
+                    request()->routeIs('services.*') || 
+                    request()->routeIs('products.*') || 
+                    request()->routeIs('product-categories.*') || 
+                    request()->routeIs('product-brands.*') || 
+                    request()->routeIs('suppliers.*') || 
+                    request()->routeIs('client-types.*') ? 'active' : '' 
+                }}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="menu-icon fa fa-book"></i>Справочники
                     </a>
                     <ul class="sub-menu children dropdown-menu">
-                        <li>
+                        <li class="{{ request()->routeIs('services.*') ? 'active' : '' }}">
                             <i class="fa fa-briefcase"></i>
                             <a href="{{ route('services.index') }}">Услуги</a>
                         </li>
-                        <li>
+                        <li class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
                             <i class="fa fa-cube"></i>
                             <a href="{{ route('products.index') }}">Товары</a>
                         </li>
-                        <li>
+                        <li class="{{ request()->routeIs('product-categories.*') ? 'active' : '' }}">
                             <i class="fa fa-folder-open"></i>
                             <a href="{{ route('product-categories.index') }}">Категории товаров</a>
                         </li>
-                        <li>
+                        <li class="{{ request()->routeIs('product-brands.*') ? 'active' : '' }}">
                             <i class="fa fa-certificate"></i>
                             <a href="{{ route('product-brands.index') }}">Бренды товаров</a>
-                </li>
-                <li>
+                        </li>
+                        <li class="{{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
                             <i class="fa fa-truck"></i>
                             <a href="{{ route('suppliers.index') }}">Поставщики</a>
-                </li>
-                        <li>
+                        </li>
+                        <li class="{{ request()->routeIs('client-types.*') ? 'active' : '' }}">
                             <i class="fa fa-id-badge"></i>
                             <a href="{{ route('client-types.index') }}">Типы клиентов</a>
-                </li>
+                        </li>
                     </ul>
                 </li>
-                <li class="menu-item-has-children dropdown">
+                <li class="menu-item-has-children dropdown {{ 
+                    request()->routeIs('users.*') || 
+                    request()->routeIs('roles.*') || 
+                    request()->routeIs('settings.*') || 
+                    request()->routeIs('email-templates.*') || 
+                    request()->routeIs('security.*') ? 'active' : '' 
+                }}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="menu-icon fa fa-cogs"></i>Настройки
                     </a>
                     <ul class="sub-menu children dropdown-menu">
-                        <li><i class="fa fa-users"></i><a href="">Пользователи</a></li>
-                        <li><i class="fa fa-lock"></i><a href="">Роли и доступы</a></li>
-                        <li><i class="fa fa-cog"></i><a href="">Общие настройки</a></li>
-                        <li><i class="fa fa-envelope"></i><a href="">Email-шаблоны</a></li>
-                        <li><i class="fa fa-shield"></i><a href="">Безопасность</a></li>
+                        <li class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
+                            <i class="fa fa-users"></i>
+                            <a href="{{ route('users.index') }}">Пользователи</a>
+                        </li>
+                        <li class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                            <i class="fa fa-lock"></i>
+                            <a href="{{ route('roles.index') }}">Роли и доступы</a>
+                        </li>
+                        <li class="{{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                            <i class="fa fa-cog"></i>
+                            <a href="{{ route('settings.index') }}">Общие настройки</a>
+                        </li>
+                        <li class="{{ request()->routeIs('email-templates.*') ? 'active' : '' }}">
+                            <i class="fa fa-envelope"></i>
+                            <a href="{{ route('email-templates.index') }}">Email-шаблоны</a>
+                        </li>
+                        <li class="{{ request()->routeIs('security.*') ? 'active' : '' }}">
+                            <i class="fa fa-shield"></i>
+                            <a href="{{ route('security.index') }}">Безопасность</a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -300,8 +365,17 @@
 </div>
 <!-- /#right-panel -->
 
-
-
+<script>
+$(document).ready(function() {
+    // Для активных меню принудительно показываем подменю
+    $('.menu-item-has-children.active .sub-menu').show();
+    
+    // Предотвращаем закрытие активного меню при клике на дочерние пункты
+    $('.menu-item-has-children.active .sub-menu a').on('click', function(e) {
+        // Разрешаем переход по ссылке, но не закрываем меню
+    });
+});
+</script>
 
 </body>
 </html>
