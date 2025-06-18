@@ -9,6 +9,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\ExpensesController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,9 +22,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('dashboard.index');
-});
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductController;
 

@@ -225,12 +225,6 @@
 }
 </style>
 
-@php
-    use Carbon\Carbon;
-    $today = Carbon::now();
-    $showDynamics = $today->day >= 20;
-@endphp
-
     <div class="dashboard-container">
         <h1 class="dashboard-title">CRM Analytics Dashboard</h1>
 
@@ -242,11 +236,13 @@
                 </div>
                 <div class="stat-content">
                     <h3 class="stat-title">Прибыль</h3>
-                    <p class="stat-value">₽ 2,847,500</p>
-                    <p class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        15.3% с прошлого месяца
-                    </p>
+                    <p class="stat-value">{{ number_format($totalProfit, 2, '.', ' ') }} грн</p>
+                    @if($showDynamics)
+                        <p class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            15.3% с прошлого месяца
+                        </p>
+                    @endif
                 </div>
             </div>
             <!-- Правая колонка: переключаемые карточки -->
@@ -259,11 +255,13 @@
                         </div>
                         <div class="stat-content">
                             <h3 class="stat-title">Продажи товаров</h3>
-                            <p class="stat-value">₽ 1,250,000</p>
-                            <p class="stat-change positive">
-                                <i class="fas fa-arrow-up"></i>
-                                8.7% с прошлого месяца
-                            </p>
+                            <p class="stat-value">{{ number_format($productsRevenue, 2, '.', ' ') }} грн</p>
+                            @if($showDynamics)
+                                <p class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    8.7% с прошлого месяца
+                                </p>
+                            @endif
                         </div>
                     </div>
                     <div class="stat-card services-card">
@@ -272,11 +270,13 @@
                         </div>
                         <div class="stat-content">
                             <h3 class="stat-title">Продажи услуг</h3>
-                            <p class="stat-value">₽ 3,000,000</p>
-                            <p class="stat-change positive">
-                                <i class="fas fa-arrow-up"></i>
-                                12.5% с прошлого месяца
-                            </p>
+                            <p class="stat-value">{{ number_format($servicesRevenue, 2, '.', ' ') }} грн</p>
+                            @if($showDynamics)
+                                <p class="stat-change positive">
+                                    <i class="fas fa-arrow-up"></i>
+                                    12.5% с прошлого месяца
+                                </p>
+                            @endif
                         </div>
                     </div>
                     <div class="stat-card expenses-card">
@@ -285,11 +285,13 @@
                         </div>
                         <div class="stat-content">
                             <h3 class="stat-title">Расходы</h3>
-                            <p class="stat-value">₽ 1,402,500</p>
-                            <p class="stat-change negative">
-                                <i class="fas fa-arrow-down"></i>
-                                5.2% с прошлого месяца
-                            </p>
+                            <p class="stat-value">{{ number_format($totalExpenses, 2, '.', ' ') }} грн</p>
+                            @if($showDynamics)
+                                <p class="stat-change negative">
+                                    <i class="fas fa-arrow-down"></i>
+                                    5.2% с прошлого месяца
+                                </p>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -301,13 +303,13 @@
                         </div>
                         <div class="stat-content">
                             <h3 class="stat-title">Услуги</h3>
-                            <p class="stat-value">284</p>
-                            <p class="stat-change positive">
-                                @if($showDynamics)
+                            <p class="stat-value">{{ $servicesCount }}</p>
+                            @if($showDynamics)
+                                <p class="stat-change positive">
                                     <i class="fas fa-arrow-up"></i>
                                     18.2% с прошлого месяца
-                                @endif
-                            </p>
+                                </p>
+                            @endif
                         </div>
                     </div>
                     <div class="stat-card clients-card">
@@ -316,13 +318,13 @@
                         </div>
                         <div class="stat-content">
                             <h3 class="stat-title">Клиенты</h3>
-                            <p class="stat-value">1,248</p>
-                            <p class="stat-change positive">
-                                @if($showDynamics)
+                            <p class="stat-value">{{ $clientsCount }}</p>
+                            @if($showDynamics)
+                                <p class="stat-change positive">
                                     <i class="fas fa-arrow-up"></i>
                                     12% с прошлого месяца
-                                @endif
-                            </p>
+                                </p>
+                            @endif
                         </div>
                     </div>
                     <div class="stat-card appointments-card">
@@ -331,13 +333,13 @@
                         </div>
                         <div class="stat-content">
                             <h3 class="stat-title">Записи</h3>
-                            <p class="stat-value">156</p>
-                            <p class="stat-change positive">
-                                @if($showDynamics)
+                            <p class="stat-value">{{ $appointmentsCount }}</p>
+                            @if($showDynamics)
+                                <p class="stat-change positive">
                                     <i class="fas fa-arrow-up"></i>
                                     5.2% с прошлой недели
-                                @endif
-                            </p>
+                                </p>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -391,6 +393,54 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
+        // Анимация счетчика для карточек
+        function animateCounter(element, start, end, duration = 1500) {
+            const startTime = performance.now();
+            const originalText = element.textContent;
+            const isCurrency = originalText.includes('грн');
+            
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Плавная анимация с easeOutQuart
+                const easeProgress = 1 - Math.pow(1 - progress, 4);
+                const current = start + (end - start) * easeProgress;
+                
+                if (isCurrency) {
+                    element.textContent = new Intl.NumberFormat('ru-RU', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }).format(current) + ' грн';
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString('ru-RU');
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+            
+            requestAnimationFrame(updateCounter);
+        }
+        
+        // Запускаем анимацию для всех карточек
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.stat-value');
+            
+            cards.forEach((card, index) => {
+                const finalValue = card.textContent;
+                const numericValue = parseFloat(finalValue.replace(/[^\d.-]/g, ''));
+                
+                if (!isNaN(numericValue)) {
+                    // Запускаем анимацию с небольшой задержкой для каждой карточки
+                    setTimeout(() => {
+                        animateCounter(card, 0, numericValue, 1500);
+                    }, index * 200);
+                }
+            });
+        });
+
         // 1. График продаж по месяцам (линейный график)
         const salesCtx = document.getElementById('salesChart').getContext('2d');
         const salesChart = new Chart(salesCtx, {
