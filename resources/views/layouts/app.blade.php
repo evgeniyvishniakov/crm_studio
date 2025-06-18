@@ -34,6 +34,16 @@
     <script src="{{ asset('js/main.js') }}"></script>
 
     <style>
+        body {
+            background: #f8f9fa !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        #right-panel {
+            background: #f8f9fa !important;
+        }
+        
         #weatherWidget .currentDesc {
             color: #ffffff!important;
         }

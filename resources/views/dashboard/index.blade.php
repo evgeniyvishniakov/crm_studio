@@ -3,10 +3,25 @@
 @section('content')
 <style>
 /* Dashboard Statistics Cards - Inline Styles */
-.dashboard-container {
-    padding: 10px !important;
+body {
     background: #f8f9fa !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.dashboard-container {
+    padding: 24px !important;
+    background: #fff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+    border: 1px solid #e5e7eb !important;
     min-height: 100vh !important;
+    max-width: 1400px !important;
+    margin: 32px auto 0 auto !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .dashboard-title {
@@ -23,12 +38,17 @@
     gap: 1.5rem !important;
     margin-bottom: 2rem !important;
     align-items: stretch !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .stat-card {
     height: 150px !important;
     min-width: 0 !important;
     max-width: 100% !important;
+    width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
@@ -41,6 +61,7 @@
     transition: all 0.3s ease !important;
     position: relative !important;
     overflow: hidden !important;
+    flex-shrink: 0 !important;
 }
 
 .stat-card .stat-content {
@@ -78,6 +99,16 @@
     color: #2d3748 !important;
     margin: 0 0 0.2rem 0 !important;
     line-height: 1.2 !important;
+    opacity: 0 !important;
+    transition: opacity 0.3s ease !important;
+    min-width: 80px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.stat-value.animated {
+    opacity: 1 !important;
 }
 
 .stat-change {
@@ -431,12 +462,20 @@
             cards.forEach((card, index) => {
                 const finalValue = card.textContent;
                 const numericValue = parseFloat(finalValue.replace(/[^\d.-]/g, ''));
+                const isCurrency = finalValue.includes('грн');
                 
                 if (!isNaN(numericValue)) {
+                    // Сразу устанавливаем 0 и показываем элемент
+                    card.textContent = '0' + (isCurrency ? ' грн' : '');
+                    card.classList.add('animated');
+                    
                     // Запускаем анимацию с небольшой задержкой для каждой карточки
                     setTimeout(() => {
                         animateCounter(card, 0, numericValue, 1500);
                     }, index * 200);
+                } else {
+                    // Для нечисловых значений просто показываем
+                    card.classList.add('animated');
                 }
             });
         });
