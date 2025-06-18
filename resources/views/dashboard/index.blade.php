@@ -20,21 +20,34 @@
 .stats-grid {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
-    gap: 0.8rem !important;
+    gap: 1.5rem !important;
     margin-bottom: 2rem !important;
+    align-items: stretch !important;
 }
 
 .stat-card {
+    height: 150px !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: flex-start !important;
+    padding: 1.2rem 1.1rem !important;
+    box-sizing: border-box !important;
     background: white !important;
     border-radius: 12px !important;
-    padding: 1rem !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
     transition: all 0.3s ease !important;
     position: relative !important;
     overflow: hidden !important;
+}
+
+.stat-card .stat-content {
+    flex: 1 1 auto !important;
     display: flex !important;
-    align-items: center !important;
-    gap: 0.8rem !important;
+    flex-direction: column !important;
+    justify-content: center !important;
 }
 
 .stat-icon {
@@ -96,33 +109,133 @@
     --card-color-light: #fbbf24 !important;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
     .stats-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: 1fr !important;
         gap: 1rem !important;
     }
-    
-    .stat-card {
-        padding: 1rem !important;
+    .stat-card.profit-card {
+        max-width: 100%;
+        margin-bottom: 1rem;
     }
-    
-    .stat-icon {
-        width: 45px !important;
-        height: 45px !important;
-        font-size: 1.1rem !important;
+    .stat-cards-group {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+        position: static !important;
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: all !important;
+        height: auto;
     }
-    
-    .stat-value {
-        font-size: 1.3rem !important;
+    .stat-cards-container {
+        min-height: unset !important;
+        display: block !important;
     }
 }
+
+/* Переключатели */
+.dashboard-tabs {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+    margin-bottom: 2rem !important;
+}
+
+.tab-button {
+    background: white !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1.5rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+.tab-button:hover {
+    border-color: #3b82f6 !important;
+    color: #3b82f6 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15) !important;
+}
+
+.tab-button.active {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
+    border-color: #3b82f6 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+}
+
+.tab-button i {
+    font-size: 1rem !important;
+}
+
+/* Контейнер для переключаемых карточек */
+.stat-cards-container {
+    display: contents !important;
+}
+
+/* Группы карточек */
+.stat-cards-group {
+    display: contents !important;
+    position: static !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: all !important;
+    height: auto !important;
+    transition: none !important;
+}
+
+.stat-cards-group:not(.active) .stat-card {
+    display: none !important;
+}
+
+/* Дополнительные цвета для новых карточек */
+.services-card {
+    --card-color: #8b5cf6 !important;
+    --card-color-light: #a78bfa !important;
+}
+
+.expenses-card {
+    --card-color: #ef4444 !important;
+    --card-color-light: #f87171 !important;
+}
+
+.procedures-card {
+    --card-color: #06b6d4 !important;
+    --card-color-light: #22d3ee !important;
+}
+
+/* Анимация при переключении */
+.stat-cards-group.finances-group {
+    transform: translateX(-20px) !important;
+}
+
+.stat-cards-group.activity-group {
+    transform: translateX(20px) !important;
+}
+
+.stat-cards-group.active.finances-group,
+.stat-cards-group.active.activity-group {
+    transform: translateX(0) !important;
+}
 </style>
+
+@php
+    use Carbon\Carbon;
+    $today = Carbon::now();
+    $showDynamics = $today->day >= 20;
+@endphp
 
     <div class="dashboard-container">
         <h1 class="dashboard-title">CRM Analytics Dashboard</h1>
 
         <div class="stats-grid">
-            <!-- Карточка Прибыль -->
+            <!-- Левая колонка: прибыль -->
             <div class="stat-card profit-card">
                 <div class="stat-icon">
                     <i class="fas fa-chart-line"></i>
@@ -136,51 +249,111 @@
                     </p>
                 </div>
             </div>
-
-            <!-- Карточка Продажи -->
-            <div class="stat-card sales-card">
-                <div class="stat-icon">
-                    <i class="fas fa-shopping-cart"></i>
+            <!-- Правая колонка: переключаемые карточки -->
+            <div class="stat-cards-container">
+                <!-- Финансы -->
+                <div class="stat-cards-group finances-group active">
+                    <div class="stat-card sales-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-title">Продажи товаров</h3>
+                            <p class="stat-value">₽ 1,250,000</p>
+                            <p class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                8.7% с прошлого месяца
+                            </p>
+                        </div>
+                    </div>
+                    <div class="stat-card services-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-title">Продажи услуг</h3>
+                            <p class="stat-value">₽ 3,000,000</p>
+                            <p class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                12.5% с прошлого месяца
+                            </p>
+                        </div>
+                    </div>
+                    <div class="stat-card expenses-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-title">Расходы</h3>
+                            <p class="stat-value">₽ 1,402,500</p>
+                            <p class="stat-change negative">
+                                <i class="fas fa-arrow-down"></i>
+                                5.2% с прошлого месяца
+                            </p>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-content">
-                    <h3 class="stat-title">Продажи</h3>
-                    <p class="stat-value">₽ 4,250,000</p>
-                    <p class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        8.7% с прошлого месяца
-                    </p>
+                <!-- Активность -->
+                <div class="stat-cards-group activity-group">
+                    <div class="stat-card procedures-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-title">Услуги</h3>
+                            <p class="stat-value">284</p>
+                            <p class="stat-change positive">
+                                @if($showDynamics)
+                                    <i class="fas fa-arrow-up"></i>
+                                    18.2% с прошлого месяца
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                    <div class="stat-card clients-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-title">Клиенты</h3>
+                            <p class="stat-value">1,248</p>
+                            <p class="stat-change positive">
+                                @if($showDynamics)
+                                    <i class="fas fa-arrow-up"></i>
+                                    12% с прошлого месяца
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                    <div class="stat-card appointments-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-title">Записи</h3>
+                            <p class="stat-value">156</p>
+                            <p class="stat-change positive">
+                                @if($showDynamics)
+                                    <i class="fas fa-arrow-up"></i>
+                                    5.2% с прошлой недели
+                                @endif
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Карточка Клиенты -->
-            <div class="stat-card clients-card">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 class="stat-title">Клиенты</h3>
-                    <p class="stat-value">1,248</p>
-                    <p class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        12% с прошлого месяца
-                    </p>
-                </div>
-            </div>
-
-            <!-- Карточка Записи -->
-            <div class="stat-card appointments-card">
-                <div class="stat-icon">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
-                <div class="stat-content">
-                    <h3 class="stat-title">Записи</h3>
-                    <p class="stat-value">156</p>
-                    <p class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        5.2% с прошлой недели
-                    </p>
-                </div>
-            </div>
+        <!-- Переключатели -->
+        <div class="dashboard-tabs">
+            <button class="tab-button active" data-tab="finances">
+                <i class="fas fa-chart-pie"></i>
+                Финансы
+            </button>
+            <button class="tab-button" data-tab="activity">
+                <i class="fas fa-chart-bar"></i>
+                Активность
+            </button>
         </div>
 
         <!-- Графики -->
@@ -216,6 +389,7 @@
     
     <!-- Подключаем Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
         // 1. График продаж по месяцам (линейный график)
         const salesCtx = document.getElementById('salesChart').getContext('2d');
@@ -364,6 +538,33 @@
                     }
                 }
             }
+        });
+
+        // Функциональность переключения вкладок
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const cardGroups = document.querySelectorAll('.stat-cards-group');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // Убираем активный класс со всех кнопок
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Убираем активный класс со всех групп карточек
+                    cardGroups.forEach(group => group.classList.remove('active'));
+                    
+                    // Добавляем активный класс к нажатой кнопке
+                    this.classList.add('active');
+                    
+                    // Показываем соответствующую группу карточек
+                    const targetGroup = document.querySelector(`.${targetTab}-group`);
+                    if (targetGroup) {
+                        targetGroup.classList.add('active');
+                    }
+                });
+            });
         });
     </script>
 
