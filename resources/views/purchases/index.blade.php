@@ -97,11 +97,11 @@
                     @csrf
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Дата *</label>
+                            <label>Дата </label>
                             <input type="date" name="date" required class="form-control">
                         </div>
                         <div class="form-group">
-                            <label>Поставщик *</label>
+                            <label>Поставщик </label>
                             <select name="supplier_id" required class="form-control">
                                 <option value="">Выберите поставщика</option>
                                 @foreach($suppliers as $supplier)
@@ -120,7 +120,7 @@
                         <div class="item-row template" style="display: none;">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Товар *</label>
+                                    <label>Товар </label>
                                     <div class="product-search-container">
                                         <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
                                                oninput="searchProducts(this)"
@@ -137,15 +137,15 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Закупочная цена *</label>
+                                    <label>Закупочная цена </label>
                                     <input type="number"  name="items[0][purchase_price]" class="form-control" >
                                 </div>
                                 <div class="form-group">
-                                    <label>Розничная цена *</label>
+                                    <label>Розничная цена </label>
                                     <input type="number" name="items[0][retail_price]" class="form-control" >
                                 </div>
                                 <div class="form-group">
-                                    <label>Количество *</label>
+                                    <label>Количество </label>
                                     <input type="number" name="items[0][quantity]" required class="form-control" min="1" value="1">
                                 </div>
                                 <div class="form-group">
@@ -160,7 +160,7 @@
                         <div class="item-row">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Товар *</label>
+                                    <label>Товар </label>
                                     <div class="product-search-container">
                                         <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
                                                oninput="searchProducts(this)"
@@ -177,15 +177,15 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Закупочная цена *</label>
+                                    <label>Закупочная цена </label>
                                     <input type="number" step="0.01" name="items[0][purchase_price]" required class="form-control" min="0.01">
                                 </div>
                                 <div class="form-group">
-                                    <label>Розничная цена *</label>
+                                    <label>Розничная цена </label>
                                     <input type="number" step="0.01" name="items[0][retail_price]" required class="form-control" min="0.01">
                                 </div>
                                 <div class="form-group">
-                                    <label>Количество *</label>
+                                    <label>Количество </label>
                                     <input type="number" name="items[0][quantity]" required class="form-control" min="1" value="1">
                                 </div>
                                 <div class="form-group">
@@ -359,7 +359,7 @@
                     if (data.success) {
                         const purchase = data.purchase;
                         const modalBody = document.getElementById('editPurchaseModalBody');
-                        
+
                         // Создаем форму редактирования
                         const formHtml = `
                             <form id="editPurchaseForm">
@@ -367,11 +367,11 @@
                                 @method('PUT')
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Дата *</label>
+                                        <label>Дата </label>
                                         <input type="date" name="date" required class="form-control" value="${purchase.date}">
                                     </div>
                                     <div class="form-group">
-                                        <label>Поставщик *</label>
+                                        <label>Поставщик </label>
                                         <select name="supplier_id" required class="form-control">
                                             <option value="">Выберите поставщика</option>
                                             @foreach($suppliers as $supplier)
@@ -392,7 +392,7 @@
                                         <div class="item-row">
                                             <div class="form-row">
                                                 <div class="form-group">
-                                                    <label>Товар *</label>
+                                                    <label>Товар </label>
                                                     <select name="items[${index}][product_id]" required class="form-control">
                                                         <option value="">Выберите товар</option>
                                                         @foreach($products as $product)
@@ -403,15 +403,15 @@
                                                     </select>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>Закупочная цена *</label>
+                                                    <label>Закупочная цена </label>
                                                     <input type="number" step="0.01" name="items[${index}][purchase_price]" required class="form-control" value="${item.purchase_price}">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>Розничная цена *</label>
+                                                    <label>Розничная цена </label>
                                                     <input type="number" step="0.01" name="items[${index}][retail_price]" required class="form-control" value="${item.retail_price}">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>Количество *</label>
+                                                    <label>Количество </label>
                                                     <input type="number" name="items[${index}][quantity]" required class="form-control" value="${item.quantity}">
                                                 </div>
                                                 <div class="form-group">
@@ -437,16 +437,16 @@
                                 </div>
                             </form>
                         `;
-                        
+
                         modalBody.innerHTML = formHtml;
                         document.getElementById('editPurchaseModal').style.display = 'block';
-                        
+
                         // Добавляем обработчик отправки формы
                         document.getElementById('editPurchaseForm').addEventListener('submit', function(e) {
                             e.preventDefault();
                             const formData = new FormData(this);
                             const items = [];
-                            
+
                             // Собираем данные о товарах
                             const itemRows = this.querySelectorAll('.item-row');
                             itemRows.forEach((row, index) => {
@@ -457,7 +457,7 @@
                                     quantity: row.querySelector(`[name="items[${index}][quantity]"]`).value
                                 });
                             });
-                            
+
                             // Отправляем запрос на обновление
                             fetch(`/purchases/${id}`, {
                                 method: 'POST',

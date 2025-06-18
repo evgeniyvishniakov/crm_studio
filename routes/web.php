@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AppointmentsController;
+use App\Http\Controllers\ClientTypeController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ServiceController;
@@ -40,14 +42,7 @@ Route::post('/products/{product}/remove-photo', [ProductController::class, 'remo
 
 
 Route::resource('warehouse', WarehouseController::class);
-Route::prefix('warehouse')->group(function () {
-    Route::get('/', [WarehouseController::class, 'index'])->name('warehouse.index');
-    Route::post('/', [WarehouseController::class, 'store'])->name('warehouse.store');
-    Route::put('/{warehouse}', [WarehouseController::class, 'update'])->name('warehouse.update');
-    Route::delete('/{warehouse}', [WarehouseController::class, 'destroy'])->name('warehouse.destroy');
-    Route::get('/products', [WarehouseController::class, 'getProducts'])->name('warehouse.products');
-    Route::get('/warehouse/{id}/edit', [WarehouseController::class, 'edit'])->name('warehouse.edit');
-});
+Route::get('/warehouse/products', [WarehouseController::class, 'getProducts'])->name('warehouse.products');
 
 Route::resource('purchases', PurchaseController::class);
 
@@ -104,11 +99,9 @@ Route::resource('suppliers', \App\Http\Controllers\SupplierController::class)
 Route::resource('client-types', \App\Http\Controllers\ClientTypeController::class)
     ->except(['create', 'show']);
 
-// Маршруты для типов клиентов
-Route::prefix('client-types')->group(function () {
-    Route::get('/', [ClientTypeController::class, 'index'])->name('client-types.index');
-    Route::post('/', [ClientTypeController::class, 'store'])->name('client-types.store');
-    Route::get('/{id}', [ClientTypeController::class, 'show'])->name('client-types.show');
-    Route::put('/{id}', [ClientTypeController::class, 'update'])->name('client-types.update');
-    Route::delete('/{id}', [ClientTypeController::class, 'destroy'])->name('client-types.destroy');
-});
+Route::get('/inventories', [InventoryController::class, 'index'])->name('inventories.index');
+Route::post('/inventories', [InventoryController::class, 'store'])->name('inventories.store');
+Route::get('/inventories/{id}/edit', [InventoryController::class, 'edit'])->name('inventories.edit');
+Route::put('/inventories/{id}', [InventoryController::class, 'update'])->name('inventories.update');
+Route::delete('/inventories/{id}', [InventoryController::class, 'destroy'])->name('inventories.destroy');
+Route::get('/inventories/{id}/items', [InventoryController::class, 'items'])->name('inventories.items');

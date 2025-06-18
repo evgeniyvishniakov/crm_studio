@@ -104,7 +104,7 @@
                     <a href="{{ route('expenses.index') }}"><i class="menu-icon fa fa-credit-card"></i>Расходы</a>
                 </li>
                 <li>
-                    <a href=""><i class="menu-icon fa fa-archive"></i>Инвентаризация</a>
+                    <a href="{{ route('inventories.index') }}"><i class="menu-icon fa fa-archive"></i>Инвентаризация</a>
                 </li>
                 <li>
                     <a href="{{ route('clients.list') }}"><i class="menu-icon fa fa-bar-chart"></i>Отчеты</a>
