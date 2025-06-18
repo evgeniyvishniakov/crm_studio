@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('main.index');
+    return view('dashboard.index');
 });
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductController;

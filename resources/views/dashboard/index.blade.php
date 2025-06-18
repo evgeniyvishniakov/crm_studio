@@ -1,27 +1,185 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+/* Dashboard Statistics Cards - Inline Styles */
+.dashboard-container {
+    padding: 10px !important;
+    background: #f8f9fa !important;
+    min-height: 100vh !important;
+}
+
+.dashboard-title {
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    color: #2d3748 !important;
+    margin-bottom: 1.5rem !important;
+    text-align: center !important;
+}
+
+.stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.8rem !important;
+    margin-bottom: 2rem !important;
+}
+
+.stat-card {
+    background: white !important;
+    border-radius: 12px !important;
+    padding: 1rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.8rem !important;
+}
+
+.stat-icon {
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: linear-gradient(135deg, var(--card-color), var(--card-color-light)) !important;
+    color: white !important;
+    font-size: 1.3rem !important;
+    flex-shrink: 0 !important;
+}
+
+.stat-title {
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: #718096 !important;
+    margin: 0 0 0.3rem 0 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+
+.stat-value {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: #2d3748 !important;
+    margin: 0 0 0.2rem 0 !important;
+    line-height: 1.2 !important;
+}
+
+.stat-change {
+    font-size: 0.7rem !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.2rem !important;
+}
+
+.profit-card {
+    --card-color: #10b981 !important;
+    --card-color-light: #34d399 !important;
+}
+
+.sales-card {
+    --card-color: #3b82f6 !important;
+    --card-color-light: #60a5fa !important;
+}
+
+.clients-card {
+    --card-color: #8b5cf6 !important;
+    --card-color-light: #a78bfa !important;
+}
+
+.appointments-card {
+    --card-color: #f59e0b !important;
+    --card-color-light: #fbbf24 !important;
+}
+
+@media (max-width: 1000px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+    
+    .stat-card {
+        padding: 1rem !important;
+    }
+    
+    .stat-icon {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 1.1rem !important;
+    }
+    
+    .stat-value {
+        font-size: 1.3rem !important;
+    }
+}
+</style>
+
     <div class="dashboard-container">
         <h1 class="dashboard-title">CRM Analytics Dashboard</h1>
 
         <div class="stats-grid">
-            <!-- Статистические карточки -->
-            <div class="stat-card">
-                <h3 class="stat-title">Total Customers</h3>
-                <p class="stat-value blue">1,248</p>
-                <p class="stat-change positive">↑ 12% from last month</p>
+            <!-- Карточка Прибыль -->
+            <div class="stat-card profit-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-title">Прибыль</h3>
+                    <p class="stat-value">₽ 2,847,500</p>
+                    <p class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        15.3% с прошлого месяца
+                    </p>
+                </div>
             </div>
 
-            <div class="stat-card">
-                <h3 class="stat-title">New Leads</h3>
-                <p class="stat-value purple">84</p>
-                <p class="stat-change positive">↑ 5% from last week</p>
+            <!-- Карточка Продажи -->
+            <div class="stat-card sales-card">
+                <div class="stat-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-title">Продажи</h3>
+                    <p class="stat-value">₽ 4,250,000</p>
+                    <p class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        8.7% с прошлого месяца
+                    </p>
+                </div>
             </div>
 
-            <div class="stat-card">
-                <h3 class="stat-title">Conversion Rate</h3>
-                <p class="stat-value green">24%</p>
-                <p class="stat-change negative">↓ 2% from last quarter</p>
+            <!-- Карточка Клиенты -->
+            <div class="stat-card clients-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-title">Клиенты</h3>
+                    <p class="stat-value">1,248</p>
+                    <p class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        12% с прошлого месяца
+                    </p>
+                </div>
+            </div>
+
+            <!-- Карточка Записи -->
+            <div class="stat-card appointments-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-title">Записи</h3>
+                    <p class="stat-value">156</p>
+                    <p class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        5.2% с прошлой недели
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -53,6 +211,9 @@
         </div>
     </div>
 
+    <!-- Подключаем Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <!-- Подключаем Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
