@@ -59,4 +59,140 @@ class DashboardController extends Controller
 
         return view('dashboard.index', compact('servicesCount', 'clientsCount', 'appointmentsCount', 'totalExpenses', 'showDynamics', 'servicesRevenue', 'productsRevenue', 'totalProfit'));
     }
+
+    /**
+     * API: Получить динамику прибыли для графика (по дням/неделям/месяцам)
+     */
+    public function profitChartData(Request $request)
+    {
+        $period = $request->input('period', 7); // 7, 30, 90
+        $now = now();
+        $labels = [];
+        $data = [];
+        if ($period == 7) {
+            // За 7 дней: по дням
+            for ($i = 6; $i >= 0; $i--) {
+                $date = $now->copy()->subDays($i)->toDateString();
+                $labels[] = $now->copy()->subDays($i)->format('d M');
+                $profit = $this->getProfitForDate($date);
+                $data[] = round($profit, 2);
+            }
+        } elseif ($period == 30) {
+            // За месяц: по неделям (4 недели)
+            for ($i = 3; $i >= 0; $i--) {
+                $start = $now->copy()->startOfWeek()->subWeeks($i)->toDateString();
+                $end = $now->copy()->startOfWeek()->subWeeks($i-1)->subDay()->toDateString();
+                $labels[] = $now->copy()->startOfWeek()->subWeeks($i)->format('d M');
+                $profit = $this->getProfitForPeriod($start, $end);
+                $data[] = round($profit, 2);
+            }
+        } elseif ($period == 90) {
+            // За 3 месяца: по неделям (13 недель)
+            for ($i = 12; $i >= 0; $i--) {
+                $start = $now->copy()->startOfWeek()->subWeeks($i)->toDateString();
+                $end = $now->copy()->startOfWeek()->subWeeks($i-1)->subDay()->toDateString();
+                $labels[] = $now->copy()->startOfWeek()->subWeeks($i)->format('d M');
+                $profit = $this->getProfitForPeriod($start, $end);
+                $data[] = round($profit, 2);
+            }
+        }
+        return response()->json([
+            'labels' => $labels,
+            'data' => $data
+        ]);
+    }
+
+    /**
+     * Получить прибыль за конкретную дату (день)
+     */
+    private function getProfitForDate($date)
+    {
+        $productsProfit = \App\Models\SaleItem::whereDate('created_at', $date)
+            ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
+            ->value('profit') ?? 0;
+        $servicesProfit = \App\Models\Appointment::whereDate('date', $date)
+            ->sum('price');
+        $expenses = \App\Models\Expense::whereDate('date', $date)->sum('amount');
+        $purchases = \App\Models\Purchase::whereDate('date', $date)->sum('total_amount');
+        return $productsProfit + $servicesProfit - $expenses - $purchases;
+    }
+
+    /**
+     * Получить прибыль за период (от и до)
+     */
+    private function getProfitForPeriod($start, $end)
+    {
+        $productsProfit = \App\Models\SaleItem::whereBetween('created_at', [$start, $end])
+            ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
+            ->value('profit') ?? 0;
+        $servicesProfit = \App\Models\Appointment::whereBetween('date', [$start, $end])
+            ->sum('price');
+        $expenses = \App\Models\Expense::whereBetween('date', [$start, $end])->sum('amount');
+        $purchases = \App\Models\Purchase::whereBetween('date', [$start, $end])->sum('total_amount');
+        return $productsProfit + $servicesProfit - $expenses - $purchases;
+    }
+
+    /**
+     * API: Получить динамику продаж товаров для графика (по дням/неделям/месяцам)
+     */
+    public function salesChartData(Request $request)
+    {
+        $period = $request->input('period', 7); // 7, 30, 90
+        $now = now();
+        $labels = [];
+        $data = [];
+        if ($period == 7) {
+            // За 7 дней: по дням
+            for ($i = 6; $i >= 0; $i--) {
+                $date = $now->copy()->subDays($i)->toDateString();
+                $labels[] = $now->copy()->subDays($i)->format('d M');
+                $sales = $this->getSalesForDate($date);
+                $data[] = round($sales, 2);
+            }
+        } elseif ($period == 30) {
+            // За месяц: по дням (30 точек)
+            for ($i = 29; $i >= 0; $i--) {
+                $date = $now->copy()->subDays($i)->toDateString();
+                $labels[] = $now->copy()->subDays($i)->format('d M');
+                $sales = $this->getSalesForDate($date);
+                $data[] = round($sales, 2);
+            }
+        } elseif ($period == 90) {
+            // За 3 месяца: по дням (90 точек)
+            for ($i = 89; $i >= 0; $i--) {
+                $date = $now->copy()->subDays($i)->toDateString();
+                $labels[] = $now->copy()->subDays($i)->format('d M');
+                $sales = $this->getSalesForDate($date);
+                $data[] = round($sales, 2);
+            }
+        }
+        return response()->json([
+            'labels' => $labels,
+            'data' => $data
+        ]);
+    }
+
+    /**
+     * Получить выручку по продажам товаров за конкретную дату (день)
+     */
+    private function getSalesForDate($date)
+    {
+        return \App\Models\SaleItem::whereHas('sale', function($q) use ($date) {
+                $q->whereDate('date', $date);
+            })
+            ->selectRaw('SUM(retail_price * quantity) as sales')
+            ->value('sales') ?? 0;
+    }
+
+    /**
+     * Получить выручку по продажам товаров за период (от и до)
+     */
+    private function getSalesForPeriod($start, $end)
+    {
+        return \App\Models\SaleItem::whereHas('sale', function($q) use ($start, $end) {
+                $q->whereBetween('date', [$start, $end]);
+            })
+            ->selectRaw('SUM(retail_price * quantity) as sales')
+            ->value('sales') ?? 0;
+    }
 }
