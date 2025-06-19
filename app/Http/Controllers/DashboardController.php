@@ -248,4 +248,54 @@ class DashboardController extends Controller
             'data' => $data
         ]);
     }
+
+    /**
+     * API: Получить динамику активности (услуги, клиенты, записи) для графика
+     */
+    public function activityChartData(Request $request)
+    {
+        $period = $request->input('period', 30); // 7, 30, 90, 180, 365
+        $now = now();
+        $labels = [];
+        $servicesData = [];
+        $clientsData = [];
+        $appointmentsData = [];
+        $days = 0;
+        if ($period == 7) $days = 6;
+        elseif ($period == 30) $days = 29;
+        elseif ($period == 90) $days = 89;
+        elseif ($period == 180) $days = 179;
+        elseif ($period == 365) $days = 364;
+        // Находим самую раннюю дату по услугам, клиентам, записям
+        $firstService = \App\Models\Appointment::orderBy('date', 'asc')->first();
+        $firstClient = \App\Models\Client::orderBy('created_at', 'asc')->first();
+        $firstAppointment = \App\Models\Appointment::orderBy('created_at', 'asc')->first();
+        $firstDate = $now;
+        $dates = [];
+        if ($firstService) $dates[] = \Carbon\Carbon::parse($firstService->date);
+        if ($firstClient) $dates[] = \Carbon\Carbon::parse($firstClient->created_at);
+        if ($firstAppointment) $dates[] = \Carbon\Carbon::parse($firstAppointment->created_at);
+        if (count($dates)) $firstDate = min($dates);
+        $daysSinceStart = $now->diffInDays($firstDate);
+        $maxDays = min($days, $daysSinceStart);
+        for ($i = $maxDays; $i >= 0; $i--) {
+            $date = $now->copy()->subDays($i)->toDateString();
+            $labels[] = $now->copy()->subDays($i)->format('d M');
+            // Услуги: завершённые записи за день
+            $servicesCount = \App\Models\Appointment::whereDate('date', $date)->where('status', 'completed')->count();
+            // Клиенты: новые клиенты за день
+            $clientsCount = \App\Models\Client::whereDate('created_at', $date)->count();
+            // Записи: все записи за день (по дате услуги, а не по дате создания)
+            $appointmentsCount = \App\Models\Appointment::whereDate('date', $date)->count();
+            $servicesData[] = $servicesCount;
+            $clientsData[] = $clientsCount;
+            $appointmentsData[] = $appointmentsCount;
+        }
+        return response()->json([
+            'labels' => $labels,
+            'services' => $servicesData,
+            'clients' => $clientsData,
+            'appointments' => $appointmentsData
+        ]);
+    }
 }

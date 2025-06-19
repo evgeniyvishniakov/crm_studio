@@ -23,3 +23,4 @@ Route::get('/dashboard/profit-chart', [DashboardController::class, 'profitChartD
 Route::get('/dashboard/sales-chart', [DashboardController::class, 'salesChartData']);
 Route::get('/dashboard/services-chart', [\App\Http\Controllers\DashboardController::class, 'servicesChartData']);
 Route::get('/dashboard/expenses-chart', [\App\Http\Controllers\DashboardController::class, 'expensesChartData']);
+Route::get('/dashboard/activity-chart', [\App\Http\Controllers\DashboardController::class, 'activityChartData']);

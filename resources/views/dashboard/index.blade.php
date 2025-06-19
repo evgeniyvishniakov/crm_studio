@@ -968,9 +968,53 @@ body {
                     return;
                 }
                 if (type === 'activity') {
-                    universalChart.data.labels = getLastNDates(currentPeriod);
-                    universalChart.data.datasets = getActivityDatasets(currentPeriod);
-                    universalChart.update();
+                    fetch(`/api/dashboard/activity-chart?period=${currentPeriod}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            universalChart.data.labels = res.labels;
+                            universalChart.data.datasets = [
+                                {
+                                    label: 'Услуги',
+                                    data: res.services,
+                                    borderColor: '#8b5cf6',
+                                    backgroundColor: '#8b5cf6' + '33',
+                                    tension: 0.4,
+                                    fill: false,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                },
+                                {
+                                    label: 'Клиенты',
+                                    data: res.clients,
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: '#3b82f6' + '33',
+                                    tension: 0.4,
+                                    fill: false,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                },
+                                {
+                                    label: 'Записи',
+                                    data: res.appointments,
+                                    borderColor: '#f59e0b',
+                                    backgroundColor: '#f59e0b' + '33',
+                                    tension: 0.4,
+                                    fill: false,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                }
+                            ];
+                            // Y max по максимальному из всех
+                            const maxValue = Math.max(...res.services, ...res.clients, ...res.appointments);
+                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                            universalChart.update();
+                        });
                     return;
                 }
             });
@@ -1045,9 +1089,52 @@ body {
                         });
                     return;
                 } else if (currentMetric === 'activity') {
-                    universalChart.data.labels = getLastNDates(currentPeriod);
-                    universalChart.data.datasets = getActivityDatasets(currentPeriod);
-                    universalChart.update();
+                    fetch(`/api/dashboard/activity-chart?period=${currentPeriod}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            universalChart.data.labels = res.labels;
+                            universalChart.data.datasets = [
+                                {
+                                    label: 'Услуги',
+                                    data: res.services,
+                                    borderColor: '#8b5cf6',
+                                    backgroundColor: '#8b5cf6' + '33',
+                                    tension: 0.4,
+                                    fill: false,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                },
+                                {
+                                    label: 'Клиенты',
+                                    data: res.clients,
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: '#3b82f6' + '33',
+                                    tension: 0.4,
+                                    fill: false,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                },
+                                {
+                                    label: 'Записи',
+                                    data: res.appointments,
+                                    borderColor: '#f59e0b',
+                                    backgroundColor: '#f59e0b' + '33',
+                                    tension: 0.4,
+                                    fill: false,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                }
+                            ];
+                            const maxValue = Math.max(...res.services, ...res.clients, ...res.appointments);
+                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                            universalChart.update();
+                        });
                     return;
                 } else if (currentMetric === 'profit') {
                     fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`)
