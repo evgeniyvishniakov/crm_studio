@@ -471,7 +471,7 @@ body {
                             @endif
                         </div>
                     </div>
-            </div>
+                </div>
             </div>
         </div>
 
@@ -503,16 +503,15 @@ body {
                         <button class="dropdown-item metric-item" data-type="sales"><i class="fas fa-shopping-cart"></i> Продажи товаров</button>
                         <button class="dropdown-item metric-item" data-type="services"><i class="fas fa-spa"></i> Продажи услуг</button>
                         <button class="dropdown-item metric-item" data-type="expenses"><i class="fas fa-credit-card"></i> Расходы</button>
-                        <button class="dropdown-item metric-item" data-type="clients"><i class="fas fa-users"></i> Клиенты</button>
-                        <button class="dropdown-item metric-item" data-type="appointments"><i class="fas fa-calendar-check"></i> Записи</button>
-            </div>
-            </div>
+                        <button class="dropdown-item metric-item" data-type="activity"><i class="fas fa-bolt"></i> Активность</button>
+                    </div>
+                </div>
                 <!-- Фильтры справа -->
                 <div class="period-filters" style="display: flex; gap: 0.5rem;">
                     <button class="period-btn active" data-period="7">За 7 дней</button>
                     <button class="period-btn" data-period="30">За месяц</button>
                     <button class="period-btn" data-period="90">За 3 месяца</button>
-            </div>
+                </div>
             </div>
             <canvas id="universalChart" height="150"></canvas>
         </div>
@@ -604,7 +603,7 @@ body {
             services: {
                 label: "Продажи услуг",
                 icon: "fa-spa",
-            data: {
+                data: {
                     7: [4500, 4400, 4300, 4280, 4250, 4220, 4200],
                     30: [3000, 3500, 4000, 3800, 4100, 4500, 4400, 4300, 4280, 4250, 4220, 4200, 4180, 4150, 4130, 4100, 4080, 4050, 4030, 4000, 3980, 3950, 3930, 3900, 3880, 3850, 3830, 3800, 3780, 3750],
                     90: [3000, 3200, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5400, 5600, 5800, 6000, 6200, 6400, 6600, 6800, 7000, 7200, 7400, 7600, 7800, 8000, 8200, 8400, 8600, 8800, 9000, 9200, 9400, 9600, 9800, 10000, 10200, 10400, 10600, 10800, 11000, 11200, 11400, 11600, 11800, 12000, 12200, 12400, 12600, 12800, 13000, 13200, 13400, 13600, 13800, 14000, 14200, 14400, 14600, 14800, 15000, 15200, 15400, 15600, 15800, 16000, 16200, 16400, 16600, 16800, 17000, 17200, 17400, 17600, 17800, 18000, 18200, 18400, 18600, 18800]
@@ -638,6 +637,16 @@ body {
                 }
             }
         };
+        // Формируем activity только после определения всех метрик
+        datasets.activity = {
+            label: 'Активность',
+            icon: 'fa-bolt',
+            data: {
+                clients: datasets.clients ? datasets.clients.data : {},
+                appointments: datasets.appointments ? datasets.appointments.data : {},
+                services: datasets.services ? datasets.services.data : {}
+            }
+        };
         // Лейблы для разных периодов
         const periodLabels = {
             7: ['6 дн', '5 дн', '4 дн', '3 дн', '2 дн', 'Вчера', 'Сегодня'],
@@ -649,6 +658,46 @@ body {
             if (period === '30') return getWeekStartDates(4);
             if (period === '90') return getWeekStartDates(13);
             return [];
+        }
+        function getActivityDatasets(period) {
+            return [
+                {
+                    label: 'Клиенты',
+                    data: datasets.activity.data.clients[period],
+                    borderColor: '#8b5cf6',
+                    backgroundColor: '#8b5cf6' + '33',
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHitRadius: 12,
+                    spanGaps: true
+                },
+                {
+                    label: 'Записи',
+                    data: datasets.activity.data.appointments[period],
+                    borderColor: '#f59e0b',
+                    backgroundColor: '#f59e0b' + '33',
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHitRadius: 12,
+                    spanGaps: true
+                },
+                {
+                    label: 'Продажи услуг',
+                    data: datasets.activity.data.services[period],
+                    borderColor: '#8b5cf6',
+                    backgroundColor: '#8b5cf6' + '33',
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHitRadius: 12,
+                    spanGaps: true
+                }
+            ];
         }
         let currentMetric = 'profit';
         let currentPeriod = '7';
@@ -673,7 +722,7 @@ body {
             options: {
                 responsive: true,
                 plugins: {
-                    legend: { display: false },
+                    legend: { display: true },
                     tooltip: { mode: 'index', intersect: false }
                 },
                 scales: {
@@ -710,10 +759,8 @@ body {
             item.addEventListener('click', function() {
                 const type = this.dataset.type;
                 currentMetric = type;
-                // Обновить подпись и иконку
                 selectedMetricLabel.textContent = datasets[type].label;
                 metricToggle.querySelector('i').className = 'fas ' + datasets[type].icon;
-                // Обновить график
                 if (currentPeriod === '7') {
                     universalChart.data.labels = getLastNDates(7);
                 } else if (currentPeriod === '30') {
@@ -721,10 +768,22 @@ body {
                 } else if (currentPeriod === '90') {
                     universalChart.data.labels = getLastNDates(90);
                 }
-                universalChart.data.datasets[0].label = datasets[type].label;
-                universalChart.data.datasets[0].data = datasets[type].data[currentPeriod];
-                universalChart.data.datasets[0].borderColor = getMetricColor(type);
-                universalChart.data.datasets[0].backgroundColor = getMetricColor(type) + '33';
+                if (type === 'activity') {
+                    universalChart.data.datasets = getActivityDatasets(currentPeriod);
+                } else {
+                    universalChart.data.datasets = [{
+                        label: datasets[type].label,
+                        data: datasets[type].data[currentPeriod],
+                        borderColor: getMetricColor(type),
+                        backgroundColor: getMetricColor(type) + '33',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHitRadius: 12,
+                        spanGaps: true
+                    }];
+                }
                 universalChart.update();
                 metricDropdown.classList.remove('open');
             });
@@ -735,7 +794,6 @@ body {
                 document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 currentPeriod = this.dataset.period;
-                // Обновить график
                 if (currentPeriod === '7') {
                     universalChart.data.labels = getLastNDates(7);
                 } else if (currentPeriod === '30') {
@@ -743,7 +801,22 @@ body {
                 } else if (currentPeriod === '90') {
                     universalChart.data.labels = getLastNDates(90);
                 }
-                universalChart.data.datasets[0].data = datasets[currentMetric].data[currentPeriod];
+                if (currentMetric === 'activity') {
+                    universalChart.data.datasets = getActivityDatasets(currentPeriod);
+                } else {
+                    universalChart.data.datasets = [{
+                        label: datasets[currentMetric].label,
+                        data: datasets[currentMetric].data[currentPeriod],
+                        borderColor: getMetricColor(currentMetric),
+                        backgroundColor: getMetricColor(currentMetric) + '33',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHitRadius: 12,
+                        spanGaps: true
+                    }];
+                }
                 universalChart.update();
             });
         });
