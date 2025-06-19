@@ -390,30 +390,17 @@ body {
         </div>
 
         <!-- Графики -->
-        <div class="charts-grid">
-            <!-- 1. График продаж по месяцам -->
-            <div class="chart-container">
-                <h3 class="chart-title">Sales Performance</h3>
-                <canvas id="salesChart" height="300"></canvas>
+        <div class="chart-container" style="width: 100%; max-width: 100%; padding: 8px 0 0 0; box-sizing: border-box;">
+            <h3 class="chart-title">Динамика показателей</h3>
+            <div class="chart-buttons" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button class="tab-button active" data-type="profit">Прибыль</button>
+                <button class="tab-button" data-type="sales">Продажи товаров</button>
+                <button class="tab-button" data-type="services">Услуги</button>
+                <button class="tab-button" data-type="expenses">Расходы</button>
+                <button class="tab-button" data-type="clients">Клиенты</button>
+                <button class="tab-button" data-type="appointments">Записи</button>
             </div>
-
-            <!-- 2. Воронка продаж -->
-            <div class="chart-container">
-                <h3 class="chart-title">Sales Funnel</h3>
-                <canvas id="funnelChart" height="300"></canvas>
-            </div>
-
-            <!-- 3. Распределение клиентов по регионам -->
-            <div class="chart-container">
-                <h3 class="chart-title">Customers by Region</h3>
-                <canvas id="regionChart" height="300"></canvas>
-            </div>
-
-            <!-- 4. Активность клиентов -->
-            <div class="chart-container">
-                <h3 class="chart-title">Customer Activity</h3>
-                <canvas id="activityChart" height="300"></canvas>
-            </div>
+            <canvas id="universalChart" height="150"></canvas>
         </div>
     </div>
 
@@ -480,179 +467,89 @@ body {
             });
         });
 
-        // 1. График продаж по месяцам (линейный график)
-        const salesCtx = document.getElementById('salesChart').getContext('2d');
-        const salesChart = new Chart(salesCtx, {
+        const datasets = {
+            profit: {
+                label: "Прибыль",
+                data: [10000, 12000, 15000, 14000, 16000, 18000],
+                color: "#10b981"
+            },
+            sales: {
+                label: "Продажи товаров",
+                data: [8000, 9000, 11000, 13000, 12500, 14000],
+                color: "#3b82f6"
+            },
+            services: {
+                label: "Услуги",
+                data: [3000, 3500, 4000, 3800, 4100, 4500],
+                color: "#8b5cf6"
+            },
+            expenses: {
+                label: "Расходы",
+                data: [2000, 2500, 3000, 2800, 2700, 2900],
+                color: "#ef4444"
+            },
+            clients: {
+                label: "Клиенты",
+                data: [50, 60, 65, 80, 75, 90],
+                color: "#8b5cf6"
+            },
+            appointments: {
+                label: "Записи",
+                data: [20, 25, 22, 30, 28, 35],
+                color: "#f59e0b"
+            }
+        };
+
+        const ctx = document.getElementById('universalChart').getContext('2d');
+        let universalChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'],
                 datasets: [{
-                    label: 'Sales 2023',
-                    data: [12000, 19000, 15000, 22000, 21000, 25000, 28000, 26000, 30000, 32000, 35000, 40000],
-                    borderColor: 'rgba(79, 70, 229, 1)',
-                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
-                    tension: 0.3,
+                    label: datasets.profit.label,
+                    data: datasets.profit.data,
+                    borderColor: datasets.profit.color,
+                    backgroundColor: datasets.profit.color + '33',
+                    tension: 0.4,
                     fill: true
                 }]
             },
             options: {
                 responsive: true,
                 plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                    }
+                    legend: { display: false },
+                    tooltip: { mode: 'index', intersect: false }
                 },
                 scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+                    y: { beginAtZero: true }
                 }
             }
         });
 
-        // 2. Воронка продаж
-        const funnelCtx = document.getElementById('funnelChart').getContext('2d');
-        const funnelChart = new Chart(funnelCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Leads', 'Prospects', 'Negotiation', 'Closed Won', 'Closed Lost'],
-                datasets: [{
-                    label: 'Sales Funnel',
-                    data: [1000, 600, 300, 150, 200],
-                    backgroundColor: [
-                        'rgba(99, 102, 241, 0.7)',
-                        'rgba(129, 140, 248, 0.7)',
-                        'rgba(167, 139, 250, 0.7)',
-                        'rgba(14, 165, 233, 0.7)',
-                        'rgba(239, 68, 68, 0.7)'
-                    ],
-                    borderColor: [
-                        'rgba(99, 102, 241, 1)',
-                        'rgba(129, 140, 248, 1)',
-                        'rgba(167, 139, 250, 1)',
-                        'rgba(14, 165, 233, 1)',
-                        'rgba(239, 68, 68, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+        document.querySelectorAll('.chart-buttons .tab-button').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.chart-buttons .tab-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
 
-        // 3. Распределение клиентов по регионам (круговая диаграмма)
-        const regionCtx = document.getElementById('regionChart').getContext('2d');
-        const regionChart = new Chart(regionCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['North', 'South', 'East', 'West', 'Central'],
-                datasets: [{
-                    data: [25, 20, 30, 15, 10],
-                    backgroundColor: [
-                        'rgba(239, 68, 68, 0.7)',
-                        'rgba(16, 185, 129, 0.7)',
-                        'rgba(59, 130, 246, 0.7)',
-                        'rgba(245, 158, 11, 0.7)',
-                        'rgba(139, 92, 246, 0.7)'
-                    ],
-                    borderColor: [
-                        'rgba(239, 68, 68, 1)',
-                        'rgba(16, 185, 129, 1)',
-                        'rgba(59, 130, 246, 1)',
-                        'rgba(245, 158, 11, 1)',
-                        'rgba(139, 92, 246, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                    }
-                }
-            }
-        });
+                const type = this.dataset.type;
+                const ds = datasets[type];
 
-        // 4. Активность клиентов (столбчатая диаграмма с группировкой)
-        const activityCtx = document.getElementById('activityChart').getContext('2d');
-        const activityChart = new Chart(activityCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [
-                    {
-                        label: 'New Customers',
-                        data: [45, 60, 55, 70, 65, 80],
-                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Active Customers',
-                        data: [30, 40, 50, 60, 55, 70],
-                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                        borderColor: 'rgba(16, 185, 129, 1)',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
+                universalChart.data.datasets[0].label = ds.label;
+                universalChart.data.datasets[0].data = ds.data;
+                universalChart.data.datasets[0].borderColor = ds.color;
+                universalChart.data.datasets[0].backgroundColor = ds.color + '33';
+                universalChart.update();
+            });
         });
-
-        // Функциональность переключения вкладок
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const cardGroups = document.querySelectorAll('.stat-cards-group');
-            
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const targetTab = this.getAttribute('data-tab');
-                    
-                    // Убираем активный класс со всех кнопок
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    
-                    // Убираем активный класс со всех групп карточек
-                    cardGroups.forEach(group => group.classList.remove('active'));
-                    
-                    // Добавляем активный класс к нажатой кнопке
-                    this.classList.add('active');
-                    
-                    // Показываем соответствующую группу карточек
-                    const targetGroup = document.querySelector(`.${targetTab}-group`);
-                    if (targetGroup) {
-                        targetGroup.classList.add('active');
-                    }
-                });
+        // ВОССТАНАВЛИВАЮ переключение вкладок Финансы/Активность
+        document.querySelectorAll('.dashboard-tabs .tab-button').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.dashboard-tabs .tab-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const tab = this.getAttribute('data-tab');
+                document.querySelectorAll('.stat-cards-group').forEach(group => group.classList.remove('active'));
+                const target = document.querySelector(`.stat-cards-group.${tab}-group`);
+                if(target) target.classList.add('active');
             });
         });
     </script>
@@ -734,12 +631,6 @@ body {
         }
 
         /* Сетка графиков */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 20px;
-        }
-
         .chart-container {
             background: white;
             border-radius: 8px;
@@ -760,8 +651,8 @@ body {
                 grid-template-columns: 1fr;
             }
 
-            .charts-grid {
-                grid-template-columns: 1fr;
+            .chart-container {
+                padding: 10px;
             }
 
             .dashboard-title {
