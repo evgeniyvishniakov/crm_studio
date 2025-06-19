@@ -254,6 +254,41 @@ body {
 .stat-cards-group.active.activity-group {
     transform: translateX(0) !important;
 }
+
+/* Стили для period-фильтров */
+.period-filters {
+    display: flex;
+    gap: 0.5rem;
+}
+.period-btn {
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.5rem 1.2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s;
+    outline: none;
+}
+.period-btn:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.10);
+}
+.period-btn.active {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    border-color: #3b82f6;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(59,130,246,0.15);
+}
+
+/* Удаляю все ::after для .metric-toggle, если есть */
+.metric-toggle::after {
+    display: none !important;
+    content: none !important;
+}
 </style>
 
     <div class="dashboard-container">
@@ -392,13 +427,29 @@ body {
         <!-- Графики -->
         <div class="chart-container" style="width: 100%; max-width: 100%; padding: 8px 0 0 0; box-sizing: border-box;">
             <h3 class="chart-title">Динамика показателей</h3>
-            <div class="chart-buttons" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <button class="tab-button active" data-type="profit">Прибыль</button>
-                <button class="tab-button" data-type="sales">Продажи товаров</button>
-                <button class="tab-button" data-type="services">Услуги</button>
-                <button class="tab-button" data-type="expenses">Расходы</button>
-                <button class="tab-button" data-type="clients">Клиенты</button>
-                <button class="tab-button" data-type="appointments">Записи</button>
+            <div class="chart-toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                <!-- Dropdown слева -->
+                <div class="dropdown metric-dropdown" style="position: relative;">
+                    <button class="dropdown-toggle metric-toggle" type="button" style="display: flex; align-items: center; gap: 0.5rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; min-width: 140px;">
+                        <i class="fas fa-chart-line"></i>
+                        <span id="selectedMetricLabel">Прибыль</span>
+                        <i class="fas fa-chevron-down" style="margin-left: 0.5rem;"></i>
+                    </button>
+                    <div class="dropdown-menu metric-menu" style="display: none; position: absolute; left: 0; top: 110%; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); min-width: 180px; z-index: 10;">
+                        <button class="dropdown-item metric-item" data-type="profit"><i class="fas fa-chart-line"></i> Прибыль</button>
+                        <button class="dropdown-item metric-item" data-type="sales"><i class="fas fa-shopping-cart"></i> Продажи товаров</button>
+                        <button class="dropdown-item metric-item" data-type="services"><i class="fas fa-spa"></i> Услуги</button>
+                        <button class="dropdown-item metric-item" data-type="expenses"><i class="fas fa-credit-card"></i> Расходы</button>
+                        <button class="dropdown-item metric-item" data-type="clients"><i class="fas fa-users"></i> Клиенты</button>
+                        <button class="dropdown-item metric-item" data-type="appointments"><i class="fas fa-calendar-check"></i> Записи</button>
+                    </div>
+                </div>
+                <!-- Фильтры справа -->
+                <div class="period-filters" style="display: flex; gap: 0.5rem;">
+                    <button class="period-btn active" data-period="7">За 7 дней</button>
+                    <button class="period-btn" data-period="30">За месяц</button>
+                    <button class="period-btn" data-period="90">За 3 месяца</button>
+                </div>
             </div>
             <canvas id="universalChart" height="150"></canvas>
         </div>
@@ -467,49 +518,82 @@ body {
             });
         });
 
+        // Данные для графика (пример)
         const datasets = {
             profit: {
                 label: "Прибыль",
-                data: [10000, 12000, 15000, 14000, 16000, 18000],
-                color: "#10b981"
+                icon: "fa-chart-line",
+                data: {
+                    7: [18000, 17500, 17000, 16800, 16500, 16200, 16000],
+                    30: [10000, 12000, 15000, 14000, 16000, 18000, 17500, 17000, 16800, 16500, 16200, 16000, 15800, 15500, 15300, 15000, 14800, 14500, 14300, 14000, 13800, 13500, 13300, 13000, 12800, 12500, 12300, 12000, 11800, 11500],
+                    90: [10000, 10500, 11000, 11500, 12000, 12500, 13000, 13500, 14000, 14500, 15000, 15500, 16000, 16500, 17000, 17500, 18000, 18500, 19000, 19500, 20000, 20500, 21000, 21500, 22000, 22500, 23000, 23500, 24000, 24500, 25000, 25500, 26000, 26500, 27000, 27500, 28000, 28500, 29000, 29500, 30000, 30500, 31000, 31500, 32000, 32500, 33000, 33500, 34000, 34500, 35000, 35500, 36000, 36500, 37000, 37500, 38000, 38500, 39000, 39500, 40000, 40500, 41000, 41500, 42000, 42500, 43000, 43500, 44000, 44500, 45000, 45500, 46000, 46500, 47000, 47500, 48000, 48500, 49000, 49500]
+                }
             },
             sales: {
                 label: "Продажи товаров",
-                data: [8000, 9000, 11000, 13000, 12500, 14000],
-                color: "#3b82f6"
+                icon: "fa-shopping-cart",
+                data: {
+                    7: [14000, 13500, 13000, 12800, 12500, 12200, 12000],
+                    30: [8000, 9000, 11000, 13000, 12500, 14000, 13500, 13000, 12800, 12500, 12200, 12000, 11800, 11500, 11300, 11000, 10800, 10500, 10300, 10000, 9800, 9500, 9300, 9000, 8800, 8500, 8300, 8000, 7800, 7500],
+                    90: [8000, 8500, 9000, 9500, 10000, 10500, 11000, 11500, 12000, 12500, 13000, 13500, 14000, 14500, 15000, 15500, 16000, 16500, 17000, 17500, 18000, 18500, 19000, 19500, 20000, 20500, 21000, 21500, 22000, 22500, 23000, 23500, 24000, 24500, 25000, 25500, 26000, 26500, 27000, 27500, 28000, 28500, 29000, 29500, 30000, 30500, 31000, 31500, 32000, 32500, 33000, 33500, 34000, 34500, 35000, 35500, 36000, 36500, 37000, 37500, 38000, 38500, 39000, 39500, 40000, 40500, 41000, 41500, 42000, 42500, 43000, 43500, 44000, 44500, 45000, 45500, 46000, 46500, 47000, 47500]
+                }
             },
             services: {
                 label: "Услуги",
-                data: [3000, 3500, 4000, 3800, 4100, 4500],
-                color: "#8b5cf6"
+                icon: "fa-spa",
+                data: {
+                    7: [4500, 4400, 4300, 4280, 4250, 4220, 4200],
+                    30: [3000, 3500, 4000, 3800, 4100, 4500, 4400, 4300, 4280, 4250, 4220, 4200, 4180, 4150, 4130, 4100, 4080, 4050, 4030, 4000, 3980, 3950, 3930, 3900, 3880, 3850, 3830, 3800, 3780, 3750],
+                    90: [3000, 3200, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5400, 5600, 5800, 6000, 6200, 6400, 6600, 6800, 7000, 7200, 7400, 7600, 7800, 8000, 8200, 8400, 8600, 8800, 9000, 9200, 9400, 9600, 9800, 10000, 10200, 10400, 10600, 10800, 11000, 11200, 11400, 11600, 11800, 12000, 12200, 12400, 12600, 12800, 13000, 13200, 13400, 13600, 13800, 14000, 14200, 14400, 14600, 14800, 15000, 15200, 15400, 15600, 15800, 16000, 16200, 16400, 16600, 16800, 17000, 17200, 17400, 17600, 17800, 18000, 18200, 18400, 18600, 18800]
+                }
             },
             expenses: {
                 label: "Расходы",
-                data: [2000, 2500, 3000, 2800, 2700, 2900],
-                color: "#ef4444"
+                icon: "fa-credit-card",
+                data: {
+                    7: [2900, 2850, 2800, 2780, 2750, 2720, 2700],
+                    30: [2000, 2500, 3000, 2800, 2700, 2900, 2850, 2800, 2780, 2750, 2720, 2700, 2680, 2650, 2630, 2600, 2580, 2550, 2530, 2500, 2480, 2450, 2430, 2400, 2380, 2350, 2330, 2300, 2280, 2250],
+                    90: [2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000, 4100, 4200, 4300, 4400, 4500, 4600, 4700, 4800, 4900, 5000, 5100, 5200, 5300, 5400, 5500, 5600, 5700, 5800, 5900, 6000, 6100, 6200, 6300, 6400, 6500, 6600, 6700, 6800, 6900, 7000, 7100, 7200, 7300, 7400, 7500, 7600, 7700, 7800, 7900, 8000, 8100, 8200, 8300, 8400, 8500, 8600, 8700, 8800, 8900, 9000, 9100, 9200, 9300, 9400, 9500, 9600, 9700, 9800, 9900]
+                }
             },
             clients: {
                 label: "Клиенты",
-                data: [50, 60, 65, 80, 75, 90],
-                color: "#8b5cf6"
+                icon: "fa-users",
+                data: {
+                    7: [90, 88, 85, 83, 80, 78, 75],
+                    30: [50, 60, 65, 80, 75, 90, 88, 85, 83, 80, 78, 75, 73, 70, 68, 65, 63, 60, 58, 55, 53, 50, 48, 45, 43, 40, 38, 35, 33, 30],
+                    90: [50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 148, 150, 152, 154, 156, 158, 160, 162, 164, 166, 168, 170, 172, 174, 176, 178, 180, 182, 184, 186, 188, 190, 192, 194, 196, 198, 200, 202, 204, 206, 208]
+                }
             },
             appointments: {
                 label: "Записи",
-                data: [20, 25, 22, 30, 28, 35],
-                color: "#f59e0b"
+                icon: "fa-calendar-check",
+                data: {
+                    7: [35, 34, 33, 32, 31, 30, 28],
+                    30: [20, 25, 22, 30, 28, 35, 34, 33, 32, 31, 30, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10],
+                    90: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]
+                }
             }
         };
-
+        // Лейблы для разных периодов
+        const periodLabels = {
+            7: ['6 дн', '5 дн', '4 дн', '3 дн', '2 дн', 'Вчера', 'Сегодня'],
+            30: Array.from({length: 30}, (_, i) => `${30-i} дн назад`).reverse(),
+            90: Array.from({length: 90}, (_, i) => `${90-i} дн назад`).reverse()
+        };
+        let currentMetric = 'profit';
+        let currentPeriod = '7';
+        // Инициализация графика
         const ctx = document.getElementById('universalChart').getContext('2d');
         let universalChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн'],
+                labels: periodLabels[currentPeriod],
                 datasets: [{
-                    label: datasets.profit.label,
-                    data: datasets.profit.data,
-                    borderColor: datasets.profit.color,
-                    backgroundColor: datasets.profit.color + '33',
+                    label: datasets[currentMetric].label,
+                    data: datasets[currentMetric].data[currentPeriod],
+                    borderColor: getMetricColor(currentMetric),
+                    backgroundColor: getMetricColor(currentMetric) + '33',
                     tension: 0.4,
                     fill: true
                 }]
@@ -525,22 +609,58 @@ body {
                 }
             }
         });
-
-        document.querySelectorAll('.chart-buttons .tab-button').forEach(btn => {
-            btn.addEventListener('click', function () {
-                document.querySelectorAll('.chart-buttons .tab-button').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-
+        // Dropdown логика
+        const metricToggle = document.querySelector('.metric-toggle');
+        const metricMenu = document.querySelector('.metric-menu');
+        const selectedMetricLabel = document.getElementById('selectedMetricLabel');
+        metricToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            metricMenu.style.display = metricMenu.style.display === 'block' ? 'none' : 'block';
+        });
+        document.addEventListener('click', function() {
+            metricMenu.style.display = 'none';
+        });
+        document.querySelectorAll('.metric-item').forEach(item => {
+            item.addEventListener('click', function() {
                 const type = this.dataset.type;
-                const ds = datasets[type];
-
-                universalChart.data.datasets[0].label = ds.label;
-                universalChart.data.datasets[0].data = ds.data;
-                universalChart.data.datasets[0].borderColor = ds.color;
-                universalChart.data.datasets[0].backgroundColor = ds.color + '33';
+                currentMetric = type;
+                // Обновить подпись и иконку
+                selectedMetricLabel.textContent = datasets[type].label;
+                metricToggle.querySelector('i').className = 'fas ' + datasets[type].icon;
+                // Обновить график
+                universalChart.data.labels = periodLabels[currentPeriod];
+                universalChart.data.datasets[0].label = datasets[type].label;
+                universalChart.data.datasets[0].data = datasets[type].data[currentPeriod];
+                universalChart.data.datasets[0].borderColor = getMetricColor(type);
+                universalChart.data.datasets[0].backgroundColor = getMetricColor(type) + '33';
+                universalChart.update();
+                metricMenu.style.display = 'none';
+            });
+        });
+        // Фильтры периода
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentPeriod = this.dataset.period;
+                // Обновить график
+                universalChart.data.labels = periodLabels[currentPeriod];
+                universalChart.data.datasets[0].data = datasets[currentMetric].data[currentPeriod];
                 universalChart.update();
             });
         });
+        // Цвета для метрик
+        function getMetricColor(type) {
+            const colors = {
+                profit: '#10b981', // зелёный
+                sales: '#3b82f6', // синий
+                services: '#8b5cf6', // фиолетовый
+                expenses: '#ef4444', // красный
+                clients: '#8b5cf6', // фиолетовый
+                appointments: '#f59e0b' // оранжевый
+            };
+            return colors[type] || '#10b981';
+        }
         // ВОССТАНАВЛИВАЮ переключение вкладок Финансы/Активность
         document.querySelectorAll('.dashboard-tabs .tab-button').forEach(btn => {
             btn.addEventListener('click', function () {
