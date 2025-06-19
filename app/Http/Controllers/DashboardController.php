@@ -65,34 +65,24 @@ class DashboardController extends Controller
      */
     public function profitChartData(Request $request)
     {
-        $period = $request->input('period', 7); // 7, 30, 90
+        $period = $request->input('period', 7); // 30, 90, 180, 365
         $now = now();
         $labels = [];
         $data = [];
-        if ($period == 7) {
-            // За 7 дней: по дням
-            for ($i = 6; $i >= 0; $i--) {
-                $date = $now->copy()->subDays($i)->toDateString();
-                $labels[] = $now->copy()->subDays($i)->format('d M');
-                $profit = $this->getProfitForDate($date);
-                $data[] = round($profit, 2);
-            }
-        } elseif ($period == 30) {
-            // За месяц: по дням (30 точек)
-            for ($i = 29; $i >= 0; $i--) {
-                $date = $now->copy()->subDays($i)->toDateString();
-                $labels[] = $now->copy()->subDays($i)->format('d M');
-                $profit = $this->getProfitForDate($date);
-                $data[] = round($profit, 2);
-            }
-        } elseif ($period == 90) {
-            // За 3 месяца: по дням (90 точек)
-            for ($i = 89; $i >= 0; $i--) {
-                $date = $now->copy()->subDays($i)->toDateString();
-                $labels[] = $now->copy()->subDays($i)->format('d M');
-                $profit = $this->getProfitForDate($date);
-                $data[] = round($profit, 2);
-            }
+        $firstAppointment = \App\Models\Appointment::orderBy('created_at', 'asc')->first();
+        $firstDate = $firstAppointment ? \Carbon\Carbon::parse($firstAppointment->created_at) : $now;
+        $daysSinceStart = $now->diffInDays($firstDate);
+        $days = 0;
+        if ($period == 30) $days = 29;
+        elseif ($period == 90) $days = 89;
+        elseif ($period == 180) $days = 179;
+        elseif ($period == 365) $days = 364;
+        $maxDays = min($days, $daysSinceStart);
+        for ($i = $maxDays; $i >= 0; $i--) {
+            $date = $now->copy()->subDays($i)->toDateString();
+            $labels[] = $now->copy()->subDays($i)->format('d M');
+            $profit = $this->getProfitForDate($date);
+            $data[] = round($profit, 2);
         }
         return response()->json([
             'labels' => $labels,
@@ -139,30 +129,21 @@ class DashboardController extends Controller
         $now = now();
         $labels = [];
         $data = [];
-        if ($period == 7) {
-            // За 7 дней: по дням
-            for ($i = 6; $i >= 0; $i--) {
-                $date = $now->copy()->subDays($i)->toDateString();
-                $labels[] = $now->copy()->subDays($i)->format('d M');
-                $sales = $this->getSalesForDate($date);
-                $data[] = round($sales, 2);
-            }
-        } elseif ($period == 30) {
-            // За месяц: по дням (30 точек)
-            for ($i = 29; $i >= 0; $i--) {
-                $date = $now->copy()->subDays($i)->toDateString();
-                $labels[] = $now->copy()->subDays($i)->format('d M');
-                $sales = $this->getSalesForDate($date);
-                $data[] = round($sales, 2);
-            }
-        } elseif ($period == 90) {
-            // За 3 месяца: по дням (90 точек)
-            for ($i = 89; $i >= 0; $i--) {
-                $date = $now->copy()->subDays($i)->toDateString();
-                $labels[] = $now->copy()->subDays($i)->format('d M');
-                $sales = $this->getSalesForDate($date);
-                $data[] = round($sales, 2);
-            }
+        $firstSale = \App\Models\Sale::orderBy('date', 'asc')->first();
+        $firstDate = $firstSale ? \Carbon\Carbon::parse($firstSale->date) : $now;
+        $daysSinceStart = $now->diffInDays($firstDate);
+        $days = 0;
+        if ($period == 7) $days = 6;
+        elseif ($period == 30) $days = 29;
+        elseif ($period == 90) $days = 89;
+        elseif ($period == 180) $days = 179;
+        elseif ($period == 365) $days = 364;
+        $maxDays = min($days, $daysSinceStart);
+        for ($i = $maxDays; $i >= 0; $i--) {
+            $date = $now->copy()->subDays($i)->toDateString();
+            $labels[] = $now->copy()->subDays($i)->format('d M');
+            $sales = $this->getSalesForDate($date);
+            $data[] = round($sales, 2);
         }
         return response()->json([
             'labels' => $labels,
@@ -203,33 +184,23 @@ class DashboardController extends Controller
         $now = now();
         $labels = [];
         $data = [];
-        if ($period == 7) {
-            for ($i = 6; $i >= 0; $i--) {
-                $date = $now->copy()->subDays($i)->toDateString();
-                $labels[] = $now->copy()->subDays($i)->format('d M');
-                $sum = \App\Models\Appointment::whereDate('date', $date)
-                    ->where('status', 'completed')
-                    ->sum('price');
-                $data[] = round($sum, 2);
-            }
-        } elseif ($period == 30) {
-            for ($i = 29; $i >= 0; $i--) {
-                $date = $now->copy()->subDays($i)->toDateString();
-                $labels[] = $now->copy()->subDays($i)->format('d M');
-                $sum = \App\Models\Appointment::whereDate('date', $date)
-                    ->where('status', 'completed')
-                    ->sum('price');
-                $data[] = round($sum, 2);
-            }
-        } elseif ($period == 90) {
-            for ($i = 89; $i >= 0; $i--) {
-                $date = $now->copy()->subDays($i)->toDateString();
-                $labels[] = $now->copy()->subDays($i)->format('d M');
-                $sum = \App\Models\Appointment::whereDate('date', $date)
-                    ->where('status', 'completed')
-                    ->sum('price');
-                $data[] = round($sum, 2);
-            }
+        $firstAppointment = \App\Models\Appointment::orderBy('date', 'asc')->first();
+        $firstDate = $firstAppointment ? \Carbon\Carbon::parse($firstAppointment->date) : $now;
+        $daysSinceStart = $now->diffInDays($firstDate);
+        $days = 0;
+        if ($period == 7) $days = 6;
+        elseif ($period == 30) $days = 29;
+        elseif ($period == 90) $days = 89;
+        elseif ($period == 180) $days = 179;
+        elseif ($period == 365) $days = 364;
+        $maxDays = min($days, $daysSinceStart);
+        for ($i = $maxDays; $i >= 0; $i--) {
+            $date = $now->copy()->subDays($i)->toDateString();
+            $labels[] = $now->copy()->subDays($i)->format('d M');
+            $sum = \App\Models\Appointment::whereDate('date', $date)
+                ->where('status', 'completed')
+                ->sum('price');
+            $data[] = round($sum, 2);
         }
         return response()->json([
             'labels' => $labels,

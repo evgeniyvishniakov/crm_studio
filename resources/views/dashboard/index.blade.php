@@ -508,9 +508,10 @@ body {
                 </div>
                 <!-- Фильтры справа -->
                 <div class="period-filters" style="display: flex; gap: 0.5rem;">
-                    <button class="period-btn active" data-period="7">За 7 дней</button>
                     <button class="period-btn" data-period="30">За месяц</button>
                     <button class="period-btn" data-period="90">За 3 месяца</button>
+                    <button class="period-btn" data-period="180">За 6 месяцев</button>
+                    <button class="period-btn" data-period="365">За год</button>
                 </div>
             </div>
             <canvas id="universalChart" height="150"></canvas>
@@ -525,7 +526,7 @@ body {
     
     <script>
         let currentMetric = 'profit';
-        let currentPeriod = '7';
+        let currentPeriod = '30';
 
         // Анимация счетчика для карточек
         function animateCounter(element, start, end, duration = 1500) {
@@ -722,14 +723,22 @@ body {
             },
             options: {
                 responsive: true,
+                animation: true,
                 plugins: {
                     legend: { display: true },
-                    tooltip: { mode: 'index', intersect: false }
+                    tooltip: { mode: 'index', intersect: false },
+                    decimation: {
+                        enabled: true,
+                        algorithm: 'min-max'
+                    }
                 },
                 scales: {
                     x: {
                         ticks: {
                             callback: function(value, index, ticks) {
+                                if (currentPeriod === '180' || currentPeriod === '365') {
+                                    return getMonthLabels(this.getLabels().length)[index];
+                                }
                                 if (currentPeriod === '7') return this.getLabelForValue(this.getLabels()[index]);
                                 const date = new Date();
                                 date.setDate(date.getDate() - (this.getLabels().length - 1 - index));
@@ -783,6 +792,9 @@ body {
                                 pointHitRadius: 12,
                                 spanGaps: true
                             }];
+                            // Устанавливаем максимум оси Y на 15% выше максимального значения
+                            const maxValue = Math.max(...getCumulativeData(res.data));
+                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
                         });
                     return;
@@ -840,6 +852,9 @@ body {
                                     return '';
                                 };
                             }
+                            // Устанавливаем максимум оси Y на 15% выше максимального значения
+                            const maxValue = Math.max(...res.data);
+                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
                         });
                     return;
@@ -897,7 +912,7 @@ body {
                                     return '';
                                 };
                             }
-                            // Вычисляем max для оси y
+                            // Устанавливаем максимум оси Y на 15% выше максимального значения
                             const maxValue = Math.max(...res.data);
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
@@ -949,6 +964,9 @@ body {
                                     return '';
                                 }
                             };
+                            // Устанавливаем максимум оси Y на 15% выше максимального значения
+                            const maxValue = Math.max(...res.data);
+                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
                         });
                     return;
@@ -982,7 +1000,7 @@ body {
                                     return '';
                                 }
                             };
-                            // Вычисляем max для оси y
+                            // Устанавливаем максимум оси Y на 15% выше максимального значения
                             const maxValue = Math.max(...res.data);
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
@@ -1010,6 +1028,9 @@ body {
                                 pointHitRadius: 12,
                                 spanGaps: true
                             }];
+                            // Устанавливаем максимум оси Y на 15% выше максимального значения
+                            const maxValue = Math.max(...getCumulativeData(res.data));
+                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
                         });
                     return;
@@ -1027,6 +1048,9 @@ body {
                         pointHitRadius: 12,
                         spanGaps: true
                     }];
+                    // Устанавливаем максимум оси Y на 15% выше максимального значения
+                    const maxValue = Math.max(...datasets[currentMetric].data[currentPeriod]);
+                    universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                     universalChart.update();
                 }
             });
@@ -1088,6 +1112,31 @@ body {
                 result.push(Number(sum.toFixed(2)));
             }
             return result;
+        }
+
+        // По умолчанию активна кнопка 'За месяц'
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-period') === '30') btn.classList.add('active');
+        });
+
+        // Добавляю функцию для генерации подписей месяцев
+        function getMonthLabels(n) {
+            const arr = [];
+            const now = new Date();
+            let prevMonth = null;
+            for (let i = n - 1; i >= 0; i--) {
+                const d = new Date(now);
+                d.setDate(now.getDate() - i);
+                const month = d.toLocaleDateString('ru-RU', { month: 'short' });
+                if (prevMonth !== month) {
+                    arr.push(month.charAt(0).toUpperCase() + month.slice(1));
+                    prevMonth = month;
+                } else {
+                    arr.push('');
+                }
+            }
+            return arr;
         }
     </script>
 
