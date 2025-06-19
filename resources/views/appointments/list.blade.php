@@ -2174,16 +2174,27 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Клиент *</label>
-                            <select name="client_id" class="form-control" required>
-                                <option value="">Выберите клиента</option>
-                                ${allClients.map(client => `
-                                    <option value="${client.id}" ${client.id == appointment.client_id ? 'selected' : ''}>
-                                        ${escapeHtml(client.name)}
-                                        ${client.instagram ? `(${escapeHtml(client.instagram)})` : ''}
-                                        ${client.phone ? ` - ${escapeHtml(client.phone)}` : ''}
-                                    </option>
-                                `).join('')}
-                            </select>
+                            <div class="client-search-container">
+                                <input type="text" class="client-search-input form-control"
+                                       placeholder="Начните вводить имя, инстаграм или email клиента..."
+                                       value="${escapeHtml(getClientDisplayName(appointment.client_id))}"
+                                       oninput="searchClients(this)"
+                                       onfocus="searchClients(this)">
+                                <input type="hidden" name="client_id" class="client-id-hidden" value="${appointment.client_id}">
+                                <div class="client-dropdown" style="display: none;">
+                                    <div class="client-dropdown-list"></div>
+                                </div>
+                                <select name="client_id" class="form-control client-select" style="display: none;" required>
+                                    <option value="">Выберите клиента</option>
+                                    ${allClients.map(client => `
+                                        <option value="${client.id}" ${client.id == appointment.client_id ? 'selected' : ''}>
+                                            ${escapeHtml(client.name)}
+                                            ${client.instagram ? `(${escapeHtml(client.instagram)})` : ''}
+                                            ${client.phone ? ` - ${escapeHtml(client.phone)}` : ''}
+                                        </option>
+                                    `).join('')}
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Процедура *</label>
@@ -2241,6 +2252,15 @@
                 e.preventDefault();
                 await submitEditAppointmentForm(this, currentAppointmentId);
             });
+        }
+
+        function getClientDisplayName(clientId) {
+            const client = allClients.find(c => c.id == clientId);
+            if (!client) return '';
+            let str = client.name || '';
+            if (client.instagram) str += ` (@${client.instagram})`;
+            if (client.phone) str += ` - ${client.phone}`;
+            return str;
         }
 
         function confirmDeleteAppointment(event, id) {
