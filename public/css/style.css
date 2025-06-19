@@ -799,12 +799,12 @@ aside.left-panel {
         .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children.show .sub-menu {
           position: absolute !important; }
       aside.left-panel .navbar .navbar-nav li span.count {
-        display: none;
-        margin-right: 5px;
-        z-index: 1; }
+      display: none;
+      margin-right: 5px;
+      z-index: 1; }
       aside.left-panel .navbar .navbar-nav li.active a:after {
-        content: '';
-        display: none; }
+      content: '';
+      display: none; }
   .open aside.left-panel .navbar .navbar-nav .menu-title {
     font-size: 0;
     line-height: 0;

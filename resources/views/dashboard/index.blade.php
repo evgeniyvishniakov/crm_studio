@@ -289,6 +289,69 @@ body {
     display: none !important;
     content: none !important;
 }
+
+.metric-dropdown {
+    position: relative;
+}
+.metric-toggle {
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.04);
+    transition: border 0.2s, box-shadow 0.2s;
+}
+.metric-toggle:focus, .metric-toggle:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 16px rgba(59,130,246,0.10);
+}
+.metric-menu {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 110%;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(59,130,246,0.13), 0 1.5px 6px rgba(0,0,0,0.04);
+    min-width: 190px;
+    padding: 0.4rem 0;
+    z-index: 10;
+    border: none;
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+    pointer-events: none;
+    transition: opacity 0.22s cubic-bezier(.4,0,.2,1), transform 0.22s cubic-bezier(.4,0,.2,1);
+}
+.metric-dropdown.open .metric-menu {
+    display: block;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+.metric-item {
+    width: 100%;
+    background: none;
+    border: none;
+    outline: none;
+    text-align: left;
+    padding: 0.7rem 1.2rem;
+    font-size: 1rem;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+.metric-item:hover, .metric-item:focus {
+    background: linear-gradient(90deg, #e0e7ff 0%, #f0f9ff 100%);
+    color: #3b82f6;
+}
 </style>
 
     <div class="dashboard-container">
@@ -408,7 +471,7 @@ body {
                             @endif
                         </div>
                     </div>
-                </div>
+            </div>
             </div>
         </div>
 
@@ -435,21 +498,21 @@ body {
                         <span id="selectedMetricLabel">Прибыль</span>
                         <i class="fas fa-chevron-down" style="margin-left: 0.5rem;"></i>
                     </button>
-                    <div class="dropdown-menu metric-menu" style="display: none; position: absolute; left: 0; top: 110%; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); min-width: 180px; z-index: 10;">
+                    <div class="dropdown-menu metric-menu">
                         <button class="dropdown-item metric-item" data-type="profit"><i class="fas fa-chart-line"></i> Прибыль</button>
                         <button class="dropdown-item metric-item" data-type="sales"><i class="fas fa-shopping-cart"></i> Продажи товаров</button>
                         <button class="dropdown-item metric-item" data-type="services"><i class="fas fa-spa"></i> Услуги</button>
                         <button class="dropdown-item metric-item" data-type="expenses"><i class="fas fa-credit-card"></i> Расходы</button>
                         <button class="dropdown-item metric-item" data-type="clients"><i class="fas fa-users"></i> Клиенты</button>
                         <button class="dropdown-item metric-item" data-type="appointments"><i class="fas fa-calendar-check"></i> Записи</button>
-                    </div>
-                </div>
+            </div>
+            </div>
                 <!-- Фильтры справа -->
                 <div class="period-filters" style="display: flex; gap: 0.5rem;">
                     <button class="period-btn active" data-period="7">За 7 дней</button>
                     <button class="period-btn" data-period="30">За месяц</button>
                     <button class="period-btn" data-period="90">За 3 месяца</button>
-                </div>
+            </div>
             </div>
             <canvas id="universalChart" height="150"></canvas>
         </div>
@@ -457,7 +520,7 @@ body {
 
     <!-- Подключаем Font Awesome для иконок -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <!-- Подключаем Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -541,7 +604,7 @@ body {
             services: {
                 label: "Услуги",
                 icon: "fa-spa",
-                data: {
+            data: {
                     7: [4500, 4400, 4300, 4280, 4250, 4220, 4200],
                     30: [3000, 3500, 4000, 3800, 4100, 4500, 4400, 4300, 4280, 4250, 4220, 4200, 4180, 4150, 4130, 4100, 4080, 4050, 4030, 4000, 3980, 3950, 3930, 3900, 3880, 3850, 3830, 3800, 3780, 3750],
                     90: [3000, 3200, 3400, 3600, 3800, 4000, 4200, 4400, 4600, 4800, 5000, 5200, 5400, 5600, 5800, 6000, 6200, 6400, 6600, 6800, 7000, 7200, 7400, 7600, 7800, 8000, 8200, 8400, 8600, 8800, 9000, 9200, 9400, 9600, 9800, 10000, 10200, 10400, 10600, 10800, 11000, 11200, 11400, 11600, 11800, 12000, 12200, 12400, 12600, 12800, 13000, 13200, 13400, 13600, 13800, 14000, 14200, 14400, 14600, 14800, 15000, 15200, 15400, 15600, 15800, 16000, 16200, 16400, 16600, 16800, 17000, 17200, 17400, 17600, 17800, 18000, 18200, 18400, 18600, 18800]
@@ -612,13 +675,14 @@ body {
         // Dropdown логика
         const metricToggle = document.querySelector('.metric-toggle');
         const metricMenu = document.querySelector('.metric-menu');
+        const metricDropdown = document.querySelector('.metric-dropdown');
         const selectedMetricLabel = document.getElementById('selectedMetricLabel');
         metricToggle.addEventListener('click', function(e) {
             e.stopPropagation();
-            metricMenu.style.display = metricMenu.style.display === 'block' ? 'none' : 'block';
+            metricDropdown.classList.toggle('open');
         });
         document.addEventListener('click', function() {
-            metricMenu.style.display = 'none';
+            metricDropdown.classList.remove('open');
         });
         document.querySelectorAll('.metric-item').forEach(item => {
             item.addEventListener('click', function() {
