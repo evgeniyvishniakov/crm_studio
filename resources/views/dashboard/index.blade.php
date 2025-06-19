@@ -644,21 +644,29 @@ body {
             30: Array.from({length: 30}, (_, i) => `${30-i} дн назад`).reverse(),
             90: Array.from({length: 90}, (_, i) => `${90-i} дн назад`).reverse()
         };
+        function getChartLabels(period) {
+            if (period === '7') return getLastNDates(7);
+            if (period === '30') return getWeekStartDates(4);
+            if (period === '90') return getWeekStartDates(13);
+            return [];
+        }
         let currentMetric = 'profit';
         let currentPeriod = '7';
-        // Инициализация графика
         const ctx = document.getElementById('universalChart').getContext('2d');
         let universalChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: periodLabels[currentPeriod],
+                labels: getChartLabels(currentPeriod),
                 datasets: [{
                     label: datasets[currentMetric].label,
                     data: datasets[currentMetric].data[currentPeriod],
                     borderColor: getMetricColor(currentMetric),
                     backgroundColor: getMetricColor(currentMetric) + '33',
                     tension: 0.4,
-                    fill: true
+                    fill: true,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHitRadius: 12
                 }]
             },
             options: {
@@ -692,7 +700,7 @@ body {
                 selectedMetricLabel.textContent = datasets[type].label;
                 metricToggle.querySelector('i').className = 'fas ' + datasets[type].icon;
                 // Обновить график
-                universalChart.data.labels = periodLabels[currentPeriod];
+                universalChart.data.labels = getChartLabels(currentPeriod);
                 universalChart.data.datasets[0].label = datasets[type].label;
                 universalChart.data.datasets[0].data = datasets[type].data[currentPeriod];
                 universalChart.data.datasets[0].borderColor = getMetricColor(type);
@@ -708,7 +716,7 @@ body {
                 this.classList.add('active');
                 currentPeriod = this.dataset.period;
                 // Обновить график
-                universalChart.data.labels = periodLabels[currentPeriod];
+                universalChart.data.labels = getChartLabels(currentPeriod);
                 universalChart.data.datasets[0].data = datasets[currentMetric].data[currentPeriod];
                 universalChart.update();
             });
@@ -736,6 +744,30 @@ body {
                 if(target) target.classList.add('active');
             });
         });
+
+        function getLastNDates(n) {
+            const arr = [];
+            const now = new Date();
+            for (let i = n - 1; i >= 0; i--) {
+                const d = new Date(now);
+                d.setDate(now.getDate() - i);
+                arr.push(d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', ''));
+            }
+            return arr;
+        }
+
+        function getWeekStartDates(weeks) {
+            const arr = [];
+            const now = new Date();
+            let monday = new Date(now);
+            monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+            for (let i = weeks - 1; i >= 0; i--) {
+                const d = new Date(monday);
+                d.setDate(monday.getDate() - i * 7);
+                arr.push(d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', ''));
+            }
+            return arr;
+        }
     </script>
 
     <style>
