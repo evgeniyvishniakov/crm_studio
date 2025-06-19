@@ -195,4 +195,47 @@ class DashboardController extends Controller
             ->selectRaw('SUM(retail_price * quantity) as sales')
             ->value('sales') ?? 0;
     }
+
+    /**
+     * API: Получить динамику продаж услуг для графика (по дням/неделям/месяцам)
+     */
+    public function servicesChartData(Request $request)
+    {
+        $period = $request->input('period', 7); // 7, 30, 90
+        $now = now();
+        $labels = [];
+        $data = [];
+        if ($period == 7) {
+            for ($i = 6; $i >= 0; $i--) {
+                $date = $now->copy()->subDays($i)->toDateString();
+                $labels[] = $now->copy()->subDays($i)->format('d M');
+                $sum = \App\Models\Appointment::whereDate('date', $date)
+                    ->where('status', 'completed')
+                    ->sum('price');
+                $data[] = round($sum, 2);
+            }
+        } elseif ($period == 30) {
+            for ($i = 29; $i >= 0; $i--) {
+                $date = $now->copy()->subDays($i)->toDateString();
+                $labels[] = $now->copy()->subDays($i)->format('d M');
+                $sum = \App\Models\Appointment::whereDate('date', $date)
+                    ->where('status', 'completed')
+                    ->sum('price');
+                $data[] = round($sum, 2);
+            }
+        } elseif ($period == 90) {
+            for ($i = 89; $i >= 0; $i--) {
+                $date = $now->copy()->subDays($i)->toDateString();
+                $labels[] = $now->copy()->subDays($i)->format('d M');
+                $sum = \App\Models\Appointment::whereDate('date', $date)
+                    ->where('status', 'completed')
+                    ->sum('price');
+                $data[] = round($sum, 2);
+            }
+        }
+        return response()->json([
+            'labels' => $labels,
+            'data' => $data
+        ]);
+    }
 }

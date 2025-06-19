@@ -524,6 +524,9 @@ body {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
+        let currentMetric = 'profit';
+        let currentPeriod = '7';
+
         // Анимация счетчика для карточек
         function animateCounter(element, start, end, duration = 1500) {
             const startTime = performance.now();
@@ -699,8 +702,6 @@ body {
                 }
             ];
         }
-        let currentMetric = 'profit';
-        let currentPeriod = '7';
         const ctx = document.getElementById('universalChart').getContext('2d');
         let universalChart = new Chart(ctx, {
             type: 'line',
@@ -739,7 +740,10 @@ body {
                             }
                         }
                     },
-                    y: { beginAtZero: true }
+                    y: {
+                        beginAtZero: true,
+                        max: undefined
+                    }
                 }
             }
         });
@@ -763,69 +767,9 @@ body {
                 metricToggle.querySelector('i').className = 'fas ' + datasets[type].icon;
 
                 if (type === 'sales') {
-                    // Получаем текущий период
-                    let period = currentPeriod;
-                    fetch(`/api/dashboard/sales-chart?period=${period}`)
-                        .then(res => res.json())
-                        .then(res => {
-                            universalChart.data.labels = res.labels;
-                            universalChart.data.datasets = [{
-                                label: datasets[type].label,
-                                data: res.data,
-                                borderColor: getMetricColor(type),
-                                backgroundColor: getMetricColor(type) + '33',
-                                tension: 0.4,
-                                fill: true,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                pointHitRadius: 12,
-                                spanGaps: true
-                            }];
-                            universalChart.update();
-                        });
-                    metricDropdown.classList.remove('open');
-                    return;
-                }
-
-                if (currentPeriod === '7') {
-                    universalChart.data.labels = getLastNDates(7);
-                } else if (currentPeriod === '30') {
-                    universalChart.data.labels = getLastNDates(30);
-                } else if (currentPeriod === '90') {
-                    universalChart.data.labels = getLastNDates(90);
-                }
-                if (type === 'activity') {
-                    universalChart.data.datasets = getActivityDatasets(currentPeriod);
-                } else {
-                    universalChart.data.datasets = [{
-                        label: datasets[type].label,
-                        data: datasets[type].data[currentPeriod],
-                        borderColor: getMetricColor(type),
-                        backgroundColor: getMetricColor(type) + '33',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0,
-                        pointHoverRadius: 6,
-                        pointHitRadius: 12,
-                        spanGaps: true
-                    }];
-                }
-                universalChart.update();
-                metricDropdown.classList.remove('open');
-            });
-        });
-        // Фильтры периода
-        document.querySelectorAll('.period-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentPeriod = this.dataset.period;
-                if (currentMetric === 'sales') {
                     fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            // Для 7 дней: показываем все даты
-                            // Для 30 и 90: на оси X только недели, но tooltip по дням
                             if (currentPeriod === '7') {
                                 universalChart.data.labels = res.labels;
                                 universalChart.data.datasets = [{
@@ -858,17 +802,13 @@ body {
                                     spanGaps: true
                                 }];
                                 universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    // Показываем только если дата — понедельник
                                     const label = this.getLabelForValue(this.getLabels()[index]);
-                                    // Преобразуем label в дату
                                     const parts = label.split(' ');
                                     if (parts.length === 2) {
                                         const day = parseInt(parts[0]);
                                         const month = parts[1];
                                         const date = new Date();
                                         date.setDate(day);
-                                        // Проверяем, понедельник ли это
-                                        // Для корректности нужно получить дату по индексу
                                         const now = new Date();
                                         const d = new Date(now);
                                         d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
@@ -883,9 +823,155 @@ body {
                         });
                     return;
                 }
-                if (currentMetric === 'activity') {
+                if (type === 'services') {
+                    fetch(`/api/dashboard/services-chart?period=${currentPeriod}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            if (currentPeriod === '7') {
+                                universalChart.data.labels = res.labels;
+                                universalChart.data.datasets = [{
+                                    label: datasets['services'].label,
+                                    data: res.data,
+                                    borderColor: getMetricColor('services'),
+                                    backgroundColor: getMetricColor('services') + '33',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                }];
+                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
+                                    return this.getLabelForValue(this.getLabels()[index]);
+                                };
+                            } else if (currentPeriod === '30' || currentPeriod === '90') {
+                                universalChart.data.labels = res.labels;
+                                universalChart.data.datasets = [{
+                                    label: datasets['services'].label,
+                                    data: res.data,
+                                    borderColor: getMetricColor('services'),
+                                    backgroundColor: getMetricColor('services') + '33',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                }];
+                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
+                                    const label = this.getLabelForValue(this.getLabels()[index]);
+                                    const parts = label.split(' ');
+                                    if (parts.length === 2) {
+                                        const day = parseInt(parts[0]);
+                                        const month = parts[1];
+                                        const date = new Date();
+                                        date.setDate(day);
+                                        const now = new Date();
+                                        const d = new Date(now);
+                                        d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
+                                        if (d.getDay() === 1) {
+                                            return label;
+                                        }
+                                    }
+                                    return '';
+                                };
+                            }
+                            // Вычисляем max для оси y
+                            const maxValue = Math.max(...res.data);
+                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                            universalChart.update();
+                        });
+                    return;
+                }
+                if (type === 'activity') {
                     universalChart.data.labels = getLastNDates(currentPeriod);
                     universalChart.data.datasets = getActivityDatasets(currentPeriod);
+                    universalChart.update();
+                    return;
+                }
+            });
+        });
+        // Фильтры периода
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentPeriod = this.dataset.period;
+                console.log('currentMetric:', currentMetric, 'currentPeriod:', currentPeriod, 'typeof:', typeof currentMetric);
+                if (currentMetric === 'sales') {
+                    fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            universalChart.data.labels = res.labels;
+                            universalChart.data.datasets = [{
+                                label: datasets['sales'].label,
+                                data: res.data,
+                                borderColor: getMetricColor('sales'),
+                                backgroundColor: getMetricColor('sales') + '33',
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointHitRadius: 12,
+                                spanGaps: true
+                            }];
+                            universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
+                                if (currentPeriod === '7') {
+                                    return this.getLabelForValue(this.getLabels()[index]);
+                                } else {
+                                    const now = new Date();
+                                    const d = new Date(now);
+                                    d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
+                                    if (d.getDay() === 1) {
+                                        return this.getLabelForValue(this.getLabels()[index]);
+                                    }
+                                    return '';
+                                }
+                            };
+                            universalChart.update();
+                        });
+                    return;
+                } else if (currentMetric === 'services') {
+                    fetch(`/api/dashboard/services-chart?period=${currentPeriod}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            universalChart.data.labels = res.labels;
+                            universalChart.data.datasets = [{
+                                label: datasets['services'].label,
+                                data: res.data,
+                                borderColor: getMetricColor('services'),
+                                backgroundColor: getMetricColor('services') + '33',
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointHitRadius: 12,
+                                spanGaps: true
+                            }];
+                            universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
+                                if (currentPeriod === '7') {
+                                    return this.getLabelForValue(this.getLabels()[index]);
+                                } else {
+                                    const now = new Date();
+                                    const d = new Date(now);
+                                    d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
+                                    if (d.getDay() === 1) {
+                                        return this.getLabelForValue(this.getLabels()[index]);
+                                    }
+                                    return '';
+                                }
+                            };
+                            // Вычисляем max для оси y
+                            const maxValue = Math.max(...res.data);
+                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                            universalChart.update();
+                        });
+                    return;
+                } else if (currentMetric === 'activity') {
+                    universalChart.data.labels = getLastNDates(currentPeriod);
+                    universalChart.data.datasets = getActivityDatasets(currentPeriod);
+                    universalChart.update();
+                    return;
                 } else {
                     universalChart.data.labels = getLastNDates(currentPeriod);
                     universalChart.data.datasets = [{
@@ -900,8 +986,8 @@ body {
                         pointHitRadius: 12,
                         spanGaps: true
                     }];
+                    universalChart.update();
                 }
-                universalChart.update();
             });
         });
         // Цвета для метрик
