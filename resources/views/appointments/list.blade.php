@@ -1118,6 +1118,7 @@
                                        placeholder="Начните вводить имя, инстаграм или email клиента..."
                                        oninput="searchClients(this)"
                                        onfocus="searchClients(this)">
+                                <input type="hidden" name="client_id" class="client-id-hidden" value="">
                                 <div class="client-dropdown" style="display: none;">
                                     <div class="client-dropdown-list"></div>
                                 </div>
@@ -1345,9 +1346,12 @@
                 'cancelled': 'Отменено',
                 'rescheduled': 'Перенесено'
             };
+            // Добавляем скрытое поле с client_id
             modalBody.innerHTML = `
     <input type="hidden" id="appointmentId" value="${appointment.id}">
+    <input type="hidden" id="clientId" value="${appointment.client_id}">
     <input type="hidden" name="date" value="${appointment.date}">
+    <input type="hidden" name="time" value="${appointment.time}">
     <div class="appointment-details-modal">
         <div class="details-header">
             <div class="client-info">
@@ -2092,9 +2096,11 @@
             const input = container.querySelector('.client-search-input');
             const select = container.querySelector('.client-select');
             const dropdown = container.querySelector('.client-dropdown');
+            const hiddenInput = container.querySelector('.client-id-hidden');
 
             input.value = clientName.trim();
             select.value = clientId;
+            hiddenInput.value = clientId;
             dropdown.style.display = 'none';
         }
 
@@ -2418,84 +2424,28 @@
         async function saveAppointmentChanges() {
             const modal = document.getElementById('viewAppointmentModal');
             const appointmentId = modal.querySelector('#appointmentId')?.value;
+            const clientId = modal.querySelector('#clientId')?.value;
 
-            if (!appointmentId) {
-                showNotification('ID записи не найден', 'error');
+            if (!clientId) {
+                showNotification('Не удалось определить клиента', 'error');
                 return;
             }
 
-            // Get basic appointment data
-            // Получаем дату и время из нового дизайна (текст после первого <span> внутри каждого div)
-                let time = '';
-                let dateText = '';
-                const detailsRow = modal.querySelector('.details-row');
-                if (detailsRow) {
-                    const divs = detailsRow.querySelectorAll('div');
-                    if (divs.length > 1) {
-                        // Дата
-                        const dateLabel = divs[0].querySelector('span');
-                        if (dateLabel && dateLabel.nextSibling) {
-                            dateText = dateLabel.nextSibling.textContent.trim();
-                        }
-                        // Время
-                        const timeLabel = divs[1].querySelector('span');
-                        if (timeLabel && timeLabel.nextSibling) {
-                            time = timeLabel.nextSibling.textContent.trim();
-                        }
-                    }
-                }
-                console.log('Debug time:', { time, dateText });
-
-            // Получаем имя клиента из правильного элемента
-            const clientElement = modal.querySelector('.client-name');
-            const clientNameWithInstagram = clientElement?.textContent?.trim() || '';
-
-            // Извлекаем только имя клиента, обрабатывая оба случая
-            const clientName = clientNameWithInstagram.includes('(@')
-                ? clientNameWithInstagram.split('(@')[0].trim()
-                : clientNameWithInstagram.trim();
-
-            // Получаем имя услуги из правильного элемента
             const serviceElement = modal.querySelector('.service-name');
             const serviceName = serviceElement?.textContent?.trim();
-
+            const service = serviceName ? allServices.find(s => s.name.trim() === serviceName) : null;
             const priceText = modal.querySelector('.procedure-price')?.textContent;
             const price = parseFloat(priceText?.replace('грн', '').trim()) || 0;
 
-            // Format date
-            let formattedDate = '';
-            if (dateText) {
-                const [day, month, year] = dateText.split('.');
-                formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-            }
+            const date = modal.querySelector('input[name="date"]')?.value || '';
+            const time = modal.querySelector('input[name="time"]')?.value || '';
 
-            // Find client and service IDs with improved error handling
-            const client = clientName ? allClients.find(c => c.name.trim() === clientName) : null;
-            const service = serviceName ? allServices.find(s => s.name.trim() === serviceName) : null;
-
-            // Подробная проверка данных перед отправкой
-            const validationErrors = [];
-
-            if (!formattedDate) validationErrors.push('Дата не указана');
-            if (!time) validationErrors.push('Время не указано');
-            if (!clientName) validationErrors.push('Имя клиента не найдено в форме');
-            if (!client || !client.id) validationErrors.push(`Не удалось найти клиента "${clientName}" в списке`);
-            if (!serviceName) validationErrors.push('Название услуги не найдено в форме');
-            if (!service || !service.id) validationErrors.push(`Не удалось найти услугу "${serviceName}" в списке`);
-            if (isNaN(price) || price < 0) validationErrors.push('Некорректная цена');
-
-            if (validationErrors.length > 0) {
-                showNotification('Ошибки валидации:\n' + validationErrors.join('\n'), 'error');
-                return;
-            }
-
-            // Подготавливаем данные для отправки
             const requestData = {
-                date: formattedDate,
-                time: time,
-                client_id: client.id,
-                service_id: service.id,
+                client_id: clientId,
+                service_id: service?.id || '',
                 price: price,
+                date: date,
+                time: time,
                 sales: temporaryProducts.map(p => ({
                     product_id: p.product_id,
                     quantity: parseInt(p.quantity),
@@ -2504,7 +2454,13 @@
                 }))
             };
 
-            console.log('Отправляемые данные:', requestData);
+            // Валидация на клиенте
+            if (!requestData.service_id) {
+                showNotification('Необходимо указать услугу', 'error');
+                return;
+            }
+
+            console.log('Sending data:', requestData);
 
             try {
                 const response = await fetch(`/appointments/${appointmentId}`, {
@@ -2520,26 +2476,21 @@
                 const data = await response.json();
 
                 if (!response.ok) {
-                    console.error('Ответ сервера:', data);
+                    // Показываем ошибки валидации сервера, если есть
                     if (data.errors) {
-                        const errorMessages = Object.entries(data.errors)
-                            .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
-                            .join('\n');
-                        throw new Error(`Ошибки валидации:\n${errorMessages}`);
+                        const errorMessages = Object.values(data.errors).flat().join(', ');
+                        showNotification(errorMessages, 'error');
+                        return;
                     }
-                    throw new Error(data.message || `Ошибка сохранения (${response.status})`);
+                    throw new Error(data.message || 'Ошибка сохранения');
                 }
 
                 if (data.success) {
                     showNotification('Изменения успешно сохранены');
                     toggleModal('viewAppointmentModal', false);
-
-                    // Обновляем календарь если он существует
                     if (typeof calendar !== 'undefined' && calendar) {
                         calendar.refetchEvents();
                     }
-
-
                 } else {
                     throw new Error(data.message || 'Ошибка сохранения');
                 }

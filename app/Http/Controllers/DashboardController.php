@@ -78,21 +78,19 @@ class DashboardController extends Controller
                 $data[] = round($profit, 2);
             }
         } elseif ($period == 30) {
-            // За месяц: по неделям (4 недели)
-            for ($i = 3; $i >= 0; $i--) {
-                $start = $now->copy()->startOfWeek()->subWeeks($i)->toDateString();
-                $end = $now->copy()->startOfWeek()->subWeeks($i-1)->subDay()->toDateString();
-                $labels[] = $now->copy()->startOfWeek()->subWeeks($i)->format('d M');
-                $profit = $this->getProfitForPeriod($start, $end);
+            // За месяц: по дням (30 точек)
+            for ($i = 29; $i >= 0; $i--) {
+                $date = $now->copy()->subDays($i)->toDateString();
+                $labels[] = $now->copy()->subDays($i)->format('d M');
+                $profit = $this->getProfitForDate($date);
                 $data[] = round($profit, 2);
             }
         } elseif ($period == 90) {
-            // За 3 месяца: по неделям (13 недель)
-            for ($i = 12; $i >= 0; $i--) {
-                $start = $now->copy()->startOfWeek()->subWeeks($i)->toDateString();
-                $end = $now->copy()->startOfWeek()->subWeeks($i-1)->subDay()->toDateString();
-                $labels[] = $now->copy()->startOfWeek()->subWeeks($i)->format('d M');
-                $profit = $this->getProfitForPeriod($start, $end);
+            // За 3 месяца: по дням (90 точек)
+            for ($i = 89; $i >= 0; $i--) {
+                $date = $now->copy()->subDays($i)->toDateString();
+                $labels[] = $now->copy()->subDays($i)->format('d M');
+                $profit = $this->getProfitForDate($date);
                 $data[] = round($profit, 2);
             }
         }

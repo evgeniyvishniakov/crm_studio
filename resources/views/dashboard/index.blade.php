@@ -709,7 +709,7 @@ body {
                 labels: getLastNDates(7),
                 datasets: [{
                     label: datasets[currentMetric].label,
-                    data: datasets[currentMetric].data['7'],
+                    data: currentMetric === 'profit' ? [] : datasets[currentMetric].data['7'],
                     borderColor: getMetricColor(currentMetric),
                     backgroundColor: getMetricColor(currentMetric) + '33',
                     tension: 0.4,
@@ -766,6 +766,27 @@ body {
                 selectedMetricLabel.textContent = datasets[type].label;
                 metricToggle.querySelector('i').className = 'fas ' + datasets[type].icon;
 
+                if (type === 'profit') {
+                    fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            universalChart.data.labels = res.labels;
+                            universalChart.data.datasets = [{
+                                label: 'Прибыль',
+                                data: getCumulativeData(res.data),
+                                borderColor: getMetricColor('profit'),
+                                backgroundColor: getMetricColor('profit') + '33',
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointHitRadius: 12,
+                                spanGaps: true
+                            }];
+                            universalChart.update();
+                        });
+                    return;
+                }
                 if (type === 'sales') {
                     fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
                         .then(res => res.json())
@@ -972,6 +993,26 @@ body {
                     universalChart.data.datasets = getActivityDatasets(currentPeriod);
                     universalChart.update();
                     return;
+                } else if (currentMetric === 'profit') {
+                    fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            universalChart.data.labels = res.labels;
+                            universalChart.data.datasets = [{
+                                label: 'Прибыль',
+                                data: getCumulativeData(res.data),
+                                borderColor: getMetricColor('profit'),
+                                backgroundColor: getMetricColor('profit') + '33',
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointHitRadius: 12,
+                                spanGaps: true
+                            }];
+                            universalChart.update();
+                        });
+                    return;
                 } else {
                     universalChart.data.labels = getLastNDates(currentPeriod);
                     universalChart.data.datasets = [{
@@ -1036,6 +1077,17 @@ body {
                 arr.push(d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', ''));
             }
             return arr;
+        }
+
+        // Функция для получения накопительных данных
+        function getCumulativeData(arr) {
+            let result = [];
+            let sum = 0;
+            for (let i = 0; i < arr.length; i++) {
+                sum += arr[i];
+                result.push(Number(sum.toFixed(2)));
+            }
+            return result;
         }
     </script>
 
