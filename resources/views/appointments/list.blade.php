@@ -2053,29 +2053,37 @@
         // Функции для работы с клиентами
         function searchClients(inputElement) {
             const searchTerm = inputElement.value.trim().toLowerCase();
-            const dropdown = inputElement.nextElementSibling;
-            const dropdownList = dropdown.querySelector('.client-dropdown-list');
-
+            const container = inputElement.closest('.client-search-container');
+            if (!container) {
+                console.error('Client search container not found');
+                return;
+            }
+            const dropdown = container.querySelector('.client-dropdown');
+            const dropdownList = container.querySelector('.client-dropdown-list');
+            if (!dropdown || !dropdownList) {
+                console.error('Client dropdown elements not found');
+                return;
+            }
             if (searchTerm.length === 0) {
                 dropdown.style.display = 'none';
                 return;
             }
-
+            if (!Array.isArray(allClients)) {
+                console.error('allClients is not an array:', allClients);
+                return;
+            }
             const filteredClients = allClients.filter(client => {
                 const nameMatch = client.name?.toLowerCase().includes(searchTerm) || false;
                 const instagramMatch = client.instagram?.toLowerCase().includes(searchTerm) || false;
                 const emailMatch = client.email?.toLowerCase().includes(searchTerm) || false;
-                const phoneMatch = client.phone?.includes(searchTerm) || false;
-
+                const phoneMatch = client.phone?.toString().includes(searchTerm) || false;
                 return nameMatch || instagramMatch || emailMatch || phoneMatch;
-            }).slice(0, 5); // Ограничиваем до 5 результатов
-
+            }).slice(0, 5);
             if (filteredClients.length > 0) {
                 dropdownList.innerHTML = filteredClients.map(client => {
                     const name = escapeHtml(client.name || '');
                     const instagram = client.instagram ? `(@${escapeHtml(client.instagram)})` : '';
-                    const phone = client.phone ? ` - ${escapeHtml(client.phone)}` : '';
-
+                    const phone = client.phone ? ` - ${escapeHtml(client.phone.toString())}` : '';
                     return `
                         <div class="client-dropdown-item"
                              data-client-id="${client.id}"
@@ -2093,15 +2101,15 @@
 
         function selectClient(element, clientId, clientName) {
             const container = element.closest('.client-search-container');
+            if (!container) return;
             const input = container.querySelector('.client-search-input');
             const select = container.querySelector('.client-select');
             const dropdown = container.querySelector('.client-dropdown');
             const hiddenInput = container.querySelector('.client-id-hidden');
-
-            input.value = clientName.trim();
-            select.value = clientId;
-            hiddenInput.value = clientId;
-            dropdown.style.display = 'none';
+            if (input) input.value = clientName.trim();
+            if (select) select.value = clientId;
+            if (hiddenInput) hiddenInput.value = clientId;
+            if (dropdown) dropdown.style.display = 'none';
         }
 
         // Функции для работы с записями
@@ -2418,6 +2426,26 @@
                 }
                 if (e.target && e.target.id === 'saveAppointmentChanges') {
                     saveAppointmentChanges();
+                }
+            });
+
+            // Обработчики для поиска клиентов
+            document.querySelectorAll('.client-search-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    searchClients(this);
+                });
+                input.addEventListener('focus', function() {
+                    if (this.value.trim().length > 0) {
+                        searchClients(this);
+                    }
+                });
+            });
+            // Закрытие выпадающего списка при клике вне его
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.client-search-container')) {
+                    document.querySelectorAll('.client-dropdown').forEach(dropdown => {
+                        dropdown.style.display = 'none';
+                    });
                 }
             });
         });
