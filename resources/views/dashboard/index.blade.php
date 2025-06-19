@@ -756,6 +756,28 @@ body {
                 }
             }
         });
+        // После инициализации universalChart
+        // Автоматически загружаем данные для прибыли за месяц при загрузке страницы
+        fetch('/api/dashboard/profit-chart?period=30')
+            .then(res => res.json())
+            .then(res => {
+                universalChart.data.labels = res.labels;
+                universalChart.data.datasets = [{
+                    label: 'Прибыль',
+                    data: getCumulativeData(res.data),
+                    borderColor: getMetricColor('profit'),
+                    backgroundColor: getMetricColor('profit') + '33',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointHitRadius: 12,
+                    spanGaps: true
+                }];
+                const maxValue = Math.max(...getCumulativeData(res.data));
+                universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                universalChart.update();
+            });
         // Dropdown логика
         const metricToggle = document.querySelector('.metric-toggle');
         const metricMenu = document.querySelector('.metric-menu');
