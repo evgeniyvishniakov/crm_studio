@@ -22,3 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/dashboard/profit-chart', [DashboardController::class, 'profitChartData']);
 Route::get('/dashboard/sales-chart', [DashboardController::class, 'salesChartData']);
 Route::get('/dashboard/services-chart', [\App\Http\Controllers\DashboardController::class, 'servicesChartData']);
+Route::get('/dashboard/expenses-chart', [\App\Http\Controllers\DashboardController::class, 'expensesChartData']);

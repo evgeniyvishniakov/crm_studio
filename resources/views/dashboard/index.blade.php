@@ -814,8 +814,34 @@ body {
                                 pointHitRadius: 12,
                                 spanGaps: true
                             }];
-                            // Устанавливаем максимум оси Y на 15% выше максимального значения
                             const maxValue = Math.max(...getCumulativeData(res.data));
+                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                            universalChart.update();
+                        });
+                    return;
+                }
+                if (type === 'expenses') {
+                    // Получаем реальные расходы по API
+                    fetch(`/api/dashboard/expenses-chart?period=${currentPeriod}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            // Делаем накопительную линию
+                            const data = getCumulativeData(res.data);
+                            let labels = res.labels;
+                            universalChart.data.labels = labels;
+                            universalChart.data.datasets = [{
+                                label: datasets['expenses'].label,
+                                data: data,
+                                borderColor: getMetricColor('expenses'),
+                                backgroundColor: getMetricColor('expenses') + '33',
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointHitRadius: 12,
+                                spanGaps: true
+                            }];
+                            const maxValue = Math.max(...data);
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
                         });
@@ -956,16 +982,20 @@ body {
                 this.classList.add('active');
                 currentPeriod = this.dataset.period;
                 console.log('currentMetric:', currentMetric, 'currentPeriod:', currentPeriod, 'typeof:', typeof currentMetric);
-                if (currentMetric === 'sales') {
-                    fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
+                if (currentMetric === 'expenses') {
+                    // Получаем реальные расходы по API
+                    fetch(`/api/dashboard/expenses-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            universalChart.data.labels = res.labels;
+                            // Делаем накопительную линию
+                            const data = getCumulativeData(res.data);
+                            let labels = res.labels;
+                            universalChart.data.labels = labels;
                             universalChart.data.datasets = [{
-                                label: datasets['sales'].label,
-                                data: res.data,
-                                borderColor: getMetricColor('sales'),
-                                backgroundColor: getMetricColor('sales') + '33',
+                                label: datasets['expenses'].label,
+                                data: data,
+                                borderColor: getMetricColor('expenses'),
+                                backgroundColor: getMetricColor('expenses') + '33',
                                 tension: 0.4,
                                 fill: true,
                                 pointRadius: 0,
@@ -973,21 +1003,7 @@ body {
                                 pointHitRadius: 12,
                                 spanGaps: true
                             }];
-                            universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                if (currentPeriod === '7') {
-                                    return this.getLabelForValue(this.getLabels()[index]);
-                                } else {
-                                    const now = new Date();
-                                    const d = new Date(now);
-                                    d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
-                                    if (d.getDay() === 1) {
-                                        return this.getLabelForValue(this.getLabels()[index]);
-                                    }
-                                    return '';
-                                }
-                            };
-                            // Устанавливаем максимум оси Y на 15% выше максимального значения
-                            const maxValue = Math.max(...res.data);
+                            const maxValue = Math.max(...data);
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
                         });
