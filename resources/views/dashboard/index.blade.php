@@ -501,7 +501,7 @@ body {
                     <div class="dropdown-menu metric-menu">
                         <button class="dropdown-item metric-item" data-type="profit"><i class="fas fa-chart-line"></i> Прибыль</button>
                         <button class="dropdown-item metric-item" data-type="sales"><i class="fas fa-shopping-cart"></i> Продажи товаров</button>
-                        <button class="dropdown-item metric-item" data-type="services"><i class="fas fa-spa"></i> Услуги</button>
+                        <button class="dropdown-item metric-item" data-type="services"><i class="fas fa-spa"></i> Продажи услуг</button>
                         <button class="dropdown-item metric-item" data-type="expenses"><i class="fas fa-credit-card"></i> Расходы</button>
                         <button class="dropdown-item metric-item" data-type="clients"><i class="fas fa-users"></i> Клиенты</button>
                         <button class="dropdown-item metric-item" data-type="appointments"><i class="fas fa-calendar-check"></i> Записи</button>
@@ -602,7 +602,7 @@ body {
                 }
             },
             services: {
-                label: "Услуги",
+                label: "Продажи услуг",
                 icon: "fa-spa",
             data: {
                     7: [4500, 4400, 4300, 4280, 4250, 4220, 4200],
@@ -656,17 +656,18 @@ body {
         let universalChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: getChartLabels(currentPeriod),
+                labels: getLastNDates(7),
                 datasets: [{
                     label: datasets[currentMetric].label,
-                    data: datasets[currentMetric].data[currentPeriod],
+                    data: datasets[currentMetric].data['7'],
                     borderColor: getMetricColor(currentMetric),
                     backgroundColor: getMetricColor(currentMetric) + '33',
                     tension: 0.4,
                     fill: true,
                     pointRadius: 0,
                     pointHoverRadius: 6,
-                    pointHitRadius: 12
+                    pointHitRadius: 12,
+                    spanGaps: true
                 }]
             },
             options: {
@@ -676,6 +677,19 @@ body {
                     tooltip: { mode: 'index', intersect: false }
                 },
                 scales: {
+                    x: {
+                        ticks: {
+                            callback: function(value, index, ticks) {
+                                if (currentPeriod === '7') return this.getLabelForValue(this.getLabels()[index]);
+                                const date = new Date();
+                                date.setDate(date.getDate() - (this.getLabels().length - 1 - index));
+                                if (date.getDay() === 1) {
+                                    return this.getLabelForValue(this.getLabels()[index]);
+                                }
+                                return '';
+                            }
+                        }
+                    },
                     y: { beginAtZero: true }
                 }
             }
@@ -700,13 +714,19 @@ body {
                 selectedMetricLabel.textContent = datasets[type].label;
                 metricToggle.querySelector('i').className = 'fas ' + datasets[type].icon;
                 // Обновить график
-                universalChart.data.labels = getChartLabels(currentPeriod);
+                if (currentPeriod === '7') {
+                    universalChart.data.labels = getLastNDates(7);
+                } else if (currentPeriod === '30') {
+                    universalChart.data.labels = getLastNDates(30);
+                } else if (currentPeriod === '90') {
+                    universalChart.data.labels = getLastNDates(90);
+                }
                 universalChart.data.datasets[0].label = datasets[type].label;
                 universalChart.data.datasets[0].data = datasets[type].data[currentPeriod];
                 universalChart.data.datasets[0].borderColor = getMetricColor(type);
                 universalChart.data.datasets[0].backgroundColor = getMetricColor(type) + '33';
                 universalChart.update();
-                metricMenu.style.display = 'none';
+                metricDropdown.classList.remove('open');
             });
         });
         // Фильтры периода
@@ -716,7 +736,13 @@ body {
                 this.classList.add('active');
                 currentPeriod = this.dataset.period;
                 // Обновить график
-                universalChart.data.labels = getChartLabels(currentPeriod);
+                if (currentPeriod === '7') {
+                    universalChart.data.labels = getLastNDates(7);
+                } else if (currentPeriod === '30') {
+                    universalChart.data.labels = getLastNDates(30);
+                } else if (currentPeriod === '90') {
+                    universalChart.data.labels = getLastNDates(90);
+                }
                 universalChart.data.datasets[0].data = datasets[currentMetric].data[currentPeriod];
                 universalChart.update();
             });
