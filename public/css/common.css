@@ -142,7 +142,8 @@
 .purchase-table thead,
 .sale-table thead,
 .services-table thead,
-.expenses-table thead{
+.expenses-table thead,
+.appointments-table thead{
     background-color: #e0e4e9 !important;
     border-bottom: 1px solid #e5e7eb;
 }

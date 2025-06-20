@@ -487,8 +487,8 @@ body {
             </button>
         </div>
 
-        <!-- Графики -->
-        <div class="chart-container" style="width: 100%; max-width: 100%; padding: 8px 0 0 0; box-sizing: border-box;">
+        <div class="dashboard-main-content" style="max-width: 1400px; margin: 0 auto; padding: 0 24px;">
+            <div class="chart-container" style="width: 100%; max-width: 100%; padding: 10px; box-sizing: border-box;">
             <h3 class="chart-title">Динамика показателей</h3>
             <div class="chart-toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
                 <!-- Dropdown слева -->
@@ -516,6 +516,150 @@ body {
             </div>
             <canvas id="universalChart" height="150"></canvas>
         </div>
+            <div class="dashboard-widgets-grid-2x2" style="display: grid; grid-template-columns: 35% 65%; gap: 1.6rem; margin: 32px 0 0 0; align-items: stretch;">
+                <!-- 1. Календарь -->
+                <div class="widget-card calendar-widget">
+                    <div class="widget-content">
+                        <div class="calendar-header-modern">
+                            <span class="calendar-title">June 2025</span>
+                            <span class="calendar-nav-group">
+                                <button class="calendar-nav-btn"><i class="fas fa-chevron-left"></i></button>
+                                <button class="calendar-nav-btn"><i class="fas fa-chevron-right"></i></button>
+                            </span>
+                        </div>
+                        <div class="calendar-grid">
+                            <div class="calendar-row calendar-days-row">
+                                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                        </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day muted">1</div><div class="calendar-day muted">2</div><div class="calendar-day muted">3</div><div class="calendar-day muted">4</div><div class="calendar-day muted">5</div><div class="calendar-day">1</div><div class="calendar-day">2</div>
+                        </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day">3</div><div class="calendar-day">4</div><div class="calendar-day">5</div><div class="calendar-day">6</div><div class="calendar-day">7</div><div class="calendar-day">8</div><div class="calendar-day">9</div>
+                    </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day calendar-has-badge">10<span class="calendar-badge-mini">3</span></div><div class="calendar-day">11</div><div class="calendar-day">12</div><div class="calendar-day">13</div><div class="calendar-day">14</div><div class="calendar-day">15</div><div class="calendar-day">16</div>
+                </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day">17</div><div class="calendar-day">18</div><div class="calendar-day">19</div><div class="calendar-day calendar-has-badge">20<span class="calendar-badge-mini">1</span></div><div class="calendar-day">21</div><div class="calendar-day">22</div><div class="calendar-day">23</div>
+            </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day">24</div><div class="calendar-day">25</div><div class="calendar-day">26</div><div class="calendar-day">27</div><div class="calendar-day">28</div><div class="calendar-day">29</div><div class="calendar-day">30</div>
+                </div>
+                            <div class="calendar-row">
+                                <div class="calendar-day muted">1</div><div class="calendar-day muted">2</div><div class="calendar-day muted">3</div><div class="calendar-day muted">4</div><div class="calendar-day muted">5</div><div class="calendar-day muted">6</div><div class="calendar-day muted">7</div>
+            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 2. Записи -->
+                <div class="widget-card appointments-widget">
+                    <div class="widget-content">
+                        <h3 class="widget-title">Записи</h3>
+                        <div class="appointments-table-block">
+                            <table class="appointments-table">
+                                <thead>
+                                    <tr>
+                                        <th>ДАТА</th>
+                                        <th>КЛИЕНТ</th>
+                                        <th>ПРОЦЕДУРА</th>
+                                        <th>СТАТУС</th>
+                                        <th>СТОИМОСТЬ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="appt-date">19.06.2025</span><br><span class="appt-time">14:00</span></td>
+                                        <td>Ирина</td>
+                                        <td>Кератин</td>
+                                        <td><span class="status-badge status-done">Завершено</span></td>
+                                        <td>3000 грн</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- 3. Краткий отчёт за сегодня -->
+                <div class="widget-card">
+                    <div class="widget-content">
+                        <h3 class="widget-title">Краткий отчёт за сегодня</h3>
+                        <div style="display: flex; gap: 1.5rem; margin-top: 1.2rem; align-items: flex-end; justify-content: center; min-width: 0;">
+                            <div style="display: flex; flex-direction: column; align-items: center; min-width: 90px;">
+                                <span style="font-size: 2.1rem; font-weight: 700; color: #3b82f6; line-height: 1;">5</span>
+                                <span style="font-size: 1rem; color: #64748b;">Клиентов сегодня</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center; min-width: 120px;">
+                                <span style="font-size: 2.1rem; font-weight: 700; color: #10b981; line-height: 1;">3 200 грн</span>
+                                <span style="font-size: 1rem; color: #64748b;">Прибыль за день</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center; min-width: 90px;">
+                                <span style="font-size: 2.1rem; font-weight: 700; color: #8b5cf6; line-height: 1;">4</span>
+                                <span style="font-size: 1rem; color: #64748b;">Завершено процедур</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 4. To Do List -->
+                <div class="widget-card">
+                    <div class="widget-content">
+                        <h3 class="widget-title" style="margin-bottom:1rem;">To Do List</h3>
+                        <ul class="todo-list-minimal">
+                            <li>
+                                <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
+                                <input type="checkbox" id="todo1-minimal">
+                                <label for="todo1-minimal">Conveniently fabricate interactive technology for ....</label>
+                                <span class="todo-actions">
+                                    <i class="fas fa-check"></i>
+                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
+                                <input type="checkbox" id="todo2-minimal">
+                                <label for="todo2-minimal">Creating component page</label>
+                                <span class="todo-actions">
+                                    <i class="fas fa-check"></i>
+                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                            </li>
+                            <li class="done">
+                                <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
+                                <input type="checkbox" id="todo3-minimal" checked>
+                                <label for="todo3-minimal">Follow back those who follow you</label>
+                                <span class="todo-actions">
+                                    <i class="fas fa-check"></i>
+                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                            </li>
+                            <li class="done">
+                                <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
+                                <input type="checkbox" id="todo4-minimal" checked>
+                                <label for="todo4-minimal">Design One page theme</label>
+                                <span class="todo-actions">
+                                    <i class="fas fa-check"></i>
+                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
+                                <input type="checkbox" id="todo5-minimal">
+                                <label for="todo5-minimal">Creating component page</label>
+                                <span class="todo-actions">
+                                    <i class="fas fa-check"></i>
+                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                            </li>
+                    </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Подключаем Font Awesome для иконок -->
@@ -523,7 +667,7 @@ body {
 
     <!-- Подключаем Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <script>
         let currentMetric = 'profit';
         let currentPeriod = '30';
@@ -533,15 +677,15 @@ body {
             const startTime = performance.now();
             const originalText = element.textContent;
             const isCurrency = originalText.includes('грн');
-            
+
             function updateCounter(currentTime) {
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 // Плавная анимация с easeOutQuart
                 const easeProgress = 1 - Math.pow(1 - progress, 4);
                 const current = start + (end - start) * easeProgress;
-                
+
                 if (isCurrency) {
                     element.textContent = new Intl.NumberFormat('ru-RU', {
                         minimumFractionDigits: 2,
@@ -550,29 +694,29 @@ body {
                 } else {
                     element.textContent = Math.floor(current).toLocaleString('ru-RU');
                 }
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(updateCounter);
                 }
             }
-            
+
             requestAnimationFrame(updateCounter);
         }
-        
+
         // Запускаем анимацию для всех карточек
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.stat-value');
-            
+
             cards.forEach((card, index) => {
                 const finalValue = card.textContent;
                 const numericValue = parseFloat(finalValue.replace(/[^\d.-]/g, ''));
                 const isCurrency = finalValue.includes('грн');
-                
+
                 if (!isNaN(numericValue)) {
                     // Сразу устанавливаем 0 и показываем элемент
                     card.textContent = '0' + (isCurrency ? ' грн' : '');
                     card.classList.add('animated');
-                    
+
                     // Запускаем анимацию с небольшой задержкой для каждой карточки
                     setTimeout(() => {
                         animateCounter(card, 0, numericValue, 1500);
@@ -848,13 +992,14 @@ body {
                     return;
                 }
                 if (type === 'sales') {
+                    // Обработка "Продажи товаров" по образцу "Продажи услуг"
                     fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
                             if (currentPeriod === '7') {
                                 universalChart.data.labels = res.labels;
                                 universalChart.data.datasets = [{
-                                    label: datasets['sales'].label,
+                                    label: 'Продажи товаров',
                                     data: res.data,
                                     borderColor: getMetricColor('sales'),
                                     backgroundColor: getMetricColor('sales') + '33',
@@ -871,7 +1016,7 @@ body {
                             } else if (currentPeriod === '30' || currentPeriod === '90') {
                                 universalChart.data.labels = res.labels;
                                 universalChart.data.datasets = [{
-                                    label: datasets['sales'].label,
+                                    label: 'Продажи товаров',
                                     data: res.data,
                                     borderColor: getMetricColor('sales'),
                                     backgroundColor: getMetricColor('sales') + '33',
@@ -899,11 +1044,40 @@ body {
                                     }
                                     return '';
                                 };
+                            } else {
+                                universalChart.data.labels = res.labels;
+                                universalChart.data.datasets = [{
+                                    label: 'Продажи товаров',
+                                    data: res.data,
+                                    borderColor: getMetricColor('sales'),
+                                    backgroundColor: getMetricColor('sales') + '33',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                }];
+                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
+                                    return '';
+                                };
                             }
                             // Устанавливаем максимум оси Y на 15% выше максимального значения
                             const maxValue = Math.max(...res.data);
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
+                            // Обновление и анимация для карточки "Продажи товаров" при смене периода
+                            const salesCard = document.querySelector('.stat-card.sales-card .stat-value');
+                            if (salesCard && Array.isArray(res.data)) {
+                                const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                                salesCard.classList.remove('animated');
+                                salesCard.textContent = '0 грн';
+                                void salesCard.offsetWidth; // reflow для сброса transition
+                                salesCard.classList.add('animated');
+                                setTimeout(() => {
+                                    animateCounter(salesCard, 0, total, 1500);
+                                }, 100);
+                            }
                         });
                     return;
                 }
@@ -1020,21 +1194,58 @@ body {
             });
         });
         // Фильтры периода
+        // В обработчике смены периода (period-btn) замените текущий код на этот:
+        // В обработчике смены периода (period-btn) замените текущий код на этот:
         document.querySelectorAll('.period-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 currentPeriod = this.dataset.period;
-                console.log('currentMetric:', currentMetric, 'currentPeriod:', currentPeriod, 'typeof:', typeof currentMetric);
+
+                // Обновляем данные для текущей метрики
+                if (currentMetric === 'profit') {
+                    fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            universalChart.data.labels = res.labels;
+                            universalChart.data.datasets = [{
+                                label: 'Прибыль',
+                                data: getCumulativeData(res.data),
+                                borderColor: getMetricColor('profit'),
+                                backgroundColor: getMetricColor('profit') + '33',
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointHitRadius: 12,
+                                spanGaps: true
+                            }];
+                            const maxValue = Math.max(...getCumulativeData(res.data));
+                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                            universalChart.update();
+
+                            // Анимация для карточки "Прибыль"
+                            const profitCard = document.querySelector('.stat-card.profit-card .stat-value');
+                            if (profitCard && Array.isArray(res.data)) {
+                                const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                                profitCard.classList.remove('animated');
+                                profitCard.textContent = '0 грн';
+                                void profitCard.offsetWidth;
+                                profitCard.classList.add('animated');
+                                setTimeout(() => {
+                                    animateCounter(profitCard, 0, total, 1500);
+                                }, 100);
+                            }
+                        });
+                    return;
+                }
+
                 if (currentMetric === 'expenses') {
-                    // Получаем реальные расходы по API
                     fetch(`/api/dashboard/expenses-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            // Делаем накопительную линию
                             const data = getCumulativeData(res.data);
-                            let labels = res.labels;
-                            universalChart.data.labels = labels;
+                            universalChart.data.labels = res.labels;
                             universalChart.data.datasets = [{
                                 label: datasets['expenses'].label,
                                 data: data,
@@ -1050,45 +1261,234 @@ body {
                             const maxValue = Math.max(...data);
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
+
+                            // Анимация для карточки "Расходы"
+                            const expensesCard = document.querySelector('.stat-card.expenses-card .stat-value');
+                            if (expensesCard && Array.isArray(res.data)) {
+                                const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                                expensesCard.classList.remove('animated');
+                                expensesCard.textContent = '0 грн';
+                                void expensesCard.offsetWidth;
+                                expensesCard.classList.add('animated');
+                                setTimeout(() => {
+                                    animateCounter(expensesCard, 0, total, 1500);
+                                }, 100);
+                            }
                         });
                     return;
-                } else if (currentMetric === 'services') {
-                    fetch(`/api/dashboard/services-chart?period=${currentPeriod}`)
+                }
+
+                if (currentMetric === 'sales') {
+                    fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            universalChart.data.labels = res.labels;
-                            universalChart.data.datasets = [{
-                                label: datasets['services'].label,
-                                data: res.data,
-                                borderColor: getMetricColor('services'),
-                                backgroundColor: getMetricColor('services') + '33',
-                                tension: 0.4,
-                                fill: true,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                pointHitRadius: 12,
-                                spanGaps: true
-                            }];
-                            universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                if (currentPeriod === '7') {
+                            if (currentPeriod === '7') {
+                                universalChart.data.labels = res.labels;
+                                universalChart.data.datasets = [{
+                                    label: 'Продажи товаров',
+                                    data: res.data,
+                                    borderColor: getMetricColor('sales'),
+                                    backgroundColor: getMetricColor('sales') + '33',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                }];
+                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
                                     return this.getLabelForValue(this.getLabels()[index]);
-                                } else {
-                                    const now = new Date();
-                                    const d = new Date(now);
-                                    d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
-                                    if (d.getDay() === 1) {
-                                        return this.getLabelForValue(this.getLabels()[index]);
+                                };
+                            } else if (currentPeriod === '30' || currentPeriod === '90') {
+                                universalChart.data.labels = res.labels;
+                                universalChart.data.datasets = [{
+                                    label: 'Продажи товаров',
+                                    data: res.data,
+                                    borderColor: getMetricColor('sales'),
+                                    backgroundColor: getMetricColor('sales') + '33',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                }];
+                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
+                                    const label = this.getLabelForValue(this.getLabels()[index]);
+                                    const parts = label.split(' ');
+                                    if (parts.length === 2) {
+                                        const day = parseInt(parts[0]);
+                                        const month = parts[1];
+                                        const date = new Date();
+                                        date.setDate(day);
+                                        const now = new Date();
+                                        const d = new Date(now);
+                                        d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
+                                        if (d.getDay() === 1) {
+                                            return label;
+                                        }
                                     }
                                     return '';
-                                }
-                            };
-                            // Устанавливаем максимум оси Y на 15% выше максимального значения
+                                };
+                            } else {
+                                // Обработка для 6 месяцев и года
+                                universalChart.data.labels = res.labels;
+                                universalChart.data.datasets = [{
+                                    label: 'Продажи товаров',
+                                    data: res.data,
+                                    borderColor: getMetricColor('sales'),
+                                    backgroundColor: getMetricColor('sales') + '33',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                }];
+                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
+                                    const label = this.getLabelForValue(this.getLabels()[index]);
+                                    const parts = label.split(' ');
+                                    if (parts.length === 2) {
+                                        const day = parseInt(parts[0]);
+                                        const month = parts[1];
+                                        const date = new Date();
+                                        date.setDate(day);
+                                        const now = new Date();
+                                        const d = new Date(now);
+                                        d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
+                                        if (d.getDate() === 1) {
+                                            return month;
+                                        }
+                                    }
+                                    return '';
+                                };
+                            }
                             const maxValue = Math.max(...res.data);
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
+
+                            // Анимация для карточки "Продажи товаров"
+                            const salesCard = document.querySelector('.stat-card.sales-card .stat-value');
+                            if (salesCard && Array.isArray(res.data)) {
+                                const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                                salesCard.classList.remove('animated');
+                                salesCard.textContent = '0 грн';
+                                void salesCard.offsetWidth;
+                                salesCard.classList.add('animated');
+                                setTimeout(() => {
+                                    animateCounter(salesCard, 0, total, 1500);
+                                }, 100);
+                            }
                         });
                     return;
-                } else if (currentMetric === 'activity') {
+                }
+
+                if (currentMetric === 'services') {
+                    fetch(`/api/dashboard/services-chart?period=${currentPeriod}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            if (currentPeriod === '7') {
+                                universalChart.data.labels = res.labels;
+                                universalChart.data.datasets = [{
+                                    label: datasets['services'].label,
+                                    data: res.data,
+                                    borderColor: getMetricColor('services'),
+                                    backgroundColor: getMetricColor('services') + '33',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                }];
+                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
+                                    return this.getLabelForValue(this.getLabels()[index]);
+                                };
+                            } else if (currentPeriod === '30' || currentPeriod === '90') {
+                                universalChart.data.labels = res.labels;
+                                universalChart.data.datasets = [{
+                                    label: datasets['services'].label,
+                                    data: res.data,
+                                    borderColor: getMetricColor('services'),
+                                    backgroundColor: getMetricColor('services') + '33',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                }];
+                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
+                                    const label = this.getLabelForValue(this.getLabels()[index]);
+                                    const parts = label.split(' ');
+                                    if (parts.length === 2) {
+                                        const day = parseInt(parts[0]);
+                                        const month = parts[1];
+                                        const date = new Date();
+                                        date.setDate(day);
+                                        const now = new Date();
+                                        const d = new Date(now);
+                                        d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
+                                        if (d.getDay() === 1) {
+                                            return label;
+                                        }
+                                    }
+                                    return '';
+                                };
+                            } else {
+                                // Обработка для 6 месяцев и года
+                                universalChart.data.labels = res.labels;
+                                universalChart.data.datasets = [{
+                                    label: datasets['services'].label,
+                                    data: res.data,
+                                    borderColor: getMetricColor('services'),
+                                    backgroundColor: getMetricColor('services') + '33',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointRadius: 0,
+                                    pointHoverRadius: 6,
+                                    pointHitRadius: 12,
+                                    spanGaps: true
+                                }];
+                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
+                                    const label = this.getLabelForValue(this.getLabels()[index]);
+                                    const parts = label.split(' ');
+                                    if (parts.length === 2) {
+                                        const day = parseInt(parts[0]);
+                                        const month = parts[1];
+                                        const date = new Date();
+                                        date.setDate(day);
+                                        const now = new Date();
+                                        const d = new Date(now);
+                                        d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
+                                        if (d.getDate() === 1) {
+                                            return month;
+                                        }
+                                    }
+                                    return '';
+                                };
+                            }
+                            const maxValue = Math.max(...res.data);
+                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                            universalChart.update();
+
+                            // Анимация для карточки "Продажи услуг"
+                            const servicesCard = document.querySelector('.stat-card.services-card .stat-value');
+                            if (servicesCard && Array.isArray(res.data)) {
+                                const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                                servicesCard.classList.remove('animated');
+                                servicesCard.textContent = '0 грн';
+                                void servicesCard.offsetWidth;
+                                servicesCard.classList.add('animated');
+                                setTimeout(() => {
+                                    animateCounter(servicesCard, 0, total, 1500);
+                                }, 100);
+                            }
+                        });
+                    return;
+                }
+
+                if (currentMetric === 'activity') {
                     fetch(`/api/dashboard/activity-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
@@ -1134,49 +1534,49 @@ body {
                             const maxValue = Math.max(...res.services, ...res.clients, ...res.appointments);
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
+
+                            // Анимация для карточек активности
+                            const clientsCard = document.querySelector('.stat-card.clients-card .stat-value');
+                            const appointmentsCard = document.querySelector('.stat-card.appointments-card .stat-value');
+                            const proceduresCard = document.querySelector('.stat-card.procedures-card .stat-value');
+
+                            // Клиенты
+                            if (clientsCard && Array.isArray(res.clients)) {
+                                const total = res.clients.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                                clientsCard.classList.remove('animated');
+                                clientsCard.textContent = '0';
+                                void clientsCard.offsetWidth;
+                                clientsCard.classList.add('animated');
+                                setTimeout(() => {
+                                    animateCounter(clientsCard, 0, total, 1500);
+                                }, 100);
+                            }
+
+                            // Записи
+                            if (appointmentsCard && Array.isArray(res.appointments)) {
+                                const total = res.appointments.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                                appointmentsCard.classList.remove('animated');
+                                appointmentsCard.textContent = '0';
+                                void appointmentsCard.offsetWidth;
+                                appointmentsCard.classList.add('animated');
+                                setTimeout(() => {
+                                    animateCounter(appointmentsCard, 0, total, 1500);
+                                }, 100);
+                            }
+
+                            // Услуги (для активности)
+                            if (proceduresCard && Array.isArray(res.services)) {
+                                const total = res.services.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                                proceduresCard.classList.remove('animated');
+                                proceduresCard.textContent = '0';
+                                void proceduresCard.offsetWidth;
+                                proceduresCard.classList.add('animated');
+                                setTimeout(() => {
+                                    animateCounter(proceduresCard, 0, total, 1500);
+                                }, 100);
+                            }
                         });
                     return;
-                } else if (currentMetric === 'profit') {
-                    fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`)
-                        .then(res => res.json())
-                        .then(res => {
-                            universalChart.data.labels = res.labels;
-                            universalChart.data.datasets = [{
-                                label: 'Прибыль',
-                                data: getCumulativeData(res.data),
-                                borderColor: getMetricColor('profit'),
-                                backgroundColor: getMetricColor('profit') + '33',
-                                tension: 0.4,
-                                fill: true,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                pointHitRadius: 12,
-                                spanGaps: true
-                            }];
-                            // Устанавливаем максимум оси Y на 15% выше максимального значения
-                            const maxValue = Math.max(...getCumulativeData(res.data));
-                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
-                            universalChart.update();
-                        });
-                    return;
-                } else {
-                    universalChart.data.labels = getLastNDates(currentPeriod);
-                    universalChart.data.datasets = [{
-                        label: datasets[currentMetric].label,
-                        data: datasets[currentMetric].data[currentPeriod],
-                        borderColor: getMetricColor(currentMetric),
-                        backgroundColor: getMetricColor(currentMetric) + '33',
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0,
-                        pointHoverRadius: 6,
-                        pointHitRadius: 12,
-                        spanGaps: true
-                    }];
-                    // Устанавливаем максимум оси Y на 15% выше максимального значения
-                    const maxValue = Math.max(...datasets[currentMetric].data[currentPeriod]);
-                    universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
-                    universalChart.update();
                 }
             });
         });
@@ -1345,7 +1745,7 @@ body {
         .chart-container {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.3);
             padding: 20px;
         }
 
@@ -1370,5 +1770,467 @@ body {
                 font-size: 24px;
             }
         }
+    </style>
+
+    <style>
+    .dashboard-widgets-grid-2x2 {
+        display: grid;
+        grid-template-columns: 34% 64%;
+        gap: 1.6rem;
+        margin: 32px 0 0 0;
+    }
+    .widget-card {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        padding: 1.1rem 1.1rem 1.1rem 1.1rem;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        min-height: 260px;
+        position: relative;
+        transition: none;
+    }
+    /* Убираем hover-эффекты */
+    .widget-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        background: #fff;
+        transform: none;
+    }
+    /* Внутренние блоки таблицы выравниваем */
+    .appointments-table-block {
+        background: transparent;
+        border-radius: 10px;
+        box-shadow: none;
+        padding: 0;
+        margin-top: 0;
+        overflow-x: auto;
+    }
+    .appointments-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 1rem;
+        color: #374151;
+        background: transparent;
+    }
+    .widget-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.7rem;
+        margin-bottom: 0.7rem;
+        color: #fff;
+    }
+    .widget-icon.calendar { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+    .widget-icon.todo { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+    .widget-icon.rating { background: linear-gradient(135deg, #10b981, #34d399); }
+    .widget-icon.notifications { background: linear-gradient(135deg, #ef4444, #f87171); }
+    .widget-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.7rem;
+    }
+    .widget-content {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+    }
+    /* Аватарки */
+    .avatar {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #e0e7ff;
+        color: #3b82f6;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-right: 0.5rem;
+        box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+    }
+    /* Бейджи */
+    .badge {
+        display: inline-block;
+        padding: 0.15em 0.7em;
+        border-radius: 8px;
+        font-size: 0.85em;
+        font-weight: 600;
+        margin-left: 0.5em;
+        vertical-align: middle;
+        color: #fff;
+    }
+    .badge-warning { background: #f59e0b; }
+    .badge-info { background: #3b82f6; }
+    .badge-success { background: #10b981; }
+    .badge-danger { background: #ef4444; }
+    .badge-default { background: #64748b; }
+    /* ToDo и уведомления */
+    .todo-list, .notifications-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+    }
+    .todo-list li, .notifications-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1rem;
+        color: #374151;
+        background: none;
+        border-radius: 8px;
+        padding: 0.2rem 0.2rem;
+        transition: background 0.18s;
+    }
+    .todo-list li:hover, .notifications-list li:hover {
+        background: #f3f4f6;
+    }
+    .todo-date {
+        background: #f3f4f6;
+        color: #64748b;
+        border-radius: 6px;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.85rem;
+        margin-left: 0.7rem;
+    }
+    .notif-time {
+        color: #a0aec0;
+        font-size: 0.85em;
+        margin-left: auto;
+        font-weight: 500;
+    }
+    /* Прогресс-бары и тренды */
+    .rating-section {
+        margin-top: 0.7rem;
+    }
+    .rating-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-top: 0.5rem;
+        margin-bottom: 0.2rem;
+    }
+    .rating-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+    .rating-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.98rem;
+    }
+    .progress-bar {
+        flex: 1;
+        height: 0.6rem;
+        background: #f3f4f6;
+        border-radius: 6px;
+        overflow: hidden;
+        margin: 0 0.5rem;
+        position: relative;
+    }
+    .progress-bar > div {
+        height: 100%;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        border-radius: 6px;
+        transition: width 0.7s cubic-bezier(.4,0,.2,1);
+    }
+    .rating-value {
+        font-weight: 600;
+        color: #3b82f6;
+        min-width: 2.2rem;
+        text-align: right;
+    }
+    .trend-up {
+        color: #10b981;
+        font-size: 0.95em;
+        margin-left: 0.3em;
+    }
+    .trend-down {
+        color: #ef4444;
+        font-size: 0.95em;
+        margin-left: 0.3em;
+    }
+    /* Календарь: точки событий */
+    .calendar-date.event {
+        position: relative;
+    }
+    .calendar-date .event-dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        background: #3b82f6;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 3px;
+        right: 6px;
+    }
+    .calendar-date.today {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: #fff;
+        font-weight: 700;
+    }
+    /* Пустые состояния */
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #a0aec0;
+        font-size: 1.1em;
+        padding: 2em 0;
+    }
+    .empty-state img {
+        width: 60px;
+        margin-bottom: 1em;
+        opacity: 0.7;
+    }
+    @media (max-width: 1100px) {
+        .dashboard-widgets-grid-2x2 {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 768px) {
+        .widget-card {
+            min-height: 180px;
+            padding: 1rem 0.7rem;
+        }
+        .widget-title {
+            font-size: 1rem;
+        }
+    }
+    </style>
+
+    <style>
+    .todo-list-minimal {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+    }
+    .todo-list-minimal li {
+        display: flex;
+        align-items: center;
+        background: #f9fafb;
+        border-radius: 10px;
+        padding: 0.7rem 1rem;
+        box-shadow: 0 1px 4px rgba(59,130,246,0.04);
+        transition: background 0.18s, box-shadow 0.18s;
+        font-size: 1rem;
+        color: #374151;
+        position: relative;
+    }
+    .todo-list-minimal li:hover {
+        background: #f3f4f6;
+        box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+    }
+    .todo-drag {
+        color: #cbd5e1;
+        font-size: 1.2em;
+        margin-right: 1rem;
+        cursor: grab;
+        flex-shrink: 0;
+    }
+    .todo-list-minimal input[type="checkbox"] {
+        width: 1.1rem;
+        height: 1.1rem;
+        accent-color: #3b82f6;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+    .todo-list-minimal label {
+        flex: 1 1 auto;
+        cursor: pointer;
+        margin: 0;
+        transition: color 0.18s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .todo-list-minimal li.done label {
+        text-decoration: line-through;
+        color: #a0aec0;
+    }
+    .todo-actions {
+        display: flex;
+        gap: 0.7rem;
+        margin-left: 1rem;
+        color: #cbd5e1;
+        font-size: 1.1em;
+    }
+    .todo-actions i {
+        cursor: pointer;
+        transition: color 0.18s;
+    }
+    .todo-actions i:hover {
+        color: #3b82f6;
+    }
+    </style>
+
+    <style>
+    .calendar-widget {
+        min-width: 0;
+        padding: 0;
+    }
+    .calendar-header-modern {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.1rem 1.1rem 0.5rem 1.1rem;
+    }
+    .calendar-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #2d3748;
+    }
+    .calendar-nav-group {
+        display: flex;
+        gap: 0.3rem;
+    }
+    .calendar-nav-btn {
+        background: #f3f4f6;
+        border: none;
+        border-radius: 6px;
+        padding: 0.3rem 0.6rem;
+        cursor: pointer;
+        color: #64748b;
+        font-size: 1rem;
+        transition: background 0.18s;
+    }
+    .calendar-nav-btn:hover {
+        background: #e0e7ff;
+        color: #3b82f6;
+    }
+    .calendar-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+        padding: 0 1.1rem 1.1rem 1.1rem;
+    }
+    .calendar-row {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.1rem;
+    }
+    .calendar-days-row div {
+        font-size: 0.95em;
+        color: #a0aec0;
+        font-weight: 600;
+        text-align: center;
+        padding: 0.3em 0 0.3em 0;
+    }
+    .calendar-day {
+        min-height: 2.1em;
+        text-align: center;
+        font-size: 1.05em;
+        color: #374151;
+        background: #fff;
+        border-radius: 7px;
+        position: relative;
+        transition: background 0.18s, color 0.18s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        cursor: pointer;
+        flex-direction: column;
+        padding: 0.2em 0 0.2em 0;
+    }
+    .calendar-day.muted {
+        color: #cbd5e1;
+        background: #f8fafc;
+        cursor: default;
+    }
+    .calendar-day:hover:not(.muted) {
+        background: #f3f6fd;
+        color: #3b82f6;
+    }
+    .calendar-badge-mini {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 7px;
+        bottom: 6px;
+        min-width: 16px;
+        height: 16px;
+        background: #3b82f6;
+        color: #fff;
+        font-size: 0.85em;
+        font-weight: 700;
+        border-radius: 50%;
+        box-shadow: none;
+        z-index: 2;
+        padding: 0 0.1em;
+        border: 1.5px solid #fff;
+        line-height: 1;
+    }
+    .calendar-has-badge {
+        position: relative;
+    }
+    </style>
+
+    <style>
+    .calendar-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 7px;
+        bottom: 7px;
+        min-width: 22px;
+        height: 22px;
+        background: #2563eb;
+        color: #fff;
+        font-size: 0.95em;
+        font-weight: 700;
+        border-radius: 50%;
+        box-shadow: 0 1px 4px rgba(59,130,246,0.07);
+        z-index: 2;
+        padding: 0 0.2em;
+        border: 2px solid #fff;
+    }
+    .calendar-day {
+        position: relative;
+    }
+    </style>
+
+    <style>
+    .appointments-table-block {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 1px 4px rgba(59,130,246,0.04);
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.25em 1.1em;
+        border-radius: 7px;
+        font-size: 0.98em;
+        font-weight: 600;
+        color: #fff;
+        background: #10b981;
+        white-space: nowrap;
+    }
+    .status-done { background: #10b981; }
+    .status-pending { background: #f59e0b; }
+    .status-cancel { background: #ef4444; }
+    </style>
+
+    <style>
+    .appt-date { font-weight: 600; }
+    .appt-time { color: #3b82f6; font-size: 0.98em; font-weight: 500; }
     </style>
 @endsection
