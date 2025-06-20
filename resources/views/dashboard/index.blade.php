@@ -358,6 +358,67 @@ body {
     background: #fffbe6 !important;
     border: 2px solid #ffe066 !important;
 }
+
+.fc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin: 2px 2px 0 2px;
+    display: inline-block;
+}
+.fc-dot-more {
+    width: 18px;
+    height: 8px;
+    border-radius: 8px;
+    background: #cbd5e1;
+    color: #374151;
+    font-size: 9px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2px;
+}
+.fc-daygrid-day.fc-day-today {
+    background-color: #fffbe6;
+    border: 2px solid #ffe066;
+}
+
+/* Ряд точек под числом дня */
+.fc-daygrid-day-events {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    margin-top: 2px;
+    min-height: 10px;
+}
+.fc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 1.5px;
+}
+/* Убираю зелёную заливку у сегодняшнего дня, только рамка */
+.fc-daygrid-day.fc-day-today {
+    background: #fff !important;
+    border: 2px solid #ffe066 !important;
+}
+
+/* ... предыдущие стили ... */
+.fc-event-title, .fc-event-time {
+    display: none !important;
+}
+.fc-event {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-width: 0 !important;
+}
 </style>
 
     <div class="dashboard-container">
@@ -1645,228 +1706,7 @@ body {
         }
 
         // === Календарь дашборда: подсветка сегодняшней даты, количество записей, popover и модалка ===
-        document.addEventListener('DOMContentLoaded', function() {
-            // 1. Подсветка сегодняшней даты
-            const today = new Date();
-            const day = today.getDate();
-            const month = today.getMonth() + 1;
-            const year = today.getFullYear();
-            // В календаре дашборда ищем ячейку с сегодняшним числом
-            document.querySelectorAll('.calendar-day').forEach(cell => {
-                if (!cell.classList.contains('muted')) {
-                    const cellDay = parseInt(cell.textContent);
-                    // Определяем текущий месяц по заголовку
-                    const calTitle = document.querySelector('.calendar-title');
-                    if (calTitle && calTitle.textContent) {
-                        const [calMonthName, calYear] = calTitle.textContent.split(' ');
-                        const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-                        let calMonth = monthNames.indexOf(calMonthName);
-                        if (calMonth > 11) calMonth -= 12; // если русские месяцы
-                        if (parseInt(calYear) === year && (calMonth + 1) === month && cellDay === day) {
-                            cell.classList.add('calendar-today');
-                        }
-                    }
-                }
-            });
-
-            // 2. Получаем количество записей на каждый день
-            fetch('/appointments/calendar-events')
-                .then(res => res.json())
-                .then(events => {
-                    // Считаем количество записей по датам
-                    const dateMap = {};
-                    events.forEach(ev => {
-                        const date = ev.start ? ev.start.split('T')[0] : ev.date;
-                        if (!dateMap[date]) dateMap[date] = 0;
-                        dateMap[date]++;
-                    });
-                    // Для каждой ячейки календаря ищем совпадение по дате
-                    document.querySelectorAll('.calendar-day').forEach(cell => {
-                        if (!cell.classList.contains('muted')) {
-                            const cellDay = parseInt(cell.textContent);
-                            const calTitle = document.querySelector('.calendar-title');
-                            if (calTitle && calTitle.textContent) {
-                                const [calMonthName, calYear] = calTitle.textContent.split(' ');
-                                const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-                                let calMonth = monthNames.indexOf(calMonthName);
-                                if (calMonth > 11) calMonth -= 12;
-                                const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(cellDay).padStart(2,'0')}`;
-                                if (dateMap[dateStr]) {
-                                    // Вписываем количество в кружочек
-                                    let badge = cell.querySelector('.calendar-badge-mini');
-                                    if (!badge) {
-                                        badge = document.createElement('span');
-                                        badge.className = 'calendar-badge-mini';
-                                        cell.appendChild(badge);
-                                    }
-                                    badge.textContent = dateMap[dateStr];
-                                }
-                            }
-                        }
-                    });
-                });
-
-            // 3. Popover с записями и кнопкой "Добавить запись"
-            // Создаём popover-элемент
-            let calendarPopover = document.getElementById('calendarPopover');
-            if (!calendarPopover) {
-                calendarPopover = document.createElement('div');
-                calendarPopover.id = 'calendarPopover';
-                calendarPopover.style.position = 'absolute';
-                calendarPopover.style.zIndex = 1000;
-                calendarPopover.style.display = 'none';
-                calendarPopover.style.background = '#fff';
-                calendarPopover.style.boxShadow = '0 4px 16px rgba(0,0,0,0.18)';
-                calendarPopover.style.borderRadius = '10px';
-                calendarPopover.style.padding = '1rem 1.2rem';
-                calendarPopover.style.minWidth = '220px';
-                calendarPopover.style.maxWidth = '320px';
-                calendarPopover.style.fontSize = '1rem';
-                calendarPopover.style.color = '#2d3748';
-                calendarPopover.style.border = '1.5px solid #e5e7eb';
-                calendarPopover.innerHTML = '';
-                document.body.appendChild(calendarPopover);
-            }
-            // Скрытие popover при клике вне
-            document.addEventListener('click', function(e) {
-                if (calendarPopover && !calendarPopover.contains(e.target) && !e.target.classList.contains('calendar-day')) {
-                    calendarPopover.style.display = 'none';
-                }
-            });
-            // Обработчик клика по дню
-            document.querySelectorAll('.calendar-day').forEach(cell => {
-                if (!cell.classList.contains('muted')) {
-                    cell.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        // Определяем дату
-                        const cellDay = parseInt(cell.textContent);
-                        const calTitle = document.querySelector('.calendar-title');
-                        if (calTitle && calTitle.textContent) {
-                            const [calMonthName, calYear] = calTitle.textContent.split(' ');
-                            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-                            let calMonth = monthNames.indexOf(calMonthName);
-                            if (calMonth > 11) calMonth -= 12;
-                            const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(cellDay).padStart(2,'0')}`;
-                            // Получаем записи на этот день
-                            fetch('/appointments/calendar-events')
-                                .then(res => res.json())
-                                .then(events => {
-                                    const dayEvents = events.filter(ev => (ev.start ? ev.start.split('T')[0] : ev.date) === dateStr);
-                                    let html = `<div style='font-weight:600;margin-bottom:0.5rem;'>Записи на ${cellDay}.${String(calMonth+1).padStart(2,'0')}.${calYear}</div>`;
-                                    if (dayEvents.length === 0) {
-                                        html += '<div style="color:#a0aec0;">Нет записей</div>';
-                                    } else {
-                                        dayEvents.forEach(ev => {
-                                            html += `<div style='margin-bottom:0.4rem;'><b>${ev.title || ev.client || ''}</b> <span style='color:#64748b;'>${ev.time || (ev.start ? ev.start.split("T")[1]?.slice(0,5) : '')}</span></div>`;
-                                        });
-                                    }
-                                    html += `<button id='addAppointmentFromCalendar' style='margin-top:0.7rem; width:100%; background:#3b82f6; color:#fff; border:none; border-radius:7px; padding:0.6rem 0; font-weight:600; cursor:pointer;'>Добавить запись</button>`;
-                                    calendarPopover.innerHTML = html;
-                                    // Позиционируем popover
-                                    const rect = cell.getBoundingClientRect();
-                                    calendarPopover.style.top = (window.scrollY + rect.bottom + 8) + 'px';
-                                    calendarPopover.style.left = (window.scrollX + rect.left) + 'px';
-                                    calendarPopover.style.display = 'block';
-                                    // Обработчик кнопки "Добавить запись"
-                                    document.getElementById('addAppointmentFromCalendar').onclick = function() {
-                                        // Открываем модалку добавления записи, если есть
-                                        const modal = document.getElementById('appointmentModal');
-                                        if (modal) {
-                                            // Устанавливаем дату в поле формы
-                                            const dateInput = modal.querySelector('input[name="date"]');
-                                            if (dateInput) dateInput.value = dateStr;
-                                            modal.style.display = 'block';
-                                            calendarPopover.style.display = 'none';
-                                        } else {
-                                            // fallback: редирект
-                                            window.location.href = '/appointments/create?date=' + dateStr;
-                                        }
-                                    };
-                                });
-                        }
-                    });
-                }
-            });
-        });
-
-        // === FullCalendar для дашборда ===
-        document.addEventListener('DOMContentLoaded', function() {
-            if (document.getElementById('dashboardCalendar')) {
-                const dashboardCalendar = new FullCalendar.Calendar(document.getElementById('dashboardCalendar'), {
-                    initialView: 'dayGridMonth',
-                    headerToolbar: false,
-                    locale: 'ru',
-                    height: 'auto',
-                    selectable: true,
-                    editable: false,
-                    events: '/appointments/calendar-events',
-                    eventTimeFormat: {
-                        hour: '2-digit', minute: '2-digit', hour12: false
-                    },
-                    dateClick: function(info) {
-                        // Получаем события на выбранный день
-                        fetch('/appointments/calendar-events')
-                            .then(res => res.json())
-                            .then(events => {
-                                const dayEvents = events.filter(ev => (ev.start ? ev.start.split('T')[0] : ev.date) === info.dateStr);
-                                let html = `<div style='font-weight:600;margin-bottom:0.5rem;'>Записи на ${info.dateStr.split('-').reverse().join('.')}</div>`;
-                                if (dayEvents.length === 0) {
-                                    html += '<div style="color:#a0aec0;">Нет записей</div>';
-                                } else {
-                                    dayEvents.forEach(ev => {
-                                        html += `<div style='margin-bottom:0.4rem;'><b>${ev.title || ev.client || ''}</b> <span style='color:#64748b;'>${ev.time || (ev.start ? ev.start.split("T")[1]?.slice(0,5) : '')}</span></div>`;
-                                    });
-                                }
-                                html += `<button id='addAppointmentFromCalendar' style='margin-top:0.7rem; width:100%; background:#3b82f6; color:#fff; border:none; border-radius:7px; padding:0.6rem 0; font-weight:600; cursor:pointer;'>Добавить запись</button>`;
-                                // Popover
-                                let calendarPopover = document.getElementById('calendarPopover');
-                                if (!calendarPopover) {
-                                    calendarPopover = document.createElement('div');
-                                    calendarPopover.id = 'calendarPopover';
-                                    calendarPopover.style.position = 'absolute';
-                                    calendarPopover.style.zIndex = 1000;
-                                    calendarPopover.style.background = '#fff';
-                                    calendarPopover.style.boxShadow = '0 4px 16px rgba(0,0,0,0.18)';
-                                    calendarPopover.style.borderRadius = '10px';
-                                    calendarPopover.style.padding = '1rem 1.2rem';
-                                    calendarPopover.style.minWidth = '220px';
-                                    calendarPopover.style.maxWidth = '320px';
-                                    calendarPopover.style.fontSize = '1rem';
-                                    calendarPopover.style.color = '#2d3748';
-                                    calendarPopover.style.border = '1.5px solid #e5e7eb';
-                                    document.body.appendChild(calendarPopover);
-                                }
-                                calendarPopover.innerHTML = html;
-                                // Позиционируем popover
-                                const rect = info.dayEl.getBoundingClientRect();
-                                calendarPopover.style.top = (window.scrollY + rect.bottom + 8) + 'px';
-                                calendarPopover.style.left = (window.scrollX + rect.left) + 'px';
-                                calendarPopover.style.display = 'block';
-                                // Скрытие popover при клике вне
-                                document.addEventListener('click', function hidePopover(e) {
-                                    if (calendarPopover && !calendarPopover.contains(e.target) && e.target !== info.dayEl) {
-                                        calendarPopover.style.display = 'none';
-                                        document.removeEventListener('click', hidePopover);
-                                    }
-                                });
-                                // Обработчик кнопки "Добавить запись"
-                                document.getElementById('addAppointmentFromCalendar').onclick = function() {
-                                    const modal = document.getElementById('appointmentModal');
-                                    if (modal) {
-                                        const dateInput = modal.querySelector('input[name="date"]');
-                                        if (dateInput) dateInput.value = info.dateStr;
-                                        modal.style.display = 'block';
-                                        calendarPopover.style.display = 'none';
-                                    } else {
-                                        window.location.href = '/appointments/create?date=' + info.dateStr;
-                                    }
-                                };
-                            });
-                    }
-                });
-                dashboardCalendar.render();
-            }
-        });
+        // [УДАЛЕНО: старая реализация кастомного календаря на .calendar-day]
     </script>
 
     <style>
@@ -2437,4 +2277,43 @@ body {
     .appt-date { font-weight: 600; }
     .appt-time { color: #3b82f6; font-size: 0.98em; font-weight: 500; }
     </style>
+
+    <!-- Подключаем FullCalendar -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+    <script>
+        // === FullCalendar: минималистичный календарь с точками по статусу ===
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('dashboardCalendar')) {
+                const calendar = new FullCalendar.Calendar(document.getElementById('dashboardCalendar'), {
+                    initialView: 'dayGridMonth',
+                    locale: 'ru',
+                    height: 'auto',
+                    firstDay: 1,
+                    headerToolbar: false,
+                    events: '/appointments/calendar-events',
+                    eventDisplay: 'block',
+                    eventContent: function(arg) {
+                        const status = arg.event.extendedProps.status || arg.event.status;
+                        const color = getStatusColor(status);
+                        return { html: `<span class='fc-dot' style='background:${color}'></span>` };
+                    }
+                });
+                calendar.render();
+            }
+        });
+
+        // Цвет точки по статусу
+        function getStatusColor(status) {
+            switch (status) {
+                case 'done':
+                case 'completed': return '#10b981';      // зелёный
+                case 'pending': return '#f59e0b';        // оранжевый
+                case 'cancelled': return '#ef4444';      // красный
+                case 'rescheduled': return '#3b82f6';    // синий
+                default: return '#cbd5e1';               // серый
+            }
+        }
+    </script>
 @endsection

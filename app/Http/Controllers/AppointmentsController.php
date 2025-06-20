@@ -543,6 +543,7 @@ class AppointmentsController extends Controller
                         'title' => $appointment->client->name . ' - ' . $appointment->service->name,
                         'start' => $startDateTime->format('Y-m-d\TH:i:s'),
                         'end' => $endDateTime->format('Y-m-d\TH:i:s'),
+                        'date' => $date,
                         'backgroundColor' => '#4CAF50',
                         'borderColor' => '#4CAF50',
                         'textColor' => '#ffffff',
