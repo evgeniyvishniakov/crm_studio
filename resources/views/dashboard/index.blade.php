@@ -352,6 +352,12 @@ body {
     background: linear-gradient(90deg, #e0e7ff 0%, #f0f9ff 100%);
     color: #3b82f6;
 }
+
+/* Подсветка сегодняшней даты в календаре дашборда */
+.calendar-today {
+    background: #fffbe6 !important;
+    border: 2px solid #ffe066 !important;
+}
 </style>
 
     <div class="dashboard-container">
@@ -521,35 +527,9 @@ body {
                 <div class="widget-card calendar-widget">
                     <div class="widget-content">
                         <div class="calendar-header-modern">
-                            <span class="calendar-title">June 2025</span>
-                            <span class="calendar-nav-group">
-                                <button class="calendar-nav-btn"><i class="fas fa-chevron-left"></i></button>
-                                <button class="calendar-nav-btn"><i class="fas fa-chevron-right"></i></button>
-                            </span>
+                            <span class="calendar-title">Календарь</span>
                         </div>
-                        <div class="calendar-grid">
-                            <div class="calendar-row calendar-days-row">
-                                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-                        </div>
-                            <div class="calendar-row">
-                                <div class="calendar-day muted">1</div><div class="calendar-day muted">2</div><div class="calendar-day muted">3</div><div class="calendar-day muted">4</div><div class="calendar-day muted">5</div><div class="calendar-day">1</div><div class="calendar-day">2</div>
-                        </div>
-                            <div class="calendar-row">
-                                <div class="calendar-day">3</div><div class="calendar-day">4</div><div class="calendar-day">5</div><div class="calendar-day">6</div><div class="calendar-day">7</div><div class="calendar-day">8</div><div class="calendar-day">9</div>
-                    </div>
-                            <div class="calendar-row">
-                                <div class="calendar-day calendar-has-badge">10<span class="calendar-badge-mini">3</span></div><div class="calendar-day">11</div><div class="calendar-day">12</div><div class="calendar-day">13</div><div class="calendar-day">14</div><div class="calendar-day">15</div><div class="calendar-day">16</div>
-                </div>
-                            <div class="calendar-row">
-                                <div class="calendar-day">17</div><div class="calendar-day">18</div><div class="calendar-day">19</div><div class="calendar-day calendar-has-badge">20<span class="calendar-badge-mini">1</span></div><div class="calendar-day">21</div><div class="calendar-day">22</div><div class="calendar-day">23</div>
-            </div>
-                            <div class="calendar-row">
-                                <div class="calendar-day">24</div><div class="calendar-day">25</div><div class="calendar-day">26</div><div class="calendar-day">27</div><div class="calendar-day">28</div><div class="calendar-day">29</div><div class="calendar-day">30</div>
-                </div>
-                            <div class="calendar-row">
-                                <div class="calendar-day muted">1</div><div class="calendar-day muted">2</div><div class="calendar-day muted">3</div><div class="calendar-day muted">4</div><div class="calendar-day muted">5</div><div class="calendar-day muted">6</div><div class="calendar-day muted">7</div>
-            </div>
-                        </div>
+                        <div id="dashboardCalendar"></div>
                     </div>
                 </div>
                 <!-- 2. Записи -->
@@ -1429,8 +1409,8 @@ body {
                                         const now = new Date();
                                         const d = new Date(now);
                                         d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
-                                        if (d.getDay() === 1) {
-                                            return label;
+                                        if (d.getDate() === 1) {
+                                            return month;
                                         }
                                     }
                                     return '';
@@ -1663,6 +1643,230 @@ body {
             }
             return arr;
         }
+
+        // === Календарь дашборда: подсветка сегодняшней даты, количество записей, popover и модалка ===
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1. Подсветка сегодняшней даты
+            const today = new Date();
+            const day = today.getDate();
+            const month = today.getMonth() + 1;
+            const year = today.getFullYear();
+            // В календаре дашборда ищем ячейку с сегодняшним числом
+            document.querySelectorAll('.calendar-day').forEach(cell => {
+                if (!cell.classList.contains('muted')) {
+                    const cellDay = parseInt(cell.textContent);
+                    // Определяем текущий месяц по заголовку
+                    const calTitle = document.querySelector('.calendar-title');
+                    if (calTitle && calTitle.textContent) {
+                        const [calMonthName, calYear] = calTitle.textContent.split(' ');
+                        const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+                        let calMonth = monthNames.indexOf(calMonthName);
+                        if (calMonth > 11) calMonth -= 12; // если русские месяцы
+                        if (parseInt(calYear) === year && (calMonth + 1) === month && cellDay === day) {
+                            cell.classList.add('calendar-today');
+                        }
+                    }
+                }
+            });
+
+            // 2. Получаем количество записей на каждый день
+            fetch('/appointments/calendar-events')
+                .then(res => res.json())
+                .then(events => {
+                    // Считаем количество записей по датам
+                    const dateMap = {};
+                    events.forEach(ev => {
+                        const date = ev.start ? ev.start.split('T')[0] : ev.date;
+                        if (!dateMap[date]) dateMap[date] = 0;
+                        dateMap[date]++;
+                    });
+                    // Для каждой ячейки календаря ищем совпадение по дате
+                    document.querySelectorAll('.calendar-day').forEach(cell => {
+                        if (!cell.classList.contains('muted')) {
+                            const cellDay = parseInt(cell.textContent);
+                            const calTitle = document.querySelector('.calendar-title');
+                            if (calTitle && calTitle.textContent) {
+                                const [calMonthName, calYear] = calTitle.textContent.split(' ');
+                                const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+                                let calMonth = monthNames.indexOf(calMonthName);
+                                if (calMonth > 11) calMonth -= 12;
+                                const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(cellDay).padStart(2,'0')}`;
+                                if (dateMap[dateStr]) {
+                                    // Вписываем количество в кружочек
+                                    let badge = cell.querySelector('.calendar-badge-mini');
+                                    if (!badge) {
+                                        badge = document.createElement('span');
+                                        badge.className = 'calendar-badge-mini';
+                                        cell.appendChild(badge);
+                                    }
+                                    badge.textContent = dateMap[dateStr];
+                                }
+                            }
+                        }
+                    });
+                });
+
+            // 3. Popover с записями и кнопкой "Добавить запись"
+            // Создаём popover-элемент
+            let calendarPopover = document.getElementById('calendarPopover');
+            if (!calendarPopover) {
+                calendarPopover = document.createElement('div');
+                calendarPopover.id = 'calendarPopover';
+                calendarPopover.style.position = 'absolute';
+                calendarPopover.style.zIndex = 1000;
+                calendarPopover.style.display = 'none';
+                calendarPopover.style.background = '#fff';
+                calendarPopover.style.boxShadow = '0 4px 16px rgba(0,0,0,0.18)';
+                calendarPopover.style.borderRadius = '10px';
+                calendarPopover.style.padding = '1rem 1.2rem';
+                calendarPopover.style.minWidth = '220px';
+                calendarPopover.style.maxWidth = '320px';
+                calendarPopover.style.fontSize = '1rem';
+                calendarPopover.style.color = '#2d3748';
+                calendarPopover.style.border = '1.5px solid #e5e7eb';
+                calendarPopover.innerHTML = '';
+                document.body.appendChild(calendarPopover);
+            }
+            // Скрытие popover при клике вне
+            document.addEventListener('click', function(e) {
+                if (calendarPopover && !calendarPopover.contains(e.target) && !e.target.classList.contains('calendar-day')) {
+                    calendarPopover.style.display = 'none';
+                }
+            });
+            // Обработчик клика по дню
+            document.querySelectorAll('.calendar-day').forEach(cell => {
+                if (!cell.classList.contains('muted')) {
+                    cell.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        // Определяем дату
+                        const cellDay = parseInt(cell.textContent);
+                        const calTitle = document.querySelector('.calendar-title');
+                        if (calTitle && calTitle.textContent) {
+                            const [calMonthName, calYear] = calTitle.textContent.split(' ');
+                            const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+                            let calMonth = monthNames.indexOf(calMonthName);
+                            if (calMonth > 11) calMonth -= 12;
+                            const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(cellDay).padStart(2,'0')}`;
+                            // Получаем записи на этот день
+                            fetch('/appointments/calendar-events')
+                                .then(res => res.json())
+                                .then(events => {
+                                    const dayEvents = events.filter(ev => (ev.start ? ev.start.split('T')[0] : ev.date) === dateStr);
+                                    let html = `<div style='font-weight:600;margin-bottom:0.5rem;'>Записи на ${cellDay}.${String(calMonth+1).padStart(2,'0')}.${calYear}</div>`;
+                                    if (dayEvents.length === 0) {
+                                        html += '<div style="color:#a0aec0;">Нет записей</div>';
+                                    } else {
+                                        dayEvents.forEach(ev => {
+                                            html += `<div style='margin-bottom:0.4rem;'><b>${ev.title || ev.client || ''}</b> <span style='color:#64748b;'>${ev.time || (ev.start ? ev.start.split("T")[1]?.slice(0,5) : '')}</span></div>`;
+                                        });
+                                    }
+                                    html += `<button id='addAppointmentFromCalendar' style='margin-top:0.7rem; width:100%; background:#3b82f6; color:#fff; border:none; border-radius:7px; padding:0.6rem 0; font-weight:600; cursor:pointer;'>Добавить запись</button>`;
+                                    calendarPopover.innerHTML = html;
+                                    // Позиционируем popover
+                                    const rect = cell.getBoundingClientRect();
+                                    calendarPopover.style.top = (window.scrollY + rect.bottom + 8) + 'px';
+                                    calendarPopover.style.left = (window.scrollX + rect.left) + 'px';
+                                    calendarPopover.style.display = 'block';
+                                    // Обработчик кнопки "Добавить запись"
+                                    document.getElementById('addAppointmentFromCalendar').onclick = function() {
+                                        // Открываем модалку добавления записи, если есть
+                                        const modal = document.getElementById('appointmentModal');
+                                        if (modal) {
+                                            // Устанавливаем дату в поле формы
+                                            const dateInput = modal.querySelector('input[name="date"]');
+                                            if (dateInput) dateInput.value = dateStr;
+                                            modal.style.display = 'block';
+                                            calendarPopover.style.display = 'none';
+                                        } else {
+                                            // fallback: редирект
+                                            window.location.href = '/appointments/create?date=' + dateStr;
+                                        }
+                                    };
+                                });
+                        }
+                    });
+                }
+            });
+        });
+
+        // === FullCalendar для дашборда ===
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('dashboardCalendar')) {
+                const dashboardCalendar = new FullCalendar.Calendar(document.getElementById('dashboardCalendar'), {
+                    initialView: 'dayGridMonth',
+                    headerToolbar: false,
+                    locale: 'ru',
+                    height: 'auto',
+                    selectable: true,
+                    editable: false,
+                    events: '/appointments/calendar-events',
+                    eventTimeFormat: {
+                        hour: '2-digit', minute: '2-digit', hour12: false
+                    },
+                    dateClick: function(info) {
+                        // Получаем события на выбранный день
+                        fetch('/appointments/calendar-events')
+                            .then(res => res.json())
+                            .then(events => {
+                                const dayEvents = events.filter(ev => (ev.start ? ev.start.split('T')[0] : ev.date) === info.dateStr);
+                                let html = `<div style='font-weight:600;margin-bottom:0.5rem;'>Записи на ${info.dateStr.split('-').reverse().join('.')}</div>`;
+                                if (dayEvents.length === 0) {
+                                    html += '<div style="color:#a0aec0;">Нет записей</div>';
+                                } else {
+                                    dayEvents.forEach(ev => {
+                                        html += `<div style='margin-bottom:0.4rem;'><b>${ev.title || ev.client || ''}</b> <span style='color:#64748b;'>${ev.time || (ev.start ? ev.start.split("T")[1]?.slice(0,5) : '')}</span></div>`;
+                                    });
+                                }
+                                html += `<button id='addAppointmentFromCalendar' style='margin-top:0.7rem; width:100%; background:#3b82f6; color:#fff; border:none; border-radius:7px; padding:0.6rem 0; font-weight:600; cursor:pointer;'>Добавить запись</button>`;
+                                // Popover
+                                let calendarPopover = document.getElementById('calendarPopover');
+                                if (!calendarPopover) {
+                                    calendarPopover = document.createElement('div');
+                                    calendarPopover.id = 'calendarPopover';
+                                    calendarPopover.style.position = 'absolute';
+                                    calendarPopover.style.zIndex = 1000;
+                                    calendarPopover.style.background = '#fff';
+                                    calendarPopover.style.boxShadow = '0 4px 16px rgba(0,0,0,0.18)';
+                                    calendarPopover.style.borderRadius = '10px';
+                                    calendarPopover.style.padding = '1rem 1.2rem';
+                                    calendarPopover.style.minWidth = '220px';
+                                    calendarPopover.style.maxWidth = '320px';
+                                    calendarPopover.style.fontSize = '1rem';
+                                    calendarPopover.style.color = '#2d3748';
+                                    calendarPopover.style.border = '1.5px solid #e5e7eb';
+                                    document.body.appendChild(calendarPopover);
+                                }
+                                calendarPopover.innerHTML = html;
+                                // Позиционируем popover
+                                const rect = info.dayEl.getBoundingClientRect();
+                                calendarPopover.style.top = (window.scrollY + rect.bottom + 8) + 'px';
+                                calendarPopover.style.left = (window.scrollX + rect.left) + 'px';
+                                calendarPopover.style.display = 'block';
+                                // Скрытие popover при клике вне
+                                document.addEventListener('click', function hidePopover(e) {
+                                    if (calendarPopover && !calendarPopover.contains(e.target) && e.target !== info.dayEl) {
+                                        calendarPopover.style.display = 'none';
+                                        document.removeEventListener('click', hidePopover);
+                                    }
+                                });
+                                // Обработчик кнопки "Добавить запись"
+                                document.getElementById('addAppointmentFromCalendar').onclick = function() {
+                                    const modal = document.getElementById('appointmentModal');
+                                    if (modal) {
+                                        const dateInput = modal.querySelector('input[name="date"]');
+                                        if (dateInput) dateInput.value = info.dateStr;
+                                        modal.style.display = 'block';
+                                        calendarPopover.style.display = 'none';
+                                    } else {
+                                        window.location.href = '/appointments/create?date=' + info.dateStr;
+                                    }
+                                };
+                            });
+                    }
+                });
+                dashboardCalendar.render();
+            }
+        });
     </script>
 
     <style>
