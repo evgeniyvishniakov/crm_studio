@@ -552,7 +552,8 @@ class AppointmentsController extends Controller
                             'service' => $appointment->service->name,
                             'price' => $appointment->price,
                             'notes' => $appointment->notes,
-                            'status' => $appointment->status
+                            'status' => $appointment->status,
+                            'time' => $appointment->time
                         ]
                     ];
 

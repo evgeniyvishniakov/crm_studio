@@ -2348,6 +2348,11 @@ body {
                         // Открыть модалку с событиями на этот день
                         showDayModal(info.dateStr, calendar.getEvents());
                     },
+                    eventClick: function(info) {
+                        info.jsEvent.preventDefault(); // Предотвращаем стандартное поведение
+                        const dateStr = info.event.startStr.slice(0, 10);
+                        showDayModal(dateStr, calendar.getEvents());
+                    },
                     datesSet: function() {
                         updateCalendarTitle(this); // `this` is the calendar instance
                     }
@@ -2404,12 +2409,13 @@ body {
             if (events.length === 0) {
                 eventsBlock.innerHTML = '<div style="color:#888;">Нет записей на этот день</div>';
             } else {
-                eventsBlock.innerHTML = events.map(ev =>
-                    `<div style='margin-bottom:0.7em; display:flex; align-items:center; gap:0.5em;'>
+                eventsBlock.innerHTML = events.map(ev => {
+                    const time = ev.extendedProps.time ? ev.extendedProps.time.slice(0, 5) : (ev.start ? new Date(ev.start).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '');
+                    return `<div style='margin-bottom:0.7em; display:flex; align-items:center; gap:0.5em;'>
                         <span class='fc-dot' style='background:${getStatusColor(ev.extendedProps.status || ev.status)}'></span>
-                        <span><b>${ev.extendedProps.time ? ev.extendedProps.time.slice(0,5) : ''}</b> ${ev.extendedProps.client || ''} <span style='color:#888;'>(${ev.extendedProps.service || ''})</span></span>
+                        <span><b>${time}</b> ${ev.extendedProps.client || ''} <span style='color:#888;'>(${ev.extendedProps.service || ''})</span></span>
                     </div>`
-                ).join('');
+                }).join('');
             }
             modal.style.display = 'flex';
             // Кнопка "Добавить новую"
