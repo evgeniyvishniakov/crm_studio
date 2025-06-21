@@ -701,59 +701,19 @@ body {
                 <!-- 4. To Do List -->
                 <div class="widget-card">
                     <div class="widget-content">
-                        <h3 class="widget-title" style="margin-bottom:1rem;">To Do List</h3>
-                        <ul class="todo-list-minimal">
-                            <li>
-                                <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
-                                <input type="checkbox" id="todo1-minimal">
-                                <label for="todo1-minimal">Conveniently fabricate interactive technology for ....</label>
-                                <span class="todo-actions">
-                                    <i class="fas fa-check"></i>
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash"></i>
-                                </span>
-                            </li>
-                            <li>
-                                <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
-                                <input type="checkbox" id="todo2-minimal">
-                                <label for="todo2-minimal">Creating component page</label>
-                                <span class="todo-actions">
-                                    <i class="fas fa-check"></i>
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash"></i>
-                                </span>
-                            </li>
-                            <li class="done">
-                                <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
-                                <input type="checkbox" id="todo3-minimal" checked>
-                                <label for="todo3-minimal">Follow back those who follow you</label>
-                                <span class="todo-actions">
-                                    <i class="fas fa-check"></i>
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash"></i>
-                                </span>
-                            </li>
-                            <li class="done">
-                                <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
-                                <input type="checkbox" id="todo4-minimal" checked>
-                                <label for="todo4-minimal">Design One page theme</label>
-                                <span class="todo-actions">
-                                    <i class="fas fa-check"></i>
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash"></i>
-                                </span>
-                            </li>
-                            <li>
-                                <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
-                                <input type="checkbox" id="todo5-minimal">
-                                <label for="todo5-minimal">Creating component page</label>
-                                <span class="todo-actions">
-                                    <i class="fas fa-check"></i>
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash"></i>
-                                </span>
-                            </li>
-                    </ul>
+                        <div class="widget-header-modern">
+                            <div class="widget-title-container">
+                                <i class="fas fa-list-check todo-icon"></i>
+                                <span class="widget-title">To Do List</span>
+                            </div>
+                            <div class="todo-add-form">
+                                <input type="text" id="newTodoInput" placeholder="Новая задача...">
+                                <button id="addTodoBtn"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <ul class="todo-list-minimal" id="todoListContainer">
+                            <!-- Задачи будут добавляться сюда динамически -->
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -2116,10 +2076,28 @@ body {
     .todo-list-minimal {
         list-style: none;
         padding: 0;
-        margin: 0;
+        margin: 1rem 0 0 0;
         display: flex;
         flex-direction: column;
         gap: 0.7rem;
+        max-height: 195px; /* Примерная высота для 5 элементов */
+        overflow-y: auto;
+        padding-right: 0.5rem; /* Отступ для скроллбара */
+    }
+    /* Стилизация скроллбара для Webkit-браузеров */
+    .todo-list-minimal::-webkit-scrollbar {
+        width: 6px;
+    }
+    .todo-list-minimal::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+    .todo-list-minimal::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 10px;
+    }
+    .todo-list-minimal::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
     }
     .todo-list-minimal li {
         display: flex;
@@ -2177,6 +2155,54 @@ body {
     }
     .todo-actions i:hover {
         color: #3b82f6;
+    }
+    .fa-trash:hover {
+        color: #ef4444;
+    }
+    .todo-empty-state {
+        text-align: center;
+        color: #a0aec0;
+        padding: 1.5rem 0;
+        font-style: italic;
+        background: #fdfdff !important;
+        box-shadow: none !important;
+        justify-content: center;
+    }
+    .todo-add-form {
+        display: flex;
+        gap: 0.5rem;
+    }
+    #newTodoInput {
+        flex-grow: 1;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.4rem 0.7rem;
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.2s;
+        width: 350px;
+    }
+    #newTodoInput:focus {
+        border-color: #3b82f6;
+    }
+    #addTodoBtn {
+        flex-shrink: 0;
+        width: 34px;
+        height: 34px;
+        border: none;
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s, background 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #addTodoBtn:hover {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
     }
     </style>
 
@@ -2250,7 +2276,7 @@ body {
     }
     .widget-header-modern {
         display: flex;
-        align-items: baseline;
+        align-items: center;
         justify-content: space-between;
         /* Убираем лишние отступы, так как они теперь есть у родителя */
         padding: 0.5rem 0 0.8rem 0;
@@ -2286,6 +2312,10 @@ body {
     .summary-icon {
         font-size: 1.2rem;
         color: #f59e0b;
+    }
+    .todo-icon {
+        font-size: 1.2rem;
+        color: #8b5cf6;
     }
     .calendar-nav-group {
         display: flex;
@@ -2568,4 +2598,94 @@ body {
         <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:#3b82f6; color:#fff; border:none; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer;">Добавить новую</button>
       </div>
     </div>
+
+    <script>
+    // === ToDo List Logic ===
+    document.addEventListener('DOMContentLoaded', function() {
+        const todoListContainer = document.getElementById('todoListContainer');
+        const newTodoInput = document.getElementById('newTodoInput');
+        const addTodoBtn = document.getElementById('addTodoBtn');
+
+        if (!todoListContainer || !newTodoInput || !addTodoBtn) return;
+
+        let todos = JSON.parse(localStorage.getItem('dashboard_todos')) || [];
+
+        function saveTodos() {
+            localStorage.setItem('dashboard_todos', JSON.stringify(todos));
+        }
+
+        function renderTodos() {
+            todoListContainer.innerHTML = '';
+            if (todos.length === 0) {
+                todoListContainer.innerHTML = `<li class="todo-empty-state">Задач пока нет.</li>`;
+                return;
+            }
+            todos.forEach((todo, index) => {
+                const li = document.createElement('li');
+                li.className = todo.done ? 'done' : '';
+                li.dataset.index = index;
+                li.innerHTML = `
+                    <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
+                    <input type="checkbox" id="todo-${index}" ${todo.done ? 'checked' : ''}>
+                    <label for="todo-${index}">${todo.text}</label>
+                    <span class="todo-actions">
+                        <i class="fas fa-trash delete-btn"></i>
+                    </span>
+                `;
+                todoListContainer.appendChild(li);
+            });
+        }
+
+        function addTodo() {
+            const text = newTodoInput.value.trim();
+            if (text) {
+                todos.push({ text: text, done: false });
+                newTodoInput.value = '';
+                saveTodos();
+                renderTodos();
+            }
+        }
+
+        addTodoBtn.addEventListener('click', addTodo);
+        newTodoInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+
+        todoListContainer.addEventListener('click', function(e) {
+            const target = e.target;
+            const li = target.closest('li');
+            if (!li || li.classList.contains('todo-empty-state')) return;
+            const index = li.dataset.index;
+
+            // Toggle done
+            if (target.type === 'checkbox') {
+                todos[index].done = target.checked;
+                saveTodos();
+                renderTodos();
+            }
+
+            // Delete todo
+            if (target.classList.contains('delete-btn')) {
+                todos.splice(index, 1);
+                saveTodos();
+                renderTodos();
+            }
+        });
+
+        renderTodos(); // Initial render
+    });
+    </script>
+
+    <!-- Модальное окно для записей дня -->
+    <div id="calendarDayModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:9999; align-items:center; justify-content:center;">
+      <div style="background:#fff; border-radius:12px; max-width:400px; width:90vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
+        <button id="closeDayModalBtn" style="position:absolute; right:12px; top:10px; background:none; border:none; font-size:1.5em; color:#aaa; cursor:pointer;">&times;</button>
+        <h3 id="modalDayTitle" style="margin-bottom:1em; font-size:1.1em;">Записи на день</h3>
+        <div id="modalDayEvents"></div>
+        <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:#3b82f6; color:#fff; border:none; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer;">Добавить новую</button>
+      </div>
+    </div>
 @endsection
+
