@@ -2080,7 +2080,7 @@ body {
         display: flex;
         flex-direction: column;
         gap: 0.7rem;
-        max-height: 195px; /* Примерная высота для 5 элементов */
+        max-height: 250px; /* Финальная высота для 4-х элементов */
         overflow-y: auto;
         padding-right: 0.5rem; /* Отступ для скроллбара */
     }
@@ -2460,6 +2460,8 @@ body {
     <!-- Подключаем FullCalendar -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <!-- Подключаем SortableJS для перетаскивания -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <style>
     /* Фикс для сегодняшнего дня: убираем рамку, добавляем фон */
@@ -2675,6 +2677,21 @@ body {
         });
 
         renderTodos(); // Initial render
+
+        // Инициализация SortableJS для перетаскивания
+        new Sortable(todoListContainer, {
+            animation: 150,
+            handle: '.todo-drag', // Указываем, за какой элемент можно перетаскивать
+            onEnd: function (evt) {
+                // Обновляем массив `todos` в соответствии с новым порядком
+                const movedItem = todos.splice(evt.oldIndex, 1)[0];
+                todos.splice(evt.newIndex, 0, movedItem);
+
+                // Сохраняем новый порядок и перерисовываем список
+                saveTodos();
+                renderTodos();
+            }
+        });
     });
     </script>
 
