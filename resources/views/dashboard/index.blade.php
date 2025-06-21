@@ -599,12 +599,15 @@ body {
             </div>
             <canvas id="universalChart" height="150"></canvas>
         </div>
-            <div class="dashboard-widgets-grid-2x2" style="display: grid; grid-template-columns: 35% 65%; gap: 1.6rem; margin: 32px 0 0 0; align-items: stretch;">
+            <div class="dashboard-widgets-grid-2x2" style="display: grid; grid-template-columns: 34% 64%; gap: 1.6rem; margin: 32px 0 0 0; align-items: stretch;">
                 <!-- 1. Календарь -->
                 <div class="widget-card calendar-widget">
                     <div class="widget-content">
                         <div class="calendar-header-modern">
-                            <span class="calendar-title">Календарь</span>
+                            <div class="calendar-title-container">
+                                <i class="fas fa-calendar-alt calendar-icon"></i>
+                                <span class="calendar-title">Календарь</span>
+                            </div>
                             <div class="calendar-nav">
                                 <span id="calendarMonthYearTitle" class="calendar-month-title"></span>
                                 <div class="calendar-nav-group">
@@ -621,7 +624,7 @@ body {
                     <div class="widget-content">
                         <h3 class="widget-title">Записи</h3>
                         <div class="appointments-table-block">
-                            <table class="appointments-table">
+                            <table class="table-striped appointments-table">
                                 <thead>
                                     <tr>
                                         <th>ДАТА</th>
@@ -632,13 +635,36 @@ body {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td><span class="appt-date">19.06.2025</span><br><span class="appt-time">14:00</span></td>
-                                        <td>Ирина</td>
-                                        <td>Кератин</td>
-                                        <td><span class="status-badge status-done">Завершено</span></td>
-                                        <td>3000 грн</td>
-                                    </tr>
+                                    @php
+                                        function getStatusInfo($status) {
+                                            $map = [
+                                                'completed' => ['class' => 'done', 'name' => 'Завершено'],
+                                                'pending' => ['class' => 'pending', 'name' => 'Ожидается'],
+                                                'cancelled' => ['class' => 'cancel', 'name' => 'Отменено'],
+                                                'rescheduled' => ['class' => 'rescheduled', 'name' => 'Перенесено'],
+                                            ];
+                                            return $map[$status] ?? ['class' => 'default', 'name' => ucfirst($status)];
+                                        }
+                                    @endphp
+                                    @forelse($upcomingAppointments as $appointment)
+                                        @php $statusInfo = getStatusInfo($appointment->status); @endphp
+                                        <tr>
+                                            <td>
+                                                <span class="appt-date">{{ \Carbon\Carbon::parse($appointment->date)->isToday() ? 'Сегодня' : 'Завтра' }}</span><br>
+                                                <span class="appt-time">{{ \Carbon\Carbon::parse($appointment->time)->format('H:i') }}</span>
+                                            </td>
+                                            <td>{{ $appointment->client->name ?? 'Клиент не найден' }}</td>
+                                            <td>{{ $appointment->service->name ?? 'Услуга не найдена' }}</td>
+                                            <td><span class="status-badge status-{{ $statusInfo['class'] }}">{{ $statusInfo['name'] }}</span></td>
+                                            <td>{{ number_format($appointment->price, 0, '.', ' ') }} грн</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" style="text-align: center; padding: 20px; color: #888;">
+                                                На сегодня и завтра активных записей нет.
+                                            </td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -2157,7 +2183,7 @@ body {
         align-items: center;
         justify-content: space-between;
         /* Убираем лишние отступы, так как они теперь есть у родителя */
-        padding: 0 0 0.5rem 0;
+        padding: 0.5rem 0 0.8rem 0;
     }
     .calendar-nav {
         display: flex;
@@ -2173,6 +2199,15 @@ body {
         font-size: 1.15rem;
         font-weight: 700;
         color: #2d3748;
+    }
+    .calendar-title-container {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+    .calendar-icon {
+        font-size: 1.2rem;
+        color: #3b82f6;
     }
     .calendar-nav-group {
         display: flex;
@@ -2306,6 +2341,7 @@ body {
     .status-done { background: #10b981; }
     .status-pending { background: #f59e0b; }
     .status-cancel { background: #ef4444; }
+    .status-rescheduled { background: #3b82f6; } /* Добавил цвет для перенесенных */
     </style>
 
     <style>

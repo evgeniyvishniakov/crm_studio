@@ -57,7 +57,19 @@ class DashboardController extends Controller
             $showDynamics = false;
         }
 
-        return view('dashboard.index', compact('servicesCount', 'clientsCount', 'appointmentsCount', 'totalExpenses', 'showDynamics', 'servicesRevenue', 'productsRevenue', 'totalProfit'));
+        // Получаем ближайшие 5 записей на сегодня и завтра
+        $today = Carbon::today();
+        $tomorrow = Carbon::tomorrow();
+
+        $upcomingAppointments = Appointment::with(['client', 'service'])
+            ->whereIn('date', [$today, $tomorrow])
+            ->where('status', 'pending')
+            ->orderBy('date', 'asc')
+            ->orderBy('time', 'asc')
+            ->take(5)
+            ->get();
+
+        return view('dashboard.index', compact('servicesCount', 'clientsCount', 'appointmentsCount', 'totalExpenses', 'showDynamics', 'servicesRevenue', 'productsRevenue', 'totalProfit', 'upcomingAppointments'));
     }
 
     /**
