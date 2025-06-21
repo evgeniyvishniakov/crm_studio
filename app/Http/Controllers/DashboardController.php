@@ -18,8 +18,8 @@ class DashboardController extends Controller
         // Услуги: только завершённые записи
         $servicesCount = Appointment::where('status', 'completed')->count();
 
-        // Продажи услуг: сумма всех цен из записей
-        $servicesRevenue = Appointment::sum('price');
+        // Продажи услуг: сумма цен только из завершённых записей
+        $servicesRevenue = Appointment::where('status', 'completed')->sum('price');
 
         // Продажи товаров: общая прибыль (сумма розничных цен - сумма оптовых цен)
         $totalRetail = SaleItem::sum(\DB::raw('retail_price * quantity'));
@@ -111,6 +111,7 @@ class DashboardController extends Controller
             ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
             ->value('profit') ?? 0;
         $servicesProfit = \App\Models\Appointment::whereDate('date', $date)
+            ->where('status', 'completed')
             ->sum('price');
         $expenses = \App\Models\Expense::whereDate('date', $date)->sum('amount');
         $purchases = \App\Models\Purchase::whereDate('date', $date)->sum('total_amount');

@@ -627,6 +627,7 @@ body {
                                 <i class="fas fa-rectangle-list list-icon"></i>
                                 <span class="widget-title">Записи</span>
                             </div>
+                            <button class="tab-button active" id="addWidgetAppointmentBtn">Добавить новую</button>
                         </div>
                         <div class="appointments-table-block">
                             <table class="table-striped appointments-table">
@@ -2421,6 +2422,19 @@ body {
                 document.getElementById('calendarNextBtn').addEventListener('click', function() {
                     calendar.next();
                 });
+
+                // Обработчик для кнопки "Добавить новую" в виджете "Записи"
+                const addWidgetBtn = document.getElementById('addWidgetAppointmentBtn');
+                if (addWidgetBtn) {
+                    addWidgetBtn.addEventListener('click', function() {
+                        const today = new Date();
+                        const year = today.getFullYear();
+                        const month = String(today.getMonth() + 1).padStart(2, '0');
+                        const day = String(today.getDate()).padStart(2, '0');
+                        const todayDateStr = `${year}-${month}-${day}`;
+                        window.location.href = '/appointments?action=create&date=' + todayDateStr;
+                    });
+                }
             }
         });
 
@@ -2441,7 +2455,7 @@ body {
             const modal = document.getElementById('calendarDayModal');
             const title = document.getElementById('modalDayTitle');
             const eventsBlock = document.getElementById('modalDayEvents');
-            const addBtn = document.getElementById('addNewEventBtn');
+            const addBtn = document.getElementById('modalAddAppointmentBtn');
             const closeBtn = document.getElementById('closeDayModalBtn');
             // Форматируем дату
             const d = new Date(dateStr);
@@ -2483,7 +2497,7 @@ body {
         <button id="closeDayModalBtn" style="position:absolute; right:12px; top:10px; background:none; border:none; font-size:1.5em; color:#aaa; cursor:pointer;">&times;</button>
         <h3 id="modalDayTitle" style="margin-bottom:1em; font-size:1.1em;">Записи на день</h3>
         <div id="modalDayEvents"></div>
-        <button id="addNewEventBtn" style="margin-top:1.2em; background:#3b82f6; color:#fff; border:none; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer;">Добавить новую</button>
+        <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:#3b82f6; color:#fff; border:none; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer;">Добавить новую</button>
       </div>
     </div>
 @endsection
