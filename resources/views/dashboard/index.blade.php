@@ -392,15 +392,16 @@ body {
     justify-content: center;
     align-items: center;
     gap: 2px;
-    margin-top: 0px; /* Было 2px, стало 0 */
-    min-height: 10px;
+    margin-top: -4px !important; /* Пробуем сдвинуть повыше */
+    min-height: 0 !important; /* Убираем минимальную высоту, чтобы не мешала */
+    height: 5px !important; /* Задаем небольшую высоту */
 }
 .fc-dot {
-    width: 8px;
-    height: 8px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     display: inline-block;
-    margin: 0 1.5px 0 1.5px; /* Убираю верхний margin */
+    margin: 0 1px; /* Скорректировал отступы */
 }
 /* Убираю зелёную заливку у сегодняшнего дня, только рамка */
 .fc-daygrid-day.fc-day-today {
