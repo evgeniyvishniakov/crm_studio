@@ -2420,7 +2420,7 @@ body {
             modal.style.display = 'flex';
             // Кнопка "Добавить новую"
             addBtn.onclick = function() {
-                window.location.href = '/appointments/create?date=' + dateStr;
+                window.location.href = '/appointments?action=create&date=' + dateStr;
             };
             closeBtn.onclick = function() {
                 modal.style.display = 'none';

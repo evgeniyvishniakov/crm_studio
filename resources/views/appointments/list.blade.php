@@ -859,232 +859,256 @@
     const tooltip = document.getElementById('appointmentTooltip');
 
     document.addEventListener('DOMContentLoaded', function() {
-            if (document.getElementById('calendar')) {
+        // Проверяем URL на наличие параметра для создания записи с дашборда
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'create' && urlParams.has('date')) {
+            const date = urlParams.get('date');
+            const modal = document.getElementById('appointmentModal');
+            const form = document.getElementById('appointmentForm');
+            
+            if (modal && form) {
+                // Сбрасываем форму
+                form.reset();
+                
+                // Устанавливаем заголовок
+                const title = modal.querySelector('.modal-title');
+                if(title) title.textContent = 'Добавить запись';
 
-                // Добавляем обработчики для самой подсказки
-                tooltip.addEventListener('mouseenter', () => {
-                    if (activeEvent) {
-                        tooltip.style.display = 'block';
-                    }
-                });
+                // Устанавливаем дату
+                const dateInput = form.querySelector('input[name="date"]');
+                if (dateInput) dateInput.value = date;
 
-                tooltip.addEventListener('mouseleave', () => {
-                    if (!activeEvent) {
-                        tooltip.style.display = 'none';
-                    }
-                });
+                // Открываем модальное окно
+                toggleModal('appointmentModal', true);
+            }
+        }
 
-                calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-                    initialView: 'dayGridMonth',
-                    headerToolbar: false,
-                    locale: 'ru',
-                    height: 'auto',
-                    selectable: true,
-                    editable: true,
-                    events: function(info, successCallback, failureCallback) {
-                        console.log('=== Загрузка событий календаря ===');
-                        fetch('/appointments/calendar-events')
-                            .then(response => response.json())
-                            .then(events => {
-                                console.log('Загруженные события:', events);
-                                // Проверяем формат ID у первого события
-                                if (events.length > 0) {
-                                    console.log('Пример ID первого события:', events[0].id);
-                                    console.log('Тип ID:', typeof events[0].id);
-                                }
-                                successCallback(events);
-                            })
-                            .catch(error => {
-                                console.error('Ошибка загрузки событий:', error);
-                                failureCallback(error);
-                            });
-                    },
-                    eventTimeFormat: {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                    },
-                    slotMinTime: '08:00:00',
-                    slotMaxTime: '20:00:00',
-                    allDaySlot: false,
-                    slotDuration: '00:30:00',
+        if (document.getElementById('calendar')) {
 
-                    // Обработчик наведения на событие
-                    eventMouseEnter: function(info) {
-                        activeEvent = info.event;
-                        const event = info.event;
-                        const tooltipContent = tooltip.querySelector('.appointment-tooltip-content');
-                        const editBtn = tooltip.querySelector('.tooltip-btn-edit');
-                        const deleteBtn = tooltip.querySelector('.tooltip-btn-delete');
-
-                        // Форматируем время
-                        const startTime = event.start ? new Date(event.start).toLocaleTimeString('ru-RU', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        }) : '';
-
-                        // Формируем содержимое всплывающей подсказки
-                        tooltipContent.innerHTML = `
-                            <p><strong>Время:</strong> ${startTime}</p>
-                            <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
-                            <p><strong>Процедура:</strong> ${event.extendedProps.service}</p>
-                            <p><strong>Цена:</strong> ${event.extendedProps.price} грн</p>
-                            <p><strong>Статус:</strong> ${getStatusName(event.extendedProps.status)}</p>
-                        `;
-
-                        // Позиционируем всплывающую подсказку
-                        const eventEl = info.el;
-                        const rect = eventEl.getBoundingClientRect();
-
-                        // Получаем размеры окна
-                        const windowWidth = window.innerWidth;
-                        const windowHeight = window.innerHeight;
-
-                        // Получаем размеры подсказки
-                        const tooltipWidth = 250; // ширина подсказки
-                        const tooltipHeight = tooltip.offsetHeight;
-
-                        // Рассчитываем позицию
-                        let left = rect.left - tooltipWidth - 5; // Всегда размещаем слева от события с отступом 5px
-                        let top = rect.top;
-
-                        // Если подсказка выходит за левый край экрана, размещаем её справа от события
-                            // Если подсказка выходит за левый край экрана, размещаем её справа от события
-                            if (left < 0) {
-                                left = rect.right + 5;
-                            }
-
-                            // Проверяем, не выходит ли подсказка за пределы экрана снизу
-                            if (top + tooltipHeight > windowHeight) {
-                                top = windowHeight - tooltipHeight - 5; // 5px отступ снизу
-                            }
-
-                            // Применяем позицию
-                            tooltip.style.top = `${top}px`;
-                            tooltip.style.left = `${left}px`;
-                            tooltip.style.display = 'block';
-
-                            // Добавляем обработчики для кнопок
-                            editBtn.onclick = (e) => {
-                                activeEvent = null;
-                                tooltip.style.display = 'none';
-                                editAppointment(event.id);
-                            };
-                            deleteBtn.onclick = (e) => {
-                                activeEvent = null;
-                                tooltip.style.display = 'none';
-                                confirmDeleteAppointment(e, event.id);
-                            };
-                        },
-
-                        // Скрываем всплывающую подсказку при уходе курсора
-                        eventMouseLeave: function() {
-                            activeEvent = null;
-                            // Даем небольшую задержку, чтобы можно было навести на подсказку
-                            setTimeout(() => {
-                                if (!activeEvent && !tooltip.matches(':hover')) {
-                                    tooltip.style.display = 'none';
-                                }
-                            }, 100);
-                        },
-
-                        eventClick: function(info) {
-                            tooltip.style.display = 'none';
-                            viewAppointment(info.event.id);
-                        },
-
-                        dateClick: function(info) {
-                            createAppointment(info.dateStr);
-                        }
-                    });
-
-                    calendar.render();
-
-                    // Функция создания записи при клике на дату
-                    function createAppointment(dateStr) {
-                        // Устанавливаем выбранную дату в поле формы
-                        document.querySelector('#appointmentModal input[name="date"]').value = dateStr;
-                        // Открываем модальное окно
-                        toggleModal('appointmentModal');
-                    }
-
-                    // Функция обновления заголовка
-                    function updateTitle() {
-                        const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-                                        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-                        const date = calendar.getDate();
-                        const view = calendar.view.type;
-                        let title = '';
-
-                        if (view === 'timeGridDay') {
-                            // Для дневного вида показываем дату в формате "1 января 2024"
-                            title = `${date.getDate()} ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
-                        } else if (view === 'timeGridWeek') {
-                            // Для недельного вида показываем номер недели
-                            const weekNumber = Math.ceil((date.getDate() + new Date(date.getFullYear(), date.getMonth(), 1).getDay()) / 7);
-                            title = `${weekNumber}-я неделя ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
-                        } else {
-                            // Для месячного вида оставляем как есть
-                            title = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-                        }
-
-                        document.getElementById('currentMonthYear').textContent = title;
-                    }
-
-                    // Обработчики кнопок навигации
-                    document.querySelector('.calendar-prev-button').addEventListener('click', function() {
-                        const view = calendar.view.type;
-                        if (view === 'timeGridDay') {
-                            calendar.prev();
-                        } else if (view === 'timeGridWeek') {
-                            calendar.prev();
-                        } else {
-                            calendar.prev();
-                        }
-                        updateTitle();
-                    });
-
-                    document.querySelector('.calendar-next-button').addEventListener('click', function() {
-                        const view = calendar.view.type;
-                        if (view === 'timeGridDay') {
-                            calendar.next();
-                        } else if (view === 'timeGridWeek') {
-                            calendar.next();
-                        } else {
-                            calendar.next();
-                        }
-                        updateTitle();
-                    });
-
-                    // Обработчики кнопок переключения вида
-                    document.querySelectorAll('.view-switch-btn[data-view]').forEach(button => {
-                        button.addEventListener('click', function() {
-                            // Удаляем активный класс у всех кнопок
-                            document.querySelectorAll('.view-switch-btn').forEach(btn => {
-                                btn.classList.remove('active');
-                            });
-                            // Добавляем активный класс текущей кнопке
-                            this.classList.add('active');
-                            // Переключаем вид календаря
-                            calendar.changeView(this.dataset.view);
-                        });
-                    });
-
-                    // Обработчик кнопки "Сегодня"
-                    document.querySelector('.today-button').addEventListener('click', function() {
-                        calendar.today();
-                        updateTitle();
-                    });
-
-                    // Обновляем заголовок при изменении даты
-                    calendar.on('datesSet', function() {
-                        updateTitle();
-                    });
-
-                    // Инициализация заголовка
-                    updateTitle();
+            // Добавляем обработчики для самой подсказки
+            tooltip.addEventListener('mouseenter', () => {
+                if (activeEvent) {
+                    tooltip.style.display = 'block';
                 }
             });
+
+            tooltip.addEventListener('mouseleave', () => {
+                if (!activeEvent) {
+                    tooltip.style.display = 'none';
+                }
+            });
+
+            calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+                initialView: 'dayGridMonth',
+                headerToolbar: false,
+                locale: 'ru',
+                height: 'auto',
+                selectable: true,
+                editable: true,
+                events: function(info, successCallback, failureCallback) {
+                    console.log('=== Загрузка событий календаря ===');
+                    fetch('/appointments/calendar-events')
+                        .then(response => response.json())
+                        .then(events => {
+                            console.log('Загруженные события:', events);
+                            // Проверяем формат ID у первого события
+                            if (events.length > 0) {
+                                console.log('Пример ID первого события:', events[0].id);
+                                console.log('Тип ID:', typeof events[0].id);
+                            }
+                            successCallback(events);
+                        })
+                        .catch(error => {
+                            console.error('Ошибка загрузки событий:', error);
+                            failureCallback(error);
+                        });
+                },
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                },
+                slotMinTime: '08:00:00',
+                slotMaxTime: '20:00:00',
+                allDaySlot: false,
+                slotDuration: '00:30:00',
+
+                // Обработчик наведения на событие
+                eventMouseEnter: function(info) {
+                    activeEvent = info.event;
+                    const event = info.event;
+                    const tooltipContent = tooltip.querySelector('.appointment-tooltip-content');
+                    const editBtn = tooltip.querySelector('.tooltip-btn-edit');
+                    const deleteBtn = tooltip.querySelector('.tooltip-btn-delete');
+
+                    // Форматируем время
+                    const startTime = event.start ? new Date(event.start).toLocaleTimeString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : '';
+
+                    // Формируем содержимое всплывающей подсказки
+                    tooltipContent.innerHTML = `
+                        <p><strong>Время:</strong> ${startTime}</p>
+                        <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
+                        <p><strong>Процедура:</strong> ${event.extendedProps.service}</p>
+                        <p><strong>Цена:</strong> ${event.extendedProps.price} грн</p>
+                        <p><strong>Статус:</strong> ${getStatusName(event.extendedProps.status)}</p>
+                    `;
+
+                    // Позиционируем всплывающую подсказку
+                    const eventEl = info.el;
+                    const rect = eventEl.getBoundingClientRect();
+
+                    // Получаем размеры окна
+                    const windowWidth = window.innerWidth;
+                    const windowHeight = window.innerHeight;
+
+                    // Получаем размеры подсказки
+                    const tooltipWidth = 250; // ширина подсказки
+                    const tooltipHeight = tooltip.offsetHeight;
+
+                    // Рассчитываем позицию
+                    let left = rect.left - tooltipWidth - 5; // Всегда размещаем слева от события с отступом 5px
+                    let top = rect.top;
+
+                    // Если подсказка выходит за левый край экрана, размещаем её справа от события
+                        // Если подсказка выходит за левый край экрана, размещаем её справа от события
+                        if (left < 0) {
+                            left = rect.right + 5;
+                        }
+
+                        // Проверяем, не выходит ли подсказка за пределы экрана снизу
+                        if (top + tooltipHeight > windowHeight) {
+                            top = windowHeight - tooltipHeight - 5; // 5px отступ снизу
+                        }
+
+                        // Применяем позицию
+                        tooltip.style.top = `${top}px`;
+                        tooltip.style.left = `${left}px`;
+                        tooltip.style.display = 'block';
+
+                        // Добавляем обработчики для кнопок
+                        editBtn.onclick = (e) => {
+                            activeEvent = null;
+                            tooltip.style.display = 'none';
+                            editAppointment(event.id);
+                        };
+                        deleteBtn.onclick = (e) => {
+                            activeEvent = null;
+                            tooltip.style.display = 'none';
+                            confirmDeleteAppointment(e, event.id);
+                        };
+                    },
+
+                    // Скрываем всплывающую подсказку при уходе курсора
+                    eventMouseLeave: function() {
+                        activeEvent = null;
+                        // Даем небольшую задержку, чтобы можно было навести на подсказку
+                        setTimeout(() => {
+                            if (!activeEvent && !tooltip.matches(':hover')) {
+                                tooltip.style.display = 'none';
+                            }
+                        }, 100);
+                    },
+
+                    eventClick: function(info) {
+                        tooltip.style.display = 'none';
+                        viewAppointment(info.event.id);
+                    },
+
+                    dateClick: function(info) {
+                        createAppointment(info.dateStr);
+                    }
+                });
+
+                calendar.render();
+
+                // Функция создания записи при клике на дату
+                function createAppointment(dateStr) {
+                    // Устанавливаем выбранную дату в поле формы
+                    document.querySelector('#appointmentModal input[name="date"]').value = dateStr;
+                    // Открываем модальное окно
+                    toggleModal('appointmentModal');
+                }
+
+                // Функция обновления заголовка
+                function updateTitle() {
+                    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+                                    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+                    const date = calendar.getDate();
+                    const view = calendar.view.type;
+                    let title = '';
+
+                    if (view === 'timeGridDay') {
+                        // Для дневного вида показываем дату в формате "1 января 2024"
+                        title = `${date.getDate()} ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
+                    } else if (view === 'timeGridWeek') {
+                        // Для недельного вида показываем номер недели
+                        const weekNumber = Math.ceil((date.getDate() + new Date(date.getFullYear(), date.getMonth(), 1).getDay()) / 7);
+                        title = `${weekNumber}-я неделя ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
+                    } else {
+                        // Для месячного вида оставляем как есть
+                        title = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+                    }
+
+                    document.getElementById('currentMonthYear').textContent = title;
+                }
+
+                // Обработчики кнопок навигации
+                document.querySelector('.calendar-prev-button').addEventListener('click', function() {
+                    const view = calendar.view.type;
+                    if (view === 'timeGridDay') {
+                        calendar.prev();
+                    } else if (view === 'timeGridWeek') {
+                        calendar.prev();
+                    } else {
+                        calendar.prev();
+                    }
+                    updateTitle();
+                });
+
+                document.querySelector('.calendar-next-button').addEventListener('click', function() {
+                    const view = calendar.view.type;
+                    if (view === 'timeGridDay') {
+                        calendar.next();
+                    } else if (view === 'timeGridWeek') {
+                        calendar.next();
+                    } else {
+                        calendar.next();
+                    }
+                    updateTitle();
+                });
+
+                // Обработчики кнопок переключения вида
+                document.querySelectorAll('.view-switch-btn[data-view]').forEach(button => {
+                    button.addEventListener('click', function() {
+                        // Удаляем активный класс у всех кнопок
+                        document.querySelectorAll('.view-switch-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        // Добавляем активный класс текущей кнопке
+                        this.classList.add('active');
+                        // Переключаем вид календаря
+                        calendar.changeView(this.dataset.view);
+                    });
+                });
+
+                // Обработчик кнопки "Сегодня"
+                document.querySelector('.today-button').addEventListener('click', function() {
+                    calendar.today();
+                    updateTitle();
+                });
+
+                // Обновляем заголовок при изменении даты
+                calendar.on('datesSet', function() {
+                    updateTitle();
+                });
+
+                // Инициализация заголовка
+                updateTitle();
+            }
+        });
 
         </script>
     </div>
@@ -2683,11 +2707,11 @@
                         <div class="form-actions">
                             <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
                             <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                        </svg>Добавить</button>
-                        </div>
-                    </div>
-                `;
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>Добавить</button>
+                </div>
+            </div>
+        `;
 
             // Обновляем общую сумму
             updateTotalAmount();
