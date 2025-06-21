@@ -380,8 +380,9 @@ body {
     margin-left: 2px;
 }
 .fc-daygrid-day.fc-day-today {
-    background-color: #fffbe6;
-    border: 2px solid #ffe066;
+    background: #fffbe6 !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(255,224,102,0.13);
 }
 
 /* Ряд точек под числом дня */
@@ -391,7 +392,7 @@ body {
     justify-content: center;
     align-items: center;
     gap: 2px;
-    margin-top: 2px;
+    margin-top: 0px; /* Было 2px, стало 0 */
     min-height: 10px;
 }
 .fc-dot {
@@ -399,7 +400,7 @@ body {
     height: 8px;
     border-radius: 50%;
     display: inline-block;
-    margin: 0 1.5px;
+    margin: 0 1.5px 0 1.5px; /* Убираю верхний margin */
 }
 /* Убираю зелёную заливку у сегодняшнего дня, только рамка */
 .fc-daygrid-day.fc-day-today {
@@ -418,6 +419,20 @@ body {
     padding: 0 !important;
     margin: 0 !important;
     min-width: 0 !important;
+}
+
+/* ... предыдущие стили ... */
+.fc-daygrid-day {
+    cursor: pointer !important;
+}
+.fc-daygrid-day.fc-day-other {
+    cursor: default !important;
+}
+/* ... остальные стили ... */
+.fc-daygrid-day:hover:not(.fc-day-other) {
+    background: #f3f6fd !important;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+    transition: background 0.18s, box-shadow 0.18s;
 }
 </style>
 
@@ -589,6 +604,13 @@ body {
                     <div class="widget-content">
                         <div class="calendar-header-modern">
                             <span class="calendar-title">Календарь</span>
+                            <div class="calendar-nav">
+                                <span id="calendarMonthYearTitle" class="calendar-month-title"></span>
+                                <div class="calendar-nav-group">
+                                    <button id="calendarPrevBtn" class="calendar-nav-btn"><i class="fas fa-chevron-left"></i></button>
+                                    <button id="calendarNextBtn" class="calendar-nav-btn"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
                         </div>
                         <div id="dashboardCalendar"></div>
                     </div>
@@ -2126,13 +2148,25 @@ body {
     <style>
     .calendar-widget {
         min-width: 0;
-        padding: 0;
+        /* Было padding: 0, возвращаем стандартный отступ виджета */
+        padding: 1.1rem;
     }
     .calendar-header-modern {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 1.1rem 1.1rem 0.5rem 1.1rem;
+        /* Убираем лишние отступы, так как они теперь есть у родителя */
+        padding: 0 0 0.5rem 0;
+    }
+    .calendar-nav {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    .calendar-month-title {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #374151;
     }
     .calendar-title {
         font-size: 1.15rem;
@@ -2282,11 +2316,21 @@ body {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 
+    <style>
+    /* Фикс для сегодняшнего дня: убираем рамку, добавляем фон */
+    .fc-day-today, .fc-daygrid-day.fc-day-today {
+        background: #fffbe6 !important;
+        border: none !important;
+        box-shadow: 0 2px 8px rgba(255,224,102,0.13) !important;
+    }
+    </style>
+
     <script>
         // === FullCalendar: минималистичный календарь с точками по статусу ===
         document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('dashboardCalendar')) {
-                const calendar = new FullCalendar.Calendar(document.getElementById('dashboardCalendar'), {
+                const calendarEl = document.getElementById('dashboardCalendar');
+                const calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
                     locale: 'ru',
                     height: 'auto',
@@ -2298,9 +2342,34 @@ body {
                         const status = arg.event.extendedProps.status || arg.event.status;
                         const color = getStatusColor(status);
                         return { html: `<span class='fc-dot' style='background:${color}'></span>` };
+                    },
+                    dateClick: function(info) {
+                        // Открыть модалку с событиями на этот день
+                        showDayModal(info.dateStr, calendar.getEvents());
+                    },
+                    datesSet: function() {
+                        updateCalendarTitle(this); // `this` is the calendar instance
                     }
                 });
+
+                function updateCalendarTitle(calInstance) {
+                    const titleEl = document.getElementById('calendarMonthYearTitle');
+                    if (titleEl) {
+                        let title = calInstance.view.title;
+                        titleEl.textContent = title.charAt(0).toUpperCase() + title.slice(1);
+                    }
+                }
+
                 calendar.render();
+                updateCalendarTitle(calendar); // Set initial title
+
+                document.getElementById('calendarPrevBtn').addEventListener('click', function() {
+                    calendar.prev();
+                });
+
+                document.getElementById('calendarNextBtn').addEventListener('click', function() {
+                    calendar.next();
+                });
             }
         });
 
@@ -2315,5 +2384,54 @@ body {
                 default: return '#cbd5e1';               // серый
             }
         }
+
+        // Модалка для событий дня
+        function showDayModal(dateStr, allEvents) {
+            const modal = document.getElementById('calendarDayModal');
+            const title = document.getElementById('modalDayTitle');
+            const eventsBlock = document.getElementById('modalDayEvents');
+            const addBtn = document.getElementById('addNewEventBtn');
+            const closeBtn = document.getElementById('closeDayModalBtn');
+            // Форматируем дату
+            const d = new Date(dateStr);
+            title.textContent = 'Записи на ' + d.toLocaleDateString('ru-RU');
+            // Фильтруем события по дате
+            const events = allEvents.filter(ev => {
+                const evDate = ev.extendedProps.date || (ev.start ? ev.start.toISOString().slice(0,10) : null);
+                return evDate === dateStr;
+            });
+            if (events.length === 0) {
+                eventsBlock.innerHTML = '<div style="color:#888;">Нет записей на этот день</div>';
+            } else {
+                eventsBlock.innerHTML = events.map(ev =>
+                    `<div style='margin-bottom:0.7em; display:flex; align-items:center; gap:0.5em;'>
+                        <span class='fc-dot' style='background:${getStatusColor(ev.extendedProps.status || ev.status)}'></span>
+                        <span><b>${ev.extendedProps.time ? ev.extendedProps.time.slice(0,5) : ''}</b> ${ev.extendedProps.client || ''} <span style='color:#888;'>(${ev.extendedProps.service || ''})</span></span>
+                    </div>`
+                ).join('');
+            }
+            modal.style.display = 'flex';
+            // Кнопка "Добавить новую"
+            addBtn.onclick = function() {
+                window.location.href = '/appointments/create?date=' + dateStr;
+            };
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+            };
+            // Закрытие по клику вне окна
+            modal.onclick = function(e) {
+                if (e.target === modal) modal.style.display = 'none';
+            };
+        }
     </script>
+
+    <!-- Модальное окно для записей дня -->
+    <div id="calendarDayModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:9999; align-items:center; justify-content:center;">
+      <div style="background:#fff; border-radius:12px; max-width:400px; width:90vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
+        <button id="closeDayModalBtn" style="position:absolute; right:12px; top:10px; background:none; border:none; font-size:1.5em; color:#aaa; cursor:pointer;">&times;</button>
+        <h3 id="modalDayTitle" style="margin-bottom:1em; font-size:1.1em;">Записи на день</h3>
+        <div id="modalDayEvents"></div>
+        <button id="addNewEventBtn" style="margin-top:1.2em; background:#3b82f6; color:#fff; border:none; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer;">Добавить новую</button>
+      </div>
+    </div>
 @endsection
