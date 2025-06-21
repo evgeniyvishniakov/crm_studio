@@ -603,10 +603,10 @@ body {
                 <!-- 1. Календарь -->
                 <div class="widget-card calendar-widget">
                     <div class="widget-content">
-                        <div class="calendar-header-modern">
-                            <div class="calendar-title-container">
+                        <div class="widget-header-modern">
+                            <div class="widget-title-container">
                                 <i class="fas fa-calendar-alt calendar-icon"></i>
-                                <span class="calendar-title">Календарь</span>
+                                <span class="widget-title">Календарь</span>
                             </div>
                             <div class="calendar-nav">
                                 <span id="calendarMonthYearTitle" class="calendar-month-title"></span>
@@ -622,7 +622,12 @@ body {
                 <!-- 2. Записи -->
                 <div class="widget-card appointments-widget">
                     <div class="widget-content">
-                        <h3 class="widget-title">Записи</h3>
+                        <div class="widget-header-modern">
+                            <div class="widget-title-container">
+                                <i class="fas fa-rectangle-list list-icon"></i>
+                                <span class="widget-title">Записи</span>
+                            </div>
+                        </div>
                         <div class="appointments-table-block">
                             <table class="table-striped appointments-table">
                                 <thead>
@@ -2178,9 +2183,9 @@ body {
         /* Было padding: 0, возвращаем стандартный отступ виджета */
         padding: 1.1rem;
     }
-    .calendar-header-modern {
+    .widget-header-modern {
         display: flex;
-        align-items: center;
+        align-items: baseline;
         justify-content: space-between;
         /* Убираем лишние отступы, так как они теперь есть у родителя */
         padding: 0.5rem 0 0.8rem 0;
@@ -2195,19 +2200,23 @@ body {
         font-weight: 600;
         color: #374151;
     }
-    .calendar-title {
+    .widget-title {
         font-size: 1.15rem;
         font-weight: 700;
         color: #2d3748;
+        margin-left: 5px;
     }
-    .calendar-title-container {
-        display: flex;
+    .widget-title-container {
         align-items: center;
         gap: 0.6rem;
     }
     .calendar-icon {
         font-size: 1.2rem;
         color: #3b82f6;
+    }
+    .list-icon {
+        font-size: 1.2rem;
+        color: #03a813;
     }
     .calendar-nav-group {
         display: flex;
