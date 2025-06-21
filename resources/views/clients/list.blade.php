@@ -18,7 +18,7 @@
                     <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                     </svg>
-                    <input type="text" placeholder="Поиск...">
+                    <input type="text" placeholder="Поиск..." autocomplete="off">
                 </div>
             </div>
         </div>
@@ -122,19 +122,19 @@
                     @csrf
                     <div class="form-group">
                         <label for="clientName">Имя *</label>
-                        <input type="text" id="clientName" name="name" required>
+                        <input type="text" id="clientName" name="name" required autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="clientInstagram">Инстаграм</label>
-                        <input type="text" id="clientInstagram" name="instagram">
+                        <input type="text" id="clientInstagram" name="instagram" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="clientPhone">Телефон</label>
-                        <input type="tel" id="clientPhone" name="phone">
+                        <input type="tel" id="clientPhone" name="phone" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="clientEmail">Почта</label>
-                        <input type="email" id="clientEmail" name="email">
+                        <input type="email" id="clientEmail" name="email" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Тип клиента</label>
@@ -186,19 +186,19 @@
                     <input type="hidden" id="editClientId" name="id">
                     <div class="form-group">
                         <label for="editClientName">Имя *</label>
-                        <input type="text" id="editClientName" name="name" required>
+                        <input type="text" id="editClientName" name="name" required autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="editClientInstagram">Инстаграм</label>
-                        <input type="text" id="editClientInstagram" name="instagram">
+                        <input type="text" id="editClientInstagram" name="instagram" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="editClientPhone">Телефон</label>
-                        <input type="tel" id="editClientPhone" name="phone">
+                        <input type="tel" id="editClientPhone" name="phone" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label for="editClientEmail">Почта</label>
-                        <input type="email" id="editClientEmail" name="email">
+                        <input type="email" id="editClientEmail" name="email" autocomplete="off">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Тип клиента</label>

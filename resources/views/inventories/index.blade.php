@@ -148,7 +148,7 @@
                                         <input type="text" class="product-search-input form-control"
                                                placeholder="Начните вводить название товара..."
                                                oninput="searchProducts(this)"
-                                               onfocus="showProductDropdown(this)">
+                                               onfocus="showProductDropdown(this)" autocomplete="off">
                                         <div class="product-dropdown" style="display: none;">
                                             <div class="product-dropdown-list"></div>
                                         </div>

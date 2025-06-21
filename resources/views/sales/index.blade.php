@@ -108,7 +108,7 @@
                             <div class="client-search-container">
                                 <input type="text" class="client-search-input form-control"
                                        placeholder="Начните вводить имя, инстаграм или email клиента..."
-                                       oninput="searchClients(this)" onfocus="showClientDropdown(this)">
+                                       oninput="searchClients(this)" onfocus="showClientDropdown(this)" autocomplete="off">
                                 <div class="client-dropdown" style="display: none;">
                                     <div class="client-dropdown-list"></div>
                                 </div>
@@ -140,7 +140,7 @@
                                         <input type="text" class="product-search-input form-control"
                                                placeholder="Начните вводить название товара..."
                                                oninput="searchProducts(this)"
-                                               onfocus="showProductDropdown(this)">
+                                               onfocus="showProductDropdown(this)" autocomplete="off">
                                         <div class="product-dropdown" style="display: none;">
                                             <div class="product-dropdown-list"></div>
                                         </div>
@@ -191,7 +191,7 @@
                                         <input type="text" class="product-search-input form-control"
                                                placeholder="Начните вводить название товара..."
                                                oninput="searchProducts(this)"
-                                               onfocus="showProductDropdown(this)">
+                                               onfocus="showProductDropdown(this)" autocomplete="off">
                                         <div class="product-dropdown" style="display: none;">
                                             <div class="product-dropdown-list"></div>
                                         </div>
@@ -471,7 +471,7 @@
                                         <input type="text" class="client-search-input form-control" placeholder="Начните вводить имя, инстаграм или email клиента..."
                                                value="${data.sale.client.name}${data.sale.client.instagram ? ` (@${data.sale.client.instagram})` : ''}"
                                                oninput="searchClients(this)"
-                                               onfocus="showClientDropdown(this)">
+                                               onfocus="showClientDropdown(this)" autocomplete="off">
                                         <div class="client-dropdown" style="display: none;">
                                             <div class="client-dropdown-list"></div>
                                         </div>
@@ -496,7 +496,7 @@
                                             <div class="product-search-container">
                                                 <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
                                                        oninput="searchProducts(this)"
-                                                       onfocus="showProductDropdown(this)">
+                                                       onfocus="showProductDropdown(this)" autocomplete="off">
                                                 <div class="product-dropdown" style="display: none;">
                                                     <div class="product-dropdown-list"></div>
                                                 </div>
@@ -536,7 +536,7 @@
                                                     <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
                                                            value="${item.product.name}"
                                                            oninput="searchProducts(this)"
-                                                           onfocus="showProductDropdown(this)">
+                                                           onfocus="showProductDropdown(this)" autocomplete="off">
                                                     <div class="product-dropdown" style="display: none;">
                                                         <div class="product-dropdown-list"></div>
                                                     </div>

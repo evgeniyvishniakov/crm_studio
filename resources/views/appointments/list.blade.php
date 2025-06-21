@@ -1141,7 +1141,7 @@
                                 <input type="text" class="client-search-input form-control"
                                        placeholder="Начните вводить имя, инстаграм или email клиента..."
                                        oninput="searchClients(this)"
-                                       onfocus="searchClients(this)">
+                                       onfocus="searchClients(this)" autocomplete="off">
                                 <input type="hidden" name="client_id" class="client-id-hidden" value="">
                                 <div class="client-dropdown" style="display: none;">
                                     <div class="client-dropdown-list"></div>
@@ -1425,7 +1425,7 @@
                                        id="productSearchInput"
                                        placeholder="Начните вводить название товара..."
                                        oninput="searchProducts(this)"
-                                       onfocus="showProductDropdown(this)">
+                                       onfocus="showProductDropdown(this)" autocomplete="off">
                                 <div class="product-dropdown" style="display: none;">
                                     <div class="product-dropdown-list"></div>
                                 </div>
@@ -1751,7 +1751,7 @@
                                    id="productSearchInput"
                                    placeholder="Начните вводить название товара..."
                                    oninput="searchProducts(this)"
-                                   onfocus="showProductDropdown(this)">
+                                   onfocus="showProductDropdown(this)" autocomplete="off">
                             <div class="product-dropdown" style="display: none;">
                                 <div class="product-dropdown-list"></div>
                             </div>
@@ -2203,7 +2203,7 @@
                                        placeholder="Начните вводить имя, инстаграм или email клиента..."
                                        value="${escapeHtml(getClientDisplayName(appointment.client_id))}"
                                        oninput="searchClients(this)"
-                                       onfocus="searchClients(this)">
+                                       onfocus="searchClients(this)" autocomplete="off">
                                 <input type="hidden" name="client_id" class="client-id-hidden" value="${appointment.client_id}">
                                 <div class="client-dropdown" style="display: none;">
                                     <div class="client-dropdown-list"></div>
@@ -2684,7 +2684,7 @@
                                            id="productSearchInput"
                                            placeholder="Начните вводить название товара..."
                                            oninput="searchProducts(this)"
-                                           onfocus="showProductDropdown(this)">
+                                           onfocus="showProductDropdown(this)" autocomplete="off">
                                     <div class="product-dropdown" style="display: none;">
                                         <div class="product-dropdown-list"></div>
                                     </div>
