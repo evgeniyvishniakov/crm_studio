@@ -69,7 +69,38 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        return view('dashboard.index', compact('servicesCount', 'clientsCount', 'appointmentsCount', 'totalExpenses', 'showDynamics', 'servicesRevenue', 'productsRevenue', 'totalProfit', 'upcomingAppointments'));
+        // Данные для виджета "Краткий отчёт за сегодня"
+        $todayDate = Carbon::today();
+
+        // 1. Прибыль с услуг за сегодня
+        $todayServicesProfit = Appointment::where('status', 'completed')
+            ->whereDate('date', $todayDate)
+            ->sum('price');
+
+        // 2. Прибыль с товаров за сегодня
+        $todayProductsProfit = SaleItem::whereHas('sale', function($q) use ($todayDate) {
+                $q->whereDate('date', $todayDate);
+            })
+            ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
+            ->value('profit') ?? 0;
+
+        // 3. Услуг оказано сегодня
+        $todayCompletedServices = Appointment::where('status', 'completed')
+            ->whereDate('date', $todayDate)
+            ->count();
+        
+        // 4. Товаров продано сегодня (сумма всех quantity из SaleItem)
+        $todaySoldProducts = SaleItem::whereHas('sale', function($q) use ($todayDate) {
+                $q->whereDate('date', $todayDate);
+            })
+            ->sum('quantity');
+
+        return view('dashboard.index', compact(
+            'servicesCount', 'clientsCount', 'appointmentsCount', 'totalExpenses', 
+            'showDynamics', 'servicesRevenue', 'productsRevenue', 'totalProfit', 
+            'upcomingAppointments', 'todayServicesProfit', 'todayProductsProfit',
+            'todayCompletedServices', 'todaySoldProducts'
+        ));
     }
 
     /**
