@@ -260,29 +260,6 @@ body {
     display: flex;
     gap: 0.5rem;
 }
-.period-btn {
-    background: #fff;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 0.5rem 1.2rem;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #64748b;
-    cursor: pointer;
-    transition: all 0.3s;
-    outline: none;
-}
-.period-btn:hover {
-    border-color: #3b82f6;
-    color: #3b82f6;
-    box-shadow: 0 2px 8px rgba(59,130,246,0.10);
-}
-.period-btn.active {
-    background: linear-gradient(135deg, #3b82f6, #60a5fa);
-    border-color: #3b82f6;
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(59,130,246,0.15);
-}
 
 /* Удаляю все ::after для .metric-toggle, если есть */
 .metric-toggle::after {
@@ -591,10 +568,10 @@ body {
                 </div>
                 <!-- Фильтры справа -->
                 <div class="period-filters" style="display: flex; gap: 0.5rem;">
-                    <button class="period-btn" data-period="30">За месяц</button>
-                    <button class="period-btn" data-period="90">За 3 месяца</button>
-                    <button class="period-btn" data-period="180">За 6 месяцев</button>
-                    <button class="period-btn" data-period="365">За год</button>
+                    <button class="tab-button" data-period="30">За месяц</button>
+                    <button class="tab-button" data-period="90">За 3 месяца</button>
+                    <button class="tab-button" data-period="180">За 6 месяцев</button>
+                    <button class="tab-button" data-period="365">За год</button>
                 </div>
             </div>
             <canvas id="universalChart" height="150"></canvas>
@@ -679,19 +656,44 @@ body {
                 <!-- 3. Краткий отчёт за сегодня -->
                 <div class="widget-card">
                     <div class="widget-content">
-                        <h3 class="widget-title">Краткий отчёт за сегодня</h3>
-                        <div style="display: flex; gap: 1.5rem; margin-top: 1.2rem; align-items: flex-end; justify-content: center; min-width: 0;">
-                            <div style="display: flex; flex-direction: column; align-items: center; min-width: 90px;">
-                                <span style="font-size: 2.1rem; font-weight: 700; color: #3b82f6; line-height: 1;">5</span>
-                                <span style="font-size: 1rem; color: #64748b;">Клиентов сегодня</span>
+                        <div class="widget-header-modern">
+                            <div class="widget-title-container">
+                                <i class="fas fa-clipboard-list summary-icon"></i>
+                                <span class="widget-title">Краткий отчёт за сегодня</span>
                             </div>
-                            <div style="display: flex; flex-direction: column; align-items: center; min-width: 120px;">
-                                <span style="font-size: 2.1rem; font-weight: 700; color: #10b981; line-height: 1;">3 200 грн</span>
-                                <span style="font-size: 1rem; color: #64748b;">Прибыль за день</span>
+                        </div>
+                        <div class="daily-summary-grid">
+                            <!-- 1. Прибыль Услуги -->
+                            <div class="summary-grid-item services-profit">
+                                <div class="item-header">
+                                    <i class="fas fa-spa item-icon"></i>
+                                    <span class="item-label">Прибыль с услуг</span>
+                                </div>
+                                <div class="item-value">{{ number_format($todayServicesProfit ?? 2000, 0, '.', ' ') }} <small>грн</small></div>
                             </div>
-                            <div style="display: flex; flex-direction: column; align-items: center; min-width: 90px;">
-                                <span style="font-size: 2.1rem; font-weight: 700; color: #8b5cf6; line-height: 1;">4</span>
-                                <span style="font-size: 1rem; color: #64748b;">Завершено процедур</span>
+                            <!-- 2. Прибыль Товары -->
+                            <div class="summary-grid-item products-profit">
+                                <div class="item-header">
+                                    <i class="fas fa-boxes-stacked item-icon"></i>
+                                    <span class="item-label">Прибыль с товаров</span>
+                                </div>
+                                <div class="item-value">{{ number_format($todayProductsProfit ?? 1200, 0, '.', ' ') }} <small>грн</small></div>
+                            </div>
+                            <!-- 3. Услуг оказано -->
+                            <div class="summary-grid-item services-count">
+                                <div class="item-header">
+                                    <i class="fas fa-check-circle item-icon"></i>
+                                    <span class="item-label">Услуг оказано</span>
+                                </div>
+                                <div class="item-value">{{ $todayCompletedServices ?? 4 }}</div>
+                            </div>
+                            <!-- 4. Товаров продано -->
+                            <div class="summary-grid-item products-count">
+                                <div class="item-header">
+                                    <i class="fas fa-shopping-basket item-icon"></i>
+                                    <span class="item-label">Товаров продано</span>
+                                </div>
+                                <div class="item-value">{{ $todaySoldProducts ?? 8 }}</div>
                             </div>
                         </div>
                     </div>
@@ -1292,9 +1294,9 @@ body {
         // Фильтры периода
         // В обработчике смены периода (period-btn) замените текущий код на этот:
         // В обработчике смены периода (period-btn) замените текущий код на этот:
-        document.querySelectorAll('.period-btn').forEach(btn => {
+        document.querySelectorAll('.period-filters .tab-button').forEach(btn => {
             btn.addEventListener('click', function() {
-                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.period-filters .tab-button').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 currentPeriod = this.dataset.period;
 
@@ -1736,7 +1738,7 @@ body {
         }
 
         // По умолчанию активна кнопка 'За месяц'
-        document.querySelectorAll('.period-btn').forEach(btn => {
+        document.querySelectorAll('.period-filters .tab-button').forEach(btn => {
             btn.classList.remove('active');
             if (btn.getAttribute('data-period') === '30') btn.classList.add('active');
         });
@@ -2179,6 +2181,68 @@ body {
     </style>
 
     <style>
+    /* Краткий отчет за сегодня - новый дизайн 2x2 */
+    .daily-summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+        margin-top: 1.2rem;
+        flex-grow: 1; /* Чтобы сетка заняла все доступное место */
+    }
+    .summary-grid-item {
+        background: #fdfdff;
+        border-radius: 12px;
+        padding: 1.1rem;
+        border: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .summary-grid-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    }
+    .item-header {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.5rem;
+    }
+    .item-icon {
+        font-size: 1.1rem;
+    }
+    .item-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #4a5568;
+    }
+    .item-value {
+        font-size: 2rem;
+        font-weight: 700;
+        text-align: right;
+        line-height: 1.1;
+    }
+    .item-value small {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #9ca3af;
+    }
+    /* Цвета */
+    .summary-grid-item.services-profit .item-icon,
+    .summary-grid-item.services-profit .item-value { color: #10b981; } /* Зеленый */
+
+    .summary-grid-item.products-profit .item-icon,
+    .summary-grid-item.products-profit .item-value { color: #3b82f6; } /* Синий */
+
+    .summary-grid-item.services-count .item-icon,
+    .summary-grid-item.services-count .item-value { color: #8b5cf6; } /* Фиолетовый */
+
+    .summary-grid-item.products-count .item-icon,
+    .summary-grid-item.products-count .item-value { color: #f59e0b; } /* Оранжевый */
+    </style>
+
+    <style>
     .calendar-widget {
         min-width: 0;
         /* Было padding: 0, возвращаем стандартный отступ виджета */
@@ -2218,6 +2282,10 @@ body {
     .list-icon {
         font-size: 1.2rem;
         color: #03a813;
+    }
+    .summary-icon {
+        font-size: 1.2rem;
+        color: #f59e0b;
     }
     .calendar-nav-group {
         display: flex;
