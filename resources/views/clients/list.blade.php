@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="clients-container">
+    <div class="dashboard-container">
         <div class="clients-header">
             <h1>Клиенты</h1>
             <div id="notification"></div>

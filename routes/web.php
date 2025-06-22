@@ -10,6 +10,9 @@ use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\ExpensesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ClientReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,8 +26,6 @@ use App\Http\Controllers\DashboardController;
 */
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\ProductController;
 
 Route::prefix('clients')->group(function () {
     Route::get('/', [ClientController::class, 'index'])->name('clients.list');
@@ -36,9 +37,12 @@ Route::prefix('clients')->group(function () {
     Route::get('/{client}/edit', [ClientController::class, 'edit'])->name('clients.edit');
     Route::put('/{client}', [ClientController::class, 'update'])->name('clients.update');
 });
+
+// Отчеты по клиентам
+Route::get('/reports/clients', [ClientReportController::class, 'index'])->name('reports.clients.index');
+
 Route::resource('products', ProductController::class);
 Route::post('/products/{product}/remove-photo', [ProductController::class, 'removePhoto'])->name('products.remove-photo');
-
 
 Route::resource('warehouse', WarehouseController::class);
 Route::get('/warehouse/products', [WarehouseController::class, 'getProducts'])->name('warehouse.products');
@@ -51,7 +55,8 @@ Route::prefix('sales')->group(function () {
     Route::get('/{sale}/edit', [SaleController::class, 'edit'])->name('sales.edit');
     Route::put('/{sale}', [SaleController::class, 'update'])->name('sales.update');
     Route::delete('/{sale}', [SaleController::class, 'destroy'])->name('sales.destroy');
-    Route::delete('/{sale}/items/{item}', [SaleController::class, 'deleteItem'])->name('sales.items.delete');});
+    Route::delete('/{sale}/items/{item}', [SaleController::class, 'deleteItem'])->name('sales.items.delete');
+});
 
 Route::resource('services', ServiceController::class);
 

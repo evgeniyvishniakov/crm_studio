@@ -78,6 +78,19 @@
             height: 160px;
         }
         
+        /* Это правило не дает иконке активного пункта меню становиться синей */
+        /*
+        .navbar .navbar-nav li.active > a .menu-icon {
+            color: #555 !important;
+        }
+        */
+
+        /* Делаем иконку активного пункта светло-голубой, как на дашборде */
+        .navbar .navbar-nav li.active > a .menu-icon {
+            color: #03a9f3 !important; /* Цвет текста, который мы хотим для иконки */
+            opacity: 0.7 !important; /* Делаем ее полупрозрачной для "светлого" эффекта */
+        }
+        
         /* Одинаковый светло-синий цвет для активного родителя и дочернего пункта */
         .menu-item-has-children.active > a,
         .sub-menu li.active > a,
@@ -134,6 +147,9 @@
                 </li>
                 <li class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}">
                     <a href="{{ route('appointments.index') }}"> <i class="menu-icon fa fa-calendar"></i>Записи</a>
+                </li>
+                <li class="{{ request()->routeIs('reports.clients.*') ? 'active' : '' }}">
+                    <a href="{{ route('reports.clients.index') }}"><i class="menu-icon fa fa-bar-chart"></i>Отчеты</a>
                 </li>
 
                 <li class="menu-title">Товарооборот</li>
@@ -376,6 +392,8 @@ $(document).ready(function() {
     });
 });
 </script>
+
+@stack('scripts')
 
 </body>
 </html>
