@@ -424,6 +424,66 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // --- Функция для обновления графика статусов записей ---
+    async function updateAppointmentStatusAnalytics(period = 'week') {
+        console.log(`Запрос данных для статусов записей за период: ${period}`);
+        if (!charts.statusChart) return;
+
+        try {
+            const response = await fetch(`/reports/appointment-status-data?period=${period}`);
+            if (!response.ok) {
+                throw new Error(`Сетевой ответ не был успешным. Статус: ${response.status}.`);
+            }
+            const data = await response.json();
+
+            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i]})`);
+            
+            updateChart(charts.statusChart, labelsWithCounts, [{
+                data: data.data,
+                backgroundColor: data.colors,
+                hoverOffset: 4
+            }]);
+        } catch (error) {
+            console.error('Ошибка при загрузке данных о статусах записей:', error);
+        }
+    }
+
+    // --- Функция для обновления популярности услуг ---
+    async function updateServicePopularityAnalytics(period = 'week') {
+        console.log(`Запрос данных для популярности услуг за период: ${period}`);
+        if (!charts.servicesChart) return;
+
+        try {
+            const response = await fetch(`/reports/service-popularity-data?period=${period}`);
+            if (!response.ok) {
+                throw new Error(`Сетевой ответ не был успешным. Статус: ${response.status}.`);
+            }
+            const data = await response.json();
+            
+            // Устанавливаем максимальное значение для шкалы X
+            if (charts.servicesChart && data.data && data.data.length > 0) {
+                const maxValue = Math.max(...data.data);
+                const servicesChart = charts.servicesChart;
+                if (!servicesChart.options.scales) servicesChart.options.scales = {};
+                if (!servicesChart.options.scales.x) servicesChart.options.scales.x = {};
+                servicesChart.options.scales.x.suggestedMax = maxValue + 1;
+                servicesChart.options.scales.x.ticks = { precision: 0 };
+            } else if (charts.servicesChart) {
+                delete charts.servicesChart.options.scales.x.suggestedMax;
+            }
+
+            updateChart(charts.servicesChart, data.labels, [{
+                label: 'Количество записей',
+                data: data.data,
+                backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                borderColor: 'rgba(139, 92, 246, 1)',
+                borderWidth: 1
+            }]);
+        } catch (error) {
+            console.error('Ошибка при загрузке данных о популярности услуг:', error);
+        }
+    }
+
     // --- Вспомогательная функция для обновления одного графика ---
     function updateChart(chart, labels, datasets) {
         chart.data.labels = labels;
@@ -443,6 +503,23 @@ document.addEventListener('DOMContentLoaded', function() {
             mainPanes.forEach(pane => {
                 pane.style.display = pane.id === targetPaneId ? 'block' : 'none';
             });
+            
+            // Получаем активный период
+            const activeButton = document.querySelector('.filter-section .filter-button.active');
+            const periodKey = activeButton.textContent.trim();
+            const period = periodMapping[periodKey];
+
+            // Принудительно обновляем данные для активной вкладки
+            if (period) {
+                 if (targetPaneId === 'clients-analytics') {
+                    updateClientAnalytics(period);
+                } else if (targetPaneId === 'appointments-analytics') {
+                    updateAppointmentsAnalytics(period);
+                    updateAppointmentStatusAnalytics(period);
+                    updateServicePopularityAnalytics(period);
+                }
+                // Для финансовой аналитики пока нет динамической загрузки
+            }
         });
     });
 
@@ -465,43 +542,55 @@ document.addEventListener('DOMContentLoaded', function() {
             const periodKey = button.textContent.trim();
             const period = periodMapping[periodKey];
             if (period) {
-                updateClientAnalytics(period);
-                updateAppointmentsAnalytics(period);
+                const activeTabId = document.querySelector('.tab-button.active').getAttribute('data-tab');
+                if (activeTabId === 'clients-analytics') {
+                    updateClientAnalytics(period);
+                } else if (activeTabId === 'appointments-analytics') {
+                    updateAppointmentsAnalytics(period);
+                    updateAppointmentStatusAnalytics(period);
+                    updateServicePopularityAnalytics(period);
+                }
+                // Для финансовой аналитики пока нет динамической загрузки
             }
         });
     });
 
-    // --- Первоначальная загрузка ---
+    // --- Первоначальная загрузка для первой активной вкладки ---
     initializeCharts();
-    updateClientAnalytics();
-    updateAppointmentsAnalytics();
+    const initialPeriodButton = document.querySelector('.filter-section .filter-button.active');
+    const initialPeriod = periodMapping[initialPeriodButton.textContent.trim()];
+    if (initialPeriod) {
+        updateClientAnalytics(initialPeriod);
+    }
 
     // --- Графики для вкладки "Аналитика по записям" (статичные данные) ---
     // Загруженность по дням - теперь обновляется динамически
 
     // Статусы записей
     if (charts.statusChart) {
-        updateChart(charts.statusChart,
-            ['Выполнено', 'Отменено', 'Не пришел'],
-            [{
-                data: [250, 45, 15],
-                backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
-                hoverOffset: 4
-            }]
-        );
+        // Этот блок теперь не нужен, так как данные загружаются динамически
+        // updateChart(charts.statusChart,
+        //     ['Выполнено', 'Отменено', 'Не пришел'],
+        //     [{
+        //         data: [250, 45, 15],
+        //         backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+        //         hoverOffset: 4
+        //     }]
+        // );
     }
     // Популярность услуг
     if (charts.servicesChart) {
-        updateChart(charts.servicesChart,
-            ['Стрижка женская', 'Маникюр + Гель-лак', 'Окрашивание корней', 'Педикюр', 'Коррекция бровей', 'Укладка', 'Макияж'],
-            [{
-                label: 'Количество записей',
-                data: [80, 75, 60, 50, 45, 30, 15],
-                backgroundColor: 'rgba(139, 92, 246, 0.7)',
-                borderColor: 'rgba(139, 92, 246, 1)',
-                borderWidth: 1
-            }]
-        );
+        // Этот блок теперь не нужен, так как данные загружаются динамически
+        // updateChart(charts.servicesChart,
+        //     ['Стрижка женская', 'Маникюр + Гель-лак', 'Окрашивание корней', 'Педикюр', 'Коррекция бровей', 'Укладка', 'Макияж'],
+        //     [{
+        //         label: 'Количество записей',
+        //         data: [80, 75, 60, 50, 45, 30, 15],
+        //         backgroundColor: 'rgba(139, 92, 246, 0.7)',
+        //         borderColor: 'rgba(139, 92, 246, 1)',
+        //         borderWidth: 1
+        //     }]
+        // );
     }
 });
 </script>

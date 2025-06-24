@@ -646,6 +646,133 @@ class AppointmentsController extends Controller
     }
 
     /**
+     * Получение данных о статусах записей для отчета.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAppointmentStatusData(Request $request)
+    {
+        $period = $request->get('period', 'week');
+        $endDate = Carbon::now();
+
+        switch ($period) {
+            case '2weeks':
+                $startDate = $endDate->copy()->subWeeks(2);
+                break;
+            case 'month':
+                $startDate = $endDate->copy()->subMonth();
+                break;
+            case 'half_year':
+                $startDate = $endDate->copy()->subMonths(6);
+                break;
+            case 'year':
+                $startDate = $endDate->copy()->subYear();
+                break;
+            case 'week':
+            default:
+                $startDate = $endDate->copy()->subWeek();
+                break;
+        }
+
+        $statuses = Appointment::whereBetween('date', [$startDate, $endDate])
+            ->select('status', DB::raw('count(*) as count'))
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->all();
+        
+        $statusLabels = [
+            'completed' => 'Выполнено',
+            'cancelled' => 'Отменено',
+            'pending' => 'В ожидании',
+            'rescheduled' => 'Перенесено',
+        ];
+        
+        $labels = [];
+        $data = [];
+        $backgroundColors = [
+            'completed' => '#10b981',
+            'cancelled' => '#ef4444',
+            'pending' => '#f59e0b',
+            'rescheduled' => '#3b82f6',
+        ];
+        $colors = [];
+
+        foreach ($statuses as $status => $count) {
+            if (isset($statusLabels[$status])) {
+                $labels[] = $statusLabels[$status];
+                $data[] = $count;
+                $colors[] = $backgroundColors[$status] ?? '#6b7280';
+            }
+        }
+        
+        if (empty($labels)) {
+            return response()->json([
+                'labels' => ['Нет данных'],
+                'data' => [0],
+                'colors' => ['#d1d5db']
+            ]);
+        }
+
+        return response()->json([
+            'labels' => $labels,
+            'data' => $data,
+            'colors' => $colors,
+        ]);
+    }
+
+    /**
+     * Получение данных о популярности услуг для отчета.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getServicePopularityData(Request $request)
+    {
+        $period = $request->get('period', 'week');
+        $endDate = Carbon::now();
+
+        switch ($period) {
+            case '2weeks':
+                $startDate = $endDate->copy()->subWeeks(2);
+                break;
+            case 'month':
+                $startDate = $endDate->copy()->subMonth();
+                break;
+            case 'half_year':
+                $startDate = $endDate->copy()->subMonths(6);
+                break;
+            case 'year':
+                $startDate = $endDate->copy()->subYear();
+                break;
+            case 'week':
+            default:
+                $startDate = $endDate->copy()->subWeek();
+                break;
+        }
+
+        $servicePopularity = Appointment::whereBetween('date', [$startDate, $endDate])
+            ->join('services', 'appointments.service_id', '=', 'services.id')
+            ->select('services.name', DB::raw('count(appointments.id) as count'))
+            ->groupBy('services.name')
+            ->orderBy('count', 'desc')
+            ->limit(10) // Ограничим топ-10 для наглядности
+            ->pluck('count', 'name');
+
+        if ($servicePopularity->isEmpty()) {
+            return response()->json([
+                'labels' => ['Нет данных'],
+                'data' => [0]
+            ]);
+        }
+
+        return response()->json([
+            'labels' => $servicePopularity->keys(),
+            'data' => $servicePopularity->values()
+        ]);
+    }
+
+    /**
      * Предоставляет данные о количестве записей по дням, неделям или месяцам.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -728,5 +855,4 @@ class AppointmentsController extends Controller
 
         return response()->json(['labels' => $labels, 'data' => $values]);
     }
-
 }

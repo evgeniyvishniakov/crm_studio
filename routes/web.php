@@ -143,3 +143,5 @@ Route::prefix('security')->group(function () {
 });
 
 Route::get('/reports/appointments-by-day', [AppointmentsController::class, 'getAppointmentsByDay']);
+Route::get('/reports/appointment-status-data', [AppointmentsController::class, 'getAppointmentStatusData']);
+Route::get('/reports/service-popularity-data', [AppointmentsController::class, 'getServicePopularityData']);
