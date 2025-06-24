@@ -13,7 +13,7 @@
 
     <!-- Новый блок фильтров -->
     <div class="filter-section">
-        <div class="period-filters">
+        <div class="period-filters" style="display:flex;align-items:center;gap:8px;">
             <button class="filter-button active">За неделю</button>
             <button class="filter-button">За 2 недели</button>
             <button class="filter-button">За месяц</button>
@@ -22,6 +22,7 @@
             <button class="filter-button calendar-button" id="dateRangePicker">
                 <i class="fa fa-calendar"></i>
             </button>
+            <span id="calendarRangeDisplay" style="min-width:110px;text-align:center;vertical-align:middle;font-family:inherit;font-size:14px;font-weight:600;color: #64748b;"></span>
         </div>
     </div>
 
@@ -128,6 +129,10 @@
 @push('scripts')
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Flatpickr для выбора диапазона дат -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM готов. Начинаем инициализацию отчетов.');
@@ -250,10 +255,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Функция для обновления данных на всех графиках ---
-    async function updateClientAnalytics(period = 'week') {
-        console.log(`Запрос данных для аналитики клиентов за период: ${period}`);
+    async function updateClientAnalytics(period = 'week', params = null) {
+        let url = '/reports/client-analytics';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
+        console.log(`Запрос данных для аналитики клиентов за период: ${url}`);
         try {
-            const response = await fetch(`/reports/client-analytics?period=${period}`);
+            const response = await fetch(url);
             console.log('Получен ответ от сервера:', response);
 
             if (!response.ok) {
@@ -364,12 +375,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Функция для обновления данных на вкладке "Аналитика по записям" ---
-    async function updateAppointmentsAnalytics(period = 'week') {
-        console.log(`Запрос данных для аналитики записей за период: ${period}`);
+    async function updateAppointmentsAnalytics(period = 'week', params = null) {
+        let url = '/reports/appointments-by-day';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
+        console.log(`Запрос данных для аналитики записей за период: ${url}`);
         if (!charts.loadChart) return;
 
         try {
-            const response = await fetch(`/reports/appointments-by-day?period=${period}`);
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Сетевой ответ не был успешным. Статус: ${response.status}.`);
             }
@@ -429,12 +446,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Функция для обновления графика статусов записей ---
-    async function updateAppointmentStatusAnalytics(period = 'week') {
-        console.log(`Запрос данных для статусов записей за период: ${period}`);
+    async function updateAppointmentStatusAnalytics(period = 'week', params = null) {
+        let url = '/reports/appointment-status-data';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
+        console.log(`Запрос данных для статусов записей за период: ${url}`);
         if (!charts.statusChart) return;
 
         try {
-            const response = await fetch(`/reports/appointment-status-data?period=${period}`);
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Сетевой ответ не был успешным. Статус: ${response.status}.`);
             }
@@ -453,13 +476,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Функция для обновления популярности услуг ---
-    async function updateServicePopularityAnalytics(period = 'week') {
-        console.log(`Запрос данных для популярности услуг за период: ${period}`);
+    async function updateServicePopularityAnalytics(period = 'week', params = null) {
+        let url = '/reports/service-popularity-data';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
+        console.log(`Запрос данных для популярности услуг за период: ${url}`);
         const servicesChart = charts.servicesChart;
         if (!servicesChart) return;
 
         try {
-            const response = await fetch(`/reports/service-popularity-data?period=${period}`);
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error(`Сетевой ответ не был успешным. Статус: ${response.status}.`);
             }
@@ -501,6 +530,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Вспомогательная функция для обновления одного графика ---
     function updateChart(chart, labels, datasets) {
+        // Если размеры ещё не рассчитаны — отложить обновление
+        if (chart && chart.chartArea && (chart.chartArea.width === 0 || chart.chartArea.height === 0)) {
+            setTimeout(() => updateChart(chart, labels, datasets), 120);
+            return;
+        }
         // Градиент для bar и line графиков
         if (chart && chart.config && chart.config.type) {
             const ctx = chart.ctx;
@@ -584,12 +618,10 @@ document.addEventListener('DOMContentLoaded', function() {
             mainPanes.forEach(pane => {
                 pane.style.display = pane.id === targetPaneId ? 'block' : 'none';
             });
-            
             // Получаем активный период
             const activeButton = document.querySelector('.filter-section .filter-button.active');
             const periodKey = activeButton.textContent.trim();
             const period = periodMapping[periodKey];
-
             // Принудительно обновляем данные для активной вкладки
             if (period) {
                  if (targetPaneId === 'clients-analytics') {
@@ -605,6 +637,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateTopServicesByRevenueAnalytics(period);
                 }
             }
+            // ФИКС Chart.js: после показа вкладки пересчитываем размеры и обновляем все графики
+            setTimeout(() => {
+                Object.values(charts).forEach(chart => {
+                    if (chart && chart.resize) chart.resize();
+                    if (chart && chart.update) chart.update();
+                });
+            }, 120);
         });
     });
 
@@ -700,10 +739,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Функция для обновления топ-5 клиентов по выручке ---
-    async function updateTopClientsByRevenueAnalytics(period = 'week') {
+    async function updateTopClientsByRevenueAnalytics(period = 'week', params = null) {
+        let url = '/reports/top-clients-by-revenue';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
         if (!charts.topClientsByRevenueChart) return;
         try {
-            const response = await fetch(`/reports/top-clients-by-revenue?period=${period}`);
+            const response = await fetch(url);
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
             // labels с числом в скобках
@@ -721,10 +766,16 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (e) { console.error('Ошибка загрузки топ-5 по выручке', e); }
     }
     // --- Функция для обновления динамики среднего чека ---
-    async function updateAvgCheckDynamicsAnalytics(period = 'week') {
+    async function updateAvgCheckDynamicsAnalytics(period = 'week', params = null) {
+        let url = '/reports/avg-check-dynamics';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
         if (!charts.avgCheckChart) return;
         try {
-            const response = await fetch(`/reports/avg-check-dynamics?period=${period}`);
+            const response = await fetch(url);
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
             updateChart(charts.avgCheckChart, data.labels, [{
@@ -734,10 +785,16 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (e) { console.error('Ошибка загрузки динамики среднего чека', e); }
     }
     // --- Функция для обновления LTV по типам клиентов ---
-    async function updateLtvByClientTypeAnalytics(period = 'week') {
+    async function updateLtvByClientTypeAnalytics(period = 'week', params = null) {
+        let url = '/reports/ltv-by-client-type';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
         if (!charts.ltvChart) return;
         try {
-            const response = await fetch(`/reports/ltv-by-client-type?period=${period}`);
+            const response = await fetch(url);
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
             // Формируем labels с числами в скобках
@@ -749,10 +806,16 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (e) { console.error('Ошибка загрузки LTV', e); }
     }
     // --- Функция для обновления топ-услуг по выручке ---
-    async function updateTopServicesByRevenueAnalytics(period = 'week') {
+    async function updateTopServicesByRevenueAnalytics(period = 'week', params = null) {
+        let url = '/reports/top-services-by-revenue';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
         if (!charts.topServicesByRevenueChart) return;
         try {
-            const response = await fetch(`/reports/top-services-by-revenue?period=${period}`);
+            const response = await fetch(url);
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
             // Формируем labels с числами в скобках
@@ -762,6 +825,60 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: data.data
             }]);
         } catch (e) { console.error('Ошибка загрузки топ-услуг по выручке', e); }
+    }
+
+    // --- Логика для календаря ---
+    const calendarBtn = document.getElementById('dateRangePicker');
+    const calendarRangeDisplay = document.getElementById('calendarRangeDisplay');
+    let calendarInstance = null;
+    let selectedRange = null;
+    calendarBtn.addEventListener('click', function(e) {
+        if (!calendarInstance) {
+            calendarInstance = flatpickr(calendarBtn, {
+                mode: 'range',
+                dateFormat: 'Y-m-d',
+                locale: 'ru',
+                onClose: function(selectedDates, dateStr) {
+                    if (selectedDates.length === 2) {
+                        selectedRange = {
+                            start: selectedDates[0],
+                            end: selectedDates[1]
+                        };
+                        filterButtons.forEach(btn => btn.classList.remove('active'));
+                        calendarBtn.classList.add('active');
+                        // Отображаем выбранный диапазон
+                        const format = d => d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+                        calendarRangeDisplay.textContent = `${format(selectedRange.start)} – ${format(selectedRange.end)}`;
+                        updateAllChartsWithRange(selectedRange.start, selectedRange.end);
+                    }
+                }
+            });
+        }
+        calendarInstance.open();
+    });
+
+    // При выборе фиксированного периода очищаем отображение диапазона
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            if (button.id !== 'dateRangePicker') {
+                calendarRangeDisplay.textContent = '';
+            }
+        });
+    });
+
+    function updateAllChartsWithRange(startDate, endDate) {
+        // Форматируем даты строго как локальные YYYY-MM-DD
+        const format = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const params = `start_date=${format(startDate)}&end_date=${format(endDate)}`;
+        // Для каждой функции обновления графиков передаём диапазон
+        updateClientAnalytics(null, params);
+        updateAppointmentsAnalytics(null, params);
+        updateAppointmentStatusAnalytics(null, params);
+        updateServicePopularityAnalytics(null, params);
+        updateTopClientsByRevenueAnalytics(null, params);
+        updateAvgCheckDynamicsAnalytics(null, params);
+        updateLtvByClientTypeAnalytics(null, params);
+        updateTopServicesByRevenueAnalytics(null, params);
     }
 });
 

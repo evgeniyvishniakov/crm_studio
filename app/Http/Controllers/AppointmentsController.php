@@ -653,26 +653,21 @@ class AppointmentsController extends Controller
      */
     public function getAppointmentStatusData(Request $request)
     {
-        $period = $request->get('period', 'week');
-        $endDate = Carbon::now();
-
-        switch ($period) {
-            case '2weeks':
-                $startDate = $endDate->copy()->subWeeks(2);
-                break;
-            case 'month':
-                $startDate = $endDate->copy()->subMonth();
-                break;
-            case 'half_year':
-                $startDate = $endDate->copy()->subMonths(6);
-                break;
-            case 'year':
-                $startDate = $endDate->copy()->subYear();
-                break;
-            case 'week':
-            default:
-                $startDate = $endDate->copy()->subWeek();
-                break;
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        if ($startDate && $endDate) {
+            $startDate = Carbon::parse($startDate);
+            $endDate = Carbon::parse($endDate);
+        } else {
+            $period = $request->get('period', 'week');
+            $endDate = Carbon::now();
+            switch ($period) {
+                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
+                case 'month': $startDate = $endDate->copy()->subMonth(); break;
+                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
+                case 'year': $startDate = $endDate->copy()->subYear(); break;
+                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+            }
         }
 
         $statuses = Appointment::whereBetween('date', [$startDate, $endDate])
@@ -729,26 +724,21 @@ class AppointmentsController extends Controller
      */
     public function getServicePopularityData(Request $request)
     {
-        $period = $request->get('period', 'week');
-        $endDate = Carbon::now();
-
-        switch ($period) {
-            case '2weeks':
-                $startDate = $endDate->copy()->subWeeks(2);
-                break;
-            case 'month':
-                $startDate = $endDate->copy()->subMonth();
-                break;
-            case 'half_year':
-                $startDate = $endDate->copy()->subMonths(6);
-                break;
-            case 'year':
-                $startDate = $endDate->copy()->subYear();
-                break;
-            case 'week':
-            default:
-                $startDate = $endDate->copy()->subWeek();
-                break;
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        if ($startDate && $endDate) {
+            $startDate = Carbon::parse($startDate);
+            $endDate = Carbon::parse($endDate);
+        } else {
+            $period = $request->get('period', 'week');
+            $endDate = Carbon::now();
+            switch ($period) {
+                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
+                case 'month': $startDate = $endDate->copy()->subMonth(); break;
+                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
+                case 'year': $startDate = $endDate->copy()->subYear(); break;
+                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+            }
         }
 
         $servicePopularity = Appointment::whereBetween('date', [$startDate, $endDate])
@@ -780,26 +770,22 @@ class AppointmentsController extends Controller
      */
     public function getAppointmentsByDay(Request $request)
     {
-        $periodName = $request->input('period', 'week');
-        $endDate = Carbon::today()->endOfDay();
-        
-        switch ($periodName) {
-            case '2weeks':
-                $startDate = Carbon::now()->subWeeks(2);
-                break;
-            case 'month':
-                $startDate = Carbon::now()->subMonth();
-                break;
-            case 'half_year':
-                $startDate = Carbon::now()->subMonths(6);
-                break;
-            case 'year':
-                $startDate = Carbon::now()->subYear();
-                break;
-            case 'week':
-            default:
-                $startDate = Carbon::now()->subWeek();
-                break;
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        if ($startDate && $endDate) {
+            $startDate = Carbon::parse($startDate);
+            $endDate = Carbon::parse($endDate);
+            $period = 'custom';
+        } else {
+            $period = $request->get('period', 'week');
+            $endDate = Carbon::now();
+            switch ($period) {
+                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
+                case 'month': $startDate = $endDate->copy()->subMonth(); break;
+                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
+                case 'year': $startDate = $endDate->copy()->subYear(); break;
+                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+            }
         }
 
         $periodRange = [$startDate, $endDate];
@@ -809,7 +795,7 @@ class AppointmentsController extends Controller
         $dateGroupFormatter = null;
         $labelFormatter = null;
 
-        switch ($periodName) {
+        switch ($period) {
             case 'half_year': // Группировка по неделям
                 $dateGroupRaw = 'DATE_FORMAT(date, "%x-%v")'; // ISO Year-Week
                 $periodIterator = CarbonPeriod::create($periodRange[0], '1 week', $periodRange[1]);
@@ -861,14 +847,21 @@ class AppointmentsController extends Controller
      */
     public function getTopClientsByRevenue(Request $request)
     {
-        $period = $request->get('period', 'week');
-        $endDate = Carbon::now();
-        switch ($period) {
-            case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
-            case 'month': $startDate = $endDate->copy()->subMonth(); break;
-            case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
-            case 'year': $startDate = $endDate->copy()->subYear(); break;
-            case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        if ($startDate && $endDate) {
+            $startDate = Carbon::parse($startDate);
+            $endDate = Carbon::parse($endDate);
+        } else {
+            $period = $request->get('period', 'week');
+            $endDate = Carbon::now();
+            switch ($period) {
+                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
+                case 'month': $startDate = $endDate->copy()->subMonth(); break;
+                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
+                case 'year': $startDate = $endDate->copy()->subYear(); break;
+                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+            }
         }
         $clients = Client::select('name', 'id')
             ->withSum(['appointments as revenue' => function($q) use ($startDate, $endDate) {
@@ -883,18 +876,25 @@ class AppointmentsController extends Controller
     }
 
     /**
-     * Динамика среднего чека по датам
+     * Динамика среднего чека по датам (только по дням, где есть данные)
      */
     public function getAvgCheckDynamics(Request $request)
     {
-        $period = $request->get('period', 'week');
-        $endDate = Carbon::now();
-        switch ($period) {
-            case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
-            case 'month': $startDate = $endDate->copy()->subMonth(); break;
-            case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
-            case 'year': $startDate = $endDate->copy()->subYear(); break;
-            case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        if ($startDate && $endDate) {
+            $startDate = Carbon::parse($startDate);
+            $endDate = Carbon::parse($endDate);
+        } else {
+            $period = $request->get('period', 'week');
+            $endDate = Carbon::now();
+            switch ($period) {
+                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
+                case 'month': $startDate = $endDate->copy()->subMonth(); break;
+                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
+                case 'year': $startDate = $endDate->copy()->subYear(); break;
+                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+            }
         }
         $checks = Appointment::whereBetween('date', [$startDate, $endDate])
             ->selectRaw('date, AVG(price) as avg_check')
@@ -911,6 +911,22 @@ class AppointmentsController extends Controller
      */
     public function getLtvByClientType(Request $request)
     {
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        if ($startDate && $endDate) {
+            $startDate = Carbon::parse($startDate);
+            $endDate = Carbon::parse($endDate);
+        } else {
+            $period = $request->get('period', 'week');
+            $endDate = Carbon::now();
+            switch ($period) {
+                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
+                case 'month': $startDate = $endDate->copy()->subMonth(); break;
+                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
+                case 'year': $startDate = $endDate->copy()->subYear(); break;
+                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+            }
+        }
         $types = ClientType::with(['clients.sales'])->get();
         $labels = [];
         $data = [];
@@ -930,14 +946,21 @@ class AppointmentsController extends Controller
      */
     public function getTopServicesByRevenue(Request $request)
     {
-        $period = $request->get('period', 'week');
-        $endDate = Carbon::now();
-        switch ($period) {
-            case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
-            case 'month': $startDate = $endDate->copy()->subMonth(); break;
-            case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
-            case 'year': $startDate = $endDate->copy()->subYear(); break;
-            case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        if ($startDate && $endDate) {
+            $startDate = Carbon::parse($startDate);
+            $endDate = Carbon::parse($endDate);
+        } else {
+            $period = $request->get('period', 'week');
+            $endDate = Carbon::now();
+            switch ($period) {
+                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
+                case 'month': $startDate = $endDate->copy()->subMonth(); break;
+                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
+                case 'year': $startDate = $endDate->copy()->subYear(); break;
+                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+            }
         }
         $services = Service::select('name')
             ->withSum(['appointments as revenue' => function($q) use ($startDate, $endDate) {
@@ -949,5 +972,26 @@ class AppointmentsController extends Controller
         $labels = $services->pluck('name');
         $data = $services->pluck('revenue')->map(function($v){return (float)$v;});
         return response()->json(['labels'=>$labels,'data'=>$data]);
+    }
+
+    public function getClientAnalyticsData(Request $request)
+    {
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+        if ($startDate && $endDate) {
+            $startDate = Carbon::parse($startDate);
+            $endDate = Carbon::parse($endDate);
+        } else {
+            $period = $request->get('period', 'week');
+            $endDate = Carbon::now();
+            switch ($period) {
+                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
+                case 'month': $startDate = $endDate->copy()->subMonth(); break;
+                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
+                case 'year': $startDate = $endDate->copy()->subYear(); break;
+                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+            }
+        }
+        // ... остальной код, где используется $startDate, $endDate ...
     }
 }

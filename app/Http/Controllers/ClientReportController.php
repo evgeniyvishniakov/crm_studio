@@ -26,28 +26,34 @@ class ClientReportController extends Controller
 
     /**
      * Предоставляет данные для аналитики по клиентам.
+     * Теперь поддерживает диапазон дат (start_date, end_date) или стандартный период.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function getClientAnalyticsData(Request $request)
     {
-        $periodName = $request->input('period', 'week');
-        $periodRange = $this->getDateRange($periodName);
-
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        if ($startDate && $endDate) {
+            $start = Carbon::parse($startDate)->startOfDay();
+            $end = Carbon::parse($endDate)->endOfDay();
+            $periodName = 'custom';
+            $periodRange = [$start, $end];
+        } else {
+            $periodName = $request->input('period', 'week');
+            $periodRange = $this->getDateRange($periodName);
+        }
         // Определяем дату первого клиента, чтобы не строить пустой график вначале.
         $firstClientDate = Client::query()->min('created_at');
         $firstClientDate = $firstClientDate ? Carbon::parse($firstClientDate) : Carbon::now();
-
         // Начало для графика динамики - не раньше первого клиента.
         $clientDynamicsStartDate = $periodRange[0]->copy()->max($firstClientDate);
         $clientDynamicsPeriodRange = [$clientDynamicsStartDate, $periodRange[1]];
-
         $clientDynamics = $this->getClientDynamics($periodName, $clientDynamicsPeriodRange);
         $topClientsByVisits = $this->getTopClientsByVisits($periodRange);
         $newVsReturning = $this->getNewVsReturningClients($periodRange);
         $clientTypesDistribution = $this->getClientTypesDistribution($periodRange);
-
         return response()->json([
             'clientDynamics' => $clientDynamics,
             'topClientsByVisits' => $topClientsByVisits,
