@@ -906,77 +906,117 @@ body {
                 }
             ];
         }
-        const ctx = document.getElementById('universalChart').getContext('2d');
-        let universalChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: getLastNDates(7),
-                datasets: [{
-                    label: datasets[currentMetric].label,
-                    data: currentMetric === 'profit' ? [] : datasets[currentMetric].data['7'],
-                    borderColor: getMetricColor(currentMetric),
-                    backgroundColor: getMetricColor(currentMetric) + '33',
-                    tension: 0.4,
-                    fill: true,
-                    pointRadius: 0,
-                    pointHoverRadius: 6,
-                    pointHitRadius: 12,
-                    spanGaps: true
-                }]
-            },
-            options: {
-                responsive: true,
-                animation: true,
-                plugins: {
-                    legend: { display: true },
-                    tooltip: { mode: 'index', intersect: false },
-                    decimation: {
-                        enabled: true,
-                        algorithm: 'min-max'
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: {
-                            callback: function(value, index, ticks) {
-                                if (currentPeriod === '180' || currentPeriod === '365') {
-                                    return getMonthLabels(this.getLabels().length)[index];
-                                }
-                                if (currentPeriod === '7') return this.getLabelForValue(this.getLabels()[index]);
-                                const date = new Date();
-                                date.setDate(date.getDate() - (this.getLabels().length - 1 - index));
-                                if (date.getDay() === 1) {
-                                    return this.getLabelForValue(this.getLabels()[index]);
-                                }
-                                return '';
+        let universalChart = null;
+        // Функция округления до красивого значения (500 или 1000)
+        function getNiceMax(value) {
+            if (value <= 1000) return Math.ceil(value / 100) * 100;
+            if (value <= 5000) return Math.ceil(value / 500) * 500;
+            if (value <= 20000) return Math.ceil(value / 1000) * 1000;
+            return Math.ceil(value / 5000) * 5000;
+        }
+        function createUniversalChart(type, labels, data, color, labelText) {
+            const ctx = document.getElementById('universalChart').getContext('2d');
+            if (universalChart) universalChart.destroy();
+            universalChart = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: labelText,
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: function(ctx) {
+                            const chart = ctx.chart;
+                            const {ctx:canvasCtx, chartArea} = chart;
+                            if (!chartArea) return color + (type === 'bar' ? '33' : '22');
+                            if (type === 'bar') {
+                                const grad = canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                                grad.addColorStop(0, 'rgba(139,92,246,0.22)');
+                                grad.addColorStop(0.7, 'rgba(139,92,246,0.45)');
+                                grad.addColorStop(1, 'rgba(139,92,246,0.85)');
+                                return grad;
+                            } else {
+                                const grad = canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                                grad.addColorStop(0, color + '33');
+                                grad.addColorStop(1, color + '05');
+                                return grad;
                             }
+                        },
+                        tension: 0.4,
+                        fill: type !== 'bar',
+                        pointRadius: type === 'bar' ? 5 : 5,
+                        pointBackgroundColor: color,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 8,
+                        pointHitRadius: 14,
+                        spanGaps: true,
+                        borderRadius: type === 'bar' ? 8 : 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: { duration: 900, easing: 'easeOutQuart' },
+                    layout: { padding: { top: 32 } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(59,130,246,0.95)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: color,
+                            borderWidth: 1.5,
+                            cornerRadius: 8,
+                            padding: 12,
+                            caretSize: 8,
+                            displayColors: false
+                        },
+                        decimation: {
+                            enabled: true,
+                            algorithm: 'min-max'
                         }
                     },
-                    y: {
-                        beginAtZero: true,
-                        max: undefined
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                color: '#22223b',
+                                font: { size: 15, weight: '600' },
+                                padding: 8,
+                                callback: function(value, index, ticks) {
+                                    if (currentPeriod === '180' || currentPeriod === '365') {
+                                        return getMonthLabels(this.getLabels().length)[index];
+                                    }
+                                    if (currentPeriod === '7') return this.getLabelForValue(this.getLabels()[index]);
+                                    const date = new Date();
+                                    date.setDate(date.getDate() - (this.getLabels().length - 1 - index));
+                                    if (date.getDay() === 1) {
+                                        return this.getLabelForValue(this.getLabels()[index]);
+                                    }
+                                    return '';
+                                }
+                            }
+                        },
+                        y: {
+                            grid: { color: '#e5e7eb', lineWidth: 1.2 },
+                            ticks: { color: '#22223b', font: { size: 15, weight: '600' }, padding: 8 },
+                            beginAtZero: true,
+                            max: undefined
+                        }
                     }
                 }
-            }
-        });
-        // После инициализации universalChart
-        // Автоматически загружаем данные для прибыли за месяц при загрузке страницы
+            });
+            // --- Устанавливаем максимум оси Y на красивое значение ---
+            const maxValue = Math.max(...(Array.isArray(data) ? data : (data[0]?.data || [])));
+            const niceMax = maxValue > 0 ? getNiceMax(Math.ceil(maxValue * 1.10)) : undefined;
+            universalChart.options.scales.y.max = niceMax;
+            universalChart.update();
+        }
+        // Инициализация universalChart при загрузке страницы
         fetch('/api/dashboard/profit-chart?period=30')
             .then(res => res.json())
             .then(res => {
-                universalChart.data.labels = res.labels;
-                universalChart.data.datasets = [{
-                    label: 'Прибыль',
-                    data: getCumulativeData(res.data),
-                    borderColor: getMetricColor('profit'),
-                    backgroundColor: getMetricColor('profit') + '33',
-                    tension: 0.4,
-                    fill: true,
-                    pointRadius: 0,
-                    pointHoverRadius: 6,
-                    pointHitRadius: 12,
-                    spanGaps: true
-                }];
+                createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
                 const maxValue = Math.max(...getCumulativeData(res.data));
                 universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                 universalChart.update();
@@ -1004,19 +1044,7 @@ body {
                     fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            universalChart.data.labels = res.labels;
-                            universalChart.data.datasets = [{
-                                label: 'Прибыль',
-                                data: getCumulativeData(res.data),
-                                borderColor: getMetricColor('profit'),
-                                backgroundColor: getMetricColor('profit') + '33',
-                                tension: 0.4,
-                                fill: true,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                pointHitRadius: 12,
-                                spanGaps: true
-                            }];
+                            createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
                             const maxValue = Math.max(...getCumulativeData(res.data));
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
@@ -1024,26 +1052,12 @@ body {
                     return;
                 }
                 if (type === 'expenses') {
-                    // Получаем реальные расходы по API
                     fetch(`/api/dashboard/expenses-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            // Делаем накопительную линию
                             const data = getCumulativeData(res.data);
                             let labels = res.labels;
-                            universalChart.data.labels = labels;
-                            universalChart.data.datasets = [{
-                                label: datasets['expenses'].label,
-                                data: data,
-                                borderColor: getMetricColor('expenses'),
-                                backgroundColor: getMetricColor('expenses') + '33',
-                                tension: 0.4,
-                                fill: true,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                pointHitRadius: 12,
-                                spanGaps: true
-                            }];
+                            createUniversalChart('line', labels, data, getMetricColor('expenses'), datasets['expenses'].label);
                             const maxValue = Math.max(...data);
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
@@ -1051,92 +1065,14 @@ body {
                     return;
                 }
                 if (type === 'sales') {
-                    // Обработка "Продажи товаров" по образцу "Продажи услуг"
                     fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            if (currentPeriod === '7') {
-                                universalChart.data.labels = res.labels;
-                                universalChart.data.datasets = [{
-                                    label: 'Продажи товаров',
-                                    data: res.data,
-                                    borderColor: getMetricColor('sales'),
-                                    backgroundColor: getMetricColor('sales') + '33',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }];
-                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    return this.getLabelForValue(this.getLabels()[index]);
-                                };
-                            } else if (currentPeriod === '30' || currentPeriod === '90') {
-                                universalChart.data.labels = res.labels;
-                                universalChart.data.datasets = [{
-                                    label: 'Продажи товаров',
-                                    data: res.data,
-                                    borderColor: getMetricColor('sales'),
-                                    backgroundColor: getMetricColor('sales') + '33',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }];
-                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    const label = this.getLabelForValue(this.getLabels()[index]);
-                                    const parts = label.split(' ');
-                                    if (parts.length === 2) {
-                                        const day = parseInt(parts[0]);
-                                        const month = parts[1];
-                                        const date = new Date();
-                                        date.setDate(day);
-                                        const now = new Date();
-                                        const d = new Date(now);
-                                        d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
-                                        if (d.getDay() === 1) {
-                                            return label;
-                                        }
-                                    }
-                                    return '';
-                                };
-                            } else {
-                                universalChart.data.labels = res.labels;
-                                universalChart.data.datasets = [{
-                                    label: 'Продажи товаров',
-                                    data: res.data,
-                                    borderColor: getMetricColor('sales'),
-                                    backgroundColor: getMetricColor('sales') + '33',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }];
-                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    return '';
-                                };
-                            }
-                            // Устанавливаем максимум оси Y на 15% выше максимального значения
-                            const maxValue = Math.max(...res.data);
-                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                            createUniversalChart('line', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
+                            universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
+                                return this.getLabelForValue(this.getLabels()[index]);
+                            };
                             universalChart.update();
-                            // Обновление и анимация для карточки "Продажи товаров" при смене периода
-                            const salesCard = document.querySelector('.stat-card.sales-card .stat-value');
-                            if (salesCard && Array.isArray(res.data)) {
-                                const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
-                                salesCard.classList.remove('animated');
-                                salesCard.textContent = '0 грн';
-                                void salesCard.offsetWidth; // reflow для сброса transition
-                                salesCard.classList.add('animated');
-                                setTimeout(() => {
-                                    animateCounter(salesCard, 0, total, 1500);
-                                }, 100);
-                            }
                         });
                     return;
                 }
@@ -1144,112 +1080,18 @@ body {
                     fetch(`/api/dashboard/services-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            if (currentPeriod === '7') {
-                                universalChart.data.labels = res.labels;
-                                universalChart.data.datasets = [{
-                                    label: datasets['services'].label,
-                                    data: res.data,
-                                    borderColor: getMetricColor('services'),
-                                    backgroundColor: getMetricColor('services') + '33',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }];
-                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    return this.getLabelForValue(this.getLabels()[index]);
-                                };
-                            } else if (currentPeriod === '30' || currentPeriod === '90') {
-                                universalChart.data.labels = res.labels;
-                                universalChart.data.datasets = [{
-                                    label: datasets['services'].label,
-                                    data: res.data,
-                                    borderColor: getMetricColor('services'),
-                                    backgroundColor: getMetricColor('services') + '33',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }];
-                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    const label = this.getLabelForValue(this.getLabels()[index]);
-                                    const parts = label.split(' ');
-                                    if (parts.length === 2) {
-                                        const day = parseInt(parts[0]);
-                                        const month = parts[1];
-                                        const date = new Date();
-                                        date.setDate(day);
-                                        const now = new Date();
-                                        const d = new Date(now);
-                                        d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
-                                        if (d.getDay() === 1) {
-                                            return label;
-                                        }
-                                    }
-                                    return '';
-                                };
-                            }
-                            // Устанавливаем максимум оси Y на 15% выше максимального значения
-                            const maxValue = Math.max(...res.data);
-                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                            createUniversalChart('bar', res.labels, res.data, getMetricColor('services'), 'Продажи услуг');
                             universalChart.update();
                         });
                     return;
                 }
-                if (type === 'activity') {
-                    fetch(`/api/dashboard/activity-chart?period=${currentPeriod}`)
-                        .then(res => res.json())
-                        .then(res => {
-                            universalChart.data.labels = res.labels;
-                            universalChart.data.datasets = [
-                                {
-                                    label: 'Услуги',
-                                    data: res.services,
-                                    borderColor: '#8b5cf6',
-                                    backgroundColor: '#8b5cf6' + '33',
-                                    tension: 0.4,
-                                    fill: false,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                },
-                                {
-                                    label: 'Клиенты',
-                                    data: res.clients,
-                                    borderColor: '#3b82f6',
-                                    backgroundColor: '#3b82f6' + '33',
-                                    tension: 0.4,
-                                    fill: false,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                },
-                                {
-                                    label: 'Записи',
-                                    data: res.appointments,
-                                    borderColor: '#f59e0b',
-                                    backgroundColor: '#f59e0b' + '33',
-                                    tension: 0.4,
-                                    fill: false,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }
-                            ];
-                            // Y max по максимальному из всех
-                            const maxValue = Math.max(...res.services, ...res.clients, ...res.appointments);
-                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
-                            universalChart.update();
-                        });
-                    return;
-                }
+                // Для других метрик по умолчанию line
+                fetch(`/api/dashboard/${type}-chart?period=${currentPeriod}`)
+                    .then(res => res.json())
+                    .then(res => {
+                        createUniversalChart('line', res.labels, res.data, getMetricColor(type), datasets[type].label);
+                        universalChart.update();
+                    });
             });
         });
         // Фильтры периода
@@ -1266,19 +1108,7 @@ body {
                     fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            universalChart.data.labels = res.labels;
-                            universalChart.data.datasets = [{
-                                label: 'Прибыль',
-                                data: getCumulativeData(res.data),
-                                borderColor: getMetricColor('profit'),
-                                backgroundColor: getMetricColor('profit') + '33',
-                                tension: 0.4,
-                                fill: true,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                pointHitRadius: 12,
-                                spanGaps: true
-                            }];
+                            createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
                             const maxValue = Math.max(...getCumulativeData(res.data));
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
@@ -1304,19 +1134,7 @@ body {
                         .then(res => res.json())
                         .then(res => {
                             const data = getCumulativeData(res.data);
-                            universalChart.data.labels = res.labels;
-                            universalChart.data.datasets = [{
-                                label: datasets['expenses'].label,
-                                data: data,
-                                borderColor: getMetricColor('expenses'),
-                                backgroundColor: getMetricColor('expenses') + '33',
-                                tension: 0.4,
-                                fill: true,
-                                pointRadius: 0,
-                                pointHoverRadius: 6,
-                                pointHitRadius: 12,
-                                spanGaps: true
-                            }];
+                            createUniversalChart('line', res.labels, data, getMetricColor('expenses'), 'Расходы');
                             const maxValue = Math.max(...data);
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
@@ -1342,36 +1160,12 @@ body {
                         .then(res => res.json())
                         .then(res => {
                             if (currentPeriod === '7') {
-                                universalChart.data.labels = res.labels;
-                                universalChart.data.datasets = [{
-                                    label: 'Продажи товаров',
-                                    data: res.data,
-                                    borderColor: getMetricColor('sales'),
-                                    backgroundColor: getMetricColor('sales') + '33',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }];
+                                createUniversalChart('line', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
                                 universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
                                     return this.getLabelForValue(this.getLabels()[index]);
                                 };
                             } else if (currentPeriod === '30' || currentPeriod === '90') {
-                                universalChart.data.labels = res.labels;
-                                universalChart.data.datasets = [{
-                                    label: 'Продажи товаров',
-                                    data: res.data,
-                                    borderColor: getMetricColor('sales'),
-                                    backgroundColor: getMetricColor('sales') + '33',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }];
+                                createUniversalChart('line', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
                                 universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
                                     const label = this.getLabelForValue(this.getLabels()[index]);
                                     const parts = label.split(' ');
@@ -1391,19 +1185,7 @@ body {
                                 };
                             } else {
                                 // Обработка для 6 месяцев и года
-                                universalChart.data.labels = res.labels;
-                                universalChart.data.datasets = [{
-                                    label: 'Продажи товаров',
-                                    data: res.data,
-                                    borderColor: getMetricColor('sales'),
-                                    backgroundColor: getMetricColor('sales') + '33',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }];
+                                createUniversalChart('line', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
                                 universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
                                     const label = this.getLabelForValue(this.getLabels()[index]);
                                     const parts = label.split(' ');
@@ -1446,103 +1228,8 @@ body {
                     fetch(`/api/dashboard/services-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            if (currentPeriod === '7') {
-                                universalChart.data.labels = res.labels;
-                                universalChart.data.datasets = [{
-                                    label: datasets['services'].label,
-                                    data: res.data,
-                                    borderColor: getMetricColor('services'),
-                                    backgroundColor: getMetricColor('services') + '33',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }];
-                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    return this.getLabelForValue(this.getLabels()[index]);
-                                };
-                            } else if (currentPeriod === '30' || currentPeriod === '90') {
-                                universalChart.data.labels = res.labels;
-                                universalChart.data.datasets = [{
-                                    label: datasets['services'].label,
-                                    data: res.data,
-                                    borderColor: getMetricColor('services'),
-                                    backgroundColor: getMetricColor('services') + '33',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }];
-                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    const label = this.getLabelForValue(this.getLabels()[index]);
-                                    const parts = label.split(' ');
-                                    if (parts.length === 2) {
-                                        const day = parseInt(parts[0]);
-                                        const month = parts[1];
-                                        const date = new Date();
-                                        date.setDate(day);
-                                        const now = new Date();
-                                        const d = new Date(now);
-                                        d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
-                                        if (d.getDate() === 1) {
-                                            return month;
-                                        }
-                                    }
-                                    return '';
-                                };
-                            } else {
-                                // Обработка для 6 месяцев и года
-                                universalChart.data.labels = res.labels;
-                                universalChart.data.datasets = [{
-                                    label: datasets['services'].label,
-                                    data: res.data,
-                                    borderColor: getMetricColor('services'),
-                                    backgroundColor: getMetricColor('services') + '33',
-                                    tension: 0.4,
-                                    fill: true,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 6,
-                                    pointHitRadius: 12,
-                                    spanGaps: true
-                                }];
-                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    const label = this.getLabelForValue(this.getLabels()[index]);
-                                    const parts = label.split(' ');
-                                    if (parts.length === 2) {
-                                        const day = parseInt(parts[0]);
-                                        const month = parts[1];
-                                        const date = new Date();
-                                        date.setDate(day);
-                                        const now = new Date();
-                                        const d = new Date(now);
-                                        d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
-                                        if (d.getDate() === 1) {
-                                            return month;
-                                        }
-                                    }
-                                    return '';
-                                };
-                            }
-                            const maxValue = Math.max(...res.data);
-                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                            createUniversalChart('bar', res.labels, res.data, getMetricColor('services'), 'Продажи услуг');
                             universalChart.update();
-
-                            // Анимация для карточки "Продажи услуг"
-                            const servicesCard = document.querySelector('.stat-card.services-card .stat-value');
-                            if (servicesCard && Array.isArray(res.data)) {
-                                const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
-                                servicesCard.classList.remove('animated');
-                                servicesCard.textContent = '0 грн';
-                                void servicesCard.offsetWidth;
-                                servicesCard.classList.add('animated');
-                                setTimeout(() => {
-                                    animateCounter(servicesCard, 0, total, 1500);
-                                }, 100);
-                            }
                         });
                     return;
                 }
@@ -1551,8 +1238,7 @@ body {
                     fetch(`/api/dashboard/activity-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            universalChart.data.labels = res.labels;
-                            universalChart.data.datasets = [
+                            createUniversalChart('line', res.labels, [
                                 {
                                     label: 'Услуги',
                                     data: res.services,
@@ -1589,51 +1275,11 @@ body {
                                     pointHitRadius: 12,
                                     spanGaps: true
                                 }
-                            ];
+                            ], getMetricColor('activity'), 'Активность');
+                            // Y max по максимальному из всех
                             const maxValue = Math.max(...res.services, ...res.clients, ...res.appointments);
                             universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                             universalChart.update();
-
-                            // Анимация для карточек активности
-                            const clientsCard = document.querySelector('.stat-card.clients-card .stat-value');
-                            const appointmentsCard = document.querySelector('.stat-card.appointments-card .stat-value');
-                            const proceduresCard = document.querySelector('.stat-card.procedures-card .stat-value');
-
-                            // Клиенты
-                            if (clientsCard && Array.isArray(res.clients)) {
-                                const total = res.clients.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
-                                clientsCard.classList.remove('animated');
-                                clientsCard.textContent = '0';
-                                void clientsCard.offsetWidth;
-                                clientsCard.classList.add('animated');
-                                setTimeout(() => {
-                                    animateCounter(clientsCard, 0, total, 1500);
-                                }, 100);
-                            }
-
-                            // Записи
-                            if (appointmentsCard && Array.isArray(res.appointments)) {
-                                const total = res.appointments.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
-                                appointmentsCard.classList.remove('animated');
-                                appointmentsCard.textContent = '0';
-                                void appointmentsCard.offsetWidth;
-                                appointmentsCard.classList.add('animated');
-                                setTimeout(() => {
-                                    animateCounter(appointmentsCard, 0, total, 1500);
-                                }, 100);
-                            }
-
-                            // Услуги (для активности)
-                            if (proceduresCard && Array.isArray(res.services)) {
-                                const total = res.services.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
-                                proceduresCard.classList.remove('animated');
-                                proceduresCard.textContent = '0';
-                                void proceduresCard.offsetWidth;
-                                proceduresCard.classList.add('animated');
-                                setTimeout(() => {
-                                    animateCounter(proceduresCard, 0, total, 1500);
-                                }, 100);
-                            }
                         });
                     return;
                 }
@@ -2705,5 +2351,62 @@ body {
         <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:#3b82f6; color:#fff; border:none; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer;">Добавить новую</button>
       </div>
     </div>
+
+    <script>
+    // === Современный стиль для universalChart ===
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Современный стиль для universalChart ---
+        if (window.Chart) {
+            Chart.defaults.font.family = 'Inter, Arial, sans-serif';
+            Chart.defaults.font.size = 15;
+            Chart.defaults.color = '#22223b';
+            Chart.defaults.plugins.legend.display = false;
+            Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(59,130,246,0.95)';
+            Chart.defaults.plugins.tooltip.titleColor = '#fff';
+            Chart.defaults.plugins.tooltip.bodyColor = '#fff';
+            Chart.defaults.plugins.tooltip.borderColor = '#3b82f6';
+            Chart.defaults.plugins.tooltip.borderWidth = 1.5;
+            Chart.defaults.plugins.tooltip.cornerRadius = 8;
+            Chart.defaults.plugins.tooltip.padding = 12;
+            Chart.defaults.plugins.tooltip.caretSize = 8;
+            Chart.defaults.plugins.tooltip.displayColors = false;
+            Chart.defaults.elements.line.tension = 0.4;
+            Chart.defaults.elements.line.borderWidth = 3;
+            Chart.defaults.elements.line.borderColor = 'rgba(59,130,246,1)';
+            Chart.defaults.elements.line.backgroundColor = function(ctx) {
+                const chart = ctx.chart;
+                const {ctx:canvasCtx, chartArea} = chart;
+                if (!chartArea) return 'rgba(59,130,246,0.12)';
+                const grad = canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                grad.addColorStop(0, 'rgba(59,130,246,0.18)');
+                grad.addColorStop(1, 'rgba(59,130,246,0.01)');
+                return grad;
+            };
+            Chart.defaults.elements.point.radius = 5;
+            Chart.defaults.elements.point.backgroundColor = '#3b82f6';
+            Chart.defaults.elements.point.borderColor = '#fff';
+            Chart.defaults.elements.point.borderWidth = 2;
+            Chart.defaults.elements.point.hoverRadius = 8;
+            Chart.defaults.elements.bar.borderRadius = 8;
+            Chart.defaults.elements.bar.backgroundColor = function(ctx) {
+                const chart = ctx.chart;
+                const {ctx:canvasCtx, chartArea} = chart;
+                if (!chartArea) return 'rgba(139,92,246,0.18)';
+                const grad = canvasCtx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+                grad.addColorStop(0, 'rgba(139,92,246,0.18)');
+                grad.addColorStop(0.5, 'rgba(139,92,246,0.35)');
+                grad.addColorStop(1, 'rgba(139,92,246,0.7)');
+                return grad;
+            };
+            Chart.defaults.scales.x.grid.display = false;
+            Chart.defaults.scales.y.grid.color = '#e5e7eb';
+            Chart.defaults.scales.y.grid.lineWidth = 1.2;
+            Chart.defaults.scales.y.ticks.padding = 8;
+            Chart.defaults.scales.x.ticks.padding = 8;
+            Chart.defaults.animation.duration = 900;
+            Chart.defaults.animation.easing = 'easeOutQuart';
+        }
+    });
+    </script>
 @endsection
 
