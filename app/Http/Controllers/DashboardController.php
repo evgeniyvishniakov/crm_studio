@@ -10,6 +10,7 @@ use App\Models\Purchase;
 use App\Models\SaleItem;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Carbon\CarbonPeriod;
 
 class DashboardController extends Controller
 {
@@ -104,6 +105,30 @@ class DashboardController extends Controller
     }
 
     /**
+     * Округлить максимум для графика прибыли: если < 50000 — 50000, иначе шаг 5000
+     */
+    private function roundProfitMaxValueForChart($maxValue)
+    {
+        if ($maxValue <= 0) return 5000;
+        if ($maxValue < 50000) {
+            return 50000;
+        }
+        return ceil($maxValue / 5000) * 5000;
+    }
+
+    /**
+     * Округлить максимум для графика расходов: если < 40000 — 45000, иначе шаг 5000
+     */
+    private function roundExpensesMaxValueForChart($maxValue)
+    {
+        if ($maxValue <= 0) return 5000;
+        if ($maxValue < 40000) {
+            return 45000;
+        }
+        return ceil($maxValue / 5000) * 5000;
+    }
+
+    /**
      * API: Получить динамику прибыли для графика (по дням/неделям/месяцам)
      */
     public function profitChartData(Request $request)
@@ -127,9 +152,11 @@ class DashboardController extends Controller
             $profit = $this->getProfitForDate($date);
             $data[] = round($profit, 2);
         }
+        $maxValue = $this->roundProfitMaxValueForChart(max($data));
         return response()->json([
             'labels' => $labels,
-            'data' => $data
+            'data' => $data,
+            'maxValue' => $maxValue
         ]);
     }
 
@@ -267,7 +294,6 @@ class DashboardController extends Controller
         elseif ($period == 90) $days = 89;
         elseif ($period == 180) $days = 179;
         elseif ($period == 365) $days = 364;
-        // Находим дату первой записи расходов или закупки
         $firstExpense = \App\Models\Expense::orderBy('date', 'asc')->first();
         $firstPurchase = \App\Models\Purchase::orderBy('date', 'asc')->first();
         $firstDate = $now;
@@ -287,9 +313,11 @@ class DashboardController extends Controller
             $purchases = \App\Models\Purchase::whereDate('date', $date)->sum('total_amount');
             $data[] = round($expenses + $purchases, 2);
         }
+        $maxValue = $this->roundExpensesMaxValueForChart(max($data));
         return response()->json([
             'labels' => $labels,
-            'data' => $data
+            'data' => $data,
+            'maxValue' => $maxValue
         ]);
     }
 
