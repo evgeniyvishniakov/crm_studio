@@ -145,3 +145,7 @@ Route::prefix('security')->group(function () {
 Route::get('/reports/appointments-by-day', [AppointmentsController::class, 'getAppointmentsByDay']);
 Route::get('/reports/appointment-status-data', [AppointmentsController::class, 'getAppointmentStatusData']);
 Route::get('/reports/service-popularity-data', [AppointmentsController::class, 'getServicePopularityData']);
+Route::get('/reports/top-clients-by-revenue', [AppointmentsController::class, 'getTopClientsByRevenue']);
+Route::get('/reports/avg-check-dynamics', [AppointmentsController::class, 'getAvgCheckDynamics']);
+Route::get('/reports/ltv-by-client-type', [AppointmentsController::class, 'getLtvByClientType']);
+Route::get('/reports/top-services-by-revenue', [AppointmentsController::class, 'getTopServicesByRevenue']);

@@ -855,4 +855,99 @@ class AppointmentsController extends Controller
 
         return response()->json(['labels' => $labels, 'data' => $values]);
     }
+
+    /**
+     * Топ-5 клиентов по выручке за период
+     */
+    public function getTopClientsByRevenue(Request $request)
+    {
+        $period = $request->get('period', 'week');
+        $endDate = Carbon::now();
+        switch ($period) {
+            case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
+            case 'month': $startDate = $endDate->copy()->subMonth(); break;
+            case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
+            case 'year': $startDate = $endDate->copy()->subYear(); break;
+            case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+        }
+        $clients = Client::select('name', 'id')
+            ->withSum(['appointments as revenue' => function($q) use ($startDate, $endDate) {
+                $q->whereBetween('date', [$startDate, $endDate]);
+            }], 'price')
+            ->orderByDesc('revenue')
+            ->limit(5)
+            ->get();
+        $labels = $clients->pluck('name');
+        $data = $clients->pluck('revenue')->map(function($v){return (float)$v;});
+        return response()->json(['labels'=>$labels,'data'=>$data]);
+    }
+
+    /**
+     * Динамика среднего чека по датам
+     */
+    public function getAvgCheckDynamics(Request $request)
+    {
+        $period = $request->get('period', 'week');
+        $endDate = Carbon::now();
+        switch ($period) {
+            case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
+            case 'month': $startDate = $endDate->copy()->subMonth(); break;
+            case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
+            case 'year': $startDate = $endDate->copy()->subYear(); break;
+            case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+        }
+        $checks = Sale::whereBetween('date', [$startDate, $endDate])
+            ->selectRaw('date, AVG(total_amount) as avg_check')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+        $labels = $checks->pluck('date')->map(fn($d)=>date('d.m',strtotime($d)));
+        $data = $checks->pluck('avg_check')->map(fn($v)=>round($v,2));
+        return response()->json(['labels'=>$labels,'data'=>$data]);
+    }
+
+    /**
+     * LTV по типам клиентов
+     */
+    public function getLtvByClientType(Request $request)
+    {
+        $types = ClientType::with(['clients.sales'])->get();
+        $labels = [];
+        $data = [];
+        foreach ($types as $type) {
+            $labels[] = $type->name;
+            $ltv = 0;
+            foreach ($type->clients as $client) {
+                $ltv += $client->sales->sum('total_amount');
+            }
+            $data[] = round($ltv,2);
+        }
+        return response()->json(['labels'=>$labels,'data'=>$data]);
+    }
+
+    /**
+     * Топ-10 услуг по выручке за период
+     */
+    public function getTopServicesByRevenue(Request $request)
+    {
+        $period = $request->get('period', 'week');
+        $endDate = Carbon::now();
+        switch ($period) {
+            case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
+            case 'month': $startDate = $endDate->copy()->subMonth(); break;
+            case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
+            case 'year': $startDate = $endDate->copy()->subYear(); break;
+            case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+        }
+        $services = Service::select('name')
+            ->withSum(['appointments as revenue' => function($q) use ($startDate, $endDate) {
+                $q->whereBetween('date', [$startDate, $endDate]);
+            }], 'price')
+            ->orderByDesc('revenue')
+            ->limit(10)
+            ->get();
+        $labels = $services->pluck('name');
+        $data = $services->pluck('revenue')->map(function($v){return (float)$v;});
+        return response()->json(['labels'=>$labels,'data'=>$data]);
+    }
 }

@@ -13,4 +13,10 @@ class Service extends Model
         'name',
         'price'
     ];
+
+    // Связь с записями (appointments)
+    public function appointments()
+    {
+        return $this->hasMany(\App\Models\Appointment::class, 'service_id');
+    }
 }

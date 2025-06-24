@@ -105,25 +105,18 @@
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">RFM-анализ (в будущем)</h4>
-                        <p class="text-muted">Более сложная сегментация по давности, частоте и сумме покупок.</p>
-                        <div class="alert alert-info mt-4">Этот блок пока неактивен.</div>
-                    </div>
-                </div>
-            </div>
-             <div class="row">
-                <div class="col-lg-7 mb-4">
-                    <div class="report-card">
                         <h4 class="mb-3">Динамика среднего чека</h4>
                         <p class="text-muted">Средняя сумма, которую клиент тратит за один визит.</p>
                         <canvas id="avgCheckChart"></canvas>
                     </div>
                 </div>
-                <div class="col-lg-5 mb-4">
+            </div>
+             <div class="row">
+                <div class="col-lg-12 mb-12">
                     <div class="report-card">
-                        <h4 class="mb-3">Ценность клиента (LTV) по типам</h4>
-                        <p class="text-muted">Прогнозируемая выручка с клиента за все время.</p>
-                        <canvas id="ltvChart"></canvas>
+                        <h4 class="mb-3">Популярность услуг по выручке</h4>
+                        <p class="text-muted">Топ-10 услуг по сумме выручки за период.</p>
+                        <canvas id="topServicesByRevenueChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -235,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Финансовая аналитика
             topClientsByRevenueChart: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } },
             avgCheckChart: { type: 'line', options: { scales: { y: { grid: { display: false } }, x: { grid: { display: false } } } } },
-            ltvChart: { type: 'bar', options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } } } }
+            topServicesByRevenueChart: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } }
         };
 
         Object.keys(chartConfigs).forEach(id => {
@@ -348,8 +341,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!charts.topClientsByVisitsChart.options.scales.y) charts.topClientsByVisitsChart.options.scales.y = {};
                     charts.topClientsByVisitsChart.options.scales.y.suggestedMax = maxValue + 1;
                     charts.topClientsByVisitsChart.options.scales.y.ticks = { precision: 0 };
+                    // Цвета: максимальный — зелёный, остальные — оранжевый
                     const colors = data.topClientsByVisits.data.map(v => v === maxValue ? '#10b981' : 'rgba(234, 88, 12, 0.7)');
-                    updateChart(charts.topClientsByVisitsChart, data.topClientsByVisits.labels, [{
+                    // labels с числом визитов в скобках
+                    const labelsWithCounts = data.topClientsByVisits.labels.map((label, i) => `${label} (${data.topClientsByVisits.data[i]})`);
+                    updateChart(charts.topClientsByVisitsChart, labelsWithCounts, [{
                         label: 'Рейтинг визитов',
                         data: data.topClientsByVisits.data,
                         backgroundColor: colors,
@@ -511,8 +507,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const area = chart.chartArea;
             if (ctx && area && datasets.length > 0) {
                 if (chart.config.type === 'bar') {
-                    // Горизонтальный bar (indexAxis: 'y') — вертикальный градиент
-                    if (chart.options.indexAxis === 'y') {
+                    // Для topServicesByRevenueChart и servicesChart — фиолетовый градиент
+                    if ((chart.canvas && chart.canvas.id === 'topServicesByRevenueChart') || (chart.canvas && chart.canvas.id === 'servicesChart')) {
                         const grad = ctx.createLinearGradient(area.left, 0, area.right, 0);
                         grad.addColorStop(0, 'rgba(139,92,246,0.9)');
                         grad.addColorStop(0.5, 'rgba(139,92,246,0.6)');
@@ -521,8 +517,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         datasets[0].borderColor = 'rgba(139,92,246,0.3)';
                         datasets[0].borderRadius = 4;
                         datasets[0].borderSkipped = false;
+                    } else if (chart.options.indexAxis === 'y') {
+                        // Для остальных горизонтальных bar — синий градиент
+                        const grad = ctx.createLinearGradient(area.left, 0, area.right, 0);
+                        grad.addColorStop(0, 'rgba(59,130,246,0.9)');
+                        grad.addColorStop(0.5, 'rgba(59,130,246,0.5)');
+                        grad.addColorStop(1, 'rgba(59,130,246,0.2)');
+                        datasets[0].backgroundColor = grad;
+                        datasets[0].borderColor = 'rgba(59,130,246,0.3)';
+                        datasets[0].borderRadius = 4;
+                        datasets[0].borderSkipped = false;
                     } else {
-                        // Обычный bar — горизонтальный градиент
                         const grad = ctx.createLinearGradient(0, area.bottom, 0, area.top);
                         grad.addColorStop(0, 'rgba(59,130,246,0.9)');
                         grad.addColorStop(0.5, 'rgba(59,130,246,0.5)');
@@ -592,8 +597,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateAppointmentsAnalytics(period);
                     updateAppointmentStatusAnalytics(period);
                     updateServicePopularityAnalytics(period);
+                } else if (targetPaneId === 'complex-analytics') {
+                    updateTopClientsByRevenueAnalytics(period);
+                    updateAvgCheckDynamicsAnalytics(period);
+                    updateLtvByClientTypeAnalytics(period);
+                    updateTopServicesByRevenueAnalytics(period);
                 }
-                // Для финансовой аналитики пока нет динамической загрузки
             }
         });
     });
@@ -624,8 +633,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateAppointmentsAnalytics(period);
                     updateAppointmentStatusAnalytics(period);
                     updateServicePopularityAnalytics(period);
+                } else if (activeTabId === 'complex-analytics') {
+                    updateTopClientsByRevenueAnalytics(period);
+                    updateAvgCheckDynamicsAnalytics(period);
+                    updateLtvByClientTypeAnalytics(period);
+                    updateTopServicesByRevenueAnalytics(period);
                 }
-                // Для финансовой аналитики пока нет динамической загрузки
             }
         });
     });
@@ -666,6 +679,71 @@ document.addEventListener('DOMContentLoaded', function() {
         //         borderWidth: 1
         //     }]
         // );
+    }
+
+    // --- Функция для обновления топ-5 клиентов по выручке ---
+    async function updateTopClientsByRevenueAnalytics(period = 'week') {
+        if (!charts.topClientsByRevenueChart) return;
+        try {
+            const response = await fetch(`/reports/top-clients-by-revenue?period=${period}`);
+            if (!response.ok) throw new Error('Ошибка сети');
+            const data = await response.json();
+            // labels с числом в скобках
+            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i]})`);
+            // Цвета: максимальный — зелёный, остальные — оранжевый (как у топ-5 по визитам)
+            const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
+            const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(234, 88, 12, 0.7)');
+            updateChart(charts.topClientsByRevenueChart, labelsWithCounts, [{
+                label: 'Выручка',
+                data: data.data,
+                backgroundColor: colors,
+                borderColor: colors,
+                borderWidth: 1
+            }]);
+        } catch (e) { console.error('Ошибка загрузки топ-5 по выручке', e); }
+    }
+    // --- Функция для обновления динамики среднего чека ---
+    async function updateAvgCheckDynamicsAnalytics(period = 'week') {
+        if (!charts.avgCheckChart) return;
+        try {
+            const response = await fetch(`/reports/avg-check-dynamics?period=${period}`);
+            if (!response.ok) throw new Error('Ошибка сети');
+            const data = await response.json();
+            updateChart(charts.avgCheckChart, data.labels, [{
+                label: 'Средний чек',
+                data: data.data
+            }]);
+        } catch (e) { console.error('Ошибка загрузки динамики среднего чека', e); }
+    }
+    // --- Функция для обновления LTV по типам клиентов ---
+    async function updateLtvByClientTypeAnalytics(period = 'week') {
+        if (!charts.ltvChart) return;
+        try {
+            const response = await fetch(`/reports/ltv-by-client-type?period=${period}`);
+            if (!response.ok) throw new Error('Ошибка сети');
+            const data = await response.json();
+            // Формируем labels с числами в скобках
+            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i]})`);
+            updateChart(charts.ltvChart, labelsWithCounts, [{
+                label: 'LTV',
+                data: data.data
+            }]);
+        } catch (e) { console.error('Ошибка загрузки LTV', e); }
+    }
+    // --- Функция для обновления топ-услуг по выручке ---
+    async function updateTopServicesByRevenueAnalytics(period = 'week') {
+        if (!charts.topServicesByRevenueChart) return;
+        try {
+            const response = await fetch(`/reports/top-services-by-revenue?period=${period}`);
+            if (!response.ok) throw new Error('Ошибка сети');
+            const data = await response.json();
+            // Формируем labels с числами в скобках
+            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i]})`);
+            updateChart(charts.topServicesByRevenueChart, labelsWithCounts, [{
+                label: 'Выручка',
+                data: data.data
+            }]);
+        } catch (e) { console.error('Ошибка загрузки топ-услуг по выручке', e); }
     }
 });
 
