@@ -551,9 +551,9 @@ body {
         <div class="dashboard-main-content" style="max-width: 1400px; margin: 0 auto; padding: 0 24px;">
             <div class="chart-container" style="width: 100%; max-width: 100%; padding: 10px; box-sizing: border-box;">
             <h3 class="chart-title">Динамика показателей</h3>
-            <div class="chart-toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+            <div class="chart-toolbar" style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 1rem; width: 100%;">
                 <!-- Dropdown слева -->
-                <div class="dropdown metric-dropdown" style="position: relative;">
+                <div class="dropdown metric-dropdown" style="position: relative; flex-grow: 1;">
                     <button class="dropdown-toggle metric-toggle" type="button" style="display: flex; align-items: center; gap: 0.5rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; min-width: 140px;">
                         <i class="fas fa-chart-line"></i>
                         <span id="selectedMetricLabel">Прибыль</span>
@@ -568,7 +568,7 @@ body {
                     </div>
                 </div>
                 <!-- Фильтры справа -->
-                <div class="period-filters" style="display: flex; gap: 0.5rem;">
+                <div class="period-filters" style="display: flex; gap: 0.5rem; margin-left: auto; min-width: 340px; justify-content: flex-end;">
                     <button class="tab-button" data-period="30">За месяц</button>
                     <button class="tab-button" data-period="90">За 3 месяца</button>
                     <button class="tab-button" data-period="180">За 6 месяцев</button>
