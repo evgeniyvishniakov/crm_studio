@@ -2909,3 +2909,40 @@ footer.site-footer {
     border: 1px solid #e5e7eb;
 }
 
+/* New Period Filters Styles */
+.period-filters {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.filter-button {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-button:hover {
+    border-color: #a0aec0;
+    background-color: #f7fafc;
+}
+
+.filter-button.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+}
+
+.filter-button.calendar-button {
+    padding: 0.5rem 0.75rem;
+}
+

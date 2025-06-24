@@ -12,6 +12,7 @@ use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class AppointmentsController extends Controller
 {
@@ -630,66 +631,102 @@ class AppointmentsController extends Controller
 
     public function updateSales(Request $request, Appointment $appointment)
     {
-        try {
-            DB::beginTransaction();
+        // Проверка и сохранение данных
+        $validatedData = $request->validate([
+            'total_price' => 'required|numeric',
+            'products' => 'array'
+        ]);
 
-            // Получаем текущие продажи
-            $currentSales = $appointment->sales()->with('items')->get();
+        $appointment->price = $validatedData['total_price'];
+        $appointment->save();
 
-            // Удаляем старые продажи и возвращаем товары на склад
-            foreach ($currentSales as $sale) {
-                foreach ($sale->items as $item) {
-                    if ($item->product && $item->product->warehouse) {
-                        $item->product->warehouse->increment('quantity', $item->quantity);
-                    }
-                }
-                $sale->items()->delete();
-                $sale->delete();
-            }
+        // Логика для обновления или создания продаж связанных с продуктами (если есть)
 
-            // Создаем новую продажу
-            if ($request->has('sales')) {
-                $sale = Sale::create([
-                    'appointment_id' => $appointment->id,
-                    'total_amount' => 0
-                ]);
+        return response()->json(['success' => true]);
+    }
 
-                $totalAmount = 0;
-
-                foreach ($request->sales as $saleData) {
-                    $item = $sale->items()->create([
-                        'product_id' => $saleData['product_id'],
-                        'quantity' => $saleData['quantity'],
-                        'price' => $saleData['price'],
-                        'purchase_price' => $saleData['purchase_price']
-                    ]);
-
-                    // Уменьшаем количество товара на складе
-                    if ($item->product && $item->product->warehouse) {
-                        $item->product->warehouse->decrement('quantity', $item->quantity);
-                    }
-
-                    $totalAmount += $saleData['price'] * $saleData['quantity'];
-                }
-
-                $sale->update(['total_amount' => $totalAmount]);
-            }
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Продажи успешно обновлены',
-                'appointment' => $appointment->fresh(['client', 'service', 'sales.items.product'])
-            ]);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Ошибка при обновлении продаж: ' . $e->getMessage()
-            ], 500);
+    /**
+     * Предоставляет данные о количестве записей по дням, неделям или месяцам.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAppointmentsByDay(Request $request)
+    {
+        $periodName = $request->input('period', 'week');
+        $endDate = Carbon::today()->endOfDay();
+        
+        switch ($periodName) {
+            case '2weeks':
+                $startDate = Carbon::now()->subWeeks(2);
+                break;
+            case 'month':
+                $startDate = Carbon::now()->subMonth();
+                break;
+            case 'half_year':
+                $startDate = Carbon::now()->subMonths(6);
+                break;
+            case 'year':
+                $startDate = Carbon::now()->subYear();
+                break;
+            case 'week':
+            default:
+                $startDate = Carbon::now()->subWeek();
+                break;
         }
+
+        $periodRange = [$startDate, $endDate];
+        
+        $dateGroupRaw = '';
+        $periodIterator = null;
+        $dateGroupFormatter = null;
+        $labelFormatter = null;
+
+        switch ($periodName) {
+            case 'half_year': // Группировка по неделям
+                $dateGroupRaw = 'DATE_FORMAT(date, "%x-%v")'; // ISO Year-Week
+                $periodIterator = CarbonPeriod::create($periodRange[0], '1 week', $periodRange[1]);
+                $dateGroupFormatter = fn(Carbon $date) => $date->isoFormat('GGGG-WW');
+                $labelFormatter = function ($dateGroup) {
+                    [$year, $week] = explode('-', $dateGroup);
+                    $date = Carbon::now()->setISODate($year, $week)->startOfWeek();
+                    return 'Нед. ' . $date->format('d.m');
+                };
+                break;
+
+            case 'year': // Группировка по месяцам
+                $dateGroupRaw = 'DATE_FORMAT(date, "%Y-%m")';
+                $periodIterator = CarbonPeriod::create($periodRange[0]->startOfMonth(), '1 month', $periodRange[1]);
+                $dateGroupFormatter = fn(Carbon $date) => $date->format('Y-m');
+                $labelFormatter = fn($dateGroup) => Carbon::parse($dateGroup)->translatedFormat('M Y');
+                break;
+
+            default: // 'week', '2weeks', 'month' - Группировка по дням
+                $dateGroupRaw = 'DATE(date)';
+                $periodIterator = CarbonPeriod::create($periodRange[0], '1 day', $periodRange[1]);
+                $dateGroupFormatter = fn(Carbon $date) => $date->format('Y-m-d');
+                $labelFormatter = fn($dateGroup) => $dateGroup; // Возвращаем полную дату 'Y-m-d'
+                break;
+        }
+
+        $data = Appointment::query()
+            ->whereBetween('date', $periodRange)
+            ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
+            ->groupBy('date_group')
+            ->orderBy('date_group')
+            ->get()
+            ->keyBy('date_group');
+
+        $scaffold = [];
+        foreach ($periodIterator as $date) {
+            $key = $dateGroupFormatter($date);
+            $scaffold[$key] = $data->get($key)->count ?? 0;
+        }
+
+        $labels = collect(array_keys($scaffold))->map($labelFormatter);
+        $values = array_values($scaffold);
+
+        return response()->json(['labels' => $labels, 'data' => $values]);
     }
 
 }

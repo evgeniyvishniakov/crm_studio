@@ -4,24 +4,25 @@
 <div class="dashboard-container">
     <h1 class="dashboard-title">Отчеты</h1>
 
-    <!-- Фильтры -->
-    <div class="filter-section">
-        <div class="row align-items-end">
-            <div class="col-md-4">
-                <label for="daterange" class="font-weight-bold">Период:</label>
-                <input type="text" id="daterange" name="daterange" class="form-control" placeholder="Выберите период...">
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-primary btn-block" style="background: linear-gradient(135deg, #3b82f6, #60a5fa); border: none;">Применить</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Навигация по вкладкам -->
     <div class="dashboard-tabs">
         <button class="tab-button active" data-tab="clients-analytics"><i class="fa fa-users"></i> Аналитика по клиентам</button>
         <button class="tab-button" data-tab="appointments-analytics"><i class="fa fa-calendar"></i> Аналитика по записям</button>
         <button class="tab-button" data-tab="complex-analytics"><i class="fa fa-money"></i> Финансовая аналитика</button>
+    </div>
+
+    <!-- Новый блок фильтров -->
+    <div class="filter-section">
+        <div class="period-filters">
+            <button class="filter-button active">За неделю</button>
+            <button class="filter-button">За 2 недели</button>
+            <button class="filter-button">За месяц</button>
+            <button class="filter-button">За полгода</button>
+            <button class="filter-button">За год</button>
+            <button class="filter-button calendar-button" id="dateRangePicker">
+                <i class="fa fa-calendar"></i>
+            </button>
+        </div>
     </div>
 
     <!-- Содержимое вкладок -->
@@ -38,25 +39,26 @@
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Распределение по типам клиентов</h4>
-                        <p class="text-muted">Соотношение клиентов по реальным типам из вашего справочника.</p>
-                        <canvas id="clientTypesChart"></canvas>
+                        <h4 class="mb-3">Топ-5 клиентов по визитам</h4>
+                        <p class="text-muted">Самые частые посетители за период.</p>
+                        <canvas id="topClientsByVisitsChart"></canvas>
                     </div>
                 </div>
+                
             </div>
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Новые vs. Вернувшиеся клиенты</h4>
-                        <p class="text-muted">Соотношение новых и повторных клиентов за период.</p>
+                        <h4 class="mb-3">Визиты: Первичные / Повторные</h4>
+                        <p class="text-muted">Соотношение первичных и повторных визитов за период.</p>
                         <canvas id="newVsReturningChart"></canvas>
                     </div>
                 </div>
-                <div class="col-lg-6 mb-4">
+                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">RFM-анализ (в будущем)</h4>
-                        <p class="text-muted">Более сложная сегментация по давности, частоте и сумме покупок.</p>
-                        <div class="alert alert-info mt-4">Этот блок пока неактивен.</div>
+                        <h4 class="mb-3">Распределение по типам клиентов</h4>
+                        <p class="text-muted">Соотношение клиентов по реальным типам из вашего справочника.</p>
+                        <canvas id="clientTypesChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -67,8 +69,8 @@
             <div class="row">
                 <div class="col-lg-7 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Загруженность по дням и часам</h4>
-                        <p class="text-muted">Среднее количество записей по времени в течение недели.</p>
+                        <h4 class="mb-3">Загруженность по дням</h4>
+                        <p class="text-muted">Количество записей по дням в течение недели.</p>
                         <canvas id="loadChart"></canvas>
                     </div>
                 </div>
@@ -103,9 +105,9 @@
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Топ-5 клиентов по визитам</h4>
-                        <p class="text-muted">Самые частые посетители за период.</p>
-                        <canvas id="topClientsByVisitsChart"></canvas>
+                        <h4 class="mb-3">RFM-анализ (в будущем)</h4>
+                        <p class="text-muted">Более сложная сегментация по давности, частоте и сумме покупок.</p>
+                        <div class="alert alert-info mt-4">Этот блок пока неактивен.</div>
                     </div>
                 </div>
             </div>
@@ -135,216 +137,372 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Логика переключения вкладок
-    const tabs = document.querySelectorAll('.tab-button');
-    const panes = document.querySelectorAll('.tab-pane');
+    console.log('DOM готов. Начинаем инициализацию отчетов.');
+    // Глобальные переменные для хранения экземпляров графиков
+    let charts = {};
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-
-            const targetPaneId = tab.getAttribute('data-tab');
-            
-            panes.forEach(pane => {
-                if (pane.id === targetPaneId) {
-                    pane.style.display = 'block';
-                } else {
-                    pane.style.display = 'none';
+    // --- Инициализация всех графиков ---
+    function initializeCharts() {
+        console.log('Инициализация графиков...');
+        const chartConfigs = {
+            // Аналитика по клиентам
+            clientDynamicsChart: {
+                type: 'line',
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        },
+                         x: {
+                            ticks: {
+                                autoSkip: true,
+                                maxRotation: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const label = tooltipItems[0].label;
+                                    if (label && /^\d{4}-\d{2}-\d{2}$/.test(label)) {
+                                        const date = new Date(label);
+                                        return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+                                    }
+                                    return label;
+                                },
+                                label: function(context) {
+                                    return `Новые клиенты: ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    }
                 }
+            },
+            clientTypesChart: { type: 'pie', options: {} },
+            newVsReturningChart: { type: 'doughnut', options: {} },
+            topClientsByVisitsChart: { type: 'bar', options: {} },
+            // Аналитика по записям
+            loadChart: { 
+                type: 'bar', 
+                options: { 
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                autoSkip: true,
+                                maxRotation: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const label = tooltipItems[0].label;
+                                    if (label && /^\d{4}-\d{2}-\d{2}$/.test(label)) {
+                                        const date = new Date(label);
+                                        return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+                                    }
+                                    return label;
+                                },
+                                label: function(context) {
+                                    return `Записи: ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    } 
+                } 
+            },
+            statusChart: { type: 'pie', options: {} },
+            servicesChart: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true } }, plugins: { legend: { display: false } } } },
+            // Финансовая аналитика
+            topClientsByRevenueChart: { type: 'bar', options: { indexAxis: 'y', plugins: { legend: { display: false } } } },
+            avgCheckChart: { type: 'line', options: {} },
+            ltvChart: { type: 'bar', options: { plugins: { legend: { display: false } } } }
+        };
+
+        Object.keys(chartConfigs).forEach(id => {
+            const canvas = document.getElementById(id);
+            if (!canvas) {
+                console.warn(`Элемент canvas с id="${id}" не найден.`);
+                return;
+            }
+            
+            console.log(`Создание графика для id="${id}"`);
+            const ctx = canvas.getContext('2d');
+            charts[id] = new Chart(ctx, {
+                type: chartConfigs[id].type,
+                data: { labels: [], datasets: [] },
+                options: chartConfigs[id].options,
+            });
+        });
+        console.log('Инициализация графиков завершена. Созданные экземпляры:', charts);
+    }
+
+    // --- Функция для обновления данных на всех графиках ---
+    async function updateClientAnalytics(period = 'week') {
+        console.log(`Запрос данных для аналитики клиентов за период: ${period}`);
+        try {
+            const response = await fetch(`/reports/client-analytics?period=${period}`);
+            console.log('Получен ответ от сервера:', response);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Сетевой ответ не был успешным. Статус: ${response.status}. Ответ: ${errorText}`);
+            }
+
+            const data = await response.json();
+            console.log('Данные успешно получены и распарсены:', data);
+
+            // 1. Динамика клиентской базы
+            if (charts.clientDynamicsChart && data.clientDynamics) {
+                console.log('Обновление графика "Динамика клиентской базы"');
+
+                const xTicks = charts.clientDynamicsChart.options.scales.x.ticks;
+                
+                const formatDate = (dateString) => {
+                    const [year, month, day] = dateString.split('-');
+                    return `${day}.${month}`;
+                };
+
+                if (period === 'month') {
+                    xTicks.callback = function(value, index, ticks) {
+                        const label = this.getLabelForValue(value);
+                        if (!label) return '';
+                        
+                        const date = new Date(label);
+                        if (date.getDay() === 0 || index === 0) {
+                           return formatDate(label);
+                        }
+                        return '';
+                    };
+                    xTicks.autoSkip = false;
+                } else {
+                    xTicks.callback = function(value, index, ticks) {
+                        const label = this.getLabelForValue(value);
+                        if (label && /^\d{4}-\d{2}-\d{2}$/.test(label)) {
+                            return formatDate(label);
+                        }
+                        return label;
+                    };
+                    xTicks.autoSkip = true;
+                }
+
+                if (data.clientDynamics.data && data.clientDynamics.data.length > 0) {
+                    const maxValue = Math.max(...data.clientDynamics.data);
+                    charts.clientDynamicsChart.options.scales.y.suggestedMax = maxValue + 1;
+                } else {
+                    delete charts.clientDynamicsChart.options.scales.y.suggestedMax;
+                }
+                const totalNew = data.clientDynamics.data.reduce((a, b) => a + b, 0);
+                updateChart(charts.clientDynamicsChart, data.clientDynamics.labels, [{
+                    label: `Новые клиенты (${totalNew})`,
+                    data: data.clientDynamics.data,
+                    borderColor: 'rgb(59, 130, 246)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]);
+            }
+            // 2. Распределение по типам клиентов
+            if (charts.clientTypesChart && data.clientTypesDistribution) {
+                const labelsWithCounts = data.clientTypesDistribution.labels.map((label, i) => `${label} (${data.clientTypesDistribution.data[i]})`);
+                updateChart(charts.clientTypesChart, labelsWithCounts, [{
+                    data: data.clientTypesDistribution.data,
+                    backgroundColor: ['#7c3aed', '#c4b5fd', '#8b5cf6', '#a78bfa', '#6d28d9'],
+                    hoverOffset: 4
+                }]);
+            }
+            // 3. Новые vs. Повторные визиты
+            if (charts.newVsReturningChart && data.newVsReturning) {
+                const labelsWithCounts = data.newVsReturning.labels.map((label, i) => `${label} (${data.newVsReturning.data[i]})`);
+                updateChart(charts.newVsReturningChart, labelsWithCounts, [{
+                    data: data.newVsReturning.data,
+                    backgroundColor: ['#f59e0b', '#fcd34d'],
+                    hoverOffset: 4
+                }]);
+            }
+            // 4. Топ-5 клиентов по визитам
+            if (charts.topClientsByVisitsChart && data.topClientsByVisits) {
+                console.log('Обновление графика "Топ-5 клиентов по визитам"');
+                if (data.topClientsByVisits.data && data.topClientsByVisits.data.length > 0) {
+                    const maxValue = Math.max(...data.topClientsByVisits.data);
+                    if (!charts.topClientsByVisitsChart.options.scales) charts.topClientsByVisitsChart.options.scales = {};
+                    if (!charts.topClientsByVisitsChart.options.scales.y) charts.topClientsByVisitsChart.options.scales.y = {};
+                    charts.topClientsByVisitsChart.options.scales.y.suggestedMax = maxValue + 1;
+                    charts.topClientsByVisitsChart.options.scales.y.ticks = { precision: 0 };
+                    const colors = data.topClientsByVisits.data.map(v => v === maxValue ? '#10b981' : 'rgba(234, 88, 12, 0.7)');
+                    updateChart(charts.topClientsByVisitsChart, data.topClientsByVisits.labels, [{
+                        label: 'Рейтинг визитов',
+                        data: data.topClientsByVisits.data,
+                        backgroundColor: colors,
+                        borderColor: colors,
+                        borderWidth: 1
+                    }]);
+                } else {
+                    if (charts.topClientsByVisitsChart.options.scales && charts.topClientsByVisitsChart.options.scales.y) {
+                        delete charts.topClientsByVisitsChart.options.scales.y.suggestedMax;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Ошибка при загрузке аналитических данных:', error);
+        }
+    }
+
+    // --- Функция для обновления данных на вкладке "Аналитика по записям" ---
+    async function updateAppointmentsAnalytics(period = 'week') {
+        console.log(`Запрос данных для аналитики записей за период: ${period}`);
+        if (!charts.loadChart) return;
+
+        try {
+            const response = await fetch(`/reports/appointments-by-day?period=${period}`);
+            if (!response.ok) {
+                throw new Error(`Сетевой ответ не был успешным. Статус: ${response.status}.`);
+            }
+            const data = await response.json();
+
+            // Обновление графика "Загруженность по дням"
+            const loadChart = charts.loadChart;
+
+            // Логика форматирования меток оси X
+            const xTicks = loadChart.options.scales.x.ticks;
+            const formatDate = (dateString) => {
+                const [year, month, day] = dateString.split('-');
+                return `${day}.${month}`;
+            };
+            
+            if (period === 'month') {
+                xTicks.callback = function(value, index, ticks) {
+                    const label = this.getLabelForValue(value);
+                    if (!label) return '';
+                    const date = new Date(label);
+                    if (date.getDay() === 0 || index === 0) {
+                       return formatDate(label);
+                    }
+                    return '';
+                };
+                xTicks.autoSkip = false;
+            } else {
+                xTicks.callback = function(value, index, ticks) {
+                    const label = this.getLabelForValue(value);
+                    if (label && /^\d{4}-\d{2}-\d{2}$/.test(label)) {
+                        return formatDate(label);
+                    }
+                    return label;
+                };
+                xTicks.autoSkip = true;
+            }
+
+            if (data.data && data.data.length > 0) {
+                const maxValue = Math.max(...data.data);
+                if (!loadChart.options.scales) loadChart.options.scales = {};
+                if (!loadChart.options.scales.y) loadChart.options.scales.y = {};
+                loadChart.options.scales.y.suggestedMax = maxValue + 1;
+                loadChart.options.scales.y.ticks = { precision: 0 };
+            } else {
+                delete loadChart.options.scales.y.suggestedMax;
+            }
+            updateChart(loadChart, data.labels, [{
+                label: 'Записи',
+                data: data.data,
+                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                borderWidth: 1
+            }]);
+        } catch (error) {
+            console.error('Ошибка при загрузке данных о загруженности:', error);
+        }
+    }
+
+    // --- Вспомогательная функция для обновления одного графика ---
+    function updateChart(chart, labels, datasets) {
+        chart.data.labels = labels;
+        chart.data.datasets = datasets;
+        chart.update();
+    }
+
+    // --- Логика переключения вкладок и фильтров ---
+    const mainTabs = document.querySelectorAll('.tab-button');
+    const mainPanes = document.querySelectorAll('.tab-pane');
+
+    mainTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            mainTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const targetPaneId = tab.getAttribute('data-tab');
+            mainPanes.forEach(pane => {
+                pane.style.display = pane.id === targetPaneId ? 'block' : 'none';
             });
         });
     });
 
-    // Инициализация графиков
-    // 1. Динамика клиентской базы
-    const clientDynamicsCtx = document.getElementById('clientDynamicsChart').getContext('2d');
-    new Chart(clientDynamicsCtx, {
-        type: 'line',
-        data: {
-            labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл'],
-            datasets: [{
-                label: 'Новые клиенты',
-                data: [12, 19, 10, 15, 22, 30, 25],
-                borderColor: 'rgb(59, 130, 246)',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        }
-    });
+    const filterButtons = document.querySelectorAll('.filter-section .filter-button');
+    const periodMapping = {
+        'За неделю': 'week',
+        'За 2 недели': '2weeks',
+        'За месяц': 'month',
+        'За полгода': 'half_year',
+        'За год': 'year'
+    };
 
-    // 2. Распределение по типам клиентов
-    const clientTypesCtx = document.getElementById('clientTypesChart').getContext('2d');
-    new Chart(clientTypesCtx, {
-        type: 'pie',
-        data: {
-            labels: ['Новые', 'Постоянные'],
-            datasets: [{
-                data: [50, 85],
-                backgroundColor: ['#3b82f6', '#60a5fa'],
-                hoverOffset: 4
-            }]
-        }
-    });
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            if (button.id === 'dateRangePicker') return; 
 
-    // 3. Новые vs. Вернувшиеся клиенты
-    const newVsReturningCtx = document.getElementById('newVsReturningChart').getContext('2d');
-    new Chart(newVsReturningCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Новые клиенты', 'Вернувшиеся клиенты'],
-            datasets: [{
-                data: [35, 65],
-                backgroundColor: ['#8b5cf6', '#a78bfa'],
-                hoverOffset: 4
-            }]
-        }
-    });
-
-    // --- Графики для вкладки "Аналитика по записям" ---
-
-    // 4. Загруженность по дням и часам
-    const loadCtx = document.getElementById('loadChart').getContext('2d');
-    new Chart(loadCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'],
-            datasets: [{
-                label: 'Записи',
-                data: [5, 8, 12, 10, 15, 20, 4],
-                backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                borderColor: 'rgba(59, 130, 246, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            const periodKey = button.textContent.trim();
+            const period = periodMapping[periodKey];
+            if (period) {
+                updateClientAnalytics(period);
+                updateAppointmentsAnalytics(period);
             }
-        }
+        });
     });
 
-    // 5. Статусы записей
-    const statusCtx = document.getElementById('statusChart').getContext('2d');
-    new Chart(statusCtx, {
-        type: 'pie',
-        data: {
-            labels: ['Выполнено', 'Отменено', 'Не пришел'],
-            datasets: [{
+    // --- Первоначальная загрузка ---
+    initializeCharts();
+    updateClientAnalytics();
+    updateAppointmentsAnalytics();
+
+    // --- Графики для вкладки "Аналитика по записям" (статичные данные) ---
+    // Загруженность по дням - теперь обновляется динамически
+
+    // Статусы записей
+    if (charts.statusChart) {
+        updateChart(charts.statusChart,
+            ['Выполнено', 'Отменено', 'Не пришел'],
+            [{
                 data: [250, 45, 15],
                 backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
                 hoverOffset: 4
             }]
-        }
-    });
-
-    // 6. Популярность услуг
-    const servicesCtx = document.getElementById('servicesChart').getContext('2d');
-    new Chart(servicesCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Стрижка женская', 'Маникюр + Гель-лак', 'Окрашивание корней', 'Педикюр', 'Коррекция бровей', 'Укладка', 'Макияж'],
-            datasets: [{
+        );
+    }
+    // Популярность услуг
+    if (charts.servicesChart) {
+        updateChart(charts.servicesChart,
+            ['Стрижка женская', 'Маникюр + Гель-лак', 'Окрашивание корней', 'Педикюр', 'Коррекция бровей', 'Укладка', 'Макияж'],
+            [{
                 label: 'Количество записей',
                 data: [80, 75, 60, 50, 45, 30, 15],
                 backgroundColor: 'rgba(139, 92, 246, 0.7)',
                 borderColor: 'rgba(139, 92, 246, 1)',
                 borderWidth: 1
             }]
-        },
-        options: {
-            indexAxis: 'y', // Делаем диаграмму горизонтальной
-            scales: {
-                x: {
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false // Можно скрыть легенду, т.к. только один набор данных
-                }
-            }
-        }
-    });
-
-    // --- Графики для вкладки "Финансовая аналитика" ---
-
-    // 7. Динамика среднего чека
-    const avgCheckCtx = document.getElementById('avgCheckChart').getContext('2d');
-    new Chart(avgCheckCtx, {
-        type: 'line',
-        data: {
-            labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл'],
-            datasets: [{
-                label: 'Средний чек (руб.)',
-                data: [1500, 1550, 1650, 1600, 1750, 1800, 1780],
-                borderColor: 'rgb(239, 68, 68)',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        }
-    });
-
-    // 8. LTV по типам клиентов
-    const ltvCtx = document.getElementById('ltvChart').getContext('2d');
-    new Chart(ltvCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Новые', 'Постоянные'],
-            datasets: [{
-                label: 'LTV (руб.)',
-                data: [5000, 25000],
-                backgroundColor: ['#f59e0b', '#fbbf24'],
-            }]
-        },
-        options: {
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
-
-    // 9. Топ-5 клиентов по выручке
-    const topRevenueCtx = document.getElementById('topClientsByRevenueChart').getContext('2d');
-    new Chart(topRevenueCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Екатерина Иванова', 'Алексей Смирнов', 'Ольга Васильева', 'Дмитрий Петров', 'Марина Соколова'],
-            datasets: [{
-                label: 'Выручка (руб.)',
-                data: [45000, 41000, 38000, 32000, 29000],
-                backgroundColor: 'rgba(239, 68, 68, 0.7)',
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            plugins: { legend: { display: false } }
-        }
-    });
-
-    // 10. Топ-5 клиентов по визитам
-    const topVisitsCtx = document.getElementById('topClientsByVisitsChart').getContext('2d');
-    new Chart(topVisitsCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Марина Соколова', 'Ольга Васильева', 'Екатерина Иванова', 'Анна Попова', 'Иван Лебедев'],
-            datasets: [{
-                label: 'Кол-во визитов',
-                data: [15, 14, 12, 12, 11],
-                backgroundColor: 'rgba(16, 185, 129, 0.7)',
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            plugins: { legend: { display: false } }
-        }
-    });
+        );
+    }
 });
 </script>
 @endpush 

@@ -259,6 +259,7 @@ body {
 .period-filters {
     display: flex;
     gap: 0.5rem;
+
 }
 
 /* Удаляю все ::after для .metric-toggle, если есть */

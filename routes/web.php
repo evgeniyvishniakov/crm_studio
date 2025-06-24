@@ -40,6 +40,7 @@ Route::prefix('clients')->group(function () {
 
 // Отчеты по клиентам
 Route::get('/reports/clients', [ClientReportController::class, 'index'])->name('reports.clients.index');
+Route::get('/reports/client-analytics', [ClientReportController::class, 'getClientAnalyticsData'])->name('reports.clientAnalytics');
 
 Route::resource('products', ProductController::class);
 Route::post('/products/{product}/remove-photo', [ProductController::class, 'removePhoto'])->name('products.remove-photo');
@@ -140,3 +141,5 @@ Route::prefix('security')->group(function () {
         return '<h1>Безопасность</h1><p>Раздел в разработке</p>';
     })->name('security.index');
 });
+
+Route::get('/reports/appointments-by-day', [AppointmentsController::class, 'getAppointmentsByDay']);
