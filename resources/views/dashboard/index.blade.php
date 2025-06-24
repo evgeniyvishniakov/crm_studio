@@ -930,6 +930,15 @@ body {
                             const {ctx:canvasCtx, chartArea} = chart;
                             if (!chartArea) return color + (type === 'bar' ? '33' : '22');
                             if (type === 'bar') {
+                                if (labelText === 'Продажи товаров') {
+                                    // Синий градиент для Продажи товаров
+                                    const grad = canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                                    grad.addColorStop(0, 'rgba(59,130,246,0.18)');
+                                    grad.addColorStop(0.7, 'rgba(59,130,246,0.45)');
+                                    grad.addColorStop(1, 'rgba(59,130,246,0.85)');
+                                    return grad;
+                                }
+                                // Фиолетовый градиент для остальных bar
                                 const grad = canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
                                 grad.addColorStop(0, 'rgba(139,92,246,0.22)');
                                 grad.addColorStop(0.7, 'rgba(139,92,246,0.45)');
@@ -1068,11 +1077,20 @@ body {
                     fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            createUniversalChart('line', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
-                            universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                return this.getLabelForValue(this.getLabels()[index]);
-                            };
+                            createUniversalChart('bar', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
                             universalChart.update();
+                            // Анимация для карточки "Продажи товаров"
+                            const salesCard = document.querySelector('.stat-card.sales-card .stat-value');
+                            if (salesCard && Array.isArray(res.data)) {
+                                const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                                salesCard.classList.remove('animated');
+                                salesCard.textContent = '0 грн';
+                                void salesCard.offsetWidth;
+                                salesCard.classList.add('animated');
+                                setTimeout(() => {
+                                    animateCounter(salesCard, 0, total, 1500);
+                                }, 100);
+                            }
                         });
                     return;
                 }
@@ -1159,55 +1177,8 @@ body {
                     fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
-                            if (currentPeriod === '7') {
-                                createUniversalChart('line', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
-                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    return this.getLabelForValue(this.getLabels()[index]);
-                                };
-                            } else if (currentPeriod === '30' || currentPeriod === '90') {
-                                createUniversalChart('line', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
-                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    const label = this.getLabelForValue(this.getLabels()[index]);
-                                    const parts = label.split(' ');
-                                    if (parts.length === 2) {
-                                        const day = parseInt(parts[0]);
-                                        const month = parts[1];
-                                        const date = new Date();
-                                        date.setDate(day);
-                                        const now = new Date();
-                                        const d = new Date(now);
-                                        d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
-                                        if (d.getDay() === 1) {
-                                            return label;
-                                        }
-                                    }
-                                    return '';
-                                };
-                            } else {
-                                // Обработка для 6 месяцев и года
-                                createUniversalChart('line', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
-                                universalChart.options.scales.x.ticks.callback = function(value, index, ticks) {
-                                    const label = this.getLabelForValue(this.getLabels()[index]);
-                                    const parts = label.split(' ');
-                                    if (parts.length === 2) {
-                                        const day = parseInt(parts[0]);
-                                        const month = parts[1];
-                                        const date = new Date();
-                                        date.setDate(day);
-                                        const now = new Date();
-                                        const d = new Date(now);
-                                        d.setDate(now.getDate() - (this.getLabels().length - 1 - index));
-                                        if (d.getDate() === 1) {
-                                            return month;
-                                        }
-                                    }
-                                    return '';
-                                };
-                            }
-                            const maxValue = Math.max(...res.data);
-                            universalChart.options.scales.y.max = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
+                            createUniversalChart('bar', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
                             universalChart.update();
-
                             // Анимация для карточки "Продажи товаров"
                             const salesCard = document.querySelector('.stat-card.sales-card .stat-value');
                             if (salesCard && Array.isArray(res.data)) {
