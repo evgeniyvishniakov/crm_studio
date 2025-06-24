@@ -620,32 +620,19 @@
                 <table class="table-striped appointments-table" id="appointmentsTable">
                     <thead>
                     <tr>
-                        <th>Дата</th>
-                        <th>Время</th>
+                        <th class="date-col">Дата</th>
                         <th>Клиент</th>
-                        <th>Процедура</th>
+                        <th>Услуга</th>
                         <th>Статус</th>
-                        <th>Стоимость</th>
-                        <th>Действия</th>
+                        <th class="price-col">Стоимость</th>
+                        <th class="actions-col" style="text-align: right;">Действия</th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($appointments as $appointment)
                         <tr data-appointment-id="{{ $appointment->id }}">
                             <td>{{ \Carbon\Carbon::parse($appointment->date)->format('d.m.Y') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($appointment->time)->format('H:i') }}</td>
-                            <td>
-                                {{ $appointment->client->name }}
-                                @if($appointment->client->instagram)
-                                    <br />
-                                    (<a href="https://instagram.com/{{ $appointment->client->instagram }}" class="instagram-link" target="_blank" rel="noopener noreferrer">
-                                        <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        {{ $appointment->client->instagram }}
-                                    </a>)
-                                @endif
-                            </td>
+                            <td>{{ $appointment->client->name }}</td>
                             <td>{{ $appointment->service->name }}</td>
                             <td>
                         <span class="status-badge status-{{ $appointment->status }}">
@@ -812,9 +799,9 @@
                             tooltipContent.innerHTML = `
                             <p><strong>Время:</strong> ${startTime}</p>
                             <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
-                            <p><strong>Процедура:</strong> ${event.extendedProps.service}</p>
+                            <p><strong>Услуга:</strong> ${event.extendedProps.service}</p>
+                            <p><strong>Статус:</strong> <span class="status-badge status-${event.extendedProps.status}">${getStatusName(event.extendedProps.status)}</span></p>
                             <p><strong>Цена:</strong> ${event.extendedProps.price} грн</p>
-                            <p><strong>Статус:</strong> ${getStatusName(event.extendedProps.status)}</p>
                         `;
 
                             // Позиционируем всплывающую подсказку
@@ -1019,13 +1006,11 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Процедура *</label>
+                            <label>Услуга *</label>
                             <select name="service_id" class="form-control" required>
-                                <option value="">Выберите процедуру</option>
+                                <option value="">Выберите услугу</option>
                                 @foreach($services as $service)
-                                    <option value="{{ $service->id }}" data-price="{{ $service->price }}">
-                                        {{ $service->name }}
-                                    </option>
+                                    <option value="{{ $service->id }}" data-price="{{ $service->price }}">{{ $service->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -1254,7 +1239,7 @@
                     </span>
                 </div>
 
-                <h3>Процедура</h3>
+                <h3>Услуга</h3>
                 <div class="services-section">
                     <div class="service-item">
                         <span class="service-name">${escapeHtml(appointment.service.name)}</span>
@@ -1371,11 +1356,11 @@
 
         async function addNewProcedureToAppointment() {
             const appointmentId = document.getElementById('appointmentId').value;
-            const selectedServiceId = prompt("Введите ID новой процедуры:");
-            const newPrice = prompt("Введите цену для новой процедуры:");
+            const selectedServiceId = prompt("Введите ID новой услуги:");
+            const newPrice = prompt("Введите цену для новой услуги:");
 
             if (!selectedServiceId || !newPrice) {
-                alert("Процедура и цена обязательны");
+                alert("Услуга и цена обязательны");
                 return;
             }
 
@@ -1394,7 +1379,7 @@
             const result = await response.json();
 
             if (result.success) {
-                alert("Процедура добавлена как новая запись");
+                alert("Услуга добавлена как новая запись");
             } else {
                 alert("Ошибка: " + result.message);
             }
@@ -2049,9 +2034,9 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Процедура *</label>
+                            <label>Услуга *</label>
                             <select name="service_id" class="form-control" required>
-                                <option value="">Выберите процедуру</option>
+                                <option value="">Выберите услугу</option>
                                 ${allServices.map(service => `
                                     <option value="${service.id}"
                                             data-price="${service.price}"
@@ -2090,7 +2075,7 @@
                 </form>
             `;
 
-            // Обработчик изменения выбора процедуры
+            // Обработчик изменения выбора услуги
             document.querySelector('#editAppointmentModal [name="service_id"]')?.addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
                 const priceInput = document.querySelector('#editAppointmentModal [name="price"]');
@@ -2222,7 +2207,7 @@
                 submitAppointmentForm(this);
             });
 
-            // Обработчик изменения выбора процедуры
+            // Обработчик изменения выбора услуги
             document.querySelector('[name="service_id"]')?.addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
                 const priceInput = document.querySelector('[name="price"]');

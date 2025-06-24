@@ -494,7 +494,7 @@ class AppointmentsController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка при добавлении процедуры: ' . $e->getMessage()
+                'message' => 'Ошибка при добавлении услуги: ' . $e->getMessage()
             ], 500);
         }
     }

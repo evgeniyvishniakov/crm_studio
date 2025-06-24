@@ -252,14 +252,14 @@
 
                     <div class="card procedures-card">
                         <div class="card-title accordion-header" onclick="toggleAccordion('proceduresAccordion')">
-                            <span>Процедуры (<span id="proceduresCount">0</span>)</span>
+                            <span>Услуги (<span id="proceduresCount">0</span>)</span>
                             <svg class="accordion-icon" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M7 10l5 5 5-5z"/>
                             </svg>
                         </div>
                         <div class="accordion-content" id="proceduresAccordion">
                             <div class="procedures-list" id="viewClientProcedures">
-                                <!-- Список процедур будет добавлен через JavaScript -->
+                                <!-- Список услуг будет добавлен через JavaScript -->
                             </div>
                         </div>
                     </div>
@@ -1472,7 +1472,7 @@
                         contactsContainer.innerHTML = contactsHtml;
                     }
 
-                    // Устанавливаем процедуры
+                    // Устанавливаем услуги
                     const proceduresContainer = document.getElementById('viewClientProcedures');
                     if (proceduresContainer) {
                         if (client.appointments && client.appointments.length > 0) {
@@ -1549,7 +1549,7 @@
                                     </div>
                                 `;
 
-                                // Суммируем стоимость только завершенных процедур
+                                // Суммируем стоимость только завершенных услуг
                                 if (appointment.status === 'completed') {
                                     totalProceduresAmount += parseFloat(appointment.price) || 0;
                                 }
@@ -1561,7 +1561,7 @@
                                     <svg viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z"/>
                                     </svg>
-                                    <div>Нет выполненных процедур</div>
+                                    <div>Нет выполненных услуг</div>
                                 </div>
                             `;
                         }
@@ -1652,7 +1652,7 @@
                         }
                     }
 
-                    // Обновляем количество процедур и продаж
+                    // Обновляем количество услуг и продаж
                     document.getElementById('proceduresCount').textContent = client.appointments ? client.appointments.length : 0;
                     document.getElementById('salesCount').textContent = client.sales ? client.sales.length : 0;
                 })

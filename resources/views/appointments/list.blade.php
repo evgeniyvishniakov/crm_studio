@@ -739,7 +739,7 @@
                     <th>Дата</th>
                     <th>Время</th>
                     <th>Клиент</th>
-                    <th>Процедура</th>
+                    <th>Услуга</th>
                     <th>Статус</th>
                     <th>Стоимость</th>
                     <th>Действия</th>
@@ -952,7 +952,7 @@
                     tooltipContent.innerHTML = `
                         <p><strong>Время:</strong> ${startTime}</p>
                         <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
-                        <p><strong>Процедура:</strong> ${event.extendedProps.service}</p>
+                        <p><strong>Услуга:</strong> ${event.extendedProps.service}</p>
                         <p><strong>Цена:</strong> ${event.extendedProps.price} грн</p>
                         <p><strong>Статус:</strong> ${getStatusName(event.extendedProps.status)}</p>
                     `;
@@ -1160,9 +1160,9 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Процедура *</label>
+                            <label>Услуга *</label>
                             <select name="service_id" class="form-control" required>
-                                <option value="">Выберите процедуру</option>
+                                <option value="">Выберите услугу</option>
                                 @foreach($services as $service)
                                 <option value="{{ $service->id }}" data-price="{{ $service->price }}">
                                     {{ $service->name }}
@@ -1398,7 +1398,7 @@
             <div><span class="details-label">Время:</span> ${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</div>
         </div>
         <div class="card procedure-card">
-            <div class="card-title">Процедура</div>
+            <div class="card-title">Услуга</div>
             <div class="procedure-info">
                 <span class="service-name">${escapeHtml(appointment.service.name)}</span>
                 <span class="procedure-price">${Number(servicePrice) % 1 === 0 ? Number(servicePrice) : servicePrice.toFixed(2)} грн</span>
@@ -1513,11 +1513,11 @@
 
         async function addNewProcedureToAppointment() {
             const appointmentId = document.getElementById('appointmentId').value;
-            const selectedServiceId = prompt("Введите ID новой процедуры:");
-            const newPrice = prompt("Введите цену для новой процедуры:");
+            const selectedServiceId = prompt("Введите ID новой услуги:");
+            const newPrice = prompt("Введите цену для новой услуги:");
 
             if (!selectedServiceId || !newPrice) {
-                alert("Процедура и цена обязательны");
+                alert("Услуга и цена обязательны");
                 return;
             }
 
@@ -1536,7 +1536,7 @@
             const result = await response.json();
 
             if (result.success) {
-                alert("Процедура добавлена как новая запись");
+                alert("Услуга добавлена как новая запись");
             } else {
                 alert("Ошибка: " + result.message);
             }
@@ -2222,9 +2222,9 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Процедура *</label>
+                            <label>Услуга *</label>
                             <select name="service_id" class="form-control" required>
-                                <option value="">Выберите процедуру</option>
+                                <option value="">Выберите услугу</option>
                                 ${allServices.map(service => `
                                     <option value="${service.id}"
                                             data-price="${service.price}"
@@ -3115,6 +3115,18 @@
             // Если записи динамически меняются, можно вызвать updateRows()
             updateRows();
         })();
+
+        // Обработчик изменения выбора услуги
+        $('#addAppointmentModal').on('change', 'select[name="service_id"]', function() {
+            const price = $(this).find('option:selected').data('price');
+            $('#addAppointmentModal input[name="price"]').val(price);
+        });
+
+        // Обработчик изменения выбора услуги
+        $('#editAppointmentModal').on('change', 'select[name="service_id"]', function() {
+            const price = $(this).find('option:selected').data('price');
+            $('#editAppointmentModal input[name="price"]').val(price);
+        });
     </script>
 </div>
 @endsection
