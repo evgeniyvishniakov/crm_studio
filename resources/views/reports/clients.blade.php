@@ -152,15 +152,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: {
-                                precision: 0
-                            }
+                            ticks: { precision: 0 },
+                            grid: { display: true, color: '#e5e7eb' }
                         },
-                         x: {
-                            ticks: {
-                                autoSkip: true,
-                                maxRotation: 0
-                            }
+                        x: {
+                            ticks: { autoSkip: true, maxRotation: 0 },
+                            grid: { display: false }
                         }
                     },
                     plugins: {
@@ -184,24 +181,14 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             clientTypesChart: { type: 'pie', options: {} },
             newVsReturningChart: { type: 'doughnut', options: {} },
-            topClientsByVisitsChart: { type: 'bar', options: {} },
+            topClientsByVisitsChart: { type: 'bar', options: { scales: { y: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' }, ticks: { precision: 0 } }, x: { grid: { display: false } } } } },
             // Аналитика по записям
             loadChart: { 
                 type: 'bar', 
                 options: { 
                     scales: { 
-                        y: { 
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                autoSkip: true,
-                                maxRotation: 0
-                            }
-                        }
+                        y: { beginAtZero: true, ticks: { precision: 0 }, grid: { display: true, color: '#e5e7eb' } },
+                        x: { ticks: { autoSkip: true, maxRotation: 0 }, grid: { display: false } }
                     },
                     plugins: {
                         tooltip: {
@@ -223,11 +210,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 } 
             },
             statusChart: { type: 'pie', options: {} },
-            servicesChart: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true } }, plugins: { legend: { display: false } } } },
+            servicesChart: { 
+                type: 'bar', 
+                options: { 
+                    indexAxis: 'y', 
+                    scales: { 
+                        x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, 
+                        y: { grid: { display: false } } 
+                    }, 
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    // Убираем скобки и число
+                                    const label = tooltipItems[0].label;
+                                    return label.replace(/\s*\(\d+\)$/, '');
+                                }
+                            }
+                        }
+                    } 
+                } 
+            },
             // Финансовая аналитика
-            topClientsByRevenueChart: { type: 'bar', options: { indexAxis: 'y', plugins: { legend: { display: false } } } },
-            avgCheckChart: { type: 'line', options: {} },
-            ltvChart: { type: 'bar', options: { plugins: { legend: { display: false } } } }
+            topClientsByRevenueChart: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } },
+            avgCheckChart: { type: 'line', options: { scales: { y: { grid: { display: false } }, x: { grid: { display: false } } } } },
+            ltvChart: { type: 'bar', options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } } } }
         };
 
         Object.keys(chartConfigs).forEach(id => {
@@ -451,7 +459,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Функция для обновления популярности услуг ---
     async function updateServicePopularityAnalytics(period = 'week') {
         console.log(`Запрос данных для популярности услуг за период: ${period}`);
-        if (!charts.servicesChart) return;
+        const servicesChart = charts.servicesChart;
+        if (!servicesChart) return;
 
         try {
             const response = await fetch(`/reports/service-popularity-data?period=${period}`);
@@ -460,24 +469,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             const data = await response.json();
             
+            // Формируем labels с числами в скобках
+            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i]})`);
+
             // Устанавливаем максимальное значение для шкалы X
-            if (charts.servicesChart && data.data && data.data.length > 0) {
+            if (data.data && data.data.length > 0) {
                 const maxValue = Math.max(...data.data);
-                const servicesChart = charts.servicesChart;
                 if (!servicesChart.options.scales) servicesChart.options.scales = {};
                 if (!servicesChart.options.scales.x) servicesChart.options.scales.x = {};
                 servicesChart.options.scales.x.suggestedMax = maxValue + 1;
                 servicesChart.options.scales.x.ticks = { precision: 0 };
-            } else if (charts.servicesChart) {
-                delete charts.servicesChart.options.scales.x.suggestedMax;
+            } else {
+                delete servicesChart.options.scales.x.suggestedMax;
             }
 
-            updateChart(charts.servicesChart, data.labels, [{
+            const ctx = servicesChart.ctx;
+            const gradient = ctx.createLinearGradient(0, 0, servicesChart.chartArea.right, 0);
+            gradient.addColorStop(0, 'rgba(139, 92, 246, 0.9)');
+            gradient.addColorStop(0.5, 'rgba(139, 92, 246, 0.6)');
+            gradient.addColorStop(1, 'rgba(139, 92, 246, 0.4)');
+
+            updateChart(servicesChart, labelsWithCounts, [{
                 label: 'Количество записей',
                 data: data.data,
-                backgroundColor: 'rgba(139, 92, 246, 0.7)',
-                borderColor: 'rgba(139, 92, 246, 1)',
-                borderWidth: 1
+                backgroundColor: gradient,
+                borderColor: 'rgba(139, 92, 246, 0.3)',
+                borderWidth: 1,
+                borderRadius: 4,
+                borderSkipped: false
             }]);
         } catch (error) {
             console.error('Ошибка при загрузке данных о популярности услуг:', error);
@@ -486,6 +505,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Вспомогательная функция для обновления одного графика ---
     function updateChart(chart, labels, datasets) {
+        // Градиент для bar и line графиков
+        if (chart && chart.config && chart.config.type) {
+            const ctx = chart.ctx;
+            const area = chart.chartArea;
+            if (ctx && area && datasets.length > 0) {
+                if (chart.config.type === 'bar') {
+                    // Горизонтальный bar (indexAxis: 'y') — вертикальный градиент
+                    if (chart.options.indexAxis === 'y') {
+                        const grad = ctx.createLinearGradient(area.left, 0, area.right, 0);
+                        grad.addColorStop(0, 'rgba(139,92,246,0.9)');
+                        grad.addColorStop(0.5, 'rgba(139,92,246,0.6)');
+                        grad.addColorStop(1, 'rgba(139,92,246,0.4)');
+                        datasets[0].backgroundColor = grad;
+                        datasets[0].borderColor = 'rgba(139,92,246,0.3)';
+                        datasets[0].borderRadius = 4;
+                        datasets[0].borderSkipped = false;
+                    } else {
+                        // Обычный bar — горизонтальный градиент
+                        const grad = ctx.createLinearGradient(0, area.bottom, 0, area.top);
+                        grad.addColorStop(0, 'rgba(59,130,246,0.9)');
+                        grad.addColorStop(0.5, 'rgba(59,130,246,0.5)');
+                        grad.addColorStop(1, 'rgba(59,130,246,0.2)');
+                        datasets[0].backgroundColor = grad;
+                        datasets[0].borderColor = 'rgba(59,130,246,0.3)';
+                        datasets[0].borderRadius = 4;
+                        datasets[0].borderSkipped = false;
+                    }
+                } else if (chart.config.type === 'line') {
+                    // Градиентная заливка под линией
+                    const grad = ctx.createLinearGradient(0, area.bottom, 0, area.top);
+                    grad.addColorStop(0, 'rgba(59,130,246,0.15)');
+                    grad.addColorStop(1, 'rgba(59,130,246,0.01)');
+                    datasets[0].backgroundColor = grad;
+                    datasets[0].borderColor = 'rgb(59,130,246)';
+                    datasets[0].pointBackgroundColor = 'rgb(59,130,246)';
+                    datasets[0].pointRadius = 4;
+                    datasets[0].pointHoverRadius = 6;
+                    datasets[0].tension = 0.4;
+                    datasets[0].fill = true;
+                }
+            }
+        }
         chart.data.labels = labels;
         chart.data.datasets = datasets;
         chart.update();
