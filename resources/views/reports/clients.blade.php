@@ -544,6 +544,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     datasets[0].pointHoverRadius = 6;
                     datasets[0].tension = 0.4;
                     datasets[0].fill = true;
+                } else if (chart.config.type === 'pie' || chart.config.type === 'doughnut') {
+                    // Современный стиль для pie/doughnut
+                    // Цвета — только из данных, не трогаем
+                    datasets[0].borderColor = 'rgba(255,255,255,0.7)';
+                    datasets[0].borderWidth = 2;
+                    datasets[0].hoverOffset = 12;
+                    // Тень через plugin (Chart.js 3+)
+                    chart.options.plugins.shadow = {
+                        enabled: true,
+                        color: 'rgba(59,130,246,0.18)',
+                        blur: 12,
+                        offsetX: 0,
+                        offsetY: 4
+                    };
                 }
             }
         }
@@ -652,6 +666,27 @@ document.addEventListener('DOMContentLoaded', function() {
         //         borderWidth: 1
         //     }]
         // );
+    }
+});
+
+// --- Chart.js shadow plugin ---
+Chart.register({
+    id: 'shadow',
+    beforeDraw: function(chart) {
+        if (chart.options.plugins && chart.options.plugins.shadow && chart.options.plugins.shadow.enabled) {
+            const ctx = chart.ctx;
+            ctx.save();
+            ctx.shadowColor = chart.options.plugins.shadow.color || 'rgba(0,0,0,0.15)';
+            ctx.shadowBlur = chart.options.plugins.shadow.blur || 10;
+            ctx.shadowOffsetX = chart.options.plugins.shadow.offsetX || 0;
+            ctx.shadowOffsetY = chart.options.plugins.shadow.offsetY || 4;
+        }
+    },
+    afterDraw: function(chart) {
+        if (chart.options.plugins && chart.options.plugins.shadow && chart.options.plugins.shadow.enabled) {
+            const ctx = chart.ctx;
+            ctx.restore();
+        }
     }
 });
 </script>
