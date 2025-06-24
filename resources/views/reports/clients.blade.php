@@ -507,31 +507,32 @@ document.addEventListener('DOMContentLoaded', function() {
             const area = chart.chartArea;
             if (ctx && area && datasets.length > 0) {
                 if (chart.config.type === 'bar') {
-                    // Для topServicesByRevenueChart и servicesChart — фиолетовый градиент
+                    // Для topServicesByRevenueChart и servicesChart — фиолетовый градиент (перевёрнутый)
                     if ((chart.canvas && chart.canvas.id === 'topServicesByRevenueChart') || (chart.canvas && chart.canvas.id === 'servicesChart')) {
                         const grad = ctx.createLinearGradient(area.left, 0, area.right, 0);
-                        grad.addColorStop(0, 'rgba(139,92,246,0.9)');
+                        grad.addColorStop(0, 'rgba(139,92,246,0.4)');
                         grad.addColorStop(0.5, 'rgba(139,92,246,0.6)');
-                        grad.addColorStop(1, 'rgba(139,92,246,0.4)');
+                        grad.addColorStop(1, 'rgba(139,92,246,0.9)');
                         datasets[0].backgroundColor = grad;
                         datasets[0].borderColor = 'rgba(139,92,246,0.3)';
                         datasets[0].borderRadius = 4;
                         datasets[0].borderSkipped = false;
                     } else if (chart.options.indexAxis === 'y') {
-                        // Для остальных горизонтальных bar — синий градиент
+                        // Для остальных горизонтальных bar — синий градиент (перевёрнутый)
                         const grad = ctx.createLinearGradient(area.left, 0, area.right, 0);
-                        grad.addColorStop(0, 'rgba(59,130,246,0.9)');
+                        grad.addColorStop(0, 'rgba(59,130,246,0.2)');
                         grad.addColorStop(0.5, 'rgba(59,130,246,0.5)');
-                        grad.addColorStop(1, 'rgba(59,130,246,0.2)');
+                        grad.addColorStop(1, 'rgba(59,130,246,0.9)');
                         datasets[0].backgroundColor = grad;
                         datasets[0].borderColor = 'rgba(59,130,246,0.3)';
                         datasets[0].borderRadius = 4;
                         datasets[0].borderSkipped = false;
                     } else {
+                        // Для вертикальных bar — синий градиент (перевёрнутый)
                         const grad = ctx.createLinearGradient(0, area.bottom, 0, area.top);
-                        grad.addColorStop(0, 'rgba(59,130,246,0.9)');
+                        grad.addColorStop(0, 'rgba(59,130,246,0.2)');
                         grad.addColorStop(0.5, 'rgba(59,130,246,0.5)');
-                        grad.addColorStop(1, 'rgba(59,130,246,0.2)');
+                        grad.addColorStop(1, 'rgba(59,130,246,0.9)');
                         datasets[0].backgroundColor = grad;
                         datasets[0].borderColor = 'rgba(59,130,246,0.3)';
                         datasets[0].borderRadius = 4;
@@ -645,10 +646,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Первоначальная загрузка для первой активной вкладки ---
     initializeCharts();
-    const initialPeriodButton = document.querySelector('.filter-section .filter-button.active');
-    const initialPeriod = periodMapping[initialPeriodButton.textContent.trim()];
-    if (initialPeriod) {
+    // Сразу выбираем период 'За месяц'
+    const filterButtonsArr = Array.from(document.querySelectorAll('.filter-section .filter-button'));
+    const monthBtn = filterButtonsArr.find(btn => btn.textContent.trim() === 'За месяц');
+    if (monthBtn) {
+        filterButtonsArr.forEach(btn => btn.classList.remove('active'));
+        monthBtn.classList.add('active');
+    }
+    const initialPeriod = 'month';
+    // Определяем активную вкладку
+    const initialTabId = document.querySelector('.tab-button.active').getAttribute('data-tab');
+    if (initialTabId === 'clients-analytics') {
         updateClientAnalytics(initialPeriod);
+    } else if (initialTabId === 'appointments-analytics') {
+        updateAppointmentsAnalytics(initialPeriod);
+        updateAppointmentStatusAnalytics(initialPeriod);
+        updateServicePopularityAnalytics(initialPeriod);
+    } else if (initialTabId === 'complex-analytics') {
+        updateTopClientsByRevenueAnalytics(initialPeriod);
+        updateAvgCheckDynamicsAnalytics(initialPeriod);
+        updateLtvByClientTypeAnalytics(initialPeriod);
+        updateTopServicesByRevenueAnalytics(initialPeriod);
     }
 
     // --- Графики для вкладки "Аналитика по записям" (статичные данные) ---

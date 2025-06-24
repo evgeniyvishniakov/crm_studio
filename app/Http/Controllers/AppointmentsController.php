@@ -896,8 +896,8 @@ class AppointmentsController extends Controller
             case 'year': $startDate = $endDate->copy()->subYear(); break;
             case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
         }
-        $checks = Sale::whereBetween('date', [$startDate, $endDate])
-            ->selectRaw('date, AVG(total_amount) as avg_check')
+        $checks = Appointment::whereBetween('date', [$startDate, $endDate])
+            ->selectRaw('date, AVG(price) as avg_check')
             ->groupBy('date')
             ->orderBy('date')
             ->get();
