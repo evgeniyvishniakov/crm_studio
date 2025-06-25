@@ -66,4 +66,14 @@ class Product extends Model
     {
         return $this->hasMany(\App\Models\SaleItem::class, 'product_id');
     }
+
+    public function inventoryItem()
+    {
+        return $this->hasOne(InventoryItem::class);
+    }
+
+    public function purchaseItems()
+    {
+        return $this->hasMany(\App\Models\PurchaseItem::class, 'product_id');
+    }
 }

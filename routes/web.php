@@ -152,3 +152,5 @@ Route::get('/reports/ltv-by-client-type', [AppointmentsController::class, 'getLt
 Route::get('/reports/top-services-by-revenue', [AppointmentsController::class, 'getTopServicesByRevenue']);
 Route::get('/reports/turnover', [TurnoverReportController::class, 'index'])->name('reports.turnover.index');
 Route::get('/reports/turnover-analytics', [TurnoverReportController::class, 'getDynamicAnalyticsData'])->name('reports.turnover.analytics');
+Route::get('/reports/turnover-tops', [TurnoverReportController::class, 'getTopsAnalyticsData'])->name('reports.turnover.tops');
+Route::get('/reports/suppliers-analytics', [\App\Http\Controllers\TurnoverReportController::class, 'suppliersAnalyticsData']);
