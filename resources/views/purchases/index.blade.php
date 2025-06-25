@@ -784,7 +784,7 @@
             detailsCell.innerHTML = `
                 <div class="purchases-details">
                     <div class="purchases-notes">${purchase.notes || '—'}</div>
-                    <table class="purchase-table">
+                    <table class="table-wrapper table-striped purchases-table">
                         <thead>
                             <tr>
                                 <th>Фото</th>
