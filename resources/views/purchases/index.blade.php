@@ -23,68 +23,74 @@
             </div>
         </div>
 
-        <div class="purchases-list" id="purchasesList">
-            @foreach($purchases as $purchase)
-                <div class="purchase-item" id="purchase-{{ $purchase->id }}">
-                    <div class="purchase-header" onclick="togglePurchaseDetails({{ $purchase->id }})">
-                        <div class="purchase-info">
-                            <span class="purchase-date">{{ $purchase->formatted_date }}</span>
-                            <span class="purchase-supplier">{{ $purchase->supplier ? $purchase->supplier->name : '—' }}</span>
-                        </div>
-                        <div class="purchase-summary">
-                            <span class="purchase-total">{{ number_format($purchase->total_amount, 2) }} грн</span>
-                            <div class="purchase-actions">
+        <table class="table table-hover purchases-table-main">
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Поставщик</th>
+                    <th>Сумма</th>
+                    <th class="text-right">Действия</th>
+                </tr>
+            </thead>
+            <tbody id="purchasesListBody">
+                @foreach($purchases as $purchase)
+                    <tr class="purchase-summary-row" id="purchase-row-{{ $purchase->id }}" onclick="togglePurchaseDetailsRow({{ $purchase->id }})">
+                        <td class="purchase-date">{{ $purchase->formatted_date }}</td>
+                        <td class="purchase-supplier">{{ $purchase->supplier ? $purchase->supplier->name : '—' }}</td>
+                        <td class="purchase-total">{{ (float)$purchase->total_amount }} грн</td>
+                        <td>
+                            <div class="purchase-actions text-right">
                                 <button class="btn-edit" onclick="editPurchase(event, {{ $purchase->id }})">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                    </svg>
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
                                     Ред.
                                 </button>
                                 <button class="btn-delete" onclick="confirmDeletePurchase(event, {{ $purchase->id }})">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
                                     Удалить
                                 </button>
                             </div>
-                        </div>
-                    </div>
-                    <div class="purchase-details" id="details-{{ $purchase->id }}" style="display: none;">
-                        <div class="purchase-notes">{{ $purchase->notes }}</div>
-                        <table class="table-striped purchase-table">
-                            <thead>
-                            <tr>
-                                <th>Фото</th>
-                                <th>Товар</th>
-                                <th>Закупочная цена</th>
-                                <th>Розничная цена</th>
-                                <th>Количество</th>
-                                <th>Сумма</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($purchase->items as $item)
-                                <tr>
-                                    <td>
-                                        @if($item->product->photo)
-                                            <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="{{ $item->product->name }}">
-                                        @else
-                                            <div class="no-photo">Нет фото</div>
-                                        @endif
-                                    </td>
-                                    <td>{{ $item->product->name }}</td>
-                                    <td>{{ number_format($item->purchase_price, 2) }} грн</td>
-                                    <td>{{ number_format($item->retail_price, 2) }} грн</td>
-                                    <td>{{ $item->quantity }} шт</td>
-                                    <td>{{ number_format($item->total, 2) }} грн</td>
-                                </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            @endforeach
-        </div>
+                        </td>
+                    </tr>
+                    <tr class="purchase-details-row" id="details-row-{{ $purchase->id }}" style="display: none;">
+                        <td colspan="4">
+                            <div class="purchase-details">
+                                <div class="purchase-notes">{{ $purchase->notes }}</div>
+                                <table class="table-striped purchase-table">
+                                    <thead>
+                                    <tr>
+                                        <th>Фото</th>
+                                        <th>Товар</th>
+                                        <th>Закупочная цена</th>
+                                        <th>Розничная цена</th>
+                                        <th>Количество</th>
+                                        <th>Сумма</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($purchase->items as $item)
+                                        <tr>
+                                            <td>
+                                                @if($item->product->photo)
+                                                    <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="{{ $item->product->name }}">
+                                                @else
+                                                    <div class="no-photo">Нет фото</div>
+                                                @endif
+                                            </td>
+                                            <td>{{ $item->product->name }}</td>
+                                            <td>{{ (float)$item->purchase_price }} грн</td>
+                                            <td>{{ (float)$item->retail_price }} грн</td>
+                                            <td>{{ $item->quantity }} шт</td>
+                                            <td>{{ (float)$item->total }} грн</td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 
     <!-- Модальное окно добавления закупки -->
@@ -353,20 +359,38 @@
             form.reset();
 
             // Удаляем все ряды товаров, кроме первого
-            const rows = document.querySelectorAll('.item-row:not(.template)');
+            const rows = document.querySelectorAll('#purchaseForm .item-row:not(.template)');
             rows.forEach((row, index) => {
                 if (index > 0) {
                     row.remove();
                 }
             });
 
+            // Сбрасываем первый ряд
+            const firstRow = document.querySelector('#purchaseForm .item-row:not(.template)');
+            if (firstRow) {
+                const inputs = firstRow.querySelectorAll('input, select');
+                inputs.forEach(input => {
+                    if (input.tagName === 'SELECT') {
+                        input.selectedIndex = 0;
+                    } else if (input.name && input.name.includes('quantity')) {
+                        input.value = '1';
+                    } else {
+                        input.value = '';
+                    }
+                });
+                firstRow.querySelector('.product-search-input').value = '';
+            }
+
             itemCounter = 1;
         }
 
         // Функция для показа/скрытия деталей закупки
-        function togglePurchaseDetails(id) {
-            const details = document.getElementById(`details-${id}`);
-            details.style.display = details.style.display === 'none' ? 'block' : 'none';
+        function togglePurchaseDetailsRow(id) {
+            const detailsRow = document.getElementById(`details-row-${id}`);
+            if (detailsRow) {
+                detailsRow.style.display = detailsRow.style.display === 'none' ? 'table-row' : 'none';
+            }
         }
 
         // Функция для редактирования закупки
@@ -507,19 +531,7 @@
                                     showNotification('success', 'Закупка успешно обновлена');
                                     closeEditPurchaseModal();
                                     // Обновляем данные на странице
-                                    const purchaseElement = document.getElementById(`purchase-${id}`);
-                                    if (purchaseElement) {
-                                        const purchaseInfo = purchaseElement.querySelector('.purchase-info');
-                                        const formattedDate = new Date(data.purchase.date).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\./g, '.');
-
-                                        purchaseElement.querySelector('.purchase-date').textContent = formattedDate;
-                                        purchaseElement.querySelector('.purchase-supplier').textContent = data.purchase.supplier ? data.purchase.supplier.name : '—';
-                                        purchaseElement.querySelector('.purchase-total').textContent = `${Number(data.purchase.total_amount).toFixed(2)} грн`;
-
-                                        // Обновляем детали, если они открыты
-                                        const details = document.getElementById(`details-${id}`);
-                                        // Здесь можно добавить логику обновления деталей, если это необходимо
-                                    }
+                                    updatePurchaseRowInDOM(data.purchase);
                                 } else {
                                     showNotification('error', data.message || 'Ошибка обновления закупки');
                                 }
@@ -571,7 +583,8 @@
                 .then(data => {
                     if (data.success) {
                         showNotification('Закупка успешно удалена', 'success');
-                        document.getElementById(`purchase-${id}`).remove();
+                        document.getElementById(`purchase-row-${id}`).remove();
+                        document.getElementById(`details-row-${id}`).remove();
                     } else {
                         showNotification('Ошибка при удалении закупки', 'error');
                     }
@@ -661,158 +674,127 @@
                 }).replace(/\./g, '.')
                 : 'Нет даты';
 
-            // Генерируем HTML для товаров
+            // Генерируем HTML для товаров в детальной строке
             const itemsHTML = purchase.items.map(item => {
-                // Преобразуем цены и количество в числа
                 const purchasePrice = parseFloat(item.purchase_price);
                 const retailPrice = parseFloat(item.retail_price);
                 const quantity = parseInt(item.quantity);
                 const total = purchasePrice * quantity;
 
                 return `
-        <tr>
-            <td>
-                ${item.product.photo
-                    ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">`
-                    : `<div class="no-photo">Нет фото</div>`
-                }
-            </td>
-            <td>${item.product.name}</td>
-            <td>${purchasePrice.toFixed(2)} грн</td>
-            <td>${retailPrice.toFixed(2)} грн</td>
-            <td>${quantity} шт</td>
-            <td>${total.toFixed(2)} грн</td>
-        </tr>
-        `;
+                <tr>
+                    <td>
+                        ${item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` : `<div class="no-photo">Нет фото</div>`}
+                    </td>
+                    <td>${item.product.name}</td>
+                    <td>${Number(purchasePrice)} грн</td>
+                    <td>${Number(retailPrice)} грн</td>
+                    <td>${quantity} шт</td>
+                    <td>${Number(total)} грн</td>
+                </tr>`;
             }).join('');
 
-            // Создаём HTML закупки
-            const purchaseHTML = `
-    <div class="purchase-item" id="purchase-${purchase.id}">
-        <div class="purchase-header" onclick="togglePurchaseDetails(${purchase.id})">
-            <div class="purchase-info">
-                <span class="purchase-date">${formattedDate}</span>
-                <span class="purchase-supplier">${purchase.supplier ? purchase.supplier.name : '—'}</span>
-            </div>
-            <div class="purchase-summary">
-                <span class="purchase-total">${parseFloat(purchase.total_amount).toFixed(2)} грн</span>
-                <div class="purchase-actions">
-                    <button class="btn-edit" onclick="editPurchase(event, ${purchase.id})">
-                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                        </svg>
-                        Ред.
-                    </button>
-                    <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
-                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                        </svg>
-                        Удалить
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="purchase-details" id="details-${purchase.id}" style="display: none;">
-            <div class="purchase-notes">${purchase.notes || ''}</div>
-            <table class="purchase-table">
-                <thead>
-                    <tr>
-                        <th>Фото</th>
-                        <th>Товар</th>
-                        <th>Закупочная цена</th>
-                        <th>Розничная цена</th>
-                        <th>Количество</th>
-                        <th>Сумма</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${itemsHTML}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    `;
+            // Создаём HTML для двух строк таблицы: основной и детальной
+            const newRowHTML = `
+                <tr class="purchase-summary-row" id="purchase-row-${purchase.id}" onclick="togglePurchaseDetailsRow(${purchase.id})">
+                    <td class="purchase-date">${formattedDate}</td>
+                    <td class="purchase-supplier">${purchase.supplier ? purchase.supplier.name : '—'}</td>
+                    <td class="purchase-total">${Number(purchase.total_amount)} грн</td>
+                    <td>
+                        <div class="purchase-actions text-right">
+                            <button class="btn-edit" onclick="editPurchase(event, ${purchase.id})">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg> Ред.
+                            </button>
+                            <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> Удалить
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="purchase-details-row" id="details-row-${purchase.id}" style="display: none;">
+                    <td colspan="4">
+                        <div class="purchase-details">
+                            <div class="purchase-notes">${purchase.notes || ''}</div>
+                            <table class="table-striped purchase-table">
+                                <thead>
+                                    <tr>
+                                        <th>Фото</th>
+                                        <th>Товар</th>
+                                        <th>Закупочная цена</th>
+                                        <th>Розничная цена</th>
+                                        <th>Количество</th>
+                                        <th>Сумма</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${itemsHTML}
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            `;
 
-            // Вставляем в DOM
-            const purchasesList = document.getElementById('purchasesList');
-            purchasesList.insertAdjacentHTML('afterbegin', purchaseHTML);
+            // Вставляем в тело таблицы
+            const purchasesListBody = document.getElementById('purchasesListBody');
+            purchasesListBody.insertAdjacentHTML('afterbegin', newRowHTML);
         }
 
-        function updatePurchaseInDOM(purchase) {
+        function updatePurchaseRowInDOM(purchase) {
+            const purchaseRow = document.getElementById(`purchase-row-${purchase.id}`);
+            const detailsRow = document.getElementById(`details-row-${purchase.id}`);
+
+            if (!purchaseRow || !detailsRow) return;
+
+            // 1. Обновляем основную строку
             const formattedDate = new Date(purchase.date).toLocaleDateString('ru-RU', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
+                day: '2-digit', month: '2-digit', year: 'numeric'
             }).replace(/\./g, '.');
 
-            const purchaseElement = document.getElementById(`purchase-${purchase.id}`);
-            if (purchaseElement) {
-                // Преобразуем все числовые значения в числа
-                const itemsWithNumbers = purchase.items.map(item => ({
-                    ...item,
-                    purchase_price: parseFloat(item.purchase_price),
-                    retail_price: parseFloat(item.retail_price),
-                    quantity: parseInt(item.quantity),
-                    total: parseFloat(item.purchase_price) * parseInt(item.quantity)
-                }));
+            purchaseRow.querySelector('.purchase-date').textContent = formattedDate;
+            purchaseRow.querySelector('.purchase-supplier').textContent = purchase.supplier ? purchase.supplier.name : '—';
+            purchaseRow.querySelector('.purchase-total').textContent = `${Number(purchase.total_amount)} грн`;
 
-                purchaseElement.innerHTML = `
-            <div class="purchase-header" onclick="togglePurchaseDetails(${purchase.id})">
-                <div class="purchase-info">
-                    <span class="purchase-date">${formattedDate}</span>
-                    <span class="purchase-supplier">${purchase.supplier ? purchase.supplier.name : '—'}</span>
-                </div>
-                <div class="purchase-summary">
-                    <span class="purchase-total">${parseFloat(purchase.total_amount).toFixed(2)} грн</span>
-                    <div class="purchase-actions">
-                        <button class="btn-edit" onclick="editPurchase(event, ${purchase.id})">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                            </svg>
-                            Ред.
-                        </button>
-                        <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            Удалить
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="purchase-details" id="details-${purchase.id}" style="display: none;">
-                <div class="purchase-notes">${purchase.notes || ''}</div>
-                <table class="purchase-table">
-                    <thead>
-                        <tr>
-                            <th>Фото</th>
-                            <th>Товар</th>
-                            <th>Закупочная цена</th>
-                            <th>Розничная цена</th>
-                            <th>Количество</th>
-                            <th>Сумма</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${itemsWithNumbers.map(item => `
+            // 2. Обновляем детальную строку
+            const itemsHTML = purchase.items.map(item => {
+                const purchasePrice = parseFloat(item.purchase_price);
+                const retailPrice = parseFloat(item.retail_price);
+                const quantity = parseInt(item.quantity);
+                const total = purchasePrice * quantity;
+                return `
+                <tr>
+                    <td>
+                        ${item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` : `<div class="no-photo">Нет фото</div>`}
+                    </td>
+                    <td>${item.product.name}</td>
+                    <td>${Number(purchasePrice)} грн</td>
+                    <td>${Number(retailPrice)} грн</td>
+                    <td>${quantity} шт</td>
+                    <td>${Number(total)} грн</td>
+                </tr>`;
+            }).join('');
+
+            const detailsCell = detailsRow.querySelector('td');
+            detailsCell.innerHTML = `
+                <div class="purchase-details">
+                    <div class="purchase-notes">${purchase.notes || ''}</div>
+                    <table class="purchase-table">
+                        <thead>
                             <tr>
-                                <td>
-                                    ${item.product.photo ?
-                    `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` :
-                    `<div class="no-photo">Нет фото</div>`}
-                                </td>
-                                <td>${item.product.name}</td>
-                                <td>${item.purchase_price.toFixed(2)} грн</td>
-                                <td>${item.retail_price.toFixed(2)} грн</td>
-                                <td>${item.quantity} шт</td>
-                                <td>${item.total.toFixed(2)} грн</td>
+                                <th>Фото</th>
+                                <th>Товар</th>
+                                <th>Закупочная цена</th>
+                                <th>Розничная цена</th>
+                                <th>Количество</th>
+                                <th>Сумма</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-            }
+                        </thead>
+                        <tbody>
+                            ${itemsHTML}
+                        </tbody>
+                    </table>
+                </div>
+            `;
         }
 
         // Вспомогательные функции
@@ -874,19 +856,23 @@
         // Поиск закупок
         document.getElementById('searchInput').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
-            const purchases = document.querySelectorAll('.purchase-item');
+            const rows = document.querySelectorAll('#purchasesListBody .purchase-summary-row');
 
-            purchases.forEach(purchase => {
-                const header = purchase.querySelector('.purchase-header');
-                const textContent = header.textContent.toLowerCase();
+            rows.forEach(row => {
+                const textContent = row.textContent.toLowerCase();
+                const detailsRow = document.getElementById(row.id.replace('purchase-row-', 'details-row-'));
+
                 if (textContent.includes(searchTerm)) {
-                    purchase.style.display = 'block';
+                    row.style.display = 'table-row';
                 } else {
-                    purchase.style.display = 'none';
+                    row.style.display = 'none';
+                    if (detailsRow) {
+                        detailsRow.style.display = 'none'; // Также скрыть детали при поиске
+                    }
                 }
             });
-
         });
+
         // Глобальная переменная для хранения всех продуктов
         let allProducts = @json($products);
 
@@ -969,29 +955,52 @@
         });
     </script>
     <style>
-        .purchase-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .purchases-table-main {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .purchase-info {
-            display: flex;
-            gap: 15px;
-            align-items: center;
+        .purchases-table-main thead tr {
+            border-bottom: 2px solid #dee2e6;
         }
-        .purchase-summary {
-            display: flex;
-            align-items: center;
-            gap: 20px;
+        .purchases-table-main th {
+            padding: 12px;
+            text-align: center;
+            background-color: #f8f9fa;
+        }
+        .purchase-summary-row {
+            cursor: pointer;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .purchase-summary-row:hover {
+            background-color: #f1f1f1;
+        }
+        .purchase-summary-row td {
+            padding: 12px;
+            vertical-align: middle;
         }
         .purchase-total {
             font-weight: normal;
-            color: #333;
-            white-space: nowrap;
+            color: inherit;
+        }
+        .purchase-details-row td {
+            padding: 0;
+            background-color: #fdfdfd;
+        }
+        .purchase-details {
+            padding: 20px;
+        }
+        .purchase-notes {
+            margin-bottom: 15px;
+            font-style: italic;
+            color: #6c757d;
+        }
+        .text-right {
+            text-align: right;
         }
         .purchase-actions {
             display: flex;
             gap: 10px;
+            justify-content: flex-end;
         }
     </style>
 @endsection
