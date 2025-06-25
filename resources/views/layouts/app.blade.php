@@ -149,8 +149,9 @@
                     <a href="{{ route('appointments.index') }}"> <i class="menu-icon fa fa-calendar"></i>Записи</a>
                 </li>
                 <li class="{{ request()->routeIs('reports.clients.*') ? 'active' : '' }}">
-                    <a href="{{ route('reports.clients.index') }}"><i class="menu-icon fa fa-bar-chart"></i>Отчеты</a>
+                    <a href="{{ route('reports.clients.index') }}"><i class="menu-icon fa fa-bar-chart"></i>Аналитика</a>
                 </li>
+                
 
                 <li class="menu-title">Товарооборот</li>
 
@@ -169,8 +170,8 @@
                 <li class="{{ request()->routeIs('inventories.*') ? 'active' : '' }}">
                     <a href="{{ route('inventories.index') }}"><i class="menu-icon fa fa-archive"></i>Инвентаризация</a>
                 </li>
-                <li class="{{ request()->routeIs('clients.list') ? 'active' : '' }}">
-                    <a href="{{ route('clients.list') }}"><i class="menu-icon fa fa-bar-chart"></i>Отчеты</a>
+                <li class="{{ request()->routeIs('reports.turnover.*') ? 'active' : '' }}">
+                    <a href="{{ route('reports.turnover.index') }}"><i class="menu-icon fa fa-bar-chart"></i>Аналитика</a>
                 </li>
 
                 <li class="menu-title">Сервисы</li>

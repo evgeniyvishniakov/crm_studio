@@ -61,4 +61,9 @@ class Product extends Model
     {
         return $this->belongsTo(ProductBrand::class);
     }
+
+    public function saleItems()
+    {
+        return $this->hasMany(\App\Models\SaleItem::class, 'product_id');
+    }
 }

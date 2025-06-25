@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ClientReportController;
+use App\Http\Controllers\TurnoverReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -149,3 +150,5 @@ Route::get('/reports/top-clients-by-revenue', [AppointmentsController::class, 'g
 Route::get('/reports/avg-check-dynamics', [AppointmentsController::class, 'getAvgCheckDynamics']);
 Route::get('/reports/ltv-by-client-type', [AppointmentsController::class, 'getLtvByClientType']);
 Route::get('/reports/top-services-by-revenue', [AppointmentsController::class, 'getTopServicesByRevenue']);
+Route::get('/reports/turnover', [TurnoverReportController::class, 'index'])->name('reports.turnover.index');
+Route::get('/reports/turnover-analytics', [TurnoverReportController::class, 'getDynamicAnalyticsData'])->name('reports.turnover.analytics');
