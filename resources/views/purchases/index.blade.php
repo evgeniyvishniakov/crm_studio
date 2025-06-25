@@ -530,7 +530,7 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    showNotification('Закупка успешно обновлена', 'success');
+                                    showNotification('success', 'Закупка успешно обновлена');
                                     closeEditPurchaseModal();
                                     // Обновляем данные на странице
                                     updatePurchaseRowInDOM(data.purchase);
@@ -584,16 +584,16 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showNotification('Закупка успешно удалена', 'success');
+                        showNotification('success', 'Закупка успешно удалена');
                         document.getElementById(`purchase-row-${id}`).remove();
                         document.getElementById(`details-row-${id}`).remove();
                     } else {
-                        showNotification('Ошибка при удалении закупки', 'error');
+                        showNotification('error', 'Ошибка при удалении закупки');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showNotification('Ошибка при удалении закупки', 'error');
+                    showNotification('error', 'Ошибка при удалении закупки');
                 });
         }
 
@@ -608,7 +608,7 @@
 
             // Собираем данные о товарах
             const items = [];
-            document.querySelectorAll('.item-row:not(.template)').forEach((row, index) => {
+            form.querySelectorAll('.item-row:not(.template)').forEach((row, index) => {
                 const item = {
                     product_id: row.querySelector('[name*="product_id"]').value,
                     purchase_price: row.querySelector('[name*="purchase_price"]').value,
@@ -643,7 +643,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        showNotification('Закупка успешно добавлена', 'success');
+                        showNotification('success', 'Закупка успешно добавлена');
                         closePurchaseModal();
                         addPurchaseToDOM(data.purchase);
                         resetPurchaseForm();
@@ -651,7 +651,7 @@
                         if (data.errors) {
                             displayErrors(data.errors, 'purchaseForm');
                         } else {
-                            showNotification(data.message || 'Ошибка при добавлении закупки', 'error');
+                            showNotification('error', data.message || 'Ошибка при добавлении закупки');
                         }
                     }
                 })
@@ -660,7 +660,7 @@
                     if (error.errors) {
                         displayErrors(error.errors, 'purchaseForm');
                     } else {
-                        showNotification(error.message || 'Ошибка при добавлении закупки', 'error');
+                        showNotification('error', error.message || 'Ошибка при добавлении закупки');
                     }
                 });
         }
@@ -992,6 +992,26 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            z-index: 1050;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 250px;
+            text-align: center;
+        }
+        .notification.success {
+            background-color: #28a745;
+        }
+        .notification.error {
+            background-color: #dc3545;
         }
     </style>
 @endsection
