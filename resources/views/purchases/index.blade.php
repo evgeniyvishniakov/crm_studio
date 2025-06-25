@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="purchases-container">
+    <div class="dashboard-container">
         <div class="purchases-header">
             <h1>Закупки</h1>
             <div id="notification" class="notification">
@@ -23,13 +23,14 @@
             </div>
         </div>
 
-        <table class="table table-hover purchases-table-main">
+        <table class="table purchases-table">
             <thead>
                 <tr>
                     <th>Дата</th>
                     <th>Поставщик</th>
-                    <th>Сумма</th>
-                    <th class="text-right">Действия</th>
+                    <th>Оптовая сумма</th>
+                    <th>Примечания</th>
+                    <th>Действия</th>
                 </tr>
             </thead>
             <tbody id="purchasesListBody">
@@ -38,8 +39,9 @@
                         <td class="purchase-date">{{ $purchase->formatted_date }}</td>
                         <td class="purchase-supplier">{{ $purchase->supplier ? $purchase->supplier->name : '—' }}</td>
                         <td class="purchase-total">{{ (float)$purchase->total_amount }} грн</td>
+                        <td class="purchase-notes-cell" title="{{ $purchase->notes }}">{{ $purchase->notes ?: '—' }}</td>
                         <td>
-                            <div class="purchase-actions text-right">
+                            <div class="purchases-actions">
                                 <button class="btn-edit" onclick="editPurchase(event, {{ $purchase->id }})">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
                                     Ред.
@@ -51,17 +53,17 @@
                             </div>
                         </td>
                     </tr>
-                    <tr class="purchase-details-row" id="details-row-{{ $purchase->id }}" style="display: none;">
-                        <td colspan="4">
-                            <div class="purchase-details">
-                                <div class="purchase-notes">{{ $purchase->notes }}</div>
-                                <table class="table-striped purchase-table">
+                    <tr class="purchases-details-row" id="details-row-{{ $purchase->id }}" style="display: none;">
+                        <td colspan="5">
+                            <div class="purchases-details">
+                                <div class="purchases-notes">{{ $purchase->notes ?: '—' }}</div>
+                                <table class="table-wrapper table-striped purchases-table">
                                     <thead>
                                     <tr>
                                         <th>Фото</th>
                                         <th>Товар</th>
-                                        <th>Закупочная цена</th>
-                                        <th>Розничная цена</th>
+                                        <th>Опт</th>
+                                        <th>Розница</th>
                                         <th>Количество</th>
                                         <th>Сумма</th>
                                     </tr>
@@ -528,7 +530,7 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    showNotification('success', 'Закупка успешно обновлена');
+                                    showNotification('Закупка успешно обновлена', 'success');
                                     closeEditPurchaseModal();
                                     // Обновляем данные на странице
                                     updatePurchaseRowInDOM(data.purchase);
@@ -700,8 +702,9 @@
                     <td class="purchase-date">${formattedDate}</td>
                     <td class="purchase-supplier">${purchase.supplier ? purchase.supplier.name : '—'}</td>
                     <td class="purchase-total">${Number(purchase.total_amount)} грн</td>
+                    <td class="purchase-notes-cell" title="${purchase.notes || ''}">${purchase.notes || '—'}</td>
                     <td>
-                        <div class="purchase-actions text-right">
+                        <div class="purchases-actions">
                             <button class="btn-edit" onclick="editPurchase(event, ${purchase.id})">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg> Ред.
                             </button>
@@ -711,11 +714,11 @@
                         </div>
                     </td>
                 </tr>
-                <tr class="purchase-details-row" id="details-row-${purchase.id}" style="display: none;">
-                    <td colspan="4">
-                        <div class="purchase-details">
-                            <div class="purchase-notes">${purchase.notes || ''}</div>
-                            <table class="table-striped purchase-table">
+                <tr class="purchases-details-row" id="details-row-${purchase.id}" style="display: none;">
+                    <td colspan="5">
+                        <div class="purchases-details">
+                            <div class="purchases-notes">${purchase.notes || '—'}</div>
+                            <table class="table-wrapper table-striped purchases-table">
                                 <thead>
                                     <tr>
                                         <th>Фото</th>
@@ -754,6 +757,9 @@
             purchaseRow.querySelector('.purchase-date').textContent = formattedDate;
             purchaseRow.querySelector('.purchase-supplier').textContent = purchase.supplier ? purchase.supplier.name : '—';
             purchaseRow.querySelector('.purchase-total').textContent = `${Number(purchase.total_amount)} грн`;
+            const notesCell = purchaseRow.querySelector('.purchase-notes-cell');
+            notesCell.textContent = purchase.notes || '—';
+            notesCell.title = purchase.notes || '';
 
             // 2. Обновляем детальную строку
             const itemsHTML = purchase.items.map(item => {
@@ -776,8 +782,8 @@
 
             const detailsCell = detailsRow.querySelector('td');
             detailsCell.innerHTML = `
-                <div class="purchase-details">
-                    <div class="purchase-notes">${purchase.notes || ''}</div>
+                <div class="purchases-details">
+                    <div class="purchases-notes">${purchase.notes || '—'}</div>
                     <table class="purchase-table">
                         <thead>
                             <tr>
@@ -955,36 +961,15 @@
         });
     </script>
     <style>
-        .purchases-table-main {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .purchases-table-main thead tr {
-            border-bottom: 2px solid #dee2e6;
-        }
-        .purchases-table-main th {
-            padding: 12px;
-            text-align: center;
-            background-color: #f8f9fa;
-        }
         .purchase-summary-row {
             cursor: pointer;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .purchase-summary-row:hover {
-            background-color: #f1f1f1;
         }
         .purchase-summary-row td {
-            padding: 12px;
             vertical-align: middle;
-        }
-        .purchase-total {
-            font-weight: normal;
-            color: inherit;
         }
         .purchase-details-row td {
             padding: 0;
-            background-color: #fdfdfd;
+            background-color: #fdfdfd !important; /* Use important to override hover */
         }
         .purchase-details {
             padding: 20px;
@@ -1001,6 +986,12 @@
             display: flex;
             gap: 10px;
             justify-content: flex-end;
+        }
+        .purchase-notes-cell {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 @endsection

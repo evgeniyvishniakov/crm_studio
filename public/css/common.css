@@ -127,7 +127,7 @@
 .clients-table,
 .products-table,
 .warehouse-table,
-.purchase-table,
+.purchases-table,
 .sale-table,
 .services-table,
 .appointments-table,
@@ -139,7 +139,7 @@
 .clients-table thead,
 .products-table thead,
 .warehouse-table thead,
-.purchase-table thead,
+.purchases-table thead,
 .sale-table thead,
 .services-table thead,
 .expenses-table thead,
@@ -151,7 +151,7 @@
 .clients-table th,
 .products-table th,
 .warehouse-table th,
-.purchase-table th,
+.purchases-table th,
 .sale-table th,
 .services-table th,
 .appointments-table th,
@@ -168,7 +168,7 @@
 .clients-table td,
 .products-table td,
 .warehouse-table td,
-.purchase-table td,
+.purchases-table td,
 .sale-table td,
 .services-table td,
 .appointments-table td,
@@ -183,7 +183,7 @@
 .clients-table tr:last-child td,
 .products-table tr:last-child td,
 .warehouse-table tr:last-child td,
-.purchase-table tr:last-child td,
+.purchases-table tr:last-child td,
 .services-table tr:last-child td,
 .appointments-table th:last-child td,
 .expenses-table th:last-child td{
@@ -660,20 +660,6 @@
         overflow: hidden;
     }
 
-    .purchase-header {
-        padding: 15px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .purchase-header:hover {
-        background-color: #e9ecef;
-    }
-
     .purchase-info {
         display: flex;
         align-items: center;
@@ -696,7 +682,7 @@
         text-align: right;
     }
 
-    .purchase-actions,
+    .purchases-actions,
     .expense-actions,
     .sale-actions {
         display: flex;

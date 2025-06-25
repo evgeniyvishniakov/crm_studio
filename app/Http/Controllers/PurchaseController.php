@@ -15,7 +15,7 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-        $purchases = Purchase::with(['supplier', 'items.product'])->get();
+        $purchases = Purchase::with(['supplier', 'items.product'])->latest()->get();
         $products = Product::all();
         $suppliers = Supplier::orderBy('name')->get();
         return view('purchases.index', compact('purchases', 'products', 'suppliers'));

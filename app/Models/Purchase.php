@@ -13,12 +13,8 @@ class Purchase extends Model
         'total_amount'
     ];
 
-    // Option 1: Using $dates (for Laravel < 7)
-    protected $dates = ['date'];
-
-    // Option 2: Using $casts (preferred for Laravel 7+)
     protected $casts = [
-        'date' => 'date'
+        'date' => 'date',
     ];
 
     public function items()
@@ -33,6 +29,9 @@ class Purchase extends Model
 
     public function getFormattedDateAttribute()
     {
+        if (!$this->date) {
+            return '';
+        }
         return $this->date->format('d.m.Y');
     }
 }
