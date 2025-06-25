@@ -29,7 +29,7 @@
                     <div class="purchase-header" onclick="togglePurchaseDetails({{ $purchase->id }})">
                         <div class="purchase-info">
                             <span class="purchase-date">{{ $purchase->formatted_date }}</span>
-                            <span class="purchase-supplier">{{ $purchase->supplier->name ?? '—' }}</span>
+                            <span class="purchase-supplier">{{ $purchase->supplier ? $purchase->supplier->name : '—' }}</span>
                             <span class="purchase-total">{{ number_format($purchase->total_amount, 2) }} грн</span>
                         </div>
                         <div class="purchase-actions">
@@ -485,7 +485,7 @@
                                         const purchaseInfo = purchaseElement.querySelector('.purchase-info');
                                         purchaseInfo.innerHTML = `
                                             <span class="purchase-date">${data.purchase.formatted_date}</span>
-                                            <span class="purchase-supplier">${data.purchase.supplier?.name ?? '—'}</span>
+                                            <span class="purchase-supplier">${data.purchase.supplier ? data.purchase.supplier.name : '—'}</span>
                                             <span class="purchase-total">${Number(data.purchase.total_amount).toFixed(2)} грн</span>
                                         `;
                                     }
@@ -661,7 +661,7 @@
         <div class="purchase-header" onclick="togglePurchaseDetails(${purchase.id})">
             <div class="purchase-info">
                 <span class="purchase-date">${formattedDate}</span>
-                <span class="purchase-supplier">${purchase.supplier}</span>
+                <span class="purchase-supplier">${purchase.supplier ? purchase.supplier.name : '—'}</span>
                 <span class="purchase-total">${parseFloat(purchase.total_amount).toFixed(2)} грн</span>
             </div>
             <div class="purchase-actions">
@@ -727,7 +727,7 @@
             <div class="purchase-header" onclick="togglePurchaseDetails(${purchase.id})">
                 <div class="purchase-info">
                     <span class="purchase-date">${formattedDate}</span>
-                    <span class="purchase-supplier">${purchase.supplier}</span>
+                    <span class="purchase-supplier">${purchase.supplier ? purchase.supplier.name : '—'}</span>
                     <span class="purchase-total">${parseFloat(purchase.total_amount).toFixed(2)} грн</span>
                 </div>
                 <div class="purchase-actions">

@@ -34,35 +34,54 @@ class PurchaseController extends Controller
             'items.*.quantity' => 'required|integer|min:1'
         ]);
 
-        $purchase = Purchase::create([
-            'date' => $validated['date'],
-            'supplier_id' => $validated['supplier_id'],
-            'notes' => $validated['notes'],
-            'total_amount' => 0
-        ]);
+        DB::beginTransaction();
 
-        $totalAmount = 0;
-
-        foreach ($validated['items'] as $item) {
-            $itemTotal = $item['purchase_price'] * $item['quantity'];
-            $totalAmount += $itemTotal;
-
-            $purchase->items()->create([
-                'product_id' => $item['product_id'],
-                'purchase_price' => $item['purchase_price'],
-                'retail_price' => $item['retail_price'],
-                'quantity' => $item['quantity'],
-                'total' => $itemTotal
+        try {
+            $purchase = Purchase::create([
+                'date' => $validated['date'],
+                'supplier_id' => $validated['supplier_id'],
+                'notes' => $validated['notes'],
+                'total_amount' => 0
             ]);
+
+            $totalAmount = 0;
+
+            foreach ($validated['items'] as $item) {
+                $itemTotal = $item['purchase_price'] * $item['quantity'];
+                $totalAmount += $itemTotal;
+
+                $purchase->items()->create([
+                    'product_id' => $item['product_id'],
+                    'purchase_price' => $item['purchase_price'],
+                    'retail_price' => $item['retail_price'],
+                    'quantity' => $item['quantity'],
+                    'total' => $itemTotal
+                ]);
+
+                // Обновляем склад
+                $warehouseItem = Warehouse::firstOrNew(['product_id' => $item['product_id']]);
+                $warehouseItem->quantity = ($warehouseItem->quantity ?? 0) + $item['quantity'];
+                $warehouseItem->purchase_price = $item['purchase_price'];
+                $warehouseItem->retail_price = $item['retail_price'];
+                $warehouseItem->save();
+            }
+
+            // Обновляем общую сумму закупки
+            $purchase->update(['total_amount' => $totalAmount]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'purchase' => $purchase->load(['supplier', 'items.product'])
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при создании закупки: ' . $e->getMessage()
+            ], 500);
         }
-
-        // Обновляем общую сумму закупки
-        $purchase->update(['total_amount' => $totalAmount]);
-
-        return response()->json([
-            'success' => true,
-            'purchase' => $purchase->load(['supplier', 'items.product'])
-        ]);
     }
 
     public function edit(Purchase $purchase)
@@ -109,81 +128,55 @@ class PurchaseController extends Controller
         DB::beginTransaction();
 
         try {
-            // Сохраняем старые данные для корректировки склада
-            $oldItems = $purchase->items;
+            // 1. Отменяем старое состояние на складе
+            foreach ($purchase->items as $item) {
+                $warehouseItem = Warehouse::where('product_id', $item->product_id)->first();
+                if ($warehouseItem) {
+                    $warehouseItem->quantity -= $item->quantity;
+                    $warehouseItem->save();
+                }
+            }
 
+            // 2. Обновляем данные самой закупки и удаляем старые товары
             $purchase->update([
                 'date' => $validated['date'],
                 'supplier_id' => $validated['supplier_id'],
                 'notes' => $validated['notes']
             ]);
-
-            // Удаляем старые товары
             $purchase->items()->delete();
 
             $totalAmount = 0;
 
-            // Добавляем новые товары
-            foreach ($validated['items'] as $item) {
-                $itemTotal = $item['purchase_price'] * $item['quantity'];
+            // 3. Добавляем новые товары и обновляем склад
+            foreach ($validated['items'] as $itemData) {
+                $itemTotal = $itemData['purchase_price'] * $itemData['quantity'];
                 $totalAmount += $itemTotal;
 
+                // Создаем новую запись о товаре в закупке
                 $purchase->items()->create([
-                    'product_id' => $item['product_id'],
-                    'purchase_price' => $item['purchase_price'],
-                    'retail_price' => $item['retail_price'],
-                    'quantity' => $item['quantity'],
+                    'product_id' => $itemData['product_id'],
+                    'purchase_price' => $itemData['purchase_price'],
+                    'retail_price' => $itemData['retail_price'],
+                    'quantity' => $itemData['quantity'],
                     'total' => $itemTotal
                 ]);
 
-                // Обновляем склад
-                $warehouseItem = Warehouse::firstOrNew(['product_id' => $item['product_id']]);
-
-                // Вычитаем старые количества
-                foreach ($oldItems as $oldItem) {
-                    if ($oldItem->product_id == $item['product_id']) {
-                        $warehouseItem->quantity -= $oldItem->quantity;
-                    }
-                }
-
-                // Добавляем новые количества
-                $warehouseItem->quantity += $item['quantity'];
-                $warehouseItem->purchase_price = $item['purchase_price'];
-                $warehouseItem->retail_price = $item['retail_price'];
+                // Обновляем склад (логика аналогична методу store)
+                $warehouseItem = Warehouse::firstOrNew(['product_id' => $itemData['product_id']]);
+                $warehouseItem->quantity = ($warehouseItem->quantity ?? 0) + $itemData['quantity'];
+                $warehouseItem->purchase_price = $itemData['purchase_price'];
+                $warehouseItem->retail_price = $itemData['retail_price'];
                 $warehouseItem->save();
             }
 
-            // Удаляем остатки старых товаров, которых нет в новой закупке
-            foreach ($oldItems as $oldItem) {
-                $exists = false;
-                foreach ($validated['items'] as $newItem) {
-                    if ($oldItem->product_id == $newItem['product_id']) {
-                        $exists = true;
-                        break;
-                    }
-                }
-
-                if (!$exists) {
-                    $warehouseItem = Warehouse::where('product_id', $oldItem->product_id)->first();
-                    if ($warehouseItem) {
-                        $warehouseItem->quantity -= $oldItem->quantity;
-                        if ($warehouseItem->quantity <= 0) {
-                            $warehouseItem->delete();
-                        } else {
-                            $warehouseItem->save();
-                        }
-                    }
-                }
-            }
-
-            // Обновляем общую сумму закупки
+            // 4. Обновляем общую сумму закупки
             $purchase->update(['total_amount' => $totalAmount]);
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'purchase' => $purchase->load(['supplier', 'items.product'])
+                'purchase' => $purchase->fresh()->load(['supplier', 'items.product'])
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
