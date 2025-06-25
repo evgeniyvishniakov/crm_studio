@@ -241,7 +241,7 @@
     <script>
         // Глобальные переменные
         let currentDeleteId = null;
-        let itemCounter = 1;
+        let itemCounter = 1; // Этот счетчик будет заменен динамическим расчетом
 
         // Функции для работы с модальными окнами
         function openPurchaseModal() {
@@ -276,40 +276,57 @@
         }
 
         // Функции для работы с товарами в закупке
-        function addItemRow() {
-            const container = document.getElementById('itemsContainer');
-            const template = container.querySelector('.template');
-            const newRow = template.cloneNode(true);
+        function addItemRow(containerId = 'itemsContainer') {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.error(`Container with id ${containerId} not found.`);
+                return;
+            }
 
+            // Шаблон всегда находится в модальном окне добавления
+            const template = document.querySelector('#itemsContainer .template');
+            if (!template) {
+                console.error('Template row not found.');
+                return;
+            }
+
+            const newRow = template.cloneNode(true);
             newRow.style.display = 'block';
             newRow.classList.remove('template');
 
-            // Обновляем индексы в именах полей
-            const inputs = newRow.querySelectorAll('input, select');
-            inputs.forEach(input => {
-                const name = input.name.replace(/\[\d+\]/, `[${itemCounter}]`);
-                input.name = name;
+            // Новый индекс - это количество существующих строк товаров
+            const newIndex = container.querySelectorAll('.item-row:not(.template)').length;
+
+            newRow.querySelectorAll('input, select').forEach(input => {
+                if (input.name) {
+                    input.name = input.name.replace(/\[\\d+\]/, `[${newIndex}]`);
+                }
                 if (input.tagName === 'SELECT') {
                     input.selectedIndex = 0;
+                } else if (input.name && input.name.includes('quantity')) {
+                    input.value = '1';
                 } else {
-                    input.value = input.name.includes('quantity') ? '1' : '';
+                    input.value = '';
                 }
             });
 
             // Инициализируем поиск для нового ряда
-            const searchContainer = newRow.querySelector('.product-search-container');
-            if (searchContainer) {
-                const searchInput = searchContainer.querySelector('.product-search-input');
-                searchInput.id = `product-search-${itemCounter}`;
-                searchInput.value = '';
-
-                const select = searchContainer.querySelector('.product-select');
-                select.name = `items[${itemCounter}][product_id]`;
-                select.selectedIndex = 0;
+            const searchInput = newRow.querySelector('.product-search-input');
+            if (searchInput) {
+                searchInput.id = `product-search-${containerId}-${newIndex}`;
+            }
+            const productSelect = newRow.querySelector('.product-select');
+            if (productSelect) {
+                productSelect.name = `items[${newIndex}][product_id]`;
             }
 
-            container.insertBefore(newRow, container.querySelector('.form-actions'));
-            itemCounter++;
+
+            const formActions = container.querySelector('.form-actions');
+            if (formActions) {
+                container.insertBefore(newRow, formActions);
+            } else {
+                container.appendChild(newRow); // Fallback
+            }
         }
 
         function removeItemRow(button) {
@@ -391,27 +408,35 @@
                                     ${purchase.items.map((item, index) => `
                                         <div class="item-row">
                                             <div class="form-row">
-                                                <div class="form-group">
-                                                    <label>Товар </label>
-                                                    <select name="items[${index}][product_id]" required class="form-control">
-                                                        <option value="">Выберите товар</option>
-                                                        @foreach($products as $product)
-                                                            <option value="{{ $product->id }}" ${item.product_id == {{ $product->id }} ? 'selected' : ''}>
-                                                                {{ $product->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
+                                                 <div class="form-group">
+                                                    <label>Товар</label>
+                                                    <div class="product-search-container">
+                                                        <input type="text"
+                                                               id="product-search-edit-${index}"
+                                                               class="product-search-input form-control"
+                                                               placeholder="Начните вводить название товара..."
+                                                               oninput="searchProducts(this)"
+                                                               onfocus="showProductDropdown(this)"
+                                                               value="${item.product_name}"
+                                                               autocomplete="off">
+                                                        <div class="product-dropdown" style="display: none;">
+                                                            <div class="product-dropdown-list"></div>
+                                                        </div>
+                                                        <select name="items[${index}][product_id]" class="form-control product-select" style="display: none;">
+                                                            <option value="${item.product_id}">${item.product_name}</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>Закупочная цена </label>
+                                                    <label>Закупочная цена</label>
                                                     <input type="number" step="0.01" name="items[${index}][purchase_price]" required class="form-control" value="${item.purchase_price}">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>Розничная цена </label>
+                                                    <label>Розничная цена</label>
                                                     <input type="number" step="0.01" name="items[${index}][retail_price]" required class="form-control" value="${item.retail_price}">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>Количество </label>
+                                                    <label>Количество</label>
                                                     <input type="number" name="items[${index}][quantity]" required class="form-control" value="${item.quantity}">
                                                 </div>
                                                 <div class="form-group">

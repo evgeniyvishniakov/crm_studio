@@ -87,6 +87,9 @@ class PurchaseController extends Controller
     public function edit(Purchase $purchase)
     {
         try {
+            // Загружаем связанные товары, чтобы получить их имена
+            $purchase->load('items.product');
+
             return response()->json([
                 'success' => true,
                 'purchase' => [
@@ -97,6 +100,7 @@ class PurchaseController extends Controller
                     'items' => $purchase->items->map(function($item) {
                         return [
                             'product_id' => $item->product_id,
+                            'product_name' => $item->product->name,
                             'purchase_price' => $item->purchase_price,
                             'retail_price' => $item->retail_price,
                             'quantity' => $item->quantity
