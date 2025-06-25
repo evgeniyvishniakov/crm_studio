@@ -33,7 +33,7 @@ class TurnoverReportController extends Controller
             $appointmentsQuery->whereDate('date', '<=', $endDate);
         }
 
-        // Категории
+        // Категории (количество и сумма проданных товаров)
         $categoryData = \App\Models\ProductCategory::with(['products.saleItems' => function($q) use ($startDate, $endDate) {
             $q->whereHas('sale', function($sq) use ($startDate, $endDate) {
                 if ($startDate) $sq->whereDate('date', '>=', $startDate);
@@ -43,16 +43,20 @@ class TurnoverReportController extends Controller
         $categoryCounts = $categoryData->map(function($cat) {
             return $cat->products->flatMap->saleItems->sum('quantity');
         })->toArray();
+        $categorySums = $categoryData->map(function($cat) {
+            return $cat->products->flatMap->saleItems->sum('total');
+        })->toArray();
         $categoryLabels = $categoryData->pluck('name')->toArray();
         // Фильтрация по количеству > 0 (без unzip)
         $filteredCategories = [];
         foreach ($categoryLabels as $i => $label) {
             if ($categoryCounts[$i] > 0) {
-                $filteredCategories[] = ['label' => $label, 'count' => $categoryCounts[$i]];
+                $filteredCategories[] = ['label' => $label, 'count' => $categoryCounts[$i], 'sum' => $categorySums[$i]];
             }
         }
         $categoryLabels = array_column($filteredCategories, 'label');
         $categoryCounts = array_column($filteredCategories, 'count');
+        $categorySums = array_column($filteredCategories, 'sum');
 
         // Бренды
         $brandData = \App\Models\ProductBrand::with(['products.saleItems' => function($q) use ($startDate, $endDate) {
@@ -64,45 +68,58 @@ class TurnoverReportController extends Controller
         $brandCounts = $brandData->map(function($brand) {
             return $brand->products->flatMap->saleItems->sum('quantity');
         })->toArray();
+        $brandSums = $brandData->map(function($brand) {
+            return $brand->products->flatMap->saleItems->sum('total');
+        })->toArray();
         $brandLabels = $brandData->pluck('name')->toArray();
         // Фильтрация по количеству > 0 (без unzip)
         $filteredBrands = [];
         foreach ($brandLabels as $i => $label) {
             if ($brandCounts[$i] > 0) {
-                $filteredBrands[] = ['label' => $label, 'count' => $brandCounts[$i]];
+                $filteredBrands[] = ['label' => $label, 'count' => $brandCounts[$i], 'sum' => $brandSums[$i]];
             }
         }
         $brandLabels = array_column($filteredBrands, 'label');
         $brandCounts = array_column($filteredBrands, 'count');
+        $brandSums = array_column($filteredBrands, 'sum');
 
         // Поставщики
         $supplierData = \App\Models\Supplier::with(['purchases' => function($q) use ($startDate, $endDate) {
             if ($startDate) $q->whereDate('date', '>=', $startDate);
             if ($endDate) $q->whereDate('date', '<=', $endDate);
         }])->get();
-        $supplierLabels = $supplierData->pluck('name')->toArray();
         $supplierSums = $supplierData->map(function($sup) {
             return $sup->purchases->sum('total_amount');
         })->toArray();
+        $supplierCounts = $supplierData->map(function($sup) {
+            return $sup->purchases->flatMap->items->sum('quantity');
+        })->toArray();
+        $supplierLabels = $supplierData->pluck('name')->toArray();
+        // Фильтрация по сумме > 0 (без unzip)
+        $filteredSuppliers = [];
+        foreach ($supplierLabels as $i => $label) {
+            if ($supplierSums[$i] > 0) {
+                $filteredSuppliers[] = [
+                    'label' => $label,
+                    'sum' => $supplierSums[$i],
+                    'count' => $supplierCounts[$i]
+                ];
+            }
+        }
+        $supplierLabels = array_column($filteredSuppliers, 'label');
+        $supplierSums = array_column($filteredSuppliers, 'sum');
+        $supplierCounts = array_column($filteredSuppliers, 'count');
 
-        // Типы (Товары/Услуги)
-        $salesTotal = $salesQuery->with('items')->get()->flatMap->items->sum('total');
-        $servicesTotal = $appointmentsQuery->sum('price');
+        // Типы (Товары/Услуги) — считаем количество
+        $salesTotalCount = $salesQuery->with('items')->get()->flatMap->items->sum('quantity');
+        $salesTotalSum = $salesQuery->with('items')->get()->flatMap->items->sum('total');
+        $servicesTotalCount = $appointmentsQuery->count();
+        $servicesTotalSum = $appointmentsQuery->sum('price');
         $typeLabels = ['Товары', 'Услуги'];
-        $typeSums = [$salesTotal, $servicesTotal];
+        $typeCounts = [$salesTotalCount, $servicesTotalCount];
+        $typeSums = [$salesTotalSum, $servicesTotalSum];
 
-        // Динамика по дням (за последние 14 дней или по периоду)
-        $period = [];
-        if ($startDate && $endDate) {
-            $start = new \Carbon\Carbon($startDate);
-            $end = new \Carbon\Carbon($endDate);
-        } else {
-            $end = now();
-            $start = (clone $end)->subDays(13);
-        }
-        for ($date = $start->copy(); $date <= $end; $date->addDay()) {
-            $period[] = $date->format('Y-m-d');
-        }
+        // Динамика по дням (только по датам, где есть данные)
         $salesByDay = $salesQuery->with('items')->get()->groupBy(function($sale) {
             return $sale->date->format('Y-m-d');
         })->map(function($sales) {
@@ -113,26 +130,32 @@ class TurnoverReportController extends Controller
         })->map(function($purchases) {
             return $purchases->sum('total_amount');
         });
-        $dynamicLabels = $period;
-        $dynamicSales = array_map(fn($d) => $salesByDay[$d] ?? 0, $period);
-        $dynamicPurchases = array_map(fn($d) => $purchasesByDay[$d] ?? 0, $period);
+        // Собираем только те даты, где есть хотя бы продажи или закупки
+        $allDates = collect($salesByDay->keys())->merge($purchasesByDay->keys())->unique()->sort()->values();
+        $dynamicLabels = $allDates->toArray();
+        $dynamicSales = array_map(fn($d) => $salesByDay[$d] ?? 0, $dynamicLabels);
+        $dynamicPurchases = array_map(fn($d) => $purchasesByDay[$d] ?? 0, $dynamicLabels);
 
         $data = [
             'category' => [
                 'labels' => $categoryLabels,
                 'data' => $categoryCounts,
+                'sums' => $categorySums,
             ],
             'brand' => [
                 'labels' => $brandLabels,
                 'data' => $brandCounts,
+                'sums' => $brandSums,
             ],
             'supplier' => [
                 'labels' => $supplierLabels,
                 'data' => $supplierSums,
+                'counts' => $supplierCounts,
             ],
             'type' => [
                 'labels' => $typeLabels,
-                'data' => $typeSums,
+                'data' => $typeCounts,
+                'sums' => $typeSums,
             ],
             'dynamic' => [
                 'labels' => $dynamicLabels,

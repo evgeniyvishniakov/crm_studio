@@ -217,7 +217,29 @@ document.addEventListener('DOMContentLoaded', function() {
                             grid: { display: false },
                             ticks: {
                                 callback: function(value, index, values) {
-                                    return this.getLabelForValue(value);
+                                    const label = this.getLabelForValue(value);
+                                    // Определяем период по длине массива
+                                    const total = values.length;
+                                    // Форматируем дату
+                                    const date = new Date(label);
+                                    const day = date.getDate().toString().padStart(2, '0');
+                                    const month = date.toLocaleString('ru-RU', { month: 'short' });
+                                    // За неделю/2 недели — каждый день
+                                    if (total <= 14) {
+                                        return `${day} ${month}`;
+                                    }
+                                    // За месяц/полгода — только начало недели (Пн)
+                                    if (total <= 31*2) {
+                                        if (date.getDay() === 1 || index === 0) {
+                                            return `Пн ${day} ${month}`;
+                                        }
+                                        return '';
+                                    }
+                                    // За год — только первый день месяца
+                                    if (date.getDate() === 1) {
+                                        return month;
+                                    }
+                                    return '';
                                 }
                             }
                         }
@@ -266,7 +288,27 @@ document.addEventListener('DOMContentLoaded', function() {
                         ...pieOptions
                     }]
                 },
-                options: { ...pieOptions }
+                options: {
+                    ...pieOptions,
+                    plugins: {
+                        ...pieOptions.plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const i = context.dataIndex;
+                                    const label = data.category.labels[i];
+                                    const count = data.category.data[i];
+                                    const sum = data.category.sums[i];
+                                    return [
+                                        `${label}`,
+                                        `Количество: ${count} шт`,
+                                        `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
             };
             // Бренды
             const brandConfig = {
@@ -279,7 +321,27 @@ document.addEventListener('DOMContentLoaded', function() {
                         ...pieOptions
                     }]
                 },
-                options: { ...pieOptions }
+                options: {
+                    ...pieOptions,
+                    plugins: {
+                        ...pieOptions.plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const i = context.dataIndex;
+                                    const label = data.brand.labels[i];
+                                    const count = data.brand.data[i];
+                                    const sum = data.brand.sums[i];
+                                    return [
+                                        `${label}`,
+                                        `Количество: ${count} шт`,
+                                        `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
             };
             // Поставщики
             const supplierConfig = {
@@ -292,7 +354,25 @@ document.addEventListener('DOMContentLoaded', function() {
                         ...pieOptions
                     }]
                 },
-                options: { ...pieOptions }
+                options: {
+                    ...pieOptions,
+                    plugins: {
+                        ...pieOptions.plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const i = context.dataIndex;
+                                    const label = data.supplier.labels[i];
+                                    const sum = data.supplier.data[i];
+                                    return [
+                                        `${label}`,
+                                        `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
             };
             // Типы
             const typeConfig = {
@@ -305,7 +385,27 @@ document.addEventListener('DOMContentLoaded', function() {
                         ...pieOptions
                     }]
                 },
-                options: { ...pieOptions }
+                options: {
+                    ...pieOptions,
+                    plugins: {
+                        ...pieOptions.plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const i = context.dataIndex;
+                                    const label = data.type.labels[i];
+                                    const count = data.type.data[i];
+                                    const sum = data.type.sums[i];
+                                    return [
+                                        `${label}`,
+                                        `Количество: ${count} шт`,
+                                        `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
             };
             // Инициализация графиков
             const chartMap = [
@@ -339,14 +439,264 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 120);
         });
     });
-    // Фильтры периода (заглушка)
+
+    // --- Функция для обновления графиков по периоду ---
+    function updateTurnoverAnalytics(params = '') {
+        let url = '/reports/turnover-analytics';
+        if (params) url += '?' + params;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // --- (тот же код инициализации графиков, как выше) ---
+                const dynamicConfig = {
+                    type: 'line',
+                    data: {
+                        labels: data.dynamic.labels,
+                        datasets: [
+                            {
+                                label: 'Продажи',
+                                data: data.dynamic.sales,
+                                borderColor: 'rgb(59, 130, 246)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Закупки',
+                                data: data.dynamic.purchases,
+                                borderColor: 'rgb(16, 185, 129)',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } },
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                        const label = this.getLabelForValue(value);
+                                        // Определяем период по длине массива
+                                        const total = values.length;
+                                        // Форматируем дату
+                                        const date = new Date(label);
+                                        const day = date.getDate().toString().padStart(2, '0');
+                                        const month = date.toLocaleString('ru-RU', { month: 'short' });
+                                        // За неделю/2 недели — каждый день
+                                        if (total <= 14) {
+                                            return `${day} ${month}`;
+                                        }
+                                        // За месяц/полгода — только начало недели (Пн)
+                                        if (total <= 31*2) {
+                                            if (date.getDay() === 1 || index === 0) {
+                                                return `Пн ${day} ${month}`;
+                                            }
+                                            return '';
+                                        }
+                                        // За год — только первый день месяца
+                                        if (date.getDate() === 1) {
+                                            return month;
+                                        }
+                                        return '';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                const strictPalette = [
+                    '#2563eb', '#10b981', '#f59e42', '#7c3aed', '#ef4444', '#0ea5e9', '#fbbf24', '#6366f1', '#dc2626', '#059669', '#eab308', '#334155',
+                ];
+                function generatePieColors(count) {
+                    return Array.from({length: count}, (_, i) => strictPalette[i % strictPalette.length]);
+                }
+                const pieOptions = {
+                    borderColor: 'rgba(255,255,255,0.7)',
+                    borderWidth: 2,
+                    hoverOffset: 12,
+                    plugins: {
+                        shadow: {
+                            enabled: true,
+                            color: 'rgba(59,130,246,0.18)',
+                            blur: 12,
+                            offsetX: 0,
+                            offsetY: 4
+                        }
+                    }
+                };
+                const categoryConfig = {
+                    type: 'pie',
+                    data: {
+                        labels: data.category.labels,
+                        datasets: [{
+                            data: data.category.data,
+                            backgroundColor: generatePieColors(data.category.labels.length),
+                            ...pieOptions
+                        }]
+                    },
+                    options: {
+                        ...pieOptions,
+                        plugins: {
+                            ...pieOptions.plugins,
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const i = context.dataIndex;
+                                        const label = data.category.labels[i];
+                                        const count = data.category.data[i];
+                                        const sum = data.category.sums[i];
+                                        return [
+                                            `${label}`,
+                                            `Количество: ${count} шт`,
+                                            `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                const brandConfig = {
+                    type: 'pie',
+                    data: {
+                        labels: data.brand.labels,
+                        datasets: [{
+                            data: data.brand.data,
+                            backgroundColor: generatePieColors(data.brand.labels.length),
+                            ...pieOptions
+                        }]
+                    },
+                    options: {
+                        ...pieOptions,
+                        plugins: {
+                            ...pieOptions.plugins,
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const i = context.dataIndex;
+                                        const label = data.brand.labels[i];
+                                        const count = data.brand.data[i];
+                                        const sum = data.brand.sums[i];
+                                        return [
+                                            `${label}`,
+                                            `Количество: ${count} шт`,
+                                            `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                const supplierConfig = {
+                    type: 'pie',
+                    data: {
+                        labels: data.supplier.labels,
+                        datasets: [{
+                            data: data.supplier.data,
+                            backgroundColor: generatePieColors(data.supplier.labels.length),
+                            ...pieOptions
+                        }]
+                    },
+                    options: {
+                        ...pieOptions,
+                        plugins: {
+                            ...pieOptions.plugins,
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const i = context.dataIndex;
+                                        const label = data.supplier.labels[i];
+                                        const sum = data.supplier.data[i];
+                                        return [
+                                            `${label}`,
+                                            `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                const typeConfig = {
+                    type: 'pie',
+                    data: {
+                        labels: data.type.labels,
+                        datasets: [{
+                            data: data.type.data,
+                            backgroundColor: generatePieColors(data.type.labels.length),
+                            ...pieOptions
+                        }]
+                    },
+                    options: {
+                        ...pieOptions,
+                        plugins: {
+                            ...pieOptions.plugins,
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const i = context.dataIndex;
+                                        const label = data.type.labels[i];
+                                        const count = data.type.data[i];
+                                        const sum = data.type.sums[i];
+                                        return [
+                                            `${label}`,
+                                            `Количество: ${count} шт`,
+                                            `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                // --- Обновление/пересоздание графиков ---
+                const chartMap = [
+                    {id: 'turnoverDynamicChart', config: dynamicConfig},
+                    {id: 'turnoverCategoryPie', config: categoryConfig},
+                    {id: 'turnoverBrandPie', config: brandConfig},
+                    {id: 'turnoverSupplierPie', config: supplierConfig},
+                    {id: 'turnoverTypePie', config: typeConfig},
+                ];
+                chartMap.forEach(({id, config}) => {
+                    const canvas = document.getElementById(id);
+                    if (!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    if (charts[id]) { charts[id].destroy(); }
+                    charts[id] = new Chart(ctx, config);
+                });
+            });
+    }
+
+    // --- Обработка фильтров периода ---
     const filterButtons = document.querySelectorAll('.filter-section .filter-button');
+    const periodMapping = {
+        'За неделю': 7,
+        'За 2 недели': 14,
+        'За месяц': 30,
+        'За полгода': 182,
+        'За год': 365
+    };
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
             if (button.id === 'dateRangePicker') return;
             filterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            // Здесь можно реализовать обновление данных по периоду
+            // Очищаем отображение диапазона дат при выборе любого периода
+            if (calendarRangeDisplay) calendarRangeDisplay.textContent = '';
+            // Определяем период
+            const days = periodMapping[button.textContent.trim()];
+            if (days) {
+                const end = new Date();
+                const start = new Date();
+                start.setDate(end.getDate() - (days - 1));
+                const format = d => d.toISOString().slice(0,10);
+                const params = `start_date=${format(start)}&end_date=${format(end)}`;
+                updateTurnoverAnalytics(params);
+            }
         });
     });
     // Flatpickr календарь
@@ -365,12 +715,32 @@ document.addEventListener('DOMContentLoaded', function() {
                         calendarBtn.classList.add('active');
                         const format = d => d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
                         calendarRangeDisplay.textContent = `${format(selectedDates[0])} — ${format(selectedDates[1])}`;
+                        // Форматируем для запроса
+                        const formatISO = d => d.toISOString().slice(0,10);
+                        const params = `start_date=${formatISO(selectedDates[0])}&end_date=${formatISO(selectedDates[1])}`;
+                        updateTurnoverAnalytics(params);
                     }
                 }
             });
         }
         calendarInstance.open();
     });
+
+    // --- Инициализация при загрузке (по умолчанию за месяц) ---
+    // Снимаем выделение со всех кнопок и выделяем 'За месяц'
+    const filterButtonsArr = Array.from(document.querySelectorAll('.filter-section .filter-button'));
+    const monthBtn = filterButtonsArr.find(btn => btn.textContent.trim() === 'За месяц');
+    if (monthBtn) {
+        filterButtonsArr.forEach(btn => btn.classList.remove('active'));
+        monthBtn.classList.add('active');
+    }
+    // Формируем параметры для месяца
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 29);
+    const format = d => d.toISOString().slice(0,10);
+    const params = `start_date=${format(start)}&end_date=${format(end)}`;
+    updateTurnoverAnalytics(params);
 
     if (document.getElementById('stockTotalWholesale')) {
         document.getElementById('stockTotalWholesale').textContent = stockTotalWholesale.toLocaleString('ru-RU');
