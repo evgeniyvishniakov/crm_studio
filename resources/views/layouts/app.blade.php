@@ -18,12 +18,14 @@
     <!-- Base Styles -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.0/normalize.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css' rel='stylesheet' />
     <link rel="stylesheet" href="{{ asset('css/cs-skin-elastic.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=1.1">
     <link rel="stylesheet" href="{{ asset('css/common.css') }}">
+    <!-- Page-specific styles -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <!-- Base Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
@@ -32,6 +34,12 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/ru.global.min.js'></script>
     <script src="{{ asset('js/main.js') }}"></script>
+
+    <!-- Page-specific scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <style>
         body {
@@ -138,18 +146,18 @@
         <div id="main-menu" class="main-menu collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <a href="{{ route('dashboard') }}"><i class="menu-icon fa fa-laptop"></i>Dashboard </a>
+                    <a href="{{ route('dashboard') }}"><i class="menu-icon fas fa-laptop"></i>Dashboard </a>
                 </li>
                 <li class="menu-title">Работа с клиентами</li><!-- /.menu-title -->
 
                 <li class="{{ request()->routeIs('clients.*') ? 'active' : '' }}">
-                    <a href="{{ route('clients.list') }}"> <i class="menu-icon fa fa-users"></i>Клиенты</a>
+                    <a href="{{ route('clients.list') }}"> <i class="menu-icon fas fa-users"></i>Клиенты</a>
                 </li>
                 <li class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}">
-                    <a href="{{ route('appointments.index') }}"> <i class="menu-icon fa fa-calendar"></i>Записи</a>
+                    <a href="{{ route('appointments.index') }}"> <i class="menu-icon fas fa-calendar"></i>Записи</a>
                 </li>
                 <li class="{{ request()->routeIs('reports.clients.*') ? 'active' : '' }}">
-                    <a href="{{ route('reports.clients.index') }}"><i class="menu-icon fa fa-bar-chart"></i>Аналитика</a>
+                    <a href="{{ route('reports.clients.index') }}"><i class="menu-icon fas fa-bar-chart"></i>Аналитика</a>
                 </li>
                 
 

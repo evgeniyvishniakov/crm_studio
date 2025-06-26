@@ -1,28 +1,30 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="dashboard-container">
-    <h1 class="dashboard-title">Аналитика по товарообороту</h1>
+<div class="container-fluid">
+    <div class="report-header">
+        <h1 class="dashboard-title">Аналитика по товарообороту</h1>
 
-    <!-- Навигация по вкладкам -->
-    <div class="dashboard-tabs">
-        <button class="tab-button active" data-tab="dynamic-analytics"><i class="fa fa-line-chart"></i> Динамика и структура</button>
-        <button class="tab-button" data-tab="tops-analytics"><i class="fa fa-star"></i> Топы</button>
-        <button class="tab-button" data-tab="suppliers-analytics"><i class="fa fa-truck"></i> Поставщики и остатки</button>
-    </div>
+        <!-- Навигация по вкладкам -->
+        <div class="dashboard-tabs">
+            <button class="tab-button active" data-tab="dynamic-analytics"><i class="fa fa-line-chart"></i> Динамика и структура</button>
+            <button class="tab-button" data-tab="tops-analytics"><i class="fa fa-star"></i> Топы</button>
+            <button class="tab-button" data-tab="suppliers-analytics"><i class="fa fa-truck"></i> Поставщики и остатки</button>
+        </div>
 
-    <!-- Фильтры периода -->
-    <div class="filter-section">
-        <div class="period-filters" style="display:flex;align-items:center;gap:8px;">
-            <button class="filter-button active">За неделю</button>
-            <button class="filter-button">За 2 недели</button>
-            <button class="filter-button">За месяц</button>
-            <button class="filter-button">За полгода</button>
-            <button class="filter-button">За год</button>
-            <button class="filter-button calendar-button" id="dateRangePicker">
-                <i class="fa fa-calendar"></i>
-            </button>
-            <span id="calendarRangeDisplay" style="min-width:110px;text-align:center;vertical-align:middle;font-family:inherit;font-size:14px;font-weight:600;color: #64748b;"></span>
+        <!-- Фильтры периода -->
+        <div class="filter-section">
+            <div class="period-filters" style="display:flex;align-items:center;gap:8px;">
+                <button class="filter-button active">За неделю</button>
+                <button class="filter-button">За 2 недели</button>
+                <button class="filter-button">За месяц</button>
+                <button class="filter-button">За полгода</button>
+                <button class="filter-button">За год</button>
+                <button class="filter-button calendar-button" id="dateRangePicker">
+                    <i class="fa fa-calendar"></i>
+                </button>
+                <span id="calendarRangeDisplay" style="min-width:110px;text-align:center;vertical-align:middle;font-family:inherit;font-size:14px;font-weight:600;color: #64748b;"></span>
+            </div>
         </div>
     </div>
 
@@ -154,29 +156,6 @@
 @endsection
 
 @push('scripts')
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Flatpickr для выбора диапазона дат -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<style>
-.analytics-group-container {
-    background: #f9fafb;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    padding: 24px 18px 10px 18px;
-    margin-bottom: 32px;
-    border: 1px solid #e5e7eb;
-}
-.analytics-group-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #374151;
-    margin-bottom: 18px;
-    letter-spacing: 0.01em;
-}
-</style>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
 <script>
     var charts = {};
     document.addEventListener('DOMContentLoaded', function () {

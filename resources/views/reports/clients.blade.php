@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="dashboard-container">
+<div class="container-fluid">
     <h1 class="dashboard-title">Отчеты</h1>
 
     <!-- Навигация по вкладкам -->
@@ -127,12 +127,6 @@
 @endsection
 
 @push('scripts')
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Flatpickr для выбора диапазона дат -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM готов. Начинаем инициализацию отчетов.');
