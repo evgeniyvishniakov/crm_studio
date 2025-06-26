@@ -1,420 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-/* Dashboard Statistics Cards - Inline Styles */
-body {
-    background: #f8f9fa !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-.dashboard-container {
-    padding: 24px !important;
-    background: #fff !important;
-    border-radius: 16px !important;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
-    border: 1px solid #e5e7eb !important;
-    min-height: 100vh !important;
-    max-width: 1400px !important;
-    margin: 32px auto 0 auto !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-.dashboard-title {
-    font-size: 2rem !important;
-    font-weight: 700 !important;
-    color: #2d3748 !important;
-    margin-bottom: 1.5rem !important;
-    text-align: center !important;
-}
-
-.stats-grid {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 1.5rem !important;
-    margin-bottom: 2rem !important;
-    align-items: stretch !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-.stat-card {
-    height: 150px !important;
-    min-width: 0 !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: flex-start !important;
-    padding: 1.2rem 1.1rem !important;
-    box-sizing: border-box !important;
-    background: white !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-    transition: all 0.3s ease !important;
-    position: relative !important;
-    overflow: hidden !important;
-    flex-shrink: 0 !important;
-}
-
-.stat-card .stat-content {
-    flex: 1 1 auto !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-}
-
-.stat-icon {
-    width: 50px !important;
-    height: 50px !important;
-    border-radius: 10px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: linear-gradient(135deg, var(--card-color), var(--card-color-light)) !important;
-    color: white !important;
-    font-size: 1.3rem !important;
-    flex-shrink: 0 !important;
-}
-
-.stat-title {
-    font-size: 0.75rem !important;
-    font-weight: 600 !important;
-    color: #718096 !important;
-    margin: 0 0 0.3rem 0 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-}
-
-.stat-value {
-    font-size: 1.4rem !important;
-    font-weight: 700 !important;
-    color: #2d3748 !important;
-    margin: 0 0 0.2rem 0 !important;
-    line-height: 1.2 !important;
-    opacity: 0 !important;
-    transition: opacity 0.3s ease !important;
-    min-width: 80px !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-}
-
-.stat-value.animated {
-    opacity: 1 !important;
-}
-
-.stat-change {
-    font-size: 0.7rem !important;
-    font-weight: 500 !important;
-    margin: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.2rem !important;
-}
-
-.profit-card {
-    --card-color: #10b981 !important;
-    --card-color-light: #34d399 !important;
-}
-
-.sales-card {
-    --card-color: #3b82f6 !important;
-    --card-color-light: #60a5fa !important;
-}
-
-.clients-card {
-    --card-color: #8b5cf6 !important;
-    --card-color-light: #a78bfa !important;
-}
-
-.appointments-card {
-    --card-color: #f59e0b !important;
-    --card-color-light: #fbbf24 !important;
-}
-
-@media (max-width: 1100px) {
-    .stats-grid {
-        grid-template-columns: 1fr !important;
-        gap: 1rem !important;
-    }
-    .stat-card.profit-card {
-        max-width: 100%;
-        margin-bottom: 1rem;
-    }
-    .stat-cards-group {
-        grid-template-columns: 1fr !important;
-        gap: 1rem !important;
-        position: static !important;
-        opacity: 1 !important;
-        transform: none !important;
-        pointer-events: all !important;
-        height: auto;
-    }
-    .stat-cards-container {
-        min-height: unset !important;
-        display: block !important;
-    }
-}
-
-/* Переключатели */
-.dashboard-tabs {
-    display: flex !important;
-    justify-content: center !important;
-    gap: 1rem !important;
-    margin-bottom: 2rem !important;
-}
-
-.tab-button {
-    background: white !important;
-    border: 2px solid #e2e8f0 !important;
-    border-radius: 12px !important;
-    padding: 0.75rem 1.5rem !important;
-    font-size: 0.9rem !important;
-    font-weight: 600 !important;
-    color: #64748b !important;
-    cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-}
-
-.tab-button:hover {
-    border-color: #3b82f6 !important;
-    color: #3b82f6 !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15) !important;
-}
-
-.tab-button.active {
-    background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
-    border-color: #3b82f6 !important;
-    color: white !important;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
-}
-
-.tab-button i {
-    font-size: 1rem !important;
-}
-
-/* Контейнер для переключаемых карточек */
-.stat-cards-container {
-    display: contents !important;
-}
-
-/* Группы карточек */
-.stat-cards-group {
-    display: contents !important;
-    position: static !important;
-    opacity: 1 !important;
-    transform: none !important;
-    pointer-events: all !important;
-    height: auto !important;
-    transition: none !important;
-}
-
-.stat-cards-group:not(.active) .stat-card {
-    display: none !important;
-}
-
-/* Дополнительные цвета для новых карточек */
-.services-card {
-    --card-color: #8b5cf6 !important;
-    --card-color-light: #a78bfa !important;
-}
-
-.expenses-card {
-    --card-color: #ef4444 !important;
-    --card-color-light: #f87171 !important;
-}
-
-.procedures-card {
-    --card-color: #06b6d4 !important;
-    --card-color-light: #22d3ee !important;
-}
-
-/* Анимация при переключении */
-.stat-cards-group.finances-group {
-    transform: translateX(-20px) !important;
-}
-
-.stat-cards-group.activity-group {
-    transform: translateX(20px) !important;
-}
-
-.stat-cards-group.active.finances-group,
-.stat-cards-group.active.activity-group {
-    transform: translateX(0) !important;
-}
-
-/* Стили для period-фильтров */
-.period-filters {
-    display: flex;
-    gap: 0.5rem;
-
-}
-
-/* Удаляю все ::after для .metric-toggle, если есть */
-.metric-toggle::after {
-    display: none !important;
-    content: none !important;
-}
-
-.metric-dropdown {
-    position: relative;
-}
-.metric-toggle {
-    background: #fff;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #374151;
-    box-shadow: 0 2px 8px rgba(59,130,246,0.04);
-    transition: border 0.2s, box-shadow 0.2s;
-}
-.metric-toggle:focus, .metric-toggle:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 4px 16px rgba(59,130,246,0.10);
-}
-.metric-menu {
-    display: none;
-    position: absolute;
-    left: 0;
-    top: 110%;
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 8px 32px rgba(59,130,246,0.13), 0 1.5px 6px rgba(0,0,0,0.04);
-    min-width: 190px;
-    padding: 0.4rem 0;
-    z-index: 10;
-    border: none;
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-    pointer-events: none;
-    transition: opacity 0.22s cubic-bezier(.4,0,.2,1), transform 0.22s cubic-bezier(.4,0,.2,1);
-}
-.metric-dropdown.open .metric-menu {
-    display: block;
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: auto;
-}
-.metric-item {
-    width: 100%;
-    background: none;
-    border: none;
-    outline: none;
-    text-align: left;
-    padding: 0.7rem 1.2rem;
-    font-size: 1rem;
-    color: #374151;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.18s, color 0.18s;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-}
-.metric-item:hover, .metric-item:focus {
-    background: linear-gradient(90deg, #e0e7ff 0%, #f0f9ff 100%);
-    color: #3b82f6;
-}
-
-/* Подсветка сегодняшней даты в календаре дашборда */
-.calendar-today {
-    background: #fffbe6 !important;
-    border: 2px solid #ffe066 !important;
-}
-
-.fc-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin: 2px 2px 0 2px;
-    display: inline-block;
-}
-.fc-dot-more {
-    width: 18px;
-    height: 8px;
-    border-radius: 8px;
-    background: #cbd5e1;
-    color: #374151;
-    font-size: 9px;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 2px;
-}
-.fc-daygrid-day.fc-day-today {
-    background: #fffbe6 !important;
-    border: none !important;
-    box-shadow: 0 2px 8px rgba(255,224,102,0.13);
-}
-
-/* Ряд точек под числом дня */
-.fc-daygrid-day-events {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center;
-    align-items: center;
-    gap: 2px;
-    margin-top: -4px !important; /* Пробуем сдвинуть повыше */
-    min-height: 0 !important; /* Убираем минимальную высоту, чтобы не мешала */
-    height: 5px !important; /* Задаем небольшую высоту */
-}
-.fc-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    display: inline-block;
-    margin: 0 1px; /* Скорректировал отступы */
-}
-/* Убираю зелёную заливку у сегодняшнего дня, только рамка */
-.fc-daygrid-day.fc-day-today {
-    background: #fff !important;
-    border: 2px solid #ffe066 !important;
-}
-
-/* ... предыдущие стили ... */
-.fc-event-title, .fc-event-time {
-    display: none !important;
-}
-.fc-event {
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    min-width: 0 !important;
-}
-
-/* ... предыдущие стили ... */
-.fc-daygrid-day {
-    cursor: pointer !important;
-}
-.fc-daygrid-day.fc-day-other {
-    cursor: default !important;
-}
-/* ... остальные стили ... */
-.fc-daygrid-day:hover:not(.fc-day-other) {
-    background: #f3f6fd !important;
-    box-shadow: 0 2px 8px rgba(59,130,246,0.07);
-    transition: background 0.18s, box-shadow 0.18s;
-}
-</style>
-
     <div class="dashboard-container">
         <h1 class="dashboard-title">CRM Analytics Dashboard</h1>
 
@@ -719,9 +305,6 @@ body {
             </div>
         </div>
     </div>
-
-    <!-- Подключаем Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         let currentMetric = 'profit';
@@ -1302,1041 +885,293 @@ body {
         // === Календарь дашборда: подсветка сегодняшней даты, количество записей, popover и модалка ===
         // [УДАЛЕНО: старая реализация кастомного календаря на .calendar-day]
     </script>
-
-    <style>
-        /* Основные стили */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f7fa;
-            color: #333;
-        }
-
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .dashboard-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 30px;
-        }
-
-        /* Сетка статистических карточек */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-
-        .stat-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #4a5568;
-            margin: 0 0 10px 0;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            margin: 0 0 5px 0;
-        }
-
-        .stat-value.blue {
-            color: #3b82f6;
-        }
-
-        .stat-value.purple {
-            color: #8b5cf6;
-        }
-
-        .stat-value.green {
-            color: #10b981;
-        }
-
-        .stat-change {
-            font-size: 14px;
-            margin: 0;
-        }
-
-        .stat-change.positive {
-            color: #10b981;
-        }
-
-        .stat-change.negative {
-            color: #ef4444;
-        }
-
-        /* Сетка графиков */
-        .chart-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.3);
-            padding: 20px;
-        }
-
-        .chart-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #2d3748;
-            margin: 0 0 20px 0;
-        }
-
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .chart-container {
-                padding: 10px;
-            }
-
-            .dashboard-title {
-                font-size: 24px;
-            }
-        }
-    </style>
-
-    <style>
-    .dashboard-widgets-grid-2x2 {
-        display: grid;
-        grid-template-columns: 34% 64%;
-        gap: 1.6rem;
-        margin: 32px 0 0 0;
-    }
-    .widget-card {
-        background: #fff;
-        border-radius: 14px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-        padding: 1.1rem 1.1rem 1.1rem 1.1rem;
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-        min-height: 260px;
-        position: relative;
-        transition: none;
-    }
-    /* Убираем hover-эффекты */
-    .widget-card:hover {
-        box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-        background: #fff;
-        transform: none;
-    }
-    /* Внутренние блоки таблицы выравниваем */
-    .appointments-table-block {
-        background: transparent;
-        border-radius: 10px;
-        box-shadow: none;
-        padding: 0;
-        margin-top: 0;
-        overflow-x: auto;
-    }
-    .appointments-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        font-size: 1rem;
-        color: #374151;
-        background: transparent;
-    }
-    .widget-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.7rem;
-        margin-bottom: 0.7rem;
-        color: #fff;
-    }
-    .widget-icon.calendar { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
-    .widget-icon.todo { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
-    .widget-icon.rating { background: linear-gradient(135deg, #10b981, #34d399); }
-    .widget-icon.notifications { background: linear-gradient(135deg, #ef4444, #f87171); }
-    .widget-title {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #2d3748;
-        margin-bottom: 0.7rem;
-    }
-    .widget-content {
-        flex: 1 1 auto;
-        display: flex;
-        flex-direction: column;
-    }
-    /* Аватарки */
-    .avatar {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: #e0e7ff;
-        color: #3b82f6;
-        font-weight: 700;
-        font-size: 0.95rem;
-        margin-right: 0.5rem;
-        box-shadow: 0 2px 8px rgba(59,130,246,0.07);
-    }
-    /* Бейджи */
-    .badge {
-        display: inline-block;
-        padding: 0.15em 0.7em;
-        border-radius: 8px;
-        font-size: 0.85em;
-        font-weight: 600;
-        margin-left: 0.5em;
-        vertical-align: middle;
-        color: #fff;
-    }
-    .badge-warning { background: #f59e0b; }
-    .badge-info { background: #3b82f6; }
-    .badge-success { background: #10b981; }
-    .badge-danger { background: #ef4444; }
-    .badge-default { background: #64748b; }
-    /* ToDo и уведомления */
-    .todo-list, .notifications-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.7rem;
-    }
-    .todo-list li, .notifications-list li {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        font-size: 1rem;
-        color: #374151;
-        background: none;
-        border-radius: 8px;
-        padding: 0.2rem 0.2rem;
-        transition: background 0.18s;
-    }
-    .todo-list li:hover, .notifications-list li:hover {
-        background: #f3f4f6;
-    }
-    .todo-date {
-        background: #f3f4f6;
-        color: #64748b;
-        border-radius: 6px;
-        padding: 0.1rem 0.5rem;
-        font-size: 0.85rem;
-        margin-left: 0.7rem;
-    }
-    .notif-time {
-        color: #a0aec0;
-        font-size: 0.85em;
-        margin-left: auto;
-        font-weight: 500;
-    }
-    /* Прогресс-бары и тренды */
-    .rating-section {
-        margin-top: 0.7rem;
-    }
-    .rating-title {
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #64748b;
-        margin-top: 0.5rem;
-        margin-bottom: 0.2rem;
-    }
-    .rating-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-    }
-    .rating-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.98rem;
-    }
-    .progress-bar {
-        flex: 1;
-        height: 0.6rem;
-        background: #f3f4f6;
-        border-radius: 6px;
-        overflow: hidden;
-        margin: 0 0.5rem;
-        position: relative;
-    }
-    .progress-bar > div {
-        height: 100%;
-        background: linear-gradient(90deg, #3b82f6, #60a5fa);
-        border-radius: 6px;
-        transition: width 0.7s cubic-bezier(.4,0,.2,1);
-    }
-    .rating-value {
-        font-weight: 600;
-        color: #3b82f6;
-        min-width: 2.2rem;
-        text-align: right;
-    }
-    .trend-up {
-        color: #10b981;
-        font-size: 0.95em;
-        margin-left: 0.3em;
-    }
-    .trend-down {
-        color: #ef4444;
-        font-size: 0.95em;
-        margin-left: 0.3em;
-    }
-    /* Календарь: точки событий */
-    .calendar-date.event {
-        position: relative;
-    }
-    .calendar-date .event-dot {
-        display: inline-block;
-        width: 7px;
-        height: 7px;
-        background: #3b82f6;
-        border-radius: 50%;
-        position: absolute;
-        bottom: 3px;
-        right: 6px;
-    }
-    .calendar-date.today {
-        background: linear-gradient(135deg, #3b82f6, #60a5fa);
-        color: #fff;
-        font-weight: 700;
-    }
-    /* Пустые состояния */
-    .empty-state {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: #a0aec0;
-        font-size: 1.1em;
-        padding: 2em 0;
-    }
-    .empty-state img {
-        width: 60px;
-        margin-bottom: 1em;
-        opacity: 0.7;
-    }
-    @media (max-width: 1100px) {
-        .dashboard-widgets-grid-2x2 {
-            grid-template-columns: 1fr;
-        }
-    }
-    @media (max-width: 768px) {
-        .widget-card {
-            min-height: 180px;
-            padding: 1rem 0.7rem;
-        }
-        .widget-title {
-            font-size: 1rem;
-        }
-    }
-    </style>
-
-    <style>
-    .todo-list-minimal {
-        list-style: none;
-        padding: 0;
-        margin: 1rem 0 0 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0.7rem;
-        max-height: 250px; /* Финальная высота для 4-х элементов */
-        overflow-y: auto;
-        padding-right: 0.5rem; /* Отступ для скроллбара */
-    }
-    /* Стилизация скроллбара для Webkit-браузеров */
-    .todo-list-minimal::-webkit-scrollbar {
-        width: 6px;
-    }
-    .todo-list-minimal::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 10px;
-    }
-    .todo-list-minimal::-webkit-scrollbar-thumb {
-        background: #d1d5db;
-        border-radius: 10px;
-    }
-    .todo-list-minimal::-webkit-scrollbar-thumb:hover {
-        background: #9ca3af;
-    }
-    .todo-list-minimal li {
-        display: flex;
-        align-items: center;
-        background: #f9fafb;
-        border-radius: 10px;
-        padding: 0.7rem 1rem;
-        box-shadow: 0 1px 4px rgba(59,130,246,0.04);
-        transition: background 0.18s, box-shadow 0.18s;
-        font-size: 1rem;
-        color: #374151;
-        position: relative;
-    }
-    .todo-list-minimal li:hover {
-        background: #f3f4f6;
-        box-shadow: 0 2px 8px rgba(59,130,246,0.07);
-    }
-    .todo-drag {
-        color: #cbd5e1;
-        font-size: 1.2em;
-        margin-right: 1rem;
-        cursor: grab;
-        flex-shrink: 0;
-    }
-    .todo-list-minimal input[type="checkbox"] {
-        width: 1.1rem;
-        height: 1.1rem;
-        accent-color: #3b82f6;
-        margin-right: 1rem;
-        flex-shrink: 0;
-    }
-    .todo-list-minimal label {
-        flex: 1 1 auto;
-        cursor: pointer;
-        margin: 0;
-        transition: color 0.18s;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .todo-list-minimal li.done label {
-        text-decoration: line-through;
-        color: #a0aec0;
-    }
-    .todo-actions {
-        display: flex;
-        gap: 0.7rem;
-        margin-left: 1rem;
-        color: #cbd5e1;
-        font-size: 1.1em;
-    }
-    .todo-actions i {
-        cursor: pointer;
-        transition: color 0.18s;
-    }
-    .todo-actions i:hover {
-        color: #3b82f6;
-    }
-    .fa-trash:hover {
-        color: #ef4444;
-    }
-    .todo-empty-state {
-        text-align: center;
-        color: #a0aec0;
-        padding: 1.5rem 0;
-        font-style: italic;
-        background: #fdfdff !important;
-        box-shadow: none !important;
-        justify-content: center;
-    }
-    .todo-add-form {
-        display: flex;
-        gap: 0.5rem;
-    }
-    #newTodoInput {
-        flex-grow: 1;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 0.4rem 0.7rem;
-        font-size: 0.9rem;
-        outline: none;
-        transition: border-color 0.2s;
-        width: 350px;
-    }
-    #newTodoInput:focus {
-        border-color: #3b82f6;
-    }
-    #addTodoBtn {
-        flex-shrink: 0;
-        width: 34px;
-        height: 34px;
-        border: none;
-        background: linear-gradient(135deg, #3b82f6, #60a5fa);
-        color: white;
-        border-radius: 8px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: transform 0.2s, background 0.2s;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-    #addTodoBtn:hover {
-        transform: scale(1.05);
-        background: linear-gradient(135deg, #2563eb, #3b82f6);
-    }
-    </style>
-
-    <style>
-    /* Краткий отчет за сегодня - новый дизайн 2x2 */
-    .daily-summary-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.8rem;
-        margin-top: 1.2rem;
-        flex-grow: 1; /* Чтобы сетка заняла все доступное место */
-    }
-    .summary-grid-item {
-        background: #fdfdff;
-        border-radius: 12px;
-        padding: 1.1rem;
-        border: 1px solid #f1f5f9;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .summary-grid-item:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.07);
-    }
-    .item-header {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        margin-bottom: 0.5rem;
-    }
-    .item-icon {
-        font-size: 1.1rem;
-    }
-    .item-label {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #4a5568;
-    }
-    .item-value {
-        font-size: 2rem;
-        font-weight: 700;
-        text-align: right;
-        line-height: 1.1;
-    }
-    .item-value small {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #9ca3af;
-    }
-    /* Цвета */
-    .summary-grid-item.services-profit .item-icon,
-    .summary-grid-item.services-profit .item-value { color: #10b981; } /* Зеленый */
-
-    .summary-grid-item.products-profit .item-icon,
-    .summary-grid-item.products-profit .item-value { color: #3b82f6; } /* Синий */
-
-    .summary-grid-item.services-count .item-icon,
-    .summary-grid-item.services-count .item-value { color: #8b5cf6; } /* Фиолетовый */
-
-    .summary-grid-item.products-count .item-icon,
-    .summary-grid-item.products-count .item-value { color: #f59e0b; } /* Оранжевый */
-    </style>
-
-    <style>
-    .calendar-widget {
-        min-width: 0;
-        /* Было padding: 0, возвращаем стандартный отступ виджета */
-        padding: 1.1rem;
-    }
-    .widget-header-modern {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        /* Убираем лишние отступы, так как они теперь есть у родителя */
-        padding: 0.5rem 0 0.8rem 0;
-    }
-    .calendar-nav {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-    }
-    .calendar-month-title {
-        font-size: 1.05rem;
-        font-weight: 600;
-        color: #374151;
-    }
-    .widget-title {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: #2d3748;
-        margin-left: 5px;
-    }
-    .widget-title-container {
-        align-items: center;
-        gap: 0.6rem;
-    }
-    .calendar-icon {
-        font-size: 1.2rem;
-        color: #3b82f6;
-    }
-    .list-icon {
-        font-size: 1.2rem;
-        color: #03a813;
-    }
-    .summary-icon {
-        font-size: 1.2rem;
-        color: #f59e0b;
-    }
-    .todo-icon {
-        font-size: 1.2rem;
-        color: #8b5cf6;
-    }
-    .calendar-nav-group {
-        display: flex;
-        gap: 0.3rem;
-    }
-    .calendar-nav-btn {
-        background: #f3f4f6;
-        border: none;
-        border-radius: 6px;
-        padding: 0.3rem 0.6rem;
-        cursor: pointer;
-        color: #64748b;
-        font-size: 1rem;
-        transition: background 0.18s;
-    }
-    .calendar-nav-btn:hover {
-        background: #e0e7ff;
-        color: #3b82f6;
-    }
-    .calendar-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 0.9rem;
-        padding: 0 1.1rem 1.1rem 1.1rem;
-    }
-    .calendar-row {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 0.1rem;
-    }
-    .calendar-days-row div {
-        font-size: 0.95em;
-        color: #a0aec0;
-        font-weight: 600;
-        text-align: center;
-        padding: 0.3em 0 0.3em 0;
-    }
-    .calendar-day {
-        min-height: 2.1em;
-        text-align: center;
-        font-size: 1.05em;
-        color: #374151;
-        background: #fff;
-        border-radius: 7px;
-        position: relative;
-        transition: background 0.18s, color 0.18s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 500;
-        cursor: pointer;
-        flex-direction: column;
-        padding: 0.2em 0 0.2em 0;
-    }
-    .calendar-day.muted {
-        color: #cbd5e1;
-        background: #f8fafc;
-        cursor: default;
-    }
-    .calendar-day:hover:not(.muted) {
-        background: #f3f6fd;
-        color: #3b82f6;
-    }
-    .calendar-badge-mini {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        right: 7px;
-        bottom: 6px;
-        min-width: 16px;
-        height: 16px;
-        background: #3b82f6;
-        color: #fff;
-        font-size: 0.85em;
-        font-weight: 700;
-        border-radius: 50%;
-        box-shadow: none;
-        z-index: 2;
-        padding: 0 0.1em;
-        border: 1.5px solid #fff;
-        line-height: 1;
-    }
-    .calendar-has-badge {
-        position: relative;
-    }
-    </style>
-
-    <style>
-    .calendar-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        right: 7px;
-        bottom: 7px;
-        min-width: 22px;
-        height: 22px;
-        background: #2563eb;
-        color: #fff;
-        font-size: 0.95em;
-        font-weight: 700;
-        border-radius: 50%;
-        box-shadow: 0 1px 4px rgba(59,130,246,0.07);
-        z-index: 2;
-        padding: 0 0.2em;
-        border: 2px solid #fff;
-    }
-    .calendar-day {
-        position: relative;
-    }
-    </style>
-
-    <style>
-    .appointments-table-block {
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 1px 4px rgba(59,130,246,0.04);
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 0.25em 1.1em;
-        border-radius: 7px;
-        font-size: 0.98em;
-        font-weight: 600;
-        color: #fff;
-        background: #10b981;
-        white-space: nowrap;
-    }
-    .status-done { background: #10b981; }
-    .status-pending { background: #f59e0b; }
-    .status-cancel { background: #ef4444; }
-    .status-rescheduled { background: #3b82f6; } /* Добавил цвет для перенесенных */
-    </style>
-
-    <style>
-    .appt-date { font-weight: 600; }
-    .appt-time { color: #3b82f6; font-size: 0.98em; font-weight: 500; }
-    </style>
-
-    <!-- Подключаем FullCalendar -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-    <!-- Подключаем SortableJS для перетаскивания -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-
-    <style>
-    /* Фикс для сегодняшнего дня: убираем рамку, добавляем фон */
-    .fc-day-today, .fc-daygrid-day.fc-day-today {
-        background: #fffbe6 !important;
-        border: none !important;
-        box-shadow: 0 2px 8px rgba(255,224,102,0.13) !important;
-    }
-    </style>
-
-    <script>
-        // === FullCalendar: минималистичный календарь с точками по статусу ===
-        document.addEventListener('DOMContentLoaded', function() {
-            if (document.getElementById('dashboardCalendar')) {
-                const calendarEl = document.getElementById('dashboardCalendar');
-                const calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    locale: 'ru',
-                    height: 'auto',
-                    firstDay: 1,
-                    headerToolbar: false,
-                    events: '/appointments/calendar-events',
-                    eventDisplay: 'block',
-                    eventContent: function(arg) {
-                        const status = arg.event.extendedProps.status || arg.event.status;
-                        const color = getStatusColor(status);
-                        return { html: `<span class='fc-dot' style='background:${color}'></span>` };
-                    },
-                    dateClick: function(info) {
-                        // Открыть модалку с событиями на этот день
-                        showDayModal(info.dateStr, calendar.getEvents());
-                    },
-                    eventClick: function(info) {
-                        info.jsEvent.preventDefault(); // Предотвращаем стандартное поведение
-                        const dateStr = info.event.startStr.slice(0, 10);
-                        showDayModal(dateStr, calendar.getEvents());
-                    },
-                    datesSet: function() {
-                        updateCalendarTitle(this); // `this` is the calendar instance
-                    }
-                });
-
-                function updateCalendarTitle(calInstance) {
-                    const titleEl = document.getElementById('calendarMonthYearTitle');
-                    if (titleEl) {
-                        let title = calInstance.view.title;
-                        titleEl.textContent = title.charAt(0).toUpperCase() + title.slice(1);
-                    }
-                }
-
-                calendar.render();
-                updateCalendarTitle(calendar); // Set initial title
-
-                document.getElementById('calendarPrevBtn').addEventListener('click', function() {
-                    calendar.prev();
-                });
-
-                document.getElementById('calendarNextBtn').addEventListener('click', function() {
-                    calendar.next();
-                });
-
-                // Обработчик для кнопки "Добавить новую" в виджете "Записи"
-                const addWidgetBtn = document.getElementById('addWidgetAppointmentBtn');
-                if (addWidgetBtn) {
-                    addWidgetBtn.addEventListener('click', function() {
-                        const today = new Date();
-                        const year = today.getFullYear();
-                        const month = String(today.getMonth() + 1).padStart(2, '0');
-                        const day = String(today.getDate()).padStart(2, '0');
-                        const todayDateStr = `${year}-${month}-${day}`;
-                        window.location.href = '/appointments?action=create&date=' + todayDateStr;
-                    });
-                }
-            }
-        });
-
-        // Цвет точки по статусу
-        function getStatusColor(status) {
-            switch (status) {
-                case 'done':
-                case 'completed': return '#10b981';      // зелёный
-                case 'pending': return '#f59e0b';        // оранжевый
-                case 'cancelled': return '#ef4444';      // красный
-                case 'rescheduled': return '#3b82f6';    // синий
-                default: return '#cbd5e1';               // серый
-            }
-        }
-
-        // Модалка для событий дня
-        function showDayModal(dateStr, allEvents) {
-            const modal = document.getElementById('calendarDayModal');
-            const title = document.getElementById('modalDayTitle');
-            const eventsBlock = document.getElementById('modalDayEvents');
-            const addBtn = document.getElementById('modalAddAppointmentBtn');
-            const closeBtn = document.getElementById('closeDayModalBtn');
-            // Форматируем дату
-            const d = new Date(dateStr);
-            title.textContent = 'Записи на ' + d.toLocaleDateString('ru-RU');
-            // Фильтруем события по дате
-            const events = allEvents.filter(ev => {
-                const evDate = ev.extendedProps.date || (ev.start ? ev.start.toISOString().slice(0,10) : null);
-                return evDate === dateStr;
-            });
-            if (events.length === 0) {
-                eventsBlock.innerHTML = '<div style="color:#888;">Нет записей на этот день</div>';
-            } else {
-                eventsBlock.innerHTML = events.map(ev => {
-                    const time = ev.extendedProps.time ? ev.extendedProps.time.slice(0, 5) : (ev.start ? new Date(ev.start).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '');
-                    return `<div style='margin-bottom:0.7em; display:flex; align-items:center; gap:0.5em;'>
-                        <span class='fc-dot' style='background:${getStatusColor(ev.extendedProps.status || ev.status)}'></span>
-                        <span><b>${time}</b> ${ev.extendedProps.client || ''} <span style='color:#888;'>(${ev.extendedProps.service || ''})</span></span>
-                    </div>`
-                }).join('');
-            }
-            modal.style.display = 'flex';
-            // Кнопка "Добавить новую"
-            addBtn.onclick = function() {
-                window.location.href = '/appointments?action=create&date=' + dateStr;
-            };
-            closeBtn.onclick = function() {
-                modal.style.display = 'none';
-            };
-            // Закрытие по клику вне окна
-            modal.onclick = function(e) {
-                if (e.target === modal) modal.style.display = 'none';
-            };
-        }
-    </script>
-
-    <!-- Модальное окно для записей дня -->
-    <div id="calendarDayModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:9999; align-items:center; justify-content:center;">
-      <div style="background:#fff; border-radius:12px; max-width:400px; width:90vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
-        <button id="closeDayModalBtn" style="position:absolute; right:12px; top:10px; background:none; border:none; font-size:1.5em; color:#aaa; cursor:pointer;">&times;</button>
-        <h3 id="modalDayTitle" style="margin-bottom:1em; font-size:1.1em;">Записи на день</h3>
-        <div id="modalDayEvents"></div>
-        <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:#3b82f6; color:#fff; border:none; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer;">Добавить новую</button>
-      </div>
-    </div>
-
-    <script>
-    // === ToDo List Logic ===
-    document.addEventListener('DOMContentLoaded', function() {
-        const todoListContainer = document.getElementById('todoListContainer');
-        const newTodoInput = document.getElementById('newTodoInput');
-        const addTodoBtn = document.getElementById('addTodoBtn');
-
-        if (!todoListContainer || !newTodoInput || !addTodoBtn) return;
-
-        let todos = JSON.parse(localStorage.getItem('dashboard_todos')) || [];
-
-        function saveTodos() {
-            localStorage.setItem('dashboard_todos', JSON.stringify(todos));
-        }
-
-        function renderTodos() {
-            todoListContainer.innerHTML = '';
-            if (todos.length === 0) {
-                todoListContainer.innerHTML = `<li class="todo-empty-state">Задач пока нет.</li>`;
-                return;
-            }
-            todos.forEach((todo, index) => {
-                const li = document.createElement('li');
-                li.className = todo.done ? 'done' : '';
-                li.dataset.index = index;
-                li.innerHTML = `
-                    <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
-                    <input type="checkbox" id="todo-${index}" ${todo.done ? 'checked' : ''}>
-                    <label for="todo-${index}">${todo.text}</label>
-                    <span class="todo-actions">
-                        <i class="fas fa-trash delete-btn"></i>
-                    </span>
-                `;
-                todoListContainer.appendChild(li);
-            });
-        }
-
-        function addTodo() {
-            const text = newTodoInput.value.trim();
-            if (text) {
-                todos.push({ text: text, done: false });
-                newTodoInput.value = '';
-                saveTodos();
-                renderTodos();
-            }
-        }
-
-        addTodoBtn.addEventListener('click', addTodo);
-        newTodoInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addTodo();
-            }
-        });
-
-        todoListContainer.addEventListener('click', function(e) {
-            const target = e.target;
-            const li = target.closest('li');
-            if (!li || li.classList.contains('todo-empty-state')) return;
-            const index = li.dataset.index;
-
-            // Toggle done
-            if (target.type === 'checkbox') {
-                todos[index].done = target.checked;
-                saveTodos();
-                renderTodos();
-            }
-
-            // Delete todo
-            if (target.classList.contains('delete-btn')) {
-                todos.splice(index, 1);
-                saveTodos();
-                renderTodos();
-            }
-        });
-
-        renderTodos(); // Initial render
-
-        // Инициализация SortableJS для перетаскивания
-        new Sortable(todoListContainer, {
-            animation: 150,
-            handle: '.todo-drag', // Указываем, за какой элемент можно перетаскивать
-            onEnd: function (evt) {
-                // Обновляем массив `todos` в соответствии с новым порядком
-                const movedItem = todos.splice(evt.oldIndex, 1)[0];
-                todos.splice(evt.newIndex, 0, movedItem);
-
-                // Сохраняем новый порядок и перерисовываем список
-                saveTodos();
-                renderTodos();
-            }
-        });
-    });
-    </script>
-
-    <!-- Модальное окно для записей дня -->
-    <div id="calendarDayModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:9999; align-items:center; justify-content:center;">
-      <div style="background:#fff; border-radius:12px; max-width:400px; width:90vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
-        <button id="closeDayModalBtn" style="position:absolute; right:12px; top:10px; background:none; border:none; font-size:1.5em; color:#aaa; cursor:pointer;">&times;</button>
-        <h3 id="modalDayTitle" style="margin-bottom:1em; font-size:1.1em;">Записи на день</h3>
-        <div id="modalDayEvents"></div>
-        <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:#3b82f6; color:#fff; border:none; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer;">Добавить новую</button>
-      </div>
-    </div>
-
-    <script>
-    // === Современный стиль для universalChart ===
-    document.addEventListener('DOMContentLoaded', function() {
-        // --- Современный стиль для universalChart ---
-        if (window.Chart && Chart.defaults && Chart.defaults.scales) {
-            Chart.defaults.font.family = 'Inter, Arial, sans-serif';
-            Chart.defaults.font.size = 15;
-            Chart.defaults.color = '#22223b';
-            Chart.defaults.plugins.legend.display = false;
-            Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(59,130,246,0.95)';
-            Chart.defaults.plugins.tooltip.titleColor = '#fff';
-            Chart.defaults.plugins.tooltip.bodyColor = '#fff';
-            Chart.defaults.plugins.tooltip.borderColor = '#3b82f6';
-            Chart.defaults.plugins.tooltip.borderWidth = 1.5;
-            Chart.defaults.plugins.tooltip.cornerRadius = 8;
-            Chart.defaults.plugins.tooltip.padding = 12;
-            Chart.defaults.plugins.tooltip.caretSize = 8;
-            Chart.defaults.plugins.tooltip.displayColors = false;
-            Chart.defaults.elements.line.tension = 0.4;
-            Chart.defaults.elements.line.borderWidth = 3;
-            Chart.defaults.elements.line.borderColor = 'rgba(59,130,246,1)';
-            Chart.defaults.elements.line.backgroundColor = function(ctx) {
-                const chart = ctx.chart;
-                const {ctx:canvasCtx, chartArea} = chart;
-                if (!chartArea) return 'rgba(59,130,246,0.12)';
-                const grad = canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-                grad.addColorStop(0, 'rgba(59,130,246,0.18)');
-                grad.addColorStop(1, 'rgba(59,130,246,0.01)');
-                return grad;
-            };
-            Chart.defaults.elements.point.radius = 5;
-            Chart.defaults.elements.point.backgroundColor = '#3b82f6';
-            Chart.defaults.elements.point.borderColor = '#fff';
-            Chart.defaults.elements.point.borderWidth = 2;
-            Chart.defaults.elements.point.hoverRadius = 8;
-            Chart.defaults.elements.bar.borderRadius = 8;
-            Chart.defaults.elements.bar.backgroundColor = function(ctx) {
-                const chart = ctx.chart;
-                const {ctx:canvasCtx, chartArea} = chart;
-                if (!chartArea) return 'rgba(139,92,246,0.18)';
-                const grad = canvasCtx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-                grad.addColorStop(0, 'rgba(139,92,246,0.18)');
-                grad.addColorStop(0.5, 'rgba(139,92,246,0.35)');
-                grad.addColorStop(1, 'rgba(139,92,246,0.7)');
-                return grad;
-            };
-            Chart.defaults.scales.x.grid.display = false;
-            Chart.defaults.scales.y.grid.color = '#e5e7eb';
-            Chart.defaults.scales.y.grid.lineWidth = 1.2;
-            Chart.defaults.scales.y.ticks.padding = 8;
-            Chart.defaults.scales.x.ticks.padding = 8;
-            Chart.defaults.animation.duration = 900;
-            Chart.defaults.animation.easing = 'easeOutQuart';
-        }
-    });
-    </script>
 @endsection
+
+@push('scripts')
+<script>
+    // === FullCalendar: минималистичный календарь с точками по статусу ===
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('dashboardCalendar')) {
+            const calendarEl = document.getElementById('dashboardCalendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'ru',
+                height: 'auto',
+                firstDay: 1,
+                headerToolbar: false,
+                events: '/appointments/calendar-events',
+
+                eventDidMount: function(info) {
+                    const dotEl = info.el.querySelector('.fc-daygrid-event-dot');
+                    if (dotEl) {
+                        const status = info.event.extendedProps.status || 'default';
+                        const color = getStatusColor(status);
+                        dotEl.style.borderColor = color;
+                    }
+                },
+
+                dateClick: function(info) {
+                    // Открыть модалку с событиями на этот день
+                    showDayModal(info.dateStr, calendar.getEvents());
+                },
+
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault(); // Предотвращаем стандартное поведение
+                    const dateStr = info.event.startStr.slice(0, 10);
+                    showDayModal(dateStr, calendar.getEvents());
+                },
+
+                datesSet: function() {
+                    updateCalendarTitle(this); // `this` is the calendar instance
+                }
+            });
+
+            function updateCalendarTitle(calInstance) {
+                const titleEl = document.getElementById('calendarMonthYearTitle');
+                if (titleEl) {
+                    let title = calInstance.view.title;
+                    titleEl.textContent = title.charAt(0).toUpperCase() + title.slice(1);
+                }
+            }
+
+            calendar.render();
+            updateCalendarTitle(calendar); // Set initial title
+
+            document.getElementById('calendarPrevBtn').addEventListener('click', function() {
+                calendar.prev();
+            });
+
+            document.getElementById('calendarNextBtn').addEventListener('click', function() {
+                calendar.next();
+            });
+
+            // Обработчик для кнопки "Добавить новую" в виджете "Записи"
+            const addWidgetBtn = document.getElementById('addWidgetAppointmentBtn');
+            if (addWidgetBtn) {
+                addWidgetBtn.addEventListener('click', function() {
+                    const today = new Date();
+                    const year = today.getFullYear();
+                    const month = String(today.getMonth() + 1).padStart(2, '0');
+                    const day = String(today.getDate()).padStart(2, '0');
+                    const todayDateStr = `${year}-${month}-${day}`;
+                    window.location.href = '/appointments?action=create&date=' + todayDateStr;
+                });
+            }
+        }
+    });
+
+    // Цвет точки по статусу
+    function getStatusColor(status) {
+        switch (status) {
+            case 'done':
+            case 'completed': return '#10b981';      // зелёный
+            case 'pending': return '#f59e0b';        // оранжевый
+            case 'cancelled': return '#ef4444';      // красный
+            case 'rescheduled': return '#3b82f6';    // синий
+            default: return '#cbd5e1';               // серый
+        }
+    }
+
+    // Модалка для событий дня
+    function showDayModal(dateStr, allEvents) {
+        const modal = document.getElementById('calendarDayModal');
+        const title = document.getElementById('modalDayTitle');
+        const eventsBlock = document.getElementById('modalDayEvents');
+        const addBtn = document.getElementById('modalAddAppointmentBtn');
+        const closeBtn = document.getElementById('closeDayModalBtn');
+        // Форматируем дату
+        const d = new Date(dateStr);
+        title.textContent = 'Записи на ' + d.toLocaleDateString('ru-RU');
+        // Фильтруем события по дате
+        const events = allEvents.filter(ev => {
+            const evDate = ev.extendedProps.date || (ev.start ? ev.start.toISOString().slice(0,10) : null);
+            return evDate === dateStr;
+        });
+        if (events.length === 0) {
+            eventsBlock.innerHTML = '<div style="color:#888;">Нет записей на этот день</div>';
+        } else {
+            eventsBlock.innerHTML = events.map(ev => {
+                const time = ev.extendedProps.time ? ev.extendedProps.time.slice(0, 5) : (ev.start ? new Date(ev.start).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '');
+                return `<div style='margin-bottom:0.7em; display:flex; align-items:center; gap:0.5em;'>
+                    <span class='fc-dot' style='background:${getStatusColor(ev.extendedProps.status || ev.status)}'></span>
+                    <span><b>${time}</b> ${ev.extendedProps.client || ''} <span style='color:#888;'>(${ev.extendedProps.service || ''})</span></span>
+                </div>`
+            }).join('');
+        }
+        modal.style.display = 'flex';
+        // Кнопка "Добавить новую"
+        addBtn.onclick = function() {
+            window.location.href = '/appointments?action=create&date=' + dateStr;
+        };
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        };
+        // Закрытие по клику вне окна
+        modal.onclick = function(e) {
+            if (e.target === modal) modal.style.display = 'none';
+        };
+    }
+</script>
+
+<!-- Модальное окно для записей дня -->
+<div id="calendarDayModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; max-width:400px; width:90vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
+    <button id="closeDayModalBtn" style="position:absolute; right:12px; top:10px; background:none; border:none; font-size:1.5em; color:#aaa; cursor:pointer;">&times;</button>
+    <h3 id="modalDayTitle" style="margin-bottom:1em; font-size:1.1em;">Записи на день</h3>
+    <div id="modalDayEvents"></div>
+    <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:#3b82f6; color:#fff; border:none; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer;">Добавить новую</button>
+  </div>
+</div>
+
+<script>
+// === ToDo List Logic ===
+document.addEventListener('DOMContentLoaded', function() {
+    const todoListContainer = document.getElementById('todoListContainer');
+    const newTodoInput = document.getElementById('newTodoInput');
+    const addTodoBtn = document.getElementById('addTodoBtn');
+
+    if (!todoListContainer || !newTodoInput || !addTodoBtn) return;
+
+    let todos = JSON.parse(localStorage.getItem('dashboard_todos')) || [];
+
+    function saveTodos() {
+        localStorage.setItem('dashboard_todos', JSON.stringify(todos));
+    }
+
+    function renderTodos() {
+        todoListContainer.innerHTML = '';
+        if (todos.length === 0) {
+            todoListContainer.innerHTML = `<li class="todo-empty-state">Задач пока нет.</li>`;
+            return;
+        }
+        todos.forEach((todo, index) => {
+            const li = document.createElement('li');
+            li.className = todo.done ? 'done' : '';
+            li.dataset.index = index;
+            li.innerHTML = `
+                <span class="todo-drag"><i class="fas fa-grip-lines"></i></span>
+                <input type="checkbox" id="todo-${index}" ${todo.done ? 'checked' : ''}>
+                <label for="todo-${index}">${todo.text}</label>
+                <span class="todo-actions">
+                    <i class="fas fa-trash delete-btn"></i>
+                </span>
+            `;
+            todoListContainer.appendChild(li);
+        });
+    }
+
+    function addTodo() {
+        const text = newTodoInput.value.trim();
+        if (text) {
+            todos.push({ text: text, done: false });
+            newTodoInput.value = '';
+            saveTodos();
+            renderTodos();
+        }
+    }
+
+    addTodoBtn.addEventListener('click', addTodo);
+    newTodoInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTodo();
+        }
+    });
+
+    todoListContainer.addEventListener('click', function(e) {
+        const target = e.target;
+        const li = target.closest('li');
+        if (!li || li.classList.contains('todo-empty-state')) return;
+        const index = li.dataset.index;
+
+        // Toggle done
+        if (target.type === 'checkbox') {
+            todos[index].done = target.checked;
+            saveTodos();
+            renderTodos();
+        }
+
+        // Delete todo
+        if (target.classList.contains('delete-btn')) {
+            todos.splice(index, 1);
+            saveTodos();
+            renderTodos();
+        }
+    });
+
+    renderTodos(); // Initial render
+
+    // Инициализация SortableJS для перетаскивания
+    new Sortable(todoListContainer, {
+        animation: 150,
+        handle: '.todo-drag', // Указываем, за какой элемент можно перетаскивать
+        onEnd: function (evt) {
+            // Обновляем массив `todos` в соответствии с новым порядком
+            const movedItem = todos.splice(evt.oldIndex, 1)[0];
+            todos.splice(evt.newIndex, 0, movedItem);
+
+            // Сохраняем новый порядок и перерисовываем список
+            saveTodos();
+            renderTodos();
+        }
+    });
+});
+</script>
+
+<script>
+// === Современный стиль для universalChart ===
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Современный стиль для universalChart ---
+    if (window.Chart && Chart.defaults && Chart.defaults.scales) {
+        Chart.defaults.font.family = 'Inter, Arial, sans-serif';
+        Chart.defaults.font.size = 15;
+        Chart.defaults.color = '#22223b';
+        Chart.defaults.plugins.legend.display = false;
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(59,130,246,0.95)';
+        Chart.defaults.plugins.tooltip.titleColor = '#fff';
+        Chart.defaults.plugins.tooltip.bodyColor = '#fff';
+        Chart.defaults.plugins.tooltip.borderColor = '#3b82f6';
+        Chart.defaults.plugins.tooltip.borderWidth = 1.5;
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.padding = 12;
+        Chart.defaults.plugins.tooltip.caretSize = 8;
+        Chart.defaults.plugins.tooltip.displayColors = false;
+        Chart.defaults.elements.line.tension = 0.4;
+        Chart.defaults.elements.line.borderWidth = 3;
+        Chart.defaults.elements.line.borderColor = 'rgba(59,130,246,1)';
+        Chart.defaults.elements.line.backgroundColor = function(ctx) {
+            const chart = ctx.chart;
+            const {ctx:canvasCtx, chartArea} = chart;
+            if (!chartArea) return 'rgba(59,130,246,0.12)';
+            const grad = canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+            grad.addColorStop(0, 'rgba(59,130,246,0.18)');
+            grad.addColorStop(1, 'rgba(59,130,246,0.01)');
+            return grad;
+        };
+        Chart.defaults.elements.point.radius = 5;
+        Chart.defaults.elements.point.backgroundColor = '#3b82f6';
+        Chart.defaults.elements.point.borderColor = '#fff';
+        Chart.defaults.elements.point.borderWidth = 2;
+        Chart.defaults.elements.point.hoverRadius = 8;
+        Chart.defaults.elements.bar.borderRadius = 8;
+        Chart.defaults.elements.bar.backgroundColor = function(ctx) {
+            const chart = ctx.chart;
+            const {ctx:canvasCtx, chartArea} = chart;
+            if (!chartArea) return 'rgba(139,92,246,0.18)';
+            const grad = canvasCtx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+            grad.addColorStop(0, 'rgba(139,92,246,0.18)');
+            grad.addColorStop(0.5, 'rgba(139,92,246,0.35)');
+            grad.addColorStop(1, 'rgba(139,92,246,0.7)');
+            return grad;
+        };
+        Chart.defaults.scales.x.grid.display = false;
+        Chart.defaults.scales.y.grid.color = '#e5e7eb';
+        Chart.defaults.scales.y.grid.lineWidth = 1.2;
+        Chart.defaults.scales.y.ticks.padding = 8;
+        Chart.defaults.scales.x.ticks.padding = 8;
+        Chart.defaults.animation.duration = 900;
+        Chart.defaults.animation.easing = 'easeOutQuart';
+    }
+});
+</script>
+@endpush
 

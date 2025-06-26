@@ -25,6 +25,9 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}?v=1.1">
     <link rel="stylesheet" href="{{ asset('css/common.css') }}">
     <!-- Page-specific styles -->
+    @if(request()->routeIs('dashboard'))
+        <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    @endif
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <!-- Base Scripts -->
@@ -403,6 +406,5 @@ $(document).ready(function() {
 </script>
 
 @stack('scripts')
-
 </body>
 </html>

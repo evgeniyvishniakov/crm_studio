@@ -304,12 +304,12 @@
             newRow.style.display = 'block';
             newRow.classList.remove('template');
 
-            // Новый индекс - это количество существующих строк товаров
+            // Новый индекс — это количество существующих строк товаров
             const newIndex = container.querySelectorAll('.item-row:not(.template)').length;
 
             newRow.querySelectorAll('input, select').forEach(input => {
                 if (input.name) {
-                    input.name = input.name.replace(/\[\\d+\]/, `[${newIndex}]`);
+                    input.name = input.name.replace(/\[\d+\]/, `[${newIndex}]`);
                 }
                 if (input.tagName === 'SELECT') {
                     input.selectedIndex = 0;
@@ -330,6 +330,14 @@
                 productSelect.name = `items[${newIndex}][product_id]`;
             }
 
+            // Для режима редактирования: обновить имена всех полей
+            if (containerId === 'editItemsContainer') {
+                newRow.querySelectorAll('input, select').forEach(input => {
+                    if (input.name) {
+                        input.name = input.name.replace(/items\[\d+\]/, `items[${newIndex}]`);
+                    }
+                });
+            }
 
             const formActions = container.querySelector('.form-actions');
             if (formActions) {
@@ -503,11 +511,15 @@
                             // Собираем данные о товарах
                             const itemRows = this.querySelectorAll('.item-row');
                             itemRows.forEach((row, index) => {
+                                const productInput = row.querySelector(`[name="items[${index}][product_id]"]`);
+                                const purchaseInput = row.querySelector(`[name="items[${index}][purchase_price]"]`);
+                                const retailInput = row.querySelector(`[name="items[${index}][retail_price]"]`);
+                                const quantityInput = row.querySelector(`[name="items[${index}][quantity]"]`);
                                 items.push({
-                                    product_id: row.querySelector(`[name="items[${index}][product_id]"]`).value,
-                                    purchase_price: row.querySelector(`[name="items[${index}][purchase_price]"]`).value,
-                                    retail_price: row.querySelector(`[name="items[${index}][retail_price]"]`).value,
-                                    quantity: row.querySelector(`[name="items[${index}][quantity]"]`).value
+                                    product_id: productInput ? productInput.value : '',
+                                    purchase_price: purchaseInput ? purchaseInput.value : '',
+                                    retail_price: retailInput ? retailInput.value : '',
+                                    quantity: quantityInput ? quantityInput.value : ''
                                 });
                             });
 
@@ -939,7 +951,10 @@
             const dropdown = container.querySelector('.product-dropdown');
 
             input.value = productName;
-            select.value = productId;
+            if (select) {
+                select.value = productId;
+                select.dispatchEvent(new Event('change'));
+            }
             dropdown.style.display = 'none';
 
             // Убираем выделение у всех элементов
