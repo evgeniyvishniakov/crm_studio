@@ -94,11 +94,28 @@ class SaleController extends Controller
             $sale->total_amount = $totalAmount;
             $sale->save();
 
+            // Подгружаем связи для корректного ответа
+            $sale->load(['client', 'items.product']);
+
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'sale' => $sale->load(['client', 'items.product'])
+                'sale' => [
+                    ...$sale->toArray(),
+                    'client' => $sale->client,
+                    'items' => $sale->items->map(function($item) {
+                        return [
+                            'id' => $item->id,
+                            'product_id' => $item->product_id,
+                            'product' => $item->product,
+                            'wholesale_price' => $item->wholesale_price,
+                            'retail_price' => $item->retail_price,
+                            'quantity' => $item->quantity,
+                            'total' => $item->total,
+                        ];
+                    }),
+                ]
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -124,17 +141,38 @@ class SaleController extends Controller
         DB::beginTransaction();
 
         try {
-            // Проверяем наличие всех товаров на складе
-            foreach ($validated['items'] as $item) {
-                Warehouse::checkAvailability($item['product_id'], $item['quantity']);
+            // Получаем старые товары из продажи
+            $oldItems = $sale->items->keyBy(fn($i) => (string)$i->product_id);
+            $newItems = collect($validated['items'])->keyBy('product_id');
+
+            // 1. Обрабатываем новые и изменённые товары
+            foreach ($newItems as $productId => $item) {
+                $oldSaleItem = $oldItems[(string)$productId] ?? null;
+                $newQty = $item['quantity'];
+                $oldQty = $oldSaleItem ? $oldSaleItem->quantity : 0;
+
+                if ($oldQty) {
+                    if ($newQty > $oldQty) {
+                        $delta = $newQty - $oldQty;
+                        Warehouse::checkAvailability($productId, $delta);
+                        Warehouse::decreaseQuantity($productId, $delta);
+                    } elseif ($newQty < $oldQty) {
+                        $delta = $oldQty - $newQty;
+                        Warehouse::increaseQuantity($productId, $delta);
+                    }
+                    unset($oldItems[(string)$productId]);
+                } else {
+                    Warehouse::checkAvailability($productId, $newQty);
+                    Warehouse::decreaseQuantity($productId, $newQty);
+                }
             }
 
-            // Возвращаем старые товары на склад
-            foreach ($sale->items as $oldItem) {
+            // 2. Все товары, которые были в старой продаже, но их нет в новых — вернуть на склад
+            foreach ($oldItems as $oldItem) {
                 Warehouse::increaseQuantity($oldItem->product_id, $oldItem->quantity);
             }
 
-            // Обновляем продажу
+            // 3. Обновить продажу
             $sale->update([
                 'date' => $validated['date'],
                 'client_id' => $validated['client_id'],
@@ -142,40 +180,55 @@ class SaleController extends Controller
                 'total_amount' => 0
             ]);
 
-            // Удаляем старые позиции
+            // 4. Удалить старые позиции
             $sale->items()->delete();
 
             $totalAmount = 0;
 
-            // Добавляем новые позиции
+            // 5. Добавить новые позиции
             foreach ($validated['items'] as $item) {
-                // Получаем текущие цены со склада
+                $oldSaleItem = $oldItems[(string)$item['product_id']] ?? null;
                 $warehouseItem = Warehouse::where('product_id', $item['product_id'])->first();
-
-                $itemTotal = $warehouseItem->retail_price * $item['quantity'];
+                $product = \App\Models\Product::find($item['product_id']);
+                $wholesalePrice = $oldSaleItem ? $oldSaleItem->wholesale_price : ($warehouseItem ? $warehouseItem->purchase_price : ($product ? $product->purchase_price : 0));
+                $itemTotal = ($warehouseItem ? $warehouseItem->retail_price : ($product ? $product->retail_price : 0)) * $item['quantity'];
                 $totalAmount += $itemTotal;
 
                 SaleItem::create([
                     'sale_id' => $sale->id,
                     'product_id' => $item['product_id'],
-                    'wholesale_price' => $warehouseItem->purchase_price,
+                    'wholesale_price' => $wholesalePrice,
                     'retail_price' => $item['retail_price'],
                     'quantity' => $item['quantity'],
                     'total' => $itemTotal
                 ]);
-
-                // Уменьшаем количество на складе
-                Warehouse::decreaseQuantity($item['product_id'], $item['quantity']);
             }
 
             $sale->total_amount = $totalAmount;
             $sale->save();
 
+            // Подгружаем связи для корректного ответа
+            $sale->load(['client', 'items.product']);
+
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'sale' => $sale->load(['client', 'items.product'])
+                'sale' => [
+                    ...$sale->toArray(),
+                    'client' => $sale->client,
+                    'items' => $sale->items->map(function($item) {
+                        return [
+                            'id' => $item->id,
+                            'product_id' => $item->product_id,
+                            'product' => $item->product,
+                            'wholesale_price' => $item->wholesale_price,
+                            'retail_price' => $item->retail_price,
+                            'quantity' => $item->quantity,
+                            'total' => $item->total,
+                        ];
+                    }),
+                ]
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -233,7 +286,20 @@ class SaleController extends Controller
 
             return response()->json([
                 'success' => true,
-                'sale' => $sale,
+                'sale' => [
+                    ...$sale->toArray(),
+                    'items' => $sale->items->map(function($item) {
+                        return [
+                            'id' => $item->id,
+                            'product_id' => $item->product_id,
+                            'product' => $item->product,
+                            'wholesale_price' => $item->wholesale_price,
+                            'retail_price' => $item->retail_price,
+                            'quantity' => $item->quantity,
+                            'total' => $item->total,
+                        ];
+                    }),
+                ],
                 'clients' => $clients,
                 'products' => $products
             ]);

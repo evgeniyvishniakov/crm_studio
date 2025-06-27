@@ -64,6 +64,13 @@ class PurchaseController extends Controller
                 $warehouseItem->purchase_price = $item['purchase_price'];
                 $warehouseItem->retail_price = $item['retail_price'];
                 $warehouseItem->save();
+
+                // Обновляем цены в Product
+                Product::where('id', $item['product_id'])
+                    ->update([
+                        'purchase_price' => $item['purchase_price'],
+                        'retail_price' => $item['retail_price'],
+                    ]);
             }
 
             // Обновляем общую сумму закупки
@@ -171,6 +178,13 @@ class PurchaseController extends Controller
                 $warehouseItem->purchase_price = $itemData['purchase_price'];
                 $warehouseItem->retail_price = $itemData['retail_price'];
                 $warehouseItem->save();
+
+                // Обновляем цены в Product
+                Product::where('id', $itemData['product_id'])
+                    ->update([
+                        'purchase_price' => $itemData['purchase_price'],
+                        'retail_price' => $itemData['retail_price'],
+                    ]);
             }
 
             // 4. Обновляем общую сумму закупки

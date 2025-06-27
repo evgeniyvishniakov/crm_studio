@@ -40,16 +40,34 @@ class Warehouse extends Model
     {
         $item = self::where('product_id', $productId)->firstOrFail();
         $item->quantity -= $quantity;
-        $item->save();
-        return $item;
+        if ($item->quantity <= 0) {
+            $item->delete();
+            return null;
+        } else {
+            $item->save();
+            return $item;
+        }
     }
 
     // Метод для увеличения количества на складе
     public static function increaseQuantity($productId, $quantity)
     {
-        $item = self::where('product_id', $productId)->firstOrFail();
-        $item->quantity += $quantity;
-        $item->save();
+        $item = self::where('product_id', $productId)->first();
+        if (!$item) {
+            // Если склада нет — получаем цены из Product
+            $product = \App\Models\Product::find($productId);
+            $purchasePrice = $product ? $product->purchase_price : 0;
+            $retailPrice = $product ? $product->retail_price : 0;
+            $item = self::create([
+                'product_id' => $productId,
+                'quantity' => $quantity,
+                'purchase_price' => $purchasePrice,
+                'retail_price' => $retailPrice,
+            ]);
+        } else {
+            $item->quantity += $quantity;
+            $item->save();
+        }
         return $item;
     }
 

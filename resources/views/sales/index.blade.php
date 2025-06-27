@@ -1,6 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
+    @php
+    if (!function_exists('formatPrice')) {
+        function formatPrice($price) {
+            return (fmod($price, 1) == 0.0) ? (int)$price : number_format($price, 2, '.', '');
+        }
+    }
+    @endphp
     <div class="sales-container">
         <div class="sales-header">
             <h1>Продажи</h1>
@@ -62,10 +69,10 @@
                                     <div class="no-photo">Нет фото</div>
                                 @endif
                             </td>
-                            <td>{{ number_format($item->wholesale_price, 2) }} грн</td>
-                            <td>{{ number_format($item->retail_price, 2) }} грн</td>
+                            <td>{{ $item->wholesale_price !== null ? formatPrice($item->wholesale_price) : '—' }} грн</td>
+                            <td>{{ $item->retail_price !== null ? formatPrice($item->retail_price) : '—' }} грн</td>
                             <td>{{ $item->quantity }}</td>
-                            <td>{{ number_format($item->retail_price * $item->quantity, 2) }} грн</td>
+                            <td>{{ formatPrice($item->retail_price * $item->quantity) }} грн</td>
                             <td>
                                 <div class="sale-actions">
                                     <button class="btn-edit" onclick="editSale(event, {{ $sale->id }})" title="Редактировать">
@@ -504,15 +511,16 @@
                                                     <option value="">Выберите товар</option>
                                                     ${productOptions}
                                                 </select>
+                                                <input type="hidden" name="items[0][product_id]" class="product-id-hidden" value="">
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label>Оптовая цена *</label>
-                                            <input type="number" step="0.01" name="items[0][wholesale_price]"  class="form-control" min="0.01">
+                                            <input type="number" step="0.01" name="items[0][wholesale_price]"  class="form-control wholesale-price" min="0.01" readonly>
                                         </div>
                                         <div class="form-group">
                                             <label>Розничная цена *</label>
-                                            <input type="number" step="0.01" name="items[0][retail_price]"  class="form-control" min="0.01">
+                                            <input type="number" step="0.01" name="items[0][retail_price]"  class="form-control retail-price" min="0.01">
                                         </div>
                                         <div class="form-group">
                                             <label>Количество *</label>
@@ -546,11 +554,12 @@
                             `<option value="${product.id}" ${item.product_id == product.id ? 'selected' : ''}>${product.name}</option>`
                         ).join('')}
                                                     </select>
+                                                    <input type="hidden" name="items[${index}][product_id]" class="product-id-hidden" value="${item.product_id}">
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label>Оптовая цена *</label>
-                                                <input type="number" step="0.01" name="items[${index}][wholesale_price]" value="${item.wholesale_price}"  class="form-control" min="0.01">
+                                                <input type="number" step="0.01" name="items[${index}][wholesale_price]" value="${item.wholesale_price}"  class="form-control" min="0.01" readonly>
                                             </div>
                                             <div class="form-group">
                                                 <label>Розничная цена *</label>
@@ -583,6 +592,57 @@
                             </div>
                         </form>
                     `;
+
+                        // --- ДОБАВЛЯЕМ СИНХРОНИЗАЦИЮ SELECT И ЗНАЧЕНИЙ ДЛЯ ТОВАРОВ ---
+                        document.querySelectorAll('#editItemsContainer .item-row:not(.template)').forEach((row, index) => {
+                            const productSelect = row.querySelector('.product-select');
+                            const productInput = row.querySelector('.product-search-input');
+                            const wholesaleInput = row.querySelector('input[name*="[wholesale_price]"]');
+                            const retailInput = row.querySelector('input[name*="[retail_price]"]');
+                            const quantityInput = row.querySelector('input[name*="[quantity]"]');
+                            const hiddenInput = row.querySelector('.product-id-hidden');
+                            if (productSelect && productInput) {
+                                const selectedOption = productSelect.querySelector('option[selected]');
+                                if (selectedOption) {
+                                    productSelect.value = selectedOption.value;
+                                    if (hiddenInput) hiddenInput.value = selectedOption.value;
+                                }
+                                // При изменении select — обновлять hidden input
+                                productSelect.addEventListener('change', function() {
+                                    if (hiddenInput) hiddenInput.value = productSelect.value;
+                                    // --- ДОБАВЛЯЕМ: подтягивать цены при изменении товара ---
+                                    const selectedOption = productSelect.options[productSelect.selectedIndex];
+                                    if (selectedOption && selectedOption.value) {
+                                        const product = allProducts.find(p => p.id == selectedOption.value);
+                                        if (product) {
+                                            if (wholesaleInput) wholesaleInput.value = product.wholesale_price;
+                                            if (retailInput) retailInput.value = product.retail_price;
+                                        }
+                                    }
+                                });
+                            }
+                            // Программно выставляем значения для остальных полей, если они есть в data.sale.items
+                            if (typeof data !== 'undefined' && data.sale && data.sale.items && data.sale.items[index]) {
+                                if (wholesaleInput) wholesaleInput.value = data.sale.items[index].wholesale_price;
+                                if (retailInput) retailInput.value = data.sale.items[index].retail_price;
+                                if (quantityInput) quantityInput.value = data.sale.items[index].quantity;
+                            }
+                        });
+                        // --- КОНСОЛЬ-ЛОГ ДЛЯ ДИАГНОСТИКИ ---
+                        console.log('itemRows:', document.querySelectorAll('#editItemsContainer .item-row:not(.template)'));
+                        document.querySelectorAll('#editItemsContainer .item-row:not(.template)').forEach((row, index) => {
+                            const productSelect = row.querySelector('select[name*="[product_id]"]');
+                            const wholesaleInput = row.querySelector('input[name*="[wholesale_price]"]');
+                            const retailInput = row.querySelector('input[name*="[retail_price]"]');
+                            const quantityInput = row.querySelector('input[name*="[quantity]"]');
+                            console.log(`row #${index+1}`, {
+                                productSelect: productSelect ? productSelect.value : null,
+                                wholesaleInput: wholesaleInput ? wholesaleInput.value : null,
+                                retailInput: retailInput ? retailInput.value : null,
+                                quantityInput: quantityInput ? quantityInput.value : null
+                            });
+                        });
+                        // --- КОНЕЦ ДОБАВЛЕНИЯ ---
 
                         // Инициализация обработчика формы
                         document.getElementById('editSaleForm').addEventListener('submit', function(e) {
@@ -640,6 +700,30 @@
                 const select = searchContainer.querySelector('.product-select');
                 select.name = `items[${newIndex}][product_id]`;
                 select.selectedIndex = 0;
+
+                // Формируем опции с data-атрибутами для цен и количества
+                select.innerHTML = `<option value="">Выберите товар</option>` +
+                    allProducts.map(product =>
+                        `<option value="${product.id}" data-wholesale="${product.wholesale_price}" data-retail="${product.retail_price}" data-quantity="${product.available_quantity}">${product.name}</option>`
+                    ).join('');
+
+                // --- ДОБАВЛЯЕМ: при выборе товара подтягивать цены ---
+                select.addEventListener('change', function() {
+                    const selectedOption = select.options[select.selectedIndex];
+                    const row = select.closest('.item-row');
+                    const wholesaleInput = row.querySelector('input[name*="[wholesale_price]"]');
+                    const retailInput = row.querySelector('input[name*="[retail_price]"]');
+                    const hiddenInput = row.querySelector('.product-id-hidden');
+                    if (selectedOption && selectedOption.value) {
+                        if (wholesaleInput) wholesaleInput.value = selectedOption.dataset.wholesale ?? '';
+                        if (retailInput) retailInput.value = selectedOption.dataset.retail ?? '';
+                        if (hiddenInput) hiddenInput.value = selectedOption.value;
+                    } else {
+                        if (wholesaleInput) wholesaleInput.value = '';
+                        if (retailInput) retailInput.value = '';
+                        if (hiddenInput) hiddenInput.value = '';
+                    }
+                });
             }
 
             container.insertBefore(newRow, container.querySelector('.form-actions'));
@@ -789,6 +873,7 @@
 
             const id = form.querySelector('[name="id"]').value;
             const items = [];
+            let hasError = false;
 
             // Собираем данные о товарах
             const itemRows = document.querySelectorAll('#editItemsContainer .item-row:not(.template)');
@@ -803,39 +888,53 @@
             itemRows.forEach((row, index) => {
                 // Получаем элементы формы
                 const productSelect = row.querySelector('select[name*="[product_id]"]');
-                const wholesaleInput = row.querySelector('input[name*="[wholesale_price]"]');
+                const hiddenInput = row.querySelector('.product-id-hidden');
+                const productId = hiddenInput ? hiddenInput.value : '';
                 const retailInput = row.querySelector('input[name*="[retail_price]"]');
                 const quantityInput = row.querySelector('input[name*="[quantity]"]');
 
+                // Подробный лог для диагностики
+                console.log(`row #${index+1}`, {
+                    productSelect: productSelect ? productSelect.value : null,
+                    hiddenInput: productId,
+                    retailInput: retailInput ? retailInput.value : null,
+                    quantityInput: quantityInput ? quantityInput.value : null
+                });
+
                 // Проверяем, что все поля заполнены
-                if (!productSelect || !productSelect.value ||
-                    !wholesaleInput || !wholesaleInput.value ||
+                if (!productId ||
                     !retailInput || !retailInput.value ||
                     !quantityInput || !quantityInput.value) {
                     showNotification('Заполните все поля для товара #' + (index + 1), 'error');
+                    hasError = true;
                     return;
                 }
 
                 // Создаём объект товара
                 const item = {
-                    product_id: productSelect.value,
-                    wholesale_price: parseFloat(wholesaleInput.value),
+                    product_id: productId,
                     retail_price: parseFloat(retailInput.value),
                     quantity: parseInt(quantityInput.value)
                 };
 
                 // Проверяем валидность цен
-                if (isNaN(item.wholesale_price)) {
-                    showNotification('Некорректная оптовая цена для товара #' + (index + 1), 'error');
-                    return;
-                }
                 if (isNaN(item.retail_price)) {
                     showNotification('Некорректная розничная цена для товара #' + (index + 1), 'error');
+                    hasError = true;
                     return;
                 }
 
                 items.push(item);
             });
+
+            if (hasError) {
+                return; // Не отправлять форму, если есть ошибки
+            }
+
+            if (!items.length) {
+                showNotification('Добавьте хотя бы один товар', 'error');
+                return;
+            }
 
             // Формируем данные для отправки
             const formData = {
@@ -913,10 +1012,10 @@
                     `<img src="/storage/${item.product.photo}" class="product-photo" alt="Фото" style="height: 50px;">` :
                     '<div class="no-photo">Нет фото</div>'}
             </td>
-            <td>${parseFloat(item.wholesale_price).toFixed(2)} грн</td>
-            <td>${parseFloat(item.retail_price).toFixed(2)} грн</td>
+            <td>${formatPriceJS(item.wholesale_price)} грн</td>
+            <td>${formatPriceJS(item.retail_price)} грн</td>
             <td>${item.quantity}</td>
-            <td>${(parseFloat(item.retail_price) * parseInt(item.quantity)).toFixed(2)} грн</td>
+            <td>${formatPriceJS(item.retail_price * item.quantity)} грн</td>
             <td>
                 <div class="sale-actions">
                     <button class="btn-edit" onclick="editSale(event, ${sale.id})" title="Редактировать">
@@ -936,7 +1035,7 @@
                 // Вставляем новую строку в начало таблицы
                 tbody.insertBefore(row, tbody.firstChild);
             });
-            console.log('Отправляемые данные:', formData);
+            console.log('Добавляемая продажа:', sale);
         }
 
 
@@ -1230,18 +1329,12 @@
             const wholesalePrice = row.querySelector('.wholesale-price');
             const retailPrice = row.querySelector('.retail-price');
             const quantityInput = row.querySelector('.quantity');
+            const hiddenInput = row.querySelector('.product-id-hidden');
 
-            wholesalePrice.value = element.dataset.wholesale;
-            retailPrice.value = element.dataset.retail;
-            quantityInput.max = element.dataset.quantity;
-
-            // Убираем выделение у всех элементов
-            container.querySelectorAll('.product-dropdown-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-
-            // Выделяем выбранный элемент
-            element.classList.add('selected');
+            if (wholesalePrice) wholesalePrice.value = element.dataset.wholesale ?? '';
+            if (retailPrice) retailPrice.value = element.dataset.retail ?? '';
+            if (quantityInput) quantityInput.max = element.dataset.quantity ?? '';
+            if (hiddenInput) hiddenInput.value = productId;
         }
 
 
@@ -1282,6 +1375,12 @@
                     console.error('Error:', error);
                     showNotification(error.message || 'Ошибка при удалении товара', 'error');
                 });
+        }
+
+        function formatPriceJS(price) {
+            if (price === null || price === undefined || isNaN(price)) return '';
+            price = parseFloat(price);
+            return (price % 1 === 0) ? price.toString() : price.toFixed(2);
         }
 
     </script>

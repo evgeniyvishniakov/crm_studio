@@ -13,13 +13,13 @@ class WarehouseController extends Controller
         $warehouseItems = Warehouse::with('product')
             ->where('quantity', '>', 0)
             ->get();
-        $products = Product::select('id', 'name', 'photo')->get();
+        $products = Product::select('id', 'name', 'photo', 'purchase_price', 'retail_price')->get();
         return view('warehouse.index', compact('warehouseItems', 'products'));
     }
 
     public function getProducts()
     {
-        $products = Product::select('id', 'name', 'photo')->get();
+        $products = Product::select('id', 'name', 'photo', 'purchase_price', 'retail_price')->get();
         return response()->json($products);
     }
 
@@ -32,7 +32,18 @@ class WarehouseController extends Controller
             'quantity' => 'required|integer|min:0'
         ]);
 
-        $warehouse = Warehouse::create($validated);
+        $warehouse = \App\Models\Warehouse::firstOrNew(['product_id' => $validated['product_id']]);
+        $warehouse->purchase_price = $validated['purchase_price'];
+        $warehouse->retail_price = $validated['retail_price'];
+        $warehouse->quantity = ($warehouse->quantity ?? 0) + $validated['quantity'];
+        $warehouse->save();
+
+        // Обновляем цены в Product (как в закупках)
+        Product::where('id', $validated['product_id'])
+            ->update([
+                'purchase_price' => $validated['purchase_price'],
+                'retail_price' => $validated['retail_price'],
+            ]);
 
         return response()->json([
             'success' => true,
@@ -49,6 +60,13 @@ class WarehouseController extends Controller
         ]);
 
         $warehouse->update($validated);
+
+        // Обновляем цены в Product
+        Product::where('id', $warehouse->product_id)
+            ->update([
+                'purchase_price' => $validated['purchase_price'],
+                'retail_price' => $validated['retail_price'],
+            ]);
 
         return response()->json([
             'success' => true,

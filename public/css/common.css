@@ -403,6 +403,8 @@
 
 .notification.show {
     right: 20px;
+    display: block !important;
+    opacity: 1 !important;
 }
 
 .notification-icon {

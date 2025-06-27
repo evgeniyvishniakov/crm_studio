@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // Название (обязательное)
-            $table->string('category'); // Категория (обязательное)
-            $table->string('brand'); // Бренд (обязательное)
+            $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('brand_id');
             $table->string('photo')->nullable(); // Фото (необязательное)
+            $table->decimal('purchase_price', 10, 2)->default(0); // Оптовая/закупочная цена
+            $table->decimal('retail_price', 10, 2)->default(0);   // Розничная цена
             $table->timestamps();
         });
     }

@@ -99,7 +99,7 @@
                             <select id="productSelect" name="product_id" class="form-control product-select" style="display: none;" required>
                                 <option value="">Выберите товар</option>
                                 @foreach($products as $product)
-                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                    <option value="{{ $product->id }}" data-purchase="{{ $product->purchase_price }}" data-retail="{{ $product->retail_price }}">{{ $product->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -198,7 +198,7 @@
             } else {
                 dropdownList.innerHTML = filteredProducts.map(product => `
                     <div class="product-dropdown-item"
-                         onclick="selectProduct('${escapeHtml(product.name)}', ${product.id})">
+                         onclick="selectProduct(this, '${escapeHtml(product.name)}', ${product.id})">
                         ${escapeHtml(product.name)}
                     </div>
                 `).join('');
@@ -211,7 +211,7 @@
             const firstProducts = allProducts.slice(0, 5);
             dropdownList.innerHTML = firstProducts.map(product => `
                 <div class="product-dropdown-item"
-                     onclick="selectProduct('${escapeHtml(product.name)}', ${product.id})">
+                     onclick="selectProduct(this, '${escapeHtml(product.name)}', ${product.id})">
                     ${escapeHtml(product.name)}
                 </div>
             `).join('');
@@ -224,15 +224,38 @@
             dropdown.style.display = 'block';
         }
 
-        function selectProduct(productName, productId) {
-            const container = document.querySelector('.product-search-container');
+        function selectProduct(element, productName, productId, inputId) {
+            const container = element.closest('.product-search-container');
             const input = container.querySelector('.product-search-input');
-            const select = container.querySelector('#productSelect');
+            const select = container.querySelector('.product-select');
             const dropdown = container.querySelector('.product-dropdown');
 
             input.value = productName;
-            select.value = productId;
+            if (select) {
+                select.value = productId;
+                select.dispatchEvent(new Event('change'));
+            }
             dropdown.style.display = 'none';
+
+            // Подставляем цены из allProducts при добавлении на склад
+            const product = allProducts.find(p => String(p.id) === String(productId));
+            if (product) {
+                const form = container.closest('form');
+                if (form && form.id === 'addForm') {
+                    const purchaseInput = form.querySelector('input[name="purchase_price"]');
+                    const retailInput = form.querySelector('input[name="retail_price"]');
+                    if (purchaseInput) purchaseInput.value = product.purchase_price ?? 0;
+                    if (retailInput) retailInput.value = product.retail_price ?? 0;
+                }
+            }
+
+            // Убираем выделение у всех элементов
+            container.querySelectorAll('.product-dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+
+            // Выделяем выбранный элемент
+            element.classList.add('selected');
         }
 
         // Закрытие выпадающего списка при клике вне его
@@ -259,6 +282,9 @@
         }
         // Modal control functions
         function openModal() {
+            document.getElementById('addForm').reset();
+            // Устанавливаем количество по умолчанию = 1
+            document.querySelector('#addForm input[name="quantity"]').value = 1;
             document.getElementById('addModal').style.display = 'block';
         }
 
@@ -583,26 +609,25 @@
                     if (data.success && data.warehouse) {
                         const newRow = document.createElement('tr');
                         newRow.id = `warehouse-${data.warehouse.id}`;
-                        newRow.innerHTML = `
-                            <td>
-                                ${data.warehouse.product.photo ?
+                        const photoHtml = data.warehouse.product.photo ?
                             `<img src="/storage/${data.warehouse.product.photo}" class="product-photo" alt="${data.warehouse.product.name}">` :
-                            '<div class="no-photo">Нет фото</div>'}
-                            </td>
+                            '<div class="no-photo">Нет фото</div>';
+                        newRow.innerHTML = `
+                            <td>${photoHtml}</td>
                             <td>${data.warehouse.product.name}</td>
-                            <td class="purchase-price">${parseFloat(data.warehouse.purchase_price).toFixed(2)}</td>
-                            <td class="retail-price">${parseFloat(data.warehouse.retail_price).toFixed(2)}</td>
-                            <td class="quantity">${data.warehouse.quantity}</td>
+                            <td class="purchase-price">${formatPrice(data.warehouse.purchase_price)}</td>
+                            <td class="retail-price">${formatPrice(data.warehouse.retail_price)}</td>
+                            <td class="quantity">${data.warehouse.quantity} шт</td>
                             <td class="actions-cell">
                                 <button class="btn-edit" onclick="openEditModal(${data.warehouse.id})">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
                                     Ред.
                                 </button>
                                 <button class="btn-delete" onclick="confirmDelete(${data.warehouse.id})">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                     </svg>
                                     Удалить
                                 </button>
@@ -681,6 +706,13 @@
                     submitBtn.disabled = false;
                 });
         });
+
+        // Функция форматирования цены (без .00 для целых)
+        function formatPrice(value) {
+            value = parseFloat(value);
+            if (isNaN(value)) return '0';
+            return (value % 1 === 0 ? value.toFixed(0) : value.toFixed(2)) + ' грн';
+        }
     </script>
 
     <style>

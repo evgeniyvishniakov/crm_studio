@@ -36,6 +36,8 @@
                     <th>Название</th>
                     <th>Категория</th>
                     <th>Бренд</th>
+                    <th>Опт. цена</th>
+                    <th>Розн. цена</th>
                     <th class="actions-column">Действия</th>
                 </tr>
                 </thead>
@@ -52,18 +54,32 @@
                         <td>{{ $product->name }}</td>
                         <td>{{ $product->category->name ?? '—' }}</td>
                         <td>{{ $product->brand->name ?? '—' }}</td>
+                        <td>
+                            @if(fmod($product->purchase_price, 1) == 0)
+                                {{ (int)$product->purchase_price }} грн
+                            @else
+                                {{ number_format($product->purchase_price, 2) }} грн
+                            @endif
+                        </td>
+                        <td>
+                            @if(fmod($product->retail_price, 1) == 0)
+                                {{ (int)$product->retail_price }} грн
+                            @else
+                                {{ number_format($product->retail_price, 2) }} грн
+                            @endif
+                        </td>
                         <td class="actions-cell">
                             <button class="btn-edit">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
-                                Ред.
+                                
                             </button>
                             <button class="btn-delete">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
-                                Удалить
+                                
                             </button>
                         </td>
                     </tr>
@@ -109,6 +125,14 @@
                         <label for="productPhoto">Фото</label>
                         <input type="file" id="productPhoto" name="photo" accept="image/jpeg,image/png,image/jpg">
                         <small class="form-text text-muted">Максимальный размер: 2MB. Допустимые форматы: JPEG, PNG, JPG</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="productPurchasePrice">Оптовая цена *</label>
+                        <input type="number" id="productPurchasePrice" name="purchase_price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productRetailPrice">Розничная цена *</label>
+                        <input type="number" id="productRetailPrice" name="retail_price" min="0" step="0.01" required>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeModal()">Отмена</button>
@@ -170,6 +194,14 @@
                         <input type="file" id="editProductPhoto" name="photo" accept="image/jpeg,image/png,image/jpg">
                         <small class="form-text text-muted">Максимальный размер: 2MB. Допустимые форматы: JPEG, PNG, JPG</small>
                         <div id="currentPhotoContainer" class="mt-2"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductPurchasePrice">Оптовая цена *</label>
+                        <input type="number" id="editProductPurchasePrice" name="purchase_price" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductRetailPrice">Розничная цена *</label>
+                        <input type="number" id="editProductRetailPrice" name="retail_price" min="0" step="0.01" required>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeEditModal()">Отмена</button>
@@ -313,18 +345,20 @@
                             <td>${data.product.name}</td>
                             <td>${data.product.category?.name ?? '—'}</td>
                             <td>${data.product.brand?.name ?? '—'}</td>
+                            <td>${formatPrice(data.product.purchase_price)}</td>
+                            <td>${formatPrice(data.product.retail_price)}</td>
                             <td class="actions-cell">
                                 <button class="btn-edit">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
-                                    Ред.
+                                    
                                 </button>
                                 <button class="btn-delete">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                     </svg>
-                                    Удалить
+                                    
                                 </button>
                             </td>
                         `;
@@ -461,6 +495,10 @@
                             photoContainer.innerHTML = '<p>Нет фото</p>';
                         }
 
+                        // Подставляем цены
+                        document.getElementById('editProductPurchasePrice').value = product.purchase_price ?? '';
+                        document.getElementById('editProductRetailPrice').value = product.retail_price ?? '';
+
                         document.getElementById('editProductModal').style.display = 'block';
                     } else {
                         showNotification('error', data.message || 'Ошибка загрузки данных товара');
@@ -507,6 +545,9 @@
                         row.querySelector('td:nth-child(3)').textContent = data.product.category?.name ?? '—';
                         // Обновляем бренд
                         row.querySelector('td:nth-child(4)').textContent = data.product.brand?.name ?? '—';
+                        // Обновляем цены
+                        row.querySelector('td:nth-child(5)').textContent = formatPrice(data.product.purchase_price);
+                        row.querySelector('td:nth-child(6)').textContent = formatPrice(data.product.retail_price);
                     }
                 } else {
                     showNotification('error', data.message || 'Ошибка обновления товара');
@@ -535,6 +576,15 @@
                 }
             });
         });
+
+        // Форматирование цены как в Blade
+        function formatPrice(price) {
+            if (price % 1 === 0) {
+                return parseInt(price) + ' грн';
+            } else {
+                return Number(price).toFixed(2) + ' грн';
+            }
+        }
     </script>
 
 @endsection

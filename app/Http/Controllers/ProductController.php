@@ -26,7 +26,9 @@ class ProductController extends Controller
                     'name' => $product->name,
                     'category_id' => $product->category_id,
                     'brand_id' => $product->brand_id,
-                    'photo' => $product->photo
+                    'photo' => $product->photo,
+                    'purchase_price' => $product->purchase_price,
+                    'retail_price' => $product->retail_price,
                 ]
             ]);
         } catch (\Exception $e) {
@@ -44,6 +46,8 @@ class ProductController extends Controller
             'category_id' => 'required|exists:product_categories,id',
             'brand_id' => 'required|exists:product_brands,id',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'purchase_price' => 'required|numeric|min:0',
+            'retail_price' => 'required|numeric|min:0',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -65,7 +69,9 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:product_categories,id',
             'brand_id' => 'required|exists:product_brands,id',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'purchase_price' => 'required|numeric|min:0',
+            'retail_price' => 'required|numeric|min:0',
         ]);
 
         if ($request->hasFile('photo')) {

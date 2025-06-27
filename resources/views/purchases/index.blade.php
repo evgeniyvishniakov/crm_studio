@@ -141,7 +141,7 @@
                                         <select name="items[0][product_id]" class="form-control product-select" style="display: none;">
                                             <option value="">Выберите товар</option>
                                             @foreach($products as $product)
-                                                <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                                <option value="{{ $product->id }}" data-purchase="{{ $product->purchase_price }}" data-retail="{{ $product->retail_price }}">{{ $product->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -181,7 +181,7 @@
                                         <select name="items[0][product_id]" class="form-control product-select" style="display: none;">
                                             <option value="">Выберите товар</option>
                                             @foreach($products as $product)
-                                                <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                                <option value="{{ $product->id }}" data-purchase="{{ $product->purchase_price }}" data-retail="{{ $product->retail_price }}">{{ $product->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -957,6 +957,16 @@
             }
             dropdown.style.display = 'none';
 
+            // Подставляем цены из allProducts
+            const product = allProducts.find(p => p.id == productId);
+            if (product) {
+                const row = container.closest('.item-row');
+                const purchaseInput = row.querySelector('input[name*="[purchase_price]"]');
+                const retailInput = row.querySelector('input[name*="[retail_price]"]');
+                if (purchaseInput) purchaseInput.value = product.purchase_price;
+                if (retailInput) retailInput.value = product.retail_price;
+            }
+
             // Убираем выделение у всех элементов
             container.querySelectorAll('.product-dropdown-item').forEach(item => {
                 item.classList.remove('selected');
@@ -972,6 +982,24 @@
                 document.querySelectorAll('.product-dropdown').forEach(dropdown => {
                     dropdown.style.display = 'none';
                 });
+            }
+        });
+
+        // Автоподстановка цен из Product при выборе товара в закупке
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('product-select')) {
+                const selected = e.target.options[e.target.selectedIndex];
+                const row = e.target.closest('.item-row');
+                if (selected && row) {
+                    const purchaseInput = row.querySelector('input[name*="[purchase_price]"]');
+                    const retailInput = row.querySelector('input[name*="[retail_price]"]');
+                    if (purchaseInput && selected.dataset.purchase !== undefined) {
+                        purchaseInput.value = selected.dataset.purchase;
+                    }
+                    if (retailInput && selected.dataset.retail !== undefined) {
+                        retailInput.value = selected.dataset.retail;
+                    }
+                }
             }
         });
     </script>
