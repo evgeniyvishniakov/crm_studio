@@ -23,12 +23,18 @@ class ClientController extends Controller
             });
         }
 
-        $clients = $query->get();
+        $clients = $query->paginate(10);
         $clientTypes = ClientType::where('status', true)->get();
 
         if ($request->ajax()) {
             return response()->json([
-                'clients' => $clients
+                'clients' => $clients->items(),
+                'meta' => [
+                    'current_page' => $clients->currentPage(),
+                    'last_page' => $clients->lastPage(),
+                    'per_page' => $clients->perPage(),
+                    'total' => $clients->total(),
+                ]
             ]);
         }
 

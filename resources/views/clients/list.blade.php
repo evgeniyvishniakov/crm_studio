@@ -760,6 +760,65 @@
             height: 91px;
         
         }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            margin: 24px 0 0 0;
+            flex-wrap: wrap;
+            padding-bottom: 50px;
+        }
+        .page-btn {
+            min-width: 36px;
+            height: 36px;
+            border: none;
+            background: #f3f4f6;
+            color: #2563eb;
+            font-weight: 500;
+            font-size: 16px;
+            border-radius: 6px;
+            margin: 0 2px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            outline: none;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .page-btn.active,
+        .page-btn:hover:not(:disabled) {
+            background: #2563eb;
+            color: #fff;
+        }
+        .page-btn:disabled {
+            background: #e5e7eb;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .page-ellipsis {
+            min-width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 18px;
+            font-weight: 600;
+            user-select: none;
+        }
+        @media (max-width: 600px) {
+            .pagination {
+                gap: 2px;
+            }
+            .page-btn, .page-ellipsis {
+                min-width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+        }
     </style>
 
     <script>
@@ -1852,5 +1911,167 @@
                 });
             });
         });
+
+        // --- AJAX пагинация ---
+        let currentPage = 1;
+
+        function renderClients(clients) {
+            const tbody = document.getElementById('clientsTableBody');
+            tbody.innerHTML = '';
+            clients.forEach(client => {
+                const clientType = client.clientType;
+                let typeHtml = '<span class="client-type-badge">Новый клиент</span>';
+                if (clientType) {
+                    typeHtml = `
+                        <span class="client-type-badge" style="background-color: ${clientType.color || '#e5e7eb'}">
+                            ${clientType.name}
+                            ${clientType.discount ? `<span class="discount-badge">-${clientType.discount}%</span>` : ''}
+                        </span>
+                    `;
+                }
+                let instagramLink = '';
+                if (client.instagram) {
+                    instagramLink = `
+                        <a href="https://instagram.com/${client.instagram}" target="_blank" class="instagram-link">
+                            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                            </svg>
+                            ${client.instagram}
+                        </a>
+                    `;
+                }
+                let contactsHtml = '';
+                if (client.phone) {
+                    contactsHtml += `<div class="phone"><i class="fa fa-phone"></i> ${client.phone}</div>`;
+                }
+                if (client.email) {
+                    contactsHtml += `<div class="email"><i class="fa fa-envelope"></i>${client.email}</div>`;
+                }
+                const row = document.createElement('tr');
+                row.id = `client-${client.id}`;
+                row.innerHTML = `
+                    <td>
+                        <div class="client-info">
+                            <div class="client-avatar" style="background-color: ${getAvatarColor(client.name)};">
+                                <span style="color: ${getAvatarTextColor(client.name)};">${getInitials(client.name)}</span>
+                            </div>
+                            <div class="client-details">
+                                <div class="client-name">${client.name}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${instagramLink}</td>
+                    <td>
+                        <div class="contacts-details">
+                            ${contactsHtml}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="client-status">
+                            ${typeHtml}
+                        </div>
+                    </td>
+                    <td class="actions-cell" style="vertical-align: middle;">
+                        <button class="btn-view">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <button class="btn-edit">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                        </button>
+                        <button class="btn-delete">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderPagination(meta) {
+            let paginationHtml = '';
+            if (meta.last_page > 1) {
+                paginationHtml += '<div class="pagination">';
+                // Кнопка "<"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}>&lt;</button>`;
+
+                let pages = [];
+                if (meta.last_page <= 7) {
+                    // Показываем все страницы
+                    for (let i = 1; i <= meta.last_page; i++) pages.push(i);
+                } else {
+                    // Всегда показываем первую
+                    pages.push(1);
+                    // Если текущая страница > 4, показываем троеточие
+                    if (meta.current_page > 4) pages.push('...');
+                    // Показываем 2 страницы до и после текущей
+                    let start = Math.max(2, meta.current_page - 2);
+                    let end = Math.min(meta.last_page - 1, meta.current_page + 2);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    // Если текущая страница < last_page - 3, показываем троеточие
+                    if (meta.current_page < meta.last_page - 3) pages.push('...');
+                    // Всегда показываем последнюю
+                    pages.push(meta.last_page);
+                }
+                pages.forEach(p => {
+                    if (p === '...') {
+                        paginationHtml += `<span class="page-ellipsis">...</span>`;
+                    } else {
+                        paginationHtml += `<button class="page-btn${p === meta.current_page ? ' active' : ''}" data-page="${p}">${p}</button>`;
+                    }
+                });
+                // Кнопка ">"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;</button>`;
+                paginationHtml += '</div>';
+            }
+            let pagContainer = document.getElementById('clientsPagination');
+            if (!pagContainer) {
+                pagContainer = document.createElement('div');
+                pagContainer.id = 'clientsPagination';
+                document.querySelector('.table-wrapper').appendChild(pagContainer);
+            }
+            pagContainer.innerHTML = paginationHtml;
+
+            // Навешиваем обработчики
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    if (!isNaN(page) && !this.disabled) {
+                        loadClients(page);
+                    }
+                });
+            });
+        }
+
+        function loadClients(page = 1, search = '') {
+            currentPage = page;
+            const searchValue = search !== undefined ? search : document.querySelector('.search-box input').value.trim();
+            fetch(`/clients?search=${encodeURIComponent(searchValue)}&page=${page}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                renderClients(data.clients);
+                renderPagination(data.meta);
+            });
+        }
+
+        // Поиск с пагинацией
+        const searchInput = document.querySelector('.search-box input');
+        searchInput.addEventListener('input', function() {
+            loadClients(1, this.value.trim());
+        });
+
+        // Инициализация первой загрузки
+        loadClients(1);
     </script>
 @endsection
