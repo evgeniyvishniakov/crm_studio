@@ -9,10 +9,29 @@ use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $clients = Client::with('clientType')->orderByDesc('id')->get();
+        $query = Client::with('clientType')->orderByDesc('id');
+
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('instagram', 'like', "%$search%")
+                  ->orWhere('phone', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%");
+            });
+        }
+
+        $clients = $query->get();
         $clientTypes = ClientType::where('status', true)->get();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'clients' => $clients
+            ]);
+        }
+
         return view('clients.list', compact('clients', 'clientTypes'));
     }
 
