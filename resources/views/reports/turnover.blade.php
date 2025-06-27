@@ -133,16 +133,14 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-12 mb-4">
+                <div class="col-lg-6 mb-4">
                     <div class="report-card">
                         <h4 class="mb-3">Остатки на складе по категориям</h4>
                         <p class="text-muted">Количество и сумма остатков по оптовой и розничной цене для каждой категории товаров.</p>
                         <canvas id="stockByCategoryBar"></canvas>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12 mb-4">
+                <div class="col-lg-6 mb-4">
                     <div class="report-card">
                         <h4 class="mb-3">Поставщики по объёму закупок</h4>
                         <p class="text-muted">Поставщики с наибольшим объемом закупок.</p>
@@ -622,6 +620,8 @@
                     grad.addColorStop(0, 'rgba(245,158,11,0.4)');
                     grad.addColorStop(0.5, 'rgba(245,158,11,0.7)');
                     grad.addColorStop(1, 'rgba(245,158,11,1)');
+                    // Добавляем отступ сверху: maxValue * 1.15, округлить вверх
+                    const yMax = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                     charts.topClientsBySalesBar = new Chart(ctx, {
                         type: 'bar',
                         data: {
@@ -650,11 +650,12 @@
                                 },
                                 y: {
                                     beginAtZero: true,
-                                    suggestedMax: maxValue + 1,
+                                    suggestedMax: yMax,
+                                    max: yMax,
                                     grid: { display: true, color: '#e5e7eb' },
                                     ticks: {
                                         callback: function(value) { return Number.isInteger(value) ? value : ''; },
-                                        stepSize: 1,
+                                        stepSize: 300,
                                         padding: 8
                                     }
                                 }
@@ -811,6 +812,8 @@
                     grad.addColorStop(0, 'rgba(59,130,246,0.2)');
                     grad.addColorStop(0.5, 'rgba(59,130,246,0.5)');
                     grad.addColorStop(1, 'rgba(59,130,246,0.9)');
+                    // Добавляем отступ сверху: maxValue * 1.15, округлить вверх
+                    const yMax = maxValue > 0 ? Math.ceil(maxValue * 1.15) : undefined;
                     charts.stockByCategoryBar = new Chart(ctx, {
                         type: 'bar',
                         data: {
@@ -839,7 +842,8 @@
                                 },
                                 y: {
                                     beginAtZero: true,
-                                    suggestedMax: maxValue + 1,
+                                    suggestedMax: yMax,
+                                    max: yMax,
                                     grid: { display: true, color: '#e5e7eb' },
                                     ticks: {
                                         callback: function(value) { return Number.isInteger(value) ? value : ''; },
