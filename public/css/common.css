@@ -639,7 +639,9 @@
         background-color: #17a2b8;
         color: white;
     }
-
+    .client-type-badge{
+        font-size: 13px!important;
+    }
     .btn-delete {
         background-color: #dc3545;
         color: white;

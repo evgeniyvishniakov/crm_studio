@@ -11,7 +11,7 @@ class ClientController extends Controller
 {
     public function index()
     {
-        $clients = Client::with('clientType')->get();
+        $clients = Client::with('clientType')->orderByDesc('id')->get();
         $clientTypes = ClientType::where('status', true)->get();
         return view('clients.list', compact('clients', 'clientTypes'));
     }

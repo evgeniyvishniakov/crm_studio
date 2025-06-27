@@ -609,7 +609,12 @@
                 });
             }
             const maxValue = Math.max(...allData);
-            const niceMax = maxValue > 0 ? getNiceMax(Math.ceil(maxValue * 1.10)) : undefined;
+            let niceMax;
+            if (labelText === 'Расходы') {
+                niceMax = maxValue > 0 ? Math.ceil(maxValue * 1.15) : 5000;
+            } else {
+                niceMax = maxValue > 0 ? getNiceMax(Math.ceil(maxValue * 1.10)) : undefined;
+            }
             universalChart.options.scales.y.max = niceMax;
             universalChart.update();
         }
@@ -659,9 +664,8 @@
                             const data = getCumulativeData(res.data);
                             let labels = res.labels;
                             createUniversalChart('line', labels, data, getMetricColor('expenses'), datasets['expenses'].label);
-                            // Используем maxValue из API вместо расчета
-                            universalChart.options.scales.y.max = res.maxValue || undefined;
-                            universalChart.update();
+                            // universalChart.options.scales.y.max = res.maxValue || undefined;
+                            // universalChart.update();
                         });
                     return;
                 }
@@ -745,9 +749,8 @@
                         .then(res => {
                             const data = getCumulativeData(res.data);
                             createUniversalChart('line', res.labels, data, getMetricColor('expenses'), 'Расходы');
-                            // Используем maxValue из API вместо расчета
-                            universalChart.options.scales.y.max = res.maxValue || undefined;
-                            universalChart.update();
+                            // universalChart.options.scales.y.max = res.maxValue || undefined;
+                            // universalChart.update();
 
                             // Анимация для карточки "Расходы"
                             const expensesCard = document.querySelector('.stat-card.expenses-card .stat-value');

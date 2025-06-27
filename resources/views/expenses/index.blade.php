@@ -211,53 +211,28 @@
             const formData = new FormData(this);
             const expenseId = document.getElementById('expenseId').value;
             const url = expenseId ? `/expenses/${expenseId}` : '/expenses';
-            const method = expenseId ? 'PUT' : 'POST';
+            // ВСЕГДА отправляем через POST, для обновления добавляем _method=PUT
+            if (expenseId) {
+                formData.append('_method', 'PUT');
+            }
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: formData
+            });
 
-            try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: formData
-                });
+            const data = await response.json();
 
-                const data = await response.json();
-
-                if (data.success) {
-                    if (expenseId) {
-                        // Обновляем существующую строку
-                        const row = document.querySelector(`tr[data-expense-id="${expenseId}"]`);
-                        if (row) {
-                            const expense = data.expense;
-                            row.innerHTML = `
-                                <td>${new Date(expense.date).toLocaleDateString('ru-RU')}</td>
-                                <td>${escapeHtml(expense.comment)}</td>
-                                <td>${parseFloat(expense.amount).toFixed(2)} грн</td>
-                                <td>
-                                    <div class="expense-actions">
-                                        <button class="btn-edit" onclick="editExpense(event, ${expense.id})" title="Редактировать">
-                                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                            </svg>
-                                        </button>
-                                        <button class="btn-delete" onclick="confirmDeleteExpense(event, ${expense.id})" title="Удалить">
-                                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </td>
-                            `;
-                        }
-                    } else {
-                        // Добавляем новую строку
+            if (data.success) {
+                if (expenseId) {
+                    // Обновляем существующую строку
+                    const row = document.querySelector(`tr[data-expense-id="${expenseId}"]`);
+                    if (row) {
                         const expense = data.expense;
-                        const tbody = document.querySelector('#expensesTable tbody');
-                        const newRow = document.createElement('tr');
-                        newRow.setAttribute('data-expense-id', expense.id);
-                        newRow.innerHTML = `
+                        row.innerHTML = `
                             <td>${new Date(expense.date).toLocaleDateString('ru-RU')}</td>
                             <td>${escapeHtml(expense.comment)}</td>
                             <td>${parseFloat(expense.amount).toFixed(2)} грн</td>
@@ -276,17 +251,39 @@
                                 </div>
                             </td>
                         `;
-                        tbody.insertBefore(newRow, tbody.firstChild);
                     }
-
-                    showNotification(data.message || 'Расход успешно сохранен');
-                    closeExpenseModal();
                 } else {
-                    showNotification(data.message || 'Ошибка при сохранении', 'error');
+                    // Добавляем новую строку
+                    const expense = data.expense;
+                    const tbody = document.querySelector('#expensesTable tbody');
+                    const newRow = document.createElement('tr');
+                    newRow.setAttribute('data-expense-id', expense.id);
+                    newRow.innerHTML = `
+                        <td>${new Date(expense.date).toLocaleDateString('ru-RU')}</td>
+                        <td>${escapeHtml(expense.comment)}</td>
+                        <td>${parseFloat(expense.amount).toFixed(2)} грн</td>
+                        <td>
+                            <div class="expense-actions">
+                                <button class="btn-edit" onclick="editExpense(event, ${expense.id})" title="Редактировать">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                </button>
+                                <button class="btn-delete" onclick="confirmDeleteExpense(event, ${expense.id})" title="Удалить">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.insertBefore(newRow, tbody.firstChild);
                 }
-            } catch (error) {
-                console.error('Error:', error);
-                showNotification('Ошибка при сохранении', 'error');
+
+                showNotification(data.message || 'Расход успешно сохранен');
+                closeExpenseModal();
+            } else {
+                showNotification(data.message || 'Ошибка при сохранении', 'error');
             }
         });
 

@@ -87,9 +87,13 @@ class ExpensesController extends Controller
         try {
             return response()->json([
                 'success' => true,
-                'expense' => $expense
+                'expense' => [
+                    'id' => $expense->id,
+                    'date' => $expense->date ? $expense->date->format('Y-m-d') : null,
+                    'comment' => $expense->comment,
+                    'amount' => $expense->amount,
+                ]
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

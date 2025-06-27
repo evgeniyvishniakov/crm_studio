@@ -319,6 +319,7 @@
         .client-status {
             align-items: center;
             gap: 8px;
+            font-size: 13px;
         }
 
         .client-view-info {
@@ -752,6 +753,13 @@
         .procedure-info{
             width: 100%;
         }
+        .actions-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 91px;
+        
+        }
     </style>
 
     <script>
@@ -908,10 +916,17 @@
                         const newRow = document.createElement('tr');
                         newRow.id = `client-${data.client.id}`;
 
-                        // Форматируем статус
-                        let statusText = 'Новый клиент';
-                        if (data.client.status === 'regular') statusText = 'Постоянный клиент';
-                        if (data.client.status === 'vip') statusText = 'VIP клиент';
+                        // Формируем HTML для типа клиента (учитываем оба варианта)
+                        const clientType = data.client.clientType || data.client.client_type;
+                        let typeHtml = '<span class="client-type-badge">Новый клиент</span>';
+                        if (clientType) {
+                            typeHtml = `
+                                <span class="client-type-badge" style="background-color: ${clientType.color || '#e5e7eb'}">
+                                    ${clientType.name}
+                                    ${clientType.discount ? `<span class="discount-badge">-${clientType.discount}%</span>` : ''}
+                                </span>
+                            `;
+                        }
 
                         // Форматируем Instagram ссылку
                         let instagramLink = '';
@@ -935,13 +950,12 @@
                         </div>
                         <div class="client-details">
                             <div class="client-name">${data.client.name}</div>
-                            <div class="client-status">${statusText}</div>
                         </div>
                     </div>
                 </td>
                 <td>${instagramLink}</td>
                 <td>${data.client.phone || ''}</td>
-                <td>${data.client.email || ''}</td>
+                <td>${typeHtml}</td>
                 <td class="actions-cell" style="vertical-align: middle;">
                     <button class="btn-view">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
