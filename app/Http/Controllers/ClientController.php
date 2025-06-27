@@ -136,7 +136,13 @@ class ClientController extends Controller
         }
     }
 
-    public function checkExisting(Request $request)
+    public function history($id)
+    {
+        $client = Client::with(['sales', 'appointments'])->findOrFail($id);
+        return view('clients.history', compact('client'));
+    }
+
+    public function checkUnique(Request $request)
     {
         $field = $request->query('field');
         $value = $request->query('value');
@@ -145,17 +151,11 @@ class ClientController extends Controller
             return response()->json(['exists' => false]);
         }
 
-        $exists = Client::where($field, $value)
+        $exists = \App\Models\Client::where($field, $value)
             ->whereNotNull($field)
             ->where($field, '!=', '')
             ->exists();
 
         return response()->json(['exists' => $exists]);
-    }
-
-    public function history($id)
-    {
-        $client = Client::with(['sales', 'appointments'])->findOrFail($id);
-        return view('clients.history', compact('client'));
     }
 }

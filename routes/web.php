@@ -33,7 +33,7 @@ Route::prefix('clients')->group(function () {
     Route::post('/', [ClientController::class, 'store'])->name('clients.store');
     Route::get('/create', [ClientController::class, 'create'])->name('clients.create'); // если понадобится форма
     Route::get('/{id}', [ClientController::class, 'show'])->name('clients.show');
-    Route::get('/check', [ClientController::class, 'checkExisting']);
+    Route::get('/check', [ClientController::class, 'checkUnique']);
     Route::delete('/{client}', [ClientController::class, 'destroy'])->name('clients.destroy');
     Route::get('/{client}/edit', [ClientController::class, 'edit'])->name('clients.edit');
     Route::put('/{client}', [ClientController::class, 'update'])->name('clients.update');
@@ -154,3 +154,6 @@ Route::get('/reports/turnover', [TurnoverReportController::class, 'index'])->nam
 Route::get('/reports/turnover-analytics', [TurnoverReportController::class, 'getDynamicAnalyticsData'])->name('reports.turnover.analytics');
 Route::get('/reports/turnover-tops', [TurnoverReportController::class, 'getTopsAnalyticsData'])->name('reports.turnover.tops');
 Route::get('/reports/suppliers-analytics', [\App\Http\Controllers\TurnoverReportController::class, 'suppliersAnalyticsData']);
+Route::get('/test', function() {
+    return 'test ok';
+});

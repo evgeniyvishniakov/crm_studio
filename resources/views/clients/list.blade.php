@@ -896,6 +896,15 @@
             submitBtn.innerHTML = '<span class="loader"></span> Добавление...';
             submitBtn.disabled = true;
 
+            // Валидация поля Instagram: только латинские буквы, цифры и _ . -
+            const instagramInput = document.getElementById('clientInstagram');
+            if (instagramInput.value && !/^[a-zA-Z0-9_.-]+$/.test(instagramInput.value)) {
+                showNotification('error', 'Instagram может содержать только латинские буквы, цифры и символы _ . -');
+                instagramInput.focus();
+                e.preventDefault();
+                return false;
+            }
+
             fetch("/clients", {
                 method: 'POST',
                 headers: {
