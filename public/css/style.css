@@ -2513,7 +2513,7 @@ footer.site-footer {
     font-size: 2rem;
     font-weight: 700;
     color: #2d3748;
-    margin-bottom: 1.5rem;
+    margin: 30px 0 40px 0!important;
     text-align: center;
 }
 
@@ -2765,7 +2765,7 @@ footer.site-footer {
     
     .dashboard-title {
         font-size: 2rem;
-        margin-bottom: 1.5rem;
+        margin: 30px 0 40px 0!important;
     }
     
     .stats-grid {
@@ -2833,7 +2833,7 @@ footer.site-footer {
     font-size: 2rem;
     font-weight: 700;
     color: #2d3748;
-    margin-bottom: 1.5rem;
+    margin: 30px 0 40px 0!important;
     text-align: center;
 }
 

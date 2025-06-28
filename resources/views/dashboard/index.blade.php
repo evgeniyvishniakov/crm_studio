@@ -2,13 +2,13 @@
 
 @section('content')
     <div class="dashboard-container">
-        <h1 class="dashboard-title">CRM Analytics Dashboard</h1>
+        <h1 class="dashboard-title">Панель управления</h1>
 
         <div class="stats-grid">
             <!-- Левая колонка: прибыль -->
             <div class="stat-card profit-card">
                 <div class="stat-icon">
-                    <i class="fas fa-chart-line"></i>
+                    <i class="fas fa-coins"></i>
                 </div>
                 <div class="stat-content">
                     <h3 class="stat-title">Прибыль</h3>

@@ -149,7 +149,7 @@
         <div id="main-menu" class="main-menu collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <a href="{{ route('dashboard') }}"><i class="menu-icon fas fa-laptop"></i>Dashboard </a>
+                    <a href="{{ route('dashboard') }}"><i class="menu-icon fas fa-laptop"></i>Панель управления</a>
                 </li>
                 <li class="menu-title">Работа с клиентами</li><!-- /.menu-title -->
 
