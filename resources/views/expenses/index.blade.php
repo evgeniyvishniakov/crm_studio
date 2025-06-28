@@ -38,7 +38,7 @@
                     <tr data-expense-id="{{ $expense->id }}">
                         <td>{{ $expense->date->format('d.m.Y') }}</td>
                         <td>{{ $expense->comment }}</td>
-                        <td>{{ number_format($expense->amount, 2) }} грн</td>
+                        <td>{{ $expense->amount == (int)$expense->amount ? (int)$expense->amount : number_format($expense->amount, 2, '.', '') }} грн</td>
                         <td>
                             <div class="expense-actions">
                                 <button class="btn-edit" onclick="editExpense(event, {{ $expense->id }})" title="Редактировать">
@@ -235,7 +235,7 @@
                         row.innerHTML = `
                             <td>${new Date(expense.date).toLocaleDateString('ru-RU')}</td>
                             <td>${escapeHtml(expense.comment)}</td>
-                            <td>${parseFloat(expense.amount).toFixed(2)} грн</td>
+                            <td>${Number(parseFloat(expense.amount)) % 1 === 0 ? Number(parseFloat(expense.amount)) : parseFloat(expense.amount).toFixed(2)} грн</td>
                             <td>
                                 <div class="expense-actions">
                                     <button class="btn-edit" onclick="editExpense(event, ${expense.id})" title="Редактировать">
@@ -261,7 +261,7 @@
                     newRow.innerHTML = `
                         <td>${new Date(expense.date).toLocaleDateString('ru-RU')}</td>
                         <td>${escapeHtml(expense.comment)}</td>
-                        <td>${parseFloat(expense.amount).toFixed(2)} грн</td>
+                        <td>${Number(parseFloat(expense.amount)) % 1 === 0 ? Number(parseFloat(expense.amount)) : parseFloat(expense.amount).toFixed(2)} грн</td>
                         <td>
                             <div class="expense-actions">
                                 <button class="btn-edit" onclick="editExpense(event, ${expense.id})" title="Редактировать">

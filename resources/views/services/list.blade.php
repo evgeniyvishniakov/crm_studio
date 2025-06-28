@@ -41,7 +41,7 @@
                 @foreach($services as $service)
                     <tr id="service-{{ $service->id }}">
                         <td>{{ $service->name }}</td>
-                        <td>{{ $service->price ? number_format($service->price, 2) . ' грн' : '—' }}</td>
+                        <td>{{ $service->price ? ($service->price == (int)$service->price ? (int)$service->price : number_format($service->price, 2, '.', '')) . ' грн' : '—' }}</td>
                         <td class="actions-cell">
                             <button class="btn-edit">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -252,7 +252,7 @@
 
                         newRow.innerHTML = `
                             <td>${data.service.name}</td>
-                            <td>${data.service.price ? parseFloat(data.service.price).toFixed(2) + ' грн' : '—'}</td>
+                            <td>${data.service.price ? (Number(parseFloat(data.service.price)) % 1 === 0 ? Number(parseFloat(data.service.price)) : parseFloat(data.service.price).toFixed(2)) + ' грн' : '—'}</td>
                             <td class="actions-cell">
                                 <button class="btn-edit">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -445,7 +445,7 @@
             const cells = row.querySelectorAll('td');
             if (cells.length >= 2) {
                 cells[0].textContent = service.name;
-                cells[1].textContent = service.price ? parseFloat(service.price).toFixed(2) + ' грн' : '—';
+                cells[1].textContent = service.price ? (Number(parseFloat(service.price)) % 1 === 0 ? Number(parseFloat(service.price)) : parseFloat(service.price).toFixed(2)) + ' грн' : '—';
             }
         }
     </script>

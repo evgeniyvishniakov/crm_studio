@@ -10,8 +10,8 @@ class ClientTypeController extends Controller
 {
     public function index()
     {
-        $types = ClientType::all();
-        return response()->json($types);
+        $clientTypes = ClientType::all();
+        return view('client-types.list', compact('clientTypes'));
     }
 
     public function store(Request $request)
@@ -32,11 +32,18 @@ class ClientTypeController extends Controller
         }
 
         try {
-            $type = ClientType::create($request->all());
+            $data = $request->all();
+            
+            // Добавляем цвет по умолчанию, если не указан
+            if (empty($data['color'])) {
+                $data['color'] = '#e5e7eb'; // Серый цвет по умолчанию
+            }
+            
+            $clientType = ClientType::create($data);
             return response()->json([
                 'success' => true,
                 'message' => 'Тип клиента успешно создан',
-                'type' => $type
+                'clientType' => $clientType
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -70,12 +77,12 @@ class ClientTypeController extends Controller
         }
 
         try {
-            $type = ClientType::findOrFail($id);
-            $type->update($request->all());
+            $clientType = ClientType::findOrFail($id);
+            $clientType->update($request->all());
             return response()->json([
                 'success' => true,
                 'message' => 'Тип клиента успешно обновлен',
-                'type' => $type
+                'clientType' => $clientType
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -109,5 +116,11 @@ class ClientTypeController extends Controller
                 'message' => 'Ошибка при удалении типа клиента: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function edit($id)
+    {
+        $clientType = ClientType::findOrFail($id);
+        return response()->json($clientType);
     }
 }

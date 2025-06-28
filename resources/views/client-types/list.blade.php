@@ -45,7 +45,7 @@
                         <td>{{ $clientType->description ?? '—' }}</td>
                         <td>
                             @if($clientType->discount !== null)
-                                {{ number_format($clientType->discount, 2) }}%
+                                {{ $clientType->discount == (int)$clientType->discount ? (int)$clientType->discount : number_format($clientType->discount, 2, '.', '') }}%
                             @else
                                 —
                             @endif
@@ -289,7 +289,7 @@
                             <td>${data.clientType.name}</td>
                             <td>${data.clientType.description ?? '—'}</td>
                             <td>
-                                ${data.clientType.discount !== null ? parseFloat(data.clientType.discount).toFixed(2) + '%' : '—'}
+                                ${data.clientType.discount !== null ? (Number(parseFloat(data.clientType.discount)) % 1 === 0 ? Number(parseFloat(data.clientType.discount)) : parseFloat(data.clientType.discount).toFixed(2)) + '%' : '—'}
                             </td>
                             <td>
                                 <span class="status-badge ${data.clientType.status ? 'active' : 'inactive'}">
@@ -491,7 +491,7 @@
             if (cells.length >= 4) {
                 cells[0].textContent = clientType.name;
                 cells[1].textContent = clientType.description ?? '—';
-                cells[2].textContent = clientType.discount !== null ? parseFloat(clientType.discount).toFixed(2) + '%' : '—';
+                cells[2].textContent = clientType.discount !== null ? (Number(parseFloat(clientType.discount)) % 1 === 0 ? Number(parseFloat(clientType.discount)) : parseFloat(clientType.discount).toFixed(2)) + '%' : '—';
 
                 // Обновляем статус
                 const statusBadge = cells[3].querySelector('.status-badge');

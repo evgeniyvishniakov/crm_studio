@@ -71,7 +71,7 @@
                         <td>
                             <div class="client-status">
                                 @if($client->client_type_id)
-                                    <span class="client-type-badge" style="background-color: {{ $client->clientType->color ?? '#e5e7eb' }}">
+                                    <span class="client-type-badge">
                                         {{ $client->clientType->name }}
                                         @if($client->clientType->discount)
                                             <span class="discount-badge">-{{ $client->clientType->discount }}%</span>
@@ -295,9 +295,10 @@
             display: inline-block;
             text-align: center;
             min-width: 100px;
-            background-color: #999da5!important;
-            color: #fff;
+            background-color: #f3f4f6;
+            color: #374151;
             margin-left: 8px;
+            border: 1px solid #d1d5db;
         }
 
         .client-type-badge svg {
@@ -592,7 +593,7 @@
         }
 
         .procedure-status.rescheduled {
-            background-color: #FF9800;
+            background-color: #3B82F6;
             color: #fff;
         }
 
@@ -989,7 +990,7 @@
                         let typeHtml = '<span class="client-type-badge">Новый клиент</span>';
                         if (clientType) {
                             typeHtml = `
-                                <span class="client-type-badge" style="background-color: ${clientType.color || '#e5e7eb'}">
+                                <span class="client-type-badge">
                                     ${clientType.name}
                                     ${clientType.discount ? `<span class="discount-badge">-${clientType.discount}%</span>` : ''}
                                 </span>
@@ -1357,7 +1358,7 @@
             if (typeCell) {
                 if (client.client_type) {
                     typeCell.innerHTML = `
-                        <span class="client-type-badge" style="background-color: ${client.client_type.color || '#e5e7eb'}">
+                        <span class="client-type-badge">
                             ${client.client_type.name}
                             ${client.client_type.discount ? `<span class="discount-badge">-${client.client_type.discount}%</span>` : ''}
                         </span>
@@ -1521,7 +1522,7 @@
                     if (typeContainer) {
                         if (client.client_type) {
                             typeContainer.innerHTML = `
-                                <span class="client-type-badge" style="background-color: ${client.client_type.color || '#e5e7eb'}">
+                                <span class="client-type-badge">
                                     ${client.client_type.name}
                                     ${client.client_type.discount ? `<span class="discount-badge">-${client.client_type.discount}%</span>` : ''}
                                 </span>
@@ -1758,6 +1759,17 @@
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
             try {
+                // Создаем словарь типов клиентов из данных, переданных с сервера
+                window.clientTypesDict = {};
+                @foreach($clientTypes as $type)
+                    window.clientTypesDict[{{ $type->id }}] = {
+                        id: {{ $type->id }},
+                        name: '{{ $type->name }}',
+                        discount: {{ $type->discount ?? 0 }},
+                        description: '{{ $type->description ?? '' }}'
+                    };
+                @endforeach
+
                 // Инициализация аватаров клиентов
                 const avatars = document.querySelectorAll('.client-avatar');
                 if (avatars) {
@@ -1766,21 +1778,46 @@
                     });
                 }
 
-                // Инициализация кнопок просмотра
-                const viewButtons = document.querySelectorAll('.btn-view');
-                if (viewButtons) {
-                    viewButtons.forEach(button => {
-                        button.addEventListener('click', function() {
-                            const row = this.closest('tr');
-                            if (row) {
-                                const clientId = row.id.split('-')[1];
-                                if (clientId) {
-                                    openViewModal(clientId);
-                                }
+                // Используем делегирование событий для кнопок просмотра
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.btn-view')) {
+                        const row = e.target.closest('tr');
+                        if (row) {
+                            const clientId = row.id.split('-')[1];
+                            if (clientId) {
+                                openViewModal(clientId);
                             }
-                        });
-                    });
-                }
+                        }
+                    }
+                });
+
+                // Используем делегирование событий для кнопок редактирования
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.btn-edit')) {
+                        const row = e.target.closest('tr');
+                        if (row) {
+                            const clientId = row.id.split('-')[1];
+                            if (clientId) {
+                                openEditModal(clientId);
+                            }
+                        }
+                    }
+                });
+
+                // Используем делегирование событий для кнопок удаления
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('.btn-delete')) {
+                        const row = e.target.closest('tr');
+                        if (row) {
+                            const clientId = row.id.split('-')[1];
+                            if (clientId) {
+                                currentDeleteRow = row;
+                                currentDeleteId = clientId;
+                                document.getElementById('confirmationModal').style.display = 'block';
+                            }
+                        }
+                    }
+                });
             } catch (error) {
                 console.error('Ошибка при инициализации:', error);
             }
@@ -1817,6 +1854,11 @@
         document.querySelector('.search-box input').addEventListener('input', function() {
             const search = this.value.trim();
 
+            // Если поиск пустой, не делаем запрос и не очищаем таблицу
+            if (search === '') {
+                return;
+            }
+
             fetch(`/clients?search=${encodeURIComponent(search)}`, {
                 headers: {
                     'Accept': 'application/json',
@@ -1830,11 +1872,14 @@
 
                 data.clients.forEach(client => {
                     // Формируем HTML для типа клиента
-                    const clientType = client.clientType;
+                    let clientType = client.clientType;
+                    if (!clientType && client.client_type_id && window.clientTypesDict) {
+                        clientType = window.clientTypesDict[client.client_type_id];
+                    }
                     let typeHtml = '<span class="client-type-badge">Новый клиент</span>';
-                    if (clientType) {
+                    if (clientType && clientType.name) {
                         typeHtml = `
-                            <span class="client-type-badge" style="background-color: ${clientType.color || '#e5e7eb'}">
+                            <span class="client-type-badge">
                                 ${clientType.name}
                                 ${clientType.discount ? `<span class="discount-badge">-${clientType.discount}%</span>` : ''}
                             </span>
@@ -1909,6 +1954,9 @@
                     `;
                     tbody.appendChild(row);
                 });
+            })
+            .catch(error => {
+                console.error('Ошибка при поиске:', error);
             });
         });
 
@@ -1918,12 +1966,21 @@
         function renderClients(clients) {
             const tbody = document.getElementById('clientsTableBody');
             tbody.innerHTML = '';
+            
+            // Если нет клиентов, не делаем ничего
+            if (!clients || clients.length === 0) {
+                return;
+            }
+            
             clients.forEach(client => {
-                const clientType = client.clientType;
+                let clientType = client.clientType;
+                if (!clientType && client.client_type_id && window.clientTypesDict) {
+                    clientType = window.clientTypesDict[client.client_type_id];
+                }
                 let typeHtml = '<span class="client-type-badge">Новый клиент</span>';
-                if (clientType) {
+                if (clientType && clientType.name) {
                     typeHtml = `
-                        <span class="client-type-badge" style="background-color: ${clientType.color || '#e5e7eb'}">
+                        <span class="client-type-badge">
                             ${clientType.name}
                             ${clientType.discount ? `<span class="discount-badge">-${clientType.discount}%</span>` : ''}
                         </span>
@@ -2060,6 +2117,14 @@
             })
             .then(response => response.json())
             .then(data => {
+                // Создаем словарь типов клиентов для быстрого доступа
+                if (data.clientTypes) {
+                    window.clientTypesDict = {};
+                    data.clientTypes.forEach(type => {
+                        window.clientTypesDict[type.id] = type;
+                    });
+                }
+                
                 renderClients(data.clients);
                 renderPagination(data.meta);
             });

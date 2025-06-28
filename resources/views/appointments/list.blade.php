@@ -14,8 +14,8 @@
     }
 
     .status-pending {
-        background-color: #FFC107;
-        color: #000;
+        background-color: #eba70e;
+        color: #fff;
     }
 
     .status-completed {
@@ -29,7 +29,7 @@
     }
 
     .status-rescheduled {
-        background-color: #FF9800;
+        background-color: #ae1ee9;
         color: #fff;
     }
 
@@ -625,10 +625,10 @@
         font-size: 1rem;
         color: #fff;
     }
-    .status-pending { background: #FFC107; color: #222; }
+    .status-pending { background: #eba70e; color: #fff; }
     .status-completed { background: #4CAF50; }
     .status-cancelled { background: #F44336; }
-    .status-rescheduled { background: #FF9800; }
+    .status-rescheduled { background: #ae1ee9; }
     .details-row {
         display: flex;
         gap: 32px;
@@ -2948,7 +2948,7 @@
                             </td>
                             <td>${escapeHtml(data.appointment.service.name)}</td>
                             <td><span class="status-badge status-${data.appointment.status}">${getStatusName(data.appointment.status)}</span></td>
-                            <td>${parseFloat(data.appointment.price).toFixed(2)} грн</td>
+                            <td>${Number(parseFloat(data.appointment.price)) % 1 === 0 ? Number(parseFloat(data.appointment.price)) : parseFloat(data.appointment.price).toFixed(2)} грн</td>
                             <td>
                                 <div class="appointment-actions actions-cell">
                                     <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">

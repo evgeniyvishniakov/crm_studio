@@ -2538,9 +2538,9 @@
                         <div class="form-actions">
                             <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
                             <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                        </svg>Добавить</button>
-                        </div>
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>Добавить</button>
+                </div>
                     </div>
                 `;
 
@@ -2778,7 +2778,7 @@
                             </td>
                             <td>${escapeHtml(data.appointment.service.name)}</td>
                             <td><span class="status-badge status-${data.appointment.status}">${getStatusName(data.appointment.status)}</span></td>
-                            <td>${parseFloat(data.appointment.price).toFixed(2)} грн</td>
+                            <td>${Number(parseFloat(data.appointment.price)) % 1 === 0 ? Number(parseFloat(data.appointment.price)) : parseFloat(data.appointment.price).toFixed(2)} грн</td>
                             <td>
                                 <div class="appointment-actions actions-cell">
                                     <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
