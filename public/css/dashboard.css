@@ -645,6 +645,7 @@ body {
 .list-icon { font-size: 1.2rem; color: #03a813; }
 .summary-icon { font-size: 1.2rem; color: #f59e0b; }
 .todo-icon { font-size: 1.2rem; color: #8b5cf6; }
+.chart-icon { font-size: 1.2rem; color: #10b981; }
 .calendar-nav-group { display: flex; gap: 0.3rem; }
 .calendar-nav-btn {
     background: #f3f4f6;

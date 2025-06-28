@@ -136,17 +136,22 @@
 
         <div class="dashboard-main-content" style="max-width: 1400px; margin: 0 auto; padding: 0 24px;">
             <div class="chart-container" style="width: 100%; max-width: 100%; padding: 10px; box-sizing: border-box;">
-            <h3 class="chart-title">Динамика показателей</h3>
+            <div class="widget-header-modern">
+                <div class="widget-title-container">
+                    <i class="fas fa-chart-line chart-icon"></i>
+                    <span class="widget-title">Динамика показателей</span>
+                </div>
+            </div>
             <div class="chart-toolbar" style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 1rem; width: 100%;">
                 <!-- Dropdown слева -->
                 <div class="dropdown metric-dropdown" style="position: relative; flex-grow: 1;">
                     <button class="dropdown-toggle metric-toggle" type="button" style="display: flex; align-items: center; gap: 0.5rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; min-width: 140px;">
-                        <i class="fas fa-chart-line"></i>
+                        <i class="fas fa-coins"></i>
                         <span id="selectedMetricLabel">Прибыль</span>
                         <i class="fas fa-chevron-down" style="margin-left: 0.5rem;"></i>
                     </button>
                     <div class="dropdown-menu metric-menu">
-                        <button class="dropdown-item metric-item" data-type="profit"><i class="fas fa-chart-line"></i> Прибыль</button>
+                        <button class="dropdown-item metric-item" data-type="profit"><i class="fas fa-coins"></i> Прибыль</button>
                         <button class="dropdown-item metric-item" data-type="sales"><i class="fas fa-shopping-cart"></i> Продажи товаров</button>
                         <button class="dropdown-item metric-item" data-type="services"><i class="fas fa-spa"></i> Продажи услуг</button>
                         <button class="dropdown-item metric-item" data-type="expenses"><i class="fas fa-credit-card"></i> Расходы</button>
@@ -370,7 +375,7 @@
         const datasets = {
             profit: {
                 label: "Прибыль",
-                icon: "fa-chart-line",
+                icon: "fa-coins",
                 data: {
                     7: [18000, 17500, 17000, 16800, 16500, 16200, 16000],
                     30: [10000, 12000, 15000, 14000, 16000, 18000, 17500, 17000, 16800, 16500, 16200, 16000, 15800, 15500, 15300, 15000, 14800, 14500, 14300, 14000, 13800, 13500, 13300, 13000, 12800, 12500, 12300, 12000, 11800, 11500],

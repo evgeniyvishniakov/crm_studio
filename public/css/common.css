@@ -597,9 +597,15 @@
     font-size: 12px;
     cursor: pointer;
 }
-
+.widget-header-modern{
+    padding: 0.5rem 0 0.8rem 5px!important;
+}
 .remove-photo-btn:hover {
     background-color: #fecaca;
+}
+
+.chart-container{
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
     /* public/css/app.css */
     .warehouse-container {
