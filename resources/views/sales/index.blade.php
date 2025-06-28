@@ -105,11 +105,7 @@
             <div class="modal-body">
                 <form id="saleForm">
                     @csrf
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Дата *</label>
-                            <input type="date" name="date" required class="form-control">
-                        </div>
+                    <div class="form-row date-client-row">
                         <div class="form-group">
                             <label>Клиент *</label>
                             <div class="client-search-container">
@@ -131,6 +127,10 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label>Дата *</label>
+                            <input type="date" name="date" required class="form-control">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Примечания</label>
@@ -141,7 +141,7 @@
                         <h3>Товары</h3>
                         <div class="item-row template" style="display: none;">
                             <div class="form-row">
-                                <div class="form-group">
+                                <div class="form-group product-field">
                                     <label>Товар *</label>
                                     <div class="product-search-container">
                                         <input type="text" class="product-search-input form-control"
@@ -165,23 +165,23 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group price-field">
                                     <label>Оптовая цена *</label>
                                     <input type="number" step="0.01" name="items[0][wholesale_price]"
                                             class="form-control wholesale-price" min="0.01" readonly>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group price-field">
                                     <label>Розничная цена *</label>
                                     <input type="number" step="0.01" name="items[0][retail_price]"
-                                            class="form-control retail-price" min="0.01">
+                                            class="form-control retail-price" min="0.01" >
                                 </div>
-                                <div class="form-group">
-                                    <label>Количество *</label>
+                                <div class="form-group quantity-field">
+                                    <label>Кол-во *</label>
                                     <input type="number" name="items[0][quantity]"
                                            class="form-control quantity" min="1" value="1" max="1"
                                            oninput="validateQuantity(this)">
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group remove-field">
                                     <button type="button" class="btn-remove-item" onclick="removeItemRow(this)">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -192,7 +192,7 @@
                         </div>
                         <div class="item-row">
                             <div class="form-row">
-                                <div class="form-group">
+                                <div class="form-group product-field">
                                     <label>Товар *</label>
                                     <div class="product-search-container">
                                         <input type="text" class="product-search-input form-control"
@@ -216,23 +216,23 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group price-field">
                                     <label>Оптовая цена *</label>
                                     <input type="number" step="0.01" name="items[0][wholesale_price]"
                                            required class="form-control wholesale-price" min="0.01" readonly>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group price-field">
                                     <label>Розничная цена *</label>
                                     <input type="number" step="0.01" name="items[0][retail_price]"
                                            required class="form-control retail-price" min="0.01" >
                                 </div>
-                                <div class="form-group">
-                                    <label>Количество *</label>
+                                <div class="form-group quantity-field">
+                                    <label>Кол-во *</label>
                                     <input type="number" name="items[0][quantity]" required
                                            class="form-control quantity" min="1" value="1" max="1"
                                            oninput="validateQuantity(this)">
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group remove-field">
                                     <button type="button" class="btn-remove-item" onclick="removeItemRow(this)">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -356,6 +356,15 @@
                 select.selectedIndex = 0;
             }
 
+            // Добавляем CSS классы к полям
+            const formGroups = newRow.querySelectorAll('.form-group');
+            formGroups.forEach((group, index) => {
+                if (index === 0) group.classList.add('product-field');
+                else if (index === 1 || index === 2) group.classList.add('price-field');
+                else if (index === 3) group.classList.add('quantity-field');
+                else if (index === 4) group.classList.add('remove-field');
+            });
+
             container.insertBefore(newRow, container.querySelector('.form-actions'));
             itemCounter++;
         }
@@ -467,11 +476,7 @@
                             @csrf
                         @method('PUT')
                         <input type="hidden" name="id" value="${data.sale.id}">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>Дата *</label>
-                                    <input type="date" name="date" value="${formatDateForInput(data.sale.date)}" required class="form-control">
-                                </div>
+                            <div class="form-row date-client-row">
                                 <div class="form-group">
                                     <label>Клиент *</label>
                                     <div class="client-search-container">
@@ -488,6 +493,10 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label>Дата *</label>
+                                    <input type="date" name="date" value="${formatDateForInput(data.sale.date)}" required class="form-control">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Примечания</label>
@@ -498,7 +507,7 @@
                                 <h3>Товары</h3>
                                 <div class="item-row template" style="display: none;">
                                     <div class="form-row">
-                                        <div class="form-group">
+                                        <div class="form-group product-field">
                                             <label>Товар *</label>
                                             <div class="product-search-container">
                                                 <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
@@ -514,19 +523,19 @@
                                                 <input type="hidden" name="items[0][product_id]" class="product-id-hidden" value="">
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group price-field">
                                             <label>Оптовая цена *</label>
                                             <input type="number" step="0.01" name="items[0][wholesale_price]"  class="form-control wholesale-price" min="0.01" readonly>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group price-field">
                                             <label>Розничная цена *</label>
                                             <input type="number" step="0.01" name="items[0][retail_price]"  class="form-control retail-price" min="0.01">
                                         </div>
-                                        <div class="form-group">
-                                            <label>Количество *</label>
+                                        <div class="form-group quantity-field">
+                                            <label>Кол-во *</label>
                                             <input type="number" name="items[0][quantity]" class="form-control" min="1" value="1">
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group remove-field">
                                             <button type="button" class="btn-remove-item" onclick="removeEditItemRow(this)">
                                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -538,7 +547,7 @@
                                 ${data.sale.items.map((item, index) => `
                                     <div class="item-row">
                                         <div class="form-row">
-                                            <div class="form-group">
+                                            <div class="form-group product-field">
                                                 <label>Товар *</label>
                                                 <div class="product-search-container">
                                                     <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
@@ -557,19 +566,19 @@
                                                     <input type="hidden" name="items[${index}][product_id]" class="product-id-hidden" value="${item.product_id}">
                                                 </div>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="form-group price-field">
                                                 <label>Оптовая цена *</label>
                                                 <input type="number" step="0.01" name="items[${index}][wholesale_price]" value="${item.wholesale_price}"  class="form-control" min="0.01" readonly>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="form-group price-field">
                                                 <label>Розничная цена *</label>
                                                 <input type="number" step="0.01" name="items[${index}][retail_price]" value="${item.retail_price}"  class="form-control" min="0.01">
                                             </div>
-                                            <div class="form-group">
-                                                <label>Количество *</label>
+                                            <div class="form-group quantity-field">
+                                                <label>Кол-во *</label>
                                                 <input type="number" name="items[${index}][quantity]" value="${item.quantity}"  class="form-control" min="1">
                                             </div>
-                                            <div class="form-group">
+                                            <div class="form-group remove-field">
                                                 <button type="button" class="btn-remove-item" onclick="removeEditItemRow(this)">
                                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -725,6 +734,15 @@
                     }
                 });
             }
+
+            // Добавляем CSS классы к полям
+            const formGroups = newRow.querySelectorAll('.form-group');
+            formGroups.forEach((group, index) => {
+                if (index === 0) group.classList.add('product-field');
+                else if (index === 1 || index === 2) group.classList.add('price-field');
+                else if (index === 3) group.classList.add('quantity-field');
+                else if (index === 4) group.classList.add('remove-field');
+            });
 
             container.insertBefore(newRow, container.querySelector('.form-actions'));
         }
@@ -1385,3 +1403,99 @@
 
     </script>
 @endsection
+
+<style>
+    /* Стили для выравнивания полей в модальном окне продажи */
+    .form-row.date-client-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .form-row.date-client-row .form-group {
+        flex: 1;
+        min-width: 0;
+        width: 50%;
+    }
+    
+    .form-row.date-client-row .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+    }
+    
+    .form-row.date-client-row .form-group input,
+    .form-row.date-client-row .form-group select,
+    .form-row.date-client-row .form-group .client-search-container {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    /* Дополнительные стили для контейнера поиска клиента */
+    .form-row.date-client-row .client-search-container {
+        width: 100%;
+        position: relative;
+    }
+    
+    .form-row.date-client-row .client-search-container input,
+    .form-row.date-client-row .client-search-container select {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    /* Стили для выпадающего списка клиентов */
+    .form-row.date-client-row .client-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    /* Стили для полей товаров */
+    .item-row .form-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .item-row .form-group {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    /* Поле товара - увеличиваем */
+    .item-row .form-group:has(.product-search-container),
+    .item-row .product-field {
+        flex: 3;
+    }
+    
+    /* Поле количества - уменьшаем */
+    .item-row .form-group:has(input[name*="quantity"]),
+    .item-row .quantity-field {
+        flex: 0.5;
+        max-width: 100px;
+    }
+    
+    /* Поля цен - средний размер */
+    .item-row .form-group:has(input[name*="price"]),
+    .item-row .price-field {
+        flex: 1;
+    }
+    
+    /* Кнопка удаления - минимальный размер */
+    .item-row .form-group:has(.btn-remove-item),
+    .item-row .remove-field {
+        flex: 0.3;
+        max-width: 50px;
+    }
+    .sale-table td{
+        padding: 25px 15px!important;
+    }
+</style>
