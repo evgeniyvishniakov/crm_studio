@@ -16,6 +16,18 @@ class ProductController extends Controller
         return view('products.list', compact('products', 'categories', 'brands'));
     }
 
+    public function create()
+    {
+        // Этот метод не используется, так как у нас модальное окно
+        return redirect()->route('products.index');
+    }
+
+    public function show(Product $product)
+    {
+        // Этот метод не используется, так как у нас нет отдельной страницы товара
+        return redirect()->route('products.index');
+    }
+
     public function edit(Product $product)
     {
         try {

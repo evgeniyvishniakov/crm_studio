@@ -26,7 +26,7 @@ class ClientController extends Controller
         if ($request->ajax()) {
             $clients = $query->get();
             $clientTypes = ClientType::where('status', true)->get();
-            
+
             return response()->json([
                 'clients' => $clients,
                 'clientTypes' => $clientTypes,
@@ -59,7 +59,7 @@ class ClientController extends Controller
             },
             'sales.items.product'
         ])->findOrFail($id);
-        
+
         return response()->json($client);
     }
 
@@ -163,6 +163,7 @@ class ClientController extends Controller
                 'message' => 'Ошибка при обновлении клиента: ' . $e->getMessage()
             ], 500);
         }
+
     }
 
     public function history($id)

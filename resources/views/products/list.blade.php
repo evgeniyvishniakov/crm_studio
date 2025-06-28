@@ -12,6 +12,18 @@
                 <span class="notification-message">Товар успешно добавлен!</span>
             </div>
             <div class="header-actions">
+                <button class="btn-export" onclick="exportProducts()">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    </svg>
+                    Экспорт
+                </button>
+                <button class="btn-import" onclick="openImportModal()">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    Импорт
+                </button>
                 <button class="btn-add-product" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -211,6 +223,105 @@
             </div>
         </div>
     </div>
+
+    <!-- Модальное окно для импорта товаров -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Импорт товаров</h2>
+                <span class="close" onclick="closeImportModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="import-info">
+                    <h3>Информация об импорте</h3>
+                    <ul>
+                        <li>Файл должен содержать колонки: Название, Категория, Бренд, Оптовая цена, Розничная цена, <strong>Фото</strong> или <strong>Изображение</strong></li>
+                        <li>Если в файле есть колонка <strong>Изображение</strong> — по ней также добавляется фото товара</li>
+                        <li>Если категория или бренд не указаны, система попытается определить их по названию товара</li>
+                        <li><strong>Фото в Excel:</strong></li>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>Вставьте ссылку на изображение в колонку "Фото" — программа сама всё обработает</li>
+                            <li>Поддерживаются форматы ссылок: http/https (JPG, JPEG, PNG)</li>
+                            <li>Можно просто вставлять гиперссылку — не нужно преобразовывать в текст</li>
+                        </ul>
+                        <li><strong>Поддерживаемые форматы файлов: только Excel (.xlsx, .xls)</strong></li>
+                        <li style="color: #888;">CSV будет доступен после регистрации</li>
+                        <li>Максимальный размер файла: 10MB</li>
+                    </ul>
+                </div>
+                
+                <form id="importForm" enctype="multipart/form-data">
+                    @csrf
+                    <div class="form-group">
+                        <label for="importFile">Выберите файл:</label>
+                        <input type="file" id="importFile" name="file" accept=".xlsx,.xls" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeImportModal()">Отмена</button>
+                        <button type="submit" class="btn-submit">Импортировать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .btn-add-product {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        .btn-add-product:hover {
+            background: #0056b3;
+        }
+        .btn-export {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        .btn-export:hover {
+            background: #1e7e34;
+        }
+        .btn-import {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #ffc107;
+            color: #212529;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .btn-import:hover {
+            background: #e0a800;
+            color: #212529;
+            text-decoration: none;
+        }
+    </style>
 
     <script>
         // Основные функции управления модальными окнами
@@ -583,6 +694,71 @@
                 return parseInt(price) + ' грн';
             } else {
                 return Number(price).toFixed(2) + ' грн';
+            }
+        }
+
+        // Функция экспорта товаров
+        function exportProducts() {
+            window.location.href = '{{ route("products.export") }}';
+        }
+
+        // Функции для работы с модальным окном импорта
+        function openImportModal() {
+            document.getElementById('importModal').style.display = 'block';
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+            // Очищаем форму
+            document.getElementById('importForm').reset();
+        }
+
+        // Обработчик отправки формы импорта
+        document.getElementById('importForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Импортирование...';
+            submitBtn.disabled = true;
+            
+            fetch('{{ route("products.import") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('success', data.message);
+                    closeImportModal();
+                    // Перезагружаем страницу для обновления списка товаров
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showNotification('error', 'Ошибка: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('error', 'Ошибка при импорте файла');
+            })
+            .finally(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            const importModal = document.getElementById('importModal');
+            if (event.target === importModal) {
+                closeImportModal();
             }
         }
     </script>

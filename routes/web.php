@@ -8,6 +8,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\ExpensesController;
+use App\Http\Controllers\ProductImportExportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClientController;
@@ -42,6 +43,12 @@ Route::prefix('clients')->group(function () {
 // Отчеты по клиентам
 Route::get('/reports/clients', [ClientReportController::class, 'index'])->name('reports.clients.index');
 Route::get('/reports/client-analytics', [ClientReportController::class, 'getClientAnalyticsData'])->name('reports.clientAnalytics');
+
+// Маршруты для импорта и экспорта товаров (должны быть ПЕРЕД ресурсным маршрутом)
+Route::get('/products/export', [ProductImportExportController::class, 'export'])->name('products.export');
+Route::post('/products/import/preview', [ProductImportExportController::class, 'previewImport'])->name('products.import.preview');
+Route::post('/products/import', [ProductImportExportController::class, 'import'])->name('products.import');
+Route::post('/products/analyze-name', [ProductImportExportController::class, 'analyzeProductName'])->name('products.analyze-name');
 
 Route::resource('products', ProductController::class);
 Route::post('/products/{product}/remove-photo', [ProductController::class, 'removePhoto'])->name('products.remove-photo');
@@ -156,4 +163,25 @@ Route::get('/reports/turnover-tops', [TurnoverReportController::class, 'getTopsA
 Route::get('/reports/suppliers-analytics', [\App\Http\Controllers\TurnoverReportController::class, 'suppliersAnalyticsData']);
 Route::get('/test', function() {
     return 'test ok';
+});
+
+Route::get('/test-excel', function() {
+    try {
+        $categories = \App\Models\ProductCategory::all();
+        $brands = \App\Models\ProductBrand::all();
+        
+        return response()->json([
+            'success' => true,
+            'categories_count' => $categories->count(),
+            'brands_count' => $brands->count(),
+            'excel_facade_exists' => class_exists('Maatwebsite\Excel\Facades\Excel'),
+            'excel_service_provider_exists' => class_exists('Maatwebsite\Excel\ExcelServiceProvider')
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+    }
 });
