@@ -14,22 +14,22 @@
     }
 
     .status-pending {
-        background-color: #eba70e;
+        background: linear-gradient(135deg, #eba70e, #f59e0b);
         color: #fff;
     }
 
     .status-completed {
-        background-color: #4CAF50;
+        background: linear-gradient(135deg, #4CAF50, #22c55e);
         color: #fff;
     }
 
     .status-cancelled {
-        background-color: #F44336;
+        background: linear-gradient(135deg, #F44336, #ef4444);
         color: #fff;
     }
 
     .status-rescheduled {
-        background-color: #ae1ee9;
+        background: linear-gradient(135deg, #ae1ee9, #a855f7);
         color: #fff;
     }
 
@@ -123,33 +123,48 @@
         cursor: pointer;
     }
     .view-switch-btn {
-        padding: 8px 16px;
-        border: 1px solid #e9ecef;
-        background: #fff;
-        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #64748b;
         cursor: pointer;
-        color: #6c757d;
         transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .view-switch-btn:hover {
-        background: #e9ecef;
+        border-color: #3b82f6;
+        color: #3b82f6;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
     }
 
     .view-switch-btn.active {
-        background: #2196f3;
-        color: #fff;
-        border-color: #2196f3;
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        border-color: #3b82f6;
+        color: white;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
 
     .today-button {
-        background: #28a745;
+        background: linear-gradient(135deg, #28a745, #34d399);
         color: white;
-        border-color: #28a745;
+        border: 2px solid #28a745;
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.15);
     }
 
     .today-button:hover {
-        background: #218838;
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #218838, #28a745);
+        border-color: #218838;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        color: white;
     }
 
     .calendar-title {
@@ -505,13 +520,18 @@
     }
 
     .today-button {
-        background: #28a745;
+        background: linear-gradient(135deg, #28a745, #34d399);
         color: white;
-        border-color: #28a745;
+        border: 2px solid #28a745;
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.15);
     }
 
     .today-button:hover {
-        background: #218838;
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #218838, #28a745);
+        border-color: #218838;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        color: white;
     }
 
     /* Стили для календаря */
@@ -570,13 +590,17 @@
     }
 
     .tooltip-btn-edit {
-        background-color: #4CAF50;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
         color: white;
+        border: 2px solid #2563eb;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
     }
 
     .tooltip-btn-delete {
-        background-color: #f44336;
+        background: linear-gradient(135deg, #dc3545, #e74c3c);
         color: white;
+        border: 2px solid #dc3545;
+        box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
     }
 
     .tooltip-btn .icon {
@@ -625,10 +649,10 @@
         font-size: 1rem;
         color: #fff;
     }
-    .status-pending { background: #eba70e; color: #fff; }
-    .status-completed { background: #4CAF50; }
-    .status-cancelled { background: #F44336; }
-    .status-rescheduled { background: #ae1ee9; }
+    .status-pending { background: linear-gradient(135deg, #eba70e, #f59e0b); color: #fff; }
+    .status-completed { background: linear-gradient(135deg, #4CAF50, #22c55e); }
+    .status-cancelled { background: linear-gradient(135deg, #F44336, #ef4444); }
+    .status-rescheduled { background: linear-gradient(135deg, #ae1ee9, #a855f7); }
     .details-row {
         display: flex;
         gap: 32px;

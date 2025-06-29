@@ -119,23 +119,33 @@
             cursor: pointer;
         }
         .view-switch-btn {
-            padding: 8px 16px;
-            border: 1px solid #e9ecef;
-            background: #fff;
-            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
             cursor: pointer;
-            color: #6c757d;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .view-switch-btn:hover {
-            background: #e9ecef;
+            border-color: #3b82f6;
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
         }
 
         .view-switch-btn.active {
-            background: #2196f3;
-            color: #fff;
-            border-color: #2196f3;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            border-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .today-button {

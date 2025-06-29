@@ -591,12 +591,17 @@ body {
     border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
+    transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
-#addTodoBtn:hover { transform: scale(1.05); background: linear-gradient(135deg, #2563eb, #3b82f6); }
+#addTodoBtn:hover { 
+    transform: translateY(-2px); 
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
 
 .daily-summary-grid {
     display: grid;
