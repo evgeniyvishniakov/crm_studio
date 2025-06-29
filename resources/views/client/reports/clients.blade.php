@@ -1,7 +1,7 @@
 @extends('client.layouts.app')
 
 @section('content')
-<div class="container-fluid">
+<div class="dashboard-container">
     <h1 class="dashboard-title">Отчеты</h1>
 
     <!-- Навигация по вкладкам -->

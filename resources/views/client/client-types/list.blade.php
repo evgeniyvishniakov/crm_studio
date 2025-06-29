@@ -1,6 +1,7 @@
 @extends('client.layouts.app')
 
 @section('content')
+<div class="dashboard-container">
     <div class="services-container">
         <div class="services-header">
             <h1>Типы клиентов</h1>
@@ -542,4 +543,5 @@
             to { transform: rotate(360deg); }
         }
     </style>
+</div>
 @endsection

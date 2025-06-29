@@ -1051,10 +1051,10 @@
             text-align: center;
         }
         .notification.success {
-            background-color: #28a745;
+            background: linear-gradient(135deg, #28a745, #34d399);
         }
         .notification.error {
-            background-color: #dc3545;
+            background: linear-gradient(135deg, #dc3545, #ef4444);
         }
     </style>
 @endsection

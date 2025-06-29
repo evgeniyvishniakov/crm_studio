@@ -1,7 +1,7 @@
 @extends('client.layouts.app')
 
 @section('content')
-<div class="container-fluid">
+<div class="dashboard-container">
     <div class="report-header">
         <h1 class="dashboard-title">Аналитика по товарообороту</h1>
 

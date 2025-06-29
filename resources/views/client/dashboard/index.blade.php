@@ -1027,7 +1027,7 @@
     <button id="closeDayModalBtn" style="position:absolute; right:12px; top:10px; background:none; border:none; font-size:1.5em; color:#aaa; cursor:pointer;">&times;</button>
     <h3 id="modalDayTitle" style="margin-bottom:1em; font-size:1.1em;">Записи на день</h3>
     <div id="modalDayEvents"></div>
-    <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:#3b82f6; color:#fff; border:none; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer;">Добавить новую</button>
+    <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:linear-gradient(135deg, #3b82f6, #60a5fa); color:#fff; border:2px solid #3b82f6; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer; transition:all 0.3s ease; box-shadow:0 2px 8px rgba(59,130,246,0.15);">Добавить новую</button>
   </div>
 </div>
 

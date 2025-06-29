@@ -92,8 +92,8 @@
 
 
         .btn-add-product .icon {
-            width: 1.25rem;
-            height: 1.25rem;
+            width: 16px;
+            height: 16px;
         }
         /* Стили для календаря */
         .calendar-wrapper {

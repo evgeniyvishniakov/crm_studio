@@ -1,6 +1,7 @@
 @extends('client.layouts.app')
 
 @section('content')
+<div class="dashboard-container">
     <div class="warehouse-container">
         <!-- Модальное окно для увеличенного изображения -->
         <div id="imageModal" class="modal image-modal" onclick="closeImageModal()">
@@ -759,7 +760,7 @@
             box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
         }
     </style>
-@endsection
+</div>
 
 <style>
 .image-modal {

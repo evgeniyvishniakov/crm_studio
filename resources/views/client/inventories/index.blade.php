@@ -1,6 +1,7 @@
 @extends('client.layouts.app')
 
 @section('content')
+<div class="dashboard-container">
     <div class="inventories-container">
         <div class="inventories-header">
             <h1>Инвентаризация</h1>

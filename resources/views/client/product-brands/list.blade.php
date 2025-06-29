@@ -1,6 +1,7 @@
 @extends('client.layouts.app')
 
 @section('content')
+<div class="dashboard-container">
     <div class="services-container">
         <div class="services-header">
             <h1>Бренды товаров</h1>
@@ -566,4 +567,5 @@
             text-decoration: underline;
         }
     </style>
+</div>
 @endsection

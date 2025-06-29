@@ -1,7 +1,7 @@
 @extends('client.layouts.app')
 
 @section('content')
-
+<div class="dashboard-container">
     <div class="products-container">
         <div class="products-header">
             <h1>Товары</h1>
@@ -322,53 +322,65 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 20px;
-            background: #007bff;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
             color: white;
-            border: none;
-            border-radius: 6px;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: 500;
-            transition: background 0.3s;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
         }
         .btn-add-product:hover {
-            background: #0056b3;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
         .btn-export {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 20px;
-            background: #28a745;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #28a745, #34d399);
             color: white;
-            border: none;
-            border-radius: 6px;
+            border: 2px solid #28a745;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: 500;
-            transition: background 0.3s;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.15);
         }
         .btn-export:hover {
-            background: #1e7e34;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #218838, #28a745);
+            border-color: #218838;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
         }
         .btn-import {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 20px;
-            background: #ffc107;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #ffc107, #ffdb4d);
             color: #212529;
-            border: none;
-            border-radius: 6px;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             text-decoration: none;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.15);
         }
         .btn-import:hover {
-            background: #e0a800;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #e0a800, #ffc107);
+            border-color: #e0a800;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
             color: #212529;
             text-decoration: none;
         }
@@ -443,34 +455,38 @@
             border-top: 1px solid #e9ecef;
         }
 
-        #importModal .btn-cancel,
         #importModal .btn-submit {
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-width: 120px;
-        }
-
-        #importModal .btn-submit {
-            background-color: #28a745;
+            background: linear-gradient(135deg, #28a745, #34d399);
             color: white;
-            border: none;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.15);
         }
 
         #importModal .btn-submit:hover {
-            background-color: #218838;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #218838, #28a745);
+            border-color: #218838;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
         }
 
         #importModal .btn-cancel {
-            background-color: #6c757d;
+            background: linear-gradient(135deg, #6c757d, #9ca3af);
             color: white;
-            border: none;
+            border: 2px solid #6c757d;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.15);
         }
 
         #importModal .btn-cancel:hover {
-            background-color: #5a6268;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #5a6268, #6c757d);
+            border-color: #5a6268;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
         }
 
         #exportModal .modal-content {
@@ -538,30 +554,35 @@
             padding-top: 20px;
             border-top: 1px solid #e9ecef;
         }
-        #exportModal .btn-cancel,
         #exportModal .btn-submit {
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-width: 120px;
-        }
-        #exportModal .btn-submit {
-            background-color: #28a745;
+            background: linear-gradient(135deg, #28a745, #34d399);
             color: white;
-            border: none;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.15);
         }
         #exportModal .btn-submit:hover {
-            background-color: #218838;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #218838, #28a745);
+            border-color: #218838;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
         }
         #exportModal .btn-cancel {
-            background-color: #6c757d;
+            background: linear-gradient(135deg, #6c757d, #9ca3af);
             color: white;
-            border: none;
+            border: 2px solid #6c757d;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.15);
         }
         #exportModal .btn-cancel:hover {
-            background-color: #5a6268;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #5a6268, #6c757d);
+            border-color: #5a6268;
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
         }
         .export-filters-row {
             display: flex;
