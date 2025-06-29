@@ -1,0 +1,211 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Client\DashboardController;
+use App\Http\Controllers\Client\ClientController;
+use App\Http\Controllers\Client\ClientTypeController;
+use App\Http\Controllers\Client\ProductController;
+use App\Http\Controllers\Client\ProductCategoryController;
+use App\Http\Controllers\Client\ProductBrandController;
+use App\Http\Controllers\Client\ProductImportExportController;
+use App\Http\Controllers\Client\SaleController;
+use App\Http\Controllers\Client\PurchaseController;
+use App\Http\Controllers\Client\SupplierController;
+use App\Http\Controllers\Client\ServiceController;
+use App\Http\Controllers\Client\AppointmentsController;
+use App\Http\Controllers\Client\ExpensesController;
+use App\Http\Controllers\Client\WarehouseController;
+use App\Http\Controllers\Client\InventoryController;
+use App\Http\Controllers\Client\ClientReportController;
+use App\Http\Controllers\Client\TurnoverReportController;
+
+/*
+|--------------------------------------------------------------------------
+| Client Routes
+|--------------------------------------------------------------------------
+|
+| Здесь размещаются маршруты для клиентской части приложения
+| Все маршруты требуют аутентификации
+|
+*/
+
+Route::group([], function () {
+    
+    // Главная страница клиентской части
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Управление клиентами
+    Route::prefix('clients')->name('clients.')->group(function () {
+        Route::get('/', [ClientController::class, 'index'])->name('list');
+        Route::post('/', [ClientController::class, 'store'])->name('store');
+        Route::get('/create', [ClientController::class, 'create'])->name('create');
+        Route::get('/{id}', [ClientController::class, 'show'])->name('show');
+        Route::get('/check', [ClientController::class, 'checkUnique']);
+        Route::delete('/{client}', [ClientController::class, 'destroy'])->name('destroy');
+        Route::get('/{client}/edit', [ClientController::class, 'edit'])->name('edit');
+        Route::put('/{client}', [ClientController::class, 'update'])->name('update');
+    });
+    
+    // Типы клиентов
+    Route::prefix('client-types')->name('client-types.')->group(function () {
+        Route::get('/', [ClientTypeController::class, 'index'])->name('index');
+        Route::get('/create', [ClientTypeController::class, 'create'])->name('create');
+        Route::post('/', [ClientTypeController::class, 'store'])->name('store');
+        Route::get('/{clientType}/edit', [ClientTypeController::class, 'edit'])->name('edit');
+        Route::put('/{clientType}', [ClientTypeController::class, 'update'])->name('update');
+        Route::delete('/{clientType}', [ClientTypeController::class, 'destroy'])->name('destroy');
+    });
+    
+    // Управление товарами
+    Route::prefix('products')->name('products.')->group(function () {
+        Route::get('/', [ProductController::class, 'index'])->name('index');
+        Route::get('/create', [ProductController::class, 'create'])->name('create');
+        Route::post('/', [ProductController::class, 'store'])->name('store');
+        Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+        Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
+        Route::put('/{product}', [ProductController::class, 'update'])->name('update');
+        Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+        
+        // Импорт/экспорт товаров
+        Route::get('/import', [ProductImportExportController::class, 'showImportForm'])->name('import.form');
+        Route::post('/import', [ProductImportExportController::class, 'import'])->name('import');
+        Route::get('/export', [ProductImportExportController::class, 'showExportForm'])->name('export.form');
+        Route::post('/export', [ProductImportExportController::class, 'export'])->name('export');
+    });
+    
+    // Категории товаров
+    Route::prefix('product-categories')->name('product-categories.')->group(function () {
+        Route::get('/', [ProductCategoryController::class, 'index'])->name('index');
+        Route::get('/create', [ProductCategoryController::class, 'create'])->name('create');
+        Route::post('/', [ProductCategoryController::class, 'store'])->name('store');
+        Route::get('/{productCategory}/edit', [ProductCategoryController::class, 'edit'])->name('edit');
+        Route::put('/{productCategory}', [ProductCategoryController::class, 'update'])->name('update');
+        Route::delete('/{productCategory}', [ProductCategoryController::class, 'destroy'])->name('destroy');
+    });
+    
+    // Бренды товаров
+    Route::prefix('product-brands')->name('product-brands.')->group(function () {
+        Route::get('/', [ProductBrandController::class, 'index'])->name('index');
+        Route::get('/create', [ProductBrandController::class, 'create'])->name('create');
+        Route::post('/', [ProductBrandController::class, 'store'])->name('store');
+        Route::get('/{productBrand}/edit', [ProductBrandController::class, 'edit'])->name('edit');
+        Route::put('/{productBrand}', [ProductBrandController::class, 'update'])->name('update');
+        Route::delete('/{productBrand}', [ProductBrandController::class, 'destroy'])->name('destroy');
+    });
+    
+    // Продажи
+    Route::prefix('sales')->name('sales.')->group(function () {
+        Route::get('/', [SaleController::class, 'index'])->name('index');
+        Route::get('/create', [SaleController::class, 'create'])->name('create');
+        Route::post('/', [SaleController::class, 'store'])->name('store');
+        Route::get('/{sale}', [SaleController::class, 'show'])->name('show');
+        Route::get('/{sale}/edit', [SaleController::class, 'edit'])->name('edit');
+        Route::put('/{sale}', [SaleController::class, 'update'])->name('update');
+        Route::delete('/{sale}', [SaleController::class, 'destroy'])->name('destroy');
+        Route::delete('/{sale}/items/{item}', [SaleController::class, 'deleteItem'])->name('items.delete');
+    });
+    
+    // Закупки
+    Route::prefix('purchases')->name('purchases.')->group(function () {
+        Route::get('/', [PurchaseController::class, 'index'])->name('index');
+        Route::get('/create', [PurchaseController::class, 'create'])->name('create');
+        Route::post('/', [PurchaseController::class, 'store'])->name('store');
+        Route::get('/{purchase}', [PurchaseController::class, 'show'])->name('show');
+        Route::get('/{purchase}/edit', [PurchaseController::class, 'edit'])->name('edit');
+        Route::put('/{purchase}', [PurchaseController::class, 'update'])->name('update');
+        Route::delete('/{purchase}', [PurchaseController::class, 'destroy'])->name('destroy');
+    });
+    
+    // Поставщики
+    Route::prefix('suppliers')->name('suppliers.')->group(function () {
+        Route::get('/', [SupplierController::class, 'index'])->name('index');
+        Route::get('/create', [SupplierController::class, 'create'])->name('create');
+        Route::post('/', [SupplierController::class, 'store'])->name('store');
+        Route::get('/{supplier}/edit', [SupplierController::class, 'edit'])->name('edit');
+        Route::put('/{supplier}', [SupplierController::class, 'update'])->name('update');
+        Route::delete('/{supplier}', [SupplierController::class, 'destroy'])->name('destroy');
+    });
+    
+    // Услуги
+    Route::prefix('services')->name('services.')->group(function () {
+        Route::get('/', [ServiceController::class, 'index'])->name('index');
+        Route::get('/create', [ServiceController::class, 'create'])->name('create');
+        Route::post('/', [ServiceController::class, 'store'])->name('store');
+        Route::get('/{service}/edit', [ServiceController::class, 'edit'])->name('edit');
+        Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
+        Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('destroy');
+    });
+    
+    // Записи на услуги
+    Route::prefix('appointments')->name('appointments.')->group(function () {
+        // Специальные маршруты ДО ресурсного маршрута
+        Route::get('/calendar-events', [AppointmentsController::class, 'calendarEvents'])->name('calendar-events');
+        Route::get('/events', [AppointmentsController::class, 'getEvents'])->name('events');
+        
+        // Ресурсный маршрут
+        Route::get('/', [AppointmentsController::class, 'index'])->name('index');
+        Route::get('/create', [AppointmentsController::class, 'create'])->name('create');
+        Route::post('/', [AppointmentsController::class, 'store'])->name('store');
+        Route::get('/{appointment}', [AppointmentsController::class, 'show'])->name('show');
+        Route::get('/{appointment}/edit', [AppointmentsController::class, 'edit'])->name('edit');
+        Route::put('/{appointment}', [AppointmentsController::class, 'update'])->name('update');
+        Route::delete('/{appointment}', [AppointmentsController::class, 'destroy'])->name('destroy');
+        Route::get('/{id}/view', [AppointmentsController::class, 'view']);
+        Route::post('/{appointment}/update-sales', [AppointmentsController::class, 'updateSales'])->name('update-sales');
+        Route::post('/{appointment}/save-products', [AppointmentsController::class, 'saveProducts'])->name('save-products');
+        Route::post('/{appointment}/add-product', [AppointmentsController::class, 'addProduct'])->name('add-product');
+        Route::delete('/{appointment}/delete-product/{sale}', [AppointmentsController::class, 'deleteProduct'])->name('delete-product');
+        Route::post('/{appointment}/add-procedure', [AppointmentsController::class, 'addProcedure']);
+        Route::post('/{appointment}/remove-product', [AppointmentsController::class, 'removeProduct'])->name('remove-product');
+    });
+    
+    // Расходы
+    Route::prefix('expenses')->name('expenses.')->group(function () {
+        Route::get('/', [ExpensesController::class, 'index'])->name('index');
+        Route::get('/create', [ExpensesController::class, 'create'])->name('create');
+        Route::post('/', [ExpensesController::class, 'store'])->name('store');
+        Route::get('/{expense}/edit', [ExpensesController::class, 'edit'])->name('edit');
+        Route::put('/{expense}', [ExpensesController::class, 'update'])->name('update');
+        Route::delete('/{expense}', [ExpensesController::class, 'destroy'])->name('destroy');
+    });
+    
+    // Склады
+    Route::prefix('warehouses')->name('warehouses.')->group(function () {
+        Route::get('/', [WarehouseController::class, 'index'])->name('index');
+        Route::get('/create', [WarehouseController::class, 'create'])->name('create');
+        Route::post('/', [WarehouseController::class, 'store'])->name('store');
+        Route::get('/{warehouse}/edit', [WarehouseController::class, 'edit'])->name('edit');
+        Route::put('/{warehouse}', [WarehouseController::class, 'update'])->name('update');
+        Route::delete('/{warehouse}', [WarehouseController::class, 'destroy'])->name('destroy');
+        Route::get('/products', [WarehouseController::class, 'getProducts'])->name('products');
+    });
+    
+    // Инвентаризация
+    Route::prefix('inventories')->name('inventories.')->group(function () {
+        Route::get('/', [InventoryController::class, 'index'])->name('index');
+        Route::get('/create', [InventoryController::class, 'create'])->name('create');
+        Route::post('/', [InventoryController::class, 'store'])->name('store');
+        Route::get('/{inventory}', [InventoryController::class, 'show'])->name('show');
+        Route::get('/{inventory}/edit', [InventoryController::class, 'edit'])->name('edit');
+        Route::put('/{inventory}', [InventoryController::class, 'update'])->name('update');
+        Route::delete('/{inventory}', [InventoryController::class, 'destroy'])->name('destroy');
+        Route::get('/{inventory}/items', [InventoryController::class, 'items'])->name('items');
+    });
+    
+    // Отчеты
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/clients', [ClientReportController::class, 'index'])->name('clients.index');
+        Route::get('/client-analytics', [ClientReportController::class, 'getClientAnalyticsData'])->name('clientAnalytics');
+        Route::get('/turnover', [TurnoverReportController::class, 'index'])->name('turnover');
+        Route::get('/turnover-analytics', [TurnoverReportController::class, 'getDynamicAnalyticsData'])->name('turnover.analytics');
+        Route::get('/turnover-tops', [TurnoverReportController::class, 'getTopsAnalyticsData'])->name('turnover.tops');
+        Route::get('/suppliers-analytics', [TurnoverReportController::class, 'suppliersAnalyticsData']);
+        Route::get('/appointments-by-day', [AppointmentsController::class, 'getAppointmentsByDay']);
+        Route::get('/appointment-status-data', [AppointmentsController::class, 'getAppointmentStatusData']);
+        Route::get('/service-popularity-data', [AppointmentsController::class, 'getServicePopularityData']);
+        Route::get('/top-clients-by-revenue', [AppointmentsController::class, 'getTopClientsByRevenue']);
+        Route::get('/avg-check-dynamics', [AppointmentsController::class, 'getAvgCheckDynamics']);
+        Route::get('/ltv-by-client-type', [AppointmentsController::class, 'getLtvByClientType']);
+        Route::get('/top-services-by-revenue', [AppointmentsController::class, 'getTopServicesByRevenue']);
+    });
+}); 

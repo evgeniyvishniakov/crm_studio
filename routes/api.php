@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Client\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +21,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/dashboard/profit-chart', [DashboardController::class, 'profitChartData']);
 Route::get('/dashboard/sales-chart', [DashboardController::class, 'salesChartData']);
-Route::get('/dashboard/services-chart', [\App\Http\Controllers\DashboardController::class, 'servicesChartData']);
-Route::get('/dashboard/expenses-chart', [\App\Http\Controllers\DashboardController::class, 'expensesChartData']);
-Route::get('/dashboard/activity-chart', [\App\Http\Controllers\DashboardController::class, 'activityChartData']);
+Route::get('/dashboard/services-chart', [DashboardController::class, 'servicesChartData']);
+Route::get('/dashboard/expenses-chart', [DashboardController::class, 'expensesChartData']);
+Route::get('/dashboard/activity-chart', [DashboardController::class, 'activityChartData']);

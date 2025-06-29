@@ -33,6 +33,18 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
+            // Маршруты лендинга (публичные)
+            Route::group([], base_path('routes/landing.php'));
+
+            // Клиентская часть (middleware web)
+            Route::middleware('web')
+                ->group(base_path('routes/client.php'));
+
+            // Админка (middleware web)
+            Route::middleware('web')
+                ->group(base_path('routes/admin.php'));
+
+            // Старые маршруты (если остались)
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
