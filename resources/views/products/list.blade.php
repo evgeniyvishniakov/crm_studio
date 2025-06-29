@@ -12,7 +12,7 @@
                 <span class="notification-message">Товар успешно добавлен!</span>
             </div>
             <div class="header-actions">
-                <button class="btn-export" onclick="exportProducts()">
+                <button class="btn-export" onclick="openExportModal()">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
                     </svg>
@@ -236,30 +236,81 @@
                     <h3>Информация об импорте</h3>
                     <ul>
                         <li>Файл должен содержать колонки: Название, Категория, Бренд, Оптовая цена, Розничная цена, <strong>Фото</strong> или <strong>Изображение</strong></li>
-                        <li>Если в файле есть колонка <strong>Изображение</strong> — по ней также добавляется фото товара</li>
                         <li>Если категория или бренд не указаны, система попытается определить их по названию товара</li>
-                        <li><strong>Фото в Excel:</strong></li>
+                        <li><strong>Фото</strong></li>
                         <ul style="margin-left: 20px; margin-top: 5px;">
                             <li>Вставьте ссылку на изображение в колонку "Фото" — программа сама всё обработает</li>
                             <li>Поддерживаются форматы ссылок: http/https (JPG, JPEG, PNG)</li>
                             <li>Можно просто вставлять гиперссылку — не нужно преобразовывать в текст</li>
                         </ul>
-                        <li><strong>Поддерживаемые форматы файлов: только Excel (.xlsx, .xls)</strong></li>
-                        <li style="color: #888;">CSV будет доступен после регистрации</li>
-                        <li>Максимальный размер файла: 10MB</li>
+                        <li><strong>Поддерживаемые форматы файлов: Excel (.xlsx, .xls) и CSV (.csv)</strong></li>
+                        <li>Максимальный размер файла: 5MB</li>
                     </ul>
                 </div>
                 
                 <form id="importForm" enctype="multipart/form-data">
-                    @csrf
                     <div class="form-group">
                         <label for="importFile">Выберите файл:</label>
-                        <input type="file" id="importFile" name="file" accept=".xlsx,.xls" required>
+                        <input type="file" id="importFile" name="file" accept=".xlsx,.xls,.csv" required>
                     </div>
                     
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeImportModal()">Отмена</button>
                         <button type="submit" class="btn-submit">Импортировать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно экспорта -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Экспорт товаров</h2>
+                <span class="close" onclick="closeExportModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="import-info">
+                    <h3>Экспорт в Excel</h3>
+                    <ul>
+                        <li>Выберите фильтры для экспорта (по категории, бренду, наличию фото).</li>
+                        <li>Файл будет скачан в формате <b>Excel (.xlsx)</b>.</li>
+                        <li>Откроется в Excel без проблем с кириллицей и разделителями.</li>
+                    </ul>
+                </div>
+                <form id="exportForm" onsubmit="event.preventDefault(); exportProducts();">
+                    <div class="export-filters-row">
+                        <div class="form-group">
+                            <label for="exportCategory">Категория:</label>
+                            <select id="exportCategory" name="category_id">
+                                <option value="">Все</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exportBrand">Бренд:</label>
+                            <select id="exportBrand" name="brand_id">
+                                <option value="">Все</option>
+                                @foreach($brands as $brand)
+                                    <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="exportPhoto">Фото:</label>
+                            <select id="exportPhoto" name="photo">
+                                <option value="all">Все товары</option>
+                                <option value="with">Только с фото</option>
+                                <option value="without">Только без фото</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeExportModal()">Отмена</button>
+                        <button type="submit" class="btn-submit">Скачать Excel</button>
                     </div>
                 </form>
             </div>
@@ -320,6 +371,211 @@
             background: #e0a800;
             color: #212529;
             text-decoration: none;
+        }
+
+        /* Специальные стили для модального окна импорта */
+        #importModal .modal-content {
+            width: 95%;
+            max-width: 800px;
+            margin: 3% auto;
+        }
+
+        #importModal .modal-body {
+            padding: 30px;
+        }
+
+        #importModal .import-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #007bff;
+        }
+
+        #importModal .import-info h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        #importModal .import-info ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        #importModal .import-info li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            color: #495057;
+            text-align: left;
+        }
+
+        #importModal .import-info ul ul {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        #importModal .import-info ul ul li {
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        #importModal .form-group {
+            margin-bottom: 20px;
+        }
+
+        #importModal .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+            text-align: left;
+        }
+
+        #importModal .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        #importModal .btn-cancel,
+        #importModal .btn-submit {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+
+        #importModal .btn-submit {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+
+        #importModal .btn-submit:hover {
+            background-color: #218838;
+        }
+
+        #importModal .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+        }
+
+        #importModal .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+
+        #exportModal .modal-content {
+            width: 95%;
+            max-width: 800px;
+            margin: 3% auto;
+        }
+        #exportModal .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+        #exportModal .modal-body {
+            padding: 30px;
+        }
+        #exportModal .import-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 4px solid #007bff;
+        }
+        #exportModal .import-info h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        #exportModal .import-info ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        #exportModal .import-info li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+            color: #495057;
+            text-align: left;
+        }
+        #exportModal .import-info ul ul {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        #exportModal .import-info ul ul li {
+            margin-bottom: 5px;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        #exportModal .form-group {
+            margin-bottom: 20px;
+        }
+        #exportModal .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+            text-align: left;
+        }
+        #exportModal .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        #exportModal .btn-cancel,
+        #exportModal .btn-submit {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+        #exportModal .btn-submit {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+        #exportModal .btn-submit:hover {
+            background-color: #218838;
+        }
+        #exportModal .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+        }
+        #exportModal .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+        .export-filters-row {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+        .export-filters-row .form-group {
+            margin-bottom: 0;
+            min-width: 180px;
+        }
+        .export-filters-row .form-group label {
+            margin-bottom: 6px;
+            display: block;
         }
     </style>
 
@@ -697,11 +953,6 @@
             }
         }
 
-        // Функция экспорта товаров
-        function exportProducts() {
-            window.location.href = '{{ route("products.export") }}';
-        }
-
         // Функции для работы с модальным окном импорта
         function openImportModal() {
             document.getElementById('importModal').style.display = 'block';
@@ -726,9 +977,6 @@
             
             fetch('{{ route("products.import") }}', {
                 method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
                 body: formData
             })
             .then(response => response.json())
@@ -759,6 +1007,34 @@
             const importModal = document.getElementById('importModal');
             if (event.target === importModal) {
                 closeImportModal();
+            }
+        }
+
+        function openExportModal() {
+            document.getElementById('exportModal').style.display = 'block';
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').style.display = 'none';
+        }
+
+        function exportProducts() {
+            const category = document.getElementById('exportCategory').value;
+            const brand = document.getElementById('exportBrand').value;
+            const photo = document.getElementById('exportPhoto').value;
+            let url = '/products/export?format=xlsx';
+            if (category) url += '&category_id=' + encodeURIComponent(category);
+            if (brand) url += '&brand_id=' + encodeURIComponent(brand);
+            if (photo) url += '&photo=' + encodeURIComponent(photo);
+            window.location.href = url;
+            closeExportModal();
+        }
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            const exportModal = document.getElementById('exportModal');
+            if (event.target === exportModal) {
+                closeExportModal();
             }
         }
     </script>

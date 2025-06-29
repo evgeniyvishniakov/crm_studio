@@ -46,9 +46,13 @@ Route::get('/reports/client-analytics', [ClientReportController::class, 'getClie
 
 // Маршруты для импорта и экспорта товаров (должны быть ПЕРЕД ресурсным маршрутом)
 Route::get('/products/export', [ProductImportExportController::class, 'export'])->name('products.export');
-Route::post('/products/import/preview', [ProductImportExportController::class, 'previewImport'])->name('products.import.preview');
-Route::post('/products/import', [ProductImportExportController::class, 'import'])->name('products.import');
-Route::post('/products/analyze-name', [ProductImportExportController::class, 'analyzeProductName'])->name('products.analyze-name');
+
+// Маршруты импорта без CSRF-проверки
+Route::middleware(['web'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->group(function () {
+    Route::post('/products/import/preview', [ProductImportExportController::class, 'previewImport'])->name('products.import.preview');
+    Route::post('/products/import', [ProductImportExportController::class, 'import'])->name('products.import');
+    Route::post('/products/analyze-name', [ProductImportExportController::class, 'analyzeProductName'])->name('products.analyze-name');
+});
 
 Route::resource('products', ProductController::class);
 Route::post('/products/{product}/remove-photo', [ProductController::class, 'removePhoto'])->name('products.remove-photo');
@@ -94,13 +98,6 @@ Route::prefix('expenses')->group(function () {
     Route::get('/{expense}/edit', [ExpensesController::class, 'edit'])->name('expenses.edit');
     Route::put('/{expense}', [ExpensesController::class, 'update'])->name('expenses.update');
     Route::delete('/{expense}', [ExpensesController::class, 'destroy'])->name('expenses.destroy');
-});
-
-Route::get('/check-session', function () {
-    return response()->json([
-        'authenticated' => auth()->check(),
-        'csrf_token' => csrf_token()
-    ]);
 });
 
 Route::resource('product-categories', \App\Http\Controllers\ProductCategoryController::class)
@@ -161,9 +158,7 @@ Route::get('/reports/turnover', [TurnoverReportController::class, 'index'])->nam
 Route::get('/reports/turnover-analytics', [TurnoverReportController::class, 'getDynamicAnalyticsData'])->name('reports.turnover.analytics');
 Route::get('/reports/turnover-tops', [TurnoverReportController::class, 'getTopsAnalyticsData'])->name('reports.turnover.tops');
 Route::get('/reports/suppliers-analytics', [\App\Http\Controllers\TurnoverReportController::class, 'suppliersAnalyticsData']);
-Route::get('/test', function() {
-    return 'test ok';
-});
+
 
 Route::get('/test-excel', function() {
     try {

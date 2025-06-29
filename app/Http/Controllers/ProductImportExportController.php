@@ -10,15 +10,32 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductBrand;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Maatwebsite\Excel\Excel as ExcelWriter;
 
 class ProductImportExportController extends Controller
 {
     /**
-     * Экспорт товаров в Excel
+     * Показать модальное окно экспорта с фильтрами
      */
-    public function export()
+    public function showExportModal(Request $request)
     {
-        return Excel::download(new ProductsExport, 'products_' . date('Y-m-d_H-i-s') . '.xlsx');
+        $categories = ProductCategory::orderBy('name')->get();
+        $brands = ProductBrand::orderBy('name')->get();
+        return view('products.list', compact('categories', 'brands'));
+    }
+
+    /**
+     * Экспорт товаров с фильтрами
+     */
+    public function export(Request $request)
+    {
+        $categoryId = $request->get('category_id');
+        $brandId = $request->get('brand_id');
+        $photo = $request->get('photo'); // all, with, without
+
+        $export = new ProductsExport($categoryId, $brandId, $photo);
+        $fileName = 'products_' . date('Y-m-d_H-i-s') . '.xlsx';
+        return \Maatwebsite\Excel\Facades\Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX);
     }
 
     /**
@@ -64,14 +81,44 @@ class ProductImportExportController extends Controller
      */
     public function import(Request $request)
     {
-        $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv|max:51200' // 50MB в килобайтах
-        ]);
+        \Log::info('Начало импорта товаров');
+        \Log::info('Request method: ' . $request->method());
+        \Log::info('Request URL: ' . $request->url());
+        \Log::info('Request headers: ' . json_encode($request->headers->all()));
+        
+        if (!$request->hasFile('file')) {
+            \Log::error('Файл не найден в запросе');
+            return response()->json([
+                'success' => false,
+                'message' => 'Файл не найден в запросе'
+            ], 400);
+        }
+        
+        $file = $request->file('file');
+        \Log::info('Файл получен: ' . $file->getClientOriginalName());
+        \Log::info('Размер файла: ' . $file->getSize());
+        \Log::info('MIME тип: ' . $file->getMimeType());
+        \Log::info('Расширение: ' . $file->getClientOriginalExtension());
 
         try {
-            $file = $request->file('file');
             $extension = strtolower($file->getClientOriginalExtension());
             $importFilePath = $file->getRealPath();
+
+            // --- Автоопределение разделителя для CSV ---
+            $delimiter = ';';
+            if ($extension === 'csv') {
+                $firstLine = '';
+                if (($handle = fopen($importFilePath, 'r')) !== false) {
+                    $firstLine = fgets($handle);
+                    fclose($handle);
+                }
+                $semicolonCount = substr_count($firstLine, ';');
+                $commaCount = substr_count($firstLine, ',');
+                if ($commaCount > $semicolonCount) {
+                    $delimiter = ',';
+                }
+                \Log::info('Автоопределённый разделитель: ' . $delimiter);
+            }
 
             // Если это Excel-файл, обрабатываем гиперссылки
             if (in_array($extension, ['xlsx', 'xls'])) {
@@ -91,7 +138,7 @@ class ProductImportExportController extends Controller
                 $importFilePath = $tempPath;
             }
 
-            $import = new ProductsImport();
+            $import = new ProductsImport($delimiter);
             Excel::import($import, $importFilePath);
 
             // Формируем сообщение на основе счетчиков
@@ -106,6 +153,8 @@ class ProductImportExportController extends Controller
                 $message = "Импорт завершен, новых товаров не добавлено";
             }
 
+            \Log::info('Импорт завершен успешно: ' . $message);
+
             return response()->json([
                 'success' => true,
                 'message' => $message,
@@ -114,6 +163,9 @@ class ProductImportExportController extends Controller
                 'totalProcessed' => $import->createdCount + $import->updatedCount
             ]);
         } catch (\Exception $e) {
+            \Log::error('Ошибка при импорте: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка при импорте: ' . $e->getMessage()

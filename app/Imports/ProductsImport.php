@@ -22,6 +22,13 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
 {
     use SkipsErrors;
 
+    private string $delimiter = ';'; // по умолчанию
+
+    public function __construct(string $delimiter = ';')
+    {
+        $this->delimiter = $delimiter;
+    }
+
     public $currentRow = 0;
     public $updatedCount = 0;
     public $createdCount = 0;
@@ -55,6 +62,7 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
         if (!$this->headerFound) {
             // Проверяем среди ключей
             foreach ($row as $key => $value) {
+                \Log::info("Проверяем ключ: '{$key}' = '{$value}'");
                 if (mb_strtolower(trim($key)) === 'название' || mb_strtolower(trim($value)) === 'название') {
                     $this->headerMap = $row;
                     $this->headerFound = true;
@@ -102,59 +110,54 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
         $brandName = $brandKey ? trim($row[$brandKey]) : '';
         $article = $articleKey ? trim($row[$articleKey]) : '';
 
-        // Если название пустое или это число (например, результат формулы), пропускаем строку
-        if (empty($productName) || is_numeric(str_replace(',', '.', $productName))) {
-            \Log::info('Пропущена строка с некорректным названием: ' . json_encode($row, JSON_UNESCAPED_UNICODE));
+        // Проверяем, что у нас есть хотя бы название товара
+        if (empty($productName)) {
+            \Log::warning('Пропущена строка без названия товара: ' . json_encode($row, JSON_UNESCAPED_UNICODE));
             return null;
         }
 
-        \Log::info("Обработка товара: {$productName}, опт: {$purchasePrice}, розница: {$retailPrice}");
-
-        // Если розничная цена равна 0, а оптовая больше 0, рассчитываем розничную
-        if ($retailPrice == 0 && $purchasePrice > 0) {
-            $retailPrice = round($purchasePrice * 1.6, 2);
-            \Log::info("Рассчитана розничная цена: {$retailPrice}");
-        }
-
-        // Определяем категорию
+        // Определяем категорию и бренд
         $categoryId = $this->determineCategory($categoryName, $productName);
-
-        // Определяем бренд
         $brandId = $this->determineBrand($brandName, $productName);
 
-        // Проверяем, существует ли товар с таким названием
+        // Проверяем, существует ли уже товар с таким названием
         $existingProduct = Product::where('name', $productName)->first();
-        
+
         if ($existingProduct) {
-            \Log::info('Обновляем существующий товар: ' . $productName);
+            // Обновляем существующий товар
+            $existingProduct->update([
+                'category_id' => $categoryId,
+                'brand_id' => $brandId,
+                'purchase_price' => $purchasePrice ?? $existingProduct->purchase_price,
+                'retail_price' => $retailPrice ?? $existingProduct->retail_price,
+                'article' => $article ?: $existingProduct->article,
+            ]);
+
             $this->updatedCount++;
-            
-            $updateData = [];
-            if ($categoryId !== null) $updateData['category_id'] = $categoryId;
-            if ($brandId !== null) $updateData['brand_id'] = $brandId;
-            if ($purchasePrice !== null) $updateData['purchase_price'] = $purchasePrice;
-            if ($retailPrice !== null) $updateData['retail_price'] = $retailPrice;
-            if (!empty($article)) $updateData['article'] = $article;
-            
-            if (!empty($updateData)) {
-                $existingProduct->update($updateData);
-            }
-            return null;
+            \Log::info("Обновлен товар: {$productName}");
         } else {
-            \Log::info('Создаем новый товар: ' . $productName);
-            $this->createdCount++;
-            // Импорт фото по URL (универсально для разных языков)
-            $photoPath = $this->processImageUrl($row);
-            return new Product([
+            // Создаем новый товар
+            $productData = [
                 'name' => $productName,
                 'category_id' => $categoryId,
                 'brand_id' => $brandId,
                 'purchase_price' => $purchasePrice ?? 0,
                 'retail_price' => $retailPrice ?? 0,
-                'photo' => $photoPath,
                 'article' => $article,
-            ]);
+            ];
+
+            // Обрабатываем фото, если есть
+            $photoPath = $this->processImageUrl($row);
+            if ($photoPath) {
+                $productData['photo'] = $photoPath;
+            }
+
+            Product::create($productData);
+            $this->createdCount++;
+            \Log::info("Создан новый товар: {$productName}");
         }
+
+        return null;
     }
 
     /**
@@ -375,7 +378,7 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
     public function getCsvSettings(): array
     {
         return [
-            'delimiter' => ';', // теперь точка с запятой
+            'delimiter' => $this->delimiter,
             'input_encoding' => 'UTF-8',
         ];
     }

@@ -9,12 +9,35 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 
 class ProductsExport implements FromCollection, WithHeadings, WithMapping
 {
+    private $categoryId;
+    private $brandId;
+    private $photo;
+
+    public function __construct($categoryId = null, $brandId = null, $photo = 'all')
+    {
+        $this->categoryId = $categoryId;
+        $this->brandId = $brandId;
+        $this->photo = $photo;
+    }
+
     /**
     * @return \Illuminate\Support\Collection
     */
     public function collection()
     {
-        return Product::with(['category', 'brand'])->get();
+        $query = Product::with(['category', 'brand']);
+        if ($this->categoryId) {
+            $query->where('category_id', $this->categoryId);
+        }
+        if ($this->brandId) {
+            $query->where('brand_id', $this->brandId);
+        }
+        if ($this->photo === 'with') {
+            $query->whereNotNull('photo')->where('photo', '!=', '');
+        } elseif ($this->photo === 'without') {
+            $query->whereNull('photo')->orWhere('photo', '');
+        }
+        return $query->get();
     }
 
     /**
