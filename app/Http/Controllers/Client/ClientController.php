@@ -25,23 +25,23 @@ class ClientController extends Controller
         }
 
         if ($request->ajax()) {
-            $clients = $query->get();
+            $clients = $query->paginate(11);
             $clientTypes = ClientType::where('status', true)->get();
 
             return response()->json([
-                'clients' => $clients,
-                'clientTypes' => $clientTypes,
+                'data' => $clients->items(),
                 'meta' => [
-                    'current_page' => 1,
-                    'last_page' => 1,
-                    'per_page' => $clients->count(),
-                    'total' => $clients->count(),
-                ]
+                    'current_page' => $clients->currentPage(),
+                    'last_page' => $clients->lastPage(),
+                    'per_page' => $clients->perPage(),
+                    'total' => $clients->total(),
+                ],
+                'clientTypes' => $clientTypes,
             ]);
         }
 
         // Для обычных запросов используем пагинацию
-        $clients = $query->paginate(10);
+        $clients = $query->paginate(11);
         $clientTypes = ClientType::where('status', true)->get();
         return view('client.clients.list', compact('clients', 'clientTypes'));
     }

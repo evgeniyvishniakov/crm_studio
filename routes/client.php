@@ -141,7 +141,7 @@ Route::group([], function () {
         // Специальные маршруты ДО ресурсного маршрута
         Route::get('/calendar-events', [AppointmentsController::class, 'calendarEvents'])->name('calendar-events');
         Route::get('/events', [AppointmentsController::class, 'getEvents'])->name('events');
-        
+        Route::get('/ajax', [AppointmentsController::class, 'ajax']);
         // Ресурсный маршрут
         Route::get('/', [AppointmentsController::class, 'index'])->name('index');
         Route::get('/create', [AppointmentsController::class, 'create'])->name('create');

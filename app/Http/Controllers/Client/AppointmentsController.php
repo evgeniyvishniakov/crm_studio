@@ -24,7 +24,7 @@ class AppointmentsController extends Controller
         $appointments = Appointment::with(['client', 'service'])
             ->orderBy('date', 'desc')
             ->orderBy('time', 'desc')
-            ->get();
+            ->paginate(11);
 
         $clients = Client::all()->map(function ($client) {
             return [
@@ -994,5 +994,56 @@ class AppointmentsController extends Controller
             }
         }
         // ... остальной код, где используется $startDate, $endDate ...
+    }
+
+    public function ajax(Request $request)
+    {
+        \Log::info('Appointments AJAX called', $request->all());
+        try {
+            $perPage = (int)($request->get('per_page', 11));
+            $search = $request->get('search');
+            $query = Appointment::with(['client', 'service']);
+            if ($search) {
+                $query->whereHas('client', function($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                      ->orWhere('instagram', 'like', "%$search%")
+                      ->orWhere('email', 'like', "%$search%")
+                      ->orWhere('phone', 'like', "%$search%")
+                    ;
+                });
+            }
+            $query->orderBy('date', 'desc')->orderBy('time', 'desc');
+            $appointments = $query->paginate($perPage);
+            $data = $appointments->map(function($a) {
+                return [
+                    'id' => $a->id,
+                    'date' => $a->date,
+                    'time' => $a->time,
+                    'client' => $a->client ? [
+                        'id' => $a->client->id,
+                        'name' => $a->client->name,
+                        'instagram' => $a->client->instagram
+                    ] : null,
+                    'service' => $a->service ? [
+                        'id' => $a->service->id,
+                        'name' => $a->service->name
+                    ] : null,
+                    'status' => $a->status,
+                    'price' => $a->price,
+                ];
+            });
+            return response()->json([
+                'data' => $data,
+                'meta' => [
+                    'current_page' => $appointments->currentPage(),
+                    'last_page' => $appointments->lastPage(),
+                    'per_page' => $appointments->perPage(),
+                    'total' => $appointments->total(),
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error('Appointments AJAX error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

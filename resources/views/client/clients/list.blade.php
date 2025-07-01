@@ -2125,7 +2125,7 @@
                     });
                 }
                 
-                renderClients(data.clients);
+                renderClients(data.data);
                 renderPagination(data.meta);
             });
         }

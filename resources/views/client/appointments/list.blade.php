@@ -681,6 +681,65 @@
             .details-header, .details-row, .details-footer { flex-direction: column; gap: 8px; align-items: flex-start; }
             .card { padding: 12px 8px; }
         }
+        /* --- Пагинация как в Клиентах --- */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            margin: 24px 0 0 0;
+            flex-wrap: wrap;
+            padding-bottom: 50px;
+        }
+        .page-btn {
+            min-width: 36px;
+            height: 36px;
+            border: none;
+            background: #f3f4f6;
+            color: #2563eb;
+            font-weight: 500;
+            font-size: 16px;
+            border-radius: 6px;
+            margin: 0 2px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            outline: none;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .page-btn.active,
+        .page-btn:hover:not(:disabled) {
+            background: #2563eb;
+            color: #fff;
+        }
+        .page-btn:disabled {
+            background: #e5e7eb;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .page-ellipsis {
+            min-width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 18px;
+            font-weight: 600;
+            user-select: none;
+        }
+        @media (max-width: 600px) {
+            .pagination {
+                gap: 2px;
+            }
+            .page-btn, .page-ellipsis {
+                min-width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+        }
     </style>
     <div class="appointments-header">
         <h1>Записи</h1>
@@ -785,15 +844,7 @@
                 @endforeach
                 </tbody>
             </table>
-            <div class="calendar-nav" id="appointmentsPagination" style="justify-content: center; margin-top: 20px;">
-                <button class="calendar-nav-btn list-prev-button" id="prevListPageBtn" type="button">
-                    <i class="fa fa-chevron-left"></i>
-                </button>
-                <span id="currentPageInfo" class="calendar-title">Страница 1 из 1</span>
-                <button class="calendar-nav-btn list-next-button" id="nextListPageBtn" type="button">
-                    <i class="fa fa-chevron-right"></i>
-                </button>
-            </div>
+            <div class="pagination" id="appointmentsPagination" style="justify-content: center; margin-top: 20px;"></div>
         </div>
     </div>
     <div id="calendarView" style="{{ $viewType === 'list' ? 'display:none;' : '' }}">
@@ -1815,6 +1866,55 @@
             }
 
             updateTotalAmount();
+        }
+
+        function renderAppointmentsTable(appointments) {
+            const tbody = document.querySelector('#appointmentsTable tbody');
+            if (!tbody) return;
+            tbody.innerHTML = renderAppointmentsList(appointments);
+        }
+        function renderAppointmentsList(appointments) {
+            return appointments.map(appointment => `
+                <tr data-appointment-id="${appointment.id}">
+                    <td>${formatDate(appointment.date)}</td>
+                    <td>${appointment.time ? appointment.time.slice(0,5) : ''}</td>
+                    <td>
+                        ${appointment.client ? appointment.client.name : 'Клиент удален'}
+                        ${appointment.client && appointment.client.instagram ? `
+                            <br>
+                            <a href="https://instagram.com/${appointment.client.instagram}" class="instagram-link" target="_blank" rel="noopener noreferrer">
+                                <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;width:16px;height:16px;">
+                                    <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
+                                </svg>
+                                ${appointment.client.instagram}
+                            </a>
+                        ` : ''}
+                    </td>
+                    <td>${appointment.service ? appointment.service.name : 'Услуга удалена'}</td>
+                    <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
+                    <td>${formatPrice(appointment.price)} грн</td>
+                    <td>
+                        <div class="appointment-actions actions-cell">
+                            <button class="btn-view" data-appointment-id="${appointment.id}" title="Просмотр">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                            <button class="btn-edit" data-appointment-id="${appointment.id}" title="Редактировать">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-delete" data-appointment-id="${appointment.id}"  title="Удалить">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
         }
 
 
@@ -3006,39 +3106,7 @@
                     </tbody>
                 </table>`;
         }
-
-        function renderAppointmentsList(appointments) {
-            return appointments.map(appointment => `
-                <tr data-appointment-id="${appointment.id}">
-                    <td>${appointment.client ? appointment.client.name : 'Клиент удален'}</td>
-                    <td>${appointment.service ? appointment.service.name : 'Услуга удалена'}</td>
-                    <td>${formatDate(appointment.date)}</td>
-                    <td>${appointment.time}</td>
-                    <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
-                    <td>${formatPrice(appointment.price)} грн</td>
-                    <td>
-                        <div class="appointment-actions actions-cell">
-                            <button class="btn-view" data-appointment-id="${appointment.id}" title="Просмотр">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-                                </svg>
-                            </button>
-                            <button class="btn-edit" data-appointment-id="${appointment.id}" title="Редактировать">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                </svg>
-                            </button>
-                            <button class="btn-delete" data-appointment-id="${appointment.id}"  title="Удалить">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-        }
+        
 
         function updateProductDetails(productId) {
             const product = allProducts.find(p => p.id == productId);
@@ -3061,46 +3129,68 @@
         }
 
         // Пагинация для списка записей
-        (function() {
-            const pageSize = 10;
-            let currentPage = 1;
-            let rows = Array.from(document.querySelectorAll('#appointmentsTable tbody tr'));
-            let totalPages = Math.ceil(rows.length / pageSize);
-
-            function renderPage(page) {
-                rows.forEach((row, idx) => {
-                    row.style.display = (idx >= (page-1)*pageSize && idx < page*pageSize) ? '' : 'none';
-                });
-                document.getElementById('currentPageInfo').textContent = `Страница ${page} из ${totalPages}`;
-                document.getElementById('prevListPageBtn').disabled = page === 1;
-                document.getElementById('nextListPageBtn').disabled = page === totalPages;
-            }
-
-            function updateRows() {
-                rows = Array.from(document.querySelectorAll('#appointmentsTable tbody tr'));
-                totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
-                if (currentPage > totalPages) currentPage = totalPages;
-                renderPage(currentPage);
-            }
-
-            document.getElementById('prevListPageBtn').addEventListener('click', function() {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderPage(currentPage);
-                }
-            });
-            document.getElementById('nextListPageBtn').addEventListener('click', function() {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderPage(currentPage);
-                }
-            });
-
-            // Если записи динамически меняются, можно вызвать updateRows()
-            updateRows();
-        })();
+        
 
       
+
+        function renderAppointmentsPagination(meta) {
+            let paginationHtml = '';
+            if (meta.last_page > 1) {
+                paginationHtml += '<div class="pagination">';
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}>&lt;<\/button>`;
+                let pages = [];
+                if (meta.last_page <= 7) {
+                    for (let i = 1; i <= meta.last_page; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    if (meta.current_page > 4) pages.push('...');
+                    let start = Math.max(2, meta.current_page - 2);
+                    let end = Math.min(meta.last_page - 1, meta.current_page + 2);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    if (meta.current_page < meta.last_page - 3) pages.push('...');
+                    pages.push(meta.last_page);
+                }
+                pages.forEach(p => {
+                    if (p === '...') {
+                        paginationHtml += `<span class="page-ellipsis">...<\/span>`;
+                    } else {
+                        paginationHtml += `<button class="page-btn${p === meta.current_page ? ' active' : ''}" data-page="${p}">${p}<\/button>`;
+                    }
+                });
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;<\/button>`;
+                paginationHtml += '<\/div>';
+            }
+            let pagContainer = document.getElementById('appointmentsPagination');
+            if (pagContainer) pagContainer.innerHTML = paginationHtml;
+            document.querySelectorAll('#appointmentsPagination .page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    if (!isNaN(page) && !this.disabled) {
+                        loadAppointments(page);
+                    }
+                });
+            });
+        }
+
+        function loadAppointments(page = 1) {
+            fetch(`/appointments/ajax?page=${page}`)
+                .then(res => res.json())
+                .then(response => {
+                    renderAppointmentsTable(response.data); // обновляет строки таблицы
+                    renderAppointmentsPagination(response.meta); // обновляет пагинацию!
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+    loadAppointments(1);
+});
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+            return date.toLocaleDateString('ru-RU');
+        }
 
        
     </script>
