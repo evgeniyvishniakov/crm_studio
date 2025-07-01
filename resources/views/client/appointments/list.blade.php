@@ -2,6 +2,698 @@
 
 @section('content')
 <div class="dashboard-container">
+    <style>
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: 500;
+            display: inline-block;
+            text-align: center;
+            min-width: 100px;
+        }
+    
+        .status-pending {
+            background: linear-gradient(135deg, #eba70e 60%, #ffce47 100%);
+            color: #fff;
+        }
+    
+        .status-completed {
+            background: linear-gradient(135deg, #4CAF50 60%, #6ee7b7 100%);
+            color: #fff;
+        }
+    
+        .status-cancelled {
+            background: linear-gradient(135deg, #F44336 60%, #ff7a7a 100%);
+            color: #fff;
+        }
+    
+        .status-rescheduled {
+            background: linear-gradient(135deg, #ae1ee9 60%, #e9a1f7 100%);
+            color: #fff;
+        }
+    
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+    
+        .products-table th,
+        .products-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+    
+        .products-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+    
+        .products-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+    
+        .btn-delete-product {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0.25rem;
+            transition: color 0.2s;
+        }
+    
+        .btn-delete-product:hover {
+            color: #dc2626;
+        }
+    
+        .btn-delete-product .icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+    
+    
+        /* Стили для календаря */
+        .calendar-wrapper {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+    
+        .calendar-view-switcher {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .fc-daygrid-day{
+            cursor: pointer;
+        }
+        .view-switch-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    
+        .view-switch-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+    
+        .view-switch-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            border-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+    
+        .today-button {
+            background: #28a745;
+            color: white !important;
+            border: none !important;
+        }
+    
+        .today-button:hover {
+            background: #218838;
+            color: white !important;
+            border: none !important;
+        }
+    
+        .calendar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            padding: 8px 16px;
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            display: inline-block;
+        }
+    
+        .calendar-nav {
+    
+            gap: 10px;
+        }
+    
+        .calendar-nav-btn {
+            background: #f8f9fa;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #2c3e50;
+        }
+    
+        .calendar-nav-btn:hover {
+            background: #e9ecef;
+        }
+    
+        /* Стили для FullCalendar */
+        #calendar {
+            margin-top: 20px;
+        }
+    
+        .fc-toolbar {
+            display: none !important;
+        }
+    
+        .fc-event {
+            border: none !important;
+            padding: 2px 4px !important;
+            margin: 1px 0 !important;
+            cursor: pointer;
+            border-radius: 4px !important;
+            position: relative;
+        }
+    
+        .fc-time-grid-event {
+            border-radius: 4px;
+            margin: 1px 0;
+        }
+    
+        .fc-time {
+            font-weight: bold !important;
+        }
+    
+        .fc-title {
+            font-size: 0.9em !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    
+        .fc-day-header {
+            font-weight: 600 !important;
+            padding: 8px 0 !important;
+        }
+    
+        .fc-day-number {
+            padding: 8px !important;
+            font-weight: 600 !important;
+        }
+    
+        .fc-today {
+            background-color: #e3f2fd !important;
+        }
+    
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+    
+        .calendar-weekday {
+            text-align: center;
+            font-weight: 600;
+            color: #6c757d;
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+    
+        .calendar-day {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            background: #f8f9fa;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+    
+        .calendar-day:hover {
+            background: #e9ecef;
+        }
+    
+        .calendar-day.today {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+        }
+    
+        .calendar-day.selected {
+            background: #bbdefb;
+        }
+    
+        .calendar-day.has-events {
+            background: #fff;
+        }
+    
+        .calendar-day.has-events::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #2196f3;
+        }
+    
+        .calendar-day.other-month {
+            opacity: 0.5;
+        }
+    
+        .calendar-day-number {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+    
+        .calendar-day-events {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+    
+        .calendar-legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+    
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+    
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 768px) {
+            .calendar-wrapper {
+                padding: 10px;
+            }
+    
+            .calendar-title {
+                font-size: 1.2rem;
+            }
+    
+            .calendar-weekday {
+                font-size: 0.8rem;
+                padding: 5px;
+            }
+    
+            .calendar-day {
+                padding: 4px;
+            }
+    
+            .calendar-day-number {
+                font-size: 0.9rem;
+            }
+        }
+    
+    
+    
+        /* Стили для записей в календаре */
+        .appointment-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin: 0 2px;
+            display: inline-block;
+        }
+    
+        .appointment-dot.confirmed { background: #4CAF50; }
+        .appointment-dot.pending { background: #FFC107; }
+        .appointment-dot.cancelled { background: #F44336; }
+    
+        /* Стили для недельного вида */
+        .week-view {
+            display: none;
+        }
+    
+        .week-view.active {
+            display: block;
+        }
+    
+        .week-timeline {
+            display: grid;
+            grid-template-columns: 60px repeat(7, 1fr);
+            gap: 1px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    
+        .timeline-hour {
+            padding: 10px;
+            border-right: 1px solid #e9ecef;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    
+        .timeline-slot {
+            height: 60px;
+            border-bottom: 1px solid #e9ecef;
+            padding: 4px;
+            position: relative;
+        }
+    
+        .appointment-card {
+            position: absolute;
+            left: 4px;
+            right: 4px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #fff;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+    
+        .appointment-card.confirmed { background: rgba(76, 175, 80, 0.9); }
+        .appointment-card.pending { background: rgba(255, 193, 7, 0.9); }
+        .appointment-card.cancelled { background: rgba(244, 67, 54, 0.9); }
+    
+        /* Стили для дневного вида */
+        .day-view {
+            display: none;
+        }
+    
+        .day-view.active {
+            display: block;
+        }
+    
+        .day-timeline {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            gap: 1px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    
+        /* Стили для годового вида */
+        .year-view {
+            display: none;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+    
+        .year-view.active {
+            display: grid;
+        }
+    
+        .mini-month {
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    
+        .mini-month-header {
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+    
+        .mini-month-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            font-size: 0.8rem;
+        }
+    
+        .mini-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    
+        .mini-day:hover {
+            background: #e9ecef;
+        }
+    
+        .mini-day.has-events {
+            color: #2196f3;
+            font-weight: 600;
+        }
+    
+        /* Стили для переключателя видов */
+        .calendar-view-switcher {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+    
+        .view-switch-btn {
+            padding: 8px 16px;
+            border: 1px solid #e9ecef;
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+    
+        .view-switch-btn.active {
+            background: #2196f3;
+            color: #fff;
+            border-color: #2196f3;
+        }
+    
+        .today-button {
+            background: #28a745;
+            color: white !important;
+            border-color: #28a745;
+        }
+    
+        .today-button:hover {
+            background: #218838;
+            color: white !important;
+        }
+    
+        /* Стили для календаря */
+        #calendar {
+            margin-top: 20px;
+        }
+    
+        .fc-toolbar {
+            display: none !important;
+        }
+    
+        .fc-event {
+            border: none !important;
+            padding: 2px 4px !important;
+            margin: 1px 0 !important;
+            cursor: pointer;
+            border-radius: 4px !important;
+        }
+    
+        /* Стили для всплывающей подсказки */
+        .appointment-tooltip {
+            position: fixed;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+            width: 250px;
+        }
+    
+        .tooltip-btn {
+            pointer-events: auto; /* Включаем события только для кнопок */
+        }
+    
+        .appointment-tooltip-content {
+            margin-bottom: 10px;
+        }
+    
+        .appointment-tooltip-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+    
+        .tooltip-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+    
+        .tooltip-btn-edit {
+            background-color: #4CAF50;
+            color: white;
+        }
+    
+        .tooltip-btn-delete {
+            background-color: #f44336;
+            color: white;
+        }
+    
+        .tooltip-btn .icon {
+            width: 16px;
+            height: 16px;
+        }
+    
+        /* --- Новый стиль для модального окна просмотра --- */
+        .appointment-details-modal {
+            padding: 24px 16px 0 16px;
+            font-size: 1.05rem;
+        }
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+        }
+        .client-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .client-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            color: #2196f3;
+        }
+        .client-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .status-block {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            background: transparent;
+        }
+        .status-pending {
+            background: linear-gradient(135deg, #eba70e 60%, #ffce47 100%);
+            color: #fff;
+        }
+        .status-completed {
+            background: linear-gradient(135deg, #4CAF50 60%, #56bb93 100%);
+        }
+        .status-cancelled {
+            background: linear-gradient(135deg, #F44336 60%, #ff7a7a 100%);
+        }
+        .status-rescheduled {
+            background: linear-gradient(135deg, #ae1ee9 60%, #e9a1f7 100%);
+        }
+        .details-row {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 18px;
+        }
+        .details-label {
+            color: #888;
+            font-weight: 500;
+            margin-right: 4px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            padding: 18px 20px;
+            margin-bottom: 18px;
+        }
+        .card-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #2196f3;
+        }
+        .procedure-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.08rem;
+        }
+        .procedure-price {
+            font-weight: 600;
+            color: #4CAF50;
+            font-size: 1.1rem;
+        }
+        .sales-card .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #bbb;
+            font-size: 1rem;
+            padding: 18px 0 8px 0;
+        }
+        .sales-card .empty-state svg {
+            width: 38px;
+            height: 38px;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+        .details-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid #eee;
+            padding: 18px 0 0 0;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+        .details-footer span {
+            margin-right: auto;
+            font-weight: 600;
+        }
+        @media (max-width: 600px) {
+            .details-header, .details-row, .details-footer { flex-direction: column; gap: 8px; align-items: flex-start; }
+            .card { padding: 12px 8px; }
+        }
+    </style>
     <div class="appointments-header">
         <h1>Записи</h1>
         <div id="notification"></div>
@@ -715,7 +1407,7 @@
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z"/></svg>
                     <div>Товары не добавлены</div>
                 </div>` : renderProductsList(temporaryProducts)}
-                <button class="btn-add-product" id="showAddProductFormBtn">
+                <button class="btn-add-appointment btn-add-product" id="showAddProductFormBtn">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
