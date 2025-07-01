@@ -89,55 +89,75 @@
             height: 160px;
         }
         
-        /* Это правило не дает иконке активного пункта меню становиться синей */
-        /*
-        .navbar .navbar-nav li.active > a .menu-icon {
-            color: #555 !important;
-        }
-        */
+        /* Оставляю только стили для .active и иконки, удаляю универсальные color: #03a9f3 !important для всех ссылок меню */
 
-        /* Делаем иконку активного пункта светло-голубой, как на дашборде */
         .navbar .navbar-nav li.active > a .menu-icon {
-            color: #03a9f3 !important; /* Цвет текста, который мы хотим для иконки */
-            opacity: 0.7 !important; /* Делаем ее полупрозрачной для "светлого" эффекта */
+            color: #03a9f3 !important;
+            opacity: 0.7 !important;
         }
-        
-        /* Одинаковый светло-синий цвет для активного родителя и дочернего пункта */
         .menu-item-has-children.active > a,
         .sub-menu li.active > a,
         .menu-item-has-children.active > a .menu-icon,
         .sub-menu li.active > i {
             color: #03a9f3 !important;
             background: none !important;
+            background-color: transparent !important;
             font-weight: normal !important;
         }
-        
-        /* Принудительно показываем подменю для активных пунктов */
-        .menu-item-has-children.active .sub-menu {
-            display: block !important;
-            position: static !important;
-            float: none !important;
-            width: auto !important;
-            margin-top: 0 !important;
-            background-color: transparent !important;
-            border: 0 !important;
-            box-shadow: none !important;
-        }
-        
-        /* Предотвращаем закрытие активного меню и сохраняем видимость */
-        .menu-item-has-children.active .dropdown-toggle {
-            pointer-events: none;
-            color: #03a9f3 !important;
-            background: none !important;
-        }
-        
-        /* Обеспечиваем видимость текста в активном меню */
         .menu-item-has-children.active .dropdown-toggle,
         .menu-item-has-children.active .dropdown-toggle:hover,
         .menu-item-has-children.active .dropdown-toggle:focus {
             color: #03a9f3 !important;
             background: none !important;
             text-decoration: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-nav .open > a,
+            .navbar-nav .show > a {
+                background: none !important;
+                background-color: transparent !important;
+                color: #03a9f3 !important;
+                box-shadow: none !important;
+                outline: none !important;
+            }
+        }
+
+        .navbar-nav .active > a,
+        .navbar-nav li.active > a,
+        .navbar-nav li.active > a:focus,
+        .navbar-nav li.active > a:active,
+        .navbar-nav li.active > a:hover,
+        .navbar-nav a:focus,
+        .navbar-nav a:active,
+        .navbar-nav a:visited {
+            background: none !important;
+            background-color: transparent !important;
+            box-shadow: none !important;
+            outline: none !important;
+            filter: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-box-shadow: none !important;
+            -moz-box-shadow: none !important;
+            border: none !important;
+            border-color: transparent !important;
+            user-select: none !important;
+        }
+
+        .header-menu {
+            display: flex;
+            align-items: center;
+        
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .user-area {
+            display: flex;
+            align-items: center;
+            margin-left: 18px;
         }
     </style>
 </head>
@@ -166,8 +186,8 @@
 
                 <li class="menu-title">Товарооборот</li>
 
-                <li class="{{ request()->routeIs('warehouse.*') ? 'active' : '' }}">
-                    <a href="{{ route('warehouses.index') }}"><i class="menu-icon fa fa-dropbox"></i>Склад</a>
+                <li class="{{ request()->routeIs('warehouses.*') ? 'active' : '' }}">
+                    <a href="{{ route('warehouses.index') }}"><i class="menu-icon fa fa-boxes-stacked"></i>Склад</a>
                 </li>
                 <li class="{{ request()->routeIs('purchases.*') ? 'active' : '' }}">
                     <a href="{{ route('purchases.index') }}"><i class="menu-icon fa fa-cart-plus"></i>Закупки</a>
@@ -196,7 +216,7 @@
                     request()->routeIs('client-types.*') ? 'active' : '' 
                 }}">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="menu-icon fa fa-book"></i>Справочники
+                        <i class="menu-icon fa fa-layer-group"></i>Справочники
                     </a>
                     <ul class="sub-menu children dropdown-menu">
                         <li class="{{ request()->routeIs('services.*') ? 'active' : '' }}">
@@ -277,14 +297,7 @@
         <div class="top-right">
             <div class="header-menu">
                 <div class="header-left">
-                    <button class="search-trigger"><i class="fa fa-search"></i></button>
-                    <div class="form-inline">
-                        <form class="search-form">
-                            <input class="form-control mr-sm-2" type="text" placeholder="Search ..." aria-label="Search">
-                            <button class="search-close" type="submit"><i class="fa fa-close"></i></button>
-                        </form>
-                    </div>
-
+                    
                     <div class="dropdown for-notification">
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-bell"></i>
@@ -352,17 +365,15 @@
 
                 <div class="user-area dropdown float-right">
                     <a href="#" class="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <img class="user-avatar rounded-circle" src="" alt="User Avatar">
+                        <span class="user-avatar-icon" style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:#e5e7eb;">
+                            <i class="fa fa-user" style="font-size:20px;color:#64748b;"></i>
+                        </span>
                     </a>
-
                     <div class="user-menu dropdown-menu">
-                        <a class="nav-link" href="#"><i class="fa fa- user"></i>My Profile</a>
+                        <a class="nav-link" href="#"><i class="fa fa-user"></i>Мой профиль</a>
 
-                        <a class="nav-link" href="#"><i class="fa fa- user"></i>Notifications <span class="count">13</span></a>
-
-                        <a class="nav-link" href="#"><i class="fa fa -cog"></i>Settings</a>
-
-                        <a class="nav-link" href="#"><i class="fa fa-power -off"></i>Logout</a>
+                        <a class="nav-link" href="#"><i class="fa fa-cog"></i>Смена пароля</a>
+                        <a class="nav-link" href="#"><i class="fa fa-power-off"></i>Выход</a>
                     </div>
                 </div>
 

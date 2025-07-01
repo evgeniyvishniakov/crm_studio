@@ -2,78 +2,76 @@
 
 @section('content')
 <div class="dashboard-container">
-    <div class="warehouse-container">
-        <!-- Модальное окно для увеличенного изображения -->
-        <div id="imageModal" class="modal image-modal" onclick="closeImageModal()">
-            <img id="modalImage" class="modal-image-content" onclick="event.stopPropagation()">
-        </div>
+    <!-- Модальное окно для увеличенного изображения -->
+    <div id="imageModal" class="modal image-modal" onclick="closeImageModal()">
+        <img id="modalImage" class="modal-image-content" onclick="event.stopPropagation()">
+    </div>
 
-        <div class="warehouse-header">
-            <h1>Склад</h1>
-            <div id="notification" class="notification">
-                <!-- Уведомления будут появляться здесь -->
-            </div>
-            <div class="header-actions">
-                <button class="btn-add-product" onclick="openModal()">
-                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                    </svg>
-                    Добавить на склад
-                </button>
-                <div class="search-box">
-                    <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                    </svg>
-                    <input type="text" placeholder="Поиск..." id="searchInput">
-                </div>
+    <div class="warehouse-header">
+        <h1>Склад</h1>
+        <div id="notification" class="notification">
+            <!-- Уведомления будут появляться здесь -->
+        </div>
+        <div class="header-actions">
+            <button class="btn-add-product" onclick="openModal()">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                Добавить на склад
+            </button>
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input type="text" placeholder="Поиск..." id="searchInput">
             </div>
         </div>
+    </div>
 
-        <div class="table-wrapper">
-            <table class="table-striped warehouse-table">
-                <thead>
-                <tr>
-                    <th>Фото</th>
-                    <th>Товар</th>
-                    <th>Закупочная цена</th>
-                    <th>Розничная цена</th>
-                    <th>Остатки</th>
-                    <th>Действия</th>
+    <div class="table-wrapper">
+        <table class="table-striped warehouse-table">
+            <thead>
+            <tr>
+                <th>Фото</th>
+                <th>Товар</th>
+                <th>Закупочная цена</th>
+                <th>Розничная цена</th>
+                <th>Остатки</th>
+                <th>Действия</th>
+            </tr>
+            </thead>
+            <tbody id="warehouseTableBody">
+            @foreach($warehouseItems as $item)
+                <tr id="warehouse-{{ $item->id }}">
+                    <td>
+                        @if($item->product->photo)
+                            <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="{{ $item->product->name }}">
+                        @else
+                            <div class="no-photo">Нет фото</div>
+                        @endif
+                    </td>
+                    <td>{{ $item->product->name }}</td>
+                    <td class="purchase-price">{{ number_format($item->purchase_price, 2) }} грн</td>
+                    <td class="retail-price">{{ number_format($item->retail_price, 2) }} грн</td>
+                    <td class="quantity">{{ $item->quantity }} шт</td>
+                    <td class="actions-cell">
+                        <button class="btn-edit" onclick="openEditModal({{ $item->id }})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                            </svg>
+                            Ред.
+                        </button>
+                        <button class="btn-delete" onclick="confirmDelete({{ $item->id }})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            Удалить
+                        </button>
+                    </td>
                 </tr>
-                </thead>
-                <tbody id="warehouseTableBody">
-                @foreach($warehouseItems as $item)
-                    <tr id="warehouse-{{ $item->id }}">
-                        <td>
-                            @if($item->product->photo)
-                                <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="{{ $item->product->name }}">
-                            @else
-                                <div class="no-photo">Нет фото</div>
-                            @endif
-                        </td>
-                        <td>{{ $item->product->name }}</td>
-                        <td class="purchase-price">{{ number_format($item->purchase_price, 2) }} грн</td>
-                        <td class="retail-price">{{ number_format($item->retail_price, 2) }} грн</td>
-                        <td class="quantity">{{ $item->quantity }} шт</td>
-                        <td class="actions-cell">
-                            <button class="btn-edit" onclick="openEditModal({{ $item->id }})">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                </svg>
-                                Ред.
-                            </button>
-                            <button class="btn-delete" onclick="confirmDelete({{ $item->id }})">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                </svg>
-                                Удалить
-                            </button>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
+            @endforeach
+            </tbody>
+        </table>
     </div>
 
     <!-- Модальное окно добавления -->
@@ -320,7 +318,7 @@
             modal.style.display = 'block';
             modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
 
-            fetch(`/warehouse/${id}/edit`, {
+            fetch(`/warehouses/${id}/edit`, {
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
@@ -396,7 +394,7 @@
             submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
             submitBtn.disabled = true;
 
-            fetch(`/warehouse/${id}`, {
+            fetch(`/warehouses/${id}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -526,7 +524,7 @@
             const row = document.getElementById(`warehouse-${id}`);
             if (row) row.classList.add('row-deleting');
 
-            fetch(`/warehouse/${id}`, {
+            fetch(`/warehouses/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -592,7 +590,7 @@
             submitBtn.innerHTML = '<span class="loader"></span> Добавление...';
             submitBtn.disabled = true;
 
-            fetch("{{ route('warehouses.store') }}", {
+            fetch("/warehouses", {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -666,7 +664,7 @@
             submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
             submitBtn.disabled = true;
 
-            fetch(`/warehouse/${id}`, {
+            fetch(`/warehouses/${id}`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -716,86 +714,7 @@
         }
     </script>
 
-    <style>
-        .product-search-container {
-            position: relative;
-            width: 100%;
-        }
-
-        .product-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            z-index: 1000;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .product-dropdown-item {
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .product-dropdown-item:hover {
-            background-color: #f5f5f5;
-        }
-
-        .product-search-input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .product-search-input:focus {
-            outline: none;
-            border-color: #4a90e2;
-            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-        }
-    </style>
 </div>
-
-<style>
-.image-modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.9);
-    cursor: pointer;
-}
-
-.modal-image-content {
-    margin: auto;
-    display: block;
-    max-width: 90%;
-    max-height: 90vh;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    cursor: default;
-}
-
-.product-photo {
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.product-photo:hover {
-    transform: scale(1.1);
-}
-</style>
 
 <script>
 function openImageModal(imgElement) {
@@ -819,3 +738,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+@endsection

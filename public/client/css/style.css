@@ -869,7 +869,7 @@ aside.left-panel {
   top: 0;
   z-index: 999; }
 .right-panel .navbar-brand {
-  width: 250px;
+  
   display: inline-block; }
 .right-panel .menutoggle {
   padding-top: 7px; }
@@ -960,7 +960,7 @@ header .form-inline {
     header .form-inline .search-form button:focus,
     header .form-inline .search-form button:visited,
     header .form-inline .search-form .btn-outline-success:hover {
-      background: transparent;
+      background: transparent!important;
       border: none !important;
       -webkit-box-shadow: none;
               box-shadow: none;
@@ -1193,7 +1193,6 @@ header .form-inline {
 
 .content {
   float: left;
-  padding: 1.875em;
   width: 100%; }
 
 .card {
