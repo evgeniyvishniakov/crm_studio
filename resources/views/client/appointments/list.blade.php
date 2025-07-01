@@ -14,22 +14,22 @@
         }
     
         .status-pending {
-            background: linear-gradient(135deg, #eba70e 60%, #ffce47 100%);
+            background: linear-gradient(135deg, #eba70e 60%, #f3c138 100%);
             color: #fff;
         }
     
         .status-completed {
-            background: linear-gradient(135deg, #4CAF50 60%, #6ee7b7 100%);
+            background: linear-gradient(135deg, #4CAF50 60%, #56bb93 100%);
             color: #fff;
         }
     
         .status-cancelled {
-            background: linear-gradient(135deg, #F44336 60%, #ff7a7a 100%);
+            background: linear-gradient(135deg, #F44336 60%, #eb7171 100%);
             color: #fff;
         }
     
         .status-rescheduled {
-            background: linear-gradient(135deg, #ae1ee9 60%, #e9a1f7 100%);
+            background: linear-gradient(135deg, #ae1ee9 60%, #bc79c9 100%);
             color: #fff;
         }
     
@@ -612,21 +612,9 @@
             font-weight: 600;
             font-size: 1rem;
             color: #fff;
-            background: transparent;
+            
         }
-        .status-pending {
-            background: linear-gradient(135deg, #eba70e 60%, #ffce47 100%);
-            color: #fff;
-        }
-        .status-completed {
-            background: linear-gradient(135deg, #4CAF50 60%, #56bb93 100%);
-        }
-        .status-cancelled {
-            background: linear-gradient(135deg, #F44336 60%, #ff7a7a 100%);
-        }
-        .status-rescheduled {
-            background: linear-gradient(135deg, #ae1ee9 60%, #e9a1f7 100%);
-        }
+        
         .details-row {
             display: flex;
             gap: 32px;
@@ -3112,17 +3100,9 @@
             updateRows();
         })();
 
-        // Обработчик изменения выбора услуги
-        $('#addAppointmentModal').on('change', 'select[name="service_id"]', function() {
-            const price = $(this).find('option:selected').data('price');
-            $('#addAppointmentModal input[name="price"]').val(price);
-        });
+      
 
-        // Обработчик изменения выбора услуги
-        $('#editAppointmentModal').on('change', 'select[name="service_id"]', function() {
-            const price = $(this).find('option:selected').data('price');
-            $('#editAppointmentModal input[name="price"]').val(price);
-        });
+       
     </script>
 </div>
 @endsection

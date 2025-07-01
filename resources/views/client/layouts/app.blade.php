@@ -393,18 +393,6 @@
 </div>
 <!-- /#right-panel -->
 
-<script>
-$(document).ready(function() {
-    // Для активных меню принудительно показываем подменю
-    $('.menu-item-has-children.active .sub-menu').show();
-    
-    // Предотвращаем закрытие активного меню при клике на дочерние пункты
-    $('.menu-item-has-children.active .sub-menu a').on('click', function(e) {
-        // Разрешаем переход по ссылке, но не закрываем меню
-    });
-});
-</script>
-
 @stack('scripts')
 </body>
 </html>
