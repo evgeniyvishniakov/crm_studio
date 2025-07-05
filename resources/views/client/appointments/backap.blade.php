@@ -764,16 +764,9 @@
                         selectable: true,
                         editable: true,
                         events: function(info, successCallback, failureCallback) {
-                            console.log('=== Загрузка событий календаря ===');
                             fetch('/appointments/calendar-events')
                                 .then(response => response.json())
                                 .then(events => {
-                                    console.log('Загруженные события:', events);
-                                    // Проверяем формат ID у первого события
-                                    if (events.length > 0) {
-                                        console.log('Пример ID первого события:', events[0].id);
-                                        console.log('Тип ID:', typeof events[0].id);
-                                    }
                                     successCallback(events);
                                 })
                                 .catch(error => {
@@ -1525,7 +1518,7 @@
             const price = modal.querySelector('#productPrice')?.value;
             const productName = modal.querySelector('#productSearchInput')?.value;
 
-            console.log('Adding product:', { productId, quantity, price, productName });
+            
 
             // Проверки
             if (!productId || productId === '') {
@@ -1707,8 +1700,7 @@
         // Функции для поиска товаров
         function searchProducts(inputElement) {
             const searchTerm = inputElement.value.trim().toLowerCase();
-            console.log('Поисковый запрос:', searchTerm);
-            console.log('Доступные товары:', allProducts);
+
 
             const dropdown = inputElement.nextElementSibling;
             const dropdownList = dropdown.querySelector('.product-dropdown-list');
@@ -1720,11 +1712,11 @@
 
             const filteredProducts = allProducts.filter(product => {
                 const nameMatch = product.name?.toLowerCase().includes(searchTerm) || false;
-                console.log('Проверяем товар:', product.name, 'Совпадение:', nameMatch);
+
                 return nameMatch;
             }).slice(0, 5);
 
-            console.log('Найденные товары:', filteredProducts);
+
 
             if (filteredProducts.length > 0) {
                 dropdownList.innerHTML = filteredProducts.map(product => {
@@ -1776,7 +1768,7 @@
                 if (productDetails) productDetails.style.display = 'flex';
             }
 
-            console.log('Selected product:', { productId, name, price, formValues: {
+            
                     searchInput: searchInput?.value,
                     hiddenInput: hiddenInput?.value,
                     priceInput: priceInput?.value,
@@ -2301,7 +2293,7 @@
             const timeElement = modal.querySelector('.detail-row-no-flex:nth-child(2) .detail-value');
             const time = timeElement?.textContent?.trim();
 
-            console.log('Debug time:', {
+
                 timeElement,
                 timeText: timeElement?.textContent,
                 time
@@ -2365,7 +2357,7 @@
                 }))
             };
 
-            console.log('Отправляемые данные:', requestData);
+
 
             try {
                 const response = await fetch(`/appointments/${appointmentId}`, {
@@ -2428,8 +2420,7 @@
         }
 
         function showProductDropdown(input) {
-            console.log('showProductDropdown вызван');
-            console.log('Все товары:', allProducts);
+
 
             const dropdown = input.nextElementSibling;
             const dropdownList = dropdown.querySelector('.product-dropdown-list');
@@ -2439,7 +2430,7 @@
             } else {
                 // Показываем первые 5 товаров
                 const availableProducts = allProducts.slice(0, 5);
-                console.log('Доступные товары:', availableProducts);
+
 
                 if (availableProducts.length === 0) {
                     dropdownList.innerHTML = '<div class="product-dropdown-item">Нет доступных товаров</div>';
@@ -2622,35 +2613,26 @@
             const priceInput = form.querySelector('#productPrice');
             const quantityInput = form.querySelector('#productQuantity');
 
-            console.log('Form state:', {
-                searchInput: searchInput?.value,
-                hiddenInput: hiddenInput?.value,
-                priceInput: priceInput?.value,
-                quantityInput: quantityInput?.value
-            });
+
         }
 
         // Добавляем проверку состояния формы после каждого важного действия
         const originalResetProductForm = resetProductForm;
         resetProductForm = function() {
             originalResetProductForm();
-            console.log('After reset:');
             checkFormState();
         };
 
         const originalSelectProduct = selectProduct;
         selectProduct = function(...args) {
             originalSelectProduct.apply(this, args);
-            console.log('After select:');
             checkFormState();
         };
 
         const originalAddProductToAppointment = addProductToAppointment;
         addProductToAppointment = function() {
-            console.log('Before add:');
             checkFormState();
             originalAddProductToAppointment();
-            console.log('After add:');
             checkFormState();
         };
 

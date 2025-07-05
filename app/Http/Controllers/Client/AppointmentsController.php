@@ -11,7 +11,6 @@ use App\Models\Service;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Http\Controllers\Controller;
@@ -97,7 +96,6 @@ class AppointmentsController extends Controller
 
     public function update(Request $request, $id)
     {
-        \Log::info('Appointment update called', ['id' => $id, 'data' => $request->all()]);
         try {
             $validated = $request->validate([
                 'date' => 'required|date',
@@ -128,7 +126,6 @@ class AppointmentsController extends Controller
 
                 // Если переданы новые данные о продажах, обновляем их
                 if (isset($validated['sales'])) {
-                    \Log::info('Processing sales data', ['sales' => $validated['sales']]);
                     // --- СТАРЫЕ ТОВАРЫ ---
                     $oldProducts = [];
                     foreach ($appointment->sales as $sale) {
@@ -153,27 +150,11 @@ class AppointmentsController extends Controller
                         }
                     }
                     
-                    Log::info('Product synchronization', [
-                        'old_products' => $oldProducts,
-                        'new_products' => $newProducts,
-                        'newly_added_products' => $newlyAddedProducts
-                    ]);
-                    
                     // Проверяем доступность и списываем только НОВЫЕ товары
                     foreach ($newlyAddedProducts as $productId => $quantity) {
-                        Log::info('Processing newly added product', [
-                            'product_id' => $productId,
-                            'quantity' => $quantity
-                        ]);
-                        
                         // Проверяем доступность только для новых товаров
                         \App\Models\Warehouse::checkAvailability((int)$productId, $quantity);
                         \App\Models\Warehouse::decreaseQuantity((int)$productId, $quantity);
-                        
-                        Log::info('Successfully decreased warehouse quantity', [
-                            'product_id' => $productId,
-                            'quantity' => $quantity
-                        ]);
                     }
 
                     // --- Удаляем старые продажи и позиции ---
@@ -350,7 +331,6 @@ class AppointmentsController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Error in view appointment: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка при загрузке данных: ' . $e->getMessage()
@@ -360,7 +340,6 @@ class AppointmentsController extends Controller
 
     public function addProduct(Request $request, $appointmentId)
     {
-        \Log::info('Add product called', ['appointment_id' => $appointmentId, 'data' => $request->all()]);
         try {
             $validated = $request->validate([
                 'product_id' => 'required|exists:products,id',
@@ -374,12 +353,6 @@ class AppointmentsController extends Controller
                 $product = Product::with('warehouse')->findOrFail($validated['product_id']);
 
                 // Проверка наличия товара
-                Log::info('Checking product availability', [
-                    'product_id' => $validated['product_id'],
-                    'requested_quantity' => $validated['quantity'],
-                    'available_quantity' => $product->warehouse ? $product->warehouse->quantity : 0
-                ]);
-                
                 if (!$product->warehouse || $product->warehouse->quantity < $validated['quantity']) {
                     throw new \Exception('Недостаточно товара на складе');
                 }
@@ -426,11 +399,6 @@ class AppointmentsController extends Controller
                 }
 
                 // Уменьшаем количество на складе
-                Log::info('Decreasing warehouse quantity in addProduct', [
-                    'product_id' => $validated['product_id'],
-                    'quantity' => $validated['quantity'],
-                    'before_quantity' => $product->warehouse->quantity
-                ]);
                 $product->warehouse->decrement('quantity', $validated['quantity']);
 
                 // Получаем обновленные данные записи
@@ -565,26 +533,17 @@ class AppointmentsController extends Controller
     public function calendarEvents(Request $request)
     {
         try {
-            \Log::info('calendarEvents method started');
-            \Log::info('Request data:', $request->all());
-
             $appointments = Appointment::with(['client', 'service'])
                 ->when($request->start, function($query) use ($request) {
-                    \Log::info('Filtering by start date: ' . $request->start);
                     return $query->whereDate('date', '>=', Carbon::parse($request->start));
                 })
                 ->when($request->end, function($query) use ($request) {
-                    \Log::info('Filtering by end date: ' . $request->end);
                     return $query->whereDate('date', '<=', Carbon::parse($request->end));
                 })
                 ->get();
 
-            \Log::info('Found appointments count: ' . $appointments->count());
-
             $events = $appointments->map(function($appointment) {
                 try {
-                    \Log::info('Processing appointment:', ['id' => $appointment->id, 'date' => $appointment->date, 'time' => $appointment->time]);
-
                     // Правильное форматирование даты и времени
                     $date = Carbon::parse($appointment->date)->format('Y-m-d');
                     $startDateTime = Carbon::parse($date . ' ' . $appointment->time);
@@ -609,24 +568,16 @@ class AppointmentsController extends Controller
                         ]
                     ];
 
-                    \Log::info('Created event:', $event);
                     return $event;
 
                 } catch (\Exception $e) {
-                    \Log::error('Error processing appointment: ' . $e->getMessage(), [
-                        'appointment_id' => $appointment->id,
-                        'date' => $appointment->date,
-                        'time' => $appointment->time
-                    ]);
                     return null;
                 }
             })->filter()->values();
 
-            \Log::info('Final events count: ' . $events->count());
             return response()->json($events);
 
         } catch (\Exception $e) {
-            \Log::error('Error in calendarEvents: ' . $e->getMessage());
             return response()->json([
                 'error' => 'Ошибка при загрузке событий: ' . $e->getMessage()
             ], 500);
@@ -1048,7 +999,6 @@ class AppointmentsController extends Controller
 
     public function ajax(Request $request)
     {
-        \Log::info('Appointments AJAX called', $request->all());
         try {
             $perPage = (int)($request->get('per_page', 11));
             $search = $request->get('search');
@@ -1092,7 +1042,6 @@ class AppointmentsController extends Controller
                 ]
             ]);
         } catch (\Throwable $e) {
-            \Log::error('Appointments AJAX error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
