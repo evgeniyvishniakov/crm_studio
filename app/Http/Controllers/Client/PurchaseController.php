@@ -59,12 +59,8 @@ class PurchaseController extends Controller
                     'total' => $itemTotal
                 ]);
 
-                // Обновляем склад
-                $warehouseItem = Warehouse::firstOrNew(['product_id' => $item['product_id']]);
-                $warehouseItem->quantity = ($warehouseItem->quantity ?? 0) + $item['quantity'];
-                $warehouseItem->purchase_price = $item['purchase_price'];
-                $warehouseItem->retail_price = $item['retail_price'];
-                $warehouseItem->save();
+                // Обновляем склад через модельный метод
+                \App\Models\Warehouse::increaseQuantity($item['product_id'], $item['quantity']);
 
                 // Обновляем цены в Product
                 Product::where('id', $item['product_id'])
@@ -142,11 +138,7 @@ class PurchaseController extends Controller
         try {
             // 1. Отменяем старое состояние на складе
             foreach ($purchase->items as $item) {
-                $warehouseItem = Warehouse::where('product_id', $item->product_id)->first();
-                if ($warehouseItem) {
-                    $warehouseItem->quantity -= $item->quantity;
-                    $warehouseItem->save();
-                }
+                \App\Models\Warehouse::decreaseQuantity($item->product_id, $item->quantity);
             }
 
             // 2. Обновляем данные самой закупки и удаляем старые товары
@@ -173,12 +165,8 @@ class PurchaseController extends Controller
                     'total' => $itemTotal
                 ]);
 
-                // Обновляем склад (логика аналогична методу store)
-                $warehouseItem = Warehouse::firstOrNew(['product_id' => $itemData['product_id']]);
-                $warehouseItem->quantity = ($warehouseItem->quantity ?? 0) + $itemData['quantity'];
-                $warehouseItem->purchase_price = $itemData['purchase_price'];
-                $warehouseItem->retail_price = $itemData['retail_price'];
-                $warehouseItem->save();
+                // Обновляем склад через модельный метод
+                \App\Models\Warehouse::increaseQuantity($itemData['product_id'], $itemData['quantity']);
 
                 // Обновляем цены в Product
                 Product::where('id', $itemData['product_id'])
@@ -213,15 +201,7 @@ class PurchaseController extends Controller
         try {
             // Возвращаем товары на склад (уменьшаем количество)
             foreach ($purchase->items as $item) {
-                $warehouseItem = Warehouse::where('product_id', $item->product_id)->first();
-                if ($warehouseItem) {
-                    $warehouseItem->quantity -= $item->quantity;
-                    if ($warehouseItem->quantity <= 0) {
-                        $warehouseItem->delete();
-                    } else {
-                        $warehouseItem->save();
-                    }
-                }
+                \App\Models\Warehouse::decreaseQuantity($item->product_id, $item->quantity);
             }
 
             // Удаляем закупку

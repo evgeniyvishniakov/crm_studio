@@ -11,6 +11,7 @@ use App\Models\Service;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Http\Controllers\Controller;
@@ -96,6 +97,7 @@ class AppointmentsController extends Controller
 
     public function update(Request $request, $id)
     {
+        \Log::info('Appointment update called', ['id' => $id, 'data' => $request->all()]);
         try {
             $validated = $request->validate([
                 'date' => 'required|date',
@@ -114,9 +116,7 @@ class AppointmentsController extends Controller
             DB::beginTransaction();
 
             try {
-                $appointment = Appointment::findOrFail($id);
-                
-                // Обновляем основные данные записи
+                $appointment = Appointment::with(['sales.items'])->findOrFail($id);
                 $appointment->update([
                     'date' => $validated['date'],
                     'time' => $validated['time'],
@@ -126,64 +126,90 @@ class AppointmentsController extends Controller
                     'status' => $validated['status'] ?? $appointment->status
                 ]);
 
-                // Удаляем старые продажи и возвращаем товары на склад
-                if ($appointment->sales) {
+                // Если переданы новые данные о продажах, обновляем их
+                if (isset($validated['sales'])) {
+                    \Log::info('Processing sales data', ['sales' => $validated['sales']]);
+                    // --- СТАРЫЕ ТОВАРЫ ---
+                    $oldProducts = [];
                     foreach ($appointment->sales as $sale) {
                         foreach ($sale->items as $item) {
-                            if ($item->product && $item->product->warehouse) {
-                                $item->product->warehouse->increment('quantity', $item->quantity);
-                            }
+                            $oldProducts[(int)$item->product_id] = ($oldProducts[(int)$item->product_id] ?? 0) + $item->quantity;
                         }
+                    }
+
+                    // --- НОВЫЕ ТОВАРЫ ---
+                    $newProducts = [];
+                    foreach ($validated['sales'] as $item) {
+                        $newProducts[(int)$item['product_id']] = ($newProducts[(int)$item['product_id']] ?? 0) + $item['quantity'];
+                    }
+
+                    // --- ИСПРАВЛЕННАЯ СИНХРОНИЗАЦИЯ ОСТАТКОВ ---
+                    // Находим только НОВЫЕ товары (которые добавляются)
+                    $newlyAddedProducts = [];
+                    foreach ($newProducts as $productId => $newQty) {
+                        $oldQty = $oldProducts[$productId] ?? 0;
+                        if ($newQty > $oldQty) {
+                            $newlyAddedProducts[$productId] = $newQty - $oldQty;
+                        }
+                    }
+                    
+                    Log::info('Product synchronization', [
+                        'old_products' => $oldProducts,
+                        'new_products' => $newProducts,
+                        'newly_added_products' => $newlyAddedProducts
+                    ]);
+                    
+                    // Проверяем доступность и списываем только НОВЫЕ товары
+                    foreach ($newlyAddedProducts as $productId => $quantity) {
+                        Log::info('Processing newly added product', [
+                            'product_id' => $productId,
+                            'quantity' => $quantity
+                        ]);
+                        
+                        // Проверяем доступность только для новых товаров
+                        \App\Models\Warehouse::checkAvailability((int)$productId, $quantity);
+                        \App\Models\Warehouse::decreaseQuantity((int)$productId, $quantity);
+                        
+                        Log::info('Successfully decreased warehouse quantity', [
+                            'product_id' => $productId,
+                            'quantity' => $quantity
+                        ]);
+                    }
+
+                    // --- Удаляем старые продажи и позиции ---
+                    foreach ($appointment->sales as $sale) {
                         $sale->items()->delete();
                         $sale->delete();
                     }
-                }
 
-                // Создаем новую продажу если есть товары
-                if (!empty($validated['sales'])) {
-                    $sale = Sale::create([
-                        'appointment_id' => $appointment->id,
-                        'client_id' => $appointment->client_id,
-                        'date' => $appointment->date,
-                        'total_amount' => 0
-                    ]);
-
-                    $totalAmount = 0;
-                    foreach ($validated['sales'] as $saleData) {
-                        $product = Product::with('warehouse')->findOrFail($saleData['product_id']);
-
-                        // Проверяем наличие на складе
-                        if (!$product->warehouse || $product->warehouse->quantity < $saleData['quantity']) {
-                            throw new \Exception("Недостаточно товара на складе: {$product->name}");
-                        }
-
-                        // Создаем позицию продажи
-                        SaleItem::create([
-                            'sale_id' => $sale->id,
-                            'product_id' => $saleData['product_id'],
-                            'quantity' => $saleData['quantity'],
-                            'retail_price' => $saleData['price'],
-                            'wholesale_price' => $saleData['purchase_price'],
-                            'total' => $saleData['quantity'] * $saleData['price']
+                    // --- Создаём новую продажу, если есть товары ---
+                    if (!empty($validated['sales'])) {
+                        $sale = Sale::create([
+                            'appointment_id' => $appointment->id,
+                            'client_id' => $appointment->client_id,
+                            'date' => $appointment->date,
+                            'total_amount' => 0
                         ]);
-
-                        // Обновляем общую сумму
-                        $totalAmount += $saleData['quantity'] * $saleData['price'];
-
-                        // Уменьшаем количество на складе
-                        $product->warehouse->decrement('quantity', $saleData['quantity']);
+                        $totalAmount = 0;
+                        foreach ($validated['sales'] as $saleData) {
+                            $itemTotal = $saleData['quantity'] * $saleData['price'];
+                            SaleItem::create([
+                                'sale_id' => $sale->id,
+                                'product_id' => $saleData['product_id'],
+                                'quantity' => $saleData['quantity'],
+                                'retail_price' => $saleData['price'],
+                                'wholesale_price' => $saleData['purchase_price'],
+                                'total' => $itemTotal
+                            ]);
+                            $totalAmount += $itemTotal;
+                        }
+                        $sale->update(['total_amount' => $totalAmount]);
                     }
-
-                    // Обновляем общую сумму продажи
-                    $sale->update(['total_amount' => $totalAmount]);
                 }
 
                 DB::commit();
 
-                // Получаем обновленные данные записи со всеми связями
                 $appointment = $appointment->fresh(['client', 'service', 'sales.items.product.warehouse']);
-
-                // Получаем обновленный список товаров
                 $products = Product::with('warehouse')
                     ->whereHas('warehouse', function($query) {
                         $query->where('quantity', '>', 0);
@@ -285,17 +311,11 @@ class AppointmentsController extends Controller
     public function view($id)
     {
         try {
-            $appointment = Appointment::with(['client', 'service'])->findOrFail($id);
+            $appointment = Appointment::with(['client', 'service', 'sales.items.product'])->findOrFail($id);
 
-            // Получаем все продажи для этого клиента на эту дату
-            $sales = Sale::with(['items.product'])
-                ->where('client_id', $appointment->client_id)
-                ->whereDate('date', $appointment->date)
-                ->get();
-
-            // Получаем все товары из продаж
+            // Получаем только продажи, связанные с этой конкретной записью
             $saleItems = [];
-            foreach ($sales as $sale) {
+            foreach ($appointment->sales as $sale) {
                 foreach ($sale->items as $item) {
                     if ($item->product) {
                         $saleItems[] = [
@@ -340,6 +360,7 @@ class AppointmentsController extends Controller
 
     public function addProduct(Request $request, $appointmentId)
     {
+        \Log::info('Add product called', ['appointment_id' => $appointmentId, 'data' => $request->all()]);
         try {
             $validated = $request->validate([
                 'product_id' => 'required|exists:products,id',
@@ -353,6 +374,12 @@ class AppointmentsController extends Controller
                 $product = Product::with('warehouse')->findOrFail($validated['product_id']);
 
                 // Проверка наличия товара
+                Log::info('Checking product availability', [
+                    'product_id' => $validated['product_id'],
+                    'requested_quantity' => $validated['quantity'],
+                    'available_quantity' => $product->warehouse ? $product->warehouse->quantity : 0
+                ]);
+                
                 if (!$product->warehouse || $product->warehouse->quantity < $validated['quantity']) {
                     throw new \Exception('Недостаточно товара на складе');
                 }
@@ -367,20 +394,43 @@ class AppointmentsController extends Controller
                     ]
                 );
 
-                // Создаем позицию в продаже
-                $saleItem = SaleItem::create([
-                    'sale_id' => $sale->id,
-                    'product_id' => $validated['product_id'],
-                    'quantity' => $validated['quantity'],
-                    'retail_price' => $validated['price'],
-                    'wholesale_price' => $validated['purchase_price'],
-                    'total' => $validated['quantity'] * $validated['price']
-                ]);
+                // Проверяем, есть ли уже такой товар в продаже
+                $existingItem = $sale->items()->where('product_id', $validated['product_id'])->first();
+                
+                if ($existingItem) {
+                    // Если товар уже есть, обновляем количество
+                    $existingItem->update([
+                        'quantity' => $existingItem->quantity + $validated['quantity'],
+                        'total' => ($existingItem->quantity + $validated['quantity']) * $validated['price']
+                    ]);
+                    $saleItem = $existingItem;
+                } else {
+                    // Создаем новую позицию в продаже
+                    $saleItem = SaleItem::create([
+                        'sale_id' => $sale->id,
+                        'product_id' => $validated['product_id'],
+                        'quantity' => $validated['quantity'],
+                        'retail_price' => $validated['price'],
+                        'wholesale_price' => $validated['purchase_price'],
+                        'total' => $validated['quantity'] * $validated['price']
+                    ]);
+                }
 
                 // Обновляем общую сумму продажи
-                $sale->increment('total_amount', $saleItem->total);
+                if ($existingItem) {
+                    // Пересчитываем общую сумму продажи
+                    $totalAmount = $sale->items->sum('total');
+                    $sale->update(['total_amount' => $totalAmount]);
+                } else {
+                    $sale->increment('total_amount', $saleItem->total);
+                }
 
                 // Уменьшаем количество на складе
+                Log::info('Decreasing warehouse quantity in addProduct', [
+                    'product_id' => $validated['product_id'],
+                    'quantity' => $validated['quantity'],
+                    'before_quantity' => $product->warehouse->quantity
+                ]);
                 $product->warehouse->decrement('quantity', $validated['quantity']);
 
                 // Получаем обновленные данные записи
