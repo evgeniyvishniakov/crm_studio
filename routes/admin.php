@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::name('admin.')->group(function () {
     // Главная страница админки
     Route::get('/', function () {
         return view('admin.dashboard.index');
@@ -47,4 +47,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/logs', function () {
         return view('admin.logs.index');
     })->name('logs.index');
+    
+    // Выход из системы
+    Route::post('/logout', function () {
+        auth()->logout();
+        return redirect('/');
+    })->name('logout');
 }); 

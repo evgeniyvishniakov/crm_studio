@@ -42,6 +42,7 @@ class RouteServiceProvider extends ServiceProvider
 
             // Админка (middleware web)
             Route::middleware('web')
+                ->prefix('panel')
                 ->group(base_path('routes/admin.php'));
 
             // Старые маршруты (если остались)

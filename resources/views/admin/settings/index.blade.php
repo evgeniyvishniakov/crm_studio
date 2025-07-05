@@ -5,7 +5,6 @@
 
 @section('content')
 <div class="row g-4">
-    <!-- Основные настройки -->
     <div class="col-lg-8">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent">
@@ -13,102 +12,52 @@
             </div>
             <div class="card-body">
                 <form>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="site_name" class="form-label">Название сайта</label>
-                                <input type="text" class="form-control" id="site_name" value="CRM Studio">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="site_email" class="form-label">Email сайта</label>
-                                <input type="email" class="form-control" id="site_email" value="info@crmstudio.ru">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="timezone" class="form-label">Часовой пояс</label>
-                                <select class="form-select" id="timezone">
-                                    <option value="Europe/Moscow" selected>Москва (UTC+3)</option>
-                                    <option value="Europe/London">Лондон (UTC+0)</option>
-                                    <option value="America/New_York">Нью-Йорк (UTC-5)</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="language" class="form-label">Язык</label>
-                                <select class="form-select" id="language">
-                                    <option value="ru" selected>Русский</option>
-                                    <option value="en">English</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <div class="mb-3">
-                        <label for="description" class="form-label">Описание сайта</label>
-                        <textarea class="form-control" id="description" rows="3">CRM Studio - система управления салоном красоты</textarea>
+                        <label for="site_name" class="form-label">Название сайта</label>
+                        <input type="text" class="form-control" id="site_name" value="CRM Studio">
                     </div>
-                    
+                    <div class="mb-3">
+                        <label for="site_description" class="form-label">Описание сайта</label>
+                        <textarea class="form-control" id="site_description" rows="3">Система управления клиентами и записями</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="admin_email" class="form-label">Email администратора</label>
+                        <input type="email" class="form-control" id="admin_email" value="admin@example.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="timezone" class="form-label">Часовой пояс</label>
+                        <select class="form-select" id="timezone">
+                            <option value="Europe/Moscow" selected>Москва (UTC+3)</option>
+                            <option value="Europe/London">Лондон (UTC+0)</option>
+                            <option value="America/New_York">Нью-Йорк (UTC-5)</option>
+                        </select>
+                    </div>
                     <button type="submit" class="btn btn-primary">Сохранить настройки</button>
                 </form>
             </div>
         </div>
     </div>
     
-    <!-- Дополнительные настройки -->
     <div class="col-lg-4">
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-transparent">
-                <h5 class="mb-0">Уведомления</h5>
-            </div>
-            <div class="card-body">
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="email_notifications" checked>
-                    <label class="form-check-label" for="email_notifications">
-                        Email уведомления
-                    </label>
-                </div>
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="sms_notifications">
-                    <label class="form-check-label" for="sms_notifications">
-                        SMS уведомления
-                    </label>
-                </div>
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="push_notifications" checked>
-                    <label class="form-check-label" for="push_notifications">
-                        Push уведомления
-                    </label>
-                </div>
-            </div>
-        </div>
-        
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent">
-                <h5 class="mb-0">Безопасность</h5>
+                <h5 class="mb-0">Системная информация</h5>
             </div>
             <div class="card-body">
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="two_factor" checked>
-                    <label class="form-check-label" for="two_factor">
-                        Двухфакторная аутентификация
-                    </label>
-                </div>
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="session_timeout" checked>
-                    <label class="form-check-label" for="session_timeout">
-                        Автоматический выход
-                    </label>
+                <div class="mb-3">
+                    <strong>Версия PHP:</strong> {{ phpversion() }}
                 </div>
                 <div class="mb-3">
-                    <label for="session_duration" class="form-label">Время сессии (минуты)</label>
-                    <input type="number" class="form-control" id="session_duration" value="120">
+                    <strong>Версия Laravel:</strong> {{ app()->version() }}
+                </div>
+                <div class="mb-3">
+                    <strong>База данных:</strong> {{ config('database.default') }}
+                </div>
+                <div class="mb-3">
+                    <strong>Режим:</strong> 
+                    <span class="badge bg-{{ app()->environment() === 'production' ? 'success' : 'warning' }}">
+                        {{ app()->environment() }}
+                    </span>
                 </div>
             </div>
         </div>

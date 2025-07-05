@@ -69,7 +69,7 @@
             </li>
             
             <li class="nav-item">
-                <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                <form method="POST" action="{{ route('admin.logout') }}" class="d-inline">
                     @csrf
                     <button type="submit" class="nav-link text-muted border-0 bg-transparent">
                         <i class="fas fa-sign-out-alt me-2"></i>
