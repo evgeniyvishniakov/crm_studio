@@ -115,6 +115,8 @@ class AppointmentsController extends Controller
 
             try {
                 $appointment = Appointment::with(['sales.items'])->findOrFail($id);
+                $oldClientId = $appointment->client_id;
+                
                 $appointment->update([
                     'date' => $validated['date'],
                     'time' => $validated['time'],
@@ -123,6 +125,13 @@ class AppointmentsController extends Controller
                     'price' => $validated['price'],
                     'status' => $validated['status'] ?? $appointment->status
                 ]);
+
+                // Если клиент изменился, обновляем client_id во всех связанных продажах
+                if ($oldClientId != $validated['client_id']) {
+                    foreach ($appointment->sales as $sale) {
+                        $sale->update(['client_id' => $validated['client_id']]);
+                    }
+                }
 
                 // Если переданы новые данные о продажах, обновляем их
                 if (isset($validated['sales'])) {
