@@ -44,7 +44,11 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        body, .navbar, .sidebar, .form-control, .btn, .nav, .dropdown-menu, .site-footer, .header, .content {
+            font-family: 'Inter', Arial, sans-serif !important;
+        }
         body {
             background: #f8f9fa !important;
             margin: 0 !important;

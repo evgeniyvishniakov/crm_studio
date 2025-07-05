@@ -55,9 +55,20 @@ class TurnoverReportController extends Controller
                 $filteredCategories[] = ['label' => $label, 'count' => $categoryCounts[$i], 'sum' => $categorySums[$i]];
             }
         }
-        $categoryLabels = array_column($filteredCategories, 'label');
-        $categoryCounts = array_column($filteredCategories, 'count');
-        $categorySums = array_column($filteredCategories, 'sum');
+        // Сортировка по количеству (или по сумме, если нужно)
+        usort($filteredCategories, function($a, $b) {
+            return $b['count'] <=> $a['count'];
+        });
+        $topCategories = array_slice($filteredCategories, 0, 5);
+        $otherCategories = array_slice($filteredCategories, 5);
+        if (count($otherCategories) > 0) {
+            $otherCount = array_sum(array_column($otherCategories, 'count'));
+            $otherSum = array_sum(array_column($otherCategories, 'sum'));
+            $topCategories[] = ['label' => 'Остальные', 'count' => $otherCount, 'sum' => $otherSum];
+        }
+        $categoryLabels = array_column($topCategories, 'label');
+        $categoryCounts = array_column($topCategories, 'count');
+        $categorySums = array_column($topCategories, 'sum');
 
         // Бренды
         $brandData = \App\Models\ProductBrand::with(['products.saleItems' => function($q) use ($startDate, $endDate) {
@@ -80,9 +91,20 @@ class TurnoverReportController extends Controller
                 $filteredBrands[] = ['label' => $label, 'count' => $brandCounts[$i], 'sum' => $brandSums[$i]];
             }
         }
-        $brandLabels = array_column($filteredBrands, 'label');
-        $brandCounts = array_column($filteredBrands, 'count');
-        $brandSums = array_column($filteredBrands, 'sum');
+        // Сортировка по количеству (или по сумме, если нужно)
+        usort($filteredBrands, function($a, $b) {
+            return $b['count'] <=> $a['count'];
+        });
+        $topBrands = array_slice($filteredBrands, 0, 5);
+        $otherBrands = array_slice($filteredBrands, 5);
+        if (count($otherBrands) > 0) {
+            $otherCount = array_sum(array_column($otherBrands, 'count'));
+            $otherSum = array_sum(array_column($otherBrands, 'sum'));
+            $topBrands[] = ['label' => 'Остальные', 'count' => $otherCount, 'sum' => $otherSum];
+        }
+        $brandLabels = array_column($topBrands, 'label');
+        $brandCounts = array_column($topBrands, 'count');
+        $brandSums = array_column($topBrands, 'sum');
 
         // Поставщики
         $supplierData = \App\Models\Supplier::with(['purchases' => function($q) use ($startDate, $endDate) {

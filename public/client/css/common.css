@@ -702,8 +702,9 @@
         background-color: #dc3545;
         color: white;
     }
-
-
+    #calendarRangeDisplay{
+        min-width: 0px!important;
+    }
 
     .purchases-list {
         display: flex;

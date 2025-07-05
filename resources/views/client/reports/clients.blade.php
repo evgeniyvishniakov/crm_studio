@@ -1,6 +1,30 @@
 @extends('client.layouts.app')
 
 @section('content')
+<style>
+.period-filters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin: 0 auto;
+}
+.filter-section {
+    width: 100%;
+}
+#calendarRangeDisplay {
+    text-align: center;
+    vertical-align: middle;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+}
+#calendarRangeDisplay:empty {
+    display: none;
+}
+</style>
 <div class="dashboard-container">
     <h1 class="dashboard-title">Отчеты</h1>
 
@@ -13,7 +37,7 @@
 
     <!-- Новый блок фильтров -->
     <div class="filter-section">
-        <div class="period-filters" style="display:flex;align-items:center;gap:8px;">
+        <div class="period-filters">
             <button class="filter-button active">За неделю</button>
             <button class="filter-button">За 2 недели</button>
             <button class="filter-button">За месяц</button>
@@ -22,7 +46,7 @@
             <button class="filter-button calendar-button" id="dateRangePicker">
                 <i class="fa fa-calendar"></i>
             </button>
-            <span id="calendarRangeDisplay" style="min-width:110px;text-align:center;vertical-align:middle;font-family:inherit;font-size:14px;font-weight:600;color: #64748b;"></span>
+            <span id="calendarRangeDisplay"></span>
         </div>
     </div>
 
@@ -843,6 +867,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Отображаем выбранный диапазон
                         const format = d => d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
                         calendarRangeDisplay.textContent = `${format(selectedRange.start)} – ${format(selectedRange.end)}`;
+                        calendarRangeDisplay.style.minWidth = '110px';
                         updateAllChartsWithRange(selectedRange.start, selectedRange.end);
                     }
                 }
@@ -856,6 +881,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', () => {
             if (button.id !== 'dateRangePicker') {
                 calendarRangeDisplay.textContent = '';
+                calendarRangeDisplay.style.minWidth = '';
             }
         });
     });
