@@ -762,64 +762,6 @@
         
         }
 
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 4px;
-            margin: 24px 0 0 0;
-            flex-wrap: wrap;
-            padding-bottom: 50px;
-        }
-        .page-btn {
-            min-width: 36px;
-            height: 36px;
-            border: none;
-            background: #f3f4f6;
-            color: #2563eb;
-            font-weight: 500;
-            font-size: 16px;
-            border-radius: 6px;
-            margin: 0 2px;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            outline: none;
-            box-shadow: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .page-btn.active,
-        .page-btn:hover:not(:disabled) {
-            background: #2563eb;
-            color: #fff;
-        }
-        .page-btn:disabled {
-            background: #e5e7eb;
-            color: #9ca3af;
-            cursor: not-allowed;
-        }
-        .page-ellipsis {
-            min-width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #9ca3af;
-            font-size: 18px;
-            font-weight: 600;
-            user-select: none;
-        }
-        @media (max-width: 600px) {
-            .pagination {
-                gap: 2px;
-            }
-            .page-btn, .page-ellipsis {
-                min-width: 28px;
-                height: 28px;
-                font-size: 14px;
-            }
-        }
     </style>
 
     <script>
