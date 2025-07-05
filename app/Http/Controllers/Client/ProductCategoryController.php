@@ -8,9 +8,29 @@ use Illuminate\Http\Request;
 
 class ProductCategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = ProductCategory::orderBy('created_at', 'desc')->get();
+        $query = ProductCategory::orderBy('name');
+
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where('name', 'like', "%$search%");
+        }
+
+        if ($request->ajax()) {
+            $categories = $query->paginate(11);
+            return response()->json([
+                'data' => $categories->items(),
+                'meta' => [
+                    'current_page' => $categories->currentPage(),
+                    'last_page' => $categories->lastPage(),
+                    'per_page' => $categories->perPage(),
+                    'total' => $categories->total(),
+                ],
+            ]);
+        }
+
+        $categories = $query->paginate(11);
         return view('client.product-categories.list', compact('categories'));
     }
 

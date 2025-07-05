@@ -13,16 +13,88 @@ use Illuminate\Support\Facades\DB;
 
 class SaleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $sales = Sale::with(['client', 'items.product'])
-            ->orderBy('date', 'desc')
-            ->get()
-            ->map(function ($sale) {
-                $sale->formatted_date = $sale->date->format('d.m.Y');
-                return $sale;
-            });
+        $query = Sale::with(['client', 'items.product'])
+            ->orderBy('date', 'desc');
 
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('notes', 'like', "%$search%")
+                  ->orWhereHas('client', function($sq) use ($search) {
+                      $sq->where('name', 'like', "%$search%")
+                         ->orWhere('instagram', 'like', "%$search%");
+                  });
+            });
+        }
+
+        if ($request->ajax()) {
+            // Получаем все продажи с товарами
+            $sales = $query->get();
+            
+            // Собираем все товары из всех продаж
+            $allItems = [];
+            foreach ($sales as $sale) {
+                foreach ($sale->items as $item) {
+                    $allItems[] = [
+                        'sale' => $sale,
+                        'item' => $item
+                    ];
+                }
+            }
+            
+            // Пагинируем товары (11 на страницу)
+            $perPage = 11;
+            $currentPage = $request->get('page', 1);
+            $offset = ($currentPage - 1) * $perPage;
+            $itemsOnPage = array_slice($allItems, $offset, $perPage);
+            $totalItems = count($allItems);
+            $lastPage = ceil($totalItems / $perPage);
+            
+            // Группируем товары обратно по продажам для отображения
+            $groupedSales = [];
+            foreach ($itemsOnPage as $itemData) {
+                $saleId = $itemData['sale']->id;
+                if (!isset($groupedSales[$saleId])) {
+                    $groupedSales[$saleId] = $itemData['sale'];
+                    $groupedSales[$saleId]->items = collect([]);
+                }
+                $groupedSales[$saleId]->items->push($itemData['item']);
+            }
+            
+            $clients = Client::select('id', 'name', 'instagram', 'phone', 'email')->get();
+
+            // Получаем только товары, которые есть на складе
+            $products = Product::whereHas('warehouse', function($query) {
+                $query->where('quantity', '>', 0);
+            })
+                ->with(['warehouse'])
+                ->select('id', 'name', 'photo')
+                ->get()
+                ->map(function($product) {
+                    // Добавляем информацию о ценах и количестве
+                    $product->available_quantity = $product->warehouse->quantity;
+                    $product->retail_price = $product->warehouse->retail_price;
+                    $product->wholesale_price = $product->warehouse->purchase_price;
+                    return $product;
+                });
+
+            return response()->json([
+                'data' => array_values($groupedSales),
+                'meta' => [
+                    'current_page' => (int)$currentPage,
+                    'last_page' => $lastPage,
+                    'per_page' => $perPage,
+                    'total' => $totalItems,
+                ],
+                'clients' => $clients,
+                'products' => $products,
+            ]);
+        }
+
+        // Для обычного запроса (не AJAX) возвращаем все продажи
+        $sales = $query->get();
         $clients = Client::select('id', 'name', 'instagram', 'phone', 'email')->get();
 
         // Получаем только товары, которые есть на складе

@@ -34,33 +34,12 @@
                     <th>Действия</th>
                 </tr>
                 </thead>
-                <tbody>
-                @foreach($expenses as $expense)
-                    <tr data-expense-id="{{ $expense->id }}">
-                        <td>{{ $expense->date->format('d.m.Y') }}</td>
-                        <td>{{ $expense->comment }}</td>
-                        <td>{{ $expense->amount == (int)$expense->amount ? (int)$expense->amount : number_format($expense->amount, 2, '.', '') }} грн</td>
-                        <td>
-                            <div class="expense-actions">
-                                <button class="btn-edit" onclick="editExpense(event, {{ $expense->id }})" title="Редактировать">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                    </svg>
-                                    Ред.
-                                </button>
-                                <button class="btn-delete" onclick="confirmDeleteExpense(event, {{ $expense->id }})" title="Удалить">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Удалить
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
+                <tbody id="expensesTableBody">
+                <!-- Данные будут загружаться через AJAX -->
                 </tbody>
             </table>
         </div>
+        <div id="expensesPagination"></div>
     </div>
 
     <!-- Модальное окно добавления/редактирования расхода -->
@@ -194,8 +173,9 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    document.querySelector(`tr[data-expense-id="${currentExpenseId}"]`).remove();
                     showNotification('Расход успешно удален');
+                    // Перезагружаем текущую страницу
+                    loadExpenses(currentPage);
                 } else {
                     showNotification(data.message || 'Ошибка при удалении', 'error');
                 }
@@ -230,78 +210,16 @@
             const data = await response.json();
 
             if (data.success) {
-                if (expenseId) {
-                    // Обновляем существующую строку
-                    const row = document.querySelector(`tr[data-expense-id="${expenseId}"]`);
-                    if (row) {
-                        const expense = data.expense;
-                        row.innerHTML = `
-                            <td>${new Date(expense.date).toLocaleDateString('ru-RU')}</td>
-                            <td>${escapeHtml(expense.comment)}</td>
-                            <td>${Number(parseFloat(expense.amount)) % 1 === 0 ? Number(parseFloat(expense.amount)) : parseFloat(expense.amount).toFixed(2)} грн</td>
-                            <td>
-                                <div class="expense-actions">
-                                    <button class="btn-edit" onclick="editExpense(event, ${expense.id})" title="Редактировать">
-                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                        </svg>
-                                        Ред.
-                                    </button>
-                                    <button class="btn-delete" onclick="confirmDeleteExpense(event, ${expense.id})" title="Удалить">
-                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                        Удалить
-                                    </button>
-                                </div>
-                            </td>
-                        `;
-                    }
-                } else {
-                    // Добавляем новую строку
-                    const expense = data.expense;
-                    const tbody = document.querySelector('#expensesTable tbody');
-                    const newRow = document.createElement('tr');
-                    newRow.setAttribute('data-expense-id', expense.id);
-                    newRow.innerHTML = `
-                        <td>${new Date(expense.date).toLocaleDateString('ru-RU')}</td>
-                        <td>${escapeHtml(expense.comment)}</td>
-                        <td>${Number(parseFloat(expense.amount)) % 1 === 0 ? Number(parseFloat(expense.amount)) : parseFloat(expense.amount).toFixed(2)} грн</td>
-                        <td>
-                            <div class="expense-actions">
-                                <button class="btn-edit" onclick="editExpense(event, ${expense.id})" title="Редактировать">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                    </svg>
-                                    Ред.
-                                </button>
-                                <button class="btn-delete" onclick="confirmDeleteExpense(event, ${expense.id})" title="Удалить">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Удалить
-                                </button>
-                            </div>
-                        </td>
-                    `;
-                    tbody.insertBefore(newRow, tbody.firstChild);
-                }
-
                 showNotification(data.message || 'Расход успешно сохранен');
                 closeExpenseModal();
+                // Перезагружаем текущую страницу для отображения изменений
+                loadExpenses(currentPage);
             } else {
                 showNotification(data.message || 'Ошибка при сохранении', 'error');
             }
         });
 
-        // Поиск по таблице
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            document.querySelectorAll('#expensesTable tbody tr').forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-        });
+
 
         // Вспомогательные функции
         function showNotification(message, type = 'success') {
@@ -325,6 +243,144 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+
+        // --- AJAX пагинация ---
+        let currentPage = 1;
+
+        function renderExpenses(expenses) {
+            const tbody = document.getElementById('expensesTableBody');
+            tbody.innerHTML = '';
+            
+            // Если нет расходов, не делаем ничего
+            if (!expenses || expenses.length === 0) {
+                return;
+            }
+            
+            expenses.forEach(expense => {
+                const row = document.createElement('tr');
+                row.setAttribute('data-expense-id', expense.id);
+                
+                const amount = parseFloat(expense.amount);
+                const formattedAmount = amount % 1 === 0 ? amount.toString() : amount.toFixed(2);
+                
+                row.innerHTML = `
+                    <td>${expense.date ? new Date(expense.date).toLocaleDateString('ru-RU') : '—'}</td>
+                    <td>${escapeHtml(expense.comment || '')}</td>
+                    <td>${formattedAmount} грн</td>
+                    <td>
+                        <div class="expense-actions">
+                            <button class="btn-edit" onclick="editExpense(event, ${expense.id})" title="Редактировать">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                </svg>
+                                Ред.
+                            </button>
+                            <button class="btn-delete" onclick="confirmDeleteExpense(event, ${expense.id})" title="Удалить">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                                Удалить
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function renderPagination(meta) {
+            let paginationHtml = '';
+            if (meta.last_page > 1) {
+                paginationHtml += '<div class="pagination">';
+                // Кнопка "<"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}>&lt;</button>`;
+
+                let pages = [];
+                if (meta.last_page <= 7) {
+                    // Показываем все страницы
+                    for (let i = 1; i <= meta.last_page; i++) pages.push(i);
+                } else {
+                    // Всегда показываем первую
+                    pages.push(1);
+                    // Если текущая страница > 4, показываем троеточие
+                    if (meta.current_page > 4) pages.push('...');
+                    // Показываем 2 страницы до и после текущей
+                    let start = Math.max(2, meta.current_page - 2);
+                    let end = Math.min(meta.last_page - 1, meta.current_page + 2);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    // Если текущая страница < last_page - 3, показываем троеточие
+                    if (meta.current_page < meta.last_page - 3) pages.push('...');
+                    // Всегда показываем последнюю
+                    pages.push(meta.last_page);
+                }
+                pages.forEach(p => {
+                    if (p === '...') {
+                        paginationHtml += `<span class="page-ellipsis">...</span>`;
+                    } else {
+                        paginationHtml += `<button class="page-btn${p === meta.current_page ? ' active' : ''}" data-page="${p}">${p}</button>`;
+                    }
+                });
+                // Кнопка ">"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;</button>`;
+                paginationHtml += '</div>';
+            }
+            let pagContainer = document.getElementById('expensesPagination');
+            if (!pagContainer) {
+                pagContainer = document.createElement('div');
+                pagContainer.id = 'expensesPagination';
+                document.querySelector('.expenses-container').appendChild(pagContainer);
+            }
+            pagContainer.innerHTML = paginationHtml;
+
+            // Навешиваем обработчики
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    if (!isNaN(page) && !this.disabled) {
+                        loadExpenses(page);
+                    }
+                });
+            });
+        }
+
+        function loadExpenses(page = 1, search = '') {
+            currentPage = page;
+            const searchValue = search !== undefined ? search : document.getElementById('searchInput').value.trim();
+            fetch(`/expenses?search=${encodeURIComponent(searchValue)}&page=${page}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.data && data.meta) {
+                    renderExpenses(data.data);
+                    renderPagination(data.meta);
+                } else {
+                    console.error('Неверный формат данных:', data);
+                    showNotification('Ошибка при загрузке данных', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке данных:', error);
+                showNotification('Ошибка при загрузке данных', 'error');
+            });
+        }
+
+        // Поиск с пагинацией
+        document.getElementById('searchInput').addEventListener('input', function() {
+            loadExpenses(1, this.value.trim());
+        });
+
+        // Инициализация первой загрузки
+        loadExpenses(1);
+
     </script>
 </div>
 @endsection 

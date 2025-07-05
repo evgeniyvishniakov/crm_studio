@@ -34,65 +34,10 @@
                 </tr>
             </thead>
             <tbody id="purchasesListBody">
-                @foreach($purchases as $purchase)
-                    <tr class="purchase-summary-row" id="purchase-row-{{ $purchase->id }}" onclick="togglePurchaseDetailsRow({{ $purchase->id }})">
-                        <td class="purchase-date">{{ $purchase->formatted_date }}</td>
-                        <td class="purchase-supplier">{{ $purchase->supplier ? $purchase->supplier->name : '—' }}</td>
-                        <td class="purchase-total">{{ (float)$purchase->total_amount }} грн</td>
-                        <td class="purchase-notes-cell" title="{{ $purchase->notes }}">{{ $purchase->notes ?: '—' }}</td>
-                        <td>
-                            <div class="purchases-actions">
-                                <button class="btn-edit" onclick="editPurchase(event, {{ $purchase->id }})">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
-                                    Ред.
-                                </button>
-                                <button class="btn-delete" onclick="confirmDeletePurchase(event, {{ $purchase->id }})">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                                    Удалить
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="purchases-details-row" id="details-row-{{ $purchase->id }}" style="display: none;">
-                        <td colspan="5">
-                            <div class="purchases-details">
-                                <div class="purchases-notes">{{ $purchase->notes ?: '—' }}</div>
-                                <table class="table-wrapper table-striped purchases-table">
-                                    <thead>
-                                    <tr>
-                                        <th>Фото</th>
-                                        <th>Товар</th>
-                                        <th>Опт</th>
-                                        <th>Розница</th>
-                                        <th>Количество</th>
-                                        <th>Сумма</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($purchase->items as $item)
-                                        <tr>
-                                            <td>
-                                                @if($item->product->photo)
-                                                    <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="{{ $item->product->name }}">
-                                                @else
-                                                    <div class="no-photo">Нет фото</div>
-                                                @endif
-                                            </td>
-                                            <td>{{ $item->product->name }}</td>
-                                            <td>{{ (float)$item->purchase_price }} грн</td>
-                                            <td>{{ (float)$item->retail_price }} грн</td>
-                                            <td>{{ $item->quantity }} шт</td>
-                                            <td>{{ (float)$item->total }} грн</td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
+                <!-- Данные будут загружаться через AJAX -->
             </tbody>
         </table>
+        <div id="purchasesPagination"></div>
     </div>
 
     <!-- Модальное окно добавления закупки -->
@@ -597,8 +542,8 @@
                 .then(data => {
                     if (data.success) {
                         showNotification('success', 'Закупка успешно удалена');
-                        document.getElementById(`purchase-row-${id}`).remove();
-                        document.getElementById(`details-row-${id}`).remove();
+                        // Перезагружаем текущую страницу
+                        loadPurchases(currentPage);
                     } else {
                         showNotification('error', 'Ошибка при удалении закупки');
                     }
@@ -657,8 +602,9 @@
                     if (data.success) {
                         showNotification('success', 'Закупка успешно добавлена');
                         closePurchaseModal();
-                        addPurchaseToDOM(data.purchase);
                         resetPurchaseForm();
+                        // Перезагружаем текущую страницу для отображения новой закупки
+                        loadPurchases(currentPage);
                     } else {
                         if (data.errors) {
                             displayErrors(data.errors, 'purchaseForm');
@@ -871,25 +817,182 @@
             }
         }
 
-        // Поиск закупок
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#purchasesListBody .purchase-summary-row');
+        // --- AJAX пагинация ---
+        let currentPage = 1;
 
-            rows.forEach(row => {
-                const textContent = row.textContent.toLowerCase();
-                const detailsRow = document.getElementById(row.id.replace('purchase-row-', 'details-row-'));
+        function renderPurchases(purchases) {
+            const tbody = document.getElementById('purchasesListBody');
+            tbody.innerHTML = '';
+            
+            // Если нет закупок, не делаем ничего
+            if (!purchases || purchases.length === 0) {
+                return;
+            }
+            
+            purchases.forEach(purchase => {
+                // Создаем строку закупки
+                const summaryRow = document.createElement('tr');
+                summaryRow.className = 'purchase-summary-row';
+                summaryRow.id = `purchase-row-${purchase.id}`;
+                summaryRow.onclick = () => togglePurchaseDetailsRow(purchase.id);
+                
+                summaryRow.innerHTML = `
+                    <td class="purchase-date">${purchase.date ? new Date(purchase.date).toLocaleDateString('ru-RU') : '—'}</td>
+                    <td class="purchase-supplier">${purchase.supplier ? purchase.supplier.name : '—'}</td>
+                    <td class="purchase-total">${parseFloat(purchase.total_amount).toFixed(2)} грн</td>
+                    <td class="purchase-notes-cell" title="${purchase.notes || '—'}">${purchase.notes || '—'}</td>
+                    <td>
+                        <div class="purchases-actions">
+                            <button class="btn-edit" onclick="editPurchase(event, ${purchase.id})">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+                                Ред.
+                            </button>
+                            <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                                Удалить
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(summaryRow);
 
-                if (textContent.includes(searchTerm)) {
-                    row.style.display = 'table-row';
-                } else {
-                    row.style.display = 'none';
-                    if (detailsRow) {
-                        detailsRow.style.display = 'none'; // Также скрыть детали при поиске
-                    }
+                // Создаем строку деталей
+                const detailsRow = document.createElement('tr');
+                detailsRow.className = 'purchases-details-row';
+                detailsRow.id = `details-row-${purchase.id}`;
+                detailsRow.style.display = 'none';
+                
+                let itemsHtml = '';
+                if (purchase.items && purchase.items.length > 0) {
+                    itemsHtml = purchase.items.map(item => `
+                        <tr>
+                            <td>
+                                ${item.product.photo ? 
+                                    `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` : 
+                                    '<div class="no-photo">Нет фото</div>'
+                                }
+                            </td>
+                            <td>${item.product.name}</td>
+                            <td>${parseFloat(item.purchase_price).toFixed(2)} грн</td>
+                            <td>${parseFloat(item.retail_price).toFixed(2)} грн</td>
+                            <td>${item.quantity} шт</td>
+                            <td>${parseFloat(item.total).toFixed(2)} грн</td>
+                        </tr>
+                    `).join('');
                 }
+
+                detailsRow.innerHTML = `
+                    <td colspan="5">
+                        <div class="purchases-details">
+                            <div class="purchases-notes">${purchase.notes || '—'}</div>
+                            <table class="table-wrapper table-striped purchases-table">
+                                <thead>
+                                <tr>
+                                    <th>Фото</th>
+                                    <th>Товар</th>
+                                    <th>Опт</th>
+                                    <th>Розница</th>
+                                    <th>Количество</th>
+                                    <th>Сумма</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                ${itemsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(detailsRow);
             });
+        }
+
+        function renderPagination(meta) {
+            let paginationHtml = '';
+            if (meta.last_page > 1) {
+                paginationHtml += '<div class="pagination">';
+                // Кнопка "<"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}>&lt;</button>`;
+
+                let pages = [];
+                if (meta.last_page <= 7) {
+                    // Показываем все страницы
+                    for (let i = 1; i <= meta.last_page; i++) pages.push(i);
+                } else {
+                    // Всегда показываем первую
+                    pages.push(1);
+                    // Если текущая страница > 4, показываем троеточие
+                    if (meta.current_page > 4) pages.push('...');
+                    // Показываем 2 страницы до и после текущей
+                    let start = Math.max(2, meta.current_page - 2);
+                    let end = Math.min(meta.last_page - 1, meta.current_page + 2);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    // Если текущая страница < last_page - 3, показываем троеточие
+                    if (meta.current_page < meta.last_page - 3) pages.push('...');
+                    // Всегда показываем последнюю
+                    pages.push(meta.last_page);
+                }
+                pages.forEach(p => {
+                    if (p === '...') {
+                        paginationHtml += `<span class="page-ellipsis">...</span>`;
+                    } else {
+                        paginationHtml += `<button class="page-btn${p === meta.current_page ? ' active' : ''}" data-page="${p}">${p}</button>`;
+                    }
+                });
+                // Кнопка ">"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;</button>`;
+                paginationHtml += '</div>';
+            }
+            let pagContainer = document.getElementById('purchasesPagination');
+            if (!pagContainer) {
+                pagContainer = document.createElement('div');
+                pagContainer.id = 'purchasesPagination';
+                document.querySelector('.dashboard-container').appendChild(pagContainer);
+            }
+            pagContainer.innerHTML = paginationHtml;
+
+            // Навешиваем обработчики
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    if (!isNaN(page) && !this.disabled) {
+                        loadPurchases(page);
+                    }
+                });
+            });
+        }
+
+        function loadPurchases(page = 1, search = '') {
+            currentPage = page;
+            const searchValue = search !== undefined ? search : document.getElementById('searchInput').value.trim();
+            fetch(`/purchases?search=${encodeURIComponent(searchValue)}&page=${page}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Обновляем allProducts для поиска в модальных окнах
+                if (data.products) {
+                    allProducts = data.products;
+                }
+                
+                renderPurchases(data.data);
+                renderPagination(data.meta);
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке данных:', error);
+            });
+        }
+
+        // Поиск с пагинацией
+        document.getElementById('searchInput').addEventListener('input', function() {
+            loadPurchases(1, this.value.trim());
         });
+
+        // Инициализация первой загрузки
+        loadPurchases(1);
 
         // Глобальная переменная для хранения всех продуктов
         let allProducts = @json($products);

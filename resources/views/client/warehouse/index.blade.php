@@ -41,38 +41,13 @@
             </tr>
             </thead>
             <tbody id="warehouseTableBody">
-            @foreach($warehouseItems as $item)
-                <tr id="warehouse-{{ $item->id }}">
-                    <td>
-                        @if($item->product->photo)
-                            <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="{{ $item->product->name }}">
-                        @else
-                            <div class="no-photo">Нет фото</div>
-                        @endif
-                    </td>
-                    <td>{{ $item->product->name }}</td>
-                    <td class="purchase-price">{{ number_format($item->purchase_price, 2) }} грн</td>
-                    <td class="retail-price">{{ number_format($item->retail_price, 2) }} грн</td>
-                    <td class="quantity">{{ $item->quantity }} шт</td>
-                    <td class="actions-cell">
-                        <button class="btn-edit" onclick="openEditModal({{ $item->id }})">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                            </svg>
-                            Ред.
-                        </button>
-                        <button class="btn-delete" onclick="confirmDelete({{ $item->id }})">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            Удалить
-                        </button>
-                    </td>
-                </tr>
-            @endforeach
+            <!-- Данные будут загружаться через AJAX -->
             </tbody>
         </table>
     </div>
+
+    <!-- Пагинация -->
+    <div id="warehousePagination"></div>
 
     <!-- Модальное окно добавления -->
     <div id="addModal" class="modal">
@@ -538,10 +513,9 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        setTimeout(() => {
-                            if (row) row.remove();
-                            showNotification('success', 'Товар успешно удален со склада');
-                        }, 300);
+                        showNotification('success', 'Товар успешно удален со склада');
+                        // Перезагружаем текущую страницу
+                        loadWarehouseItems(currentPage);
                     }
                 })
                 .catch(error => {
@@ -551,33 +525,10 @@
                 });
         }
 
-        // Поиск товаров
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchText = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('#warehouseTableBody tr');
-
-            rows.forEach(row => {
-                const productName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                const purchasePrice = row.querySelector('.purchase-price').textContent.toLowerCase();
-                const retailPrice = row.querySelector('.retail-price').textContent.toLowerCase();
-                const quantity = row.querySelector('.quantity').textContent.toLowerCase();
-
-                if (productName.includes(searchText) ||
-                    purchasePrice.includes(searchText) ||
-                    retailPrice.includes(searchText) ||
-                    quantity.includes(searchText)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
-
         // Очистка поиска при закрытии модальных окон
         function clearSearch() {
             document.getElementById('searchInput').value = '';
-            const rows = document.querySelectorAll('#warehouseTableBody tr');
-            rows.forEach(row => row.style.display = '');
+            loadWarehouseItems(1, '');
         }
 
         // Обработчик формы добавления
@@ -606,36 +557,11 @@
                 })
                 .then(data => {
                     if (data.success && data.warehouse) {
-                        const newRow = document.createElement('tr');
-                        newRow.id = `warehouse-${data.warehouse.id}`;
-                        const photoHtml = data.warehouse.product.photo ?
-                            `<img src="/storage/${data.warehouse.product.photo}" class="product-photo" alt="${data.warehouse.product.name}">` :
-                            '<div class="no-photo">Нет фото</div>';
-                        newRow.innerHTML = `
-                            <td>${photoHtml}</td>
-                            <td>${data.warehouse.product.name}</td>
-                            <td class="purchase-price">${formatPrice(data.warehouse.purchase_price)}</td>
-                            <td class="retail-price">${formatPrice(data.warehouse.retail_price)}</td>
-                            <td class="quantity">${data.warehouse.quantity} шт</td>
-                            <td class="actions-cell">
-                                <button class="btn-edit" onclick="openEditModal(${data.warehouse.id})">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                    </svg>
-                                    Ред.
-                                </button>
-                                <button class="btn-delete" onclick="confirmDelete(${data.warehouse.id})">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                    Удалить
-                                </button>
-                            </td>
-                        `;
-                        document.getElementById('warehouseTableBody').appendChild(newRow);
                         closeModal();
                         this.reset();
                         showNotification('success', 'Товар успешно добавлен на склад');
+                        // Перезагружаем текущую страницу для отображения нового товара
+                        loadWarehouseItems(currentPage);
                     }
                 })
                 .catch(error => {
@@ -712,6 +638,145 @@
             if (isNaN(value)) return '0';
             return (value % 1 === 0 ? value.toFixed(0) : value.toFixed(2)) + ' грн';
         }
+
+        // --- AJAX пагинация ---
+        let currentPage = 1;
+
+        function renderWarehouseItems(items) {
+            const tbody = document.getElementById('warehouseTableBody');
+            tbody.innerHTML = '';
+            
+            // Если нет товаров, не делаем ничего
+            if (!items || items.length === 0) {
+                return;
+            }
+            
+            items.forEach(item => {
+                const photoHtml = item.product.photo ?
+                    `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` :
+                    '<div class="no-photo">Нет фото</div>';
+                
+                const row = document.createElement('tr');
+                row.id = `warehouse-${item.id}`;
+                row.innerHTML = `
+                    <td>${photoHtml}</td>
+                    <td>${item.product.name}</td>
+                    <td class="purchase-price">${formatPrice(item.purchase_price)}</td>
+                    <td class="retail-price">${formatPrice(item.retail_price)}</td>
+                    <td class="quantity">${item.quantity} шт</td>
+                    <td class="actions-cell">
+                        <button class="btn-edit" onclick="openEditModal(${item.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            Ред.
+                        </button>
+                        <button class="btn-delete" onclick="confirmDelete(${item.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Удалить
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Добавляем обработчики для изображений
+            const productImages = document.querySelectorAll('.product-photo');
+            productImages.forEach(img => {
+                img.onclick = function() {
+                    openImageModal(this);
+                };
+            });
+        }
+
+        function renderPagination(meta) {
+            let paginationHtml = '';
+            if (meta.last_page > 1) {
+                paginationHtml += '<div class="pagination">';
+                // Кнопка "<"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}>&lt;</button>`;
+
+                let pages = [];
+                if (meta.last_page <= 7) {
+                    // Показываем все страницы
+                    for (let i = 1; i <= meta.last_page; i++) pages.push(i);
+                } else {
+                    // Всегда показываем первую
+                    pages.push(1);
+                    // Если текущая страница > 4, показываем троеточие
+                    if (meta.current_page > 4) pages.push('...');
+                    // Показываем 2 страницы до и после текущей
+                    let start = Math.max(2, meta.current_page - 2);
+                    let end = Math.min(meta.last_page - 1, meta.current_page + 2);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    // Если текущая страница < last_page - 3, показываем троеточие
+                    if (meta.current_page < meta.last_page - 3) pages.push('...');
+                    // Всегда показываем последнюю
+                    pages.push(meta.last_page);
+                }
+                pages.forEach(p => {
+                    if (p === '...') {
+                        paginationHtml += `<span class="page-ellipsis">...</span>`;
+                    } else {
+                        paginationHtml += `<button class="page-btn${p === meta.current_page ? ' active' : ''}" data-page="${p}">${p}</button>`;
+                    }
+                });
+                // Кнопка ">"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;</button>`;
+                paginationHtml += '</div>';
+            }
+            let pagContainer = document.getElementById('warehousePagination');
+            if (!pagContainer) {
+                pagContainer = document.createElement('div');
+                pagContainer.id = 'warehousePagination';
+                document.querySelector('.table-wrapper').appendChild(pagContainer);
+            }
+            pagContainer.innerHTML = paginationHtml;
+
+            // Навешиваем обработчики
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    if (!isNaN(page) && !this.disabled) {
+                        loadWarehouseItems(page);
+                    }
+                });
+            });
+        }
+
+        function loadWarehouseItems(page = 1, search = '') {
+            currentPage = page;
+            const searchValue = search !== undefined ? search : document.getElementById('searchInput').value.trim();
+            fetch(`/warehouses?search=${encodeURIComponent(searchValue)}&page=${page}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Обновляем allProducts для поиска в модальных окнах
+                if (data.products) {
+                    allProducts = data.products;
+                }
+                
+                renderWarehouseItems(data.data);
+                renderPagination(data.meta);
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке данных:', error);
+            });
+        }
+
+        // Поиск с пагинацией
+        document.getElementById('searchInput').addEventListener('input', function() {
+            loadWarehouseItems(1, this.value.trim());
+        });
+
+        // Инициализация первой загрузки
+        loadWarehouseItems(1);
     </script>
 
 </div>

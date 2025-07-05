@@ -9,9 +9,31 @@ use App\Http\Controllers\Controller;
 
 class ExpensesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $expenses = Expense::orderBy('date', 'desc')->get();
+        $query = Expense::orderBy('date', 'desc');
+
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('comment', 'like', "%$search%");
+            });
+        }
+
+        if ($request->ajax()) {
+            $expenses = $query->paginate(11);
+            return response()->json([
+                'data' => $expenses->items(),
+                'meta' => [
+                    'current_page' => $expenses->currentPage(),
+                    'last_page' => $expenses->lastPage(),
+                    'per_page' => $expenses->perPage(),
+                    'total' => $expenses->total(),
+                ],
+            ]);
+        }
+
+        $expenses = $query->paginate(11);
         return view('client.expenses.index', compact('expenses'));
     }
 

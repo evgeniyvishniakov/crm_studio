@@ -8,9 +8,29 @@ use App\Models\Service;
 
 class ServiceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $services = Service::all();
+        $query = Service::orderBy('name');
+
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where('name', 'like', "%$search%");
+        }
+
+        if ($request->ajax()) {
+            $services = $query->paginate(11);
+            return response()->json([
+                'data' => $services->items(),
+                'meta' => [
+                    'current_page' => $services->currentPage(),
+                    'last_page' => $services->lastPage(),
+                    'per_page' => $services->perPage(),
+                    'total' => $services->total(),
+                ],
+            ]);
+        }
+
+        $services = $query->paginate(11);
         return view('client.services.list', compact('services'));
     }
 

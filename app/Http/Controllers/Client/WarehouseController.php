@@ -9,11 +9,37 @@ use Illuminate\Http\Request;
 
 class WarehouseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $warehouseItems = Warehouse::with('product')
+        $query = Warehouse::with('product')
             ->where('quantity', '>', 0)
-            ->get();
+            ->orderByDesc('id');
+
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->whereHas('product', function($q) use ($search) {
+                $q->where('name', 'like', "%$search%");
+            });
+        }
+
+        if ($request->ajax()) {
+            $warehouseItems = $query->paginate(11);
+            $products = Product::select('id', 'name', 'photo', 'purchase_price', 'retail_price')->get();
+
+            return response()->json([
+                'data' => $warehouseItems->items(),
+                'meta' => [
+                    'current_page' => $warehouseItems->currentPage(),
+                    'last_page' => $warehouseItems->lastPage(),
+                    'per_page' => $warehouseItems->perPage(),
+                    'total' => $warehouseItems->total(),
+                ],
+                'products' => $products,
+            ]);
+        }
+
+        // Для обычных запросов используем пагинацию
+        $warehouseItems = $query->paginate(11);
         $products = Product::select('id', 'name', 'photo', 'purchase_price', 'retail_price')->get();
         return view('client.warehouse.index', compact('warehouseItems', 'products'));
     }

@@ -9,9 +9,29 @@ use App\Http\Controllers\Controller;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['category', 'brand'])->get();
+        $query = Product::with(['category', 'brand'])->orderBy('name');
+
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where('name', 'like', "%$search%");
+        }
+
+        if ($request->ajax()) {
+            $products = $query->paginate(11);
+            return response()->json([
+                'data' => $products->items(),
+                'meta' => [
+                    'current_page' => $products->currentPage(),
+                    'last_page' => $products->lastPage(),
+                    'per_page' => $products->perPage(),
+                    'total' => $products->total(),
+                ],
+            ]);
+        }
+
+        $products = $query->paginate(11);
         $categories = \App\Models\ProductCategory::orderBy('name')->get();
         $brands = \App\Models\ProductBrand::orderBy('name')->get();
         return view('client.products.list', compact('products', 'categories', 'brands'));

@@ -46,54 +46,12 @@
                     <th>Действия</th>
                 </tr>
                 </thead>
-                <tbody>
-                @foreach($sales as $sale)
-                    @foreach($sale->items as $item)
-                        <tr data-sale-id="{{ $sale->id }}" data-item-id="{{ $item->id }}">
-                            <td>{{ $sale->formatted_date }}</td>
-                            <td>
-                                {{ $sale->client->name }}
-                                @if($sale->client->instagram)
-                                    <a href="https://instagram.com/{{ $sale->client->instagram }}" class="instagram-link" target="_blank" rel="noopener noreferrer">
-                                        <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        {{ $sale->client->instagram }}
-                                    </a>
-                                @endif
-                            </td>
-                            <td>{{ $item->product->name }}</td>
-                            <td>
-                                @if($item->product->photo)
-                                    <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="Фото" style="height: 50px;">
-                                @else
-                                    <div class="no-photo">Нет фото</div>
-                                @endif
-                            </td>
-                            <td>{{ $item->wholesale_price !== null ? formatPrice($item->wholesale_price) : '—' }} грн</td>
-                            <td>{{ $item->retail_price !== null ? formatPrice($item->retail_price) : '—' }} грн</td>
-                            <td>{{ $item->quantity }}</td>
-                            <td>{{ formatPrice($item->retail_price * $item->quantity) }} грн</td>
-                            <td>
-                                <div class="sale-actions">
-                                    <button class="btn-edit" onclick="editSale(event, {{ $sale->id }})" title="Редактировать">
-                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                        </svg>
-                                    </button>
-                                    <button class="btn-delete" onclick="confirmDeleteItem(event, {{ $sale->id }}, {{ $item->id }})" title="Удалить">
-                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                @endforeach
+                <tbody id="salesTableBody">
+                <!-- Данные будут загружаться через AJAX -->
                 </tbody>
             </table>
         </div>
+        <div id="salesPagination"></div>
     </div>
 
     <!-- Модальное окно добавления продажи -->
@@ -875,8 +833,9 @@
                     if (data.success) {
                         showNotification('Продажа сохранена', 'success');
                         closeSaleModal();
-                        addSaleToTable(data.sale); // Добавляем новую запись в таблицу
                         resetSaleForm(); // Очищаем форму
+                        // Перезагружаем текущую страницу для отображения новой продажи
+                        loadSales(currentPage);
                     } else {
                         showNotification(data.message || 'Ошибка сохранения', 'error');
                     }
@@ -1378,14 +1337,8 @@
                 .then(data => {
                     if (data.success) {
                         showNotification(data.message || 'Товар успешно удален', 'success');
-                        // Удаляем строку с этим товаром
-                        const row = document.querySelector(`tr[data-sale-id="${saleId}"][data-item-id="${itemId}"]`);
-                        if (row) row.remove();
-
-                        // Если это был последний товар, удаляем всю продажу
-                        if (data.sale_deleted) {
-                            document.querySelectorAll(`tr[data-sale-id="${saleId}"]`).forEach(row => row.remove());
-                        }
+                        // Перезагружаем текущую страницу
+                        loadSales(currentPage);
                     } else {
                         showNotification(data.message || 'Ошибка при удалении товара', 'error');
                     }
@@ -1401,6 +1354,158 @@
             price = parseFloat(price);
             return (price % 1 === 0) ? price.toString() : price.toFixed(2);
         }
+
+        // --- AJAX пагинация ---
+        let currentPage = 1;
+
+        function renderSales(sales) {
+            const tbody = document.getElementById('salesTableBody');
+            tbody.innerHTML = '';
+            
+            // Если нет продаж, не делаем ничего
+            if (!sales || sales.length === 0) {
+                return;
+            }
+            
+            sales.forEach(sale => {
+                sale.items.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.setAttribute('data-sale-id', sale.id);
+                    row.setAttribute('data-item-id', item.id);
+                    
+                    const instagramLink = sale.client.instagram ? 
+                        `<a href="https://instagram.com/${sale.client.instagram}" class="instagram-link" target="_blank" rel="noopener noreferrer">
+                            <svg class="icon instagram-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
+                        </svg>
+                        ${sale.client.instagram}
+                    </a>` : '';
+
+                    const photoHtml = item.product.photo ? 
+                        `<img src="/storage/${item.product.photo}" class="product-photo" alt="Фото" style="height: 50px;">` : 
+                        '<div class="no-photo">Нет фото</div>';
+
+                    row.innerHTML = `
+                        <td>${sale.date ? new Date(sale.date).toLocaleDateString('ru-RU') : '—'}</td>
+                        <td>
+                            ${sale.client.name}
+                            ${instagramLink}
+                        </td>
+                        <td>${item.product.name}</td>
+                        <td>${photoHtml}</td>
+                        <td>${item.wholesale_price !== null ? formatPriceJS(item.wholesale_price) : '—'} грн</td>
+                        <td>${item.retail_price !== null ? formatPriceJS(item.retail_price) : '—'} грн</td>
+                        <td>${item.quantity}</td>
+                        <td>${formatPriceJS(item.retail_price * item.quantity)} грн</td>
+                        <td>
+                            <div class="sale-actions">
+                                <button class="btn-edit" onclick="editSale(event, ${sale.id})" title="Редактировать">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                </button>
+                                <button class="btn-delete" onclick="confirmDeleteItem(event, ${sale.id}, ${item.id})" title="Удалить">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            });
+        }
+
+        function renderPagination(meta) {
+            let paginationHtml = '';
+            if (meta.last_page > 1) {
+                paginationHtml += '<div class="pagination">';
+                // Кнопка "<"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}>&lt;</button>`;
+
+                let pages = [];
+                if (meta.last_page <= 7) {
+                    // Показываем все страницы
+                    for (let i = 1; i <= meta.last_page; i++) pages.push(i);
+                } else {
+                    // Всегда показываем первую
+                    pages.push(1);
+                    // Если текущая страница > 4, показываем троеточие
+                    if (meta.current_page > 4) pages.push('...');
+                    // Показываем 2 страницы до и после текущей
+                    let start = Math.max(2, meta.current_page - 2);
+                    let end = Math.min(meta.last_page - 1, meta.current_page + 2);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    // Если текущая страница < last_page - 3, показываем троеточие
+                    if (meta.current_page < meta.last_page - 3) pages.push('...');
+                    // Всегда показываем последнюю
+                    pages.push(meta.last_page);
+                }
+                pages.forEach(p => {
+                    if (p === '...') {
+                        paginationHtml += `<span class="page-ellipsis">...</span>`;
+                    } else {
+                        paginationHtml += `<button class="page-btn${p === meta.current_page ? ' active' : ''}" data-page="${p}">${p}</button>`;
+                    }
+                });
+                // Кнопка ">"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;</button>`;
+                paginationHtml += '</div>';
+            }
+            let pagContainer = document.getElementById('salesPagination');
+            if (!pagContainer) {
+                pagContainer = document.createElement('div');
+                pagContainer.id = 'salesPagination';
+                document.querySelector('.sales-container').appendChild(pagContainer);
+            }
+            pagContainer.innerHTML = paginationHtml;
+
+            // Навешиваем обработчики
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    if (!isNaN(page) && !this.disabled) {
+                        loadSales(page);
+                    }
+                });
+            });
+        }
+
+        function loadSales(page = 1, search = '') {
+            currentPage = page;
+            const searchValue = search !== undefined ? search : document.getElementById('searchInput').value.trim();
+            fetch(`/sales?search=${encodeURIComponent(searchValue)}&page=${page}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Обновляем allProducts и allClients для поиска в модальных окнах
+                if (data.products) {
+                    allProducts = data.products;
+                }
+                if (data.clients) {
+                    allClients = data.clients;
+                }
+                
+                renderSales(data.data);
+                renderPagination(data.meta);
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке данных:', error);
+            });
+        }
+
+        // Поиск с пагинацией
+        document.getElementById('searchInput').addEventListener('input', function() {
+            loadSales(1, this.value.trim());
+        });
+
+        // Инициализация первой загрузки
+        loadSales(1);
 
     </script>
 </div>

@@ -14,9 +14,38 @@ use Illuminate\Support\Facades\Storage;
 
 class PurchaseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $purchases = Purchase::with(['supplier', 'items.product'])->latest()->get();
+        $query = Purchase::with(['supplier', 'items.product'])->latest();
+
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('notes', 'like', "%$search%")
+                  ->orWhereHas('supplier', function($sq) use ($search) {
+                      $sq->where('name', 'like', "%$search%");
+                  });
+            });
+        }
+
+        if ($request->ajax()) {
+            $purchases = $query->paginate(11);
+            $products = Product::all();
+            $suppliers = Supplier::orderBy('name')->get();
+            return response()->json([
+                'data' => $purchases->items(),
+                'meta' => [
+                    'current_page' => $purchases->currentPage(),
+                    'last_page' => $purchases->lastPage(),
+                    'per_page' => $purchases->perPage(),
+                    'total' => $purchases->total(),
+                ],
+                'products' => $products,
+                'suppliers' => $suppliers,
+            ]);
+        }
+
+        $purchases = $query->paginate(11);
         $products = Product::all();
         $suppliers = Supplier::orderBy('name')->get();
         return view('client.purchases.index', compact('purchases', 'products', 'suppliers'));

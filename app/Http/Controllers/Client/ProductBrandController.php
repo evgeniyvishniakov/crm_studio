@@ -8,9 +8,29 @@ use Illuminate\Http\Request;
 
 class ProductBrandController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $brands = ProductBrand::orderBy('created_at', 'desc')->get();
+        $query = ProductBrand::orderBy('name');
+
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where('name', 'like', "%$search%");
+        }
+
+        if ($request->ajax()) {
+            $brands = $query->paginate(11);
+            return response()->json([
+                'data' => $brands->items(),
+                'meta' => [
+                    'current_page' => $brands->currentPage(),
+                    'last_page' => $brands->lastPage(),
+                    'per_page' => $brands->perPage(),
+                    'total' => $brands->total(),
+                ],
+            ]);
+        }
+
+        $brands = $query->paginate(11);
         return view('client.product-brands.list', compact('brands'));
     }
 
