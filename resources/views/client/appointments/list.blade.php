@@ -1586,6 +1586,13 @@
                     if (form && btn) {
                         form.style.display = 'block';
                         btn.style.display = 'none';
+                        resetProductForm();
+                        
+                        // Включаем кнопку "Добавить" в форме
+                        const submitBtn = modal.querySelector('#submitAddProduct');
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                        }
                     }
                     return;
                 }
@@ -1695,16 +1702,16 @@
                 return;
             }
 
+
+
             const productId = modal.querySelector('#selectedProductId')?.value;
             const quantity = modal.querySelector('#productQuantity')?.value;
             const price = modal.querySelector('#productPrice')?.value;
             const productName = modal.querySelector('#productSearchInput')?.value;
 
-            
-
             // Проверки
-            if (!productId || productId === '') {
-                showNotification('Пожалуйста, выберите товар', 'error');
+            if (!productId || productId === '' || !productName || productName === '') {
+                showNotification('Пожалуйста, начните вводить название товара и выберите его из появившегося списка', 'error');
                 return;
             }
 
@@ -1718,21 +1725,29 @@
                 return;
             }
 
-            // Находим товар
-            const product = allProducts.find(p => p.id == productId);
+            // Находим товар в доступных товарах
+            let product = allProducts.find(p => p.id == productId);
             if (!product) {
-                showNotification('Товар не найден', 'error');
+                showNotification('Выбранный товар не найден в списке доступных товаров', 'error');
                 return;
             }
 
-            // Добавляем товар в список
-            temporaryProducts.push({
-                product_id: productId,
-                name: product.name,
-                price: parseFloat(price),
-                purchase_price: product.purchase_price || 0,
-                quantity: parseInt(quantity)
-            });
+            // Проверяем, есть ли уже такой товар в списке
+            const existingProductIndex = temporaryProducts.findIndex(p => p.product_id == productId);
+            
+            if (existingProductIndex !== -1) {
+                // Если товар уже есть, обновляем количество
+                temporaryProducts[existingProductIndex].quantity += parseInt(quantity);
+            } else {
+                // Если товара нет, добавляем новый
+                temporaryProducts.push({
+                    product_id: productId,
+                    name: product.name,
+                    price: parseFloat(price),
+                    purchase_price: product.purchase_price || 0,
+                    quantity: parseInt(quantity)
+                });
+            }
 
             // Обновляем отображение
             updateProductsList();
@@ -1748,7 +1763,17 @@
                 btn.style.display = 'inline-block';
             }
 
-            showNotification('Товар успешно добавлен');
+            // Отключаем кнопку "Добавить" в форме
+            const submitBtn = modal.querySelector('#submitAddProduct');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+            }
+
+            if (existingProductIndex !== -1) {
+                showNotification(`Количество товара "${product.name}" обновлено`);
+            } else {
+                showNotification(`Товар "${product.name}" успешно добавлен`);
+            }
         }
 
 
@@ -1817,46 +1842,6 @@
             const form = modal.querySelector('#addProductForm');
             const cancelBtn = modal.querySelector('#cancelAddProduct');
             const submitBtn = modal.querySelector('#submitAddProduct');
-
-            // ✅ ПРИ ЗАГРУЗКЕ: если форма скрыта — кнопка появляется
-            if (btnAdd && form) {
-                // Показываем кнопку, если форма скрыта
-                if (form.style.display === 'none') {
-                    btnAdd.style.display = 'inline-block';
-                } else {
-                    btnAdd.style.display = 'none';
-                }
-
-                btnAdd.addEventListener('click', () => {
-                    btnAdd.style.display = 'none';
-                    form.style.display = 'block';
-                    resetProductForm();
-                });
-            }
-
-            // Отмена добавления товара
-            if (cancelBtn && form && btnAdd) {
-                cancelBtn.addEventListener('click', () => {
-                    form.style.display = 'none';
-                    btnAdd.style.display = 'inline-block';
-                    resetProductForm();
-                });
-            }
-
-            // Подтвердить добавление
-            if (submitBtn) {
-                submitBtn.addEventListener('click', () => {
-                    addProductToAppointment();
-                });
-            }
-
-
-            if (btnAdd && form) {
-                btnAdd.addEventListener('click', () => {
-                    btnAdd.style.display = 'none';
-                    form.style.display = 'block';
-                });
-            }
 
             updateTotalAmount();
         }
