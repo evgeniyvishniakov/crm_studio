@@ -1926,7 +1926,6 @@
         function searchProducts(inputElement) {
             const searchTerm = inputElement.value.trim().toLowerCase();
 
-
             const dropdown = inputElement.nextElementSibling;
             const dropdownList = dropdown.querySelector('.product-dropdown-list');
 
@@ -1935,16 +1934,18 @@
                 return;
             }
 
+            // Получаем ID уже добавленных товаров (приводим к числам для корректного сравнения)
+            const addedProductIds = temporaryProducts.map(p => parseInt(p.product_id));
+            
             const filteredProducts = allProducts.filter(product => {
                 const nameMatch = product.name?.toLowerCase().includes(searchTerm) || false;
+                const notAlreadyAdded = !addedProductIds.includes(parseInt(product.id));
 
-                return nameMatch;
+                return nameMatch && notAlreadyAdded;
             }).slice(0, 5);
-
-
-
+            
             if (filteredProducts.length > 0) {
-                dropdownList.innerHTML = filteredProducts.map(product => {
+                const dropdownHTML = filteredProducts.map(product => {
                     const name = escapeHtml(product.name || '');
                     const price = product.retail_price || product.price || 0;
 
@@ -1957,6 +1958,8 @@
                         </div>
                     `;
                 }).join('');
+                
+                dropdownList.innerHTML = dropdownHTML;
                 dropdown.style.display = 'block';
             } else {
                 dropdownList.innerHTML = '<div class="product-dropdown-item no-results">Товары не найдены</div>';
@@ -2643,17 +2646,19 @@
         }
 
         function showProductDropdown(input) {
-
-
             const dropdown = input.nextElementSibling;
             const dropdownList = dropdown.querySelector('.product-dropdown-list');
 
             if (input.value.length > 0) {
                 searchProducts(input);
             } else {
-                // Показываем первые 5 товаров
-                const availableProducts = allProducts.slice(0, 5);
-    
+                // Получаем ID уже добавленных товаров (приводим к числам для корректного сравнения)
+                const addedProductIds = temporaryProducts.map(p => parseInt(p.product_id));
+                
+                // Показываем первые 5 товаров, исключая уже добавленные
+                const availableProducts = allProducts.filter(product => {
+                    return !addedProductIds.includes(parseInt(product.id));
+                }).slice(0, 5);
 
                 if (availableProducts.length === 0) {
                     dropdownList.innerHTML = '<div class="product-dropdown-item">Нет доступных товаров</div>';
