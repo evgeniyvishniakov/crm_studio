@@ -473,5 +473,28 @@
 <script src="{{ asset('client/js/scripts.js') }}"></script>
 
 @stack('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var activeMenuItem = document.querySelector('#left-panel .navbar-nav li.active > a');
+        var containers = [
+            document.querySelector('#left-panel .main-menu'),
+            document.querySelector('#left-panel .navbar-nav'),
+            document.getElementById('left-panel')
+        ];
+        var scrollContainer = containers.find(function(el) {
+            return el && el.scrollHeight > el.clientHeight;
+        });
+        if (activeMenuItem && scrollContainer) {
+            var itemRect = activeMenuItem.getBoundingClientRect();
+            var containerRect = scrollContainer.getBoundingClientRect();
+            var offset = itemRect.top - containerRect.top;
+            var itemHeight = activeMenuItem.offsetHeight;
+            var containerHeight = scrollContainer.clientHeight;
+            scrollContainer.scrollTop += offset - (containerHeight / 2) + (itemHeight / 2);
+        }
+    }, 200);
+});
+</script>
 </body>
 </html>

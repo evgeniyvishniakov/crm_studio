@@ -587,6 +587,7 @@ aside.left-panel {
   display: inline-block;
   margin: 0;
   padding: 0;
+  padding: 20px 0 30px 0;
   vertical-align: top; }
   .navbar .main-menu {
     float: left;
@@ -794,6 +795,8 @@ aside.left-panel {
           width: 100%; }
           .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a .menu-icon {
             text-align: center; }
+        .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu i {
+          left: 10px; }
       .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children.show {
         overflow: visible; }
         .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children.show .sub-menu {
@@ -2454,8 +2457,19 @@ footer.site-footer {
     margin-left: 0; }
 
   #left-panel {
-    max-width: 100%;
-    width: 100%; }
+    height: 100vh;
+    min-height: 0;
+    max-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  #left-panel .main-menu {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
     #left-panel .navbar .navbar-nav li > a {
       max-width: inherit;
       font-size: 14px; }
@@ -3037,5 +3051,51 @@ footer.site-footer {
 .sidebar-submenu .sidebar-item.active .sidebar-link {
   color: #03a9f3;
   background: none;
+}
+
+#left-panel .main-menu {
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #b0b8c1 #f5f6fa;
+}
+#left-panel .main-menu::-webkit-scrollbar {
+    width: 8px;
+    background: #f5f6fa;
+    border-radius: 8px;
+}
+#left-panel .main-menu::-webkit-scrollbar-thumb {
+    background: #b0b8c1;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+#left-panel .main-menu::-webkit-scrollbar-thumb:hover {
+    background: #7a869a;
+}
+
+#left-panel .main-menu,
+#left-panel .navbar-nav {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+#left-panel,
+#left-panel > nav,
+#left-panel .main-menu,
+#left-panel .navbar-collapse,
+#left-panel .navbar {
+    height: 100vh !important;
+    min-height: 0 !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+#left-panel .main-menu,
+#left-panel .navbar-nav {
+    /* flex: 1 1 auto !important; */
+    min-height: 0 !important;
+    max-height: 100vh !important;
+    overflow-y: auto !important;
 }
 
