@@ -106,14 +106,45 @@
             color: #03a9f3 !important;
             background: none !important;
             background-color: transparent !important;
-            font-weight: normal !important;
+           
         }
         .menu-item-has-children.active .dropdown-toggle,
         .menu-item-has-children.active .dropdown-toggle:hover,
         .menu-item-has-children.active .dropdown-toggle:focus {
-            color: #03a9f3 !important;
-            background: none !important;
-            text-decoration: none !important;
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* Позволяем Bootstrap управлять отображением подменю */
+        .menu-item-has-children .sub-menu {
+            position: relative;
+            z-index: 1000;
+        }
+
+        /* Убеждаемся, что другие элементы меню не перекрываются */
+        .menu-item-has-children.dropdown + .menu-item-has-children.dropdown {
+            margin-top: 0;
+        }
+
+        /* Стили для корректного отображения подменю */
+        .sub-menu.children {
+            position: relative;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 2px;
+        }
+
+        /* Управление высотой меню */
+        .sidebar-menu {
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        /* Убеждаемся, что элементы меню не перекрываются */
+        .menu-item-has-children {
+            position: relative;
         }
 
         @media (max-width: 768px) {
@@ -211,7 +242,7 @@
 
                 <li class="menu-title">Сервисы</li>
 
-                <li class="menu-item-has-children dropdown {{ 
+                <li class="menu-item-has-children {{ 
                     request()->routeIs('services.*') || 
                     request()->routeIs('products.*') || 
                     request()->routeIs('product-categories.*') || 
@@ -219,10 +250,24 @@
                     request()->routeIs('suppliers.*') || 
                     request()->routeIs('client-types.*') ? 'active' : '' 
                 }}">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a href="#referenceMenu" data-toggle="collapse" aria-expanded="{{ 
+                        request()->routeIs('services.*') || 
+                        request()->routeIs('products.*') || 
+                        request()->routeIs('product-categories.*') || 
+                        request()->routeIs('product-brands.*') || 
+                        request()->routeIs('suppliers.*') || 
+                        request()->routeIs('client-types.*') ? 'true' : 'false' 
+                    }}" class="dropdown-toggle">
                         <i class="menu-icon fa fa-layer-group"></i>Справочники
                     </a>
-                    <ul class="sub-menu children dropdown-menu">
+                    <ul id="referenceMenu" class="sub-menu children collapse {{ 
+                        request()->routeIs('services.*') || 
+                        request()->routeIs('products.*') || 
+                        request()->routeIs('product-categories.*') || 
+                        request()->routeIs('product-brands.*') || 
+                        request()->routeIs('suppliers.*') || 
+                        request()->routeIs('client-types.*') ? 'show' : '' 
+                    }}">
                         <li class="{{ request()->routeIs('services.*') ? 'active' : '' }}">
                             <i class="fa fa-briefcase"></i>
                             <a href="{{ route('services.index') }}">Услуги</a>
@@ -238,28 +283,40 @@
                         <li class="{{ request()->routeIs('product-brands.*') ? 'active' : '' }}">
                             <i class="fa fa-certificate"></i>
                             <a href="{{ route('product-brands.index') }}">Бренды товаров</a>
-                </li>
+                        </li>
                         <li class="{{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
                             <i class="fa fa-truck"></i>
                             <a href="{{ route('suppliers.index') }}">Поставщики</a>
-                </li>
+                        </li>
                         <li class="{{ request()->routeIs('client-types.*') ? 'active' : '' }}">
                             <i class="fa fa-id-badge"></i>
                             <a href="{{ route('client-types.index') }}">Типы клиентов</a>
-                </li>
+                        </li>
                     </ul>
                 </li>
-                <li class="menu-item-has-children dropdown {{ 
+                <li class="menu-item-has-children {{ 
                     request()->routeIs('admin.users.*') || 
                     request()->routeIs('admin.roles.*') || 
                     request()->routeIs('admin.settings.*') || 
                     request()->routeIs('admin.email-templates.*') || 
                     request()->routeIs('admin.security.*') ? 'active' : '' 
                 }}">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a href="#settingsMenu" data-toggle="collapse" aria-expanded="{{ 
+                        request()->routeIs('admin.users.*') || 
+                        request()->routeIs('admin.roles.*') || 
+                        request()->routeIs('admin.settings.*') || 
+                        request()->routeIs('admin.email-templates.*') || 
+                        request()->routeIs('admin.security.*') ? 'true' : 'false' 
+                    }}" class="dropdown-toggle">
                         <i class="menu-icon fa fa-cogs"></i>Настройки
                     </a>
-                    <ul class="sub-menu children dropdown-menu">
+                    <ul id="settingsMenu" class="sub-menu children collapse {{ 
+                        request()->routeIs('admin.users.*') || 
+                        request()->routeIs('admin.roles.*') || 
+                        request()->routeIs('admin.settings.*') || 
+                        request()->routeIs('admin.email-templates.*') || 
+                        request()->routeIs('admin.security.*') ? 'show' : '' 
+                    }}">
                         <li class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                             <i class="fa fa-users"></i>
                             <a href="{{ route('admin.users.index') }}">Пользователи</a>
@@ -398,15 +455,22 @@
                 <div class="col-sm-6">
                     Copyright &copy; 2018 Ela Admin
                 </div>
-                <div class="col-sm-6 text-right">
-                    Designed by <a href="https://colorlib.com">Colorlib</a>
-                </div>
+                
             </div>
         </div>
     </footer>
     <!-- /.site-footer -->
 </div>
 <!-- /#right-panel -->
+
+<!-- Scripts -->
+<script src="{{ asset('client/js/lib/jquery-numerator.min.js') }}"></script>
+<script src="{{ asset('client/js/lib/jquery.countup.min.js') }}"></script>
+<script src="{{ asset('client/js/lib/waypoints.min.js') }}"></script>
+<script src="{{ asset('client/js/lib/jquery.counterup.min.js') }}"></script>
+<script src="{{ asset('client/js/lib/owl.carousel.min.js') }}"></script>
+<script src="{{ asset('client/js/lib/owl.carousel-init.js') }}"></script>
+<script src="{{ asset('client/js/scripts.js') }}"></script>
 
 @stack('scripts')
 </body>

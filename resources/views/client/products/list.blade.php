@@ -58,7 +58,9 @@
                     <tr id="product-{{ $product->id }}">
                         <td>
                             @if($product->photo)
-                                <img src="{{ Storage::url($product->photo) }}" alt="{{ $product->name }}" class="product-photo">
+                                <a href="{{ Storage::url($product->photo) }}" class="zoomable-image" data-img="{{ Storage::url($product->photo) }}">
+                                    <img src="{{ Storage::url($product->photo) }}" alt="{{ $product->name }}" class="product-photo">
+                                </a>
                             @else
                                 <div class="no-photo">Нет фото</div>
                             @endif
@@ -318,6 +320,12 @@
                 </form>
             </div>
         </div>
+    </div>
+
+    <!-- Модальное окно для увеличенного просмотра фото -->
+    <div id="imageModal" class="modal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);align-items:center;justify-content:center;">
+        <span id="closeImageModal" style="position:absolute;top:30px;right:50px;font-size:40px;color:#fff;cursor:pointer;z-index:10001;">&times;</span>
+        <img id="modalImage" src="" style="max-width:90vw;max-height:90vh;box-shadow:0 0 20px #000;border-radius:8px;z-index:10000;">
     </div>
 
     <style>
@@ -1104,7 +1112,7 @@
                 row.id = `product-${product.id}`;
                 
                 const photoHtml = product.photo 
-                    ? `<img src="/storage/${product.photo}" alt="${product.name}" class="product-photo">`
+                    ? `<a href="/storage/${product.photo}" class="zoomable-image" data-img="/storage/${product.photo}"><img src="/storage/${product.photo}" alt="${product.name}" class="product-photo"></a>`
                     : '<div class="no-photo">Нет фото</div>';
                 
                 row.innerHTML = `
@@ -1119,18 +1127,18 @@
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                             </svg>
-                            
                         </button>
                         <button class="btn-delete" onclick="deleteProduct(${product.id})">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
-                            
                         </button>
                     </td>
                 `;
                 tbody.appendChild(row);
             });
+            // После добавления строк навешиваем обработчики
+            initZoomableImages();
         }
 
         function renderPagination(meta) {
@@ -1255,6 +1263,33 @@
 
         // Инициализация первой загрузки
         loadPage(1);
+
+        function initZoomableImages() {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const closeBtn = document.getElementById('closeImageModal');
+            document.querySelectorAll('.zoomable-image').forEach(function(link) {
+                link.onclick = function(e) {
+                    e.preventDefault();
+                    modal.style.display = 'flex';
+                    modalImg.src = this.getAttribute('data-img');
+                };
+            });
+            closeBtn.onclick = function() {
+                modal.style.display = 'none';
+                modalImg.src = '';
+            };
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    modalImg.src = '';
+                }
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initZoomableImages();
+        });
     </script>
 
 @endsection

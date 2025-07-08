@@ -1324,3 +1324,6 @@
     min-width: 24px;
     font-weight: 700;
 }
+.navbar .navbar-nav li.menu-item-has-children .sub-menu li{
+    list-style-type: none;
+}
