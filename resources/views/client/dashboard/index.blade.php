@@ -315,7 +315,7 @@
 
     <script>
         let currentMetric = 'profit';
-        let currentPeriod = '30';
+        let currentPeriod = document.querySelector('.period-filters .tab-button.active')?.dataset.period || '30';
 
         // Анимация счетчика для карточек
         function animateCounter(element, start, end, duration = 1500) {
@@ -358,19 +358,20 @@
                 const isCurrency = finalValue.includes('грн');
 
                 if (!isNaN(numericValue)) {
-                    // Сразу устанавливаем 0 и показываем элемент
                     card.textContent = '0' + (isCurrency ? ' грн' : '');
                     card.classList.add('animated');
-
-                    // Запускаем анимацию с небольшой задержкой для каждой карточки
                     setTimeout(() => {
                         animateCounter(card, 0, numericValue, 1500);
                     }, index * 200);
                 } else {
-                    // Для нечисловых значений просто показываем
                     card.classList.add('animated');
                 }
             });
+            // --- Обновляем карточки после анимации ---
+            setTimeout(() => {
+                currentPeriod = document.querySelector('.period-filters .tab-button.active')?.dataset.period || '30';
+                updateAllStatCardsByPeriod(currentPeriod, true); // true — запускать анимацию
+            }, cards.length * 200 + 1600); // чуть больше времени, чем длится вся анимация
         });
 
         // Данные для графика (пример)
@@ -870,6 +871,119 @@
 
         // === Календарь дашборда: подсветка сегодняшней даты, количество записей, popover и модалка ===
         // [УДАЛЕНО: старая реализация кастомного календаря на .calendar-day]
+
+        // --- Функция для обновления значений в карточках ---
+        function updateStatCardValue(type, value) {
+            let selector = '';
+            if (type === 'profit') selector = '.stat-card.profit-card .stat-value';
+            if (type === 'expenses') selector = '.stat-card.expenses-card .stat-value';
+            if (type === 'sales') selector = '.stat-card.sales-card .stat-value';
+            if (type === 'services') selector = '.stat-card.services-card .stat-value';
+            if (!selector) return;
+            const card = document.querySelector(selector);
+            if (card) {
+                card.classList.remove('animated');
+                card.textContent = (type === 'expenses' ? '' : '') +
+                    new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value) + ' грн';
+                void card.offsetWidth;
+                card.classList.add('animated');
+            }
+        }
+
+        // --- Универсальная функция для обновления всех карточек по данным с сервера ---
+        function updateAllStatCardsByPeriod(period, animate = false, startDate = null, endDate = null) {
+            // Прибыль
+            let profitUrl = startDate && endDate
+                ? `/api/dashboard/profit-chart?start_date=${startDate}&end_date=${endDate}`
+                : `/api/dashboard/profit-chart?period=${period}`;
+            fetch(profitUrl)
+                .then(res => res.json())
+                .then(res => {
+                    const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                    const card = document.querySelector('.stat-card.profit-card .stat-value');
+                    if (animate && card) {
+                        card.textContent = '0 грн';
+                        animateCounter(card, 0, value, 1500);
+                    } else {
+                        updateStatCardValue('profit', value);
+                    }
+                });
+            // Расходы
+            let expensesUrl = startDate && endDate
+                ? `/api/dashboard/expenses-chart?start_date=${startDate}&end_date=${endDate}`
+                : `/api/dashboard/expenses-chart?period=${period}`;
+            fetch(expensesUrl)
+                .then(res => res.json())
+                .then(res => {
+                    const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                    const card = document.querySelector('.stat-card.expenses-card .stat-value');
+                    if (animate && card) {
+                        card.textContent = '0 грн';
+                        animateCounter(card, 0, value, 1500);
+                    } else {
+                        updateStatCardValue('expenses', value);
+                    }
+                });
+            // Продажи товаров
+            let salesUrl = startDate && endDate
+                ? `/api/dashboard/sales-chart?start_date=${startDate}&end_date=${endDate}`
+                : `/api/dashboard/sales-chart?period=${period}`;
+            fetch(salesUrl)
+                .then(res => res.json())
+                .then(res => {
+                    const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                    const card = document.querySelector('.stat-card.sales-card .stat-value');
+                    if (animate && card) {
+                        card.textContent = '0 грн';
+                        animateCounter(card, 0, value, 1500);
+                    } else {
+                        updateStatCardValue('sales', value);
+                    }
+                });
+            // Продажи услуг
+            let servicesUrl = startDate && endDate
+                ? `/api/dashboard/services-chart?start_date=${startDate}&end_date=${endDate}`
+                : `/api/dashboard/services-chart?period=${period}`;
+            fetch(servicesUrl)
+                .then(res => res.json())
+                .then(res => {
+                    const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+                    const card = document.querySelector('.stat-card.services-card .stat-value');
+                    if (animate && card) {
+                        card.textContent = '0 грн';
+                        animateCounter(card, 0, value, 1500);
+                    } else {
+                        updateStatCardValue('services', value);
+                    }
+                });
+        }
+
+        // --- Вызов при загрузке страницы (по умолчанию за месяц) ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // Синхронизируем currentPeriod с активной кнопкой
+            currentPeriod = document.querySelector('.period-filters .tab-button.active')?.dataset.period || '30';
+            updateAllStatCardsByPeriod(currentPeriod, true); // true — запускать анимацию
+        });
+
+        // --- Везде, где меняется период или диапазон, вызываем обновление карточек ---
+        // В обработчике period-фильтра:
+        document.querySelectorAll('.period-filters .tab-button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (btn.id === 'dateRangePicker') return;
+                document.querySelectorAll('.period-filters .tab-button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                calendarRangeDisplay.textContent = '';
+                selectedRange = null;
+                currentPeriod = this.dataset.period;
+                updateAllStatCardsByPeriod(currentPeriod, true);
+                // ... остальной код ...
+            });
+        });
+        // В updateChartByRange:
+        function updateChartByRange(startDate, endDate) {
+            updateAllStatCardsByPeriod(null, startDate, endDate);
+            // ... остальной код ...
+        }
     </script>
 @endsection
 
@@ -1038,6 +1152,7 @@
                     createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
                     universalChart.options.scales.y.max = res.maxValue || undefined;
                     universalChart.update();
+                    updateStatCardValue('profit', res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0));
                 });
             return;
         }
@@ -1047,6 +1162,7 @@
                 .then(res => {
                     const data = getCumulativeData(res.data);
                     createUniversalChart('line', res.labels, data, getMetricColor('expenses'), 'Расходы');
+                    updateStatCardValue('expenses', res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0));
                 });
             return;
         }
@@ -1056,6 +1172,7 @@
                 .then(res => {
                     createUniversalChart('bar', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
                     universalChart.update();
+                    updateStatCardValue('sales', res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0));
                 });
             return;
         }
@@ -1065,6 +1182,7 @@
                 .then(res => {
                     createUniversalChart('bar', res.labels, res.data, getMetricColor('services'), 'Продажи услуг');
                     universalChart.update();
+                    updateStatCardValue('services', res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0));
                 });
             return;
         }

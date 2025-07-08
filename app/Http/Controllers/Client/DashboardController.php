@@ -411,14 +411,19 @@ class DashboardController extends Controller
         $firstExpense = \App\Models\Expense::orderBy('date', 'asc')->first();
         $firstPurchase = \App\Models\Purchase::orderBy('date', 'asc')->first();
         $firstDate = $now;
-        if ($firstExpense && $firstPurchase) {
-            $firstDate = min(\Carbon\Carbon::parse($firstExpense->date), \Carbon\Carbon::parse($firstPurchase->date));
-        } elseif ($firstExpense) {
-            $firstDate = \Carbon\Carbon::parse($firstExpense->date);
-        } elseif ($firstPurchase) {
-            $firstDate = \Carbon\Carbon::parse($firstPurchase->date);
+        $dates = [];
+        if ($firstExpense && $firstExpense->date) $dates[] = \Carbon\Carbon::parse($firstExpense->date);
+        if ($firstPurchase && $firstPurchase->date) $dates[] = \Carbon\Carbon::parse($firstPurchase->date);
+        if (count($dates)) {
+            $firstDate = min($dates);
         }
         $daysSinceStart = $now->diffInDays($firstDate);
+        $days = 0;
+        if ($period == 7) $days = 6;
+        elseif ($period == 30) $days = 29;
+        elseif ($period == 90) $days = 89;
+        elseif ($period == 180) $days = 179;
+        elseif ($period == 365) $days = 364;
         $maxDays = min($days, $daysSinceStart);
         for ($i = $maxDays; $i >= 0; $i--) {
             $date = $now->copy()->subDays($i)->toDateString();
