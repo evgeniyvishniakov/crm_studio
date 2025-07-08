@@ -981,7 +981,7 @@
         });
         // В updateChartByRange:
         function updateChartByRange(startDate, endDate) {
-            updateAllStatCardsByPeriod(null, startDate, endDate);
+            updateAllStatCardsByPeriod(null, true, startDate, endDate);
             // ... остальной код ...
         }
     </script>
@@ -1144,6 +1144,7 @@
     });
 
     function updateChartByRange(startDate, endDate) {
+        updateAllStatCardsByPeriod(null, true, startDate, endDate);
         // Определяем текущую метрику
         if (currentMetric === 'profit') {
             fetch(`/api/dashboard/profit-chart?start_date=${startDate}&end_date=${endDate}`)
@@ -1152,7 +1153,6 @@
                     createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
                     universalChart.options.scales.y.max = res.maxValue || undefined;
                     universalChart.update();
-                    updateStatCardValue('profit', res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0));
                 });
             return;
         }
@@ -1162,7 +1162,6 @@
                 .then(res => {
                     const data = getCumulativeData(res.data);
                     createUniversalChart('line', res.labels, data, getMetricColor('expenses'), 'Расходы');
-                    updateStatCardValue('expenses', res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0));
                 });
             return;
         }
@@ -1172,7 +1171,6 @@
                 .then(res => {
                     createUniversalChart('bar', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
                     universalChart.update();
-                    updateStatCardValue('sales', res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0));
                 });
             return;
         }
@@ -1182,7 +1180,6 @@
                 .then(res => {
                     createUniversalChart('bar', res.labels, res.data, getMetricColor('services'), 'Продажи услуг');
                     universalChart.update();
-                    updateStatCardValue('services', res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0));
                 });
             return;
         }
