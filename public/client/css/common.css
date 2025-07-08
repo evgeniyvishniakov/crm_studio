@@ -1327,3 +1327,19 @@
 .navbar .navbar-nav li.menu-item-has-children .sub-menu li{
     list-style-type: none;
 }
+
+/* Гарантированно убираем фон у активного пункта меню и подменю */
+#left-panel .navbar-nav li.active,
+#left-panel .navbar-nav li.active *,
+#left-panel .navbar-nav li.active:before,
+#left-panel .navbar-nav li.active:after,
+#left-panel .navbar-nav li.active > a:before,
+#left-panel .navbar-nav li.active > a:after {
+    background: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+#left-panel .navbar-nav .sub-menu li.active > a {
+    background: none !important;
+    background-color: transparent !important;
+}
