@@ -134,10 +134,26 @@ class DashboardController extends Controller
      */
     public function profitChartData(Request $request)
     {
-        $period = $request->input('period', 7); // 30, 90, 180, 365
-        $now = now();
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
         $labels = [];
         $data = [];
+        if ($startDate && $endDate) {
+            $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
+            foreach ($period as $date) {
+                $labels[] = $date->format('d M');
+                $profit = $this->getProfitForDate($date->toDateString());
+                $data[] = round($profit, 2);
+            }
+            $maxValue = $this->roundProfitMaxValueForChart(max($data));
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data,
+                'maxValue' => $maxValue
+            ]);
+        }
+        $period = $request->input('period', 7); // 30, 90, 180, 365
+        $now = now();
         $firstAppointment = \App\Models\Appointment::orderBy('created_at', 'asc')->first();
         $firstDate = $firstAppointment ? \Carbon\Carbon::parse($firstAppointment->created_at) : $now;
         $daysSinceStart = $now->diffInDays($firstDate);
@@ -197,10 +213,24 @@ class DashboardController extends Controller
      */
     public function salesChartData(Request $request)
     {
-        $period = $request->input('period', 7); // 7, 30, 90
-        $now = now();
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
         $labels = [];
         $data = [];
+        if ($startDate && $endDate) {
+            $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
+            foreach ($period as $date) {
+                $labels[] = $date->format('d M');
+                $sales = $this->getSalesForDate($date->toDateString());
+                $data[] = round($sales, 2);
+            }
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data
+            ]);
+        }
+        $period = $request->input('period', 7); // 7, 30, 90
+        $now = now();
         $firstSale = \App\Models\Sale::orderBy('date', 'asc')->first();
         $firstDate = $firstSale ? \Carbon\Carbon::parse($firstSale->date) : $now;
         $daysSinceStart = $now->diffInDays($firstDate);
@@ -252,10 +282,26 @@ class DashboardController extends Controller
      */
     public function servicesChartData(Request $request)
     {
-        $period = $request->input('period', 7); // 7, 30, 90
-        $now = now();
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
         $labels = [];
         $data = [];
+        if ($startDate && $endDate) {
+            $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
+            foreach ($period as $date) {
+                $labels[] = $date->format('d M');
+                $sum = \App\Models\Appointment::whereDate('date', $date->toDateString())
+                    ->where('status', 'completed')
+                    ->sum('price');
+                $data[] = round($sum, 2);
+            }
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data
+            ]);
+        }
+        $period = $request->input('period', 7); // 7, 30, 90
+        $now = now();
         $firstAppointment = \App\Models\Appointment::orderBy('date', 'asc')->first();
         $firstDate = $firstAppointment ? \Carbon\Carbon::parse($firstAppointment->date) : $now;
         $daysSinceStart = $now->diffInDays($firstDate);
@@ -285,16 +331,27 @@ class DashboardController extends Controller
      */
     public function expensesChartData(Request $request)
     {
-        $period = $request->input('period', 30); // 7, 30, 90, 180, 365
-        $now = now();
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
         $labels = [];
         $data = [];
-        $days = 0;
-        if ($period == 7) $days = 6;
-        elseif ($period == 30) $days = 29;
-        elseif ($period == 90) $days = 89;
-        elseif ($period == 180) $days = 179;
-        elseif ($period == 365) $days = 364;
+        if ($startDate && $endDate) {
+            $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
+            foreach ($period as $date) {
+                $labels[] = $date->format('d M');
+                $expenses = \App\Models\Expense::whereDate('date', $date->toDateString())->sum('amount');
+                $purchases = \App\Models\Purchase::whereDate('date', $date->toDateString())->sum('total_amount');
+                $data[] = round($expenses + $purchases, 2);
+            }
+            $maxValue = $this->roundExpensesMaxValueForChart(max($data));
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data,
+                'maxValue' => $maxValue
+            ]);
+        }
+        $period = $request->input('period', 30); // 7, 30, 90, 180, 365
+        $now = now();
         $firstExpense = \App\Models\Expense::orderBy('date', 'asc')->first();
         $firstPurchase = \App\Models\Purchase::orderBy('date', 'asc')->first();
         $firstDate = $now;
@@ -327,19 +384,35 @@ class DashboardController extends Controller
      */
     public function activityChartData(Request $request)
     {
-        $period = $request->input('period', 30); // 7, 30, 90, 180, 365
-        $now = now();
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
         $labels = [];
         $servicesData = [];
         $clientsData = [];
         $appointmentsData = [];
-        $days = 0;
-        if ($period == 7) $days = 6;
-        elseif ($period == 30) $days = 29;
-        elseif ($period == 90) $days = 89;
-        elseif ($period == 180) $days = 179;
-        elseif ($period == 365) $days = 364;
-        // Находим самую раннюю дату по услугам, клиентам, записям
+        if ($startDate && $endDate) {
+            $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
+            foreach ($period as $date) {
+                $labels[] = $date->format('d M');
+                // Услуги: завершённые записи за день
+                $servicesCount = \App\Models\Appointment::whereDate('date', $date->toDateString())->where('status', 'completed')->count();
+                // Клиенты: новые клиенты за день
+                $clientsCount = \App\Models\Client::whereDate('created_at', $date->toDateString())->count();
+                // Записи: все записи за день (по дате услуги, а не по дате создания)
+                $appointmentsCount = \App\Models\Appointment::whereDate('date', $date->toDateString())->count();
+                $servicesData[] = $servicesCount;
+                $clientsData[] = $clientsCount;
+                $appointmentsData[] = $appointmentsCount;
+            }
+            return response()->json([
+                'labels' => $labels,
+                'services' => $servicesData,
+                'clients' => $clientsData,
+                'appointments' => $appointmentsData
+            ]);
+        }
+        $period = $request->input('period', 30); // 7, 30, 90, 180, 365
+        $now = now();
         $firstService = \App\Models\Appointment::orderBy('date', 'asc')->first();
         $firstClient = \App\Models\Client::orderBy('created_at', 'asc')->first();
         $firstAppointment = \App\Models\Appointment::orderBy('created_at', 'asc')->first();
