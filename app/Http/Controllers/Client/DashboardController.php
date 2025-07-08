@@ -197,9 +197,11 @@ class DashboardController extends Controller
      */
     private function getProfitForDate($date)
     {
-        $productsProfit = \App\Models\SaleItem::whereDate('created_at', $date)
-            ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
-            ->value('profit') ?? 0;
+        $productsProfit = \App\Models\SaleItem::whereHas('sale', function($q) use ($date) {
+            $q->whereDate('date', $date);
+        })
+        ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
+        ->value('profit') ?? 0;
         $servicesProfit = \App\Models\Appointment::whereDate('date', $date)
             ->where('status', 'completed')
             ->sum('price');
