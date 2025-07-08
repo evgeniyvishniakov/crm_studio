@@ -448,7 +448,7 @@
         };
         function getChartLabels(period) {
             if (period === '7') return getLastNDates(7);
-            if (period === '30') return getWeekStartDates(4);
+            if (period === '30') return getMonthStartDates();
             if (period === '90') return getWeekStartDates(13);
             return [];
         }
@@ -625,15 +625,22 @@
             universalChart.options.scales.y.max = niceMax;
             universalChart.update();
         }
-        // Инициализация universalChart при загрузке страницы
-        fetch('/api/dashboard/profit-chart?period=30')
-            .then(res => res.json())
-            .then(res => {
-                createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
-                // Используем maxValue из API вместо расчета
-                universalChart.options.scales.y.max = res.maxValue || undefined;
-                universalChart.update();
-            });
+        // По умолчанию активна кнопка 'За месяц'
+        document.querySelectorAll('.period-filters .tab-button').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-period') === '30') btn.classList.add('active');
+        });
+
+        // Инициализация universalChart только один раз при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/dashboard/profit-chart?period=30')
+                .then(res => res.json())
+                .then(res => {
+                    createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
+                    universalChart.options.scales.y.max = res.maxValue || undefined;
+                    universalChart.update();
+                });
+        });
         // Dropdown логика
         const metricToggle = document.querySelector('.metric-toggle');
         const metricMenu = document.querySelector('.metric-menu');
@@ -721,87 +728,43 @@
             });
         });
         // Фильтры периода
-        // В обработчике смены периода (period-btn) замените текущий код на этот:
-        // В обработчике смены периода (period-btn) замените текущий код на этот:
         document.querySelectorAll('.period-filters .tab-button').forEach(btn => {
             btn.addEventListener('click', function() {
+                if (btn.id === 'dateRangePicker') return;
                 document.querySelectorAll('.period-filters .tab-button').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
+                btn.classList.add('active');
+                calendarRangeDisplay.textContent = '';
+                selectedRange = null;
                 currentPeriod = this.dataset.period;
-
                 // Обновляем данные для текущей метрики
                 if (currentMetric === 'profit') {
                     fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
                             createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
-                            // Используем maxValue из API вместо расчета
                             universalChart.options.scales.y.max = res.maxValue || undefined;
                             universalChart.update();
-
-                            // Анимация для карточки "Прибыль"
-                            const profitCard = document.querySelector('.stat-card.profit-card .stat-value');
-                            if (profitCard && Array.isArray(res.data)) {
-                                const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
-                                profitCard.classList.remove('animated');
-                                profitCard.textContent = '0 грн';
-                                void profitCard.offsetWidth;
-                                profitCard.classList.add('animated');
-                                setTimeout(() => {
-                                    animateCounter(profitCard, 0, total, 1500);
-                                }, 100);
-                            }
                         });
                     return;
                 }
-
                 if (currentMetric === 'expenses') {
                     fetch(`/api/dashboard/expenses-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
                             const data = getCumulativeData(res.data);
                             createUniversalChart('line', res.labels, data, getMetricColor('expenses'), 'Расходы');
-                            // universalChart.options.scales.y.max = res.maxValue || undefined;
-                            // universalChart.update();
-
-                            // Анимация для карточки "Расходы"
-                            const expensesCard = document.querySelector('.stat-card.expenses-card .stat-value');
-                            if (expensesCard && Array.isArray(res.data)) {
-                                const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
-                                expensesCard.classList.remove('animated');
-                                expensesCard.textContent = '0 грн';
-                                void expensesCard.offsetWidth;
-                                expensesCard.classList.add('animated');
-                                setTimeout(() => {
-                                    animateCounter(expensesCard, 0, total, 1500);
-                                }, 100);
-                            }
                         });
                     return;
                 }
-
                 if (currentMetric === 'sales') {
                     fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
                         .then(res => res.json())
                         .then(res => {
                             createUniversalChart('bar', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
                             universalChart.update();
-                            // Анимация для карточки "Продажи товаров"
-                            const salesCard = document.querySelector('.stat-card.sales-card .stat-value');
-                            if (salesCard && Array.isArray(res.data)) {
-                                const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
-                                salesCard.classList.remove('animated');
-                                salesCard.textContent = '0 грн';
-                                void salesCard.offsetWidth;
-                                salesCard.classList.add('animated');
-                                setTimeout(() => {
-                                    animateCounter(salesCard, 0, total, 1500);
-                                }, 100);
-                            }
                         });
                     return;
                 }
-
                 if (currentMetric === 'services') {
                     fetch(`/api/dashboard/services-chart?period=${currentPeriod}`)
                         .then(res => res.json())
@@ -861,6 +824,20 @@
             return arr;
         }
 
+        // Возвращает массив дат от первого числа месяца до сегодня в формате 'дд МММ'
+        function getMonthStartDates() {
+            const arr = [];
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            for (let i = 1; i <= now.getDate(); i++) {
+                const d = new Date(year, month, i);
+                arr.push(d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', ''));
+            }
+            return arr;
+        }
+
         // Функция для получения накопительных данных
         function getCumulativeData(arr) {
             let result = [];
@@ -871,12 +848,6 @@
             }
             return result;
         }
-
-        // По умолчанию активна кнопка 'За месяц'
-        document.querySelectorAll('.period-filters .tab-button').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.getAttribute('data-period') === '30') btn.classList.add('active');
-        });
 
         // Добавляю функцию для генерации подписей месяцев
         function getMonthLabels(n) {
@@ -1105,55 +1076,6 @@
                 universalChart.update();
             });
     }
-    // --- Обработка обычных кнопок периода ---
-    document.querySelectorAll('.period-filters .tab-button').forEach(btn => {
-        btn.addEventListener('click', function() {
-            if (btn.id === 'dateRangePicker') return;
-            document.querySelectorAll('.period-filters .tab-button').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            calendarRangeDisplay.textContent = '';
-            selectedRange = null;
-            currentPeriod = this.dataset.period;
-            // Обновляем данные для текущей метрики (как раньше)
-            if (currentMetric === 'profit') {
-                fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`)
-                    .then(res => res.json())
-                    .then(res => {
-                        createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
-                        universalChart.options.scales.y.max = res.maxValue || undefined;
-                        universalChart.update();
-                    });
-                return;
-            }
-            if (currentMetric === 'expenses') {
-                fetch(`/api/dashboard/expenses-chart?period=${currentPeriod}`)
-                    .then(res => res.json())
-                    .then(res => {
-                        const data = getCumulativeData(res.data);
-                        createUniversalChart('line', res.labels, data, getMetricColor('expenses'), 'Расходы');
-                    });
-                return;
-            }
-            if (currentMetric === 'sales') {
-                fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
-                    .then(res => res.json())
-                    .then(res => {
-                        createUniversalChart('bar', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
-                        universalChart.update();
-                    });
-                return;
-            }
-            if (currentMetric === 'services') {
-                fetch(`/api/dashboard/services-chart?period=${currentPeriod}`)
-                    .then(res => res.json())
-                    .then(res => {
-                        createUniversalChart('bar', res.labels, res.data, getMetricColor('services'), 'Продажи услуг');
-                        universalChart.update();
-                    });
-                return;
-            }
-        });
-    });
 </script>
 
 <!-- Модальное окно для записей дня -->
