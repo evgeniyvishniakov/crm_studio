@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\ClientController;
 /*
 |--------------------------------------------------------------------------
 | Admin Routes
@@ -53,4 +53,6 @@ Route::name('admin.')->group(function () {
         auth()->logout();
         return redirect('/');
     })->name('logout');
+
+    Route::resource('clients', ClientController::class);
 }); 

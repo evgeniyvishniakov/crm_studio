@@ -13,8 +13,19 @@
         </div>
 
         <!-- Фильтры периода -->
-        <div class="filter-section">
+        <div class="filter-section" id="periodFiltersSection">
             <div class="period-filters" style="display:flex;align-items:center;gap:8px;">
+                <span class="period-tooltip" tabindex="0">
+                    <i class="fa fa-question-circle" aria-hidden="true"></i>
+                    <span class="period-tooltip-text">
+                        <b>Пояснения к периодам:</b><br>
+                        <b>За неделю</b>: с последнего понедельника по сегодня.<br>
+                        <b>За 2 недели</b>: с предпоследнего понедельника по сегодня.<br>
+                        <b>За месяц</b>: с 1-го числа текущего месяца по сегодня.<br>
+                        <b>За полгода</b>: с 1-го числа месяца первой продажи за последние 6 месяцев по сегодня (или просто с 1-го числа 6 месяцев назад, если нет продаж).<br>
+                        <b>За год</b>: с 1-го числа месяца первой продажи за последние 12 месяцев по сегодня (или просто с 1-го числа 12 месяцев назад, если нет продаж).
+                    </span>
+                </span>
                 <button class="filter-button active">За неделю</button>
                 <button class="filter-button">За 2 недели</button>
                 <button class="filter-button">За месяц</button>
@@ -170,7 +181,7 @@
                 start.setDate(end.getDate() - ((end.getDay() + 6) % 7) - 7); // предпоследний понедельник
                 break;
             case 'За месяц':
-                start = new Date(end.getFullYear(), end.getMonth(), 1);
+                start = new Date(end.getFullYear(), end.getMonth(), 1); // строго 1-е число месяца
                 break;
             case 'За полгода':
                 start = new Date(end.getFullYear(), end.getMonth() - 5, 1);
@@ -181,8 +192,12 @@
             default:
                 start = new Date(end.getFullYear(), end.getMonth(), 1);
         }
-        const format = d => d.toISOString().slice(0, 10);
-        return `start_date=${format(start)}&end_date=${format(end)}`;
+        const format = d => d.getFullYear() + '-' +
+            String(d.getMonth() + 1).padStart(2, '0') + '-' +
+            String(d.getDate()).padStart(2, '0');
+        const params = `start_date=${format(start)}&end_date=${format(end)}&period=${encodeURIComponent(period)}`;
+        console.log('getPeriodParams:', period, params); // debug
+        return params;
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -205,11 +220,23 @@
         if (document.getElementById('stockTotalRetail')) {
             document.getElementById('stockTotalRetail').textContent = stockTotalRetail.toLocaleString('ru-RU');
         }
+
+        // Скрываем фильтры на вкладке 'Поставщики и остатки'
+        const periodFiltersSection = document.getElementById('periodFiltersSection');
+        const suppliersTab = document.querySelector('.tab-button[data-tab="suppliers-analytics"]');
+        if (suppliersTab) {
+            suppliersTab.addEventListener('click', () => {
+                if (periodFiltersSection) {
+                    periodFiltersSection.style.display = 'none';
+                }
+            });
+        }
     });
 
     // Переключение вкладок
     const mainTabs = document.querySelectorAll('.tab-button');
     const mainPanes = document.querySelectorAll('.tab-pane');
+    const periodFiltersSection = document.getElementById('periodFiltersSection');
     mainTabs.forEach(tab => {
         tab.addEventListener('click', () => {
             mainTabs.forEach(t => t.classList.remove('active'));
@@ -254,6 +281,16 @@
                     params = `start_date=${formatISO(window.selectedRange.start)}&end_date=${formatISO(window.selectedRange.end)}`;
                 }
                 updateSuppliersAnalytics(params);
+            }
+            // Скрываем фильтры на вкладке 'Поставщики и остатки'
+            if (targetPaneId === 'suppliers-analytics') {
+                if (periodFiltersSection) {
+                    periodFiltersSection.style.display = 'none';
+                }
+            } else {
+                if (periodFiltersSection) {
+                    periodFiltersSection.style.display = '';
+                }
             }
         });
     });
@@ -974,3 +1011,37 @@
     }
 </script>
 @endpush
+
+<style>
+.period-tooltip {
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+}
+.period-tooltip i {
+    color: #64748b;
+    font-size: 18px;
+    vertical-align: middle;
+}
+.period-tooltip-text {
+    display: none;
+    position: absolute;
+    left: 120%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    color: #222;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 14px 18px;
+    font-size: 14px;
+    min-width: 320px;
+    z-index: 1000;
+    white-space: pre-line;
+}
+.period-tooltip:hover .period-tooltip-text,
+.period-tooltip:focus .period-tooltip-text {
+    display: block;
+}
+</style>

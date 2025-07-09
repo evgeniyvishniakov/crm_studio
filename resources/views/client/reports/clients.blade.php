@@ -24,6 +24,37 @@
 #calendarRangeDisplay:empty {
     display: none;
 }
+.period-tooltip {
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+}
+.period-tooltip i {
+    color: #64748b;
+    font-size: 18px;
+    vertical-align: middle;
+}
+.period-tooltip-text {
+    display: none;
+    position: absolute;
+    left: 120%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    color: #222;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 14px 18px;
+    font-size: 14px;
+    min-width: 320px;
+    z-index: 1000;
+    white-space: pre-line;
+}
+.period-tooltip:hover .period-tooltip-text,
+.period-tooltip:focus .period-tooltip-text {
+    display: block;
+}
 </style>
 <div class="dashboard-container">
     <h1 class="dashboard-title">Отчеты</h1>
@@ -38,6 +69,17 @@
     <!-- Новый блок фильтров -->
     <div class="filter-section">
         <div class="period-filters">
+            <span class="period-tooltip" tabindex="0">
+                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                <span class="period-tooltip-text">
+                    <b>Пояснения к периодам:</b><br>
+                    <b>За неделю</b>: с последнего понедельника по сегодня.<br>
+                    <b>За 2 недели</b>: с предпоследнего понедельника по сегодня.<br>
+                    <b>За месяц</b>: с 1-го числа текущего месяца по сегодня.<br>
+                    <b>За полгода</b>: с 1-го числа месяца первой продажи за последние 6 месяцев по сегодня (или просто с 1-го числа 6 месяцев назад, если нет продаж).<br>
+                    <b>За год</b>: с 1-го числа месяца первой продажи за последние 12 месяцев по сегодня (или просто с 1-го числа 12 месяцев назад, если нет продаж).
+                </span>
+            </span>
             <button class="filter-button active">За неделю</button>
             <button class="filter-button">За 2 недели</button>
             <button class="filter-button">За месяц</button>

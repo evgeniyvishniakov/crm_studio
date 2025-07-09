@@ -19,6 +19,21 @@ class TurnoverReportController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
+        // Корректируем startDate для "За полгода" и "За год":
+        $period = $request->input('period');
+        if (in_array($period, ['За полгода', 'За год'])) {
+            $months = $period === 'За полгода' ? 6 : 12;
+            $dateFrom = now()->copy()->subMonths($months - 1)->startOfMonth();
+            $firstSale = \App\Models\Sale::whereDate('date', '>=', $dateFrom->toDateString())
+                ->orderBy('date', 'asc')
+                ->first();
+            if ($firstSale) {
+                $startDate = \Carbon\Carbon::parse($firstSale->date)->startOfMonth()->toDateString();
+            } else {
+                $startDate = $dateFrom->toDateString();
+            }
+        }
+
         // Фильтр по дате для продаж и закупок
         $salesQuery = \App\Models\Sale::query();
         $purchasesQuery = \App\Models\Purchase::query();
@@ -172,11 +187,28 @@ class TurnoverReportController extends Controller
         })->map(function($purchases) {
             return $purchases->sum('total_amount');
         });
-        // Собираем только те даты, где есть хотя бы продажи или закупки
-        $allDates = collect($salesByDay->keys())->merge($purchasesByDay->keys())->unique()->sort()->values();
+        // Собираем только те даты, где есть хотя бы продажи или закупки, и которые попадают в диапазон
+        $allDates = collect($salesByDay->keys())->merge($purchasesByDay->keys())
+            ->unique()
+            ->filter(function($date) use ($startDate, $endDate) {
+                return (!$startDate || $date >= $startDate) && (!$endDate || $date <= $endDate);
+            })
+            ->sort()
+            ->values();
         $dynamicLabels = $allDates->toArray();
         $dynamicSales = array_map(fn($d) => $salesByDay[$d] ?? 0, $dynamicLabels);
         $dynamicPurchases = array_map(fn($d) => $purchasesByDay[$d] ?? 0, $dynamicLabels);
+
+        // Если нет данных за период — возвращаем пустые массивы для графиков
+        if (empty($dynamicLabels)) {
+            return response()->json([
+                'category' => [ 'labels' => [], 'data' => [], 'sums' => [] ],
+                'brand'    => [ 'labels' => [], 'data' => [], 'sums' => [] ],
+                'supplier' => [ 'labels' => [], 'data' => [], 'sums' => [] ],
+                'type'     => [ 'labels' => [], 'data' => [], 'sums' => [] ],
+                'dynamic'  => [ 'labels' => [], 'sales' => [], 'purchases' => [] ],
+            ]);
+        }
 
         $data = [
             'category' => [
@@ -204,6 +236,9 @@ class TurnoverReportController extends Controller
                 'sales' => $dynamicSales,
                 'purchases' => $dynamicPurchases,
             ],
+            // Добавляем реальные даты периода
+            'actual_start_date' => $dynamicLabels[0] ?? $startDate,
+            'actual_end_date' => end($dynamicLabels) ?: $endDate,
         ];
         return response()->json($data);
     }
