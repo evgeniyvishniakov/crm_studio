@@ -276,9 +276,9 @@ document.addEventListener('DOMContentLoaded', function() {
     async function updateClientAnalytics(period = 'week', params = null) {
         let url = '/reports/client-analytics';
         if (params) {
-            url += '?' + params;
+            url += '?' + params + '&_t=' + Date.now();
         } else {
-            url += `?period=${period}`;
+            url += `?period=${period}&_t=${Date.now()}`;
         }
         console.log(`Запрос данных для аналитики клиентов за период: ${url}`);
         try {
@@ -370,21 +370,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!charts.topClientsByVisitsChart.options.scales.y) charts.topClientsByVisitsChart.options.scales.y = {};
                     charts.topClientsByVisitsChart.options.scales.y.suggestedMax = maxValue + 1;
                     charts.topClientsByVisitsChart.options.scales.y.ticks = { precision: 0 };
-                    // Цвета: максимальный — зелёный, остальные — оранжевый
                     const colors = data.topClientsByVisits.data.map(v => v === maxValue ? '#10b981' : 'rgba(234, 88, 12, 0.7)');
-                    // labels с числом визитов в скобках
-                    const labelsWithCounts = data.topClientsByVisits.labels.map((label, i) => `${label} (${data.topClientsByVisits.data[i]})`);
-                    updateChart(charts.topClientsByVisitsChart, labelsWithCounts, [{
-                        label: 'Рейтинг визитов',
-                        data: data.topClientsByVisits.data,
-                        backgroundColor: colors,
-                        borderColor: colors,
-                        borderWidth: 1
-                    }]);
+                    const labelsWithCounts = data.topClientsByVisits.labels.map((label, i) => `${label} (${data.topClientsByVisits.data[i]})`).slice();
+                    const values = data.topClientsByVisits.data.slice();
+                    updateChart(charts.topClientsByVisitsChart, [], []);
+                    setTimeout(() => {
+                        updateChart(charts.topClientsByVisitsChart, labelsWithCounts, [{
+                            label: 'Рейтинг визитов',
+                            data: values,
+                            backgroundColor: colors.slice(),
+                            borderColor: colors.slice(),
+                            borderWidth: 1
+                        }]);
+                    }, 50);
                 } else {
-                    if (charts.topClientsByVisitsChart.options.scales && charts.topClientsByVisitsChart.options.scales.y) {
-                        delete charts.topClientsByVisitsChart.options.scales.y.suggestedMax;
-                    }
+                    // Если данных нет — очищаем график полностью
+                    updateChart(charts.topClientsByVisitsChart, [], []);
                 }
             }
         } catch (error) {
@@ -619,9 +620,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
+        // Принудительный сброс и обновление
+        chart.data.labels = [];
+        chart.data.datasets = [];
+        chart.update();
         chart.data.labels = labels;
         chart.data.datasets = datasets;
         chart.update();
+        // Лог для отладки
+        if (chart.canvas && chart.canvas.id) {
+            console.log('Обновлен график:', chart.canvas.id, {labels, datasets});
+        }
     }
 
     // --- Логика переключения вкладок и фильтров ---
@@ -678,6 +687,10 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', () => {
             if (button.id === 'dateRangePicker') return; 
 
+            // Сбросить отображение диапазона диапазона ДО обновления графиков
+            calendarRangeDisplay.textContent = '';
+            calendarRangeDisplay.style.minWidth = '';
+
             filterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             
@@ -685,6 +698,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const period = periodMapping[periodKey];
             if (period) {
                 const activeTabId = document.querySelector('.tab-button.active').getAttribute('data-tab');
+                // Всегда обновлять все графики для выбранной вкладки
                 if (activeTabId === 'clients-analytics') {
                     updateClientAnalytics(period);
                 } else if (activeTabId === 'appointments-analytics') {
@@ -697,6 +711,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateLtvByClientTypeAnalytics(period);
                     updateTopServicesByRevenueAnalytics(period);
                 }
+                // УБРАН программный клик по вкладке
             }
         });
     });

@@ -673,11 +673,34 @@ class AppointmentsController extends Controller
             $period = $request->get('period', 'week');
             $endDate = Carbon::now();
             switch ($period) {
-                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
-                case 'month': $startDate = $endDate->copy()->subMonth(); break;
-                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
-                case 'year': $startDate = $endDate->copy()->subYear(); break;
-                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+                case 'week':
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case '2weeks':
+                    $startDate = $endDate->copy()->startOfWeek()->subWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'month':
+                    $startDate = $endDate->copy()->startOfMonth();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'half_year':
+                    $sixMonthsAgo = $endDate->copy()->subMonths(6)->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $sixMonthsAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $sixMonthsAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'year':
+                    $yearAgo = $endDate->copy()->subYear()->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $yearAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $yearAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                default:
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
             }
         }
 
@@ -744,11 +767,34 @@ class AppointmentsController extends Controller
             $period = $request->get('period', 'week');
             $endDate = Carbon::now();
             switch ($period) {
-                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
-                case 'month': $startDate = $endDate->copy()->subMonth(); break;
-                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
-                case 'year': $startDate = $endDate->copy()->subYear(); break;
-                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+                case 'week':
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case '2weeks':
+                    $startDate = $endDate->copy()->startOfWeek()->subWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'month':
+                    $startDate = $endDate->copy()->startOfMonth();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'half_year':
+                    $sixMonthsAgo = $endDate->copy()->subMonths(6)->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $sixMonthsAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $sixMonthsAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'year':
+                    $yearAgo = $endDate->copy()->subYear()->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $yearAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $yearAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                default:
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
             }
         }
 
@@ -789,68 +835,93 @@ class AppointmentsController extends Controller
             $period = 'custom';
         } else {
             $period = $request->get('period', 'week');
-            $endDate = Carbon::now();
+            $today = Carbon::today();
             switch ($period) {
-                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
-                case 'month': $startDate = $endDate->copy()->subMonth(); break;
-                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
-                case 'year': $startDate = $endDate->copy()->subYear(); break;
-                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+                case 'week':
+                    $startDate = $today->copy()->startOfWeek();
+                    $endDate = $today->copy()->endOfDay();
+                    break;
+                case '2weeks':
+                    $startDate = $today->copy()->startOfWeek()->subWeek();
+                    $endDate = $today->copy()->endOfDay();
+                    break;
+                case 'month':
+                    $startDate = $today->copy()->startOfMonth();
+                    $endDate = $today->copy()->endOfDay();
+                    break;
+                case 'half_year':
+                    $sixMonthsAgo = $today->copy()->subMonths(6)->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $sixMonthsAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $sixMonthsAgo;
+                    $endDate = $today->copy()->endOfDay();
+                    break;
+                case 'year':
+                    $yearAgo = $today->copy()->subYear()->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $yearAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $yearAgo;
+                    $endDate = $today->copy()->endOfDay();
+                    break;
+                default:
+                    $startDate = $today->copy()->startOfWeek();
+                    $endDate = $today->copy()->endOfDay();
+                    break;
             }
         }
 
         $periodRange = [$startDate, $endDate];
-        
-        $dateGroupRaw = '';
-        $periodIterator = null;
-        $dateGroupFormatter = null;
-        $labelFormatter = null;
 
         switch ($period) {
-            case 'half_year': // Группировка по неделям
-                $dateGroupRaw = 'DATE_FORMAT(date, "%x-%v")'; // ISO Year-Week
-                $periodIterator = CarbonPeriod::create($periodRange[0], '1 week', $periodRange[1]);
-                $dateGroupFormatter = fn(Carbon $date) => $date->isoFormat('GGGG-WW');
-                $labelFormatter = function ($dateGroup) {
-                    [$year, $week] = explode('-', $dateGroup);
-                    $date = Carbon::now()->setISODate($year, $week)->startOfWeek();
-                    return 'Нед. ' . $date->format('d.m');
-                };
-                break;
-
-            case 'year': // Группировка по месяцам
+            case 'half_year': // Группировка по неделям, только с данными
+                $dateGroupRaw = 'YEARWEEK(date, 1)';
+                $rawData = Appointment::query()
+                    ->whereBetween('date', $periodRange)
+                    ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
+                    ->groupBy('date_group')
+                    ->orderBy('date_group')
+                    ->get();
+                $labels = $rawData->pluck('date_group')->map(function($week) {
+                    $year = substr($week, 0, 4);
+                    $w = (int)substr($week, 4);
+                    $date = Carbon::now()->setISODate($year, $w)->startOfWeek();
+                    return $date->format('d.m') . ' - ' . $date->copy()->endOfWeek()->format('d.m');
+                });
+                $values = $rawData->pluck('count');
+                return response()->json(['labels' => $labels, 'data' => $values]);
+            case 'year': // Группировка по месяцам, только с данными
                 $dateGroupRaw = 'DATE_FORMAT(date, "%Y-%m")';
-                $periodIterator = CarbonPeriod::create($periodRange[0]->startOfMonth(), '1 month', $periodRange[1]);
-                $dateGroupFormatter = fn(Carbon $date) => $date->format('Y-m');
-                $labelFormatter = fn($dateGroup) => Carbon::parse($dateGroup)->translatedFormat('M Y');
-                break;
-
-            default: // 'week', '2weeks', 'month' - Группировка по дням
+                $rawData = Appointment::query()
+                    ->whereBetween('date', $periodRange)
+                    ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
+                    ->groupBy('date_group')
+                    ->orderBy('date_group')
+                    ->get();
+                $labels = $rawData->pluck('date_group')->map(fn($d) => Carbon::parse($d.'-01')->translatedFormat('M Y'));
+                $values = $rawData->pluck('count');
+                return response()->json(['labels' => $labels, 'data' => $values]);
+            default: // 'week', '2weeks', 'month' — группировка по дням
                 $dateGroupRaw = 'DATE(date)';
                 $periodIterator = CarbonPeriod::create($periodRange[0], '1 day', $periodRange[1]);
                 $dateGroupFormatter = fn(Carbon $date) => $date->format('Y-m-d');
-                $labelFormatter = fn($dateGroup) => $dateGroup; // Возвращаем полную дату 'Y-m-d'
-                break;
+                $labelFormatter = fn($dateGroup) => $dateGroup;
+                $data = Appointment::query()
+                    ->whereBetween('date', $periodRange)
+                    ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
+                    ->groupBy('date_group')
+                    ->get()
+                    ->keyBy('date_group');
+                $scaffold = [];
+                foreach ($periodIterator as $date) {
+                    $key = $dateGroupFormatter($date);
+                    $scaffold[$key] = $data->get($key)->count ?? 0;
+                }
+                $labels = collect(array_keys($scaffold))->map($labelFormatter);
+                $values = array_values($scaffold);
+                // Если все значения нули — возвращаем пустые массивы
+                if (collect($values)->sum() === 0) {
+                    return response()->json(['labels' => [], 'data' => []]);
+                }
+                return response()->json(['labels' => $labels, 'data' => $values]);
         }
-
-        $data = Appointment::query()
-            ->whereBetween('date', $periodRange)
-            ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
-            ->groupBy('date_group')
-            ->orderBy('date_group')
-            ->get()
-            ->keyBy('date_group');
-
-        $scaffold = [];
-        foreach ($periodIterator as $date) {
-            $key = $dateGroupFormatter($date);
-            $scaffold[$key] = $data->get($key)->count ?? 0;
-        }
-
-        $labels = collect(array_keys($scaffold))->map($labelFormatter);
-        $values = array_values($scaffold);
-
-        return response()->json(['labels' => $labels, 'data' => $values]);
     }
 
     /**
@@ -867,11 +938,34 @@ class AppointmentsController extends Controller
             $period = $request->get('period', 'week');
             $endDate = Carbon::now();
             switch ($period) {
-                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
-                case 'month': $startDate = $endDate->copy()->subMonth(); break;
-                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
-                case 'year': $startDate = $endDate->copy()->subYear(); break;
-                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+                case 'week':
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case '2weeks':
+                    $startDate = $endDate->copy()->startOfWeek()->subWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'month':
+                    $startDate = $endDate->copy()->startOfMonth();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'half_year':
+                    $sixMonthsAgo = $endDate->copy()->subMonths(6)->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $sixMonthsAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $sixMonthsAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'year':
+                    $yearAgo = $endDate->copy()->subYear()->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $yearAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $yearAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                default:
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
             }
         }
         $clients = Client::select('name', 'id')
@@ -900,11 +994,34 @@ class AppointmentsController extends Controller
             $period = $request->get('period', 'week');
             $endDate = Carbon::now();
             switch ($period) {
-                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
-                case 'month': $startDate = $endDate->copy()->subMonth(); break;
-                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
-                case 'year': $startDate = $endDate->copy()->subYear(); break;
-                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+                case 'week':
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case '2weeks':
+                    $startDate = $endDate->copy()->startOfWeek()->subWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'month':
+                    $startDate = $endDate->copy()->startOfMonth();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'half_year':
+                    $sixMonthsAgo = $endDate->copy()->subMonths(6)->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $sixMonthsAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $sixMonthsAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'year':
+                    $yearAgo = $endDate->copy()->subYear()->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $yearAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $yearAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                default:
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
             }
         }
         $checks = Appointment::whereBetween('date', [$startDate, $endDate])
@@ -931,11 +1048,34 @@ class AppointmentsController extends Controller
             $period = $request->get('period', 'week');
             $endDate = Carbon::now();
             switch ($period) {
-                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
-                case 'month': $startDate = $endDate->copy()->subMonth(); break;
-                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
-                case 'year': $startDate = $endDate->copy()->subYear(); break;
-                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+                case 'week':
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case '2weeks':
+                    $startDate = $endDate->copy()->startOfWeek()->subWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'month':
+                    $startDate = $endDate->copy()->startOfMonth();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'half_year':
+                    $sixMonthsAgo = $endDate->copy()->subMonths(6)->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $sixMonthsAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $sixMonthsAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'year':
+                    $yearAgo = $endDate->copy()->subYear()->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $yearAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $yearAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                default:
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
             }
         }
         $types = ClientType::with(['clients.sales'])->get();
@@ -966,11 +1106,34 @@ class AppointmentsController extends Controller
             $period = $request->get('period', 'week');
             $endDate = Carbon::now();
             switch ($period) {
-                case '2weeks': $startDate = $endDate->copy()->subWeeks(2); break;
-                case 'month': $startDate = $endDate->copy()->subMonth(); break;
-                case 'half_year': $startDate = $endDate->copy()->subMonths(6); break;
-                case 'year': $startDate = $endDate->copy()->subYear(); break;
-                case 'week': default: $startDate = $endDate->copy()->subWeek(); break;
+                case 'week':
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case '2weeks':
+                    $startDate = $endDate->copy()->startOfWeek()->subWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'month':
+                    $startDate = $endDate->copy()->startOfMonth();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'half_year':
+                    $sixMonthsAgo = $endDate->copy()->subMonths(6)->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $sixMonthsAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $sixMonthsAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                case 'year':
+                    $yearAgo = $endDate->copy()->subYear()->startOfMonth();
+                    $firstAppointment = Appointment::query()->where('date', '>=', $yearAgo)->orderBy('date')->first();
+                    $startDate = $firstAppointment ? Carbon::parse($firstAppointment->date)->startOfMonth() : $yearAgo;
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
+                default:
+                    $startDate = $endDate->copy()->startOfWeek();
+                    $endDate = $endDate->copy()->endOfDay();
+                    break;
             }
         }
         $services = Service::select('name')
