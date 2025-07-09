@@ -156,6 +156,35 @@
 @push('scripts')
 <script>
     var charts = {};
+    // --- Функция для вычисления диапазона дат по календарным периодам ---
+    function getPeriodParams(period) {
+        const end = new Date();
+        let start;
+        switch (period) {
+            case 'За неделю':
+                start = new Date(end);
+                start.setDate(end.getDate() - ((end.getDay() + 6) % 7)); // последний понедельник
+                break;
+            case 'За 2 недели':
+                start = new Date(end);
+                start.setDate(end.getDate() - ((end.getDay() + 6) % 7) - 7); // предпоследний понедельник
+                break;
+            case 'За месяц':
+                start = new Date(end.getFullYear(), end.getMonth(), 1);
+                break;
+            case 'За полгода':
+                start = new Date(end.getFullYear(), end.getMonth() - 5, 1);
+                break;
+            case 'За год':
+                start = new Date(end.getFullYear(), end.getMonth() - 11, 1);
+                break;
+            default:
+                start = new Date(end.getFullYear(), end.getMonth(), 1);
+        }
+        const format = d => d.toISOString().slice(0, 10);
+        return `start_date=${format(start)}&end_date=${format(end)}`;
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         // --- Удалён первый fetch('/reports/turnover-analytics') ---
         // --- Инициализация при загрузке (по умолчанию за месяц) ---
@@ -167,11 +196,7 @@
             monthBtn.classList.add('active');
         }
         // Формируем параметры для месяца
-        const end = new Date();
-        const start = new Date();
-        start.setDate(end.getDate() - 29);
-        const format = d => d.toISOString().slice(0, 10);
-        const params = `start_date=${format(start)}&end_date=${format(end)}`;
+        const params = getPeriodParams('За месяц');
         updateTurnoverAnalytics(params);
 
         if (document.getElementById('stockTotalWholesale')) {
@@ -204,14 +229,8 @@
                 const activeBtn = document.querySelector('.filter-section .filter-button.active');
                 let params = '';
                 if (activeBtn) {
-                    const days = periodMapping[activeBtn.textContent.trim()];
-                    if (days) {
-                        const end = new Date();
-                        const start = new Date();
-                        start.setDate(end.getDate() - (days - 1));
-                        const format = d => d.toISOString().slice(0, 10);
-                        params = `start_date=${format(start)}&end_date=${format(end)}`;
-                    }
+                    const period = activeBtn.textContent.trim();
+                    params = getPeriodParams(period);
                 }
                 // Если выбран календарь — берём даты из calendarRangeDisplay
                 if (activeBtn && activeBtn.id === 'dateRangePicker' && window.selectedRange) {
@@ -226,14 +245,8 @@
                 const activeBtn = document.querySelector('.filter-section .filter-button.active');
                 let params = '';
                 if (activeBtn) {
-                    const days = periodMapping[activeBtn.textContent.trim()];
-                    if (days) {
-                        const end = new Date();
-                        const start = new Date();
-                        start.setDate(end.getDate() - (days - 1));
-                        const format = d => d.toISOString().slice(0,10);
-                        params = `start_date=${format(start)}&end_date=${format(end)}`;
-                    }
+                    const period = activeBtn.textContent.trim();
+                    params = getPeriodParams(period);
                 }
                 // Если выбран календарь — берём даты из calendarRangeDisplay
                 if (activeBtn && activeBtn.id === 'dateRangePicker' && window.selectedRange) {
@@ -683,27 +696,13 @@
             // Очищаем отображение диапазона дат при выборе любого периода
             if (calendarRangeDisplay) calendarRangeDisplay.textContent = '';
             // Определяем период
-            const days = periodMapping[button.textContent.trim()];
-            if (days) {
-                const end = new Date();
-                const start = new Date();
-                start.setDate(end.getDate() - (days - 1));
-                const format = d => d.toISOString().slice(0, 10);
-                const params = `start_date=${format(start)}&end_date=${format(end)}`;
-                updateTurnoverAnalytics(params);
-            }
+            const period = button.textContent.trim();
+            const params = getPeriodParams(period);
+            updateTurnoverAnalytics(params);
             // Если активна вкладка Топы — обновляем топы
             const activeTab = document.querySelector('.tab-button.active');
             if (activeTab && activeTab.getAttribute('data-tab') === 'tops-analytics') {
-                const days = periodMapping[button.textContent.trim()];
-                if (days) {
-                    const end = new Date();
-                    const start = new Date();
-                    start.setDate(end.getDate() - (days - 1));
-                    const format = d => d.toISOString().slice(0, 10);
-                    const params = `start_date=${format(start)}&end_date=${format(end)}`;
-                    updateTopsAnalytics(params);
-                }
+                updateTopsAnalytics(params);
             }
         });
     });

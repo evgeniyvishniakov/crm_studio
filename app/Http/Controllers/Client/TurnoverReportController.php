@@ -35,17 +35,24 @@ class TurnoverReportController extends Controller
         }
 
         // Категории (количество и сумма проданных товаров)
-        $categoryData = \App\Models\ProductCategory::with(['products.saleItems' => function($q) use ($startDate, $endDate) {
-            $q->whereHas('sale', function($sq) use ($startDate, $endDate) {
-                if ($startDate) $sq->whereDate('date', '>=', $startDate);
-                if ($endDate) $sq->whereDate('date', '<=', $endDate);
-            });
-        }])->get();
-        $categoryCounts = $categoryData->map(function($cat) {
-            return $cat->products->flatMap->saleItems->sum('quantity');
+        $categoryData = \App\Models\ProductCategory::with(['products.saleItems.sale'])->get();
+        $categoryCounts = $categoryData->map(function($cat) use ($startDate, $endDate) {
+            return $cat->products->flatMap->saleItems
+                ->filter(function($item) use ($startDate, $endDate) {
+                    if (!$item->sale) return false;
+                    $date = $item->sale->date;
+                    return (!$startDate || $date >= $startDate) && (!$endDate || $date <= $endDate);
+                })
+                ->sum('quantity');
         })->toArray();
-        $categorySums = $categoryData->map(function($cat) {
-            return $cat->products->flatMap->saleItems->sum('total');
+        $categorySums = $categoryData->map(function($cat) use ($startDate, $endDate) {
+            return $cat->products->flatMap->saleItems
+                ->filter(function($item) use ($startDate, $endDate) {
+                    if (!$item->sale) return false;
+                    $date = $item->sale->date;
+                    return (!$startDate || $date >= $startDate) && (!$endDate || $date <= $endDate);
+                })
+                ->sum('total');
         })->toArray();
         $categoryLabels = $categoryData->pluck('name')->toArray();
         // Фильтрация по количеству > 0 (без unzip)
@@ -71,17 +78,24 @@ class TurnoverReportController extends Controller
         $categorySums = array_column($topCategories, 'sum');
 
         // Бренды
-        $brandData = \App\Models\ProductBrand::with(['products.saleItems' => function($q) use ($startDate, $endDate) {
-            $q->whereHas('sale', function($sq) use ($startDate, $endDate) {
-                if ($startDate) $sq->whereDate('date', '>=', $startDate);
-                if ($endDate) $sq->whereDate('date', '<=', $endDate);
-            });
-        }])->get();
-        $brandCounts = $brandData->map(function($brand) {
-            return $brand->products->flatMap->saleItems->sum('quantity');
+        $brandData = \App\Models\ProductBrand::with(['products.saleItems.sale'])->get();
+        $brandCounts = $brandData->map(function($brand) use ($startDate, $endDate) {
+            return $brand->products->flatMap->saleItems
+                ->filter(function($item) use ($startDate, $endDate) {
+                    if (!$item->sale) return false;
+                    $date = $item->sale->date;
+                    return (!$startDate || $date >= $startDate) && (!$endDate || $date <= $endDate);
+                })
+                ->sum('quantity');
         })->toArray();
-        $brandSums = $brandData->map(function($brand) {
-            return $brand->products->flatMap->saleItems->sum('total');
+        $brandSums = $brandData->map(function($brand) use ($startDate, $endDate) {
+            return $brand->products->flatMap->saleItems
+                ->filter(function($item) use ($startDate, $endDate) {
+                    if (!$item->sale) return false;
+                    $date = $item->sale->date;
+                    return (!$startDate || $date >= $startDate) && (!$endDate || $date <= $endDate);
+                })
+                ->sum('total');
         })->toArray();
         $brandLabels = $brandData->pluck('name')->toArray();
         // Фильтрация по количеству > 0 (без unzip)
@@ -133,14 +147,19 @@ class TurnoverReportController extends Controller
         $supplierSums = array_column($filteredSuppliers, 'sum');
         $supplierCounts = array_column($filteredSuppliers, 'count');
 
-        // Типы (Товары/Услуги) — считаем количество
-        $salesTotalCount = $salesQuery->with('items')->get()->flatMap->items->sum('quantity');
-        $salesTotalSum = $salesQuery->with('items')->get()->flatMap->items->sum('total');
-        $servicesTotalCount = $appointmentsQuery->count();
+        // Типы (Товары/Услуги) — считаем сумму
+        $allSaleItems = $salesQuery->with('items')->get()->flatMap->items;
+        $retailSum = $allSaleItems->sum(function($item) {
+            return $item->retail_price * $item->quantity;
+        });
+        $wholesaleSum = $allSaleItems->sum(function($item) {
+            return $item->wholesale_price * $item->quantity;
+        });
+        $goodsSum = $retailSum - $wholesaleSum;
         $servicesTotalSum = $appointmentsQuery->sum('price');
         $typeLabels = ['Товары', 'Услуги'];
-        $typeCounts = [$salesTotalCount, $servicesTotalCount];
-        $typeSums = [$salesTotalSum, $servicesTotalSum];
+        $typeCounts = [null, null]; // Не используем количество, только суммы
+        $typeSums = [$goodsSum, $servicesTotalSum];
 
         // Динамика по дням (только по датам, где есть данные)
         $salesByDay = $salesQuery->with('items')->get()->groupBy(function($sale) {
@@ -177,7 +196,7 @@ class TurnoverReportController extends Controller
             ],
             'type' => [
                 'labels' => $typeLabels,
-                'data' => $typeCounts,
+                'data' => $typeSums, // теперь data = суммы
                 'sums' => $typeSums,
             ],
             'dynamic' => [
