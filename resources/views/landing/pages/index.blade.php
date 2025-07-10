@@ -12,8 +12,8 @@
                 <h1 class="display-4 fw-bold mb-4">Управляйте салоном красоты эффективно</h1>
                 <p class="lead mb-4">CRM Studio - это современная система управления, которая поможет вам организовать работу салона, вести клиентскую базу и увеличить прибыль.</p>
                 <div class="d-flex gap-3">
-                    <a href="{{ route('dashboard') }}" class="btn btn-light btn-lg">Попробовать бесплатно</a>
-                    <a href="{{ route('landing.services') }}" class="btn btn-outline-light btn-lg">Узнать больше</a>
+                    <a href="#" class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#registerModal">Попробовать бесплатно</a>
+                    <a href="{{ route('beautyflow.services') }}" class="btn btn-outline-light btn-lg">Узнать больше</a>
                 </div>
             </div>
             <div class="col-lg-6">
@@ -79,6 +79,98 @@
         <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg">Начать бесплатно</a>
     </div>
 </section>
+
+<!-- Модальное окно регистрации -->
+<div class="modal fade" id="registerModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{{ route('beautyflow.register') }}" id="registerForm" autocomplete="off">
+        @csrf
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-user-plus me-2 text-primary"></i> Регистрация
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="reg-fullname" class="form-label">Имя <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-user" style="color:#a21caf;"></i></span>
+              <input type="text" class="form-control @error('fullname') is-invalid @enderror" id="reg-fullname" name="fullname" placeholder="Ваше имя" required>
+              @error('fullname')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="reg-email" class="form-label">Email <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-envelope" style="color:#2563eb;"></i></span>
+              <input type="email" class="form-control @error('email') is-invalid @enderror" id="reg-email" name="email" placeholder="you@email.com" required autocomplete="email">
+              @error('email')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="reg-phone" class="form-label">Телефон</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-phone" style="color:#22c55e;"></i></span>
+              <input type="text" class="form-control @error('phone') is-invalid @enderror" id="reg-phone" name="phone" placeholder="+7 (___) ___-__-__" autocomplete="tel">
+              @error('phone')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="reg-salon" class="form-label">Название салона или Имя Фамилия <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-store" style="color:#a21caf;"></i></span>
+              <input type="text" class="form-control @error('salon') is-invalid @enderror" id="reg-salon" name="salon" placeholder="Beauty Studio или Иван Иванов" required>
+              @error('salon')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="privacy" required>
+            <label class="form-check-label" for="privacy">
+              Я согласен с <a href="#" target="_blank">политикой обработки данных</a>
+            </label>
+          </div>
+          <div class="form-text fw-semibold mb-3" style="color:#2563eb;"><i class="fas fa-info-circle me-1"></i>После регистрации на указанный email придет письмо с дальнейшими инструкциями.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+          <button type="submit" class="btn btn-primary" id="registerBtn">
+            <span class="spinner-border spinner-border-sm d-none" id="regSpinner"></span>
+            Зарегистрироваться
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+$(function() {
+  $('#reg-phone').mask('+7 (000) 000-00-00');
+  $('#registerForm').on('submit', function() {
+    $('#registerBtn').attr('disabled', true);
+    $('#regSpinner').removeClass('d-none');
+  });
+  $('#registerModal').on('hidden.bs.modal', function () {
+    $('#registerForm')[0].reset();
+    $('#registerBtn').attr('disabled', false);
+    $('#regSpinner').addClass('d-none');
+    $('.is-invalid').removeClass('is-invalid');
+  });
+});
+</script>
+@endpush
 @endsection
 
 @push('styles')

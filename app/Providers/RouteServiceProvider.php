@@ -34,7 +34,9 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/api.php'));
 
             // Маршруты лендинга (публичные)
-            Route::group([], base_path('routes/landing.php'));
+            Route::middleware('web')
+                ->prefix('beautyflow')
+                ->group(base_path('routes/landing.php'));
 
             // Клиентская часть (middleware web)
             Route::middleware('web')

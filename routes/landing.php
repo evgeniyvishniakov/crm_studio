@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Landing\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,16 +15,22 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('landing.pages.index');
-})->name('landing.index');
+})->name('beautyflow.index');
 
 Route::get('/about', function () {
     return view('landing.pages.about');
-})->name('landing.about');
+})->name('beautyflow.about');
 
 Route::get('/contact', function () {
     return view('landing.pages.contact');
-})->name('landing.contact');
+})->name('beautyflow.contact');
 
 Route::get('/services', function () {
     return view('landing.pages.services');
-})->name('landing.services'); 
+})->name('beautyflow.services');
+
+Route::post('/register', [RegisterController::class, 'store'])->name('beautyflow.register');
+
+Route::get('/studio', function () {
+    return view('landing.pages.index');
+})->name('landing.manual'); 

@@ -18,7 +18,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Имя</th>
-                        <th>Email</th>
+                        <th>Проект</th>
                         <th>Роль</th>
                         <th>Статус</th>
                         <th>Дата регистрации</th>
@@ -26,30 +26,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach(\App\Models\Admin\User::all() as $user)
-                    <tr>
-                        <td>{{ $user->id }}</td>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->email }}</td>
-                        <td>
-                            <span class="badge bg-primary">Администратор</span>
-                        </td>
-                        <td>
-                            <span class="badge bg-success">Активен</span>
-                        </td>
-                        <td>{{ $user->created_at->format('d.m.Y H:i') }}</td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editUserModal{{ $user->id }}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteUser({{ $user->id }})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
+                    
                 </tbody>
             </table>
         </div>
