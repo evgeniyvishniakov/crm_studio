@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\Inventory;
-use App\Models\Product;
-use App\Models\User;
+use App\Models\Clients\Inventory;
+use App\Models\Clients\Product;
+use App\Models\Clients\User;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller

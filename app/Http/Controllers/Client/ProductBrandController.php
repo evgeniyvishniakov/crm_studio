@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\ProductBrand;
+use App\Models\Clients\ProductBrand;
 use Illuminate\Http\Request;
 
 class ProductBrandController extends Controller

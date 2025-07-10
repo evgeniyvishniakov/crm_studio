@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
-use App\Models\Client;
-use App\Models\ClientType;
+use App\Models\Clients\Client;
+use App\Models\Clients\ClientType;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 
@@ -182,7 +182,7 @@ class ClientController extends Controller
             return response()->json(['exists' => false]);
         }
 
-        $exists = \App\Models\Client::where($field, $value)
+        $exists = \App\Models\Clients\Client::where($field, $value)
             ->whereNotNull($field)
             ->where($field, '!=', '')
             ->exists();

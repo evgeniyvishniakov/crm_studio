@@ -1,26 +1,30 @@
 <?php
 
-namespace App\Models;
+declare(strict_types=1);
+
+namespace App\Models\Clients;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductCategory extends Model
+class ClientType extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'name',
         'description',
+        'discount',
         'status'
     ];
 
     protected $casts = [
+        'discount' => 'decimal:2',
         'status' => 'boolean'
     ];
 
-    public function products()
+    public function clients()
     {
-        return $this->hasMany(Product::class, 'category_id');
+        return $this->hasMany(Client::class);
     }
 }

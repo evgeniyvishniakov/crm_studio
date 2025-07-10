@@ -2,9 +2,9 @@
 
 namespace App\Imports;
 
-use App\Models\Product;
-use App\Models\ProductCategory;
-use App\Models\ProductBrand;
+use App\Models\Clients\Product;
+use App\Models\Clients\ProductCategory;
+use App\Models\Clients\ProductBrand;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;

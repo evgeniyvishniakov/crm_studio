@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
-use App\Models\Warehouse;
+use App\Models\Clients\Product;
+use App\Models\Clients\Warehouse;
 use Illuminate\Http\Request;
 
 class WarehouseController extends Controller
@@ -59,7 +59,7 @@ class WarehouseController extends Controller
             'quantity' => 'required|integer|min:0'
         ]);
 
-        $warehouse = \App\Models\Warehouse::firstOrNew(['product_id' => $validated['product_id']]);
+        $warehouse = \App\Models\Clients\Warehouse::firstOrNew(['product_id' => $validated['product_id']]);
         $warehouse->purchase_price = $validated['purchase_price'];
         $warehouse->retail_price = $validated['retail_price'];
         $warehouse->quantity = ($warehouse->quantity ?? 0) + $validated['quantity'];

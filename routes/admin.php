@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\ProjectController;
 /*
 |--------------------------------------------------------------------------
 | Admin Routes
@@ -54,5 +55,5 @@ Route::name('admin.')->group(function () {
         return redirect('/');
     })->name('logout');
 
-    Route::resource('clients', ClientController::class);
+    Route::resource('projects', ProjectController::class);
 }); 

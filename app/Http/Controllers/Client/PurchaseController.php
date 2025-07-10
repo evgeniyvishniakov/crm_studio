@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
-use App\Models\Purchase;
-use App\Models\PurchaseItem;
-use App\Models\Warehouse;
-use App\Models\Supplier;
+use App\Models\Clients\Product;
+use App\Models\Clients\Purchase;
+use App\Models\Clients\PurchaseItem;
+use App\Models\Clients\Warehouse;
+use App\Models\Clients\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -89,7 +89,7 @@ class PurchaseController extends Controller
                 ]);
 
                 // Обновляем склад через модельный метод
-                \App\Models\Warehouse::increaseQuantity($item['product_id'], $item['quantity']);
+                \App\Models\Clients\Warehouse::increaseQuantity($item['product_id'], $item['quantity']);
 
                 // Обновляем цены в Product
                 Product::where('id', $item['product_id'])
@@ -167,7 +167,7 @@ class PurchaseController extends Controller
         try {
             // 1. Отменяем старое состояние на складе
             foreach ($purchase->items as $item) {
-                \App\Models\Warehouse::decreaseQuantity($item->product_id, $item->quantity);
+                \App\Models\Clients\Warehouse::decreaseQuantity($item->product_id, $item->quantity);
             }
 
             // 2. Обновляем данные самой закупки и удаляем старые товары
@@ -195,7 +195,7 @@ class PurchaseController extends Controller
                 ]);
 
                 // Обновляем склад через модельный метод
-                \App\Models\Warehouse::increaseQuantity($itemData['product_id'], $itemData['quantity']);
+                \App\Models\Clients\Warehouse::increaseQuantity($itemData['product_id'], $itemData['quantity']);
 
                 // Обновляем цены в Product
                 Product::where('id', $itemData['product_id'])
@@ -230,7 +230,7 @@ class PurchaseController extends Controller
         try {
             // Возвращаем товары на склад (уменьшаем количество)
             foreach ($purchase->items as $item) {
-                \App\Models\Warehouse::decreaseQuantity($item->product_id, $item->quantity);
+                \App\Models\Clients\Warehouse::decreaseQuantity($item->product_id, $item->quantity);
             }
 
             // Удаляем закупку

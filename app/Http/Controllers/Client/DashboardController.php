@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Appointment;
-use App\Models\Client;
-use App\Models\Expense;
-use App\Models\Purchase;
-use App\Models\SaleItem;
+use App\Models\Clients\Appointment;
+use App\Models\Clients\Client;
+use App\Models\Clients\Expense;
+use App\Models\Clients\Purchase;
+use App\Models\Clients\SaleItem;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Carbon\CarbonPeriod;
@@ -170,7 +170,7 @@ class DashboardController extends Controller
                 'maxValue' => $maxValue
             ]);
         }
-        $firstAppointment = \App\Models\Appointment::orderBy('created_at', 'asc')->first();
+        $firstAppointment = \App\Models\Clients\Appointment::orderBy('created_at', 'asc')->first();
         $firstDate = $firstAppointment ? \Carbon\Carbon::parse($firstAppointment->created_at) : $now;
         $daysSinceStart = $now->diffInDays($firstDate);
         $days = 0;
@@ -197,16 +197,16 @@ class DashboardController extends Controller
      */
     private function getProfitForDate($date)
     {
-        $productsProfit = \App\Models\SaleItem::whereHas('sale', function($q) use ($date) {
+        $productsProfit = \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date) {
             $q->whereDate('date', $date);
         })
         ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
         ->value('profit') ?? 0;
-        $servicesProfit = \App\Models\Appointment::whereDate('date', $date)
+        $servicesProfit = \App\Models\Clients\Appointment::whereDate('date', $date)
             ->where('status', 'completed')
             ->sum('price');
-        $expenses = \App\Models\Expense::whereDate('date', $date)->sum('amount');
-        $purchases = \App\Models\Purchase::whereDate('date', $date)->sum('total_amount');
+        $expenses = \App\Models\Clients\Expense::whereDate('date', $date)->sum('amount');
+        $purchases = \App\Models\Clients\Purchase::whereDate('date', $date)->sum('total_amount');
         return $productsProfit + $servicesProfit - $expenses - $purchases;
     }
 
@@ -215,13 +215,13 @@ class DashboardController extends Controller
      */
     private function getProfitForPeriod($start, $end)
     {
-        $productsProfit = \App\Models\SaleItem::whereBetween('created_at', [$start, $end])
+        $productsProfit = \App\Models\Clients\SaleItem::whereBetween('created_at', [$start, $end])
             ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
             ->value('profit') ?? 0;
-        $servicesProfit = \App\Models\Appointment::whereBetween('date', [$start, $end])
+        $servicesProfit = \App\Models\Clients\Appointment::whereBetween('date', [$start, $end])
             ->sum('price');
-        $expenses = \App\Models\Expense::whereBetween('date', [$start, $end])->sum('amount');
-        $purchases = \App\Models\Purchase::whereBetween('date', [$start, $end])->sum('total_amount');
+        $expenses = \App\Models\Clients\Expense::whereBetween('date', [$start, $end])->sum('amount');
+        $purchases = \App\Models\Clients\Purchase::whereBetween('date', [$start, $end])->sum('total_amount');
         return $productsProfit + $servicesProfit - $expenses - $purchases;
     }
 
@@ -262,7 +262,7 @@ class DashboardController extends Controller
                 'data' => $data
             ]);
         }
-        $firstSale = \App\Models\Sale::orderBy('date', 'asc')->first();
+        $firstSale = \App\Models\Clients\Sale::orderBy('date', 'asc')->first();
         $firstDate = $firstSale ? \Carbon\Carbon::parse($firstSale->date) : $now;
         $daysSinceStart = $now->diffInDays($firstDate);
         $days = 0;
@@ -288,7 +288,7 @@ class DashboardController extends Controller
      */
     private function getSalesForDate($date)
     {
-        return \App\Models\SaleItem::whereHas('sale', function($q) use ($date) {
+        return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date) {
                 $q->whereDate('date', $date);
             })
             ->selectRaw('SUM(retail_price * quantity) as sales')
@@ -300,7 +300,7 @@ class DashboardController extends Controller
      */
     private function getSalesForPeriod($start, $end)
     {
-        return \App\Models\SaleItem::whereHas('sale', function($q) use ($start, $end) {
+        return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($start, $end) {
                 $q->whereBetween('date', [$start, $end]);
             })
             ->selectRaw('SUM(retail_price * quantity) as sales')
@@ -320,7 +320,7 @@ class DashboardController extends Controller
             $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
             foreach ($period as $date) {
                 $labels[] = $date->format('d M');
-                $sum = \App\Models\Appointment::whereDate('date', $date->toDateString())
+                $sum = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
                     ->where('status', 'completed')
                     ->sum('price');
                 $data[] = round($sum, 2);
@@ -338,7 +338,7 @@ class DashboardController extends Controller
             $periodRange = \Carbon\CarbonPeriod::create($start, $end);
             foreach ($periodRange as $date) {
                 $labels[] = $date->format('d M');
-                $sum = \App\Models\Appointment::whereDate('date', $date->toDateString())
+                $sum = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
                     ->where('status', 'completed')
                     ->sum('price');
                 $data[] = round($sum, 2);
@@ -348,7 +348,7 @@ class DashboardController extends Controller
                 'data' => $data
             ]);
         }
-        $firstAppointment = \App\Models\Appointment::orderBy('date', 'asc')->first();
+        $firstAppointment = \App\Models\Clients\Appointment::orderBy('date', 'asc')->first();
         $firstDate = $firstAppointment ? \Carbon\Carbon::parse($firstAppointment->date) : $now;
         $daysSinceStart = $now->diffInDays($firstDate);
         $days = 0;
@@ -360,7 +360,7 @@ class DashboardController extends Controller
         for ($i = $maxDays; $i >= 0; $i--) {
             $date = $now->copy()->subDays($i)->toDateString();
             $labels[] = $now->copy()->subDays($i)->format('d M');
-            $sum = \App\Models\Appointment::whereDate('date', $date)
+            $sum = \App\Models\Clients\Appointment::whereDate('date', $date)
                 ->where('status', 'completed')
                 ->sum('price');
             $data[] = round($sum, 2);
@@ -384,7 +384,7 @@ class DashboardController extends Controller
             $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
             foreach ($period as $date) {
                 $labels[] = $date->format('d M');
-                $sum = \App\Models\Expense::whereDate('date', $date->toDateString())->sum('amount');
+                $sum = \App\Models\Clients\Expense::whereDate('date', $date->toDateString())->sum('amount');
                 $data[] = round($sum, 2);
             }
             return response()->json([
@@ -400,7 +400,7 @@ class DashboardController extends Controller
             $periodRange = \Carbon\CarbonPeriod::create($start, $end);
             foreach ($periodRange as $date) {
                 $labels[] = $date->format('d M');
-                $sum = \App\Models\Expense::whereDate('date', $date->toDateString())->sum('amount');
+                $sum = \App\Models\Clients\Expense::whereDate('date', $date->toDateString())->sum('amount');
                 $data[] = round($sum, 2);
             }
             return response()->json([
@@ -408,8 +408,8 @@ class DashboardController extends Controller
                 'data' => $data
             ]);
         }
-        $firstExpense = \App\Models\Expense::orderBy('date', 'asc')->first();
-        $firstPurchase = \App\Models\Purchase::orderBy('date', 'asc')->first();
+        $firstExpense = \App\Models\Clients\Expense::orderBy('date', 'asc')->first();
+        $firstPurchase = \App\Models\Clients\Purchase::orderBy('date', 'asc')->first();
         $firstDate = $now;
         $dates = [];
         if ($firstExpense && $firstExpense->date) $dates[] = \Carbon\Carbon::parse($firstExpense->date);
@@ -428,8 +428,8 @@ class DashboardController extends Controller
         for ($i = $maxDays; $i >= 0; $i--) {
             $date = $now->copy()->subDays($i)->toDateString();
             $labels[] = $now->copy()->subDays($i)->format('d M');
-            $expenses = \App\Models\Expense::whereDate('date', $date)->sum('amount');
-            $purchases = \App\Models\Purchase::whereDate('date', $date)->sum('total_amount');
+            $expenses = \App\Models\Clients\Expense::whereDate('date', $date)->sum('amount');
+            $purchases = \App\Models\Clients\Purchase::whereDate('date', $date)->sum('total_amount');
             $data[] = round($expenses + $purchases, 2);
         }
         $maxValue = $this->roundExpensesMaxValueForChart(max($data));
@@ -456,11 +456,11 @@ class DashboardController extends Controller
             foreach ($period as $date) {
                 $labels[] = $date->format('d M');
                 // Услуги: завершённые записи за день
-                $servicesCount = \App\Models\Appointment::whereDate('date', $date->toDateString())->where('status', 'completed')->count();
+                $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())->where('status', 'completed')->count();
                 // Клиенты: новые клиенты за день
-                $clientsCount = \App\Models\Client::whereDate('created_at', $date->toDateString())->count();
+                $clientsCount = \App\Models\Clients\Client::whereDate('created_at', $date->toDateString())->count();
                 // Записи: все записи за день (по дате услуги, а не по дате создания)
-                $appointmentsCount = \App\Models\Appointment::whereDate('date', $date->toDateString())->count();
+                $appointmentsCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())->count();
                 $servicesData[] = $servicesCount;
                 $clientsData[] = $clientsCount;
                 $appointmentsData[] = $appointmentsCount;
@@ -481,11 +481,11 @@ class DashboardController extends Controller
             foreach ($periodRange as $date) {
                 $labels[] = $date->format('d M');
                 // Услуги: завершённые записи за день
-                $servicesCount = \App\Models\Appointment::whereDate('date', $date->toDateString())->where('status', 'completed')->count();
+                $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())->where('status', 'completed')->count();
                 // Клиенты: новые клиенты за день
-                $clientsCount = \App\Models\Client::whereDate('created_at', $date->toDateString())->count();
+                $clientsCount = \App\Models\Clients\Client::whereDate('created_at', $date->toDateString())->count();
                 // Записи: все записи за день (по дате услуги, а не по дате создания)
-                $appointmentsCount = \App\Models\Appointment::whereDate('date', $date->toDateString())->count();
+                $appointmentsCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())->count();
                 $servicesData[] = $servicesCount;
                 $clientsData[] = $clientsCount;
                 $appointmentsData[] = $appointmentsCount;
@@ -497,9 +497,9 @@ class DashboardController extends Controller
                 'appointments' => $appointmentsData
             ]);
         }
-        $firstService = \App\Models\Appointment::orderBy('date', 'asc')->first();
-        $firstClient = \App\Models\Client::orderBy('created_at', 'asc')->first();
-        $firstAppointment = \App\Models\Appointment::orderBy('created_at', 'asc')->first();
+        $firstService = \App\Models\Clients\Appointment::orderBy('date', 'asc')->first();
+        $firstClient = \App\Models\Clients\Client::orderBy('created_at', 'asc')->first();
+        $firstAppointment = \App\Models\Clients\Appointment::orderBy('created_at', 'asc')->first();
         $firstDate = $now;
         $dates = [];
         if ($firstService) $dates[] = \Carbon\Carbon::parse($firstService->date);
@@ -512,11 +512,11 @@ class DashboardController extends Controller
             $date = $now->copy()->subDays($i)->toDateString();
             $labels[] = $now->copy()->subDays($i)->format('d M');
             // Услуги: завершённые записи за день
-            $servicesCount = \App\Models\Appointment::whereDate('date', $date)->where('status', 'completed')->count();
+            $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date)->where('status', 'completed')->count();
             // Клиенты: новые клиенты за день
-            $clientsCount = \App\Models\Client::whereDate('created_at', $date)->count();
+            $clientsCount = \App\Models\Clients\Client::whereDate('created_at', $date)->count();
             // Записи: все записи за день (по дате услуги, а не по дате создания)
-            $appointmentsCount = \App\Models\Appointment::whereDate('date', $date)->count();
+            $appointmentsCount = \App\Models\Clients\Appointment::whereDate('date', $date)->count();
             $servicesData[] = $servicesCount;
             $clientsData[] = $clientsCount;
             $appointmentsData[] = $appointmentsCount;

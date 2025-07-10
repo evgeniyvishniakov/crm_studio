@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
-use App\Models\Client;
-use App\Models\Appointment;
-use App\Models\ClientType;
+use App\Models\Clients\Client;
+use App\Models\Clients\Appointment;
+use App\Models\Clients\ClientType;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;

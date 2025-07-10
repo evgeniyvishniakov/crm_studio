@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\Sale;
-use App\Models\SaleItem;
-use App\Models\Client;
-use App\Models\Product;
-use App\Models\Warehouse;
+use App\Models\Clients\Sale;
+use App\Models\Clients\SaleItem;
+use App\Models\Clients\Client;
+use App\Models\Clients\Product;
+use App\Models\Clients\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -262,7 +262,7 @@ class SaleController extends Controller
             foreach ($validated['items'] as $item) {
                 $oldSaleItem = $oldItems[(string)$item['product_id']] ?? null;
                 $warehouseItem = Warehouse::where('product_id', $item['product_id'])->first();
-                $product = \App\Models\Product::find($item['product_id']);
+                $product = \App\Models\Clients\Product::find($item['product_id']);
                 $wholesalePrice = $oldSaleItem ? $oldSaleItem->wholesale_price : ($warehouseItem ? $warehouseItem->purchase_price : ($product ? $product->purchase_price : 0));
                 $itemTotal = ($warehouseItem ? $warehouseItem->retail_price : ($product ? $product->retail_price : 0)) * $item['quantity'];
                 $totalAmount += $itemTotal;

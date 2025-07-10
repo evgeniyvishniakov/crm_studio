@@ -1,23 +1,19 @@
 <?php
 
-namespace App\Models;
+declare(strict_types=1);
+
+namespace App\Models\Clients;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Supplier extends Model
+class ProductCategory extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'name',
-        'contact_person',
-        'phone',
-        'email',
-        'address',
-        'instagram',
-        'inn',
-        'note',
+        'description',
         'status'
     ];
 
@@ -25,8 +21,8 @@ class Supplier extends Model
         'status' => 'boolean'
     ];
 
-    public function purchases()
+    public function products()
     {
-        return $this->hasMany(Purchase::class);
+        return $this->hasMany(Product::class, 'category_id');
     }
 }

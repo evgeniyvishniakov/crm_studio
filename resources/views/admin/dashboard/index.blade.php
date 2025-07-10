@@ -15,7 +15,7 @@
                     </div>
                     <div>
                         <h6 class="card-title text-muted mb-1">Пользователи</h6>
-                        <h4 class="mb-0">{{ \App\Models\User::count() }}</h4>
+                        <h4 class="mb-0"></h4>
                     </div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
                     </div>
                     <div>
                         <h6 class="card-title text-muted mb-1">Клиенты</h6>
-                        <h4 class="mb-0">{{ \App\Models\Client::count() }}</h4>
+                        <h4 class="mb-0"></h4>
                     </div>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                     </div>
                     <div>
                         <h6 class="card-title text-muted mb-1">Товары</h6>
-                        <h4 class="mb-0">{{ \App\Models\Product::count() }}</h4>
+                        <h4 class="mb-0"></h4>
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                     </div>
                     <div>
                         <h6 class="card-title text-muted mb-1">Записи</h6>
-                        <h4 class="mb-0">{{ \App\Models\Appointment::count() }}</h4>
+                        <h4 class="mb-0"></h4>
                     </div>
                 </div>
             </div>

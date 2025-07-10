@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\Supplier;
+use App\Models\Clients\Supplier;
 use Illuminate\Http\Request;
 
 class SupplierController extends Controller

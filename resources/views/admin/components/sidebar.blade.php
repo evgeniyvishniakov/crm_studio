@@ -16,9 +16,9 @@
             </li>
 
             <li class="nav-item mb-2">
-                <a href="{{ route('admin.clients.index') }}" class="nav-link text-white {{ request()->routeIs('admin.clients.*') ? 'active bg-primary' : '' }}">
+                <a href="{{ route('admin.projects.index') }}" class="nav-link text-white {{ request()->routeIs('admin.clients.*') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-building me-2"></i>
-                    Клиенты
+                    Проекты
                 </a>
             </li>
             

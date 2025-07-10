@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Models\Appointment;
-use App\Models\Client;
-use App\Models\Product;
-use App\Models\Sale;
-use App\Models\SaleItem;
-use App\Models\Service;
-use App\Models\Warehouse;
+use App\Models\Clients\Appointment;
+use App\Models\Clients\Client;
+use App\Models\Clients\Product;
+use App\Models\Clients\Sale;
+use App\Models\Clients\SaleItem;
+use App\Models\Clients\Service;
+use App\Models\Clients\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -162,8 +162,8 @@ class AppointmentsController extends Controller
                     // Проверяем доступность и списываем только НОВЫЕ товары
                     foreach ($newlyAddedProducts as $productId => $quantity) {
                         // Проверяем доступность только для новых товаров
-                        \App\Models\Warehouse::checkAvailability((int)$productId, $quantity);
-                        \App\Models\Warehouse::decreaseQuantity((int)$productId, $quantity);
+                        \App\Models\Clients\Warehouse::checkAvailability((int)$productId, $quantity);
+                        \App\Models\Clients\Warehouse::decreaseQuantity((int)$productId, $quantity);
                     }
 
                     // --- Удаляем старые продажи и позиции ---
