@@ -93,6 +93,26 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
         </div>
         <div class="modal-body">
+          @if (
+            $errors->any() || session('success')
+          )
+            <div class="mb-3">
+              @if ($errors->any())
+                <div class="alert alert-danger">
+                  <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                    @endforeach
+                  </ul>
+                </div>
+              @endif
+              @if (session('success'))
+                <div class="alert alert-success">
+                  {{ session('success') }}
+                </div>
+              @endif
+            </div>
+          @endif
           <div class="mb-3">
             <label for="reg-fullname" class="form-label">Имя <span class="text-danger">*</span></label>
             <div class="input-group">
@@ -170,6 +190,14 @@ $(function() {
   });
 });
 </script>
+@if ($errors->any() || session('success'))
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var modal = new bootstrap.Modal(document.getElementById('registerModal'));
+    modal.show();
+  });
+</script>
+@endif
 @endpush
 @endsection
 

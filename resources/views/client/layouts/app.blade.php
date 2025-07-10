@@ -194,6 +194,27 @@
             align-items: center;
             margin-left: 18px;
         }
+        .tab-button.active {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            border-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
+            border-color: #3b82f6 !important;
+            color: #fff !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+            border-radius: 12px !important;
+            padding: 0.75rem 1.5rem !important;
+        }
+        .btn-primary:active, .btn-primary:focus, .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+            border-color: #2563eb !important;
+            color: #fff !important;
+            border-radius: 12px !important;
+            padding: 0.75rem 1.5rem !important;
+        }
     </style>
 </head>
 
@@ -464,14 +485,6 @@
 <!-- /#right-panel -->
 
 <!-- Scripts -->
-<script src="{{ asset('client/js/lib/jquery-numerator.min.js') }}"></script>
-<script src="{{ asset('client/js/lib/jquery.countup.min.js') }}"></script>
-<script src="{{ asset('client/js/lib/waypoints.min.js') }}"></script>
-<script src="{{ asset('client/js/lib/jquery.counterup.min.js') }}"></script>
-<script src="{{ asset('client/js/lib/owl.carousel.min.js') }}"></script>
-<script src="{{ asset('client/js/lib/owl.carousel-init.js') }}"></script>
-<script src="{{ asset('client/js/scripts.js') }}"></script>
-
 @stack('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {

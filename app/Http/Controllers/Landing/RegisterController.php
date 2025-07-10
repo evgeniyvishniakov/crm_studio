@@ -9,6 +9,8 @@ use App\Mail\RegistrationWelcomeMail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Admin\Project;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Password;
+use App\Models\Admin\User;
 
 class RegisterController extends Controller
 {
@@ -29,11 +31,10 @@ class RegisterController extends Controller
             'salon' => 'required|string|max:255',
         ]);
 
-        // Ручная проверка на дубль телефона
+        // Ручная проверка на дубль телефона только в projects
         if (!empty($validated['phone'])) {
             $phoneExists = 
-                \App\Models\Admin\Project::where('phone', $validated['phone'])->exists() ||
-                \DB::table('admin_users')->where('phone', $validated['phone'])->exists();
+                \App\Models\Admin\Project::where('phone', $validated['phone'])->exists();
             if ($phoneExists) {
                 return back()->withErrors(['phone' => 'Пользователь с таким телефоном уже зарегистрирован'])->withInput();
             }
@@ -42,32 +43,41 @@ class RegisterController extends Controller
         // Создание проекта и пользователя-админа в транзакции
         DB::transaction(function () use ($validated) {
             $project = Project::create([
-                'name' => $validated['fullname'], // Имя
-                'project_name' => $validated['salon'], // Название проекта
+                'name' => $validated['fullname'],
+                'project_name' => $validated['salon'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'] ?? null,
                 'registered_at' => now(),
                 'status' => 'active',
-                'language' => 'ru', // или по умолчанию
+                'language' => 'ru',
             ]);
 
             // Создать пользователя-админа
-            DB::table('admin_users')->insert([
+            $admin = User::create([
                 'name' => $validated['fullname'],
+                'email' => $validated['email'],
+                'password' => null,
                 'project_id' => $project->id,
                 'role' => 'admin',
                 'status' => 'active',
                 'registered_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
             ]);
+
+            // Генерируем токен для создания пароля
+            $token = Password::broker('users')->createToken($admin);
+            // Сохраняем токен для передачи в письмо
+            $GLOBALS['reset_token'] = $token;
         });
 
-        // Отправка письма
+        // Получаем токен из глобальной переменной
+        $token = $GLOBALS['reset_token'] ?? null;
+
+        // Отправка письма с ссылкой на создание пароля
         Mail::to($validated['email'])->send(new RegistrationWelcomeMail(
             $validated['email'],
             $validated['salon'],
-            $validated['phone'] ?? null
+            $validated['phone'] ?? null,
+            $token
         ));
 
         return back()->with('success', 'Регистрация отправлена!');

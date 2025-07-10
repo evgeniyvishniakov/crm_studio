@@ -14,15 +14,17 @@ class RegistrationWelcomeMail extends Mailable
     public $email;
     public $salon;
     public $phone;
+    public $token;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($email, $salon, $phone = null)
+    public function __construct($email, $salon, $phone = null, $token = null)
     {
         $this->email = $email;
         $this->salon = $salon;
         $this->phone = $phone;
+        $this->token = $token;
     }
 
     /**
@@ -36,6 +38,9 @@ class RegistrationWelcomeMail extends Mailable
                 'email' => $this->email,
                 'salon' => $this->salon,
                 'phone' => $this->phone,
+                'token' => $this->token,
+                // убираем panel из ссылки
+                'resetUrl' => route('password.reset', ['token' => $this->token, 'email' => $this->email]),
             ]);
     }
 }

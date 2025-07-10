@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="{{ asset('css/landing/main.css') }}" rel="stylesheet">
+    <link href="{{ asset('landing/main.css') }}" rel="stylesheet">
     <style>
       html, body {
         font-family: 'Manrope', 'Inter', Arial, sans-serif !important;
@@ -36,8 +36,10 @@
     @include('landing.components.footer')
     
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('js/landing/main.js') }}"></script>
+    <script src="{{ asset('landing/main.js') }}"></script>
     
     @stack('scripts')
 </body>

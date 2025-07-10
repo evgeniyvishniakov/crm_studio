@@ -94,6 +94,11 @@ return [
                 'postmark',
             ],
         ],
+
+        'maillog' => [
+            'transport' => 'log',
+            'path' => storage_path('logs/maillog.log'),
+        ],
     ],
 
     /*
