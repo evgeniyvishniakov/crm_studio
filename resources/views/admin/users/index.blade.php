@@ -26,7 +26,79 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
+                @forelse($users as $user)
+                    <tr>
+                        <td>{{ $user->id }}</td>
+                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->project ? $user->project->project_name : '—' }}</td>
+                        <td>{{ $user->role }}</td>
+                        <td>
+                            <span class="badge bg-{{ $user->status === 'active' ? 'success' : 'secondary' }}">
+                                {{ $user->status === 'active' ? 'Активен' : 'Неактивен' }}
+                            </span>
+                        </td>
+                        <td>{{ $user->registered_at ? \Carbon\Carbon::parse($user->registered_at)->format('d.m.Y H:i') : '' }}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-sm btn-outline-primary" title="Редактировать" data-bs-toggle="modal" data-bs-target="#editUserModal{{ $user->id }}"><i class="fas fa-edit"></i></button>
+                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Удалить" onclick="if(confirm('Удалить пользователя?')){ this.form.submit(); }"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Модальное окно редактирования пользователя -->
+                    <div class="modal fade" id="editUserModal{{ $user->id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Редактировать пользователя: {{ $user->name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="edit-name-{{ $user->id }}" class="form-label">Имя</label>
+                                            <input type="text" class="form-control" id="edit-name-{{ $user->id }}" name="name" value="{{ $user->name }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="edit-email-{{ $user->id }}" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="edit-email-{{ $user->id }}" name="email" value="{{ $user->email }}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="edit-role-{{ $user->id }}" class="form-label">Роль</label>
+                                            <select class="form-select" id="edit-role-{{ $user->id }}" name="role" required>
+                                                <option value="admin" @if($user->role=='admin') selected @endif>Администратор</option>
+                                                <option value="manager" @if($user->role=='manager') selected @endif>Менеджер</option>
+                                                <option value="user" @if($user->role=='user') selected @endif>Пользователь</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="edit-status-{{ $user->id }}" class="form-label">Статус</label>
+                                            <select class="form-select" id="edit-status-{{ $user->id }}" name="status" required>
+                                                <option value="active" @if($user->status=='active') selected @endif>Активен</option>
+                                                <option value="inactive" @if($user->status=='inactive') selected @endif>Неактивен</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Нет данных для отображения</td>
+                    </tr>
+                @endforelse
                 </tbody>
             </table>
         </div>

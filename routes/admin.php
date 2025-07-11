@@ -22,9 +22,9 @@ Route::name('admin.')->group(function () {
     })->name('dashboard');
     
     // Управление пользователями
-    Route::get('/users', function () {
-        return view('admin.users.index');
-    })->name('users.index');
+    Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::put('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
     
     // Роли и права
     Route::get('/roles', function () {

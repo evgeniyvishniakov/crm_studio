@@ -29,7 +29,7 @@ use App\Http\Controllers\Client\TurnoverReportController;
 |
 */
 
-Route::group([], function () {
+Route::middleware('auth:client')->group(function () {
     
     // Главная страница клиентской части
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
