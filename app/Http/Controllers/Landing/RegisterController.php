@@ -80,6 +80,11 @@ class RegisterController extends Controller
             $token
         ));
 
+        // Возврат JSON-ответа для AJAX
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
+
         return back()->with('success', 'Регистрация отправлена!');
     }
 }
