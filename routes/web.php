@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Client\ClientAuthController;
 
-Auth::routes(['reset' => true, 'register' => false, 'verify' => false]);
+Auth::routes(['reset' => false, 'register' => false, 'verify' => false]);
 
 /*
 |--------------------------------------------------------------------------

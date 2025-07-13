@@ -18,6 +18,8 @@ use App\Http\Controllers\Client\WarehouseController;
 use App\Http\Controllers\Client\InventoryController;
 use App\Http\Controllers\Client\ClientReportController;
 use App\Http\Controllers\Client\TurnoverReportController;
+use App\Http\Controllers\Auth\AdminForgotPasswordController;
+use App\Http\Controllers\Auth\AdminResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +35,15 @@ Route::middleware('auth:client')->group(function () {
     
     // Главная страница клиентской части
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+// Маршруты сброса пароля (доступны без аутентификации)
+Route::get('/password/reset', [AdminForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/password/email', [AdminForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/password/reset/{token}', [AdminResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [AdminResetPasswordController::class, 'reset'])->name('password.update');
+
+Route::middleware('auth:client')->group(function () {
     
     // Управление клиентами
     Route::prefix('clients')->name('clients.')->group(function () {

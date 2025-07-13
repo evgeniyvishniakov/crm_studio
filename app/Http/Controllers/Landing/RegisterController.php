@@ -64,7 +64,7 @@ class RegisterController extends Controller
             ]);
 
             // Генерируем токен для создания пароля
-            $token = Password::broker('users')->createToken($admin);
+            $token = Password::broker('admin_users')->createToken($admin);
             // Сохраняем токен для передачи в письмо
             $GLOBALS['reset_token'] = $token;
         });

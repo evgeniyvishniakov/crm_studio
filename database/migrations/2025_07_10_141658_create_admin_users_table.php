@@ -14,10 +14,14 @@ return new class extends Migration
         Schema::create('admin_users', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // Имя
+            $table->string('email')->unique(); // Email
+            $table->string('password')->nullable(); // Пароль
             $table->unsignedBigInteger('project_id'); // Проект
             $table->string('role'); // Роль
             $table->string('status')->default('active'); // Статус
             $table->timestamp('registered_at')->useCurrent(); // Дата регистрации
+            $table->timestamp('email_verified_at')->nullable(); // Дата подтверждения email
+            $table->rememberToken(); // Remember token для аутентификации
             $table->timestamps();
 
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');

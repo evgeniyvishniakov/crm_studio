@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ProjectController;
+use App\Http\Controllers\Auth\AdminForgotPasswordController;
+use App\Http\Controllers\Auth\AdminResetPasswordController;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -20,6 +22,12 @@ Route::name('admin.')->group(function () {
     Route::get('/', function () {
         return view('admin.dashboard.index');
     })->name('dashboard');
+    
+    // Маршруты сброса пароля для админских пользователей
+    Route::get('/password/reset', [AdminForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/password/email', [AdminForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/password/reset/{token}', [AdminResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/password/reset', [AdminResetPasswordController::class, 'reset'])->name('password.update');
     
     // Управление пользователями
     Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
