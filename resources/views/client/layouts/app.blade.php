@@ -343,7 +343,7 @@
                     }}">
                         <li class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                             <i class="fa fa-users"></i>
-                            <a href="{{ route('admin.users.index') }}">Пользователи</a>
+                            <a href="{{ route('client.users.index') }}">Пользователи</a>
                         </li>
                         <li class="{{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
                             <i class="fa fa-lock"></i>

@@ -222,4 +222,6 @@ Route::middleware('auth:client')->group(function () {
         Route::get('/ltv-by-client-type', [AppointmentsController::class, 'getLtvByClientType']);
         Route::get('/top-services-by-revenue', [AppointmentsController::class, 'getTopServicesByRevenue']);
     });
+
+    Route::get('/users', [\App\Http\Controllers\Client\ClientUserController::class, 'index'])->name('client.users.index');
 }); 

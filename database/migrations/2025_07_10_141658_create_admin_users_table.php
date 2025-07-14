@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name'); // Имя
             $table->string('email')->unique(); // Email
             $table->string('password')->nullable(); // Пароль
+            $table->string('username')->unique()->nullable();
             $table->unsignedBigInteger('project_id'); // Проект
             $table->string('role'); // Роль
             $table->string('status')->default('active'); // Статус
