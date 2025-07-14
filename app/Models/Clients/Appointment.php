@@ -18,7 +18,8 @@ class Appointment extends Model
         'time',
         'price',
         'notes',
-        'status'
+        'status',
+        'project_id', // для мультипроктности
     ];
 
     protected $casts = [

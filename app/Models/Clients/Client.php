@@ -20,7 +20,8 @@ class Client extends Model
         'client_type_id',
         'notes',
         'birth_date',
-        'is_active'
+        'is_active',
+        'project_id', // для мультипроктности
     ];
 
     protected $casts = [

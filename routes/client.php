@@ -31,6 +31,8 @@ use App\Http\Controllers\Auth\AdminResetPasswordController;
 |
 */
 
+Route::get('clients/check', [App\Http\Controllers\Client\ClientController::class, 'checkUnique']);
+
 Route::middleware('auth:client')->group(function () {
     
     // Главная страница клиентской части
