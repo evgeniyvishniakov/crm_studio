@@ -170,6 +170,7 @@ Route::middleware('auth:client')->group(function () {
         Route::delete('/{appointment}/delete-product/{sale}', [AppointmentsController::class, 'deleteProduct'])->name('delete-product');
         Route::post('/{appointment}/add-procedure', [AppointmentsController::class, 'addProcedure']);
         Route::post('/{appointment}/remove-product', [AppointmentsController::class, 'removeProduct'])->name('remove-product');
+        Route::post('/{appointment}/move', [App\Http\Controllers\Client\AppointmentsController::class, 'move'])->name('move');
     });
     
     // Расходы

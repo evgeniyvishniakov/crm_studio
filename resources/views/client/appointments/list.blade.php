@@ -1072,7 +1072,36 @@
 
                     dateClick: function(info) {
                         createAppointment(info.dateStr);
-                    }
+                    },
+
+                    eventDrop: function(info) {
+                        // Перетаскивание события (записи)
+                        const appointmentId = info.event.id;
+                        const newDate = info.event.startStr.slice(0, 10);
+                        fetch(`/appointments/${appointmentId}/move`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ date: newDate })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.showNotification('success', 'Дата записи и продаж успешно обновлена');
+                                calendar.refetchEvents();
+                            } else {
+                                window.showNotification('error', data.message || 'Ошибка при переносе записи');
+                                info.revert();
+                            }
+                        })
+                        .catch(() => {
+                            window.showNotification('error', 'Ошибка при переносе записи');
+                            info.revert();
+                        });
+                    },
                 });
 
                 calendar.render();

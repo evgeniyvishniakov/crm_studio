@@ -1222,4 +1222,31 @@ class AppointmentsController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    /**
+     * Переместить запись на другую дату (drag-and-drop в календаре)
+     */
+    public function move(Request $request, Appointment $appointment)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $request->validate([
+            'date' => 'required|date',
+        ]);
+        if ($appointment->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
+        }
+        try {
+            DB::beginTransaction();
+            $appointment->update(['date' => $request->date]);
+            // Обновить дату во всех связанных продажах
+            foreach ($appointment->sales as $sale) {
+                $sale->update(['date' => $request->date]);
+            }
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Дата записи и продаж успешно обновлена']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Ошибка при переносе: ' . $e->getMessage()], 500);
+        }
+    }
 }
