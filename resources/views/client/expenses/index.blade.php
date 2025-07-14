@@ -144,7 +144,7 @@
                     document.querySelector('#expenseForm [name="amount"]').value = expense.amount;
                     document.getElementById('expenseModal').style.display = 'block';
                 } else {
-                    window.showNotification(data.message || 'Ошибка загрузки данных', 'error');
+                    window.showNotification('Ошибка загрузки данных', 'error');
                 }
             } catch (error) {
                 window.showNotification('Ошибка при загрузке данных', 'error');
@@ -172,14 +172,14 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    window.showNotification('Расход успешно удален');
+                    window.showNotification('success', 'Расход успешно удален');
                     // Перезагружаем текущую страницу
                     loadExpenses(currentPage);
                 } else {
-                    window.showNotification(data.message || 'Ошибка при удалении', 'error');
+                    window.showNotification('error', data.message || 'Ошибка при удалении');
                 }
             } catch (error) {
-                window.showNotification('Ошибка при удалении', 'error');
+                window.showNotification('error', 'Ошибка при удалении');
             }
 
             closeConfirmationModal();
@@ -208,12 +208,12 @@
             const data = await response.json();
 
             if (data.success) {
-                window.showNotification(data.message || 'Расход успешно сохранен');
+                window.showNotification('success', data.message || 'Расход успешно сохранен');
                 closeExpenseModal();
                 // Перезагружаем текущую страницу для отображения изменений
                 loadExpenses(currentPage);
             } else {
-                window.showNotification(data.message || 'Ошибка при сохранении', 'error');
+                window.showNotification('error', data.message || 'Ошибка при сохранении');
             }
         });
 
