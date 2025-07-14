@@ -1302,10 +1302,25 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     // --- Современный стиль для universalChart ---
     if (window.Chart && Chart.defaults && Chart.defaults.scales) {
+        Chart.defaults.scales.x = Chart.defaults.scales.x || {};
+        Chart.defaults.scales.x.grid = Chart.defaults.scales.x.grid || {};
+        Chart.defaults.scales.x.grid.display = false;
+        Chart.defaults.scales.y = Chart.defaults.scales.y || {};
+        Chart.defaults.scales.y.grid = Chart.defaults.scales.y.grid || {};
+        Chart.defaults.scales.y.grid.color = '#e5e7eb';
+        Chart.defaults.scales.y.grid.lineWidth = 1.2;
+        Chart.defaults.scales.x.ticks = Chart.defaults.scales.x.ticks || {};
+        Chart.defaults.scales.x.ticks.padding = 8;
+        Chart.defaults.scales.y.ticks = Chart.defaults.scales.y.ticks || {};
+        Chart.defaults.scales.y.ticks.padding = 8;
+        Chart.defaults.font = Chart.defaults.font || {};
         Chart.defaults.font.family = 'Inter, Arial, sans-serif';
         Chart.defaults.font.size = 15;
         Chart.defaults.color = '#22223b';
+        Chart.defaults.plugins = Chart.defaults.plugins || {};
+        Chart.defaults.plugins.legend = Chart.defaults.plugins.legend || {};
         Chart.defaults.plugins.legend.display = false;
+        Chart.defaults.plugins.tooltip = Chart.defaults.plugins.tooltip || {};
         Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(59,130,246,0.95)';
         Chart.defaults.plugins.tooltip.titleColor = '#fff';
         Chart.defaults.plugins.tooltip.bodyColor = '#fff';
@@ -1315,6 +1330,8 @@ document.addEventListener('DOMContentLoaded', function() {
         Chart.defaults.plugins.tooltip.padding = 12;
         Chart.defaults.plugins.tooltip.caretSize = 8;
         Chart.defaults.plugins.tooltip.displayColors = false;
+        Chart.defaults.elements = Chart.defaults.elements || {};
+        Chart.defaults.elements.line = Chart.defaults.elements.line || {};
         Chart.defaults.elements.line.tension = 0.4;
         Chart.defaults.elements.line.borderWidth = 3;
         Chart.defaults.elements.line.borderColor = 'rgba(59,130,246,1)';
@@ -1327,11 +1344,13 @@ document.addEventListener('DOMContentLoaded', function() {
             grad.addColorStop(1, 'rgba(59,130,246,0.01)');
             return grad;
         };
+        Chart.defaults.elements.point = Chart.defaults.elements.point || {};
         Chart.defaults.elements.point.radius = 5;
         Chart.defaults.elements.point.backgroundColor = '#3b82f6';
         Chart.defaults.elements.point.borderColor = '#fff';
         Chart.defaults.elements.point.borderWidth = 2;
         Chart.defaults.elements.point.hoverRadius = 8;
+        Chart.defaults.elements.bar = Chart.defaults.elements.bar || {};
         Chart.defaults.elements.bar.borderRadius = 8;
         Chart.defaults.elements.bar.backgroundColor = function(ctx) {
             const chart = ctx.chart;
@@ -1343,11 +1362,7 @@ document.addEventListener('DOMContentLoaded', function() {
             grad.addColorStop(1, 'rgba(139,92,246,0.7)');
             return grad;
         };
-        Chart.defaults.scales.x.grid.display = false;
-        Chart.defaults.scales.y.grid.color = '#e5e7eb';
-        Chart.defaults.scales.y.grid.lineWidth = 1.2;
-        Chart.defaults.scales.x.ticks.padding = 8;
-        Chart.defaults.scales.y.ticks.padding = 8;
+        Chart.defaults.animation = Chart.defaults.animation || {};
         Chart.defaults.animation.duration = 900;
         Chart.defaults.animation.easing = 'easeOutQuart';
     }

@@ -821,7 +821,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 borderColor: colors,
                 borderWidth: 1
             }]);
-        } catch (e) { // console.error('Ошибка загрузки топ-5 по выручке', e); }
+        } catch (e) {
+            // console.error('Ошибка загрузки топ-5 по выручке', e);
+        }
     }
     // --- Функция для обновления динамики среднего чека ---
     async function updateAvgCheckDynamicsAnalytics(period = 'week', params = null) {
@@ -840,7 +842,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'Средний чек',
                 data: data.data
             }]);
-        } catch (e) { // console.error('Ошибка загрузки динамики среднего чека', e); }
+        } catch (e) {
+            // console.error('Ошибка загрузки динамики среднего чека', e);
+        }
     }
     // --- Функция для обновления LTV по типам клиентов ---
     async function updateLtvByClientTypeAnalytics(period = 'week', params = null) {
@@ -861,7 +865,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'LTV',
                 data: data.data
             }]);
-        } catch (e) { // console.error('Ошибка загрузки LTV', e); }
+        } catch (e) {
+            // console.error('Ошибка загрузки LTV', e);
+        }
     }
     // --- Функция для обновления топ-услуг по выручке ---
     async function updateTopServicesByRevenueAnalytics(period = 'week', params = null) {
@@ -882,7 +888,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'Выручка',
                 data: data.data
             }]);
-        } catch (e) { // console.error('Ошибка загрузки топ-услуг по выручке', e); }
+        } catch (e) {
+            // console.error('Ошибка загрузки топ-услуг по выручке', e);
+        }
     }
 
     // --- Логика для календаря ---
