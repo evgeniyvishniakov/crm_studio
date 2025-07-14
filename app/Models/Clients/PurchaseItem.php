@@ -14,7 +14,8 @@ class PurchaseItem extends Model
         'purchase_price',
         'retail_price',
         'quantity',
-        'total'
+        'total',
+        'project_id', // для мультипроктности
     ];
 
     public function product()

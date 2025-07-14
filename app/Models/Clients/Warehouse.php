@@ -13,7 +13,8 @@ class Warehouse extends Model
         'product_id',
         'purchase_price',
         'retail_price',
-        'quantity'
+        'quantity',
+        'project_id', // для мультипроктности
     ];
 
     public function product()
@@ -40,7 +41,16 @@ class Warehouse extends Model
     // Метод для уменьшения количества на складе
     public static function decreaseQuantity($productId, $quantity)
     {
-        $item = self::where('product_id', $productId)->firstOrFail();
+        $projectId = auth()->check() ? auth()->user()->project_id : null;
+        $item = self::where('product_id', $productId)
+            ->where('project_id', $projectId)
+            ->first();
+
+        if (!$item) {
+            // Просто ничего не делаем, если товара нет на складе
+            return null;
+        }
+
         $item->quantity -= $quantity;
         if ($item->quantity <= 0) {
             $item->delete();
@@ -57,14 +67,16 @@ class Warehouse extends Model
         $item = self::where('product_id', $productId)->first();
         if (!$item) {
             // Если склада нет — получаем цены из Product
-            $product = \App\Models\Product::find($productId);
+            $product = Product::find($productId);
             $purchasePrice = $product ? $product->purchase_price : 0;
             $retailPrice = $product ? $product->retail_price : 0;
+            $projectId = $product && isset($product->project_id) ? $product->project_id : (auth()->check() ? auth()->user()->project_id : null);
             $item = self::create([
                 'product_id' => $productId,
                 'quantity' => $quantity,
                 'purchase_price' => $purchasePrice,
                 'retail_price' => $retailPrice,
+                'project_id' => $projectId, // обязательно для мультипроктности
             ]);
         } else {
             $item->quantity += $quantity;

@@ -79,7 +79,9 @@ class PurchaseController extends Controller
 
             $totalAmount = 0;
 
-            foreach ($validated['items'] as $item) {
+            foreach (
+                $validated['items'] as $item
+            ) {
                 $itemTotal = $item['purchase_price'] * $item['quantity'];
                 $totalAmount += $itemTotal;
 
@@ -88,7 +90,8 @@ class PurchaseController extends Controller
                     'purchase_price' => $item['purchase_price'],
                     'retail_price' => $item['retail_price'],
                     'quantity' => $item['quantity'],
-                    'total' => $itemTotal
+                    'total' => $itemTotal,
+                    'project_id' => $currentProjectId, // добавлено для мультипроктности
                 ]);
 
                 // Обновляем склад через модельный метод
@@ -154,6 +157,7 @@ class PurchaseController extends Controller
 
     public function update(Request $request, Purchase $purchase)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
             'date' => 'required|date',
             'supplier_id' => 'required|exists:suppliers,id',
@@ -168,37 +172,58 @@ class PurchaseController extends Controller
         DB::beginTransaction();
 
         try {
-            // 1. Отменяем старое состояние на складе
-            foreach ($purchase->items as $item) {
-                \App\Models\Clients\Warehouse::decreaseQuantity($item->product_id, $item->quantity);
+            // Получаем старые и новые позиции закупки
+            $oldItems = $purchase->items->keyBy('product_id');
+            $newItems = collect($validated['items'])->keyBy('product_id');
+            $allProductIds = $oldItems->keys()->merge($newItems->keys())->unique();
+
+            // Корректируем склад только по разнице
+            foreach ($allProductIds as $productId) {
+                $oldQty = $oldItems[$productId]->quantity ?? 0;
+                $newQty = $newItems[$productId]['quantity'] ?? 0;
+
+                if ($oldQty && !$newQty) {
+                    // Товар был, но его удалили — уменьшить на oldQty
+                    \App\Models\Clients\Warehouse::decreaseQuantity($productId, $oldQty);
+                } elseif (!$oldQty && $newQty) {
+                    // Новый товар — добавить на склад
+                    \App\Models\Clients\Warehouse::increaseQuantity($productId, $newQty);
+                } elseif ($oldQty && $newQty && $oldQty != $newQty) {
+                    // Изменилось количество — скорректировать разницу
+                    $diff = $newQty - $oldQty;
+                    if ($diff > 0) {
+                        \App\Models\Clients\Warehouse::increaseQuantity($productId, $diff);
+                    } else {
+                        \App\Models\Clients\Warehouse::decreaseQuantity($productId, abs($diff));
+                    }
+                }
+                // Если oldQty == newQty — ничего не делать
             }
 
-            // 2. Обновляем данные самой закупки и удаляем старые товары
+            // Обновляем данные самой закупки
             $purchase->update([
                 'date' => $validated['date'],
                 'supplier_id' => $validated['supplier_id'],
                 'notes' => $validated['notes']
             ]);
+            // Удаляем старые позиции закупки
             $purchase->items()->delete();
 
             $totalAmount = 0;
 
-            // 3. Добавляем новые товары и обновляем склад
+            // Добавляем новые позиции закупки
             foreach ($validated['items'] as $itemData) {
                 $itemTotal = $itemData['purchase_price'] * $itemData['quantity'];
                 $totalAmount += $itemTotal;
 
-                // Создаем новую запись о товаре в закупке
                 $purchase->items()->create([
                     'product_id' => $itemData['product_id'],
                     'purchase_price' => $itemData['purchase_price'],
                     'retail_price' => $itemData['retail_price'],
                     'quantity' => $itemData['quantity'],
-                    'total' => $itemTotal
+                    'total' => $itemTotal,
+                    'project_id' => $currentProjectId, // для мультипроктности
                 ]);
-
-                // Обновляем склад через модельный метод
-                \App\Models\Clients\Warehouse::increaseQuantity($itemData['product_id'], $itemData['quantity']);
 
                 // Обновляем цены в Product
                 Product::where('id', $itemData['product_id'])
@@ -208,7 +233,7 @@ class PurchaseController extends Controller
                     ]);
             }
 
-            // 4. Обновляем общую сумму закупки
+            // Обновляем общую сумму закупки
             $purchase->update(['total_amount' => $totalAmount]);
 
             DB::commit();

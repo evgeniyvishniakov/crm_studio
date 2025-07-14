@@ -12,7 +12,8 @@ class Purchase extends Model
         'date',
         'supplier_id',
         'notes',
-        'total_amount'
+        'total_amount',
+        'project_id', // добавлено для мультипроктности
     ];
 
     protected $casts = [

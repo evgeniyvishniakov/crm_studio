@@ -295,6 +295,7 @@ class SaleController extends Controller
 
             return response()->json([
                 'success' => true,
+                'message' => 'Продажа успешно обновлена!',
                 'sale' => [
                     ...$sale->toArray(),
                     'client' => $sale->client,

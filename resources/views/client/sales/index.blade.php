@@ -596,21 +596,7 @@
                                 if (quantityInput) quantityInput.value = data.sale.items[index].quantity;
                             }
                         });
-                        // --- КОНСОЛЬ-ЛОГ ДЛЯ ДИАГНОСТИКИ ---
-                        console.log('itemRows:', document.querySelectorAll('#editItemsContainer .item-row:not(.template)'));
-                        document.querySelectorAll('#editItemsContainer .item-row:not(.template)').forEach((row, index) => {
-                            const productSelect = row.querySelector('select[name*="[product_id]"]');
-                            const wholesaleInput = row.querySelector('input[name*="[wholesale_price]"]');
-                            const retailInput = row.querySelector('input[name*="[retail_price]"]');
-                            const quantityInput = row.querySelector('input[name*="[quantity]"]');
-                            console.log(`row #${index+1}`, {
-                                productSelect: productSelect ? productSelect.value : null,
-                                wholesaleInput: wholesaleInput ? wholesaleInput.value : null,
-                                retailInput: retailInput ? retailInput.value : null,
-                                quantityInput: quantityInput ? quantityInput.value : null
-                            });
-                        });
-                        // --- КОНЕЦ ДОБАВЛЕНИЯ ---
+                        
 
                         // Инициализация обработчика формы
                         document.getElementById('editSaleForm').addEventListener('submit', function(e) {
@@ -622,7 +608,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    
                     modalBody.innerHTML = `
                     <div class="alert alert-danger">
                         Ошибка загрузки данных: ${error.message}
@@ -782,7 +768,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    
                     window.showNotification('Ошибка при удалении продажи', 'error');
                 });
         }
@@ -841,7 +827,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                   
                     window.showNotification('Ошибка соединения', 'error');
                 });
         }
@@ -923,8 +909,7 @@
                 items: items
             };
 
-            // Добавляем логирование перед отправкой
-            console.log('Отправляемые данные:', formData);
+    
 
             // Отправляем данные на сервер
             fetch(`/sales/${id}`, {
@@ -955,7 +940,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
+                
                     window.showNotification(error.message || 'Ошибка при обновлении продажи', 'error');
                 });
         }
@@ -1013,7 +998,7 @@
                 // Вставляем новую строку в начало таблицы
                 tbody.insertBefore(row, tbody.firstChild);
             });
-            console.log('Добавляемая продажа:', sale);
+            
         }
 
 
@@ -1125,7 +1110,7 @@
 
             // Проверка наличия данных
             if (!allClients || allClients.length === 0) {
-                console.error('No clients data available');
+               
                 dropdownList.innerHTML = '<div class="client-dropdown-item">Нет данных о клиентах</div>';
                 dropdown.style.display = 'block';
                 return;
@@ -1333,7 +1318,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    
                     window.showNotification(error.message || 'Ошибка при удалении товара', 'error');
                 });
         }
@@ -1483,9 +1468,7 @@
                 renderSales(data.data);
                 renderPagination(data.meta);
             })
-            .catch(error => {
-                console.error('Ошибка при загрузке данных:', error);
-            });
+            
         }
 
         // Поиск с пагинацией
