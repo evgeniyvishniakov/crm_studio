@@ -19,14 +19,16 @@ class AppointmentsController extends Controller
 {
     public function index(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $viewType = $request->get('view', 'list'); // list или calendar
 
         $appointments = Appointment::with(['client', 'service'])
+            ->where('project_id', $currentProjectId)
             ->orderBy('date', 'desc')
             ->orderBy('time', 'desc')
             ->paginate(11);
 
-        $clients = Client::all()->map(function ($client) {
+        $clients = Client::where('project_id', $currentProjectId)->get()->map(function ($client) {
             return [
                 'id' => $client->id,
                 'name' => $client->name,
@@ -36,8 +38,9 @@ class AppointmentsController extends Controller
             ];
         });
 
-        $services = Service::all();
+        $services = Service::where('project_id', $currentProjectId)->get();
         $products = Product::with('warehouse')
+            ->where('project_id', $currentProjectId)
             ->whereHas('warehouse', function($query) {
                 $query->where('quantity', '>', 0);
             })
@@ -63,6 +66,7 @@ class AppointmentsController extends Controller
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
             $validated = $request->validate([
                 'client_id' => 'required|exists:clients,id',
@@ -74,7 +78,7 @@ class AppointmentsController extends Controller
                 'status' => 'nullable|string|in:pending,completed,cancelled,rescheduled'
             ]);
 
-            $appointment = Appointment::create($validated);
+            $appointment = Appointment::create($validated + ['project_id' => $currentProjectId]);
 
             return response()->json([
                 'success' => true,
@@ -242,8 +246,9 @@ class AppointmentsController extends Controller
 
     public function destroy($id)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
-            $appointment = Appointment::with('sales.items')->find($id);
+            $appointment = Appointment::with('sales.items')->where('project_id', $currentProjectId)->find($id);
 
             if (!$appointment) {
                 return response()->json([
@@ -282,12 +287,16 @@ class AppointmentsController extends Controller
 
     public function edit(Appointment $appointment)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($appointment->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
+        }
         try {
             return response()->json([
                 'success' => true,
                 'appointment' => $appointment->load(['client', 'service']),
-                'clients' => Client::all(),
-                'services' => Service::all()
+                'clients' => Client::where('project_id', $currentProjectId)->get(),
+                'services' => Service::where('project_id', $currentProjectId)->get()
             ]);
 
         } catch (\Exception $e) {
@@ -300,8 +309,11 @@ class AppointmentsController extends Controller
 
     public function view($id)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
-            $appointment = Appointment::with(['client', 'service', 'sales.items.product'])->findOrFail($id);
+            $appointment = Appointment::with(['client', 'service', 'sales.items.product'])
+                ->where('project_id', $currentProjectId)
+                ->findOrFail($id);
 
             // Получаем только продажи, связанные с этой конкретной записью
             $saleItems = [];
@@ -349,6 +361,7 @@ class AppointmentsController extends Controller
 
     public function addProduct(Request $request, $appointmentId)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
             $validated = $request->validate([
                 'product_id' => 'required|exists:products,id',
@@ -357,9 +370,9 @@ class AppointmentsController extends Controller
                 'purchase_price' => 'required|numeric|min:0'
             ]);
 
-            return DB::transaction(function () use ($validated, $appointmentId) {
-                $appointment = Appointment::findOrFail($appointmentId);
-                $product = Product::with('warehouse')->findOrFail($validated['product_id']);
+            return DB::transaction(function () use ($validated, $appointmentId, $currentProjectId) {
+                $appointment = Appointment::where('project_id', $currentProjectId)->findOrFail($appointmentId);
+                $product = Product::with('warehouse')->where('project_id', $currentProjectId)->findOrFail($validated['product_id']);
 
                 // Проверка наличия товара
                 if (!$product->warehouse || $product->warehouse->quantity < $validated['quantity']) {
@@ -470,9 +483,11 @@ class AppointmentsController extends Controller
 
     public function deleteProduct($appointmentId, $saleId)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
-            return DB::transaction(function () use ($appointmentId, $saleId) {
+            return DB::transaction(function () use ($appointmentId, $saleId, $currentProjectId) {
                 $sale = Sale::where('appointment_id', $appointmentId)
+                    ->where('project_id', $currentProjectId)
                     ->findOrFail($saleId);
 
                 // Возвращаем товар на склад
@@ -500,6 +515,10 @@ class AppointmentsController extends Controller
     }
     public function addProcedure(Request $request, Appointment $appointment)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($appointment->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
+        }
         try {
             $validated = $request->validate([
                 'service_id' => 'required|exists:services,id',
@@ -512,7 +531,8 @@ class AppointmentsController extends Controller
                 'date' => $appointment->date,
                 'time' => $appointment->time,
                 'price' => $validated['price'],
-                'notes' => 'Добавлено через просмотр записи'
+                'notes' => 'Добавлено через просмотр записи',
+                'project_id' => $currentProjectId
             ]);
 
             return response()->json([
@@ -529,6 +549,10 @@ class AppointmentsController extends Controller
 
     public function removeProduct(Appointment $appointment, Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($appointment->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
+        }
         $validated = $request->validate([
             'product_id' => 'required|integer|exists:products,id'
         ]);
@@ -541,8 +565,10 @@ class AppointmentsController extends Controller
 
     public function calendarEvents(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
             $appointments = Appointment::with(['client', 'service'])
+                ->where('project_id', $currentProjectId)
                 ->when($request->start, function($query) use ($request) {
                     return $query->whereDate('date', '>=', Carbon::parse($request->start));
                 })
@@ -595,7 +621,8 @@ class AppointmentsController extends Controller
 
     public function getEvents()
     {
-        $appointments = Appointment::with(['client', 'service'])->get();
+        $currentProjectId = auth()->user()->project_id;
+        $appointments = Appointment::with(['client', 'service'])->where('project_id', $currentProjectId)->get();
 
         $events = $appointments->map(function($appointment) {
             $start = $appointment->date->format('Y-m-d') . ' ' . $appointment->time;
@@ -624,8 +651,10 @@ class AppointmentsController extends Controller
 
     public function show($id)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
             $appointment = Appointment::with(['client', 'service', 'sales.items.product.warehouse'])
+                ->where('project_id', $currentProjectId)
                 ->findOrFail($id);
 
             return response()->json([
@@ -642,6 +671,10 @@ class AppointmentsController extends Controller
 
     public function updateSales(Request $request, Appointment $appointment)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($appointment->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
+        }
         // Проверка и сохранение данных
         $validatedData = $request->validate([
             'total_price' => 'required|numeric',

@@ -15,7 +15,9 @@ class SaleController extends Controller
 {
     public function index(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $query = Sale::with(['client', 'items.product'])
+            ->where('project_id', $currentProjectId)
             ->orderBy('date', 'desc');
 
         if ($request->has('search') && $request->search !== '') {
@@ -63,12 +65,13 @@ class SaleController extends Controller
                 $groupedSales[$saleId]->items->push($itemData['item']);
             }
             
-            $clients = Client::select('id', 'name', 'instagram', 'phone', 'email')->get();
+            $clients = Client::where('project_id', $currentProjectId)->select('id', 'name', 'instagram', 'phone', 'email')->get();
 
             // Получаем только товары, которые есть на складе
-            $products = Product::whereHas('warehouse', function($query) {
-                $query->where('quantity', '>', 0);
-            })
+            $products = Product::where('project_id', $currentProjectId)
+                ->whereHas('warehouse', function($query) {
+                    $query->where('quantity', '>', 0);
+                })
                 ->with(['warehouse'])
                 ->select('id', 'name', 'photo')
                 ->get()
@@ -95,12 +98,13 @@ class SaleController extends Controller
 
         // Для обычного запроса (не AJAX) возвращаем все продажи
         $sales = $query->get();
-        $clients = Client::select('id', 'name', 'instagram', 'phone', 'email')->get();
+        $clients = Client::where('project_id', $currentProjectId)->select('id', 'name', 'instagram', 'phone', 'email')->get();
 
         // Получаем только товары, которые есть на складе
-        $products = Product::whereHas('warehouse', function($query) {
-            $query->where('quantity', '>', 0);
-        })
+        $products = Product::where('project_id', $currentProjectId)
+            ->whereHas('warehouse', function($query) {
+                $query->where('quantity', '>', 0);
+            })
             ->with(['warehouse'])
             ->select('id', 'name', 'photo')
             ->get()
@@ -117,6 +121,7 @@ class SaleController extends Controller
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
             'date' => 'required|date',
             'client_id' => 'required|exists:clients,id',
@@ -139,7 +144,8 @@ class SaleController extends Controller
                 'date' => $validated['date'],
                 'client_id' => $validated['client_id'],
                 'notes' => $validated['notes'] ?? null,
-                'total_amount' => 0
+                'total_amount' => 0,
+                'project_id' => $currentProjectId
             ]);
 
             $totalAmount = 0;

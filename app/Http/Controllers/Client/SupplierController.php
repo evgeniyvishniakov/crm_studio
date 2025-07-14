@@ -10,7 +10,8 @@ class SupplierController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Supplier::orderBy('name');
+        $currentProjectId = auth()->user()->project_id;
+        $query = Supplier::where('project_id', $currentProjectId)->orderBy('name');
 
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
@@ -36,6 +37,7 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_person' => 'nullable|string|max:255',
@@ -48,7 +50,7 @@ class SupplierController extends Controller
             'status' => 'boolean'
         ]);
 
-        $supplier = Supplier::create($validated);
+        $supplier = Supplier::create($validated + ['project_id' => $currentProjectId]);
 
         return response()->json([
             'success' => true,
@@ -64,6 +66,7 @@ class SupplierController extends Controller
 
     public function update(Request $request, Supplier $supplier)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_person' => 'nullable|string|max:255',
@@ -75,7 +78,9 @@ class SupplierController extends Controller
             'note' => 'nullable|string',
             'status' => 'boolean'
         ]);
-
+        if ($supplier->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к поставщику'], 403);
+        }
         $supplier->update($validated);
 
         return response()->json([
@@ -87,6 +92,10 @@ class SupplierController extends Controller
 
     public function destroy(Supplier $supplier)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($supplier->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к поставщику'], 403);
+        }
         $supplier->delete();
 
         return response()->json([

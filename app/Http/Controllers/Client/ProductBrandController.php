@@ -10,7 +10,8 @@ class ProductBrandController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ProductBrand::orderBy('name');
+        $currentProjectId = auth()->user()->project_id;
+        $query = ProductBrand::where('project_id', $currentProjectId)->orderBy('name');
 
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
@@ -36,6 +37,7 @@ class ProductBrandController extends Controller
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'country' => 'nullable|string|max:100',
@@ -44,7 +46,7 @@ class ProductBrandController extends Controller
             'status' => 'boolean'
         ]);
 
-        $brand = ProductBrand::create($validated);
+        $brand = ProductBrand::create($validated + ['project_id' => $currentProjectId]);
 
         return response()->json([
             'success' => true,

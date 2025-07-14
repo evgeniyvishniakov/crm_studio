@@ -20,8 +20,9 @@ class ProductImportExportController extends Controller
      */
     public function showExportModal(Request $request)
     {
-        $categories = ProductCategory::orderBy('name')->get();
-        $brands = ProductBrand::orderBy('name')->get();
+        $currentProjectId = auth()->user()->project_id;
+        $categories = ProductCategory::where('project_id', $currentProjectId)->orderBy('name')->get();
+        $brands = ProductBrand::where('project_id', $currentProjectId)->orderBy('name')->get();
         return view('client.products.list', compact('categories', 'brands'));
     }
 
@@ -30,11 +31,12 @@ class ProductImportExportController extends Controller
      */
     public function export(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $categoryId = $request->get('category_id');
         $brandId = $request->get('brand_id');
         $photo = $request->get('photo'); // all, with, without
 
-        $export = new ProductsExport($categoryId, $brandId, $photo);
+        $export = new ProductsExport($categoryId, $brandId, $photo, $currentProjectId);
         $fileName = 'products_' . date('Y-m-d_H-i-s') . '.xlsx';
         return \Maatwebsite\Excel\Facades\Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX);
     }
@@ -44,13 +46,14 @@ class ProductImportExportController extends Controller
      */
     public function previewImport(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls,csv|max:51200' // 50MB в килобайтах
         ]);
 
         try {
             $file = $request->file('file');
-            $import = new ProductsImport();
+            $import = new ProductsImport($currentProjectId);
             
             // Читаем первые 10 строк для предварительного просмотра
             $previewData = Excel::toArray($import, $file)[0];
@@ -58,8 +61,8 @@ class ProductImportExportController extends Controller
             // Ограничиваем количество строк для предварительного просмотра
             $previewData = array_slice($previewData, 0, 10);
             
-            $categories = ProductCategory::all();
-            $brands = ProductBrand::all();
+            $categories = ProductCategory::where('project_id', $currentProjectId)->get();
+            $brands = ProductBrand::where('project_id', $currentProjectId)->get();
             
             return response()->json([
                 'success' => true,
@@ -82,6 +85,7 @@ class ProductImportExportController extends Controller
      */
     public function import(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         \Log::info('Начало импорта товаров');
         \Log::info('Request method: ' . $request->method());
         \Log::info('Request URL: ' . $request->url());
@@ -139,7 +143,7 @@ class ProductImportExportController extends Controller
                 $importFilePath = $tempPath;
             }
 
-            $import = new ProductsImport($delimiter);
+            $import = new ProductsImport($delimiter, $currentProjectId);
             Excel::import($import, $importFilePath);
 
             // Формируем сообщение на основе счетчиков

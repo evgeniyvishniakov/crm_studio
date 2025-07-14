@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Client;
 
 use App\Models\Clients\Product;
+use App\Models\Clients\ProductCategory;
+use App\Models\Clients\ProductBrand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
@@ -11,7 +13,8 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'brand'])->orderBy('name');
+        $currentProjectId = auth()->user()->project_id;
+        $query = Product::with(['category', 'brand'])->where('project_id', $currentProjectId)->orderBy('name');
 
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
@@ -32,8 +35,8 @@ class ProductController extends Controller
         }
 
         $products = $query->paginate(11);
-        $categories = \App\Models\ProductCategory::orderBy('name')->get();
-        $brands = \App\Models\ProductBrand::orderBy('name')->get();
+        $categories = ProductCategory::orderBy('name')->get();
+        $brands = ProductBrand::orderBy('name')->get();
         return view('client.products.list', compact('products', 'categories', 'brands'));
     }
 
@@ -74,6 +77,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:product_categories,id',
@@ -88,7 +92,7 @@ class ProductController extends Controller
             $validated['photo'] = $path;
         }
 
-        $product = Product::create($validated);
+        $product = Product::create($validated + ['project_id' => $currentProjectId]);
 
         return response()->json([
             'success' => true,

@@ -6,6 +6,15 @@ namespace App\Http\Controllers\Client;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Clients\Sale;
+use App\Models\Clients\Purchase;
+use App\Models\Clients\Appointment;
+use App\Models\Clients\ProductCategory;
+use App\Models\Clients\ProductBrand;
+use App\Models\Clients\Supplier;
+use App\Models\Clients\SaleItem;
+use App\Models\Clients\PurchaseItem;
+use App\Models\Clients\Product;
 
 class TurnoverReportController extends Controller
 {
@@ -16,6 +25,7 @@ class TurnoverReportController extends Controller
 
     public function getDynamicAnalyticsData(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
@@ -24,7 +34,7 @@ class TurnoverReportController extends Controller
         if (in_array($period, ['За полгода', 'За год'])) {
             $months = $period === 'За полгода' ? 6 : 12;
             $dateFrom = now()->copy()->subMonths($months - 1)->startOfMonth();
-            $firstSale = \App\Models\Sale::whereDate('date', '>=', $dateFrom->toDateString())
+            $firstSale = Sale::where('project_id', $currentProjectId)->whereDate('date', '>=', $dateFrom->toDateString())
                 ->orderBy('date', 'asc')
                 ->first();
             if ($firstSale) {
@@ -35,9 +45,9 @@ class TurnoverReportController extends Controller
         }
 
         // Фильтр по дате для продаж и закупок
-        $salesQuery = \App\Models\Sale::query();
-        $purchasesQuery = \App\Models\Purchase::query();
-        $appointmentsQuery = \App\Models\Appointment::query();
+        $salesQuery = Sale::query()->where('project_id', $currentProjectId);
+        $purchasesQuery = Purchase::query()->where('project_id', $currentProjectId);
+        $appointmentsQuery = Appointment::query()->where('project_id', $currentProjectId);
         if ($startDate) {
             $salesQuery->whereDate('date', '>=', $startDate);
             $purchasesQuery->whereDate('date', '>=', $startDate);
@@ -50,7 +60,11 @@ class TurnoverReportController extends Controller
         }
 
         // Категории (количество и сумма проданных товаров)
-        $categoryData = \App\Models\ProductCategory::with(['products.saleItems.sale'])->get();
+        $categoryData = ProductCategory::with(['products' => function($q) use ($currentProjectId) {
+            $q->where('project_id', $currentProjectId);
+        }, 'products.saleItems.sale' => function($q) use ($currentProjectId) {
+            $q->where('project_id', $currentProjectId);
+        }])->where('project_id', $currentProjectId)->get();
         $categoryCounts = $categoryData->map(function($cat) use ($startDate, $endDate) {
             return $cat->products->flatMap->saleItems
                 ->filter(function($item) use ($startDate, $endDate) {
@@ -93,7 +107,11 @@ class TurnoverReportController extends Controller
         $categorySums = array_column($topCategories, 'sum');
 
         // Бренды
-        $brandData = \App\Models\ProductBrand::with(['products.saleItems.sale'])->get();
+        $brandData = ProductBrand::with(['products' => function($q) use ($currentProjectId) {
+            $q->where('project_id', $currentProjectId);
+        }, 'products.saleItems.sale' => function($q) use ($currentProjectId) {
+            $q->where('project_id', $currentProjectId);
+        }])->where('project_id', $currentProjectId)->get();
         $brandCounts = $brandData->map(function($brand) use ($startDate, $endDate) {
             return $brand->products->flatMap->saleItems
                 ->filter(function($item) use ($startDate, $endDate) {
@@ -136,10 +154,11 @@ class TurnoverReportController extends Controller
         $brandSums = array_column($topBrands, 'sum');
 
         // Поставщики
-        $supplierData = \App\Models\Supplier::with(['purchases' => function($q) use ($startDate, $endDate) {
+        $supplierData = Supplier::with(['purchases' => function($q) use ($startDate, $endDate, $currentProjectId) {
+            $q->where('project_id', $currentProjectId);
             if ($startDate) $q->whereDate('date', '>=', $startDate);
             if ($endDate) $q->whereDate('date', '<=', $endDate);
-        }])->get();
+        }])->where('project_id', $currentProjectId)->get();
         $supplierSums = $supplierData->map(function($sup) {
             return $sup->purchases->sum('total_amount');
         })->toArray();
@@ -245,13 +264,17 @@ class TurnoverReportController extends Controller
 
     public function getTopsAnalyticsData(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
         // Топ-6 товаров по продажам
-        $topSales = \App\Models\SaleItem::query()
-            ->when($startDate, fn($q) => $q->whereHas('sale', fn($sq) => $sq->whereDate('date', '>=', $startDate)))
-            ->when($endDate, fn($q) => $q->whereHas('sale', fn($sq) => $sq->whereDate('date', '<=', $endDate)))
+        $topSales = SaleItem::query()
+            ->whereHas('sale', function($q) use ($currentProjectId, $startDate, $endDate) {
+                $q->where('project_id', $currentProjectId);
+                if ($startDate) $q->whereDate('date', '>=', $startDate);
+                if ($endDate) $q->whereDate('date', '<=', $endDate);
+            })
             ->selectRaw('product_id, SUM(quantity) as total_qty')
             ->groupBy('product_id')
             ->orderByDesc('total_qty')
@@ -262,9 +285,12 @@ class TurnoverReportController extends Controller
         $topSalesData = $topSales->map(fn($item) => is_numeric($item->total_qty) ? (int)floatval($item->total_qty) : 0)->toArray();
 
         // Топ-6 товаров по закупкам
-        $topPurchases = \App\Models\PurchaseItem::query()
-            ->when($startDate, fn($q) => $q->whereHas('purchase', fn($sq) => $sq->whereDate('date', '>=', $startDate)))
-            ->when($endDate, fn($q) => $q->whereHas('purchase', fn($sq) => $sq->whereDate('date', '<=', $endDate)))
+        $topPurchases = PurchaseItem::query()
+            ->whereHas('purchase', function($q) use ($currentProjectId, $startDate, $endDate) {
+                $q->where('project_id', $currentProjectId);
+                if ($startDate) $q->whereDate('date', '>=', $startDate);
+                if ($endDate) $q->whereDate('date', '<=', $endDate);
+            })
             ->selectRaw('product_id, SUM(quantity) as total_qty')
             ->groupBy('product_id')
             ->orderByDesc('total_qty')
@@ -275,7 +301,8 @@ class TurnoverReportController extends Controller
         $topPurchasesData = $topPurchases->map(fn($item) => is_numeric($item->total_qty) ? (int)floatval($item->total_qty) : 0)->toArray();
 
         // Топ-6 клиентов по объёму покупок
-        $topClients = \App\Models\Sale::query()
+        $topClients = Sale::query()
+            ->where('project_id', $currentProjectId)
             ->when($startDate, fn($q) => $q->whereDate('date', '>=', $startDate))
             ->when($endDate, fn($q) => $q->whereDate('date', '<=', $endDate))
             ->selectRaw('client_id, SUM(total_amount) as total_sum')
@@ -305,22 +332,28 @@ class TurnoverReportController extends Controller
 
     public function suppliersAnalyticsData(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
         // Топ-6 поставщиков по объёму закупок
-        $topSuppliers = \App\Models\Supplier::with(['purchases' => function($q) use ($startDate, $endDate) {
-            if ($startDate) $q->whereDate('date', '>=', $startDate);
-            if ($endDate) $q->whereDate('date', '<=', $endDate);
-        }])->get()->map(function($sup) {
-            return [
-                'label' => $sup->name,
-                'sum' => (float)$sup->purchases->sum('total_amount')
-            ];
-        })->sortByDesc('sum')->take(6)->values();
+        $topSuppliers = Supplier::where('project_id', $currentProjectId)
+            ->with(['purchases' => function($q) use ($startDate, $endDate, $currentProjectId) {
+                $q->where('project_id', $currentProjectId);
+                if ($startDate) $q->whereDate('date', '>=', $startDate);
+                if ($endDate) $q->whereDate('date', '<=', $endDate);
+            }])->get()->map(function($sup) {
+                return [
+                    'label' => $sup->name,
+                    'sum' => (float)$sup->purchases->sum('total_amount')
+                ];
+            })->sortByDesc('sum')->take(6)->values();
 
         // Остатки по категориям
-        $categories = \App\Models\ProductCategory::with(['products.warehouse'])->get();
+        $categories = ProductCategory::where('project_id', $currentProjectId)
+            ->with(['products' => function($q) use ($currentProjectId) {
+                $q->where('project_id', $currentProjectId)->with(['warehouse']);
+            }])->get();
         $stockByCategory = $categories->map(function($cat) {
             $qty = $cat->products->sum(fn($p) => optional($p->warehouse)->quantity ?? 0);
             $wholesale = $cat->products->sum(fn($p) => (optional($p->warehouse)->quantity ?? 0) * ((float)optional($p->warehouse)->purchase_price ?? 0));
@@ -336,7 +369,8 @@ class TurnoverReportController extends Controller
         $stockTotalRetail = $stockByCategory->sum('retail');
 
         // Товары с максимальным сроком без продажи (залежалые)
-        $slowMovingProducts = \App\Models\Product::with('inventoryItem')
+        $slowMovingProducts = Product::where('project_id', $currentProjectId)
+            ->with('inventoryItem')
             ->get()
             ->filter(fn($p) => optional($p->inventoryItem)->quantity > 0)
             ->map(function($p) {
@@ -352,14 +386,16 @@ class TurnoverReportController extends Controller
             ->values();
 
         // Средний срок оборачиваемости (по всем товарам с продажами)
-        $turnoverDays = \App\Models\Product::with('saleItems')->get()->map(function($p) {
-            $firstPurchase = $p->purchaseItems()->orderBy('created_at')->first();
-            $firstSale = $p->saleItems()->orderBy('created_at')->first();
-            if ($firstPurchase && $firstSale) {
-                return $firstSale->created_at->diffInDays($firstPurchase->created_at);
-            }
-            return null;
-        })->filter()->avg();
+        $turnoverDays = Product::where('project_id', $currentProjectId)
+            ->with('saleItems')
+            ->get()->map(function($p) {
+                $firstPurchase = $p->purchaseItems()->orderBy('created_at')->first();
+                $firstSale = $p->saleItems()->orderBy('created_at')->first();
+                if ($firstPurchase && $firstSale) {
+                    return $firstSale->created_at->diffInDays($firstPurchase->created_at);
+                }
+                return null;
+            })->filter()->avg();
         $avgTurnoverDays = $turnoverDays ? round($turnoverDays) : null;
 
         return response()->json([

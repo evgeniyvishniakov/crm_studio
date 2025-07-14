@@ -10,7 +10,8 @@ class ServiceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Service::orderBy('name');
+        $currentProjectId = auth()->user()->project_id;
+        $query = Service::where('project_id', $currentProjectId)->orderBy('name');
 
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
@@ -36,6 +37,7 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255|unique:services,name',
@@ -47,7 +49,7 @@ class ServiceController extends Controller
                 'price.min' => 'Цена не может быть отрицательной.'
             ]);
 
-            $service = Service::create($validated);
+            $service = Service::create($validated + ['project_id' => $currentProjectId]);
 
             return response()->json([
                 'success' => true,
@@ -69,6 +71,10 @@ class ServiceController extends Controller
 
     public function destroy(Service $service)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($service->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к услуге'], 403);
+        }
         try {
             $service->delete();
 
@@ -92,6 +98,7 @@ class ServiceController extends Controller
 
     public function update(Request $request, Service $service)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255|unique:services,name,'.$service->id,
@@ -102,7 +109,9 @@ class ServiceController extends Controller
                 'price.numeric' => 'Цена должна быть числом.',
                 'price.min' => 'Цена не может быть отрицательной.'
             ]);
-
+            if ($service->project_id !== $currentProjectId) {
+                return response()->json(['success' => false, 'message' => 'Нет доступа к услуге'], 403);
+            }
             $service->update($validated);
 
             return response()->json([

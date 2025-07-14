@@ -34,6 +34,7 @@ class ClientReportController extends Controller
      */
     public function getClientAnalyticsData(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         if ($startDate && $endDate) {
@@ -45,16 +46,14 @@ class ClientReportController extends Controller
             $periodName = $request->input('period', 'week');
             $periodRange = $this->getDateRange($periodName);
         }
-        // Определяем дату первого клиента, чтобы не строить пустой график вначале.
-        $firstClientDate = Client::query()->min('created_at');
+        $firstClientDate = Client::query()->where('project_id', $currentProjectId)->min('created_at');
         $firstClientDate = $firstClientDate ? Carbon::parse($firstClientDate) : Carbon::now();
-        // Начало для графика динамики - не раньше первого клиента.
         $clientDynamicsStartDate = $periodRange[0]->copy()->max($firstClientDate);
         $clientDynamicsPeriodRange = [$clientDynamicsStartDate, $periodRange[1]];
-        $clientDynamics = $this->getClientDynamics($periodName, $clientDynamicsPeriodRange);
-        $topClientsByVisits = $this->getTopClientsByVisits($periodRange);
-        $newVsReturning = $this->getNewVsReturningClients($periodRange);
-        $clientTypesDistribution = $this->getClientTypesDistribution($periodRange);
+        $clientDynamics = $this->getClientDynamics($periodName, $clientDynamicsPeriodRange, $currentProjectId);
+        $topClientsByVisits = $this->getTopClientsByVisits($periodRange, $currentProjectId);
+        $newVsReturning = $this->getNewVsReturningClients($periodRange, $currentProjectId);
+        $clientTypesDistribution = $this->getClientTypesDistribution($periodRange, $currentProjectId);
         return response()->json([
             'clientDynamics' => $clientDynamics,
             'topClientsByVisits' => $topClientsByVisits,
@@ -111,27 +110,24 @@ class ClientReportController extends Controller
     /**
      * Собирает данные по динамике клиентской базы с заполнением пропусков.
      */
-    private function getClientDynamics(string $periodName, array $periodRange): array
+    private function getClientDynamics(string $periodName, array $periodRange, $currentProjectId): array
     {
         if ($periodRange[0]->gt($periodRange[1])) {
             return ['labels' => [], 'data' => []];
         }
-
-        $newTypeId = DB::table('client_types')->where('name', 'Новый клиент')->value('id');
+        $newTypeId = DB::table('client_types')->where('project_id', $currentProjectId)->where('name', 'Новый клиент')->value('id');
         if (!$newTypeId) {
             return ['labels' => [], 'data' => []];
         }
-
         $dateGroupRaw = '';
         $periodIterator = null;
         $dateGroupFormatter = null;
         $labelFormatter = null;
-
         switch ($periodName) {
             case 'half_year':
-                // Группировка по неделям, только с данными
-                $dateGroupRaw = 'YEARWEEK(created_at, 1)'; // ISO week
+                $dateGroupRaw = 'YEARWEEK(created_at, 1)';
                 $rawData = Client::query()
+                    ->where('project_id', $currentProjectId)
                     ->whereBetween('created_at', $periodRange)
                     ->where('client_type_id', $newTypeId)
                     ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
@@ -147,9 +143,9 @@ class ClientReportController extends Controller
                 $values = $rawData->pluck('count');
                 return ['labels' => $labels, 'data' => $values];
             case 'year':
-                // Группировка по месяцам, только с данными
                 $dateGroupRaw = 'DATE_FORMAT(created_at, "%Y-%m")';
                 $rawData = Client::query()
+                    ->where('project_id', $currentProjectId)
                     ->whereBetween('created_at', $periodRange)
                     ->where('client_type_id', $newTypeId)
                     ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
@@ -174,64 +170,58 @@ class ClientReportController extends Controller
                 $labelFormatter = fn($dateGroup) => $dateGroup;
                 break;
         }
-
         $data = Client::query()
+            ->where('project_id', $currentProjectId)
             ->whereBetween('created_at', $periodRange)
             ->where('client_type_id', $newTypeId)
             ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
             ->groupBy('date_group')
             ->get()
             ->keyBy('date_group');
-
         $scaffold = [];
         foreach ($periodIterator as $date) {
             $key = $dateGroupFormatter($date);
             $scaffold[$key] = $data->get($key)->count ?? 0;
         }
-
         $labels = collect(array_keys($scaffold))->map($labelFormatter);
         $values = array_values($scaffold);
-
         return ['labels' => $labels, 'data' => $values];
     }
 
     /**
      * Собирает данные по топ-5 клиентам по количеству визитов.
      */
-    private function getTopClientsByVisits(array $periodRange): array
+    private function getTopClientsByVisits(array $periodRange, $currentProjectId): array
     {
         $data = Appointment::query()
             ->with('client')
+            ->where('project_id', $currentProjectId)
             ->whereBetween('date', [$periodRange[0]->toDateString(), $periodRange[1]->toDateString()])
             ->select('client_id', DB::raw('COUNT(*) as visits_count'))
             ->groupBy('client_id')
             ->orderByDesc('visits_count')
             ->limit(5)
             ->get();
-
         $labels = $data->map(function ($item) {
-            return $item->client ? $item->client->name : 'Удаленный клиент';
+            return $item->client ? $item->client->name : 'Удалённый клиент';
         });
         $values = $data->pluck('visits_count');
-
         return ['labels' => $labels, 'data' => $values];
     }
 
     /**
      * Собирает данные по новым и вернувшимся клиентам.
      */
-    private function getNewVsReturningClients(array $periodRange): array
+    private function getNewVsReturningClients(array $periodRange, $currentProjectId): array
     {
-        // Получаем количество визитов для каждого клиента за период
         $visits = Appointment::query()
+            ->where('project_id', $currentProjectId)
             ->whereBetween('date', [$periodRange[0]->toDateString(), $periodRange[1]->toDateString()])
             ->select('client_id', DB::raw('COUNT(*) as cnt'))
             ->groupBy('client_id')
             ->pluck('cnt');
-
         $primary = $visits->filter(fn($cnt) => $cnt === 1)->count();
         $returning = $visits->filter(fn($cnt) => $cnt > 1)->count();
-
         return [
             'labels' => ['Первичные визиты', 'Повторные визиты'],
             'data' => [$primary, $returning]
@@ -241,22 +231,22 @@ class ClientReportController extends Controller
     /**
      * Собирает данные по распределению клиентов по типам.
      */
-    private function getClientTypesDistribution(array $periodRange): array
+    private function getClientTypesDistribution(array $periodRange, $currentProjectId): array
     {
-        $data = Client::query()
-            ->join('client_types', 'clients.client_type_id', '=', 'client_types.id')
-            ->whereIn('clients.id', function ($query) use ($periodRange) {
+        $clientTypesDistribution = Client::join('client_types', 'clients.client_type_id', '=', 'client_types.id')
+            ->select('client_types.name', DB::raw('COUNT(clients.id) as count'))
+            ->where('clients.project_id', $currentProjectId)
+            ->whereIn('clients.id', function ($query) use ($currentProjectId, $periodRange) {
                 $query->select('client_id')
                     ->from('appointments')
-                    ->whereBetween('date', [$periodRange[0]->toDateString(), $periodRange[1]->toDateString()]);
+                    ->where('appointments.project_id', $currentProjectId)
+                    ->whereBetween('date', $periodRange);
             })
-            ->select('client_types.name', DB::raw('COUNT(DISTINCT clients.id) as count'))
             ->groupBy('client_types.name')
+            ->orderByDesc('count')
             ->get();
-            
-        return [
-            'labels' => $data->pluck('name'),
-            'data' => $data->pluck('count')
-        ];
+        $labels = $clientTypesDistribution->pluck('name');
+        $values = $clientTypesDistribution->pluck('count');
+        return ['labels' => $labels, 'data' => $values];
     }
 } 

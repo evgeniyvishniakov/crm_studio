@@ -17,36 +17,41 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        $currentProjectId = auth()->user()->project_id;
         // Услуги: только завершённые записи
-        $servicesCount = Appointment::where('status', 'completed')->count();
+        $servicesCount = Appointment::where('project_id', $currentProjectId)->where('status', 'completed')->count();
 
         // Продажи услуг: сумма цен только из завершённых записей
-        $servicesRevenue = Appointment::where('status', 'completed')->sum('price');
+        $servicesRevenue = Appointment::where('project_id', $currentProjectId)->where('status', 'completed')->sum('price');
 
         // Продажи товаров: общая прибыль (сумма розничных цен - сумма оптовых цен)
-        $totalRetail = SaleItem::sum(\DB::raw('retail_price * quantity'));
-        $totalWholesale = SaleItem::sum(\DB::raw('wholesale_price * quantity'));
+        $totalRetail = SaleItem::whereHas('sale', function($q) use ($currentProjectId) {
+            $q->where('project_id', $currentProjectId);
+        })->sum(\DB::raw('retail_price * quantity'));
+        $totalWholesale = SaleItem::whereHas('sale', function($q) use ($currentProjectId) {
+            $q->where('project_id', $currentProjectId);
+        })->sum(\DB::raw('wholesale_price * quantity'));
         $productsRevenue = $totalRetail - $totalWholesale;
 
         // Расходы: сумма всех расходов + сумма всех закупок
-        $expensesSum = Expense::sum('amount');
-        $purchasesSum = Purchase::sum('total_amount');
+        $expensesSum = Expense::where('project_id', $currentProjectId)->sum('amount');
+        $purchasesSum = Purchase::where('project_id', $currentProjectId)->sum('total_amount');
         $totalExpenses = $expensesSum + $purchasesSum;
 
         // Общая прибыль: продажи товаров + продажи услуг - расходы
         $totalProfit = $productsRevenue + $servicesRevenue - $totalExpenses;
 
         // Записи: все, кроме "Перенесено" и "Ожидается"
-        $appointmentsCount = Appointment::whereNotIn('status', ['Перенесено', 'Ожидается'])->count();
+        $appointmentsCount = Appointment::where('project_id', $currentProjectId)->whereNotIn('status', ['Перенесено', 'Ожидается'])->count();
 
         // Клиенты: все
-        $clientsCount = Client::count();
+        $clientsCount = Client::where('project_id', $currentProjectId)->count();
 
         // Логика отображения процентов: после 15 дней и после 2-го месяца работы
         $today = Carbon::now();
         
         // Находим дату первой записи в системе
-        $firstAppointment = Appointment::orderBy('created_at', 'asc')->first();
+        $firstAppointment = Appointment::where('project_id', $currentProjectId)->orderBy('created_at', 'asc')->first();
         
         if ($firstAppointment) {
             $firstDate = Carbon::parse($firstAppointment->created_at);
@@ -64,6 +69,7 @@ class DashboardController extends Controller
         $tomorrow = Carbon::tomorrow();
 
         $upcomingAppointments = Appointment::with(['client', 'service'])
+            ->where('project_id', $currentProjectId)
             ->whereIn('date', [$today, $tomorrow])
             ->where('status', 'pending')
             ->orderBy('date', 'asc')
@@ -75,25 +81,27 @@ class DashboardController extends Controller
         $todayDate = Carbon::today();
 
         // 1. Прибыль с услуг за сегодня
-        $todayServicesProfit = Appointment::where('status', 'completed')
+        $todayServicesProfit = Appointment::where('project_id', $currentProjectId)
+            ->where('status', 'completed')
             ->whereDate('date', $todayDate)
             ->sum('price');
 
         // 2. Прибыль с товаров за сегодня
-        $todayProductsProfit = SaleItem::whereHas('sale', function($q) use ($todayDate) {
-                $q->whereDate('date', $todayDate);
+        $todayProductsProfit = SaleItem::whereHas('sale', function($q) use ($todayDate, $currentProjectId) {
+                $q->where('project_id', $currentProjectId)->whereDate('date', $todayDate);
             })
             ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
             ->value('profit') ?? 0;
 
         // 3. Услуг оказано сегодня
-        $todayCompletedServices = Appointment::where('status', 'completed')
+        $todayCompletedServices = Appointment::where('project_id', $currentProjectId)
+            ->where('status', 'completed')
             ->whereDate('date', $todayDate)
             ->count();
         
         // 4. Товаров продано сегодня (сумма всех quantity из SaleItem)
-        $todaySoldProducts = SaleItem::whereHas('sale', function($q) use ($todayDate) {
-                $q->whereDate('date', $todayDate);
+        $todaySoldProducts = SaleItem::whereHas('sale', function($q) use ($todayDate, $currentProjectId) {
+                $q->where('project_id', $currentProjectId)->whereDate('date', $todayDate);
             })
             ->sum('quantity');
 

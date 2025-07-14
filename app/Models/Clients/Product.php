@@ -7,6 +7,8 @@ namespace App\Models\Clients;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Clients\SaleItem;
+use App\Models\Clients\PurchaseItem;
 
 class Product extends Model
 {
@@ -68,7 +70,7 @@ class Product extends Model
 
     public function saleItems()
     {
-        return $this->hasMany(\App\Models\SaleItem::class, 'product_id');
+        return $this->hasMany(SaleItem::class, 'product_id');
     }
 
     public function inventoryItem()
@@ -78,6 +80,6 @@ class Product extends Model
 
     public function purchaseItems()
     {
-        return $this->hasMany(\App\Models\PurchaseItem::class, 'product_id');
+        return $this->hasMany(PurchaseItem::class, 'product_id');
     }
 }

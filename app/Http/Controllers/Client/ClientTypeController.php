@@ -11,12 +11,14 @@ class ClientTypeController extends Controller
 {
     public function index()
     {
-        $clientTypes = ClientType::all();
+        $currentProjectId = auth()->user()->project_id;
+        $clientTypes = ClientType::where('project_id', $currentProjectId)->get();
         return view('client.client-types.list', compact('clientTypes'));
     }
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -40,7 +42,7 @@ class ClientTypeController extends Controller
                 $data['color'] = '#e5e7eb'; // Серый цвет по умолчанию
             }
             
-            $clientType = ClientType::create($data);
+            $clientType = ClientType::create($data + ['project_id' => $currentProjectId]);
             return response()->json([
                 'success' => true,
                 'message' => 'Тип клиента успешно создан',

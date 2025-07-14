@@ -12,18 +12,21 @@ class InventoryController extends Controller
 {
     public function index()
     {
+        $currentProjectId = auth()->user()->project_id;
         $inventories = Inventory::with(['user', 'items.product'])
+            ->where('project_id', $currentProjectId)
             ->latest()
             ->get();
 
-        $users = User::all();
-        $products = Product::all();
+        $users = User::where('project_id', $currentProjectId)->get();
+        $products = Product::where('project_id', $currentProjectId)->get();
 
         return view('client.inventories.index', compact('inventories', 'users', 'products'));
     }
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
             'date' => 'required|date',
             'user_id' => 'required|exists:users,id',
@@ -45,6 +48,7 @@ class InventoryController extends Controller
             'date' => $validated['date'],
             'user_id' => $validated['user_id'],
             'notes' => $validated['notes'] ?? null,
+            'project_id' => $currentProjectId
         ]);
 
         // Добавляем товары

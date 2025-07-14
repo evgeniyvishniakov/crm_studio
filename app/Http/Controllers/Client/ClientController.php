@@ -12,7 +12,8 @@ class ClientController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Client::with('clientType')->orderByDesc('id');
+        $currentProjectId = auth()->user()->project_id;
+        $query = Client::with('clientType')->where('project_id', $currentProjectId)->orderByDesc('id');
 
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
@@ -26,7 +27,7 @@ class ClientController extends Controller
 
         if ($request->ajax()) {
             $clients = $query->paginate(11);
-            $clientTypes = ClientType::where('status', true)->get();
+            $clientTypes = ClientType::where('project_id', $currentProjectId)->where('status', true)->get();
 
             return response()->json([
                 'data' => $clients->items(),
@@ -42,7 +43,7 @@ class ClientController extends Controller
 
         // Для обычных запросов используем пагинацию
         $clients = $query->paginate(11);
-        $clientTypes = ClientType::where('status', true)->get();
+        $clientTypes = ClientType::where('project_id', $currentProjectId)->where('status', true)->get();
         return view('client.clients.list', compact('clients', 'clientTypes'));
     }
 
@@ -71,6 +72,7 @@ class ClientController extends Controller
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
@@ -91,7 +93,7 @@ class ClientController extends Controller
         }
 
         try {
-            $client = Client::create($request->all());
+            $client = Client::create($request->all() + ['project_id' => $currentProjectId]);
             $client = Client::with('clientType')->find($client->id);
             return response()->json([
                 'success' => true,
@@ -108,8 +110,9 @@ class ClientController extends Controller
 
     public function destroy($id)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
-            $client = Client::findOrFail($id);
+            $client = Client::where('project_id', $currentProjectId)->findOrFail($id);
             $client->delete();
             return response()->json([
                 'success' => true,
@@ -130,6 +133,7 @@ class ClientController extends Controller
 
     public function update(Request $request, $id)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
@@ -150,7 +154,7 @@ class ClientController extends Controller
         }
 
         try {
-            $client = Client::findOrFail($id);
+            $client = Client::where('project_id', $currentProjectId)->findOrFail($id);
             $client->update($request->all());
             $client = Client::with('clientType')->find($id);
             return response()->json([
@@ -169,12 +173,14 @@ class ClientController extends Controller
 
     public function history($id)
     {
-        $client = Client::with(['sales', 'appointments'])->findOrFail($id);
+        $currentProjectId = auth()->user()->project_id;
+        $client = Client::with(['sales', 'appointments'])->where('project_id', $currentProjectId)->findOrFail($id);
         return view('client.clients.history', compact('client'));
     }
 
     public function checkUnique(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $field = $request->query('field');
         $value = $request->query('value');
 
@@ -183,6 +189,7 @@ class ClientController extends Controller
         }
 
         $exists = \App\Models\Clients\Client::where($field, $value)
+            ->where('project_id', $currentProjectId)
             ->whereNotNull($field)
             ->where($field, '!=', '')
             ->exists();

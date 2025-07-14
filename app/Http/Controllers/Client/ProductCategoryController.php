@@ -10,7 +10,8 @@ class ProductCategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ProductCategory::orderBy('name');
+        $currentProjectId = auth()->user()->project_id;
+        $query = ProductCategory::where('project_id', $currentProjectId)->orderBy('name');
 
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
@@ -36,13 +37,14 @@ class ProductCategoryController extends Controller
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => 'boolean'
         ]);
 
-        $category = ProductCategory::create($validated);
+        $category = ProductCategory::create($validated + ['project_id' => $currentProjectId]);
 
         return response()->json([
             'success' => true,

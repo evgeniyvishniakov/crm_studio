@@ -11,7 +11,9 @@ class WarehouseController extends Controller
 {
     public function index(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $query = Warehouse::with('product')
+            ->where('project_id', $currentProjectId)
             ->where('quantity', '>', 0)
             ->orderByDesc('id');
 
@@ -24,7 +26,7 @@ class WarehouseController extends Controller
 
         if ($request->ajax()) {
             $warehouseItems = $query->paginate(11);
-            $products = Product::select('id', 'name', 'photo', 'purchase_price', 'retail_price')->get();
+            $products = Product::where('project_id', $currentProjectId)->select('id', 'name', 'photo', 'purchase_price', 'retail_price')->get();
 
             return response()->json([
                 'data' => $warehouseItems->items(),
@@ -40,7 +42,7 @@ class WarehouseController extends Controller
 
         // Для обычных запросов используем пагинацию
         $warehouseItems = $query->paginate(11);
-        $products = Product::select('id', 'name', 'photo', 'purchase_price', 'retail_price')->get();
+        $products = Product::where('project_id', $currentProjectId)->select('id', 'name', 'photo', 'purchase_price', 'retail_price')->get();
         return view('client.warehouse.index', compact('warehouseItems', 'products'));
     }
 
@@ -52,6 +54,7 @@ class WarehouseController extends Controller
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'purchase_price' => 'required|numeric|min:0',
@@ -59,10 +62,11 @@ class WarehouseController extends Controller
             'quantity' => 'required|integer|min:0'
         ]);
 
-        $warehouse = \App\Models\Clients\Warehouse::firstOrNew(['product_id' => $validated['product_id']]);
+        $warehouse = \App\Models\Clients\Warehouse::firstOrNew(['product_id' => $validated['product_id'], 'project_id' => $currentProjectId]);
         $warehouse->purchase_price = $validated['purchase_price'];
         $warehouse->retail_price = $validated['retail_price'];
         $warehouse->quantity = ($warehouse->quantity ?? 0) + $validated['quantity'];
+        $warehouse->project_id = $currentProjectId;
         $warehouse->save();
 
         // Обновляем цены в Product (как в закупках)

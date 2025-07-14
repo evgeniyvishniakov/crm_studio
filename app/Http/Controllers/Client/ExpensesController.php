@@ -11,7 +11,8 @@ class ExpensesController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Expense::orderBy('date', 'desc');
+        $currentProjectId = auth()->user()->project_id;
+        $query = Expense::where('project_id', $currentProjectId)->orderBy('date', 'desc');
 
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
@@ -39,6 +40,7 @@ class ExpensesController extends Controller
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
             $validated = $request->validate([
                 'date' => 'required|date',
@@ -46,7 +48,7 @@ class ExpensesController extends Controller
                 'amount' => 'required|numeric|min:0'
             ]);
 
-            $expense = Expense::create($validated);
+            $expense = Expense::create($validated + ['project_id' => $currentProjectId]);
 
             return response()->json([
                 'success' => true,
@@ -64,6 +66,7 @@ class ExpensesController extends Controller
 
     public function update(Request $request, Expense $expense)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
             $validated = $request->validate([
                 'date' => 'required|date',
@@ -71,6 +74,9 @@ class ExpensesController extends Controller
                 'amount' => 'required|numeric|min:0'
             ]);
 
+            if ($expense->project_id !== $currentProjectId) {
+                return response()->json(['success' => false, 'message' => 'Нет доступа к расходу'], 403);
+            }
             $expense->update($validated);
 
             return response()->json([
@@ -89,7 +95,11 @@ class ExpensesController extends Controller
 
     public function destroy(Expense $expense)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
+            if ($expense->project_id !== $currentProjectId) {
+                return response()->json(['success' => false, 'message' => 'Нет доступа к расходу'], 403);
+            }
             $expense->delete();
 
             return response()->json([
@@ -107,7 +117,11 @@ class ExpensesController extends Controller
 
     public function edit(Expense $expense)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
+            if ($expense->project_id !== $currentProjectId) {
+                return response()->json(['success' => false, 'message' => 'Нет доступа к расходу'], 403);
+            }
             return response()->json([
                 'success' => true,
                 'expense' => [

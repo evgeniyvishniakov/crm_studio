@@ -16,7 +16,8 @@ class PurchaseController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Purchase::with(['supplier', 'items.product'])->latest();
+        $currentProjectId = auth()->user()->project_id;
+        $query = Purchase::with(['supplier', 'items.product'])->where('project_id', $currentProjectId)->latest();
 
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
@@ -30,8 +31,8 @@ class PurchaseController extends Controller
 
         if ($request->ajax()) {
             $purchases = $query->paginate(11);
-            $products = Product::all();
-            $suppliers = Supplier::orderBy('name')->get();
+            $products = Product::where('project_id', $currentProjectId)->get();
+            $suppliers = Supplier::where('project_id', $currentProjectId)->orderBy('name')->get();
             return response()->json([
                 'data' => $purchases->items(),
                 'meta' => [
@@ -46,13 +47,14 @@ class PurchaseController extends Controller
         }
 
         $purchases = $query->paginate(11);
-        $products = Product::all();
-        $suppliers = Supplier::orderBy('name')->get();
+        $products = Product::where('project_id', $currentProjectId)->get();
+        $suppliers = Supplier::where('project_id', $currentProjectId)->orderBy('name')->get();
         return view('client.purchases.index', compact('purchases', 'products', 'suppliers'));
     }
 
     public function store(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
             'date' => 'required|date',
             'supplier_id' => 'required|exists:suppliers,id',
@@ -71,7 +73,8 @@ class PurchaseController extends Controller
                 'date' => $validated['date'],
                 'supplier_id' => $validated['supplier_id'],
                 'notes' => $validated['notes'],
-                'total_amount' => 0
+                'total_amount' => 0,
+                'project_id' => $currentProjectId
             ]);
 
             $totalAmount = 0;
