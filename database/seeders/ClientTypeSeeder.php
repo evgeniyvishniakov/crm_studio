@@ -11,8 +11,8 @@ class ClientTypeSeeder extends Seeder
     {
         $types = [
             [
-                'name' => 'Обычный клиент',
-                'description' => 'Стандартный тип клиента без специальных условий',
+                'name' => 'Новый клиент',
+                'description' => 'Клиент, который только начал пользоваться услугами',
                 'discount' => 0,
                 'status' => true
             ],
@@ -22,16 +22,10 @@ class ClientTypeSeeder extends Seeder
                 'discount' => 5,
                 'status' => true
             ],
-            [
-                'name' => 'VIP клиент',
-                'description' => 'Особо важный клиент с расширенными привилегиями',
-                'discount' => 10,
-                'status' => true
-            ]
         ];
 
         foreach ($types as $type) {
-            ClientType::create($type);
+            ClientType::firstOrCreate(['name' => $type['name']], $type);
         }
     }
 } 

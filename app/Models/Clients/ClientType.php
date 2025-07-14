@@ -23,6 +23,11 @@ class ClientType extends Model
         'status' => 'boolean'
     ];
 
+    public const FIXED_TYPES = [
+        'Постоянный клиент',
+        'Новый клиент',
+    ];
+
     public function clients()
     {
         return $this->hasMany(Client::class);

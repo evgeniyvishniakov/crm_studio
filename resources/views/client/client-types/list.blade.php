@@ -387,7 +387,7 @@
             })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Ошибка при удалении');
+                        return response.json().then(err => Promise.reject({status: response.status, ...err}));
                     }
                     return response.json();
                 })
@@ -400,9 +400,13 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
+                    // console.error('Ошибка:', error);
                     row.classList.remove('row-deleting');
-                    showNotification('error', 'Не удалось удалить тип клиента');
+                    if (error.status === 403 && error.message) {
+                        showNotification('error', error.message);
+                    } else {
+                        showNotification('error', 'Не удалось удалить тип клиента');
+                    }
                 });
         }
 
@@ -420,7 +424,7 @@
                     document.getElementById('editServiceModal').style.display = 'block';
                 })
                 .catch(error => {
-                    console.error('Ошибка загрузки данных:', error);
+                    // console.error('Ошибка загрузки данных:', error);
                     showNotification('error', 'Не удалось загрузить данные типа клиента');
                 });
         }
@@ -457,7 +461,7 @@
             })
                 .then(response => {
                     if (!response.ok) {
-                        return response.json().then(err => Promise.reject(err));
+                        return response.json().then(err => Promise.reject({status: response.status, ...err}));
                     }
                     return response.json();
                 })
@@ -469,8 +473,10 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
-                    if (error.errors) {
+                    // console.error('Ошибка:', error);
+                    if (error.status === 403 && error.message) {
+                        showNotification('error', error.message);
+                    } else if (error.errors) {
                         showErrors(error.errors, 'editServiceForm');
                         showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
                     } else {

@@ -81,6 +81,12 @@ class ClientTypeController extends Controller
 
         try {
             $clientType = ClientType::findOrFail($id);
+            if (in_array($clientType->name, ClientType::FIXED_TYPES)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Этот тип клиента нельзя изменять и удалить, так как он системный.'
+                ], 403);
+            }
             $clientType->update($request->all());
             return response()->json([
                 'success' => true,
@@ -99,7 +105,12 @@ class ClientTypeController extends Controller
     {
         try {
             $type = ClientType::findOrFail($id);
-            
+            if (in_array($type->name, ClientType::FIXED_TYPES)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Этот тип клиента нельзя изменять и удалить, так как он системный.'
+                ], 403);
+            }
             // Проверяем, есть ли клиенты с этим типом
             if ($type->clients()->count() > 0) {
                 return response()->json([
@@ -107,7 +118,6 @@ class ClientTypeController extends Controller
                     'message' => 'Невозможно удалить тип клиента, так как существуют клиенты с этим типом'
                 ], 422);
             }
-            
             $type->delete();
             return response()->json([
                 'success' => true,
