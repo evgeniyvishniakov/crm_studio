@@ -549,7 +549,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
                     showNotification('error', 'Ошибка при удалении закупки');
                 });
         }
@@ -614,12 +613,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    if (error.errors) {
-                        displayErrors(error.errors, 'purchaseForm');
-                    } else {
-                        showNotification('error', error.message || 'Ошибка при добавлении закупки');
-                    }
+                    showNotification('error', error.message || 'Ошибка при добавлении закупки');
                 });
         }
 
@@ -982,7 +976,7 @@
                 renderPagination(data.meta);
             })
             .catch(error => {
-                console.error('Ошибка при загрузке данных:', error);
+                showNotification('error', 'Ошибка при загрузке данных');
             });
         }
 

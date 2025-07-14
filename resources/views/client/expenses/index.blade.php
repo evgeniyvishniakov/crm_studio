@@ -147,7 +147,6 @@
                     showNotification(data.message || 'Ошибка загрузки данных', 'error');
                 }
             } catch (error) {
-                console.error('Error:', error);
                 showNotification('Ошибка при загрузке данных', 'error');
             }
         }
@@ -180,7 +179,6 @@
                     showNotification(data.message || 'Ошибка при удалении', 'error');
                 }
             } catch (error) {
-                console.error('Error:', error);
                 showNotification('Ошибка при удалении', 'error');
             }
 
@@ -363,12 +361,10 @@
                     renderExpenses(data.data);
                     renderPagination(data.meta);
                 } else {
-                    console.error('Неверный формат данных:', data);
                     showNotification('Ошибка при загрузке данных', 'error');
                 }
             })
             .catch(error => {
-                console.error('Ошибка при загрузке данных:', error);
                 showNotification('Ошибка при загрузке данных', 'error');
             });
         }

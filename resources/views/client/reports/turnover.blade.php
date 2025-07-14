@@ -196,7 +196,6 @@
             String(d.getMonth() + 1).padStart(2, '0') + '-' +
             String(d.getDate()).padStart(2, '0');
         const params = `start_date=${format(start)}&end_date=${format(end)}&period=${encodeURIComponent(period)}`;
-        console.log('getPeriodParams:', period, params); // debug
         return params;
     }
 

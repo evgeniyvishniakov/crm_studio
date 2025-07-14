@@ -195,13 +195,11 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM готов. Начинаем инициализацию отчетов.');
     // Глобальные переменные для хранения экземпляров графиков
     let charts = {};
 
     // --- Инициализация всех графиков ---
     function initializeCharts() {
-        console.log('Инициализация графиков...');
         const chartConfigs = {
             // Аналитика по клиентам
             clientDynamicsChart: {
@@ -299,11 +297,9 @@ document.addEventListener('DOMContentLoaded', function() {
         Object.keys(chartConfigs).forEach(id => {
             const canvas = document.getElementById(id);
             if (!canvas) {
-                console.warn(`Элемент canvas с id="${id}" не найден.`);
                 return;
             }
             
-            console.log(`Создание графика для id="${id}"`);
             const ctx = canvas.getContext('2d');
             charts[id] = new Chart(ctx, {
                 type: chartConfigs[id].type,
@@ -311,7 +307,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 options: chartConfigs[id].options,
             });
         });
-        console.log('Инициализация графиков завершена. Созданные экземпляры:', charts);
     }
 
     // --- Функция для обновления данных на всех графиках ---
@@ -322,10 +317,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             url += `?period=${period}&_t=${Date.now()}`;
         }
-        console.log(`Запрос данных для аналитики клиентов за период: ${url}`);
         try {
             const response = await fetch(url);
-            console.log('Получен ответ от сервера:', response);
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -333,11 +326,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const data = await response.json();
-            console.log('Данные успешно получены и распарсены:', data);
 
             // 1. Динамика клиентской базы
             if (charts.clientDynamicsChart && data.clientDynamics) {
-                console.log('Обновление графика "Динамика клиентской базы"');
 
                 const xTicks = charts.clientDynamicsChart.options.scales.x.ticks;
                 
@@ -405,7 +396,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             // 4. Топ-5 клиентов по визитам
             if (charts.topClientsByVisitsChart && data.topClientsByVisits) {
-                console.log('Обновление графика "Топ-5 клиентов по визитам"');
                 if (data.topClientsByVisits.data && data.topClientsByVisits.data.length > 0) {
                     const maxValue = Math.max(...data.topClientsByVisits.data);
                     if (!charts.topClientsByVisitsChart.options.scales) charts.topClientsByVisitsChart.options.scales = {};
@@ -431,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         } catch (error) {
-            console.error('Ошибка при загрузке аналитических данных:', error);
+            // console.error('Ошибка при загрузке аналитических данных:', error);
         }
     }
 
@@ -443,7 +433,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             url += `?period=${period}`;
         }
-        console.log(`Запрос данных для аналитики записей за период: ${url}`);
         if (!charts.loadChart) return;
 
         try {
@@ -502,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 borderWidth: 1
             }]);
         } catch (error) {
-            console.error('Ошибка при загрузке данных о загруженности:', error);
+            // console.error('Ошибка при загрузке данных о загруженности:', error);
         }
     }
 
@@ -514,7 +503,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             url += `?period=${period}`;
         }
-        console.log(`Запрос данных для статусов записей за период: ${url}`);
         if (!charts.statusChart) return;
 
         try {
@@ -532,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 hoverOffset: 4
             }]);
         } catch (error) {
-            console.error('Ошибка при загрузке данных о статусах записей:', error);
+            // console.error('Ошибка при загрузке данных о статусах записей:', error);
         }
     }
 
@@ -544,7 +532,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             url += `?period=${period}`;
         }
-        console.log(`Запрос данных для популярности услуг за период: ${url}`);
         const servicesChart = charts.servicesChart;
         if (!servicesChart) return;
 
@@ -585,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 borderSkipped: false
             }]);
         } catch (error) {
-            console.error('Ошибка при загрузке данных о популярности услуг:', error);
+            // console.error('Ошибка при загрузке данных о популярности услуг:', error);
         }
     }
 
@@ -669,10 +656,6 @@ document.addEventListener('DOMContentLoaded', function() {
         chart.data.labels = labels;
         chart.data.datasets = datasets;
         chart.update();
-        // Лог для отладки
-        if (chart.canvas && chart.canvas.id) {
-            console.log('Обновлен график:', chart.canvas.id, {labels, datasets});
-        }
     }
 
     // --- Логика переключения вкладок и фильтров ---
@@ -838,7 +821,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 borderColor: colors,
                 borderWidth: 1
             }]);
-        } catch (e) { console.error('Ошибка загрузки топ-5 по выручке', e); }
+        } catch (e) { // console.error('Ошибка загрузки топ-5 по выручке', e); }
     }
     // --- Функция для обновления динамики среднего чека ---
     async function updateAvgCheckDynamicsAnalytics(period = 'week', params = null) {
@@ -857,7 +840,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'Средний чек',
                 data: data.data
             }]);
-        } catch (e) { console.error('Ошибка загрузки динамики среднего чека', e); }
+        } catch (e) { // console.error('Ошибка загрузки динамики среднего чека', e); }
     }
     // --- Функция для обновления LTV по типам клиентов ---
     async function updateLtvByClientTypeAnalytics(period = 'week', params = null) {
@@ -878,7 +861,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'LTV',
                 data: data.data
             }]);
-        } catch (e) { console.error('Ошибка загрузки LTV', e); }
+        } catch (e) { // console.error('Ошибка загрузки LTV', e); }
     }
     // --- Функция для обновления топ-услуг по выручке ---
     async function updateTopServicesByRevenueAnalytics(period = 'week', params = null) {
@@ -899,7 +882,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'Выручка',
                 data: data.data
             }]);
-        } catch (e) { console.error('Ошибка загрузки топ-услуг по выручке', e); }
+        } catch (e) { // console.error('Ошибка загрузки топ-услуг по выручке', e); }
     }
 
     // --- Логика для календаря ---
