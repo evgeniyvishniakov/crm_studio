@@ -5,12 +5,7 @@
     <div class="services-container">
         <div class="services-header">
             <h1>Типы клиентов</h1>
-            <div id="notification" class="notification alert alert-success" role="alert">
-                <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                </svg>
-                <span class="notification-message">Тип клиента успешно добавлен!</span>
-            </div>
+            {{-- Удаляю старый notification-контейнер и стили уведомлений, теперь используется универсальный notification --}}
             <div class="header-actions">
                 <button class="btn-add-service" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -201,7 +196,7 @@
         // Функция для показа уведомлений
         function showNotification(type, message) {
             const notification = document.getElementById('notification');
-            notification.className = `notification ${type} show`;
+            notification.className = `notification ${type} show shake`;
 
             const icon = type === 'success' ?
                 '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>' :
@@ -213,6 +208,12 @@
                 </svg>
                 <span class="notification-message">${message}</span>
             `;
+
+            // Удаляем класс shake после окончания анимации, чтобы можно было повторно применить
+            notification.addEventListener('animationend', function handler() {
+                notification.classList.remove('shake');
+                notification.removeEventListener('animationend', handler);
+            });
 
             setTimeout(() => {
                 notification.className = `notification ${type}`;
@@ -547,6 +548,48 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50; /* Default to success color */
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .notification.show {
+            opacity: 1;
+        }
+        .notification.error {
+            background: #fde8e8;
+            color: #f05252;
+        }
+        .notification.success {
+            background: #e6f7ee;
+            color: #10b759;
+        }
+        .notification .notification-icon {
+            width: 1.2em;
+            height: 1.2em;
+            vertical-align: middle;
+            margin-right: 0.5em;
+        }
+        /* Анимация пошатывания */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(6px); }
+            100% { transform: translateX(0); }
+        }
+        .notification.shake {
+            animation: shake 0.5s;
         }
     </style>
 </div>

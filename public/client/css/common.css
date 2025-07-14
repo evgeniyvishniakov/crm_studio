@@ -442,12 +442,6 @@
     opacity: 1 !important;
 }
 
-.notification-icon {
-    width: 20px;
-    height: 20px;
-}
-
-
 /* Общие стили для лоадера */
 .loader {
     display: inline-block;

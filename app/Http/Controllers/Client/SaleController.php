@@ -163,7 +163,8 @@ class SaleController extends Controller
                     'wholesale_price' => $warehouseItem->purchase_price,
                     'retail_price' => $item['retail_price'],
                     'quantity' => $item['quantity'],
-                    'total' => $itemTotal
+                    'total' => $itemTotal,
+                    'project_id' => $sale->project_id,
                 ]);
 
                 // Уменьшаем количество на складе
@@ -279,7 +280,8 @@ class SaleController extends Controller
                     'wholesale_price' => $wholesalePrice,
                     'retail_price' => $item['retail_price'],
                     'quantity' => $item['quantity'],
-                    'total' => $itemTotal
+                    'total' => $itemTotal,
+                    'project_id' => $sale->project_id,
                 ]);
             }
 

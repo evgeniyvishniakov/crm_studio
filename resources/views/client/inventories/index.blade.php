@@ -486,11 +486,11 @@
                         modalBody.innerHTML = html;
                         document.getElementById('viewAllItemsModal').style.display = 'block';
                     } else {
-                        showNotification('error', data.message || 'Ошибка загрузки данных');
+                        window.showNotification('error', data.message || 'Ошибка загрузки данных');
                     }
                 })
                 .catch(error => {
-                    showNotification('error', 'Ошибка загрузки данных');
+                    window.showNotification('error', 'Ошибка загрузки данных');
                 });
         }
 
@@ -537,7 +537,7 @@
             }
 
             if (items.length === 0) {
-                showNotification('error', 'Добавьте хотя бы один товар');
+                window.showNotification('error', 'Добавьте хотя бы один товар');
                 return;
             }
 
@@ -593,7 +593,7 @@
 
             // Добавляем проверку наличия user_id
             if (!inventoryData.user_id) {
-                showNotification('error', 'Выберите ответственного');
+                window.showNotification('error', 'Выберите ответственного');
                 return;
             }
 
@@ -614,7 +614,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        showNotification('success', 'Инвентаризация успешно сохранена');
+                        window.showNotification('success', 'Инвентаризация успешно сохранена');
                         closeAnalysisModal();
                         addInventoryToDOM(data.inventory);
                         resetInventoryForm();
@@ -623,17 +623,17 @@
                             // Показываем все ошибки валидации
                             Object.values(data.errors).forEach(errorMessages => {
                                 errorMessages.forEach(message => {
-                                    showNotification('error', message);
+                                    window.showNotification('error', message);
                                 });
                             });
                         } else {
-                            showNotification('error', data.message || 'Ошибка при сохранении инвентаризации');
+                            window.showNotification('error', data.message || 'Ошибка при сохранении инвентаризации');
                         }
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showNotification('error', error.message || 'Ошибка при сохранении инвентаризации');
+                    window.showNotification('error', error.message || 'Ошибка при сохранении инвентаризации');
                 });
         }
         // Функция для редактирования инвентаризации
@@ -722,11 +722,11 @@
                         modalBody.innerHTML = formHtml;
                         document.getElementById('editInventoryModal').style.display = 'block';
                     } else {
-                        showNotification('error', data.message || 'Ошибка загрузки данных инвентаризации');
+                        window.showNotification('error', data.message || 'Ошибка загрузки данных инвентаризации');
                     }
                 })
                 .catch(error => {
-                    showNotification('error', 'Ошибка загрузки данных инвентаризации');
+                    window.showNotification('error', 'Ошибка загрузки данных инвентаризации');
                 });
         }
 
@@ -774,7 +774,7 @@
             }
 
             if (items.length === 0) {
-                showNotification('error', 'Добавьте хотя бы один товар');
+                window.showNotification('error', 'Добавьте хотя бы один товар');
                 return;
             }
 
@@ -802,16 +802,16 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showNotification('success', 'Инвентаризация успешно обновлена');
+                        window.showNotification('success', 'Инвентаризация успешно обновлена');
                         closeEditInventoryModal();
                         // Обновляем данные на странице
                         updateInventoryInDOM(data.inventory);
                     } else {
-                        showNotification('error', data.message || 'Ошибка обновления инвентаризации');
+                        window.showNotification('error', data.message || 'Ошибка обновления инвентаризации');
                     }
                 })
                 .catch(error => {
-                    showNotification('error', 'Ошибка обновления инвентаризации');
+                    window.showNotification('error', 'Ошибка обновления инвентаризации');
                 });
         }
 
@@ -848,15 +848,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showNotification('success', 'Инвентаризация успешно удалена');
+                        window.showNotification('success', 'Инвентаризация успешно удалена');
                         document.getElementById(`inventory-${id}`).remove();
                     } else {
-                        showNotification('error', data.message || 'Ошибка при удалении инвентаризации');
+                        window.showNotification('error', data.message || 'Ошибка при удалении инвентаризации');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    showNotification('error', 'Ошибка при удалении инвентаризации');
+                    window.showNotification('error', 'Ошибка при удалении инвентаризации');
                 });
         }
 
@@ -1041,26 +1041,6 @@
         }
 
         // Вспомогательные функции
-        function showNotification(type, message) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.style.display = 'block';
-
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-
-        function clearErrors(formId) {
-            const form = document.getElementById(formId);
-            const errorElements = form.querySelectorAll('.error-message');
-            errorElements.forEach(el => el.remove());
-
-            const errorInputs = form.querySelectorAll('.is-invalid');
-            errorInputs.forEach(el => el.classList.remove('is-invalid'));
-        }
-
         function showError(input, message) {
             input.classList.add('is-invalid');
             const errorElement = document.createElement('div');

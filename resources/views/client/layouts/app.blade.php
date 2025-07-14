@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="{{ asset('client/css/cs-skin-elastic.css') }}">
     <link rel="stylesheet" href="{{ asset('client/css/style.css') }}?v=1.1">
     <link rel="stylesheet" href="{{ asset('client/css/common.css') }}">
+    <link rel="stylesheet" href="/client/css/notifications.css">
     <!-- Page-specific styles -->
     @if(request()->routeIs('dashboard'))
         <link rel="stylesheet" href="{{ asset('client/css/dashboard.css') }}">
@@ -37,6 +38,7 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/ru.global.min.js'></script>
     <script src="{{ asset('client/js/main.js') }}"></script>
+    <script src="/client/js/notifications.js"></script>
 
     <!-- Page-specific scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -219,6 +221,7 @@
 </head>
 
 <body>
+    <div id="notification"></div>
 <!-- Left Panel -->
 <aside id="left-panel" class="left-panel">
     <nav class="navbar navbar-expand-sm navbar-default">

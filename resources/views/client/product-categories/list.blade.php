@@ -180,27 +180,6 @@
             }
         }
 
-        // Функция для показа уведомлений
-        function showNotification(type, message) {
-            const notification = document.getElementById('notification');
-            notification.className = `notification ${type} show`;
-
-            const icon = type === 'success' ?
-                '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>' :
-                '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>';
-
-            notification.innerHTML = `
-                <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-                    ${icon}
-                </svg>
-                <span class="notification-message">${message}</span>
-            `;
-
-            setTimeout(() => {
-                notification.className = `notification ${type}`;
-            }, 3000);
-        }
-
         // Функция для очистки ошибок
         function clearErrors(formId = 'addServiceForm') {
             const form = document.getElementById(formId);
@@ -296,7 +275,7 @@
                         servicesTableBody.insertBefore(newRow, servicesTableBody.firstChild);
 
                         // Показываем уведомление
-                        showNotification('success', `Категория "${data.category.name}" успешно добавлена`);
+                        window.showNotification('success', `Категория "${data.category.name}" успешно добавлена`);
 
                         // Закрываем модальное окно и очищаем форму
                         closeModal();
@@ -310,9 +289,9 @@
 
                     if (error.errors) {
                         showErrors(error.errors);
-                        showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
+                        window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
                     } else {
-                        showNotification('error', error.message || 'Произошла ошибка при добавлении категории');
+                        window.showNotification('error', error.message || 'Произошла ошибка при добавлении категории');
                     }
                 })
                 .finally(() => {
@@ -374,14 +353,14 @@
                     if (data.success) {
                         setTimeout(() => {
                             row.remove();
-                            showNotification('success', 'Категория успешно удалена');
+                            window.showNotification('success', 'Категория успешно удалена');
                         }, 300);
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка:', error);
                     row.classList.remove('row-deleting');
-                    showNotification('error', 'Не удалось удалить категорию');
+                    window.showNotification('error', 'Не удалось удалить категорию');
                 });
         }
 
@@ -399,7 +378,7 @@
                 })
                 .catch(error => {
                     console.error('Ошибка загрузки данных:', error);
-                    showNotification('error', 'Не удалось загрузить данные категории');
+                    window.showNotification('error', 'Не удалось загрузить данные категории');
                 });
         }
 
@@ -442,7 +421,7 @@
                 .then(data => {
                     if (data.success) {
                         updateCategoryRow(data.category);
-                        showNotification('success', 'Изменения успешно сохранены');
+                        window.showNotification('success', 'Изменения успешно сохранены');
                         closeEditModal();
                     }
                 })
@@ -450,9 +429,9 @@
                     console.error('Ошибка:', error);
                     if (error.errors) {
                         showErrors(error.errors, 'editServiceForm');
-                        showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
+                        window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
                     } else {
-                        showNotification('error', 'Ошибка при сохранении изменений');
+                        window.showNotification('error', 'Ошибка при сохранении изменений');
                     }
                 })
                 .finally(() => {
@@ -508,7 +487,7 @@
             })
             .catch(error => {
                 console.error('Ошибка:', error);
-                showNotification('error', 'Ошибка загрузки данных');
+                window.showNotification('error', 'Ошибка загрузки данных');
             });
         }
 

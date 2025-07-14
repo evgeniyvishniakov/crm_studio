@@ -746,7 +746,6 @@
     </style>
     <div class="appointments-header">
         <h1>Записи</h1>
-        <div id="notification"></div>
         <div class="header-actions">
             <div class="view-switcher">
                 <button class="btn-view-switch {{ $viewType === 'list' ? 'active' : '' }}" data-view="list">
@@ -1331,7 +1330,7 @@
             toggleModal('viewAppointmentModal', false);
         }
 
-        function showNotification(message, type = 'success') {
+        function showNotification(type, message) {
             const notification = document.getElementById('notification');
             if (!notification) return;
 
@@ -2083,7 +2082,7 @@
             });
             document.getElementById('saveAppointmentChanges')?.addEventListener('click', async function() {
                 // Здесь можно добавить логику для сохранения всех изменений
-                showNotification('Изменения сохранены');
+                window.showNotification('success', 'Изменения сохранены');
                 closeViewAppointmentModal();
                 // При необходимости обновите данные на странице
             });
@@ -2095,7 +2094,7 @@
             try {
                 const appointmentId = document.getElementById('appointmentId')?.value;
                 if (!appointmentId) {
-                    showNotification('Не удалось определить запись', 'error');
+                    window.showNotification('error', 'Не удалось определить запись');
                     return;
                 }
 
@@ -2104,7 +2103,7 @@
                     temporaryProducts.splice(currentDeleteIndex, 1);
                     updateProductsList();
                     updateTotalAmount();
-                    showNotification('Товар удален');
+                    window.showNotification('success', 'Товар удален');
                     return;
                 }
 
@@ -2125,11 +2124,11 @@
 
                     // После успешного удаления перезагружаем данные записи
                     await viewAppointment(appointmentId);
-                    showNotification('Товар успешно удален');
+                    window.showNotification('success', 'Товар успешно удален');
                 }
             } catch (err) {
                 console.error(err);
-                showNotification(err.message || 'Ошибка при удалении товара', 'error');
+                window.showNotification('error', err.message || 'Ошибка при удалении товара');
             } finally {
                 currentDeleteProductId = null;
                 currentDeleteIndex = null;
@@ -2201,7 +2200,7 @@
         // Функции для работы с записями
         async function editAppointment(id) {
             if (!id) {
-                showNotification('Ошибка: ID записи не указан', 'error');
+                window.showNotification('error', 'Ошибка: ID записи не указан');
                 return;
             }
 
@@ -2386,13 +2385,13 @@
                         toggleModal('viewAppointmentModal', false);
                     }
 
-                    showNotification('Запись успешно удалена');
+                    window.showNotification('success', 'Запись успешно удалена');
                 } else {
                     throw new Error(data.message || 'Ошибка при удалении записи');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showNotification(error.message || 'Ошибка при удалении записи', 'error');
+                window.showNotification('error', error.message || 'Ошибка при удалении записи');
             }
         }
 
@@ -2561,7 +2560,7 @@
             const clientId = modal.querySelector('#clientId')?.value;
 
             if (!clientId) {
-                showNotification('Не удалось определить клиента', 'error');
+                window.showNotification('error', 'Не удалось определить клиента');
                 return;
             }
 
@@ -2590,7 +2589,7 @@
 
             // Валидация на клиенте
             if (!requestData.service_id) {
-                showNotification('Необходимо указать услугу', 'error');
+                window.showNotification('error', 'Необходимо указать услугу');
                 return;
             }
 
@@ -2613,14 +2612,14 @@
                     // Показываем ошибки валидации сервера, если есть
                     if (data.errors) {
                         const errorMessages = Object.values(data.errors).flat().join(', ');
-                        showNotification(errorMessages, 'error');
+                        window.showNotification('error', errorMessages);
                         return;
                     }
                     throw new Error(data.message || 'Ошибка сохранения');
                 }
 
                 if (data.success) {
-                    showNotification('Изменения успешно сохранены');
+                    window.showNotification('success', 'Изменения успешно сохранены');
                     toggleModal('viewAppointmentModal', false);
                     if (typeof calendar !== 'undefined' && calendar) {
                         calendar.refetchEvents();
@@ -2630,7 +2629,7 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showNotification(error.message || 'Ошибка при сохранении', 'error');
+                window.showNotification('error', error.message || 'Ошибка при сохранении');
             }
         }
 
@@ -2900,7 +2899,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showNotification('Запись успешно создана');
+                    window.showNotification('success', 'Запись успешно создана');
                     closeAppointmentModal();
 
                     if (typeof calendar !== 'undefined' && calendar) {
@@ -2957,7 +2956,7 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showNotification(error.message || 'Ошибка при создании записи', 'error');
+                window.showNotification('error', error.message || 'Ошибка при создании записи');
             }
         }
 
@@ -2980,7 +2979,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showNotification('Запись успешно обновлена');
+                    window.showNotification('success', 'Запись успешно обновлена');
                     closeEditAppointmentModal();
 
                     // Обновляем календарь
@@ -3031,7 +3030,7 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showNotification(error.message || 'Ошибка при обновлении записи', 'error');
+                window.showNotification('error', error.message || 'Ошибка при обновлении записи');
             }
         }
 

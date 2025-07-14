@@ -16,7 +16,8 @@ class Sale extends Model
         'client_id',
         'appointment_id',
         'total_amount',
-        'notes'
+        'notes',
+        'project_id',
     ];
 
     public function client()

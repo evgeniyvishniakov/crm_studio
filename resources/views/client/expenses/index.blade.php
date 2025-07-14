@@ -144,10 +144,10 @@
                     document.querySelector('#expenseForm [name="amount"]').value = expense.amount;
                     document.getElementById('expenseModal').style.display = 'block';
                 } else {
-                    showNotification(data.message || 'Ошибка загрузки данных', 'error');
+                    window.showNotification(data.message || 'Ошибка загрузки данных', 'error');
                 }
             } catch (error) {
-                showNotification('Ошибка при загрузке данных', 'error');
+                window.showNotification('Ошибка при загрузке данных', 'error');
             }
         }
 
@@ -172,14 +172,14 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showNotification('Расход успешно удален');
+                    window.showNotification('Расход успешно удален');
                     // Перезагружаем текущую страницу
                     loadExpenses(currentPage);
                 } else {
-                    showNotification(data.message || 'Ошибка при удалении', 'error');
+                    window.showNotification(data.message || 'Ошибка при удалении', 'error');
                 }
             } catch (error) {
-                showNotification('Ошибка при удалении', 'error');
+                window.showNotification('Ошибка при удалении', 'error');
             }
 
             closeConfirmationModal();
@@ -208,31 +208,18 @@
             const data = await response.json();
 
             if (data.success) {
-                showNotification(data.message || 'Расход успешно сохранен');
+                window.showNotification(data.message || 'Расход успешно сохранен');
                 closeExpenseModal();
                 // Перезагружаем текущую страницу для отображения изменений
                 loadExpenses(currentPage);
             } else {
-                showNotification(data.message || 'Ошибка при сохранении', 'error');
+                window.showNotification(data.message || 'Ошибка при сохранении', 'error');
             }
         });
 
 
 
         // Вспомогательные функции
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            if (!notification) return;
-
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.style.display = 'block';
-
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-
         function escapeHtml(unsafe) {
             return unsafe
                 .replace(/&/g, "&amp;")
@@ -361,11 +348,11 @@
                     renderExpenses(data.data);
                     renderPagination(data.meta);
                 } else {
-                    showNotification('Ошибка при загрузке данных', 'error');
+                    window.showNotification('Ошибка при загрузке данных', 'error');
                 }
             })
             .catch(error => {
-                showNotification('Ошибка при загрузке данных', 'error');
+                window.showNotification('Ошибка при загрузке данных', 'error');
             });
         }
 

@@ -137,55 +137,24 @@ class AppointmentsController extends Controller
                     }
                 }
 
-                // Если переданы новые данные о продажах, обновляем их
-                if (isset($validated['sales'])) {
-                    // --- СТАРЫЕ ТОВАРЫ ---
-                    $oldProducts = [];
-                    foreach ($appointment->sales as $sale) {
-                        foreach ($sale->items as $item) {
-                            $oldProducts[(int)$item->product_id] = ($oldProducts[(int)$item->product_id] ?? 0) + $item->quantity;
-                        }
-                    }
-
-                    // --- НОВЫЕ ТОВАРЫ ---
-                    $newProducts = [];
-                    foreach ($validated['sales'] as $item) {
-                        $newProducts[(int)$item['product_id']] = ($newProducts[(int)$item['product_id']] ?? 0) + $item['quantity'];
-                    }
-
-                    // --- ИСПРАВЛЕННАЯ СИНХРОНИЗАЦИЯ ОСТАТКОВ ---
-                    // Находим только НОВЫЕ товары (которые добавляются)
-                    $newlyAddedProducts = [];
-                    foreach ($newProducts as $productId => $newQty) {
-                        $oldQty = $oldProducts[$productId] ?? 0;
-                        if ($newQty > $oldQty) {
-                            $newlyAddedProducts[$productId] = $newQty - $oldQty;
-                        }
-                    }
-                    
-                    // Проверяем доступность и списываем только НОВЫЕ товары
-                    foreach ($newlyAddedProducts as $productId => $quantity) {
-                        // Проверяем доступность только для новых товаров
-                        \App\Models\Clients\Warehouse::checkAvailability((int)$productId, $quantity);
-                        \App\Models\Clients\Warehouse::decreaseQuantity((int)$productId, $quantity);
-                    }
-
+                if ($request->has('sales')) {
+                    $salesData = $validated['sales'] ?? [];
                     // --- Удаляем старые продажи и позиции ---
                     foreach ($appointment->sales as $sale) {
                         $sale->items()->delete();
                         $sale->delete();
                     }
-
                     // --- Создаём новую продажу, если есть товары ---
-                    if (!empty($validated['sales'])) {
+                    if (!empty($salesData)) {
                         $sale = Sale::create([
                             'appointment_id' => $appointment->id,
                             'client_id' => $appointment->client_id,
                             'date' => $appointment->date,
-                            'total_amount' => 0
+                            'total_amount' => 0,
+                            'project_id' => auth()->user()->project_id
                         ]);
                         $totalAmount = 0;
-                        foreach ($validated['sales'] as $saleData) {
+                        foreach ($salesData as $saleData) {
                             $itemTotal = $saleData['quantity'] * $saleData['price'];
                             SaleItem::create([
                                 'sale_id' => $sale->id,
@@ -193,7 +162,8 @@ class AppointmentsController extends Controller
                                 'quantity' => $saleData['quantity'],
                                 'retail_price' => $saleData['price'],
                                 'wholesale_price' => $saleData['purchase_price'],
-                                'total' => $itemTotal
+                                'total' => $itemTotal,
+                                'project_id' => $sale->project_id,
                             ]);
                             $totalAmount += $itemTotal;
                         }
@@ -385,7 +355,8 @@ class AppointmentsController extends Controller
                     [
                         'client_id' => $appointment->client_id,
                         'date' => $appointment->date,
-                        'total_amount' => 0
+                        'total_amount' => 0,
+                        'project_id' => $currentProjectId
                     ]
                 );
 
@@ -407,7 +378,8 @@ class AppointmentsController extends Controller
                         'quantity' => $validated['quantity'],
                         'retail_price' => $validated['price'],
                         'wholesale_price' => $validated['purchase_price'],
-                        'total' => $validated['quantity'] * $validated['price']
+                        'total' => $validated['quantity'] * $validated['price'],
+                        'project_id' => $sale->project_id,
                     ]);
                 }
 

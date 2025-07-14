@@ -487,24 +487,24 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    showNotification('success', 'Закупка успешно обновлена');
+                                    window.showNotification('success', 'Закупка успешно обновлена');
                                     closeEditPurchaseModal();
                                     // Обновляем данные на странице
                                     updatePurchaseRowInDOM(data.purchase);
                                 } else {
-                                    showNotification('error', data.message || 'Ошибка обновления закупки');
+                                    window.showNotification('error', data.message || 'Ошибка обновления закупки');
                                 }
                             })
                             .catch(error => {
-                                showNotification('error', 'Ошибка обновления закупки');
+                                window.showNotification('error', 'Ошибка обновления закупки');
                             });
                         });
                     } else {
-                        showNotification('error', data.message || 'Ошибка загрузки данных закупки');
+                        window.showNotification('error', data.message || 'Ошибка загрузки данных закупки');
                     }
                 })
                 .catch(error => {
-                    showNotification('error', 'Ошибка загрузки данных закупки');
+                    window.showNotification('error', 'Ошибка загрузки данных закупки');
                 });
         }
 
@@ -541,15 +541,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showNotification('success', 'Закупка успешно удалена');
+                        window.showNotification('success', 'Закупка успешно удалена');
                         // Перезагружаем текущую страницу
                         loadPurchases(currentPage);
                     } else {
-                        showNotification('error', 'Ошибка при удалении закупки');
+                        window.showNotification('error', 'Ошибка при удалении закупки');
                     }
                 })
                 .catch(error => {
-                    showNotification('error', 'Ошибка при удалении закупки');
+                    window.showNotification('error', 'Ошибка при удалении закупки');
                 });
         }
 
@@ -599,7 +599,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        showNotification('success', 'Закупка успешно добавлена');
+                        window.showNotification('success', 'Закупка успешно добавлена');
                         closePurchaseModal();
                         resetPurchaseForm();
                         // Перезагружаем текущую страницу для отображения новой закупки
@@ -608,12 +608,12 @@
                         if (data.errors) {
                             displayErrors(data.errors, 'purchaseForm');
                         } else {
-                            showNotification('error', data.message || 'Ошибка при добавлении закупки');
+                            window.showNotification('error', data.message || 'Ошибка при добавлении закупки');
                         }
                     }
                 })
                 .catch(error => {
-                    showNotification('error', error.message || 'Ошибка при добавлении закупки');
+                    window.showNotification('error', error.message || 'Ошибка при добавлении закупки');
                 });
         }
 
@@ -756,17 +756,6 @@
         }
 
         // Вспомогательные функции
-        function showNotification(type, message) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.style.display = 'block';
-
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
-        }
-
         function clearErrors(formId) {
             const form = document.getElementById(formId);
             const errorElements = form.querySelectorAll('.error-message');
@@ -976,7 +965,7 @@
                 renderPagination(data.meta);
             })
             .catch(error => {
-                showNotification('error', 'Ошибка при загрузке данных');
+                window.showNotification('error', 'Ошибка при загрузке данных');
             });
         }
 

@@ -641,27 +641,6 @@
             }
         }
 
-        // Функция для показа уведомлений
-        function showNotification(type, message) {
-            const notification = document.getElementById('notification');
-            notification.className = `notification ${type} show`;
-
-            const icon = type === 'success' ?
-                '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>' :
-                '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>';
-
-            notification.innerHTML = `
-                <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-                    ${icon}
-                </svg>
-                <span class="notification-message">${message}</span>
-            `;
-
-            setTimeout(() => {
-                notification.className = `notification ${type}`;
-            }, 3000);
-        }
-
         // Функция для очистки ошибок
         function clearErrors(formId = null) {
             const form = formId ? document.getElementById(formId) : document.getElementById('addProductForm');
@@ -766,7 +745,7 @@
                         productsTableBody.insertBefore(newRow, productsTableBody.firstChild);
 
                         // Показываем уведомление
-                        showNotification('success', `Товар ${data.product.name} успешно добавлен`);
+                        window.showNotification('success', `Товар ${data.product.name} успешно добавлен`);
 
                         // Закрываем модальное окно и очищаем форму
                         closeModal();
@@ -780,9 +759,9 @@
 
                     if (error.errors) {
                         showErrors(error.errors);
-                        showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
+                        window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
                     } else {
-                        showNotification('error', error.message || 'Произошла ошибка при добавлении товара');
+                        window.showNotification('error', error.message || 'Произошла ошибка при добавлении товара');
                     }
                 })
                 .finally(() => {
@@ -847,14 +826,14 @@
                         // Удаляем строку после завершения анимации
                         setTimeout(() => {
                             row.remove();
-                            showNotification('success', 'Товар успешно удален');
+                            window.showNotification('success', 'Товар успешно удален');
                         }, 300);
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка:', error);
                     row.classList.remove('row-deleting');
-                    showNotification('error', 'Не удалось удалить товар');
+                    window.showNotification('error', 'Не удалось удалить товар');
                 });
         }
 
@@ -900,11 +879,11 @@
 
                         document.getElementById('editProductModal').style.display = 'block';
                     } else {
-                        showNotification('error', data.message || 'Ошибка загрузки данных товара');
+                        window.showNotification('error', data.message || 'Ошибка загрузки данных товара');
                     }
                 })
                 .catch(error => {
-                    showNotification('error', 'Ошибка загрузки данных товара');
+                    window.showNotification('error', 'Ошибка загрузки данных товара');
                 });
         }
 
@@ -926,7 +905,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showNotification('success', 'Товар успешно обновлен');
+                    window.showNotification('success', 'Товар успешно обновлен');
                     closeEditModal();
                     // Обновляем строку в таблице
                     const row = document.getElementById(`product-${productId}`);
@@ -949,11 +928,11 @@
                         row.querySelector('td:nth-child(6)').textContent = formatPrice(data.product.retail_price);
                     }
                 } else {
-                    showNotification('error', data.message || 'Ошибка обновления товара');
+                    window.showNotification('error', data.message || 'Ошибка обновления товара');
                 }
             })
             .catch(error => {
-                showNotification('error', 'Ошибка обновления товара');
+                window.showNotification('error', 'Ошибка обновления товара');
             });
         });
 
@@ -1014,19 +993,19 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showNotification('success', data.message);
+                    window.showNotification('success', data.message);
                     closeImportModal();
                     // Перезагружаем страницу для обновления списка товаров
                     setTimeout(() => {
                         window.location.reload();
                     }, 1500);
                 } else {
-                    showNotification('error', 'Ошибка: ' + data.message);
+                    window.showNotification('error', 'Ошибка: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showNotification('error', 'Ошибка при импорте файла');
+                window.showNotification('error', 'Ошибка при импорте файла');
             })
             .finally(() => {
                 submitBtn.textContent = originalText;
@@ -1099,7 +1078,7 @@
             })
             .catch(error => {
                 console.error('Ошибка:', error);
-                showNotification('error', 'Ошибка загрузки данных');
+                window.showNotification('error', 'Ошибка загрузки данных');
             });
         }
 
@@ -1223,15 +1202,15 @@
                     // Обновляем таблицу после добавления
                     loadPage(currentPage, searchQuery);
                     
-                    showNotification('success', 'Товар успешно добавлен');
+                    window.showNotification('success', 'Товар успешно добавлен');
                     closeModal();
                     this.reset();
                 } else {
-                    showNotification('error', data.message || 'Ошибка добавления товара');
+                    window.showNotification('error', data.message || 'Ошибка добавления товара');
                 }
             })
             .catch(error => {
-                showNotification('error', 'Ошибка добавления товара');
+                window.showNotification('error', 'Ошибка добавления товара');
             });
         });
 
@@ -1250,13 +1229,13 @@
                     if (data.success) {
                         // Обновляем таблицу после удаления
                         loadPage(currentPage, searchQuery);
-                        showNotification('success', 'Товар успешно удален');
+                        window.showNotification('success', 'Товар успешно удален');
                     } else {
-                        showNotification('error', data.message || 'Ошибка удаления товара');
+                        window.showNotification('error', data.message || 'Ошибка удаления товара');
                     }
                 })
                 .catch(error => {
-                    showNotification('error', 'Ошибка удаления товара');
+                    window.showNotification('error', 'Ошибка удаления товара');
                 });
             }
         }

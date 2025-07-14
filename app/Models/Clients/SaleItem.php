@@ -17,7 +17,8 @@ class SaleItem extends Model
         'quantity',
         'wholesale_price',
         'retail_price',
-        'total'
+        'total',
+        'project_id',
     ];
 
     public function product()
