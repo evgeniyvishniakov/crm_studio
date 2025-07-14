@@ -758,7 +758,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.showNotification('Продажа успешно удалена', 'success');
+                        window.showNotification('success', 'Продажа успешно удалена');
                         // Удаляем все строки таблицы, относящиеся к этой продаже
                         document.querySelectorAll(`tr[data-sale-id="${id}"]`).forEach(row => {
                             row.remove();
@@ -817,7 +817,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.showNotification('Продажа сохранена', 'success');
+                        window.showNotification('success', 'Продажа успешно добавлена!');
                         closeSaleModal();
                         resetSaleForm(); // Очищаем форму
                         // Перезагружаем текущую страницу для отображения новой продажи
@@ -856,14 +856,6 @@
                 const productId = hiddenInput ? hiddenInput.value : '';
                 const retailInput = row.querySelector('input[name*="[retail_price]"]');
                 const quantityInput = row.querySelector('input[name*="[quantity]"]');
-
-                // Подробный лог для диагностики
-                console.log(`row #${index+1}`, {
-                    productSelect: productSelect ? productSelect.value : null,
-                    hiddenInput: productId,
-                    retailInput: retailInput ? retailInput.value : null,
-                    quantityInput: quantityInput ? quantityInput.value : null
-                });
 
                 // Проверяем, что все поля заполнены
                 if (!productId ||
@@ -929,7 +921,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        window.showNotification('Продажа успешно обновлена', 'success');
+                        window.showNotification('success', 'Продажа успешно обновлена');
                         closeEditSaleModal();
                         updateSaleInTable(data.sale);
                     } else {
@@ -1310,7 +1302,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        window.showNotification(data.message || 'Товар успешно удален', 'success');
+                        window.showNotification('success', 'Товар успешно удален');
                         // Перезагружаем текущую страницу
                         loadSales(currentPage);
                     } else {
@@ -1479,6 +1471,33 @@
         // Инициализация первой загрузки
         loadSales(1);
 
+        // 1. Добавить/обновить универсальную функцию showNotification (как в Закупках)
+        window.showNotification = function(type, message) {
+            let notification = document.getElementById('notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'notification';
+                document.body.appendChild(notification);
+            }
+            notification.className = `notification ${type} show shake`;
+            const icon = type === 'success'
+                ? '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>'
+                : '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>';
+            notification.innerHTML = `
+                <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
+                    ${icon}
+                </svg>
+                <span class="notification-message">${message}</span>
+            `;
+            notification.addEventListener('animationend', function handler() {
+                notification.classList.remove('shake');
+                notification.removeEventListener('animationend', handler);
+            });
+            setTimeout(() => {
+                notification.className = `notification ${type}`;
+            }, 3000);
+        };
+
     </script>
 </div>
 </div>
@@ -1577,5 +1596,39 @@
     }
     .sale-table td{
         padding: 25px 15px!important;
+    }
+
+    // 2. Добавить стили уведомлений (как в Закупках)
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 1rem;
+        z-index: 1050;
+        display: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        min-width: 250px;
+        text-align: center;
+    }
+    .notification.show {
+        display: block;
+    }
+    .notification.success {
+        background: linear-gradient(135deg, #28a745, #34d399);
+    }
+    .notification.error {
+        background: linear-gradient(135deg, #dc3545, #ef4444);
+    }
+    .notification .notification-icon {
+        width: 24px;
+        height: 24px;
+        vertical-align: middle;
+        margin-right: 8px;
+    }
+    .notification .notification-message {
+        vertical-align: middle;
     }
 </style>

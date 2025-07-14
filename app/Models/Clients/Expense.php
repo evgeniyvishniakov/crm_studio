@@ -14,7 +14,8 @@ class Expense extends Model
     protected $fillable = [
         'date',
         'comment',
-        'amount'
+        'amount',
+        'project_id', // для мультипроктности
     ];
 
     protected $casts = [
