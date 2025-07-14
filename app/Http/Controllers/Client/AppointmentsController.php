@@ -562,9 +562,7 @@ class AppointmentsController extends Controller
                         'start' => $startDateTime->format('Y-m-d\TH:i:s'),
                         'end' => $endDateTime->format('Y-m-d\TH:i:s'),
                         'date' => $date,
-                        'backgroundColor' => '#4CAF50',
-                        'borderColor' => '#4CAF50',
-                        'textColor' => '#ffffff',
+                        'classNames' => ['status-' . $appointment->status],
                         'extendedProps' => [
                             'client' => $appointment->client->name,
                             'service' => $appointment->service->name,
