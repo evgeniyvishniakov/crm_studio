@@ -195,7 +195,7 @@ class PurchaseController extends Controller
                         \App\Models\Clients\Warehouse::increaseQuantity($productId, $diff);
                     } else {
                         \App\Models\Clients\Warehouse::decreaseQuantity($productId, abs($diff));
-                    }
+            }
                 }
                 // Если oldQty == newQty — ничего не делать
             }

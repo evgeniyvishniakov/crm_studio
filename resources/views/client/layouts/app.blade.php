@@ -319,14 +319,14 @@
                     </ul>
                 </li>
                 <li class="menu-item-has-children {{ 
-                    request()->routeIs('admin.users.*') || 
+                    request()->routeIs('client.users.*') || 
                     request()->routeIs('admin.roles.*') || 
                     request()->routeIs('admin.settings.*') || 
                     request()->routeIs('admin.email-templates.*') || 
                     request()->routeIs('admin.security.*') ? 'active' : '' 
                 }}">
                     <a href="#settingsMenu" data-toggle="collapse" aria-expanded="{{ 
-                        request()->routeIs('admin.users.*') || 
+                        request()->routeIs('client.users.*') || 
                         request()->routeIs('admin.roles.*') || 
                         request()->routeIs('admin.settings.*') || 
                         request()->routeIs('admin.email-templates.*') || 
@@ -335,13 +335,13 @@
                         <i class="menu-icon fa fa-cogs"></i>Настройки
                     </a>
                     <ul id="settingsMenu" class="sub-menu children collapse {{ 
-                        request()->routeIs('admin.users.*') || 
+                        request()->routeIs('client.users.*') || 
                         request()->routeIs('admin.roles.*') || 
                         request()->routeIs('admin.settings.*') || 
                         request()->routeIs('admin.email-templates.*') || 
                         request()->routeIs('admin.security.*') ? 'show' : '' 
                     }}">
-                        <li class="{{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                        <li class="{{ request()->routeIs('client.users.*') ? 'active' : '' }}">
                             <i class="fa fa-users"></i>
                             <a href="{{ route('client.users.index') }}">Пользователи</a>
                         </li>

@@ -23,6 +23,7 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
         'project_id',
@@ -50,6 +51,9 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    // Системные роли, которые нельзя редактировать или удалять
+    public const FIXED_ROLES = ['admin'];
 
     public function project()
     {
