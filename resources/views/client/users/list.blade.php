@@ -24,9 +24,9 @@
         <div class="table-wrapper">
             <table class="table-striped clients-table">
                 <thead>
-                <tr>
+                <tr></tr>
                     <th>Имя</th>
-                    <th>Email/login</th>
+                    <th>Почта/Логин</th>
                     <th>Роль</th>
                     <th>Статус</th>
                     <th>Дата регистрации</th>
@@ -44,8 +44,8 @@
                             </div>
                         </td>
                         <td>{{ $user->email ?: $user->username }}</td>
-                        <td>{{ $user->role }}</td>
-                        <td>{{ $user->status === 'active' ? 'Активен' : 'Неактивен' }}</td>
+                        <td>{{ $roles[$user->role] ?? $user->role }}</td>
+                        <td><span class="status-badge {{ $user->status === 'active' ? 'status-completed' : 'status-cancelled' }}">{{ $user->status === 'active' ? 'Активен' : 'Неактивен' }}</span></td>
                         <td>{{ $user->registered_at ? \Carbon\Carbon::parse($user->registered_at)->format('d.m.Y H:i') : '' }}</td>
                         <td class="actions-cell" style="vertical-align: middle;">
                             @if($user->username !== 'admin')
@@ -101,10 +101,11 @@
                 <div class="form-group">
                     <label for="userRole">Роль</label>
                     <select id="userRole" name="role" required>
-                        <!-- Роль admin зарезервирована только для главного пользователя -->
-                        <option value="manager">Менеджер</option>
-                        <option value="master">Мастер</option>
-                        <option value="user">Пользователь</option>
+                        @foreach($roles as $key => $label)
+                            @if($key !== 'admin')
+                                <option value="{{ $key }}">{{ $label }}</option>
+                            @endif
+                        @endforeach
                     </select>
                 </div>
                 <div class="form-actions">
@@ -143,10 +144,11 @@
                 <div class="form-group">
                     <label for="editUserRole">Роль</label>
                     <select id="editUserRole" name="role" required>
-                        <!-- Роль admin зарезервирована только для главного пользователя -->
-                        <option value="manager">Менеджер</option>
-                        <option value="master">Мастер</option>
-                        <option value="user">Пользователь</option>
+                        @foreach($roles as $key => $label)
+                            @if($key !== 'admin')
+                                <option value="{{ $key }}">{{ $label }}</option>
+                            @endif
+                        @endforeach
                     </select>
                 </div>
                 <div class="form-group">
@@ -178,6 +180,7 @@
 </div>
 
 <script>
+    window.roles = @json($roles);
 function openUserModal() {
     document.getElementById('addUserModal').style.display = 'block';
 }
@@ -270,8 +273,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </td>
                         <td>${user.email ? user.email : user.username}</td>
-                        <td>${user.role}</td>
-                        <td>${user.status === 'active' ? 'Активен' : 'Неактивен'}</td>
+                        <td>${window.roles && window.roles[user.role] ? window.roles[user.role] : user.role}</td>
+                        <td><span class="status-badge ${user.status === 'active' ? 'status-completed' : 'status-cancelled'}">${user.status === 'active' ? 'Активен' : 'Неактивен'}</span></td>
                         <td>${user.registered_at ? formatDateTime(user.registered_at) : ''}</td>
                         <td class="actions-cell" style="vertical-align: middle;">
                             @if($user->username !== 'admin')
@@ -440,8 +443,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </td>
                             <td>${user.email ? user.email : user.username}</td>
-                            <td>${user.role}</td>
-                            <td>${user.status === 'active' ? 'Активен' : 'Неактивен'}</td>
+                            <td>${window.roles && window.roles[user.role] ? window.roles[user.role] : user.role}</td>
+                            <td><span class="status-badge ${user.status === 'active' ? 'status-completed' : 'status-cancelled'}">${user.status === 'active' ? 'Активен' : 'Неактивен'}</span></td>
                             <td>${user.registered_at ? formatDateTime(user.registered_at) : ''}</td>
                             <td class="actions-cell" style="vertical-align: middle;">
                                 @if($user->username !== 'admin')

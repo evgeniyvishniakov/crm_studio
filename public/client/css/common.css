@@ -563,7 +563,6 @@
 
 /* Уникальные стили для клиентов */
 .client-info {
-    display: flex;
     align-items: center;
     gap: 12px;
 }
@@ -1343,4 +1342,22 @@
 #left-panel .navbar-nav .sub-menu li.active > a {
     background: none !important;
     background-color: transparent !important;
+}
+
+/* Status badge universal styles */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 500;
+    display: inline-block;
+    text-align: center;
+    min-width: 100px;
+}
+.status-completed {
+    background: linear-gradient(135deg, #4CAF50 60%, #56bb93 100%);
+    color: #fff;
+}
+.status-cancelled {
+    background: linear-gradient(135deg, #F44336 60%, #eb7171 100%);
+    color: #fff;
 }

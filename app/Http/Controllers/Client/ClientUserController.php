@@ -14,7 +14,8 @@ class ClientUserController extends Controller
     {
         $projectId = auth('client')->user()->project_id;
         $users = User::where('project_id', $projectId)->orderBy('id', 'asc')->get();
-        return view('client.users.list', compact('users'));
+        $roles = config('roles');
+        return view('client.users.list', compact('users', 'roles'));
     }
 
     public function store(Request $request)
@@ -77,7 +78,7 @@ class ClientUserController extends Controller
         if (in_array($user->role, User::FIXED_ROLES)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Пользователь с ролью admin не может быть удалён.'
+                'message' => 'Пользователь с ролью Администратор не может быть удалён.'
             ], 403);
         }
         try {
@@ -109,7 +110,7 @@ class ClientUserController extends Controller
         if (in_array($user->role, User::FIXED_ROLES)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Пользователь с ролью admin не может быть изменён.'
+                'message' => 'Пользователь с ролью Администратор не может быть изменён.'
             ], 403);
         }
         $validated = $request->validate([

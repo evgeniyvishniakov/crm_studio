@@ -228,4 +228,7 @@ Route::middleware('auth:client')->group(function () {
     Route::get('/users/{user}/edit', [\App\Http\Controllers\Client\ClientUserController::class, 'edit'])->name('client.users.edit');
     Route::put('/users/{user}', [\App\Http\Controllers\Client\ClientUserController::class, 'update'])->name('client.users.update');
     Route::delete('/users/{user}', [\App\Http\Controllers\Client\ClientUserController::class, 'destroy'])->name('client.users.destroy');
+
+    // Роли и доступы
+    Route::get('/roles', [\App\Http\Controllers\Client\RoleController::class, 'index'])->name('roles.index');
 }); 

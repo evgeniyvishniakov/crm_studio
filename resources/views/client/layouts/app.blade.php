@@ -345,9 +345,9 @@
                             <i class="fa fa-users"></i>
                             <a href="{{ route('client.users.index') }}">Пользователи</a>
                         </li>
-                        <li class="{{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
+                        <li class="{{ request()->routeIs('client.roles.*') ? 'active' : '' }}">
                             <i class="fa fa-lock"></i>
-                            <a href="{{ route('admin.roles.index') }}">Роли и доступы</a>
+                            <a href="{{ route('roles.index') }}">Роли и доступы</a>
                         </li>
                         <li class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
                             <i class="fa fa-cog"></i>
