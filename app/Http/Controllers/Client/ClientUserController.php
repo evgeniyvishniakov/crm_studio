@@ -25,6 +25,7 @@ class ClientUserController extends Controller
             'username' => [
                 'required',
                 'string',
+                'min:6',
                 'max:255',
                 'unique:admin_users,username',
                 'regex:/^[a-zA-Z0-9]+$/',
@@ -41,7 +42,8 @@ class ClientUserController extends Controller
                 },
             ],
         ], [
-            'username.regex' => 'Логин может содержать только латинские буквы и цифры.'
+            'username.regex' => 'Логин может содержать только латинские буквы и цифры.',
+            'username.min' => 'Логин должен быть не менее 6 символов.',
         ]);
         try {
             $user = User::create([
@@ -115,6 +117,7 @@ class ClientUserController extends Controller
             'username' => [
                 'required',
                 'string',
+                'min:6',
                 'max:255',
                 'unique:admin_users,username,' . $id,
                 'regex:/^[a-zA-Z0-9]+$/',
@@ -132,7 +135,8 @@ class ClientUserController extends Controller
             ],
             'status' => 'required|in:active,inactive',
         ], [
-            'username.regex' => 'Логин может содержать только латинские буквы и цифры.'
+            'username.regex' => 'Логин может содержать только латинские буквы и цифры.',
+            'username.min' => 'Логин должен быть не менее 6 символов.',
         ]);
         try {
             $user->update([

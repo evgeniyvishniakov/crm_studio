@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <td>${user.email ? user.email : user.username}</td>
                         <td>${user.role}</td>
                         <td>${user.status === 'active' ? 'Активен' : 'Неактивен'}</td>
-                        <td>${user.registered_at ? new Date(user.registered_at).toLocaleString('ru-RU') : ''}</td>
+                        <td>${user.registered_at ? formatDateTime(user.registered_at) : ''}</td>
                         <td class="actions-cell" style="vertical-align: middle;">
                             @if($user->username !== 'admin')
                             <button class="btn-edit" title="Редактировать">
@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <td>${user.email ? user.email : user.username}</td>
                             <td>${user.role}</td>
                             <td>${user.status === 'active' ? 'Активен' : 'Неактивен'}</td>
-                            <td>${user.registered_at ? new Date(user.registered_at).toLocaleString('ru-RU') : ''}</td>
+                            <td>${user.registered_at ? formatDateTime(user.registered_at) : ''}</td>
                             <td class="actions-cell" style="vertical-align: middle;">
                                 @if($user->username !== 'admin')
                                 <button class="btn-edit" title="Редактировать">
@@ -546,6 +546,17 @@ function deleteUser(row, userId) {
         row.classList.remove('row-deleting');
         showNotification('error', 'Не удалось удалить пользователя');
     });
+}
+
+// Добавить функцию форматирования даты без секунд
+function formatDateTime(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${day}.${month}.${year} ${hours}:${minutes}`;
 }
 </script>
 @endsection 
