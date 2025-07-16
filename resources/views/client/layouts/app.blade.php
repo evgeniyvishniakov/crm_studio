@@ -222,46 +222,111 @@
 
 <body>
     <div id="notification"></div>
+@php
+    $user = auth()->user();
+    $userPermissions = $user->permissions()->pluck('name')->toArray();
+    $isAdmin = $user->role === 'admin';
+@endphp
 <!-- Left Panel -->
 <aside id="left-panel" class="left-panel">
     <nav class="navbar navbar-expand-sm navbar-default">
         <div id="main-menu" class="main-menu collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <li class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <a href="{{ route('dashboard') }}"><i class="menu-icon fas fa-laptop"></i>Панель управления</a>
+                    @php $hasAccess = $isAdmin || in_array('dashboard', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('dashboard') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                        <i class="menu-icon fas fa-laptop"></i>Панель управления
+                        @if(!$hasAccess)
+                            <i class="fas fa-lock ms-2"></i>
+                        @endif
+                    </a>
                 </li>
                 <li class="menu-title">Работа с клиентами</li><!-- /.menu-title -->
 
                 <li class="{{ request()->routeIs('clients.*') ? 'active' : '' }}">
-                    <a href="{{ route('clients.list') }}"> <i class="menu-icon fas fa-users"></i>Клиенты</a>
+                    @php $hasAccess = $isAdmin || in_array('clients', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('clients.list') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                        <i class="menu-icon fas fa-users"></i>Клиенты
+                        @if(!$hasAccess)
+                            <i class="fas fa-lock ms-2"></i>
+                        @endif
+                    </a>
                 </li>
                 <li class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}">
-                    <a href="{{ route('appointments.index') }}"> <i class="menu-icon fas fa-calendar"></i>Записи</a>
+                    @php $hasAccess = $isAdmin || in_array('appointments', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('appointments.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                        <i class="menu-icon fas fa-calendar"></i>Записи
+                        @if(!$hasAccess)
+                            <i class="fas fa-lock ms-2"></i>
+                        @endif
+                    </a>
                 </li>
                 <li class="{{ request()->routeIs('reports.clients.*') ? 'active' : '' }}">
-                    <a href="{{ route('reports.clients.index') }}"><i class="menu-icon fas fa-bar-chart"></i>Аналитика</a>
+                    @php $hasAccess = $isAdmin || in_array('analytics', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('reports.clients.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                        <i class="menu-icon fas fa-bar-chart"></i>Аналитика
+                        @if(!$hasAccess)
+                            <i class="fas fa-lock ms-2"></i>
+                        @endif
+                    </a>
                 </li>
                 
 
                 <li class="menu-title">Товарооборот</li>
 
                 <li class="{{ request()->routeIs('warehouses.*') ? 'active' : '' }}">
-                    <a href="{{ route('warehouses.index') }}"><i class="menu-icon fa fa-boxes-stacked"></i>Склад</a>
+                    @php $hasAccess = $isAdmin || in_array('warehouse', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('warehouses.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                        <i class="menu-icon fa fa-boxes-stacked"></i>Склад
+                        @if(!$hasAccess)
+                            <i class="fas fa-lock ms-2"></i>
+                        @endif
+                    </a>
                 </li>
                 <li class="{{ request()->routeIs('purchases.*') ? 'active' : '' }}">
-                    <a href="{{ route('purchases.index') }}"><i class="menu-icon fa fa-cart-plus"></i>Закупки</a>
+                    @php $hasAccess = $isAdmin || in_array('purchases', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('purchases.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                        <i class="menu-icon fa fa-cart-plus"></i>Закупки
+                        @if(!$hasAccess)
+                            <i class="fas fa-lock ms-2"></i>
+                        @endif
+                    </a>
                 </li>
                 <li class="{{ request()->routeIs('sales.*') ? 'active' : '' }}">
-                    <a href="{{ route('sales.index') }}"><i class="menu-icon fa fa-shopping-basket"></i>Продажи</a>
+                    @php $hasAccess = $isAdmin || in_array('sales', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('sales.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                        <i class="menu-icon fa fa-shopping-basket"></i>Продажи
+                        @if(!$hasAccess)
+                            <i class="fas fa-lock ms-2"></i>
+                        @endif
+                    </a>
                 </li>
                 <li class="{{ request()->routeIs('expenses.*') ? 'active' : '' }}">
-                    <a href="{{ route('expenses.index') }}"><i class="menu-icon fa fa-credit-card"></i>Расходы</a>
+                    @php $hasAccess = $isAdmin || in_array('expenses', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('expenses.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                        <i class="menu-icon fa fa-credit-card"></i>Расходы
+                        @if(!$hasAccess)
+                            <i class="fas fa-lock ms-2"></i>
+                        @endif
+                    </a>
                 </li>
                 <li class="{{ request()->routeIs('inventories.*') ? 'active' : '' }}">
-                    <a href="{{ route('inventories.index') }}"><i class="menu-icon fa fa-archive"></i>Инвентаризация</a>
+                    @php $hasAccess = $isAdmin || in_array('inventory', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('inventories.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                        <i class="menu-icon fa fa-archive"></i>Инвентаризация
+                        @if(!$hasAccess)
+                            <i class="fas fa-lock ms-2"></i>
+                        @endif
+                    </a>
                 </li>
                 <li class="{{ request()->routeIs('reports.turnover.*') ? 'active' : '' }}">
-                    <a href="{{ route('reports.turnover') }}"><i class="menu-icon fa fa-bar-chart"></i>Аналитика</a>
+                    @php $hasAccess = $isAdmin || in_array('analytics', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('reports.turnover') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                        <i class="menu-icon fa fa-bar-chart"></i>Аналитика
+                        @if(!$hasAccess)
+                            <i class="fas fa-lock ms-2"></i>
+                        @endif
+                    </a>
                 </li>
 
                 <li class="menu-title">Сервисы</li>
@@ -367,6 +432,13 @@
         </div><!-- /.navbar-collapse -->
     </nav>
 </aside>
+<style>
+.disabled-link {
+    pointer-events: none;
+    color: #aaa !important;
+    opacity: 0.7;
+}
+</style>
 <!-- /#left-panel -->
 <!-- Right Panel -->
 <div id="right-panel" class="right-panel">

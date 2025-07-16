@@ -102,18 +102,12 @@
                 <div class="form-group">
                     <label>Доступы</label>
                     <div class="permissions-list">
-                        
-                            <label><input type="checkbox" name="permissions[]" value="dashboard"> <span>Панель управления (дешборд)</span></label>
-                            <label><input type="checkbox" name="permissions[]" value="clients"> <span>Клиенты</span></label>
-                            <label><input type="checkbox" name="permissions[]" value="appointments"> <span>Записи</span></label>
-                            <label><input type="checkbox" name="permissions[]" value="analytics"> <span>Аналитика</span></label>
-                            <label><input type="checkbox" name="permissions[]" value="warehouse"> <span>Склад</span></label>
-                            <label><input type="checkbox" name="permissions[]" value="purchases"> <span>Закупки</span></label>
-                            <label><input type="checkbox" name="permissions[]" value="sales"> <span>Продажи</span></label>
-                            <label><input type="checkbox" name="permissions[]" value="expenses"> <span>Расходы</span></label>
-                            <label><input type="checkbox" name="permissions[]" value="inventory"> <span>Инвентаризация</span></label>
-                            <label><input type="checkbox" name="permissions[]" value="reference"> <span>Справочник</span></label>
-                            <label><input type="checkbox" name="permissions[]" value="settings"> <span>Настройки</span></label>
+                        @foreach($permissions as $perm)
+                            <label>
+                                <input type="checkbox" name="permissions[]" value="{{ $perm->name }}">
+                                <span>{{ $perm->label }}</span>
+                            </label>
+                        @endforeach
                     </div>
                 </div>
                 <div class="form-actions">
@@ -125,7 +119,7 @@
     </div>
 </div>
 <script>
-window.permissions = @json($permissions->pluck('name'));
+window.permissionsLabels = @json($permissions->pluck('label', 'name'));
 let editingRoleId = null;
 let currentDeleteRoleRow = null;
 let currentDeleteRoleId = null;
@@ -267,21 +261,10 @@ function updateRoleRow(role) {
 }
 
 function getPermissionLabel(name) {
-    // Можно доработать для красивых названий
-    switch(name) {
-        case 'dashboard': return 'Панель управления (дешборд)';
-        case 'clients': return 'Клиенты';
-        case 'appointments': return 'Записи';
-        case 'analytics': return 'Аналитика';
-        case 'warehouse': return 'Склад';
-        case 'purchases': return 'Закупки';
-        case 'sales': return 'Продажи';
-        case 'expenses': return 'Расходы';
-        case 'inventory': return 'Инвентаризация';
-        case 'reference': return 'Справочник';
-        case 'settings': return 'Настройки';
-        default: return name;
+    if (window.permissionsLabels && window.permissionsLabels[name]) {
+        return window.permissionsLabels[name];
     }
+    return name;
 }
 
 // --- Удаление роли с подтверждением ---
@@ -338,6 +321,16 @@ function onRoleSelectChange() {
     // label теперь не нужен, функция оставлена пустой
 }
 
+function toggleGroup(group) {
+    const groupCheckbox = document.getElementById('group-' + group);
+    const permsDiv = document.getElementById(group + '-permissions');
+    if (groupCheckbox.checked) {
+        permsDiv.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = true);
+    } else {
+        permsDiv.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Назначаем обработчик на кнопку только после загрузки DOM
     document.getElementById('btnAddRole').onclick = openRoleModal;
@@ -354,16 +347,21 @@ window.openRoleModal = openRoleModal;
     .permissions-list {
         display: flex;
         flex-direction: column;
-        gap: 8px;
         align-items: flex-start;
+        margin-left: 0;
+        padding-left: 0;
     }
     .permissions-list label {
-        display: inline-flex;
+        display: flex;
         align-items: center;
-        gap: 6px;
-        margin-bottom: 0;
+        margin-bottom: 6px;
+        font-weight: 400;
         white-space: nowrap;
-        font-size: 16px;
+        justify-content: flex-start;
+    }
+    .permissions-list input[type="checkbox"] {
+        margin-right: 8px;
+        margin-left: 0;
     }
     .permissions-list span {
         white-space: nowrap;

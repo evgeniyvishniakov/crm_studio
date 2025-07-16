@@ -59,4 +59,14 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
     {
         return $this->belongsTo(Project::class);
     }
+
+    public function roleModel()
+    {
+        return $this->hasOne(Role::class, 'name', 'role');
+    }
+
+    public function permissions()
+    {
+        return $this->roleModel ? $this->roleModel->permissions() : collect();
+    }
 }
