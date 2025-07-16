@@ -15,17 +15,21 @@
     display: flex;
     align-items: center;
     gap: 0.7em;
+    display: none;
 }
 #notification.show {
     opacity: 1;
+    display: block;
 }
 #notification.error {
     background: #fde8e8;
     color: #f05252;
+    display: block;
 }
 #notification.success {
     background: #e6f7ee;
     color: #10b759;
+    display: block;
 }
 #notification .notification-icon {
     width: 1.2em;

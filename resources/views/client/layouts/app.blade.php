@@ -458,7 +458,12 @@
                         <a class="nav-link" href="#"><i class="fa fa-user"></i>Мой профиль</a>
 
                         <a class="nav-link" href="#"><i class="fa fa-cog"></i>Смена пароля</a>
-                        <a class="nav-link" href="#"><i class="fa fa-power-off"></i>Выход</a>
+                        <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="fa fa-power-off"></i>Выход
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
                     </div>
                 </div>
 

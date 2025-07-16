@@ -18,18 +18,24 @@ class ClientAuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'login' => ['required', 'string'],
             'password' => ['required'],
         ]);
 
-        if (Auth::guard('client')->attempt($credentials, $request->filled('remember'))) {
+        $login = $credentials['login'];
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        if (Auth::guard('client')->attempt([
+            $field => $login,
+            'password' => $credentials['password'],
+        ], $request->filled('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended(route('dashboard'));
         }
 
         return back()->withErrors([
-            'email' => 'Неверный email или пароль.',
-        ])->onlyInput('email');
+            'login' => 'Неверный email/логин или пароль.',
+        ])->onlyInput('login');
     }
 
     public function logout(Request $request)
