@@ -39,14 +39,16 @@
                             <td>{{ $inventory->formatted_date }}</td>
                             <td>{{ $inventory->user->name ?? '—' }}</td>
                             <td>
-                                @if($inventory->discrepancies_count > 0)
-                                    {{ $inventory->discrepancies_count }}
-                                    @if($inventory->shortages_count > 0)
-                                        ({{ $inventory->shortages_count }} нехватка)
-                                    @endif
-                                    @if($inventory->overages_count > 0)
-                                        ({{ $inventory->overages_count }} излишек)
-                                    @endif
+                                @php
+                                    $overagesSum = $inventory->items->where('difference', '>', 0)->sum('difference');
+                                    $shortagesSum = $inventory->items->where('difference', '<', 0)->sum(function($item) { return abs($item->difference); });
+                                @endphp
+                                @if($overagesSum > 0 && $shortagesSum == 0)
+                                    <span style="color: #b78e15;">{{ $overagesSum }} излишек</span>
+                                @elseif($shortagesSum > 0 && $overagesSum == 0)
+                                    <span class="text-danger">{{ $shortagesSum }} нехватка</span>
+                                @elseif($overagesSum > 0 && $shortagesSum > 0)
+                                    <span>{{ $overagesSum }} излишек, <span class="text-danger">{{ $shortagesSum }} нехватка</span></span>
                                 @else
                                     <span class="text-success">Совпадает</span>
                                 @endif
@@ -1175,13 +1177,23 @@
             summaryRow.className = 'inventory-summary-row';
             summaryRow.id = `inventory-row-${inventory.id}`;
             summaryRow.setAttribute('onclick', `toggleInventoryDetailsRow(${inventory.id})`);
+            const discrepanciesCell =
+                inventory.discrepancies_count > 0
+                    ? `<span
+                        ${inventory.overages_count > 0 && inventory.shortages_count == 0
+                            ? 'style="color: #b78e15;"'
+                            : inventory.shortages_count > 0 && inventory.overages_count == 0
+                                ? 'class="text-danger"'
+                                : ''}
+                    >${inventory.discrepancies_count}
+                        ${inventory.shortages_count > 0 ? `(${inventory.shortages_count} нехватка)` : ''}
+                        ${inventory.overages_count > 0 ? `(${inventory.overages_count} излишек)` : ''}
+                    </span>`
+                    : '<span class="text-success">Совпадает</span>';
             summaryRow.innerHTML = `
                 <td>${formattedDate}</td>
                 <td>${inventory.user.name}</td>
-                <td>${inventory.discrepancies_count}
-                    ${inventory.shortages_count > 0 ? `(${inventory.shortages_count} нехватка)` : ''}
-                    ${inventory.overages_count > 0 ? `(${inventory.overages_count} излишек)` : ''}
-                </td>
+                <td>${discrepanciesCell}</td>
                 <td title="${inventory.notes}">${inventory.notes ? (inventory.notes.length > 30 ? inventory.notes.substring(0, 30) + '…' : inventory.notes) : '—'}</td>
                 <td>
                     <div class="inventory-actions">
