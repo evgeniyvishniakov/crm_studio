@@ -7,10 +7,11 @@ namespace App\Models\Clients;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use App\Models\Admin\User;
 
 class Inventory extends Model
 {
-    protected $fillable = ['date', 'user_id', 'notes'];
+    protected $fillable = ['date', 'user_id', 'notes', 'project_id'];
 
     public function user()
     {

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Clients\Inventory;
 use App\Models\Clients\Product;
-use App\Models\Clients\User;
+use App\Models\Admin\User;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
@@ -20,8 +20,9 @@ class InventoryController extends Controller
 
         $users = User::where('project_id', $currentProjectId)->get();
         $products = Product::where('project_id', $currentProjectId)->get();
-
-        return view('client.inventories.index', compact('inventories', 'users', 'products'));
+        $adminUser = $users->firstWhere('role', 'admin');
+        $adminUserId = $adminUser ? $adminUser->id : null;
+        return view('client.inventories.index', compact('inventories', 'users', 'products', 'adminUserId'));
     }
 
     public function store(Request $request)
@@ -29,7 +30,7 @@ class InventoryController extends Controller
         $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
             'date' => 'required|date',
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:admin_users,id',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
@@ -38,8 +39,9 @@ class InventoryController extends Controller
         ]);
 
         // Рассчитываем разницу для каждого товара
-        $items = collect($validated['items'])->map(function ($item) {
+        $items = collect($validated['items'])->map(function ($item) use ($currentProjectId) {
             $item['difference'] = $item['actual_qty'] - $item['warehouse_qty'];
+            $item['project_id'] = $currentProjectId;
             return $item;
         });
 
@@ -56,6 +58,12 @@ class InventoryController extends Controller
 
         // Загружаем отношения для ответа
         $inventory->load(['user', 'items.product']);
+
+        // Добавляем вычисляемые поля для фронта
+        $inventory->discrepancies_count = $inventory->discrepancies_count;
+        $inventory->shortages_count = $inventory->shortages_count;
+        $inventory->overages_count = $inventory->overages_count;
+        $inventory->formatted_date = $inventory->formatted_date;
 
         return response()->json([
             'success' => true,
@@ -76,11 +84,12 @@ class InventoryController extends Controller
 
     public function update(Request $request, $id)
     {
+        $currentProjectId = auth()->user()->project_id;
         $inventory = Inventory::findOrFail($id);
 
         $validated = $request->validate([
             'date' => 'required|date',
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'required|exists:admin_users,id',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
@@ -89,8 +98,9 @@ class InventoryController extends Controller
         ]);
 
         // Рассчитываем разницу для каждого товара
-        $items = collect($validated['items'])->map(function ($item) {
+        $items = collect($validated['items'])->map(function ($item) use ($currentProjectId) {
             $item['difference'] = $item['actual_qty'] - $item['warehouse_qty'];
+            $item['project_id'] = $currentProjectId;
             return $item;
         });
 
@@ -107,6 +117,12 @@ class InventoryController extends Controller
 
         // Загружаем отношения для ответа
         $inventory->load(['user', 'items.product']);
+
+        // Добавляем вычисляемые поля для фронта
+        $inventory->discrepancies_count = $inventory->discrepancies_count;
+        $inventory->shortages_count = $inventory->shortages_count;
+        $inventory->overages_count = $inventory->overages_count;
+        $inventory->formatted_date = $inventory->formatted_date;
 
         return response()->json([
             'success' => true,

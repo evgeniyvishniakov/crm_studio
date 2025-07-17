@@ -62,9 +62,9 @@
                             <thead>
                             <tr>
                                 <th>Фото</th>
-                                <th>Товар</th>
-                                <th>На складе</th>
-                                <th>Факт</th>
+                                <th class="large-col">Товар</th>
+                                <th class="small-col">На складе</th>
+                                <th class="small-col">Кол</th>
                                 <th>Разница</th>
                                 <th>Статус</th>
                             </tr>
@@ -79,9 +79,9 @@
                                             <div class="no-photo">Нет фото</div>
                                         @endif
                                     </td>
-                                    <td>{{ $item->product->name }}</td>
-                                    <td>{{ $item->warehouse_qty }} шт</td>
-                                    <td>{{ $item->actual_qty }} шт</td>
+                                    <td class="large-col">{{ $item->product->name }}</td>
+                                    <td class="small-col">{{ $item->warehouse_qty }} шт</td>
+                                    <td class="small-col">{{ $item->actual_qty }} шт</td>
                                     <td class="{{ $item->difference > 0 ? 'text-success' : 'text-danger' }}">
                                         {{ $item->difference > 0 ? '+' : '' }}{{ $item->difference }} шт
                                     </td>
@@ -129,7 +129,9 @@
                             <select name="user_id" required class="form-control">
                                 <option value="">Выберите ответственного</option>
                                 @foreach($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    <option value="{{ $user->id }}" {{ $user->id == $adminUserId ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -143,17 +145,17 @@
                         <h3>Товары</h3>
                         <div class="item-row template" style="display: none;">
                             <div class="form-row">
-                                <div class="form-group product-group"> <!-- Добавлен класс product-group -->
+                                <div class="form-group product-group large-col"> <!-- Добавлен класс product-group -->
                                     <label>Товар</label>
                                     <div class="product-search-container">
-                                        <input type="text" class="product-search-input form-control"
+                                        <input type="text" class="product-search-input form-control large-col"
                                                placeholder="Начните вводить название товара..."
                                                oninput="searchProducts(this)"
                                                onfocus="showProductDropdown(this)" autocomplete="off">
                                         <div class="product-dropdown" style="display: none;">
                                             <div class="product-dropdown-list"></div>
                                         </div>
-                                        <select name="items[0][product_id]" class="form-control product-select" style="display: none;">
+                                        <select name="items[0][product_id]" class="form-control product-select large-col" style="display: none;">
                                             <option value="">Выберите товар</option>
                                             @foreach($products as $product)
                                                 <option value="{{ $product->id }}" data-stock="{{ $product->stock }}">
@@ -163,11 +165,15 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label>Фактическое количество</label>
-                                    <input type="number" name="items[0][actual_qty]" required class="form-control" min="0" value="0">
+                                <div class="form-group small-col">
+                                    <label>Кол</label>
+                                    <input type="number" name="items[0][actual_qty]" required class="form-control small-col" min="0" value="0">
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group small-col">
+                                    <label>На складе</label>
+                                    <input type="number" name="items[0][warehouse_qty]" class="form-control small-col" value="0" readonly>
+                                </div>
+                                <div class="form-group small-col">
                                     <button type="button" class="btn-remove-item" onclick="removeItemRow(this)">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -197,7 +203,7 @@
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
                 <h2>Анализ инвентаризации</h2>
-                <span class="close" onclick="closeAnalysisModal()">&times;</span>
+                <span class="close" onclick="confirmCloseAnalysisModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <div class="analysis-summary">
@@ -221,12 +227,13 @@
                         </div>
                     </div>
                 </div>
-                <table class="table-striped analysis-table">
+                <table class="table-striped analysis-table products-table">
                     <thead>
                     <tr>
-                        <th>Товар</th>
-                        <th>На складе</th>
-                        <th>Факт</th>
+                        <th>Фото</th>
+                        <th>Название</th>
+                        <th class="small-col">На складе</th>
+                        <th class="small-col">Кол</th>
                         <th>Разница</th>
                         <th>Статус</th>
                     </tr>
@@ -236,7 +243,7 @@
                     </tbody>
                 </table>
                 <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="closeAnalysisModal()">Назад</button>
+                    <button type="button" class="btn-cancel" onclick="confirmCloseAnalysisModal()">Назад</button>
                     <button type="button" class="btn-submit" onclick="saveInventory()">Сохранить инвентаризацию</button>
                 </div>
             </div>
@@ -281,6 +288,30 @@
         </div>
     </div>
 
+    <!-- Модальное окно подтверждения отмены инвентаризации -->
+    <div id="cancelInventoryModal" class="confirmation-modal">
+        <div class="confirmation-content">
+            <h3>Подтверждение отмены</h3>
+            <p>Вы уверены, что хотите отменить инвентаризацию? Все несохранённые данные будут потеряны.</p>
+            <div class="confirmation-buttons">
+                <button class="cancel-btn" id="cancelCancelInventory">Отмена</button>
+                <button class="confirm-btn" id="confirmCancelInventoryBtn">Да, отменить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения отмены редактирования инвентаризации -->
+    <div id="cancelEditInventoryModal" class="confirmation-modal">
+        <div class="confirmation-content">
+            <h3>Подтверждение отмены</h3>
+            <p>Вы уверены, что хотите отменить редактирование? Все несохранённые данные будут потеряны.</p>
+            <div class="confirmation-buttons">
+                <button class="cancel-btn" id="cancelCancelEditInventory">Отмена</button>
+                <button class="confirm-btn" id="confirmCancelEditInventoryBtn">Да, отменить</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Глобальные переменные
         let currentDeleteId = null;
@@ -301,7 +332,11 @@
             }
         }
 
-        function closeInventoryModal() {
+        function closeInventoryModal(force = false) {
+            if (force) {
+                resetInventoryModal();
+                return;
+            }
             // Проверяем, есть ли введенные данные
             const hasData = Array.from(document.querySelectorAll('#inventoryForm input, #inventoryForm select, #inventoryForm textarea'))
                 .some(el => {
@@ -312,9 +347,7 @@
                 });
 
             if (hasData) {
-                if (confirm('Вы действительно хотите закрыть форму? Все несохраненные данные будут потеряны.')) {
-                    resetInventoryModal();
-                }
+                document.getElementById('cancelInventoryModal').style.display = 'block';
             } else {
                 resetInventoryModal();
             }
@@ -334,8 +367,19 @@
             document.getElementById('analysisModal').style.display = 'none';
         }
 
-        function closeEditInventoryModal() {
-            document.getElementById('editInventoryModal').style.display = 'none';
+        function closeEditInventoryModal(force = false) {
+            if (force) {
+                document.getElementById('editInventoryModal').style.display = 'none';
+                return;
+            }
+            // Проверяем, есть ли введенные данные
+            const hasData = Array.from(document.querySelectorAll('#editInventoryForm input, #editInventoryForm select, #editInventoryForm textarea'))
+                .some(el => el.value && el.value !== '' && el.value !== '0');
+            if (hasData) {
+                document.getElementById('cancelEditInventoryModal').style.display = 'block';
+            } else {
+                document.getElementById('editInventoryModal').style.display = 'none';
+            }
         }
 
         function closeViewAllItemsModal() {
@@ -356,21 +400,54 @@
             if (event.target == document.getElementById('confirmationModal')) {
                 document.getElementById('confirmationModal').style.display = 'none';
             }
+            if (event.target == document.getElementById('cancelInventoryModal')) {
+                document.getElementById('cancelInventoryModal').style.display = 'none';
+            }
+            if (event.target == document.getElementById('cancelEditInventoryModal')) {
+                document.getElementById('cancelEditInventoryModal').style.display = 'none';
+            }
         }
 
+        // Логика для модального окна отмены инвентаризации
+        document.getElementById('cancelCancelInventory').addEventListener('click', function() {
+            document.getElementById('cancelInventoryModal').style.display = 'none';
+        });
+        document.getElementById('confirmCancelInventoryBtn').addEventListener('click', function() {
+            document.getElementById('cancelInventoryModal').style.display = 'none';
+            resetInventoryModal();
+            window.showNotification('error', 'Инвентаризация отменена пользователем');
+        });
+
+        // Логика для модального окна подтверждения отмены редактирования инвентаризации
+        document.getElementById('cancelCancelEditInventory').addEventListener('click', function() {
+            document.getElementById('cancelEditInventoryModal').style.display = 'none';
+        });
+        document.getElementById('confirmCancelEditInventoryBtn').addEventListener('click', function() {
+            document.getElementById('cancelEditInventoryModal').style.display = 'none';
+            document.getElementById('editInventoryModal').style.display = 'none';
+            window.showNotification('error', 'Редактирование отменено пользователем');
+        });
+
         // Функции для работы с товарами в инвентаризации
-        function addItemRow() {
-            const container = document.getElementById('itemsContainer');
+        function addItemRow(containerId = 'itemsContainer') {
+            const container = document.getElementById(containerId);
             const template = container.querySelector('.template');
             const newRow = template.cloneNode(true);
 
             newRow.style.display = 'block';
             newRow.classList.remove('template');
 
+            // Определяем текущий индекс
+            let index = itemCounter;
+            if (containerId === 'editItemsContainer') {
+                // Для редактирования считаем количество уже добавленных рядов
+                index = container.querySelectorAll('.item-row:not(.template)').length;
+            }
+
             // Обновляем индексы в именах полей
             const inputs = newRow.querySelectorAll('input, select');
             inputs.forEach(input => {
-                const name = input.name.replace(/\[\d+\]/, `[${itemCounter}]`);
+                const name = input.name.replace(/\[\d+\]/, `[${index}]`);
                 input.name = name;
                 if (input.tagName === 'SELECT') {
                     input.selectedIndex = 0;
@@ -383,16 +460,16 @@
             const searchContainer = newRow.querySelector('.product-search-container');
             if (searchContainer) {
                 const searchInput = searchContainer.querySelector('.product-search-input');
-                searchInput.id = `product-search-${itemCounter}`;
+                searchInput.id = `product-search-${index}`;
                 searchInput.value = '';
 
                 const select = searchContainer.querySelector('.product-select');
-                select.name = `items[${itemCounter}][product_id]`;
+                select.name = `items[${index}][product_id]`;
                 select.selectedIndex = 0;
             }
 
             container.insertBefore(newRow, container.querySelector('.form-actions'));
-            itemCounter++;
+            if (containerId === 'itemsContainer') itemCounter++;
         }
 
         function removeItemRow(button) {
@@ -447,8 +524,8 @@
                                     <tr>
                                         <th>Фото</th>
                                         <th>Товар</th>
-                                        <th>На складе</th>
-                                        <th>Факт</th>
+                                        <th class="small-col">На складе</th>
+                                        <th class="small-col">Кол</th>
                                         <th>Разница</th>
                                         <th>Статус</th>
                                     </tr>
@@ -468,8 +545,8 @@
                                 `<div class="no-photo">Нет фото</div>`}
                                     </td>
                                     <td>${item.product.name}</td>
-                                    <td>${item.warehouse_qty} шт</td>
-                                    <td>${item.actual_qty} шт</td>
+                                    <td class="small-col">${item.warehouse_qty} шт</td>
+                                    <td class="small-col">${item.actual_qty} шт</td>
                                     <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
                                         ${item.difference > 0 ? '+' : ''}${item.difference} шт
                                     </td>
@@ -563,16 +640,29 @@
                 const status = item.difference == 0 ? '✅ Совпадает' :
                     item.difference > 0 ? '⚠️ Лишнее' : '❌ Не хватает';
 
+                // Поиск фото товара по id
+                let product = null;
+                if (window.allProducts) {
+                    product = window.allProducts.find(p => p.id == item.product_id);
+                }
+                let photoHtml = '<div class="no-photo">Нет фото</div>';
+                if (product && product.photo) {
+                    photoHtml = `<a href="/storage/${product.photo}" class="zoomable-image" data-img="/storage/${product.photo}">
+                        <img src="/storage/${product.photo}" alt="${item.product_name}" class="product-photo">
+                    </a>`;
+                }
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
-            <td>${item.product_name}</td>
-            <td>${item.warehouse_qty} шт</td>
-            <td>${item.actual_qty} шт</td>
-            <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
-                ${item.difference > 0 ? '+' : ''}${item.difference} шт
-            </td>
-            <td>${status}</td>
-        `;
+                    <td>${photoHtml}</td>
+                    <td>${item.product_name}</td>
+                    <td class="small-col">${item.warehouse_qty} шт</td>
+                    <td class="small-col">${item.actual_qty} шт</td>
+                    <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
+                        ${item.difference > 0 ? '+' : ''}${item.difference} шт
+                    </td>
+                    <td>${status}</td>
+                `;
                 tableBody.appendChild(row);
             });
 
@@ -583,7 +673,7 @@
             document.getElementById('overageItems').textContent = overageItems;
 
             // Закрываем модалку формы и открываем модалку анализа
-            closeInventoryModal();
+            closeInventoryModal(true);
             openAnalysisModal();
         }
 
@@ -648,7 +738,7 @@
 
                         // Создаем форму редактирования
                         const formHtml = `
-                            <form id="editInventoryForm">
+                            <form id="editInventoryForm" data-project-id="${inventory.project_id}">
                                 @csrf
                         @method('PUT')
                         <div class="form-row">
@@ -674,28 +764,66 @@
                                 </div>
                                 <div class="items-container" id="editItemsContainer">
                                     <h3>Товары</h3>
+                                    <div class="item-row template" style="display: none;">
+                                        <div class="form-row">
+                                            <div class="form-group product-group large-col">
+                                                <label>Товар</label>
+                                                <div class="product-search-container">
+                                                    <input type="text" class="product-search-input form-control large-col"
+                                                           placeholder="Начните вводить название товара..."
+                                                           oninput="searchProducts(this)"
+                                                           onfocus="showProductDropdown(this)" autocomplete="off">
+                                                    <div class="product-dropdown" style="display: none;">
+                                                        <div class="product-dropdown-list"></div>
+                                                    </div>
+                                                    <select name="items[0][product_id]" class="form-control product-select large-col" style="display: none;">
+                                                        <option value="">Выберите товар</option>
+                                                        @foreach($products as $product)
+                                                            <option value="{{ $product->id }}" data-stock="{{ $product->stock }}">
+                                                                {{ $product->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group small-col">
+                                                <label>На складе</label>
+                                                <input type="number" name="items[0][warehouse_qty]" class="form-control small-col" value="0" readonly>
+                                            </div>
+                                            <div class="form-group small-col">
+                                                <label>Кол</label>
+                                                <input type="number" name="items[0][actual_qty]" required class="form-control small-col" min="0" value="0">
+                                            </div>
+                                            <div class="form-group small-col">
+                                                <button type="button" class="btn-remove-item" onclick="removeItemRow(this)">
+                                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                     ${inventory.items.map((item, index) => `
                                         <div class="item-row">
                                             <div class="form-row">
-                                                <div class="form-group">
-                                                    <label>Товар </label>
+                                                <div class="form-group product-group large-col">
+                                                    <label>Товар</label>
                                                     <div class="product-search-container">
-                                                        <input type="text" class="product-search-input form-control"
-                                                               value="${item.product.name}" readonly>
-                                                        <select name="items[${index}][product_id]" class="form-control product-select" style="display: none;">
+                                                        <input type="text" class="product-search-input form-control large-col" value="${item.product.name}" readonly>
+                                                        <select name="items[${index}][product_id]" class="form-control product-select large-col" style="display: none;">
                                                             <option value="${item.product_id}" selected>${item.product.name}</option>
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="form-group">
-                                                    <label>На складе </label>
-                                                    <input type="number" name="items[${index}][warehouse_qty]" class="form-control" value="${item.warehouse_qty}" readonly>
+                                                <div class="form-group small-col">
+                                                    <label>На складе</label>
+                                                    <input type="number" name="items[${index}][warehouse_qty]" class="form-control small-col" value="${item.warehouse_qty}" readonly>
                                                 </div>
-                                                <div class="form-group">
-                                                    <label>Фактическое количество </label>
-                                                    <input type="number" name="items[${index}][actual_qty]" required class="form-control" min="0" value="${item.actual_qty}">
+                                                <div class="form-group small-col">
+                                                    <label>Кол</label>
+                                                    <input type="number" name="items[${index}][actual_qty]" required class="form-control small-col" min="0" value="${item.actual_qty}">
                                                 </div>
-                                                <div class="form-group">
+                                                <div class="form-group small-col">
                                                     <button type="button" class="btn-remove-item" onclick="removeItemRow(this)">
                                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -732,6 +860,7 @@
 
         // Функция для анализа при редактировании инвентаризации
         function analyzeEditInventory(id) {
+            console.log('analyzeEditInventory called', id);
             clearErrors('editInventoryForm');
 
             // Собираем данные о товарах
@@ -739,17 +868,38 @@
             const seenProducts = new Set();
             let hasErrors = false;
 
+            // Получаем project_id (например, из глобальной переменной или data-атрибута)
+            let projectId = window.currentProjectId;
+            if (!projectId) {
+                // Попробуем взять из формы, если есть
+                const form = document.getElementById('editInventoryForm');
+                if (form && form.dataset.projectId) {
+                    projectId = form.dataset.projectId;
+                }
+            }
+
+            const rows = document.querySelectorAll('#editItemsContainer .item-row');
+            console.log('rows found:', rows.length);
+
             document.querySelectorAll('#editItemsContainer .item-row').forEach((row, index) => {
+                if (row.classList.contains('template')) return; // пропускать шаблон
+
                 const productId = row.querySelector('[name*="product_id"]').value;
                 const actualQty = row.querySelector('[name*="actual_qty"]').value;
+                const warehouseQtyInput = row.querySelector('[name*="warehouse_qty"]');
+                let warehouseQty = warehouseQtyInput ? warehouseQtyInput.value : 0;
+                if (!warehouseQty) warehouseQty = 0;
+                console.log('row', index, {productId, actualQty, warehouseQty});
 
                 if (!productId) {
+                    console.warn('No productId in row', index);
                     showError(row.querySelector('[name*="product_id"]'), 'Выберите товар');
                     hasErrors = true;
                     return;
                 }
 
                 if (seenProducts.has(productId)) {
+                    console.warn('Duplicate productId in row', index);
                     showError(row.querySelector('[name*="product_id"]'), 'Этот товар уже добавлен');
                     hasErrors = true;
                     return;
@@ -757,7 +907,6 @@
 
                 seenProducts.add(productId);
 
-                const warehouseQty = row.querySelector('[name*="warehouse_qty"]').value;
                 const productName = row.querySelector('.product-search-input').value;
 
                 items.push({
@@ -765,15 +914,20 @@
                     product_name: productName,
                     warehouse_qty: parseInt(warehouseQty),
                     actual_qty: parseInt(actualQty),
-                    difference: parseInt(actualQty) - parseInt(warehouseQty)
+                    difference: parseInt(actualQty) - parseInt(warehouseQty),
+                    project_id: projectId
                 });
             });
 
+            console.log('items for analysis:', items);
+
             if (hasErrors) {
+                console.warn('Validation errors, aborting analysis');
                 return;
             }
 
             if (items.length === 0) {
+                console.warn('No items to analyze');
                 window.showNotification('error', 'Добавьте хотя бы один товар');
                 return;
             }
@@ -785,6 +939,8 @@
                 notes: document.querySelector('#editInventoryForm [name="notes"]').value,
                 items: items
             };
+
+            console.log('inventoryData ready:', inventoryData);
 
             // Отправляем запрос на обновление
             fetch(`/inventories/${id}`, {
@@ -801,6 +957,7 @@
             })
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Server response:', data);
                     if (data.success) {
                         window.showNotification('success', 'Инвентаризация успешно обновлена');
                         closeEditInventoryModal();
@@ -811,6 +968,7 @@
                     }
                 })
                 .catch(error => {
+                    console.error('Server error:', error);
                     window.showNotification('error', 'Ошибка обновления инвентаризации');
                 });
         }
@@ -887,8 +1045,8 @@
                 }
                         </td>
                         <td>${item.product.name}</td>
-                        <td>${item.warehouse_qty} шт</td>
-                        <td>${item.actual_qty} шт</td>
+                        <td class="small-col">${item.warehouse_qty} шт</td>
+                        <td class="small-col">${item.actual_qty} шт</td>
                         <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
                             ${item.difference > 0 ? '+' : ''}${item.difference} шт
                         </td>
@@ -932,8 +1090,8 @@
                                 <tr>
                                     <th>Фото</th>
                                     <th>Товар</th>
-                                    <th>На складе</th>
-                                    <th>Факт</th>
+                                    <th class="small-col">На складе</th>
+                                    <th class="small-col">Кол</th>
                                     <th>Разница</th>
                                     <th>Статус</th>
                                 </tr>
@@ -1001,8 +1159,8 @@
                                 <tr>
                                     <th>Фото</th>
                                     <th>Товар</th>
-                                    <th>На складе</th>
-                                    <th>Факт</th>
+                                    <th class="small-col">На складе</th>
+                                    <th class="small-col">Кол</th>
                                     <th>Разница</th>
                                     <th>Статус</th>
                                 </tr>
@@ -1019,8 +1177,8 @@
                         `<div class="no-photo">Нет фото</div>`}
                                             </td>
                                             <td>${item.product.name}</td>
-                                            <td>${item.warehouse_qty} шт</td>
-                                            <td>${item.actual_qty} шт</td>
+                                            <td class="small-col">${item.warehouse_qty} шт</td>
+                                            <td class="small-col">${item.actual_qty} шт</td>
                                             <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
                                                 ${item.difference > 0 ? '+' : ''}${item.difference} шт
                                             </td>
@@ -1047,6 +1205,21 @@
             errorElement.className = 'error-message';
             errorElement.textContent = message;
             input.parentNode.insertBefore(errorElement, input.nextSibling);
+        }
+
+        // Универсальная функция для очистки ошибок формы
+        function clearErrors(formId = null) {
+            let form;
+            if (formId) {
+                form = document.getElementById(formId);
+            } else {
+                form = document;
+            }
+            if (!form) return;
+            // Удаляем все сообщения об ошибках
+            form.querySelectorAll('.error-message').forEach(el => el.remove());
+            // Убираем класс is-invalid у всех полей
+            form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
         }
 
         // Поиск инвентаризаций
@@ -1135,6 +1308,13 @@
 
             // Выделяем выбранный элемент
             element.classList.add('selected');
+
+            // Автоматически подставлять остаток на складе в warehouse_qty
+            const warehouseQtyInput = container.closest('.item-row').querySelector('[name*="warehouse_qty"]');
+            if (warehouseQtyInput && window.allProducts) {
+                const product = window.allProducts.find(p => p.id == productId);
+                warehouseQtyInput.value = product && product.stock !== undefined ? product.stock : 0;
+            }
         }
 
 
@@ -1146,5 +1326,23 @@
                 });
             }
         });
+
+        // Подтверждение закрытия анализа инвентаризации
+        function confirmCloseAnalysisModal() {
+            document.getElementById('cancelInventoryModal').style.display = 'block';
+            // При подтверждении — закрыть анализ и сбросить форму
+            const confirmBtn = document.getElementById('confirmCancelInventoryBtn');
+            // Чтобы не навешивать несколько обработчиков подряд:
+            confirmBtn.onclick = function() {
+                document.getElementById('cancelInventoryModal').style.display = 'none';
+                closeAnalysisModal();
+                resetInventoryModal();
+                window.showNotification('error', 'Инвентаризация отменена пользователем');
+                // Восстановить стандартное поведение для других случаев
+                confirmBtn.onclick = defaultCancelInventoryHandler;
+            };
+        }
+        // Сохраняем стандартный обработчик для других случаев отмены
+        const defaultCancelInventoryHandler = document.getElementById('confirmCancelInventoryBtn').onclick;
     </script>
 @endsection
