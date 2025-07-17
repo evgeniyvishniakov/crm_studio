@@ -23,96 +23,106 @@
                 </div>
             </div>
         </div>
-
-        <div class="inventories-list" id="inventoriesList">
-            @foreach($inventories as $inventory)
-                <div class="inventory-item" id="inventory-{{ $inventory->id }}">
-                    <div class="inventory-header" onclick="toggleInventoryDetails({{ $inventory->id }})">
-                        <div class="inventory-info">
-                            <span class="inventory-date">{{ $inventory->formatted_date }}</span>
-                            <span class="inventory-user">{{ $inventory->user->name ?? '—' }}</span>
-                            <span class="inventory-stats">
-                                {{ $inventory->discrepancies_count }} расхождений
-                                @if($inventory->shortages_count > 0)
-                                    ({{ $inventory->shortages_count }} нехватка)
-                                @endif
-                                @if($inventory->overages_count > 0)
-                                    ({{ $inventory->overages_count }} излишек)
-                                @endif
-                            </span>
-                        </div>
-                        <div class="inventory-actions">
-                            <button class="btn-edit" onclick="editInventory(event, {{ $inventory->id }})">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                </svg>
-                                Ред.
-                            </button>
-                            <button class="btn-delete" onclick="confirmDeleteInventory(event, {{ $inventory->id }})">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                </svg>
-                                Удалить
-                            </button>
-                            <button class="btn-pdf" onclick="downloadInventoryPdf(event, {{ $inventory->id }})">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
-                                </svg>
-                                PDF
-                            </button>
-                        </div>
-                    </div>
-                    <div class="inventory-details" id="details-{{ $inventory->id }}" style="display: none;">
-                        <div class="inventory-notes">{{ $inventory->notes }}</div>
-                        <table class="table-striped analysis-table products-table">
-                            <thead>
-                            <tr>
-                                <th>Фото</th>
-                                <th class="large-col">Товар</th>
-                                <th class="small-col">Склад</th>
-                                <th class="small-col">Кол</th>
-                                <th>Разница</th>
-                                <th>Статус</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($inventory->items->where('difference', '!=', 0) as $item)
+        <table class="table inventories-table">
+            <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Ответственный</th>
+                    <th>Расхождения</th>
+                    <th>Примечания</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody id="inventoriesListBody">
+                @foreach($inventories as $inventory)
+                    <tr class="inventory-summary-row" id="inventory-row-{{ $inventory->id }}" onclick="toggleInventoryDetailsRow({{ $inventory->id }})">
+                        <td>{{ $inventory->formatted_date }}</td>
+                        <td>{{ $inventory->user->name ?? '—' }}</td>
+                        <td>{{ $inventory->discrepancies_count }}
+                            @if($inventory->shortages_count > 0)
+                                ({{ $inventory->shortages_count }} нехватка)
+                            @endif
+                            @if($inventory->overages_count > 0)
+                                ({{ $inventory->overages_count }} излишек)
+                            @endif
+                        </td>
+                        <td title="{{ $inventory->notes }}">{{ $inventory->notes ? Str::limit($inventory->notes, 30) : '—' }}</td>
+                        <td>
+                            <div class="inventory-actions">
+                                <button class="btn-edit" onclick="editInventory(event, {{ $inventory->id }})">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                    Ред.
+                                </button>
+                                <button class="btn-delete" onclick="confirmDeleteInventory(event, {{ $inventory->id }})">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Удалить
+                                </button>
+                                <button class="btn-pdf" onclick="downloadInventoryPdf(event, {{ $inventory->id }})">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
+                                    </svg>
+                                    PDF
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="inventory-details-row" id="details-row-{{ $inventory->id }}" style="display: none;">
+                        <td colspan="5">
+                            <div class="inventory-notes">{{ $inventory->notes }}</div>
+                            <table class="table-striped analysis-table products-table">
+                                <thead>
                                 <tr>
-                                    <td>
-                                        @if($item->product->photo)
-                                            <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="{{ $item->product->name }}">
-                                        @else
-                                            <div class="no-photo">Нет фото</div>
-                                        @endif
-                                    </td>
-                                    <td class="large-col">{{ $item->product->name }}</td>
-                                    <td class="small-col">{{ $item->warehouse_qty }} шт</td>
-                                    <td class="small-col">{{ $item->actual_qty }} шт</td>
-                                    <td class="{{ $item->difference > 0 ? 'text-success' : 'text-danger' }}">
-                                        {{ $item->difference > 0 ? '+' : '' }}{{ $item->difference }} шт
-                                    </td>
-                                    <td>
-                                        @if($item->difference == 0)
-                                            <span class="status-success">✅ Совпадает</span>
-                                        @elseif($item->difference > 0)
-                                            <span class="status-warning">⚠️ Лишнее</span>
-                                        @else
-                                            <span class="status-danger">❌ Не хватает</span>
-                                        @endif
-                                    </td>
+                                    <th>Фото</th>
+                                    <th class="large-col">Товар</th>
+                                    <th class="small-col">Склад</th>
+                                    <th class="small-col">Кол</th>
+                                    <th>Разница</th>
+                                    <th>Статус</th>
                                 </tr>
-                            @endforeach
-                            </tbody>
-                        </table>
-                        <div class="view-all-items">
-                            <button class="btn-view-all" onclick="viewAllInventoryItems({{ $inventory->id }})">
-                                Просмотреть весь список
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
+                                </thead>
+                                <tbody>
+                                @foreach($inventory->items->where('difference', '!=', 0) as $item)
+                                    <tr>
+                                        <td>
+                                            @if($item->product->photo)
+                                                <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="{{ $item->product->name }}">
+                                            @else
+                                                <div class="no-photo">Нет фото</div>
+                                            @endif
+                                        </td>
+                                        <td class="large-col">{{ $item->product->name }}</td>
+                                        <td class="small-col">{{ $item->warehouse_qty }} шт</td>
+                                        <td class="small-col">{{ $item->actual_qty }} шт</td>
+                                        <td class="{{ $item->difference > 0 ? 'text-success' : 'text-danger' }}">
+                                            {{ $item->difference > 0 ? '+' : '' }}{{ $item->difference }} шт
+                                        </td>
+                                        <td>
+                                            @if($item->difference == 0)
+                                                <span class="status-success">✅ Совпадает</span>
+                                            @elseif($item->difference > 0)
+                                                <span class="status-warning">⚠️ Лишнее</span>
+                                            @else
+                                                <span class="status-danger">❌ Не хватает</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                            <div class="view-all-items">
+                                <button class="btn-view-all" onclick="viewAllInventoryItems({{ $inventory->id }})">
+                                    Просмотреть весь список
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
 
     <!-- Модальное окно новой инвентаризации -->
@@ -877,7 +887,6 @@
 
         // Функция для анализа при редактировании инвентаризации
         function analyzeEditInventory(id) {
-            console.log('analyzeEditInventory called', id);
             clearErrors('editInventoryForm');
 
             // Собираем данные о товарах
@@ -896,7 +905,6 @@
             }
 
             const rows = document.querySelectorAll('#editItemsContainer .item-row');
-            console.log('rows found:', rows.length);
 
             document.querySelectorAll('#editItemsContainer .item-row').forEach((row, index) => {
                 if (row.classList.contains('template')) return; // пропускать шаблон
@@ -906,17 +914,14 @@
                 const warehouseQtyInput = row.querySelector('[name*="warehouse_qty"]');
                 let warehouseQty = warehouseQtyInput ? warehouseQtyInput.value : 0;
                 warehouseQty = parseInt(warehouseQty) || 0;
-                console.log('row', index, {productId, actualQty, warehouseQty});
 
                 if (!productId) {
-                    console.warn('No productId in row', index);
                     showError(row.querySelector('[name*="product_id"]'), 'Выберите товар');
                     hasErrors = true;
                     return;
                 }
 
                 if (seenProducts.has(productId)) {
-                    console.warn('Duplicate productId in row', index);
                     showError(row.querySelector('[name*="product_id"]'), 'Этот товар уже добавлен');
                     hasErrors = true;
                     return;
@@ -936,15 +941,11 @@
                 });
             });
 
-            console.log('items for analysis:', items);
-
             if (hasErrors) {
-                console.warn('Validation errors, aborting analysis');
                 return;
             }
 
             if (items.length === 0) {
-                console.warn('No items to analyze');
                 window.showNotification('error', 'Добавьте хотя бы один товар');
                 return;
             }
@@ -956,8 +957,6 @@
                 notes: document.querySelector('#editInventoryForm [name="notes"]').value,
                 items: items
             };
-
-            console.log('inventoryData ready:', inventoryData);
 
             // Отправляем запрос на обновление
             fetch(`/inventories/${id}`, {
@@ -974,19 +973,19 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Server response:', data);
                     if (data.success) {
                         window.showNotification('success', 'Инвентаризация успешно обновлена');
-                        closeEditInventoryModal();
-                        // Обновляем данные на странице
+                        closeEditInventoryModal(true); // force=true — закрыть без подтверждения
                         updateInventoryInDOM(data.inventory);
                     } else {
                         window.showNotification('error', data.message || 'Ошибка обновления инвентаризации');
+                        // Не закрываем модалку, не вызываем отмену!
                     }
                 })
                 .catch(error => {
                     console.error('Server error:', error);
                     window.showNotification('error', 'Ошибка обновления инвентаризации');
+                    // Не закрываем модалку, не вызываем отмену!
                 });
         }
 
@@ -1024,7 +1023,10 @@
                 .then(data => {
                     if (data.success) {
                         window.showNotification('success', 'Инвентаризация успешно удалена');
-                        document.getElementById(`inventory-${id}`).remove();
+                        const summaryRow = document.getElementById(`inventory-row-${id}`);
+                        const detailsRow = document.getElementById(`details-row-${id}`);
+                        if (summaryRow) summaryRow.remove();
+                        if (detailsRow) detailsRow.remove();
                     } else {
                         window.showNotification('error', data.message || 'Ошибка при удалении инвентаризации');
                     }
@@ -1074,17 +1076,15 @@
 
             // Создаём HTML инвентаризации
             const inventoryHTML = `
-                <div class="inventory-item" id="inventory-${inventory.id}">
-                    <div class="inventory-header" onclick="toggleInventoryDetails(${inventory.id})">
-                        <div class="inventory-info">
-                            <span class="inventory-date">${formattedDate}</span>
-                            <span class="inventory-user">${inventory.user.name}</span>
-                            <span class="inventory-stats">
-                                ${inventory.discrepancies_count} расхождений
-                                ${inventory.shortages_count > 0 ? `(${inventory.shortages_count} нехватка)` : ''}
-                                ${inventory.overages_count > 0 ? `(${inventory.overages_count} излишек)` : ''}
-                            </span>
-                        </div>
+                <tr class="inventory-summary-row" id="inventory-row-${inventory.id}" onclick="toggleInventoryDetailsRow(${inventory.id})">
+                    <td>${formattedDate}</td>
+                    <td>${inventory.user.name}</td>
+                    <td>${inventory.discrepancies_count}
+                        ${inventory.shortages_count > 0 ? `(${inventory.shortages_count} нехватка)` : ''}
+                        ${inventory.overages_count > 0 ? `(${inventory.overages_count} излишек)` : ''}
+                    </td>
+                    <td title="${inventory.notes}">${inventory.notes ? (inventory.notes.length > 30 ? inventory.notes.substring(0, 30) + '…' : inventory.notes) : '—'}</td>
+                    <td>
                         <div class="inventory-actions">
                             <button class="btn-edit" onclick="editInventory(event, ${inventory.id})">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -1105,14 +1105,16 @@
                                 PDF
                             </button>
                         </div>
-                    </div>
-                    <div class="inventory-details" id="details-${inventory.id}" style="display: none;">
+                    </td>
+                </tr>
+                <tr class="inventory-details-row" id="details-row-${inventory.id}" style="display: none;">
+                    <td colspan="5">
                         <div class="inventory-notes">${inventory.notes || ''}</div>
-                        <table class="table-striped inventory-table">
+                        <table class="table-striped analysis-table products-table">
                             <thead>
                                 <tr>
                                     <th>Фото</th>
-                                    <th>Товар</th>
+                                    <th class="large-col">Товар</th>
                                     <th class="small-col">Склад</th>
                                     <th class="small-col">Кол</th>
                                     <th>Разница</th>
@@ -1128,13 +1130,13 @@
                                 Просмотреть весь список
                             </button>
                         </div>
-                    </div>
-                </div>
+                    </td>
+                </tr>
             `;
 
             // Вставляем в DOM
-            const inventoriesList = document.getElementById('inventoriesList');
-            inventoriesList.insertAdjacentHTML('afterbegin', inventoryHTML);
+            const inventoriesListBody = document.getElementById('inventoriesListBody');
+            inventoriesListBody.insertAdjacentHTML('beforeend', inventoryHTML);
         }
 
         function updateInventoryInDOM(inventory) {
@@ -1144,86 +1146,102 @@
                 year: 'numeric'
             }).replace(/\./g, '.');
 
-            const inventoryElement = document.getElementById(`inventory-${inventory.id}`);
-            if (inventoryElement) {
-                // Фильтруем товары с расхождениями
-                const itemsWithDiscrepancies = inventory.items.filter(item => item.difference !== 0);
+            // Создаём новую основную строку
+            const summaryRow = document.createElement('tr');
+            summaryRow.className = 'inventory-summary-row';
+            summaryRow.id = `inventory-row-${inventory.id}`;
+            summaryRow.setAttribute('onclick', `toggleInventoryDetailsRow(${inventory.id})`);
+            summaryRow.innerHTML = `
+                <td>${formattedDate}</td>
+                <td>${inventory.user.name}</td>
+                <td>${inventory.discrepancies_count}
+                    ${inventory.shortages_count > 0 ? `(${inventory.shortages_count} нехватка)` : ''}
+                    ${inventory.overages_count > 0 ? `(${inventory.overages_count} излишек)` : ''}
+                </td>
+                <td title="${inventory.notes}">${inventory.notes ? (inventory.notes.length > 30 ? inventory.notes.substring(0, 30) + '…' : inventory.notes) : '—'}</td>
+                <td>
+                    <div class="inventory-actions">
+                        <button class="btn-edit" onclick="editInventory(event, ${inventory.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                            </svg>
+                            Ред.
+                        </button>
+                        <button class="btn-delete" onclick="confirmDeleteInventory(event, ${inventory.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            Удалить
+                        </button>
+                        <button class="btn-pdf" onclick="downloadInventoryPdf(event, ${inventory.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
+                            </svg>
+                            PDF
+                        </button>
+                    </div>
+                </td>
+            `;
 
-                inventoryElement.innerHTML = `
-                    <div class="inventory-header" onclick="toggleInventoryDetails(${inventory.id})">
-                        <div class="inventory-info">
-                            <span class="inventory-date">${formattedDate}</span>
-                            <span class="inventory-user">${inventory.user.name}</span>
-                            <span class="inventory-stats">
-                                ${inventory.discrepancies_count} расхождений
-                                ${inventory.shortages_count > 0 ? `(${inventory.shortages_count} нехватка)` : ''}
-                                ${inventory.overages_count > 0 ? `(${inventory.overages_count} излишек)` : ''}
-                            </span>
-                        </div>
-                        <div class="inventory-actions">
-                            <button class="btn-edit" onclick="editInventory(event, ${inventory.id})">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                </svg>
-                                Ред.
-                            </button>
-                            <button class="btn-delete" onclick="confirmDeleteInventory(event, ${inventory.id})">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                </svg>
-                                Удалить
-                            </button>
-                            <button class="btn-pdf" onclick="downloadInventoryPdf(event, ${inventory.id})">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
-                                </svg>
-                                PDF
-                            </button>
-                        </div>
-                    </div>
-                    <div class="inventory-details" id="details-${inventory.id}" style="display: none;">
-                        <div class="inventory-notes">${inventory.notes || ''}</div>
-                        <table class="table-striped inventory-table">
-                            <thead>
-                                <tr>
-                                    <th>Фото</th>
-                                    <th>Товар</th>
-                                    <th class="small-col">Склад</th>
-                                    <th class="small-col">Кол</th>
-                                    <th>Разница</th>
-                                    <th>Статус</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${itemsWithDiscrepancies.map(item => {
-                    const status = item.difference == 0 ? '✅ Совпадает' :
-                        item.difference > 0 ? '⚠️ Лишнее' : '❌ Не хватает';
-                    return `
-                                        <tr>
-                                            <td>
-                                                ${item.product.photo ?
-                        `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` :
-                        `<div class="no-photo">Нет фото</div>`}
-                                            </td>
-                                            <td>${item.product.name}</td>
-                                            <td class="small-col">${item.warehouse_qty} шт</td>
-                                            <td class="small-col">${item.actual_qty} шт</td>
-                                            <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
-                                                ${item.difference > 0 ? '+' : ''}${item.difference} шт
-                                            </td>
-                                            <td>${status}</td>
-                                        </tr>
-                                    `;
-                }).join('')}
-                            </tbody>
-                        </table>
-                        <div class="view-all-items">
-                            <button class="btn-view-all" onclick="viewAllInventoryItems(${inventory.id})">
-                                Просмотреть весь список
-                            </button>
-                        </div>
-                    </div>
+            // Создаём новую детальную строку
+            const detailsRow = document.createElement('tr');
+            detailsRow.className = 'inventory-details-row';
+            detailsRow.id = `details-row-${inventory.id}`;
+            detailsRow.style.display = 'none';
+            const itemsWithDiscrepancies = inventory.items.filter(item => item.difference !== 0);
+            const itemsHTML = itemsWithDiscrepancies.map(item => {
+                const status = item.difference == 0 ? '✅ Совпадает' :
+                    item.difference > 0 ? '⚠️ Лишнее' : '❌ Не хватает';
+                return `
+                    <tr>
+                        <td>
+                            ${item.product.photo
+                                ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">`
+                                : `<div class="no-photo">Нет фото</div>`
+                            }
+                        </td>
+                        <td>${item.product.name}</td>
+                        <td class="small-col">${item.warehouse_qty} шт</td>
+                        <td class="small-col">${item.actual_qty} шт</td>
+                        <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
+                            ${item.difference > 0 ? '+' : ''}${item.difference} шт
+                        </td>
+                        <td>${status}</td>
+                    </tr>
                 `;
+            }).join('');
+            detailsRow.innerHTML = `
+                <td colspan="5">
+                    <div class="inventory-notes">${inventory.notes || ''}</div>
+                    <table class="table-striped analysis-table products-table">
+                        <thead>
+                            <tr>
+                                <th>Фото</th>
+                                <th class="large-col">Товар</th>
+                                <th class="small-col">Склад</th>
+                                <th class="small-col">Кол</th>
+                                <th>Разница</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsHTML}
+                        </tbody>
+                    </table>
+                    <div class="view-all-items">
+                        <button class="btn-view-all" onclick="viewAllInventoryItems(${inventory.id})">
+                            Просмотреть весь список
+                        </button>
+                    </div>
+                </td>
+            `;
+
+            // Заменяем обе строки в DOM
+            const oldSummaryRow = document.getElementById(`inventory-row-${inventory.id}`);
+            const oldDetailsRow = document.getElementById(`details-row-${inventory.id}`);
+            if (oldSummaryRow && oldDetailsRow) {
+                oldSummaryRow.parentNode.replaceChild(summaryRow, oldSummaryRow);
+                oldDetailsRow.parentNode.replaceChild(detailsRow, oldDetailsRow);
             }
         }
 
@@ -1254,13 +1272,13 @@
         // Поиск инвентаризаций
         document.getElementById('searchInput').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
-            const inventories = document.querySelectorAll('.inventory-item');
+            const inventories = document.querySelectorAll('.inventory-summary-row');
 
             inventories.forEach(inventory => {
                 const header = inventory.querySelector('.inventory-header');
                 const textContent = header.textContent.toLowerCase();
                 if (textContent.includes(searchTerm)) {
-                    inventory.style.display = 'block';
+                    inventory.style.display = 'table-row';
                 } else {
                     inventory.style.display = 'none';
                 }
@@ -1413,6 +1431,14 @@
         function downloadInventoryPdf(event, id) {
             event.stopPropagation();
             window.open(`/inventories/${id}/pdf`, '_blank');
+        }
+
+        // Функция для показа/скрытия деталей инвентаризации (для таблицы)
+        function toggleInventoryDetailsRow(id) {
+            const detailsRow = document.getElementById(`details-row-${id}`);
+            if (detailsRow) {
+                detailsRow.style.display = detailsRow.style.display === 'none' ? 'table-row' : 'none';
+            }
         }
     </script>
 @endsection
