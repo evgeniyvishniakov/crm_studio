@@ -1102,6 +1102,10 @@
                             info.revert();
                         });
                     },
+                    // Добавляем скрытие tooltip при начале drag&drop
+                    eventDragStart: function(info) {
+                        tooltip.style.display = 'none';
+                    },
                 });
 
                 calendar.render();

@@ -666,7 +666,7 @@
                         warehouseQty = parseInt(foundProduct.stock);
                     }
                 }
-                console.log('analyzeInventory:', {productId, pid, allProducts: window.allProducts, found: foundProduct});
+            
 
                 formData.items.push({
                     product_id: productId,
@@ -686,7 +686,7 @@
 
             // Сохраняем данные в data-атрибут модалки анализа
             document.getElementById('analysisModal').dataset.inventory = JSON.stringify(formData);
-            console.log('Inventory Data after analyze:', formData);
+            
 
             updateAnalysisTable(formData);
             closeInventoryModal(true);
@@ -741,7 +741,7 @@
             // Берём данные из data-атрибута модалки анализа
             const data = document.getElementById('analysisModal').dataset.inventory;
             const inventoryData = data ? JSON.parse(data) : null;
-            console.log('Inventory Data before save:', inventoryData);
+            
 
             if (!inventoryData) {
                 window.showNotification('error', 'Данные инвентаризации не найдены');
@@ -987,7 +987,7 @@
                 notes: notes,
                 items: items
             };
-            console.log('Данные для обновления:', data);
+            
 
             // Отправляем на сервер
             fetch(`/inventories/${id}`, {
@@ -1323,7 +1323,7 @@
 
         // Глобальная переменная для хранения всех продуктов
         window.allProducts = @json($products);
-        console.log('allProducts:', window.allProducts); // <--- ОТЛАДКА: смотрим, что приходит из Blade
+        // <--- ОТЛАДКА: смотрим, что приходит из Blade
 
         // Функция для поиска товаров
         function searchProducts(input) {
@@ -1404,7 +1404,7 @@
                 }
                 warehouseQtyInput.value = stock;
                 warehouseQtyInput.dispatchEvent(new Event('input', { bubbles: true })); // Явно обновляем событие
-                console.log('selectProduct:', {productName, productId, product, stock});
+                
             }
         }
 

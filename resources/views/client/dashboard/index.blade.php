@@ -1094,9 +1094,21 @@
         } else {
             eventsBlock.innerHTML = events.map(ev => {
                 const time = ev.extendedProps.time ? ev.extendedProps.time.slice(0, 5) : (ev.start ? new Date(ev.start).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '');
+                // Получаем статус
+                const status = ev.extendedProps.status || ev.status || 'pending';
+                let statusName = '';
+                let statusClass = '';
+                switch (status) {
+                    case 'completed': statusName = 'Завершено'; statusClass = 'done'; break;
+                    case 'pending': statusName = 'Ожидается'; statusClass = 'pending'; break;
+                    case 'cancelled': statusName = 'Отменено'; statusClass = 'cancel'; break;
+                    case 'rescheduled': statusName = 'Перенесено'; statusClass = 'rescheduled'; break;
+                    default: statusName = status; statusClass = 'default'; break;
+                }
                 return `<div style='margin-bottom:0.7em; display:flex; align-items:center; gap:0.5em;'>
-                    <span class='fc-dot' style='background:${getStatusColor(ev.extendedProps.status || ev.status)}'></span>
+                    <span class='fc-dot' style='background:${getStatusColor(status)}'></span>
                     <span><b>${time}</b> ${ev.extendedProps.client || ''} <span style='color:#888;'>(${ev.extendedProps.service || ''})</span></span>
+                    <span class="status-badge status-${statusClass}" style="margin-left:auto; font-size:12px; padding:2px 8px; min-width:unset;">${statusName}</span>
                 </div>`
             }).join('');
         }
@@ -1195,7 +1207,7 @@
 
 <!-- Модальное окно для записей дня -->
 <div id="calendarDayModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:9999; align-items:center; justify-content:center;">
-  <div style="background:#fff; border-radius:12px; max-width:400px; width:90vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
+  <div style="background:#fff; border-radius:12px; max-width:500px; width:96vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
     <button id="closeDayModalBtn" style="position:absolute; right:12px; top:10px; background:none; border:none; font-size:1.5em; color:#aaa; cursor:pointer;">&times;</button>
     <h3 id="modalDayTitle" style="margin-bottom:1em; font-size:1.1em;">Записи на день</h3>
     <div id="modalDayEvents"></div>
