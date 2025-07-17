@@ -324,26 +324,6 @@
         <img id="zoomedImage" src="" alt="Фото товара" style="display:block;max-width:90vw;max-height:90vh;margin:40px auto;box-shadow:0 0 20px #000;border-radius:8px;">
     </div>
 
-    <style>
-.btn-pdf {
-    background: #ff9800;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 14px;
-    font-size: 14px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    transition: background 0.2s;
-}
-.btn-pdf:hover {
-    background: #fb8c00;
-    color: #fff;
-}
-</style>
-
     <script>
         // Глобальные переменные
         let currentDeleteId = null;

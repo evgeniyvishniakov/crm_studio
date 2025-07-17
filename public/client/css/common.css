@@ -218,7 +218,8 @@
 
 .btn-view,
 .btn-edit,
-.btn-delete {
+.btn-delete,
+.btn-pdf {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -263,6 +264,17 @@
     transform: translateY(-2px);
     background: linear-gradient(135deg, #b91c1c, #dc2626);
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+.btn-pdf {
+    background: linear-gradient(135deg, #eba70e 60%, #f3c138 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(235, 167, 14, 0.15);
+}
+.btn-pdf:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #d18c00 60%, #e6b800 100%);
+    box-shadow: 0 4px 12px rgba(235, 167, 14, 0.3);
+    color: #fff;
 }
 
 /* Общие стили для иконок */
