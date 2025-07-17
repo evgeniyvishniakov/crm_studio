@@ -54,6 +54,12 @@
                                 </svg>
                                 Удалить
                             </button>
+                            <button class="btn-pdf" onclick="downloadInventoryPdf(event, {{ $inventory->id }})">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
+                                </svg>
+                                PDF
+                            </button>
                         </div>
                     </div>
                     <div class="inventory-details" id="details-{{ $inventory->id }}" style="display: none;">
@@ -317,6 +323,26 @@
         <span class="close" id="closeZoomImageModal" style="position:absolute;top:10px;right:20px;font-size:2em;color:#fff;cursor:pointer;">&times;</span>
         <img id="zoomedImage" src="" alt="Фото товара" style="display:block;max-width:90vw;max-height:90vh;margin:40px auto;box-shadow:0 0 20px #000;border-radius:8px;">
     </div>
+
+    <style>
+.btn-pdf {
+    background: #ff9800;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.2s;
+}
+.btn-pdf:hover {
+    background: #fb8c00;
+    color: #fff;
+}
+</style>
 
     <script>
         // Глобальные переменные
@@ -1092,6 +1118,12 @@
                                 </svg>
                                 Удалить
                             </button>
+                            <button class="btn-pdf" onclick="downloadInventoryPdf(event, ${inventory.id})">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
+                                </svg>
+                                PDF
+                            </button>
                         </div>
                     </div>
                     <div class="inventory-details" id="details-${inventory.id}" style="display: none;">
@@ -1160,6 +1192,12 @@
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                 </svg>
                                 Удалить
+                            </button>
+                            <button class="btn-pdf" onclick="downloadInventoryPdf(event, ${inventory.id})">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
+                                </svg>
+                                PDF
                             </button>
                         </div>
                     </div>
@@ -1391,5 +1429,10 @@
                 document.getElementById('zoomedImage').src = '';
             }
         });
+
+        function downloadInventoryPdf(event, id) {
+            event.stopPropagation();
+            window.open(`/inventories/${id}/pdf`, '_blank');
+        }
     </script>
 @endsection

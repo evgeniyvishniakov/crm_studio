@@ -7,6 +7,7 @@ use App\Models\Clients\Inventory;
 use App\Models\Clients\Product;
 use App\Models\Admin\User;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class InventoryController extends Controller
 {
@@ -150,5 +151,20 @@ class InventoryController extends Controller
             'success' => true,
             'items' => $inventory->items,
         ]);
+    }
+
+    /**
+     * Генерация PDF с расхождениями по инвентаризации
+     */
+    public function pdf($id)
+    {
+        $inventory = Inventory::with(['user', 'items.product'])->findOrFail($id);
+        $discrepancies = $inventory->items->where('difference', '!=', 0);
+        $pdf = Pdf::loadView('client.inventories.pdf', [
+            'inventory' => $inventory,
+            'discrepancies' => $discrepancies,
+        ]);
+        $filename = 'Инвентаризация_'.$inventory->id.'_'.($inventory->formatted_date ?? date('Y-m-d')).'.pdf';
+        return $pdf->download($filename);
     }
 }
