@@ -16,7 +16,7 @@ class InventoryController extends Controller
         $currentProjectId = auth()->user()->project_id;
         $inventories = Inventory::with(['user', 'items.product'])
             ->where('project_id', $currentProjectId)
-            ->latest()
+            ->orderBy('date', 'asc')
             ->get();
 
         $users = User::where('project_id', $currentProjectId)->get();

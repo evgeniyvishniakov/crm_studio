@@ -23,7 +23,7 @@
                 </div>
             </div>
         </div>
-        <table class="table inventories-table">
+        <table class="table-striped analysis-table products-table inventories-table">
             <thead>
                 <tr>
                     <th>Дата</th>
@@ -335,23 +335,19 @@
     </div>
 
     <script>
-        // Глобальные переменные
+        // --- Глобальные переменные ---
         let currentDeleteId = null;
         let itemCounter = 1;
-        let inventoryData = null;
+        // window.inventoryData больше не используется
 
         // Функции для работы с модальными окнами
         function openInventoryModal() {
-            document.getElementById('inventoryForm').reset();
+            // Полный сброс формы
+            resetInventoryForm();
             // Устанавливаем текущую дату
             const today = new Date().toISOString().split('T')[0];
             document.querySelector('#inventoryForm [name="date"]').value = today;
             document.getElementById('inventoryModal').style.display = 'block';
-
-            // Добавляем первый ряд товаров, если их нет
-            if (document.querySelectorAll('.item-row:not(.template)').length === 0) {
-                addItemRow();
-            }
         }
 
         function closeInventoryModal(force = false) {
@@ -376,6 +372,7 @@
         }
 
         function resetInventoryModal() {
+            // window.inventoryData = null; // Удалено
             document.getElementById('inventoryModal').style.display = 'none';
             clearErrors('inventoryForm');
             resetInventoryForm();
@@ -390,6 +387,7 @@
         }
 
         function closeEditInventoryModal(force = false) {
+            // window.inventoryData = null; // Удалено
             if (force) {
                 document.getElementById('editInventoryModal').style.display = 'none';
                 return;
@@ -449,6 +447,7 @@
             document.getElementById('cancelEditInventoryModal').style.display = 'none';
         });
         document.getElementById('confirmCancelEditInventoryBtn').addEventListener('click', function() {
+            // window.inventoryData = null; // Очищаем данные инвентаризации
             document.getElementById('cancelEditInventoryModal').style.display = 'none';
             document.getElementById('editInventoryModal').style.display = 'none';
             window.showNotification('error', 'Редактирование отменено пользователем');
@@ -515,19 +514,19 @@
             }
         }
 
+        // --- Обновлённая функция сброса формы ---
         function resetInventoryForm() {
+            itemCounter = 1;
             const form = document.getElementById('inventoryForm');
             form.reset();
 
-            // Удаляем все ряды товаров, кроме первого
-            const rows = document.querySelectorAll('.item-row:not(.template)');
-            rows.forEach((row, index) => {
-                if (index > 0) {
-                    row.remove();
-                }
-            });
+            // Удаляем все ряды товаров, кроме шаблона
+            const container = document.getElementById('itemsContainer');
+            const rows = container.querySelectorAll('.item-row:not(.template)');
+            rows.forEach(row => row.remove());
 
-            itemCounter = 1;
+            // Добавляем первый пустой ряд
+            addItemRow();
         }
 
         // Функция для показа/скрытия деталей инвентаризации
@@ -597,77 +596,81 @@
                 });
         }
 
-        // Функция для анализа инвентаризации
+        // --- Обновлённая функция анализа инвентаризации ---
         function analyzeInventory() {
             clearErrors('inventoryForm');
+            const formData = {
+                date: document.querySelector('#inventoryForm [name="date"]').value,
+                user_id: document.querySelector('#inventoryForm [name="user_id"]').value,
+                notes: document.querySelector('#inventoryForm [name="notes"]').value,
+                items: []
+            };
 
-            // Собираем данные о товарах
-            const items = [];
+            // Проверка обязательных полей
+            if (!formData.date || !formData.user_id) {
+                window.showNotification('error', 'Заполните все обязательные поля');
+                return;
+            }
+
             const seenProducts = new Set();
             let hasErrors = false;
 
-            document.querySelectorAll('.item-row:not(.template)').forEach((row, index) => {
+            document.querySelectorAll('#itemsContainer .item-row:not(.template)').forEach(row => {
                 const productId = row.querySelector('[name*="product_id"]').value;
                 const actualQty = row.querySelector('[name*="actual_qty"]').value;
-                const warehouseQtyInput = row.querySelector('[name*="warehouse_qty"]');
-                let warehouseQty = warehouseQtyInput ? warehouseQtyInput.value : 0; // Добавляем проверку
-                warehouseQty = parseInt(warehouseQty) || 0;
+                const warehouseQty = row.querySelector('[name*="warehouse_qty"]').value || 0;
+                const productName = row.querySelector('.product-search-input').value;
 
                 if (!productId) {
                     showError(row.querySelector('[name*="product_id"]'), 'Выберите товар');
                     hasErrors = true;
                     return;
                 }
-
                 if (seenProducts.has(productId)) {
                     showError(row.querySelector('[name*="product_id"]'), 'Этот товар уже добавлен');
                     hasErrors = true;
                     return;
                 }
-
                 seenProducts.add(productId);
 
-                items.push({
+                formData.items.push({
                     product_id: productId,
-                    product_name: row.querySelector('.product-search-input').value,
-                    warehouse_qty: warehouseQty,
+                    product_name: productName,
+                    warehouse_qty: parseInt(warehouseQty) || 0,
                     actual_qty: parseInt(actualQty) || 0,
-                    difference: (parseInt(actualQty) || 0) - warehouseQty
+                    difference: (parseInt(actualQty) || 0) - (parseInt(warehouseQty) || 0)
                 });
             });
 
-            if (hasErrors) {
-                return;
-            }
+            if (hasErrors) return;
 
-            if (items.length === 0) {
+            if (formData.items.length === 0) {
                 window.showNotification('error', 'Добавьте хотя бы один товар');
                 return;
             }
 
-            // Анализируем данные
-            const totalItems = items.length;
-            const matchedItems = items.filter(item => item.difference === 0).length;
-            const shortageItems = items.filter(item => item.difference < 0).length;
-            const overageItems = items.filter(item => item.difference > 0).length;
+            // Сохраняем данные в data-атрибут модалки анализа
+            document.getElementById('analysisModal').dataset.inventory = JSON.stringify(formData);
+            console.log('Inventory Data after analyze:', formData);
 
-            // Сохраняем данные для отправки
-            inventoryData = {
-                date: document.querySelector('#inventoryForm [name="date"]').value,
-                user_id: document.querySelector('#inventoryForm [name="user_id"]').value,
-                notes: document.querySelector('#inventoryForm [name="notes"]').value,
-                items: items
-            };
+            updateAnalysisTable(formData);
+            closeInventoryModal(true);
+            openAnalysisModal();
+        }
 
-            // Обновляем таблицу анализа
+        // --- Новая функция для обновления таблицы анализа ---
+        function updateAnalysisTable(data) {
             const tableBody = document.getElementById('analysisTableBody');
             tableBody.innerHTML = '';
 
-            items.forEach(item => {
+            const totalItems = data.items.length;
+            const matchedItems = data.items.filter(item => item.difference === 0).length;
+            const shortageItems = data.items.filter(item => item.difference < 0).length;
+            const overageItems = data.items.filter(item => item.difference > 0).length;
+
+            data.items.forEach(item => {
                 const status = item.difference == 0 ? '✅ Совпадает' :
                     item.difference > 0 ? '⚠️ Лишнее' : '❌ Не хватает';
-
-                // Поиск фото товара по id
                 let product = null;
                 if (window.allProducts) {
                     product = window.allProducts.find(p => p.id == item.product_id);
@@ -678,7 +681,6 @@
                         <img src="/storage/${product.photo}" alt="${item.product_name}" class="product-photo">
                     </a>`;
                 }
-
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${photoHtml}</td>
@@ -693,65 +695,70 @@
                 tableBody.appendChild(row);
             });
 
-            // Обновляем статистику
             document.getElementById('totalItems').textContent = totalItems;
             document.getElementById('matchedItems').textContent = matchedItems;
             document.getElementById('shortageItems').textContent = shortageItems;
             document.getElementById('overageItems').textContent = overageItems;
-
-            // Закрываем модалку формы и открываем модалку анализа
-            closeInventoryModal(true);
-            openAnalysisModal();
         }
 
-        // Функция для сохранения инвентаризации
+        // --- Обновлённая функция сохранения инвентаризации ---
         function saveInventory() {
-            if (!inventoryData) return;
+            // Берём данные из data-атрибута модалки анализа
+            const data = document.getElementById('analysisModal').dataset.inventory;
+            const inventoryData = data ? JSON.parse(data) : null;
+            console.log('Inventory Data before save:', inventoryData);
 
-            // Добавляем проверку наличия user_id
-            if (!inventoryData.user_id) {
-                window.showNotification('error', 'Выберите ответственного');
+            if (!inventoryData) {
+                window.showNotification('error', 'Данные инвентаризации не найдены');
+                return;
+            }
+            if (!inventoryData.items || inventoryData.items.length === 0) {
+                window.showNotification('error', 'Нет товаров для сохранения');
+                return;
+            }
+            if (!inventoryData.date || !inventoryData.user_id) {
+                window.showNotification('error', 'Заполните все обязательные поля');
                 return;
             }
 
+            const saveBtn = document.querySelector('#analysisModal .btn-submit');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Сохранение...';
+            saveBtn.disabled = true;
             fetch('/inventories', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(inventoryData)
             })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => Promise.reject(err));
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        window.showNotification('success', 'Инвентаризация успешно сохранена');
-                        closeAnalysisModal();
-                        addInventoryToDOM(data.inventory);
-                        resetInventoryForm();
-                    } else {
-                        if (data.errors) {
-                            // Показываем все ошибки валидации
-                            Object.values(data.errors).forEach(errorMessages => {
-                                errorMessages.forEach(message => {
-                                    window.showNotification('error', message);
-                                });
-                            });
-                        } else {
-                            window.showNotification('error', data.message || 'Ошибка при сохранении инвентаризации');
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    window.showNotification('error', error.message || 'Ошибка при сохранении инвентаризации');
-                });
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    window.showNotification('success', 'Инвентаризация успешно сохранена');
+                    closeAnalysisModal();
+                    addInventoryToDOM(data.inventory);
+                    resetInventoryForm();
+                    // Очищаем data-атрибут
+                    document.getElementById('analysisModal').dataset.inventory = '';
+                } else {
+                    window.showNotification('error', data.message || 'Ошибка при сохранении');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                window.showNotification('error', error.message || 'Ошибка при сохранении инвентаризации');
+            })
+            .finally(() => {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            });
         }
         // Функция для редактирования инвентаризации
         function editInventory(event, id) {
@@ -889,104 +896,88 @@
         function analyzeEditInventory(id) {
             clearErrors('editInventoryForm');
 
-            // Собираем данные о товарах
+            // Собираем данные из формы
+            const form = document.getElementById('editInventoryForm');
+            const date = form.querySelector('[name="date"]').value;
+            const user_id = form.querySelector('[name="user_id"]').value;
+            const notes = form.querySelector('[name="notes"]').value;
+
             const items = [];
             const seenProducts = new Set();
             let hasErrors = false;
 
-            // Получаем project_id (например, из глобальной переменной или data-атрибута)
-            let projectId = window.currentProjectId;
-            if (!projectId) {
-                // Попробуем взять из формы, если есть
-                const form = document.getElementById('editInventoryForm');
-                if (form && form.dataset.projectId) {
-                    projectId = form.dataset.projectId;
-                }
-            }
-
-            const rows = document.querySelectorAll('#editItemsContainer .item-row');
-
-            document.querySelectorAll('#editItemsContainer .item-row').forEach((row, index) => {
-                if (row.classList.contains('template')) return; // пропускать шаблон
-
+            form.querySelectorAll('#editItemsContainer .item-row').forEach(row => {
+                if (row.classList.contains('template')) return;
                 const productId = row.querySelector('[name*="product_id"]').value;
                 const actualQty = row.querySelector('[name*="actual_qty"]').value;
-                const warehouseQtyInput = row.querySelector('[name*="warehouse_qty"]');
-                let warehouseQty = warehouseQtyInput ? warehouseQtyInput.value : 0;
-                warehouseQty = parseInt(warehouseQty) || 0;
+                const warehouseQty = row.querySelector('[name*="warehouse_qty"]').value || 0;
+                const productName = row.querySelector('.product-search-input').value;
 
                 if (!productId) {
                     showError(row.querySelector('[name*="product_id"]'), 'Выберите товар');
                     hasErrors = true;
                     return;
                 }
-
                 if (seenProducts.has(productId)) {
                     showError(row.querySelector('[name*="product_id"]'), 'Этот товар уже добавлен');
                     hasErrors = true;
                     return;
                 }
-
                 seenProducts.add(productId);
-
-                const productName = row.querySelector('.product-search-input').value;
 
                 items.push({
                     product_id: productId,
                     product_name: productName,
-                    warehouse_qty: warehouseQty,
+                    warehouse_qty: parseInt(warehouseQty) || 0,
                     actual_qty: parseInt(actualQty) || 0,
-                    difference: (parseInt(actualQty) || 0) - warehouseQty,
-                    project_id: projectId
+                    difference: (parseInt(actualQty) || 0) - (parseInt(warehouseQty) || 0)
                 });
             });
 
-            if (hasErrors) {
-                return;
-            }
-
+            if (hasErrors) return;
             if (items.length === 0) {
                 window.showNotification('error', 'Добавьте хотя бы один товар');
                 return;
             }
+            if (!date || !user_id) {
+                window.showNotification('error', 'Заполните все обязательные поля');
+                return;
+            }
 
-            // Сохраняем данные для отправки
-            inventoryData = {
-                date: document.querySelector('#editInventoryForm [name="date"]').value,
-                user_id: document.querySelector('#editInventoryForm [name="user_id"]').value,
-                notes: document.querySelector('#editInventoryForm [name="notes"]').value,
+            // Формируем объект для отправки
+            const data = {
+                _method: 'PUT',
+                date: date,
+                user_id: user_id,
+                notes: notes,
                 items: items
             };
+            console.log('Данные для обновления:', data);
 
-            // Отправляем запрос на обновление
+            // Отправляем на сервер
             fetch(`/inventories/${id}`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    _method: 'PUT',
-                    ...inventoryData
-                })
+                body: JSON.stringify(data)
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.showNotification('success', 'Инвентаризация успешно обновлена');
-                        closeEditInventoryModal(true); // force=true — закрыть без подтверждения
-                        updateInventoryInDOM(data.inventory);
-                    } else {
-                        window.showNotification('error', data.message || 'Ошибка обновления инвентаризации');
-                        // Не закрываем модалку, не вызываем отмену!
-                    }
-                })
-                .catch(error => {
-                    console.error('Server error:', error);
-                    window.showNotification('error', 'Ошибка обновления инвентаризации');
-                    // Не закрываем модалку, не вызываем отмену!
-                });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.showNotification('success', 'Инвентаризация успешно обновлена');
+                    closeEditInventoryModal(true);
+                    updateInventoryInDOM(data.inventory);
+                } else {
+                    window.showNotification('error', data.message || 'Ошибка обновления инвентаризации');
+                }
+            })
+            .catch(error => {
+                console.error('Server error:', error);
+                window.showNotification('error', 'Ошибка обновления инвентаризации');
+            });
         }
 
         // Функции для подтверждения удаления
@@ -1396,18 +1387,24 @@
 
         // Подтверждение закрытия анализа инвентаризации
         function confirmCloseAnalysisModal() {
-            document.getElementById('cancelInventoryModal').style.display = 'block';
-            // При подтверждении — закрыть анализ и сбросить форму
-            const confirmBtn = document.getElementById('confirmCancelInventoryBtn');
-            // Чтобы не навешивать несколько обработчиков подряд:
-            confirmBtn.onclick = function() {
-                document.getElementById('cancelInventoryModal').style.display = 'none';
+            const data = document.getElementById('analysisModal').dataset.inventory;
+            const inventoryData = data ? JSON.parse(data) : null;
+            if (inventoryData && inventoryData.items && inventoryData.items.length > 0) {
+                document.getElementById('cancelInventoryModal').style.display = 'block';
+                // Обновляем обработчик подтверждения отмены
+                document.getElementById('confirmCancelInventoryBtn').onclick = function() {
+                    document.getElementById('cancelInventoryModal').style.display = 'none';
+                    closeAnalysisModal();
+                    resetInventoryModal();
+                    // Очищаем data-атрибут
+                    document.getElementById('analysisModal').dataset.inventory = '';
+                    window.showNotification('info', 'Изменения не сохранены');
+                };
+            } else {
                 closeAnalysisModal();
                 resetInventoryModal();
-                window.showNotification('error', 'Инвентаризация отменена пользователем');
-                // Восстановить стандартное поведение для других случаев
-                confirmBtn.onclick = defaultCancelInventoryHandler;
-            };
+                document.getElementById('analysisModal').dataset.inventory = '';
+            }
         }
         // Сохраняем стандартный обработчик для других случаев отмены
         const defaultCancelInventoryHandler = document.getElementById('confirmCancelInventoryBtn').onclick;

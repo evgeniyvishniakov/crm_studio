@@ -7,7 +7,8 @@
 .sales-container,
 .services-container,
 .appointments-container,
-.expenses-container{
+.expenses-container,
+.inventories-container{
     max-width: 1200px;
     margin: 0 auto;
 
@@ -149,7 +150,8 @@
 .sale-table,
 .services-table,
 .appointments-table,
-.expenses-table{
+.expenses-table,
+.inventories-table{
     width: 100%;
     border-collapse: collapse;
 }
@@ -161,7 +163,8 @@
 .sale-table thead,
 .services-table thead,
 .expenses-table thead,
-.appointments-table thead{
+.appointments-table thead,
+.inventories-table thead{
     background-color: #e0e4e9 !important;
     border-bottom: 1px solid #e5e7eb;
 }
@@ -173,7 +176,9 @@
 .sale-table th,
 .services-table th,
 .appointments-table th,
-.expenses-table th{
+.expenses-table th,
+.inventories-table th
+{
     padding: 16px;
     text-align: center;
     font-size: 14px;
@@ -190,7 +195,8 @@
 .sale-table td,
 .services-table td,
 .appointments-table td,
-.expenses-table td{
+.expenses-table td,
+.inventories-table td{
     padding: 14px;
     font-size: 14px;
     color: #4b5563;
@@ -204,7 +210,8 @@
 .purchases-table tr:last-child td,
 .services-table tr:last-child td,
 .appointments-table th:last-child td,
-.expenses-table th:last-child td{
+.expenses-table th:last-child td,
+.inventories-table th:last-child td{
     border-bottom: none;
 }
 
