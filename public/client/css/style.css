@@ -3192,3 +3192,11 @@ footer.site-footer {
 }
 /* ... существующие стили ... */
 
+.inventories-table > tbody > tr.inventory-summary-row:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
+.inventories-table > tbody > tr.inventory-summary-row:hover {
+    cursor: pointer;
+}
+

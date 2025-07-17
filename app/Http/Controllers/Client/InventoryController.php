@@ -20,7 +20,17 @@ class InventoryController extends Controller
             ->get();
 
         $users = User::where('project_id', $currentProjectId)->get();
-        $products = Product::where('project_id', $currentProjectId)->get();
+        $products = Product::with('warehouse')
+            ->where('project_id', $currentProjectId)
+            ->get()
+            ->map(function($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'photo' => $product->photo,
+                    'stock' => $product->warehouse ? $product->warehouse->quantity : 0,
+                ];
+            });
         $adminUser = $users->firstWhere('role', 'admin');
         $adminUserId = $adminUser ? $adminUser->id : null;
         return view('client.inventories.index', compact('inventories', 'users', 'products', 'adminUserId'));

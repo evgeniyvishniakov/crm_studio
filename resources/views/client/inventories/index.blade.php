@@ -22,108 +22,126 @@
                     <input type="text" placeholder="Поиск..." id="searchInput">
                 </div>
             </div>
+        <div class="table-wrapper">
+            <table class="table table-striped inventories-table">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Ответственный</th>
+                        <th>Расхождения</th>
+                        <th>Примечания</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoriesListBody">
+                    @foreach($inventories as $inventory)
+                        <tr class="inventory-summary-row" id="inventory-row-{{ $inventory->id }}" onclick="toggleInventoryDetailsRow({{ $inventory->id }})">
+                            <td>{{ $inventory->formatted_date }}</td>
+                            <td>{{ $inventory->user->name ?? '—' }}</td>
+                            <td>
+                                @if($inventory->discrepancies_count > 0)
+                                    {{ $inventory->discrepancies_count }}
+                                    @if($inventory->shortages_count > 0)
+                                        ({{ $inventory->shortages_count }} нехватка)
+                                    @endif
+                                    @if($inventory->overages_count > 0)
+                                        ({{ $inventory->overages_count }} излишек)
+                                    @endif
+                                @else
+                                    <span class="text-success">Совпадает</span>
+                                @endif
+                            </td>
+                            <td title="{{ $inventory->notes }}">{{ $inventory->notes ? Str::limit($inventory->notes, 30) : '—' }}</td>
+                            <td>
+                                <div class="inventory-actions">
+                                    <button class="btn-edit" onclick="editInventory(event, {{ $inventory->id }})">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                        </svg>
+                                        Ред.
+                                    </button>
+                                    <button class="btn-delete" onclick="confirmDeleteInventory(event, {{ $inventory->id }})">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Удалить
+                                    </button>
+                                    <button class="btn-pdf" onclick="downloadInventoryPdf(event, {{ $inventory->id }})">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
+                                        </svg>
+                                        PDF
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="inventory-details-row" id="details-row-{{ $inventory->id }}" style="display: none;">
+                            <td colspan="5">
+                                <div class="inventory-notes">{{ $inventory->notes }}</div>
+                                <div class="table-wrapper">
+                                    <table class="table-striped analysis-table products-table">
+                                        <thead>
+                                        <tr>
+                                            <th>Фото</th>
+                                            <th class="large-col">Товар</th>
+                                            <th class="small-col">Склад</th>
+                                            <th class="small-col">Кол</th>
+                                            <th>Разница</th>
+                                            <th>Статус</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @php
+                                            $discrepancies = $inventory->items->where('difference', '!=', 0);
+                                        @endphp
+                                        @if($discrepancies->count())
+                                            @foreach($discrepancies as $item)
+                                                <tr>
+                                                    <td>
+                                                        @if($item->product->photo)
+                                                            <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="{{ $item->product->name }}">
+                                                        @else
+                                                            <div class="no-photo">Нет фото</div>
+                                                        @endif
+                                                    </td>
+                                                    <td class="large-col">{{ $item->product->name }}</td>
+                                                    <td class="small-col">{{ $item->warehouse_qty }} шт</td>
+                                                    <td class="small-col">{{ $item->actual_qty }} шт</td>
+                                                    <td class="{{ $item->difference > 0 ? 'text-success' : ($item->difference < 0 ? 'text-danger' : '') }}">
+                                                        {{ $item->difference > 0 ? '+' : '' }}{{ $item->difference }} шт
+                                                    </td>
+                                                    <td>
+                                                        @if($item->difference == 0)
+                                                            <span class="status-success">✅ Совпадает</span>
+                                                        @elseif($item->difference > 0)
+                                                            <span class="status-warning">⚠️ Лишнее</span>
+                                                        @else
+                                                            <span class="status-danger">❌ Не хватает</span>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr>
+                                                <td colspan="6" class="text-center text-success">
+                                                    ✅ Все товары совпадают, расхождений нет. Инвентаризация успешно проведена.
+                                                </td>
+                                            </tr>
+                                        @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="view-all-items">
+                                    <button class="btn-view-all" onclick="viewAllInventoryItems({{ $inventory->id }})">
+                                        Просмотреть весь список
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
-        <table class="table-striped analysis-table products-table inventories-table">
-            <thead>
-                <tr>
-                    <th>Дата</th>
-                    <th>Ответственный</th>
-                    <th>Расхождения</th>
-                    <th>Примечания</th>
-                    <th>Действия</th>
-                </tr>
-            </thead>
-            <tbody id="inventoriesListBody">
-                @foreach($inventories as $inventory)
-                    <tr class="inventory-summary-row" id="inventory-row-{{ $inventory->id }}" onclick="toggleInventoryDetailsRow({{ $inventory->id }})">
-                        <td>{{ $inventory->formatted_date }}</td>
-                        <td>{{ $inventory->user->name ?? '—' }}</td>
-                        <td>{{ $inventory->discrepancies_count }}
-                            @if($inventory->shortages_count > 0)
-                                ({{ $inventory->shortages_count }} нехватка)
-                            @endif
-                            @if($inventory->overages_count > 0)
-                                ({{ $inventory->overages_count }} излишек)
-                            @endif
-                        </td>
-                        <td title="{{ $inventory->notes }}">{{ $inventory->notes ? Str::limit($inventory->notes, 30) : '—' }}</td>
-                        <td>
-                            <div class="inventory-actions">
-                                <button class="btn-edit" onclick="editInventory(event, {{ $inventory->id }})">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                    </svg>
-                                    Ред.
-                                </button>
-                                <button class="btn-delete" onclick="confirmDeleteInventory(event, {{ $inventory->id }})">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Удалить
-                                </button>
-                                <button class="btn-pdf" onclick="downloadInventoryPdf(event, {{ $inventory->id }})">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
-                                    </svg>
-                                    PDF
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="inventory-details-row" id="details-row-{{ $inventory->id }}" style="display: none;">
-                        <td colspan="5">
-                            <div class="inventory-notes">{{ $inventory->notes }}</div>
-                            <table class="table-striped analysis-table products-table">
-                                <thead>
-                                <tr>
-                                    <th>Фото</th>
-                                    <th class="large-col">Товар</th>
-                                    <th class="small-col">Склад</th>
-                                    <th class="small-col">Кол</th>
-                                    <th>Разница</th>
-                                    <th>Статус</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach($inventory->items->where('difference', '!=', 0) as $item)
-                                    <tr>
-                                        <td>
-                                            @if($item->product->photo)
-                                                <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="{{ $item->product->name }}">
-                                            @else
-                                                <div class="no-photo">Нет фото</div>
-                                            @endif
-                                        </td>
-                                        <td class="large-col">{{ $item->product->name }}</td>
-                                        <td class="small-col">{{ $item->warehouse_qty }} шт</td>
-                                        <td class="small-col">{{ $item->actual_qty }} шт</td>
-                                        <td class="{{ $item->difference > 0 ? 'text-success' : 'text-danger' }}">
-                                            {{ $item->difference > 0 ? '+' : '' }}{{ $item->difference }} шт
-                                        </td>
-                                        <td>
-                                            @if($item->difference == 0)
-                                                <span class="status-success">✅ Совпадает</span>
-                                            @elseif($item->difference > 0)
-                                                <span class="status-warning">⚠️ Лишнее</span>
-                                            @else
-                                                <span class="status-danger">❌ Не хватает</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                            <div class="view-all-items">
-                                <button class="btn-view-all" onclick="viewAllInventoryItems({{ $inventory->id }})">
-                                    Просмотреть весь список
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
 
     <!-- Модальное окно новой инвентаризации -->
     <div id="inventoryModal" class="modal">
@@ -174,8 +192,8 @@
                                         <select name="items[0][product_id]" class="form-control product-select large-col" style="display: none;">
                                             <option value="">Выберите товар</option>
                                             @foreach($products as $product)
-                                                <option value="{{ $product->id }}" data-stock="{{ $product->stock }}">
-                                                    {{ $product->name }}
+                                                <option value="{{ $product['id'] }}" data-stock="{{ $product['stock'] }}">
+                                                    {{ $product['name'] }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -184,10 +202,6 @@
                                 <div class="form-group small-col">
                                     <label>Кол</label>
                                     <input type="number" name="items[0][actual_qty]" required class="form-control small-col" min="0" value="0">
-                                </div>
-                                <div class="form-group small-col">
-                                    <label>Склад</label>
-                                    <input type="number" name="items[0][warehouse_qty]" class="form-control small-col" value="0" readonly>
                                 </div>
                                 <div class="form-group small-col">
                                     <button type="button" class="btn-remove-item" onclick="removeItemRow(this)">
@@ -333,6 +347,13 @@
         <span class="close" id="closeZoomImageModal" style="position:absolute;top:10px;right:20px;font-size:2em;color:#fff;cursor:pointer;">&times;</span>
         <img id="zoomedImage" src="" alt="Фото товара" style="display:block;max-width:90vw;max-height:90vh;margin:40px auto;box-shadow:0 0 20px #000;border-radius:8px;">
     </div>
+
+    <style>
+    .inventory-summary-row:hover {
+        background-color: rgba(0, 0, 0, .05) !important;
+        cursor: pointer;
+    }
+    </style>
 
     <script>
         // --- Глобальные переменные ---
@@ -572,7 +593,7 @@
                                     <td class="large-col">${item.product.name}</td>
                                     <td class="small-col">${item.warehouse_qty} шт</td>
                                     <td class="small-col">${item.actual_qty} шт</td>
-                                    <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
+                                    <td class="${item.difference > 0 ? 'text-success' : (item.difference < 0 ? 'text-danger' : '')}">
                                         ${item.difference > 0 ? '+' : ''}${item.difference} шт
                                     </td>
                                     <td>${status}</td>
@@ -584,6 +605,8 @@
                                 </tbody>
                             </table>
                         `;
+
+                        
 
                         modalBody.innerHTML = html;
                         document.getElementById('viewAllItemsModal').style.display = 'block';
@@ -618,7 +641,6 @@
             document.querySelectorAll('#itemsContainer .item-row:not(.template)').forEach(row => {
                 const productId = row.querySelector('[name*="product_id"]').value;
                 const actualQty = row.querySelector('[name*="actual_qty"]').value;
-                const warehouseQty = row.querySelector('[name*="warehouse_qty"]').value || 0;
                 const productName = row.querySelector('.product-search-input').value;
 
                 if (!productId) {
@@ -633,12 +655,23 @@
                 }
                 seenProducts.add(productId);
 
+                let warehouseQty = 0;
+                let pid = Number(productId); // <-- объявляем здесь
+                let foundProduct = null;
+                if (window.allProducts) {
+                    foundProduct = window.allProducts.find(p => Number(p.id) === pid);
+                    if (foundProduct && foundProduct.stock !== undefined && !isNaN(parseInt(foundProduct.stock))) {
+                        warehouseQty = parseInt(foundProduct.stock);
+                    }
+                }
+                console.log('analyzeInventory:', {productId, pid, allProducts: window.allProducts, found: foundProduct});
+
                 formData.items.push({
                     product_id: productId,
                     product_name: productName,
-                    warehouse_qty: parseInt(warehouseQty) || 0,
+                    warehouse_qty: warehouseQty,
                     actual_qty: parseInt(actualQty) || 0,
-                    difference: (parseInt(actualQty) || 0) - (parseInt(warehouseQty) || 0)
+                    difference: (parseInt(actualQty) || 0) - warehouseQty
                 });
             });
 
@@ -813,8 +846,8 @@
                                                     <select name="items[0][product_id]" class="form-control product-select large-col" style="display: none;">
                                                         <option value="">Выберите товар</option>
                                                         @foreach($products as $product)
-                                                            <option value="{{ $product->id }}" data-stock="{{ $product->stock }}">
-                                                                {{ $product->name }}
+                                                            <option value="{{ $product['id'] }}" data-stock="{{ $product['stock'] }}">
+                                                                {{ $product['name'] }}
                                                             </option>
                                                         @endforeach
                                                     </select>
@@ -1277,7 +1310,8 @@
         });
 
         // Глобальная переменная для хранения всех продуктов
-        let allProducts = @json($products);
+        window.allProducts = @json($products);
+        console.log('allProducts:', window.allProducts); // <--- ОТЛАДКА: смотрим, что приходит из Blade
 
         // Функция для поиска товаров
         function searchProducts(input) {
@@ -1291,7 +1325,7 @@
                 return;
             }
 
-            const filteredProducts = allProducts.filter(product =>
+            const filteredProducts = window.allProducts.filter(product =>
                 product.name.toLowerCase().includes(searchTerm)
             );
 
@@ -1317,7 +1351,7 @@
             } else {
                 const dropdown = input.nextElementSibling;
                 const dropdownList = dropdown.querySelector('.product-dropdown-list');
-                dropdownList.innerHTML = allProducts.map(product => `
+                dropdownList.innerHTML = window.allProducts.map(product => `
                     <div class="product-dropdown-item"
                          data-id="${product.id}"
                          onclick="selectProduct(this, '${product.name}', ${product.id}, '${input.id}')">
@@ -1350,12 +1384,15 @@
             // Автоматически подставлять остаток на складе в warehouse_qty
             const warehouseQtyInput = container.closest('.item-row').querySelector('[name*="warehouse_qty"]');
             if (warehouseQtyInput && window.allProducts) {
-                const product = window.allProducts.find(p => p.id == productId);
+                const pid = Number(productId);
+                const product = window.allProducts.find(p => Number(p.id) === pid);
                 let stock = 0;
                 if (product && product.stock !== undefined && !isNaN(parseInt(product.stock))) {
                     stock = parseInt(product.stock);
                 }
                 warehouseQtyInput.value = stock;
+                warehouseQtyInput.dispatchEvent(new Event('input', { bubbles: true })); // Явно обновляем событие
+                console.log('selectProduct:', {productName, productId, product, stock});
             }
         }
 
