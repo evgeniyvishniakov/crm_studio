@@ -58,12 +58,12 @@
                     </div>
                     <div class="inventory-details" id="details-{{ $inventory->id }}" style="display: none;">
                         <div class="inventory-notes">{{ $inventory->notes }}</div>
-                        <table class="table-striped inventory-table">
+                        <table class="table-striped analysis-table products-table">
                             <thead>
                             <tr>
                                 <th>Фото</th>
                                 <th class="large-col">Товар</th>
-                                <th class="small-col">На складе</th>
+                                <th class="small-col">Склад</th>
                                 <th class="small-col">Кол</th>
                                 <th>Разница</th>
                                 <th>Статус</th>
@@ -170,7 +170,7 @@
                                     <input type="number" name="items[0][actual_qty]" required class="form-control small-col" min="0" value="0">
                                 </div>
                                 <div class="form-group small-col">
-                                    <label>На складе</label>
+                                    <label>Склад</label>
                                     <input type="number" name="items[0][warehouse_qty]" class="form-control small-col" value="0" readonly>
                                 </div>
                                 <div class="form-group small-col">
@@ -231,8 +231,8 @@
                     <thead>
                     <tr>
                         <th>Фото</th>
-                        <th>Название</th>
-                        <th class="small-col">На складе</th>
+                        <th class="large-col">Товар</th>
+                        <th class="small-col">Склад</th>
                         <th class="small-col">Кол</th>
                         <th>Разница</th>
                         <th>Статус</th>
@@ -310,6 +310,12 @@
                 <button class="confirm-btn" id="confirmCancelEditInventoryBtn">Да, отменить</button>
             </div>
         </div>
+    </div>
+
+    <!-- Модальное окно для увеличенного фото -->
+    <div id="zoomImageModal" class="modal" style="display:none; z-index: 9999; background: rgba(0,0,0,0.7);">
+        <span class="close" id="closeZoomImageModal" style="position:absolute;top:10px;right:20px;font-size:2em;color:#fff;cursor:pointer;">&times;</span>
+        <img id="zoomedImage" src="" alt="Фото товара" style="display:block;max-width:90vw;max-height:90vh;margin:40px auto;box-shadow:0 0 20px #000;border-radius:8px;">
     </div>
 
     <script>
@@ -405,6 +411,10 @@
             }
             if (event.target == document.getElementById('cancelEditInventoryModal')) {
                 document.getElementById('cancelEditInventoryModal').style.display = 'none';
+            }
+            if (event.target == document.getElementById('zoomImageModal')) {
+                document.getElementById('zoomImageModal').style.display = 'none';
+                document.getElementById('zoomedImage').src = '';
             }
         }
 
@@ -519,12 +529,12 @@
                         const modalBody = document.getElementById('viewAllItemsModalBody');
 
                         let html = `
-                            <table class="table-striped inventory-table">
+                            <table class="table-striped analysis-table products-table">
                                 <thead>
                                     <tr>
                                         <th>Фото</th>
-                                        <th>Товар</th>
-                                        <th class="small-col">На складе</th>
+                                        <th class="large-col">Товар</th>
+                                        <th class="small-col">Склад</th>
                                         <th class="small-col">Кол</th>
                                         <th>Разница</th>
                                         <th>Статус</th>
@@ -544,7 +554,7 @@
                                 `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` :
                                 `<div class="no-photo">Нет фото</div>`}
                                     </td>
-                                    <td>${item.product.name}</td>
+                                    <td class="large-col">${item.product.name}</td>
                                     <td class="small-col">${item.warehouse_qty} шт</td>
                                     <td class="small-col">${item.actual_qty} шт</td>
                                     <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
@@ -584,7 +594,8 @@
                 const productId = row.querySelector('[name*="product_id"]').value;
                 const actualQty = row.querySelector('[name*="actual_qty"]').value;
                 const warehouseQtyInput = row.querySelector('[name*="warehouse_qty"]');
-                const warehouseQty = warehouseQtyInput ? warehouseQtyInput.value : 0; // Добавляем проверку
+                let warehouseQty = warehouseQtyInput ? warehouseQtyInput.value : 0; // Добавляем проверку
+                warehouseQty = parseInt(warehouseQty) || 0;
 
                 if (!productId) {
                     showError(row.querySelector('[name*="product_id"]'), 'Выберите товар');
@@ -603,9 +614,9 @@
                 items.push({
                     product_id: productId,
                     product_name: row.querySelector('.product-search-input').value,
-                    warehouse_qty: parseInt(warehouseQty),
-                    actual_qty: parseInt(actualQty),
-                    difference: parseInt(actualQty) - parseInt(warehouseQty)
+                    warehouse_qty: warehouseQty,
+                    actual_qty: parseInt(actualQty) || 0,
+                    difference: (parseInt(actualQty) || 0) - warehouseQty
                 });
             });
 
@@ -647,7 +658,7 @@
                 }
                 let photoHtml = '<div class="no-photo">Нет фото</div>';
                 if (product && product.photo) {
-                    photoHtml = `<a href="/storage/${product.photo}" class="zoomable-image" data-img="/storage/${product.photo}">
+                    photoHtml = `<a href="#" class="zoomable-image" data-img="/storage/${product.photo}">
                         <img src="/storage/${product.photo}" alt="${item.product_name}" class="product-photo">
                     </a>`;
                 }
@@ -787,7 +798,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group small-col">
-                                                <label>На складе</label>
+                                                <label>Склад</label>
                                                 <input type="number" name="items[0][warehouse_qty]" class="form-control small-col" value="0" readonly>
                                             </div>
                                             <div class="form-group small-col">
@@ -816,7 +827,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group small-col">
-                                                    <label>На складе</label>
+                                                    <label>Склад</label>
                                                     <input type="number" name="items[${index}][warehouse_qty]" class="form-control small-col" value="${item.warehouse_qty}" readonly>
                                                 </div>
                                                 <div class="form-group small-col">
@@ -888,7 +899,7 @@
                 const actualQty = row.querySelector('[name*="actual_qty"]').value;
                 const warehouseQtyInput = row.querySelector('[name*="warehouse_qty"]');
                 let warehouseQty = warehouseQtyInput ? warehouseQtyInput.value : 0;
-                if (!warehouseQty) warehouseQty = 0;
+                warehouseQty = parseInt(warehouseQty) || 0;
                 console.log('row', index, {productId, actualQty, warehouseQty});
 
                 if (!productId) {
@@ -912,9 +923,9 @@
                 items.push({
                     product_id: productId,
                     product_name: productName,
-                    warehouse_qty: parseInt(warehouseQty),
-                    actual_qty: parseInt(actualQty),
-                    difference: parseInt(actualQty) - parseInt(warehouseQty),
+                    warehouse_qty: warehouseQty,
+                    actual_qty: parseInt(actualQty) || 0,
+                    difference: (parseInt(actualQty) || 0) - warehouseQty,
                     project_id: projectId
                 });
             });
@@ -1090,7 +1101,7 @@
                                 <tr>
                                     <th>Фото</th>
                                     <th>Товар</th>
-                                    <th class="small-col">На складе</th>
+                                    <th class="small-col">Склад</th>
                                     <th class="small-col">Кол</th>
                                     <th>Разница</th>
                                     <th>Статус</th>
@@ -1159,7 +1170,7 @@
                                 <tr>
                                     <th>Фото</th>
                                     <th>Товар</th>
-                                    <th class="small-col">На складе</th>
+                                    <th class="small-col">Склад</th>
                                     <th class="small-col">Кол</th>
                                     <th>Разница</th>
                                     <th>Статус</th>
@@ -1313,7 +1324,11 @@
             const warehouseQtyInput = container.closest('.item-row').querySelector('[name*="warehouse_qty"]');
             if (warehouseQtyInput && window.allProducts) {
                 const product = window.allProducts.find(p => p.id == productId);
-                warehouseQtyInput.value = product && product.stock !== undefined ? product.stock : 0;
+                let stock = 0;
+                if (product && product.stock !== undefined && !isNaN(parseInt(product.stock))) {
+                    stock = parseInt(product.stock);
+                }
+                warehouseQtyInput.value = stock;
             }
         }
 
@@ -1324,6 +1339,22 @@
                 document.querySelectorAll('.product-dropdown').forEach(dropdown => {
                     dropdown.style.display = 'none';
                 });
+            }
+        });
+
+        // --- Автоочистка поля при фокусе и возврат 0 при blur ---
+        document.addEventListener('focusin', function(e) {
+            if (e.target.matches('input[name*="actual_qty"], input[name*="warehouse_qty"]')) {
+                if (e.target.value === '0') {
+                    e.target.value = '';
+                }
+            }
+        });
+        document.addEventListener('focusout', function(e) {
+            if (e.target.matches('input[name*="actual_qty"], input[name*="warehouse_qty"]')) {
+                if (e.target.value === '' || e.target.value === null) {
+                    e.target.value = '0';
+                }
             }
         });
 
@@ -1344,5 +1375,21 @@
         }
         // Сохраняем стандартный обработчик для других случаев отмены
         const defaultCancelInventoryHandler = document.getElementById('confirmCancelInventoryBtn').onclick;
+
+        // --- Увеличение фото товара при клике ---
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.zoomable-image')) {
+                e.preventDefault();
+                const imgSrc = e.target.closest('.zoomable-image').getAttribute('data-img');
+                const zoomModal = document.getElementById('zoomImageModal');
+                const zoomedImage = document.getElementById('zoomedImage');
+                zoomedImage.src = imgSrc;
+                zoomModal.style.display = 'block';
+            }
+            if (e.target.id === 'closeZoomImageModal' || (e.target.id === 'zoomImageModal' && e.target === document.getElementById('zoomImageModal'))) {
+                document.getElementById('zoomImageModal').style.display = 'none';
+                document.getElementById('zoomedImage').src = '';
+            }
+        });
     </script>
 @endsection
