@@ -24,7 +24,8 @@
 .services-header,
 .appointments-header,
 .expenses-header,
-.inventories-header{
+.inventories-header,
+.settings-header{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -41,7 +42,8 @@
 .services-header h1,
 .appointments-header h1,
 .expenses-header h1,
-.inventories-header h1{
+.inventories-header h1,
+.settings-header h1{
     font-size: 24px;
     font-weight: 600;
     color: #333;
@@ -1381,4 +1383,21 @@
 .status-cancelled {
     background: linear-gradient(135deg, #F44336 60%, #eb7171 100%);
     color: #fff;
+}
+
+/* Две колонки для форм */
+.form-row--2col {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.form-col {
+    flex: 1 1 0;
+    min-width: 250px;
+}
+@media (max-width: 900px) {
+    .form-row--2col {
+        flex-direction: column;
+        gap: 0;
+    }
 }

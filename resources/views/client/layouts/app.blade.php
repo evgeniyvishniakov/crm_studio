@@ -510,7 +510,7 @@
                         </li>
                         <li class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('settings', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('admin.settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('client.settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
                                 @if($hasAccess)
                                     <i class="fa fa-cog"></i>
                                 @else
@@ -544,6 +544,7 @@
                                
                             </a>
                         </li>
+                    
                     </ul>
                 </li>
             </ul>

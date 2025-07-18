@@ -1,0 +1,55 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers\Client;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Admin\Project;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
+
+class SettingsController extends Controller
+{
+    public function index()
+    {
+        // Получаем проект текущего пользователя (админ/руководитель)
+        $user = Auth::user();
+        // Предполагаем, что у пользователя есть project_id или связь project
+        $project = Project::where('id', $user->project_id ?? null)->first();
+        // Можно добавить Gate::authorize('view-settings', $project); для ограничения доступа
+        return view('client.settings.index', compact('project'));
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+        $project = Project::where('id', $user->project_id ?? null)->firstOrFail();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'project_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'address' => 'nullable|string|max:255',
+            'website' => 'nullable|url|max:255',
+            'social_links' => 'nullable|string|max:1000',
+            'logo' => 'nullable|image|max:2048',
+        ]);
+
+        // Обновление полей
+        $project->fill($validated);
+
+        // Обработка загрузки логотипа
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo')->store('public/project_logos');
+            $project->logo = Storage::url($logoPath);
+        }
+
+        $project->save();
+
+        return redirect()->back()->with('success', 'Настройки успешно обновлены.');
+    }
+}

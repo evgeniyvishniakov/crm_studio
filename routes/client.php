@@ -20,6 +20,7 @@ use App\Http\Controllers\Client\ClientReportController;
 use App\Http\Controllers\Client\TurnoverReportController;
 use App\Http\Controllers\Auth\AdminForgotPasswordController;
 use App\Http\Controllers\Auth\AdminResetPasswordController;
+use App\Http\Controllers\Client\SettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,15 +38,6 @@ Route::middleware('auth:client')->group(function () {
     
     // Главная страница клиентской части
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-});
-
-// Маршруты сброса пароля (доступны без аутентификации)
-Route::get('/password/reset', [AdminForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('/password/email', [AdminForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('/password/reset/{token}', [AdminResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('/password/reset', [AdminResetPasswordController::class, 'reset'])->name('password.update');
-
-Route::middleware('auth:client')->group(function () {
     
     // Управление клиентами
     Route::prefix('clients')->name('clients.')->group(function () {
@@ -236,4 +228,7 @@ Route::middleware('auth:client')->group(function () {
     Route::put('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, 'update'])->name('roles.update');
     Route::delete('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, 'destroy'])->name('roles.destroy');
     Route::get('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, 'show'])->name('client.roles.show');
+
+    Route::get('/settings', [\App\Http\Controllers\Client\SettingsController::class, 'index'])->name('client.settings.index');
+    Route::post('/settings', [\App\Http\Controllers\Client\SettingsController::class, 'update'])->name('client.settings.update');
 }); 
