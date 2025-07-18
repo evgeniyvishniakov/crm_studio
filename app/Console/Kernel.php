@@ -13,6 +13,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+        
+        // Очистка старых уведомлений каждый день в 2:00
+        $schedule->command('notifications:cleanup')
+            ->dailyAt('02:00')
+            ->appendOutputTo(storage_path('logs/notifications-cleanup.log'));
     }
 
     /**

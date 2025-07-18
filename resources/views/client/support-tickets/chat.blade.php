@@ -4,7 +4,7 @@
 <div class="dashboard-container">
     <div class="clients-header">
         <h1>Тикет: {{ $ticket->subject }}</h1>
-        <a href="{{ route('support-tickets.index') }}" class="btn-cancel" style="margin-left: 16px;">← К списку тикетов</a>
+        <a href="{{ route('client.support-tickets.index') }}" class="btn-cancel" style="margin-left: 16px;">← К списку тикетов</a>
     </div>
     <div class="chat-wrapper" id="chatWrapper">
         <div class="chat-messages" id="chatMessages" style="height: 400px; overflow-y: auto; background: #f9fafb; border-radius: 10px; padding: 24px; margin-bottom: 16px; border: 1px solid #e5e7eb;">

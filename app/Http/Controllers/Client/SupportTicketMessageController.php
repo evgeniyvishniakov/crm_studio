@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Clients\SupportTicket;
 use App\Models\Clients\SupportTicketMessage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SupportTicketMessageController extends Controller
 {
@@ -41,6 +42,15 @@ class SupportTicketMessageController extends Controller
             'message' => $request->message,
             'is_admin' => false,
         ]);
+        
+        // Логируем отправку сообщения
+        Log::info('Support ticket message sent', [
+            'user_id' => $user->id,
+            'ticket_id' => $ticket->id,
+            'message_id' => $msg->id,
+            'ip' => $request->ip()
+        ]);
+        
         return response()->json(['success' => true, 'message' => $msg]);
     }
 } 

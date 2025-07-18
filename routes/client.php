@@ -242,9 +242,19 @@ Route::middleware('auth:client')->group(function () {
     Route::get('/email/change/confirm', [SecurityController::class, 'confirmEmailChange'])->name('client.security.email.confirm');
 
     // Тикеты поддержки
-    Route::get('/support-tickets', [\App\Http\Controllers\Client\SupportTicketController::class, 'index'])->name('support-tickets.index');
-    Route::post('/support-tickets', [\App\Http\Controllers\Client\SupportTicketController::class, 'store'])->name('support-tickets.store');
+    Route::get('/support-tickets', [\App\Http\Controllers\Client\SupportTicketController::class, 'index'])->name('client.support-tickets.index');
+    Route::post('/support-tickets', [\App\Http\Controllers\Client\SupportTicketController::class, 'store'])
+        ->name('support-tickets.store')
+        ->middleware('rate.limit:tickets'); // Максимум 10 тикетов в минуту
     // Сообщения тикета поддержки (чат)
     Route::get('/support-tickets/{ticket}/messages', [\App\Http\Controllers\Client\SupportTicketMessageController::class, 'index'])->name('support-tickets.messages.index');
-    Route::post('/support-tickets/{ticket}/messages', [\App\Http\Controllers\Client\SupportTicketMessageController::class, 'store'])->name('support-tickets.messages.store');
+    Route::post('/support-tickets/{ticket}/messages', [\App\Http\Controllers\Client\SupportTicketMessageController::class, 'store'])
+        ->name('support-tickets.messages.store')
+        ->middleware('rate.limit:messages'); // Максимум 30 сообщений в минуту
+
+    // Уведомления
+    Route::get('/notifications', [\App\Http\Controllers\Client\NotificationController::class, 'index'])->name('client.notifications.index');
+    Route::post('/notifications/{notification}/read', [\App\Http\Controllers\Client\NotificationController::class, 'markAsRead'])
+        ->name('client.notifications.read')
+        ->middleware('rate.limit:notifications'); // Максимум 60 отметок "прочитано" в минуту
 }); 

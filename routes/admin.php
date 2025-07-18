@@ -76,12 +76,15 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     Route::get('/tickets/{ticket}', [\App\Http\Controllers\Admin\TicketController::class, 'show'])->name('tickets.show');
     // AJAX-роуты для сообщений тикета
     Route::get('/tickets/{ticket}/messages', [\App\Http\Controllers\Admin\TicketController::class, 'messages']);
-    Route::post('/tickets/{ticket}/messages', [\App\Http\Controllers\Admin\TicketController::class, 'sendMessage']);
+    Route::post('/tickets/{ticket}/messages', [\App\Http\Controllers\Admin\TicketController::class, 'sendMessage'])
+        ->middleware('rate.limit:messages'); // Максимум 30 сообщений в минуту
     // AJAX: смена статуса тикета
     Route::post('/tickets/{ticket}/status', [\App\Http\Controllers\Admin\TicketController::class, 'updateStatus'])->name('tickets.status');
     Route::delete('/tickets/{ticket}', [\App\Http\Controllers\Admin\TicketController::class, 'destroy'])->name('tickets.destroy');
 
     // Уведомления
     Route::get('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
-    Route::post('/notifications/{notification}/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/{notification}/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])
+        ->name('notifications.read')
+        ->middleware('rate.limit:notifications'); // Максимум 60 отметок "прочитано" в минуту
 }); 

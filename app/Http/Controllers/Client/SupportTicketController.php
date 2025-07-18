@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Clients\SupportTicket;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Notification;
+use Illuminate\Support\Facades\Log;
 
 class SupportTicketController extends Controller
 {
@@ -43,6 +44,14 @@ class SupportTicketController extends Controller
             'message' => $request->message,
             'is_admin' => false,
         ]);
+        // Логируем создание тикета
+        Log::info('Support ticket created', [
+            'user_id' => $user->id,
+            'ticket_id' => $ticket->id,
+            'subject' => $ticket->subject,
+            'ip' => $request->ip()
+        ]);
+        
         // После создания тикета:
         Notification::create([
             'type' => 'ticket',
@@ -50,9 +59,10 @@ class SupportTicketController extends Controller
             'body' => $ticket->subject,
             'url' => route('admin.tickets.index') . '#ticket-' . $ticket->id,
         ]);
+        
         if ($request->ajax()) {
             return response()->json(['success' => true, 'ticket' => $ticket]);
         }
-        return redirect()->route('support-tickets.index')->with('success', 'Тикет создан');
+        return redirect()->route('client.support-tickets.index')->with('success', 'Тикет создан');
     }
 } 

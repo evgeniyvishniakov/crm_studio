@@ -227,6 +227,9 @@
     $userPermissions = $user->permissions()->pluck('name')->toArray();
     $isAdmin = $user->role === 'admin';
     $project = \App\Models\Admin\Project::find(auth()->user()->project_id);
+    $hasNotificationAccess = $isAdmin || in_array('notifications', $userPermissions);
+    $unreadNotifications = $hasNotificationAccess ? \App\Models\Notification::where('project_id', $user->project_id)->where('is_read', false)->orderByDesc('created_at')->limit(5)->get() : collect();
+    $unreadCount = $hasNotificationAccess ? \App\Models\Notification::where('project_id', $user->project_id)->where('is_read', false)->count() : 0;
 @endphp
 <!-- Left Panel -->
 <aside id="left-panel" class="left-panel">
@@ -470,7 +473,8 @@
                     request()->routeIs('admin.settings.*') || 
                     request()->routeIs('admin.email-templates.*') || 
                     request()->routeIs('admin.security.*') || 
-                    request()->routeIs('support-tickets.*') ? 'active' : '' 
+                    request()->routeIs('support-tickets.*') || 
+                    request()->routeIs('client.notifications.*') ? 'active' : '' 
                 }}">
                     <a href="#settingsMenu" data-toggle="collapse" aria-expanded="{{ 
                         request()->routeIs('client.users.*') || 
@@ -480,7 +484,8 @@
                         request()->routeIs('admin.settings.*') || 
                         request()->routeIs('admin.email-templates.*') || 
                         request()->routeIs('admin.security.*') || 
-                        request()->routeIs('support-tickets.*') ? 'true' : 'false' 
+                        request()->routeIs('support-tickets.*') || 
+                        request()->routeIs('client.notifications.*') ? 'true' : 'false' 
                     }}" class="dropdown-toggle">
                         <i class="menu-icon fa fa-cogs"></i>Настройки
                     </a>
@@ -492,7 +497,8 @@
                         request()->routeIs('admin.settings.*') || 
                         request()->routeIs('admin.email-templates.*') || 
                         request()->routeIs('admin.security.*') || 
-                        request()->routeIs('support-tickets.*') ? 'show' : '' 
+                        request()->routeIs('support-tickets.*') || 
+                        request()->routeIs('client.notifications.*') ? 'show' : '' 
                     }}">
                         <li class="{{ request()->routeIs('client.users.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('client.users', $userPermissions); @endphp
@@ -532,13 +538,24 @@
                         </li>
                         <li class="{{ request()->routeIs('support-tickets.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('support-tickets', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('support-tickets.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('client.support-tickets.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
                                 @if($hasAccess)
                                     <i class="fa fa-life-ring"></i>
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
                                 <span class="menu-label">Поддержка</span>
+                            </a>
+                        </li>
+                        <li class="{{ request()->routeIs('client.notifications.*') ? 'active' : '' }}">
+                            @php $hasAccess = $isAdmin || in_array('notifications', $userPermissions); @endphp
+                            <a href="{{ $hasAccess ? route('client.notifications.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                                @if($hasAccess)
+                                    <i class="fa fa-bell"></i>
+                                @else
+                                    <i class="fas fa-lock"></i>
+                                @endif
+                                <span class="menu-label">Уведомления</span>
                             </a>
                         </li>
                     </ul>
@@ -583,27 +600,35 @@
             <div class="header-menu">
                 <div class="header-left">
                     
+                    @if($hasNotificationAccess)
                     <div class="dropdown for-notification">
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-bell"></i>
-                            <span class="count bg-danger">3</span>
+                            @if($unreadCount > 0)
+                                <span class="count bg-danger">{{ $unreadCount }}</span>
+                            @endif
                         </button>
                         <div class="dropdown-menu" aria-labelledby="notification">
-                            <p class="red">You have 3 Notification</p>
-                            <a class="dropdown-item media" href="#">
-                                <i class="fa fa-check"></i>
-                                <p>Server #1 overloaded.</p>
-                            </a>
-                            <a class="dropdown-item media" href="#">
-                                <i class="fa fa-info"></i>
-                                <p>Server #2 overloaded.</p>
-                            </a>
-                            <a class="dropdown-item media" href="#">
-                                <i class="fa fa-warning"></i>
-                                <p>Server #3 overloaded.</p>
-                            </a>
+                            @if($unreadNotifications->count())
+                                <p class="red">У вас {{ $unreadCount }} новых уведомлений</p>
+                                @foreach($unreadNotifications as $notification)
+                                    <form method="POST" action="{{ route('client.notifications.read', $notification->id) }}" style="display:block; margin:0;">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item media" style="width:100%;text-align:left;white-space:normal;">
+                                            <i class="fa fa-info-circle"></i>
+                                            <span style="margin-left:8px;">{{ $notification->title }}</span>
+                                            <br><small class="text-muted">{{ $notification->created_at->format('d.m.Y H:i') }}</small>
+                                        </button>
+                                    </form>
+                                @endforeach
+                            @else
+                                <p class="dropdown-item text-muted">Нет новых уведомлений</p>
+                            @endif
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-center" href="{{ route('client.notifications.index') }}">Показать все уведомления</a>
                         </div>
                     </div>
+                    @endif
 
                     <div class="dropdown for-message">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="message" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
