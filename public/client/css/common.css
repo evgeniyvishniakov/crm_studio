@@ -1401,3 +1401,34 @@
         gap: 0;
     }
 }
+
+/* Стили для поля логотипа в настройках */
+.logo-upload-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+.logo-preview img, .logo-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #f3f4f6;
+    display: block;
+}
+.logo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b0b0b0;
+    font-size: 2rem;
+    font-weight: bold;
+    background: #e5e7eb;
+}
+.logo-upload-controls {
+    flex: 1;
+}
+.settings-pane h5{
+    margin: 50px 0 20px;
+    font-size: 18px;
+}

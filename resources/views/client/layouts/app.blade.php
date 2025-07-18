@@ -226,6 +226,7 @@
     $user = auth()->user();
     $userPermissions = $user->permissions()->pluck('name')->toArray();
     $isAdmin = $user->role === 'admin';
+    $project = \App\Models\Admin\Project::find(auth()->user()->project_id);
 @endphp
 <!-- Left Panel -->
 <aside id="left-panel" class="left-panel">
@@ -574,8 +575,12 @@
     <header id="header" class="header">
         <div class="top-left">
             <div class="navbar-header">
-                <a class="navbar-brand" href="./"><img src="" alt="Logo"></a>
-                <a class="navbar-brand hidden" href="./"><img src="" alt="Logo"></a>
+                <a class="navbar-brand" href="{{ route('dashboard') }}">
+                    <img src="{{ $project && $project->logo ? $project->logo : asset('client/img/avatar-default.png') }}" alt="Logo" style="height:48px;max-width:48px;object-fit:cover;border-radius:50%;">
+                </a>
+                <a class="navbar-brand hidden" href="{{ route('dashboard') }}">
+                    <img src="{{ $project && $project->logo ? $project->logo : asset('client/img/avatar-default.png') }}" alt="Logo" style="height:48px;max-width:160px;object-fit:contain;">
+                </a>
                 <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
             </div>
         </div>

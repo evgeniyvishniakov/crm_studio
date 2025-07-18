@@ -11,7 +11,7 @@
         <button class="tab-button active" data-tab="profile">Профиль</button>
         <button class="tab-button" data-tab="security">Безопасность</button>
         <button class="tab-button" data-tab="notifications">Уведомления</button>
-        <button class="tab-button" data-tab="language">Язык</button>
+        <button class="tab-button" data-tab="language">Язык и Валюта</button>
         <button class="tab-button" data-tab="delete">Удаление</button>
     </div>
     <div class="settings-content">
@@ -37,7 +37,7 @@
                     <div class="form-col">
                         <div class="form-group mb-3">
                             <label>Email</label>
-                            <input type="email" name="email" class="form-control" value="{{ old('email', $project->email ?? '') }}">
+                            <input type="email" name="email" class="form-control" value="{{ old('email', $project->email ?? '') }}" readonly>
                         </div>
                     </div>
                     <div class="form-col">
@@ -64,25 +64,50 @@
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Социальные сети</label>
-                            <input type="text" name="social_links" class="form-control" value="{{ old('social_links', $project->social_links ?? '') }}" placeholder="Ссылки через запятую или JSON">
+                            <label>Instagram</label>
+                            <input type="url" name="instagram" class="form-control" value="{{ old('instagram', $project->instagram ?? '') }}" placeholder="https://instagram.com/yourpage">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group mb-3">
+                            <label>Facebook</label>
+                            <input type="url" name="facebook" class="form-control" value="{{ old('facebook', $project->facebook ?? '') }}" placeholder="https://facebook.com/yourpage">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row form-row--2col">
+                    <div class="form-col">
+                        <div class="form-group mb-3">
+                            <label>TikTok</label>
+                            <input type="url" name="tiktok" class="form-control" value="{{ old('tiktok', $project->tiktok ?? '') }}" placeholder="https://tiktok.com/@yourpage">
                         </div>
                     </div>
                     <div class="form-col"></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group mb-4">
-                        <label>Логотип</label><br>
-                        @if(!empty($project->logo))
-                            <img src="{{ $project->logo }}" alt="logo" style="width:64px;height:64px;border-radius:50%;object-fit:cover;">
-                        @endif
-                        <input type="file" name="logo" class="form-control mt-2" style="max-width:300px;">
+                        <label>Логотип компании или проекта</label>
+                        <div class="logo-upload-row">
+                            <div class="logo-preview">
+                                @if(!empty($project->logo))
+                                    <img src="{{ $project->logo }}" alt="logo">
+                                @else
+                                    <div class="logo-placeholder">?</div>
+                                @endif
+                            </div>
+                            <div class="logo-upload-controls">
+                                <label for="logo-input" class="btn btn-outline-secondary" style="cursor:pointer;display:inline-block;">Выбрать файл</label>
+                                <input type="file" id="logo-input" name="logo" accept="image/*" style="display:none;" onchange="document.getElementById('logo-filename').textContent = this.files[0]?.name || ''">
+                                <span id="logo-filename" style="margin-left:12px;font-size:0.95em;color:#888;"></span>
+                                <small class="form-text text-muted">PNG/JPG, до 2 МБ, квадратное изображение</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group mb-4">
                         <label>Дата регистрации</label>
-                        <input type="text" class="form-control" value="{{ $project->registered_at ?? ($project->created_at ?? '') }}" disabled style="max-width:220px; display:inline-block;">
+                        <input type="text" class="form-control" value="{{ $project->registered_at ? \Carbon\Carbon::parse($project->registered_at)->format('d.m.Y H:i') : ($project->created_at ? \Carbon\Carbon::parse($project->created_at)->format('d.m.Y H:i') : '') }}" disabled style="max-width:220px; display:inline-block;">
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Сохранить</button>
@@ -90,25 +115,79 @@
         </div>
         <!-- Безопасность -->
         <div class="settings-pane" id="tab-security" style="display:none;">
-            <form>
-                <div class="form-group mb-3">
-                    <label>Текущий пароль</label>
-                    <input type="password" class="form-control">
+            <h5>Смена пароля</h5>
+            <a href="{{ route('password.request') }}" class="btn btn-primary mb-4">Забыли пароль?</a>
+            <hr>
+            <!-- Смена почты -->
+            <form method="POST" action="{{ route('client.security.email') }}" class="mb-4" id="change-email-form">
+                @csrf
+                <h5>Смена почты</h5>
+                <div class="form-row form-row--2col">
+                    <div class="form-col">
+                        <div class="form-group mb-3">
+                            <label>Новый email</label>
+                            <input type="email" name="new_email" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group mb-3">
+                            <label>Текущий пароль</label>
+                            <input type="password" name="current_password" class="form-control" required>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group mb-3">
-                    <label>Новый пароль</label>
-                    <input type="password" class="form-control">
-                </div>
-                <div class="form-group mb-4">
-                    <label>Подтвердите новый пароль</label>
-                    <input type="password" class="form-control">
-                </div>
-                <div class="form-group mb-4">
-                    <label>Двухфакторная аутентификация</label><br>
-                    <button type="button" class="btn btn-outline-secondary">Включить 2FA</button>
-                </div>
-                <button type="submit" class="btn btn-primary">Сменить пароль</button>
+                <button type="submit" class="btn btn-primary">Изменить email</button>
+                <div id="change-email-notification" style="margin-top:16px;"></div>
             </form>
+            <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('change-email-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(form);
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(function(response) {
+                if (response.ok) return response.json();
+                return response.json().then(function(data) { throw data; });
+            })
+            .then(function(data) {
+                form.reset();
+                window.showNotification('success', 'На новую почту отправлено письмо для подтверждения. Пожалуйста, проверьте ваш email.');
+            })
+            .catch(function(error) {
+                var msg = 'Ошибка при отправке. Попробуйте ещё раз.';
+                if (error && error.errors) {
+                    msg = Object.values(error.errors).join('<br>');
+                }
+                window.showNotification('error', msg);
+            });
+        });
+    }
+});
+            </script>
+            <hr>
+            <!-- Двухфакторная аутентификация -->
+            <div class="mb-4">
+                <h5>Двухфакторная аутентификация (2FA)</h5>
+                <p>Для повышения безопасности вы можете включить двухфакторную аутентификацию через приложение Google Authenticator или аналогичное.</p>
+                <form method="POST" action="{{ route('client.security.2fa.enable') }}" style="display:inline-block;">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-primary">Включить 2FA</button>
+                </form>
+                <form method="POST" action="{{ route('client.security.2fa.disable') }}" style="display:inline-block;margin-left:10px;">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger">Отключить 2FA</button>
+                </form>
+            </div>
         </div>
         <!-- Уведомления -->
         <div class="settings-pane" id="tab-notifications" style="display:none;">
@@ -124,15 +203,31 @@
                 <button type="submit" class="btn btn-primary">Сохранить</button>
             </form>
         </div>
-        <!-- Язык -->
+        <!-- Язык и Валюта -->
         <div class="settings-pane" id="tab-language" style="display:none;">
             <form>
-                <div class="form-group mb-4">
-                    <label>Язык интерфейса</label>
-                    <select class="form-control">
-                        <option value="ru" selected>Русский</option>
-                        <option value="en">English</option>
-                    </select>
+                <h5>Язык и Валюта</h5>
+                <div class="form-row form-row--2col">
+                    <div class="form-col">
+                        <div class="form-group mb-4">
+                            <label>Язык интерфейса</label>
+                            <select class="form-control" name="language">
+                                <option value="ru" selected>Русский</option>
+                                <option value="en">Украинский</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group mb-4">
+                            <label>Валюта</label>
+                            <select class="form-control" name="currency">
+                                <option value="UAH" selected>UAH (₴)</option>
+                                <option value="USD">USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Сохранить</button>
             </form>

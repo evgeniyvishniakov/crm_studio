@@ -35,7 +35,9 @@ class SettingsController extends Controller
             'phone' => 'nullable|string|max:50',
             'address' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
-            'social_links' => 'nullable|string|max:1000',
+            'instagram' => 'nullable|url|max:255',
+            'facebook' => 'nullable|url|max:255',
+            'tiktok' => 'nullable|url|max:255',
             'logo' => 'nullable|image|max:2048',
         ]);
 

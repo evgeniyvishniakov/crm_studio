@@ -21,6 +21,7 @@ use App\Http\Controllers\Client\TurnoverReportController;
 use App\Http\Controllers\Auth\AdminForgotPasswordController;
 use App\Http\Controllers\Auth\AdminResetPasswordController;
 use App\Http\Controllers\Client\SettingsController;
+use App\Http\Controllers\Client\SecurityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,10 @@ use App\Http\Controllers\Client\SettingsController;
 */
 
 Route::get('clients/check', [App\Http\Controllers\Client\ClientController::class, 'checkUnique']);
+Route::get('/password/reset', [AdminForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/password/email', [AdminForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/password/reset/{token}', [AdminResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/password/reset', [AdminResetPasswordController::class, 'reset'])->name('password.update');
 
 Route::middleware('auth:client')->group(function () {
     
@@ -231,4 +236,8 @@ Route::middleware('auth:client')->group(function () {
 
     Route::get('/settings', [\App\Http\Controllers\Client\SettingsController::class, 'index'])->name('client.settings.index');
     Route::post('/settings', [\App\Http\Controllers\Client\SettingsController::class, 'update'])->name('client.settings.update');
+    Route::post('/security/email', [SecurityController::class, 'changeEmail'])->name('client.security.email');
+    Route::post('/security/2fa/enable', [SecurityController::class, 'enable2fa'])->name('client.security.2fa.enable');
+    Route::post('/security/2fa/disable', [SecurityController::class, 'disable2fa'])->name('client.security.2fa.disable');
+    Route::get('/email/change/confirm', [SecurityController::class, 'confirmEmailChange'])->name('client.security.email.confirm');
 }); 
