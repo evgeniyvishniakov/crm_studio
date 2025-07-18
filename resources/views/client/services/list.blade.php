@@ -265,8 +265,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
-
                     if (error.errors) {
                         showErrors(error.errors);
                         window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
@@ -338,7 +336,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
                     row.classList.remove('row-deleting');
                     window.showNotification('error', 'Не удалось удалить услугу');
                 });
@@ -356,7 +353,6 @@
                     document.getElementById('editServiceModal').style.display = 'block';
                 })
                 .catch(error => {
-                    console.error('Ошибка загрузки данных:', error);
                     window.showNotification('error', 'Не удалось загрузить данные услуги');
                 });
         }
@@ -405,7 +401,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
                     if (error.errors) {
                         showErrors(error.errors, 'editServiceForm');
                         window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
@@ -459,7 +454,6 @@
                 renderPagination(data.meta);
             })
             .catch(error => {
-                console.error('Ошибка:', error);
                 window.showNotification('error', 'Ошибка загрузки данных');
             });
         }
@@ -598,8 +592,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
-
                     if (error.errors) {
                         showErrors(error.errors);
                         window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
@@ -641,7 +633,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
                     row.classList.remove('row-deleting');
                     window.showNotification('error', 'Не удалось удалить услугу');
                 });

@@ -755,8 +755,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
-
                     if (error.errors) {
                         showErrors(error.errors);
                         window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
@@ -831,7 +829,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
                     row.classList.remove('row-deleting');
                     window.showNotification('error', 'Не удалось удалить товар');
                 });
@@ -1004,7 +1001,6 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 window.showNotification('error', 'Ошибка при импорте файла');
             })
             .finally(() => {
@@ -1077,7 +1073,6 @@
                 renderPagination(data.meta);
             })
             .catch(error => {
-                console.error('Ошибка:', error);
                 window.showNotification('error', 'Ошибка загрузки данных');
             });
         }

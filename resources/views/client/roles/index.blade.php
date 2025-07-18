@@ -193,14 +193,12 @@ document.getElementById('roleForm').onsubmit = function(e) {
         if (data.success && data.role) {
             if (editingRoleId) {
                 // Отладочный вывод
-                console.log('Обновляем роль:', data.role);
                 updateRoleRow(data.role);
                 // Форсируем обновление: повторно получаем роль с сервера и обновляем строку
                 fetch(`/roles/${editingRoleId}`)
                     .then(res => res.json())
                     .then(fresh => {
                         if (fresh.success && fresh.role) {
-                            console.log('Форсированное обновление:', fresh.role);
                             updateRoleRow(fresh.role);
                         }
                     });
@@ -249,10 +247,8 @@ function addRoleRow(role, perms, label) {
 function updateRoleRow(role) {
     const tr = document.getElementById('role-' + String(role.id));
     if (!tr) {
-        console.warn('Не найдена строка для роли:', role.id, role);
         return;
     }
-    console.log('Обновляем строку для роли:', role.id, role);
     const perms = role.permissions || [];
     tr.setAttribute('data-name', role.name);
     tr.setAttribute('data-perms', perms.join(','));

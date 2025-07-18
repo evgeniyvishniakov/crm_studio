@@ -8,17 +8,19 @@
         <div id="notification"></div>
     </div>
     <div class="dashboard-tabs" style="margin-bottom:28px;">
-        <button class="tab-button active" data-tab="profile">Профиль</button>
-        <button class="tab-button" data-tab="security">Безопасность</button>
-        <button class="tab-button" data-tab="notifications">Уведомления</button>
-        <button class="tab-button" data-tab="language">Язык и Валюта</button>
-        <button class="tab-button" data-tab="delete">Удаление</button>
+        <button class="tab-button active" data-tab="profile"><i class="fa fa-user" style="margin-right:8px;"></i>Профиль</button>
+        <button class="tab-button" data-tab="security"><i class="fa fa-shield-alt" style="margin-right:8px;"></i>Безопасность</button>
+        <button class="tab-button" data-tab="notifications"><i class="fa fa-bell" style="margin-right:8px;"></i>Уведомления</button>
+        <button class="tab-button" data-tab="language"><i class="fa fa-globe" style="margin-right:8px;"></i>Язык и Валюта</button>
+        <button class="tab-button" data-tab="subscription"><i class="fa fa-credit-card" style="margin-right:8px;"></i>Подписки</button>
+        <button class="tab-button" data-tab="delete"><i class="fa fa-trash" style="margin-right:8px;"></i>Удаление</button>
     </div>
     <div class="settings-content">
         <!-- Профиль -->
         <div class="settings-pane" id="tab-profile">
             <form method="POST" action="{{ route('client.settings.update') }}" enctype="multipart/form-data">
                 @csrf
+                <h5>Профиль</h5>
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-3">
@@ -192,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Уведомления -->
         <div class="settings-pane" id="tab-notifications" style="display:none;">
             <form>
+                <h5>Уведомления</h5>
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" id="notif1" checked>
                     <label class="form-check-label" for="notif1">Получать email-уведомления о новых записях</label>
@@ -232,8 +235,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button type="submit" class="btn btn-primary">Сохранить</button>
             </form>
         </div>
+        <!-- Подписки -->
+        <div class="settings-pane" id="tab-subscription" style="display:none;">
+            <h5>Подписки</h5>
+            <div class="alert alert-info">
+                Здесь будет информация о вашей подписке, тарифе и истории платежей.
+            </div>
+        </div>
         <!-- Удаление аккаунта -->
         <div class="settings-pane" id="tab-delete" style="display:none;">
+            <h5>Удаление аккаунта</h5>
             <div class="alert alert-danger mb-4" style="font-size:1rem;">
                 <b>Внимание!</b> Удаление аккаунта необратимо. Все ваши данные будут удалены.
             </div>
@@ -253,5 +264,34 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function activateTabFromHash() {
+        var hash = window.location.hash.replace('#', '');
+        if (!hash) return;
+        // Деактивируем все вкладки и панели
+        document.querySelectorAll('.dashboard-tabs .tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.settings-pane').forEach(pane => pane.style.display = 'none');
+        // Активируем нужную
+        var btn = document.querySelector('.dashboard-tabs .tab-button[data-tab="' + hash + '"]');
+        var pane = document.getElementById('tab-' + hash);
+        if (btn && pane) {
+            btn.classList.add('active');
+            pane.style.display = '';
+        }
+    }
+    activateTabFromHash();
+    window.addEventListener('hashchange', activateTabFromHash);
+    // Меняем hash при клике на вкладку
+    document.querySelectorAll('.dashboard-tabs .tab-button').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var tab = btn.getAttribute('data-tab');
+            if (tab) {
+                window.location.hash = tab;
+            }
+        });
+    });
+});
 </script>
 @endsection 

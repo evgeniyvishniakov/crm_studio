@@ -464,6 +464,8 @@
                 </li>
                 <li class="menu-item-has-children {{ 
                     request()->routeIs('client.users.*') || 
+                    request()->routeIs('roles.*') || 
+                    request()->routeIs('client.settings.*') || 
                     request()->routeIs('admin.roles.*') || 
                     request()->routeIs('admin.settings.*') || 
                     request()->routeIs('admin.email-templates.*') || 
@@ -471,6 +473,8 @@
                 }}">
                     <a href="#settingsMenu" data-toggle="collapse" aria-expanded="{{ 
                         request()->routeIs('client.users.*') || 
+                        request()->routeIs('roles.*') || 
+                        request()->routeIs('client.settings.*') || 
                         request()->routeIs('admin.roles.*') || 
                         request()->routeIs('admin.settings.*') || 
                         request()->routeIs('admin.email-templates.*') || 
@@ -480,6 +484,8 @@
                     </a>
                     <ul id="settingsMenu" class="sub-menu children collapse {{ 
                         request()->routeIs('client.users.*') || 
+                        request()->routeIs('roles.*') || 
+                        request()->routeIs('client.settings.*') || 
                         request()->routeIs('admin.roles.*') || 
                         request()->routeIs('admin.settings.*') || 
                         request()->routeIs('admin.email-templates.*') || 
@@ -509,7 +515,7 @@
                                 
                             </a>
                         </li>
-                        <li class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                        <li class="{{ request()->routeIs('client.settings.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('settings', $userPermissions); @endphp
                             <a href="{{ $hasAccess ? route('client.settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
                                 @if($hasAccess)
@@ -521,31 +527,6 @@
                                 
                             </a>
                         </li>
-                        <li class="{{ request()->routeIs('admin.email-templates.*') ? 'active' : '' }}">
-                            @php $hasAccess = $isAdmin || in_array('email-templates', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('admin.email-templates.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
-                                @if($hasAccess)
-                                    <i class="fa fa-envelope"></i>
-                                @else
-                                    <i class="fas fa-lock"></i>
-                                @endif
-                                <span class="menu-label">Email-шаблоны</span>
-                                
-                            </a>
-                        </li>
-                        <li class="{{ request()->routeIs('admin.security.*') ? 'active' : '' }}">
-                            @php $hasAccess = $isAdmin || in_array('security', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('admin.security.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
-                                @if($hasAccess)
-                                    <i class="fa fa-shield"></i>
-                                @else
-                                    <i class="fas fa-lock"></i>
-                                @endif
-                                <span class="menu-label">Безопасность</span>
-                               
-                            </a>
-                        </li>
-                    
                     </ul>
                 </li>
             </ul>
@@ -660,9 +641,9 @@
                         </span>
                     </a>
                     <div class="user-menu dropdown-menu">
-                        <a class="nav-link" href="#"><i class="fa fa-user"></i>Мой профиль</a>
+                        <a class="nav-link" href="{{ route('client.settings.index') }}#profile"><i class="fa fa-user"></i>Мой профиль</a>
 
-                        <a class="nav-link" href="#"><i class="fa fa-cog"></i>Смена пароля</a>
+                        <a class="nav-link" href="{{ route('client.settings.index') }}#security"><i class="fa fa-cog"></i>Смена пароля</a>
                         <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="fa fa-power-off"></i>Выход
                         </a>

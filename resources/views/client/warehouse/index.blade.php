@@ -349,7 +349,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
                     modalBody.innerHTML = `
             <div class="alert alert-danger">
                 Ошибка загрузки данных: ${error.message || 'Произошла ошибка'}
@@ -399,7 +398,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
                     window.showNotification('error', error.message || 'Ошибка при сохранении изменений');
                 })
                 .finally(() => {
@@ -498,8 +496,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
-                    if (row) row.classList.remove('row-deleting');
                     window.showNotification('error', 'Не удалось удалить товар');
                 });
         }
@@ -544,7 +540,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
                     if (error.errors) {
                         showErrors(error.errors);
                         window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
@@ -597,7 +592,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
                     if (error.errors) {
                         showErrors(error.errors, 'editForm');
                         window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');

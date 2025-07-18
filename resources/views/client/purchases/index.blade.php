@@ -234,14 +234,12 @@
         function addItemRow(containerId = 'itemsContainer') {
             const container = document.getElementById(containerId);
             if (!container) {
-                console.error(`Container with id ${containerId} not found.`);
                 return;
             }
 
             // Шаблон всегда находится в модальном окне добавления
             const template = document.querySelector('#itemsContainer .template');
             if (!template) {
-                console.error('Template row not found.');
                 return;
             }
 

@@ -787,7 +787,6 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 window.showNotification('error', error.message || 'Ошибка при сохранении инвентаризации');
             })
             .finally(() => {
@@ -1010,7 +1009,6 @@
                 }
             })
             .catch(error => {
-                console.error('Server error:', error);
                 window.showNotification('error', 'Ошибка обновления инвентаризации');
             });
         }
@@ -1058,7 +1056,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
                     window.showNotification('error', 'Ошибка при удалении инвентаризации');
                 });
         }

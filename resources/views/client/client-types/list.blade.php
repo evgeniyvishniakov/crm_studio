@@ -328,8 +328,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
-
                     if (error.errors) {
                         showErrors(error.errors);
                         showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
@@ -401,7 +399,6 @@
                     }
                 })
                 .catch(error => {
-                    // console.error('Ошибка:', error);
                     row.classList.remove('row-deleting');
                     if (error.status === 403 && error.message) {
                         showNotification('error', error.message);
@@ -425,7 +422,6 @@
                     document.getElementById('editServiceModal').style.display = 'block';
                 })
                 .catch(error => {
-                    // console.error('Ошибка загрузки данных:', error);
                     showNotification('error', 'Не удалось загрузить данные типа клиента');
                 });
         }
@@ -474,7 +470,6 @@
                     }
                 })
                 .catch(error => {
-                    // console.error('Ошибка:', error);
                     if (error.status === 403 && error.message) {
                         showNotification('error', error.message);
                     } else if (error.errors) {

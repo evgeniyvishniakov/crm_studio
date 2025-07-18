@@ -381,8 +381,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
-
                     if (error.errors) {
                         showErrors(error.errors);
                         showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
@@ -454,7 +452,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
                     row.classList.remove('row-deleting');
                     showNotification('error', 'Не удалось удалить поставщика');
                 });
@@ -479,7 +476,6 @@
                     document.getElementById('editServiceModal').style.display = 'block';
                 })
                 .catch(error => {
-                    console.error('Ошибка загрузки данных:', error);
                     showNotification('error', 'Не удалось загрузить данные поставщика');
                 });
         }
@@ -528,7 +524,6 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
                     if (error.errors) {
                         showErrors(error.errors, 'editServiceForm');
                         showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
@@ -603,7 +598,6 @@
                 renderPagination(data.meta);
             })
             .catch(error => {
-                console.error('Ошибка:', error);
                 showNotification('error', 'Ошибка загрузки данных');
             });
         }
