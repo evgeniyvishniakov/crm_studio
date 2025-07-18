@@ -67,6 +67,7 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
 
     public function permissions()
     {
-        return $this->roleModel ? $this->roleModel->permissions() : collect();
+        $role = $this->roleModel()->first();
+        return $role ? $role->permissions() : collect();
     }
 }

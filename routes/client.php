@@ -240,4 +240,11 @@ Route::middleware('auth:client')->group(function () {
     Route::post('/security/2fa/enable', [SecurityController::class, 'enable2fa'])->name('client.security.2fa.enable');
     Route::post('/security/2fa/disable', [SecurityController::class, 'disable2fa'])->name('client.security.2fa.disable');
     Route::get('/email/change/confirm', [SecurityController::class, 'confirmEmailChange'])->name('client.security.email.confirm');
+
+    // Тикеты поддержки
+    Route::get('/support-tickets', [\App\Http\Controllers\Client\SupportTicketController::class, 'index'])->name('support-tickets.index');
+    Route::post('/support-tickets', [\App\Http\Controllers\Client\SupportTicketController::class, 'store'])->name('support-tickets.store');
+    // Сообщения тикета поддержки (чат)
+    Route::get('/support-tickets/{ticket}/messages', [\App\Http\Controllers\Client\SupportTicketMessageController::class, 'index'])->name('support-tickets.messages.index');
+    Route::post('/support-tickets/{ticket}/messages', [\App\Http\Controllers\Client\SupportTicketMessageController::class, 'store'])->name('support-tickets.messages.store');
 }); 

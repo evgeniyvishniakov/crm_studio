@@ -17,8 +17,15 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::name('admin.')->group(function () {
-    // Главная страница админки
+Route::get('/login', [\App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::post('/logout', function () {
+    auth()->logout();
+    return redirect('/panel/login');
+})->name('admin.logout');
+
+// Все остальные маршруты админки защищены middleware 'admin.only'
+Route::middleware(['admin.only'])->name('admin.')->group(function () {
     Route::get('/', function () {
         return view('admin.dashboard.index');
     })->name('dashboard');
@@ -31,6 +38,8 @@ Route::name('admin.')->group(function () {
     
     // Управление пользователями
     Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [\App\Http\Controllers\Admin\UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
     Route::put('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
     
@@ -60,10 +69,5 @@ Route::name('admin.')->group(function () {
     })->name('logs.index');
     
     // Выход из системы
-    Route::post('/logout', function () {
-        auth()->logout();
-        return redirect('/');
-    })->name('logout');
-
     Route::resource('projects', ProjectController::class);
 }); 

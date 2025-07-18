@@ -38,18 +38,25 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    public function username()
+    // Удалён метод credentials(), теперь используется стандартная аутентификация по email и password
+
+    public function showLoginForm()
     {
-        return 'login';
+        // Для админки возвращаем отдельный шаблон
+        return view('admin.login');
     }
 
-    protected function credentials(\Illuminate\Http\Request $request)
+    public function login(\Illuminate\Http\Request $request)
     {
-        $login = $request->input('login');
-        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-        return [
-            $field => $login,
-            'password' => $request->input('password'),
-        ];
+        $credentials = $request->only('email', 'password');
+        if (auth()->attempt($credentials)) {
+            $user = auth()->user();
+            if (empty($user->is_panel_admin)) {
+                auth()->logout();
+                return back()->withErrors(['email' => 'Нет доступа к админке.']);
+            }
+            return redirect()->intended(route('admin.dashboard'));
+        }
+        return back()->withErrors(['email' => 'Неверный email или пароль.']);
     }
 }

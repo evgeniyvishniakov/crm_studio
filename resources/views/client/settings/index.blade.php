@@ -294,4 +294,33 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script>
+    // Добавить обработку вкладки Поддержка
+    const supportTab = document.querySelector('.dashboard-tabs .tab-button[data-tab="support"]');
+    if (supportTab) {
+        supportTab.addEventListener('click', function() {
+            document.querySelectorAll('.dashboard-tabs .tab-button').forEach(btn => btn.classList.remove('active'));
+            supportTab.classList.add('active');
+            document.querySelectorAll('.dashboard-container .settings-pane').forEach(pane => pane.style.display = 'none');
+            document.getElementById('tab-support').style.display = '';
+        });
+    }
+</script>
+
+<style>
+.settings-accordion { margin-top: 32px; }
+.accordion-item { border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 12px; background: #fff; }
+.accordion-header { padding: 14px 20px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.accordion-body { display: none; padding: 18px 24px; border-top: 1px solid #e5e7eb; }
+.accordion-body.open { display: block; }
+.accordion-header i { color: #3b82f6; }
+</style>
+<script>
+document.querySelectorAll('.settings-accordion .accordion-header').forEach(header => {
+    header.addEventListener('click', function() {
+        const body = this.nextElementSibling;
+        body.classList.toggle('open');
+    });
+});
+</script>
 @endsection 

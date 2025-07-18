@@ -113,27 +113,49 @@
                 <h5 class="modal-title">Добавить пользователя</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form>
+            <form id="createUserForm">
+                @csrf
                 <div class="modal-body">
+                    <div id="createUserErrors" class="alert alert-danger d-none"></div>
                     <div class="mb-3">
-                        <label for="name" class="form-label">Имя</label>
-                        <input type="text" class="form-control" id="name" required>
+                        <label for="user-name" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="user-name" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" required>
+                        <label for="user-email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="user-email" name="email" required>
                     </div>
                     <div class="mb-3">
-                        <label for="password" class="form-label">Пароль</label>
-                        <input type="password" class="form-control" id="password" required>
+                        <label for="user-password" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="user-password" name="password" required>
                     </div>
                     <div class="mb-3">
-                        <label for="role" class="form-label">Роль</label>
-                        <select class="form-select" id="role" required>
+                        <label for="user-password_confirmation" class="form-label">Подтверждение пароля</label>
+                        <input type="password" class="form-control" id="user-password_confirmation" name="password_confirmation" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="user-role" class="form-label">Роль</label>
+                        <select class="form-select" id="user-role" name="role" required>
                             <option value="">Выберите роль</option>
                             <option value="admin">Администратор</option>
                             <option value="manager">Менеджер</option>
                             <option value="user">Пользователь</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="user-status" class="form-label">Статус</label>
+                        <select class="form-select" id="user-status" name="status" required>
+                            <option value="active">Активен</option>
+                            <option value="inactive">Неактивен</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="user-project_id" class="form-label">Проект</label>
+                        <select class="form-select" id="user-project_id" name="project_id" required>
+                            <option value="">Выберите проект</option>
+                            @foreach($projects as $project)
+                                <option value="{{ $project->id }}">{{ $project->project_name }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -149,11 +171,51 @@
 
 @push('scripts')
 <script>
-function deleteUser(userId) {
-    if (confirm('Вы уверены, что хотите удалить этого пользователя?')) {
-        // Здесь будет AJAX запрос для удаления
-        console.log('Удаление пользователя:', userId);
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('createUserForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+            fetch("{{ route('admin.users.store') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(async response => {
+                if (response.ok) return response.json();
+                const data = await response.json();
+                throw data;
+            })
+            .then(data => {
+                if (data.success) {
+                    form.reset();
+                    document.getElementById('createUserErrors').classList.add('d-none');
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('createUserModal'));
+                    if (modal) modal.hide();
+                    location.reload();
+                } else {
+                    throw data;
+                }
+            })
+            .catch(error => {
+                let msg = 'Ошибка при создании пользователя.';
+                if (error.errors) {
+                    msg = Object.values(error.errors).join('<br>');
+                } else if (error.message) {
+                    msg = error.message;
+                }
+                const errorDiv = document.getElementById('createUserErrors');
+                if (errorDiv) {
+                    errorDiv.innerHTML = msg;
+                    errorDiv.classList.remove('d-none');
+                }
+            });
+        });
     }
-}
+});
 </script>
 @endpush 

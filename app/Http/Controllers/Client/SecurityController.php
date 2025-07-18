@@ -84,6 +84,13 @@ class SecurityController extends Controller
         $user->email_change_token_expires_at = null;
         $user->save();
 
+        // Синхронизируем email в проекте
+        $project = \App\Models\Admin\Project::find($user->project_id);
+        if ($project) {
+            $project->email = $user->email;
+            $project->save();
+        }
+
         // Можно авторизовать пользователя или просто показать сообщение
         return redirect('/login')->with('success', 'Email успешно изменён!');
     }

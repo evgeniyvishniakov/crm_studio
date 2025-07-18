@@ -51,6 +51,12 @@ body {
     transition: all 0.3s ease;
 }
 
+@media (min-width: 992px) {
+    .sidebar + .main-content {
+        margin-left: 250px;
+    }
+}
+
 /* Cards */
 .card {
     border: none;

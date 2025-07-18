@@ -469,7 +469,8 @@
                     request()->routeIs('admin.roles.*') || 
                     request()->routeIs('admin.settings.*') || 
                     request()->routeIs('admin.email-templates.*') || 
-                    request()->routeIs('admin.security.*') ? 'active' : '' 
+                    request()->routeIs('admin.security.*') || 
+                    request()->routeIs('support-tickets.*') ? 'active' : '' 
                 }}">
                     <a href="#settingsMenu" data-toggle="collapse" aria-expanded="{{ 
                         request()->routeIs('client.users.*') || 
@@ -478,7 +479,8 @@
                         request()->routeIs('admin.roles.*') || 
                         request()->routeIs('admin.settings.*') || 
                         request()->routeIs('admin.email-templates.*') || 
-                        request()->routeIs('admin.security.*') ? 'true' : 'false' 
+                        request()->routeIs('admin.security.*') || 
+                        request()->routeIs('support-tickets.*') ? 'true' : 'false' 
                     }}" class="dropdown-toggle">
                         <i class="menu-icon fa fa-cogs"></i>Настройки
                     </a>
@@ -489,7 +491,8 @@
                         request()->routeIs('admin.roles.*') || 
                         request()->routeIs('admin.settings.*') || 
                         request()->routeIs('admin.email-templates.*') || 
-                        request()->routeIs('admin.security.*') ? 'show' : '' 
+                        request()->routeIs('admin.security.*') || 
+                        request()->routeIs('support-tickets.*') ? 'show' : '' 
                     }}">
                         <li class="{{ request()->routeIs('client.users.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('client.users', $userPermissions); @endphp
@@ -525,6 +528,17 @@
                                 @endif
                                 <span class="menu-label">Общие настройки</span>
                                 
+                            </a>
+                        </li>
+                        <li class="{{ request()->routeIs('support-tickets.*') ? 'active' : '' }}">
+                            @php $hasAccess = $isAdmin || in_array('support-tickets', $userPermissions); @endphp
+                            <a href="{{ $hasAccess ? route('support-tickets.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                                @if($hasAccess)
+                                    <i class="fa fa-life-ring"></i>
+                                @else
+                                    <i class="fas fa-lock"></i>
+                                @endif
+                                <span class="menu-label">Поддержка</span>
                             </a>
                         </li>
                     </ul>

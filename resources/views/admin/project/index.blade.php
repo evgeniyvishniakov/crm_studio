@@ -124,28 +124,26 @@
 @foreach($projects as $project)
 <!-- Модальное окно просмотра проекта -->
 <div class="modal fade" id="viewProjectModal{{ $project->id }}" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Просмотр проекта: {{ $project->name }}</h5>
+                <h5 class="modal-title">Просмотр проекта: {{ $project->project_name }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <dl class="row">
-                    <dt class="col-sm-4">ID</dt>
-                    <dd class="col-sm-8">{{ $project->id }}</dd>
+                    <dt class="col-sm-4">Название проекта</dt>
+                    <dd class="col-sm-8">{{ $project->project_name }}</dd>
+                    <dt class="col-sm-4">Имя</dt>
+                    <dd class="col-sm-8">{{ $project->name }}</dd>
                     <dt class="col-sm-4">Логотип</dt>
                     <dd class="col-sm-8">
                         @if($project->logo)
-                            <img src="{{ asset('storage/' . $project->logo) }}" alt="Логотип" style="max-width: 100px; max-height: 100px;">
+                            <img src="{{ asset($project->logo) }}" alt="Логотип" style="max-width: 100px; max-height: 100px;">
                         @else
                             <span class="text-muted">Нет</span>
                         @endif
                     </dd>
-                    <dt class="col-sm-4">Имя</dt>
-                    <dd class="col-sm-8">{{ $project->name }}</dd>
-                    <dt class="col-sm-4">Название проекта</dt>
-                    <dd class="col-sm-8">{{ $project->project_name }}</dd>
                     <dt class="col-sm-4">Email администратора</dt>
                     <dd class="col-sm-8">{{ $project->email }}</dd>
                     <dt class="col-sm-4">Дата регистрации</dt>
@@ -157,21 +155,43 @@
                     <dt class="col-sm-4">Телефон</dt>
                     <dd class="col-sm-8">{{ $project->phone ?: '-' }}</dd>
                     <dt class="col-sm-4">Сайт</dt>
-                    <dd class="col-sm-8">{{ $project->website ?: '-' }}</dd>
-                    <dt class="col-sm-4">Адрес</dt>
-                    <dd class="col-sm-8">{{ $project->address ?: '-' }}</dd>
-                    <dt class="col-sm-4">Соцсети</dt>
                     <dd class="col-sm-8">
-                        @if(is_array($project->social_links) && count($project->social_links))
-                            <ul class="mb-0">
-                                @foreach($project->social_links as $link)
-                                    <li>{{ $link }}</li>
-                                @endforeach
-                            </ul>
+                        @if($project->website)
+                            <a href="{{ $project->website }}" target="_blank">{{ $project->website }}</a>
                         @else
                             <span class="text-muted">-</span>
                         @endif
                     </dd>
+                    <dt class="col-sm-4">Адрес</dt>
+                    <dd class="col-sm-8">{{ $project->address ?: '-' }}</dd>
+                    <dt class="col-sm-4">Instagram</dt>
+                    <dd class="col-sm-8">
+                        @if($project->instagram)
+                            <a href="{{ $project->instagram }}" target="_blank"><i class="fab fa-instagram"></i> {{ $project->instagram }}</a>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </dd>
+                    <dt class="col-sm-4">Facebook</dt>
+                    <dd class="col-sm-8">
+                        @if($project->facebook)
+                            <a href="{{ $project->facebook }}" target="_blank"><i class="fab fa-facebook"></i> {{ $project->facebook }}</a>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </dd>
+                    <dt class="col-sm-4">TikTok</dt>
+                    <dd class="col-sm-8">
+                        @if($project->tiktok)
+                            <a href="{{ $project->tiktok }}" target="_blank"><i class="fab fa-tiktok"></i> {{ $project->tiktok }}</a>
+                        @else
+                            <span class="text-muted">-</span>
+                        @endif
+                    </dd>
+                    <dt class="col-sm-4">Создан</dt>
+                    <dd class="col-sm-8">{{ $project->created_at ? $project->created_at->format('d.m.Y H:i') : '-' }}</dd>
+                    <dt class="col-sm-4">Обновлён</dt>
+                    <dd class="col-sm-8">{{ $project->updated_at ? $project->updated_at->format('d.m.Y H:i') : '-' }}</dd>
                 </dl>
             </div>
             <div class="modal-footer">

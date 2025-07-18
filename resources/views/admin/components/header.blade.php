@@ -1,3 +1,7 @@
+@php
+    $user = auth()->user();
+@endphp
+@if($user && !empty($user->is_panel_admin))
 <header class="bg-white border-bottom shadow-sm p-3">
     <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
@@ -51,4 +55,5 @@
             </div>
         </div>
     </div>
-</header> 
+</header>
+@endif 
