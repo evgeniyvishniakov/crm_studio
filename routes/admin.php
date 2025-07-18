@@ -70,4 +70,18 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     
     // Выход из системы
     Route::resource('projects', ProjectController::class);
+
+    // Тикеты поддержки (сообщения)
+    Route::get('/tickets', [\App\Http\Controllers\Admin\TicketController::class, 'index'])->name('tickets.index');
+    Route::get('/tickets/{ticket}', [\App\Http\Controllers\Admin\TicketController::class, 'show'])->name('tickets.show');
+    // AJAX-роуты для сообщений тикета
+    Route::get('/tickets/{ticket}/messages', [\App\Http\Controllers\Admin\TicketController::class, 'messages']);
+    Route::post('/tickets/{ticket}/messages', [\App\Http\Controllers\Admin\TicketController::class, 'sendMessage']);
+    // AJAX: смена статуса тикета
+    Route::post('/tickets/{ticket}/status', [\App\Http\Controllers\Admin\TicketController::class, 'updateStatus'])->name('tickets.status');
+    Route::delete('/tickets/{ticket}', [\App\Http\Controllers\Admin\TicketController::class, 'destroy'])->name('tickets.destroy');
+
+    // Уведомления
+    Route::get('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('notifications.read');
 }); 

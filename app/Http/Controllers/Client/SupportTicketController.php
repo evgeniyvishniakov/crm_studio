@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Clients\SupportTicket;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Notification;
 
 class SupportTicketController extends Controller
 {
@@ -41,6 +42,13 @@ class SupportTicketController extends Controller
             'user_id' => $user->id,
             'message' => $request->message,
             'is_admin' => false,
+        ]);
+        // После создания тикета:
+        Notification::create([
+            'type' => 'ticket',
+            'title' => 'Новый тикет',
+            'body' => $ticket->subject,
+            'url' => route('admin.tickets.index') . '#ticket-' . $ticket->id,
         ]);
         if ($request->ajax()) {
             return response()->json(['success' => true, 'ticket' => $ticket]);

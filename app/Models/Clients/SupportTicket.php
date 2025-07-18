@@ -24,4 +24,14 @@ class SupportTicket extends Model
     {
         return $this->belongsTo(\App\Models\Admin\User::class, 'user_id');
     }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Admin\Project::class, 'project_id');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(SupportTicketMessage::class, 'support_ticket_id');
+    }
 } 

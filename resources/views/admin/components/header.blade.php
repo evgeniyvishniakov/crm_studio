@@ -1,5 +1,16 @@
 @php
     $user = auth()->user();
+    $openTicketsCount = \App\Models\Clients\SupportTicket::where('status', 'open')->count();
+    $pendingTicketsCount = \App\Models\Clients\SupportTicket::where('status', 'pending')->count();
+    $newTicketsCount = $openTicketsCount + $pendingTicketsCount;
+    $lastTickets = \App\Models\Clients\SupportTicket::with('user')->whereIn('status', ['open','pending'])->orderByDesc('created_at')->limit(5)->get();
+    use App\Models\Notification;
+    $unreadNotifications = Notification::where(function($q) use ($user) {
+        $q->whereNull('user_id')->orWhere('user_id', $user->id);
+    })->where('is_read', false)->orderByDesc('created_at')->limit(5)->get();
+    $unreadCount = Notification::where(function($q) use ($user) {
+        $q->whereNull('user_id')->orWhere('user_id', $user->id);
+    })->where('is_read', false)->count();
 @endphp
 @if($user && !empty($user->is_panel_admin))
 <header class="bg-white border-bottom shadow-sm p-3">
@@ -16,17 +27,28 @@
             <div class="dropdown me-3">
                 <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">
                     <i class="fas fa-bell"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        3
-                    </span>
+                    @if($unreadCount > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ $unreadCount }}
+                        </span>
+                    @endif
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><h6 class="dropdown-header">Уведомления</h6></li>
-                    <li><a class="dropdown-item" href="#">Новый пользователь зарегистрирован</a></li>
-                    <li><a class="dropdown-item" href="#">Обновление системы доступно</a></li>
-                    <li><a class="dropdown-item" href="#">Резервная копия создана</a></li>
+                    @forelse($unreadNotifications as $notification)
+                        <li>
+                            <a class="dropdown-item" href="{{ $notification->url ?? '#' }}">
+                                <span class="fw-bold">{{ $notification->title }}</span>
+                                <br>
+                                <small class="text-muted">{{ $notification->created_at->format('d.m.Y H:i') }}</small>
+                            </a>
+                        </li>
+                    @empty
+                        <li><span class="dropdown-item text-muted">Нет новых уведомлений</span></li>
+                    @endforelse
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Показать все</a></li>
+                    <li><a class="dropdown-item" href="{{ route('admin.tickets.index') }}">Показать все тикеты</a></li>
+                    <li><a class="dropdown-item" href="{{ route('admin.notifications.index') }}">Показать все уведомления</a></li>
                 </ul>
             </div>
             

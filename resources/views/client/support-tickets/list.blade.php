@@ -25,11 +25,11 @@
             </thead>
             <tbody>
                 @forelse($tickets as $ticket)
-                    <tr class="ticket-row" data-ticket-id="{{ $ticket->id }}" data-ticket-subject="{{ $ticket->subject }}" style="cursor:pointer;">
+                    <tr class="ticket-row{{ in_array($ticket->status, ['pending','closed']) ? ' ticket-row-disabled' : '' }}" data-ticket-id="{{ $ticket->id }}" data-ticket-subject="{{ $ticket->subject }}" data-ticket-status="{{ $ticket->status }}" style="cursor:{{ in_array($ticket->status, ['pending','closed']) ? 'not-allowed' : 'pointer' }};">
                         <td>{{ $ticket->subject }}</td>
                         <td>
-                            <span class="status-badge {{ $ticket->status === 'open' ? 'status-completed' : 'status-cancelled' }}">
-                                {{ $ticket->status === 'open' ? 'Открыт' : 'Закрыт' }}
+                            <span class="status-badge {{ $ticket->status === 'open' ? 'status-completed' : ($ticket->status === 'pending' ? 'status-pending' : 'status-cancelled') }}">
+                                {{ $ticket->status === 'open' ? 'Открыт' : ($ticket->status === 'pending' ? 'Ожидается' : 'Закрыт') }}
                             </span>
                         </td>
                         <td>{{ $ticket->created_at->format('d.m.Y H:i') }}</td>
@@ -72,12 +72,12 @@
 
 <!-- Модальное окно чата тикета -->
 <div id="ticketChatModal" class="modal" style="display:none;">
-    <div class="modal-content" style="width: 600px; max-width: 98vw;">
+    <div class="modal-content chat-modal-centered">
         <div class="modal-header">
             <h2 id="chatModalTitle">Тикет</h2>
             <span class="close" onclick="closeTicketChatModal()">&times;</span>
         </div>
-        <div class="modal-body" style="padding:0;">
+        <div class="modal-body">
             <div class="chat-messages" id="modalChatMessages" style="height: 350px; overflow-y: auto; background: #f9fafb; border-radius: 10px; padding: 24px; margin-bottom: 0; border-bottom: 1px solid #e5e7eb;"></div>
             <form id="modalChatForm" class="chat-form" style="display: flex; gap: 12px; padding: 16px; border-top: 1px solid #e5e7eb; background: #fff;">
                 @csrf
@@ -213,6 +213,12 @@ function openTicketChatModal(ticketId, subject) {
     loadModalChatMessages(true);
     if (chatPollingInterval) clearInterval(chatPollingInterval);
     chatPollingInterval = setInterval(() => loadModalChatMessages(), 5000);
+    // Проверяем статус тикета
+    const row = document.querySelector(`.ticket-row[data-ticket-id='${ticketId}']`);
+    if (row && ['pending','closed'].includes(row.dataset.ticketStatus)) {
+        window.showNotification && window.showNotification('error', 'Чат недоступен для этого статуса');
+        return;
+    }
 }
 function closeTicketChatModal() {
     document.getElementById('ticketChatModal').style.display = 'none';
@@ -270,6 +276,7 @@ document.querySelectorAll('.ticket-row').forEach(row => {
     row.addEventListener('click', function(e) {
         // Не открывать чат только если клик по элементу управления внутри строки (например, кнопка)
         if (e.target.closest('button, a, .no-chat-open')) return;
+        if (['pending','closed'].includes(this.dataset.ticketStatus)) return; // Блокируем открытие чата
         openTicketChatModal(this.dataset.ticketId, this.dataset.ticketSubject);
     });
 });
@@ -280,6 +287,12 @@ document.getElementById('modalChatForm').addEventListener('submit', async functi
     if (!msg) return;
     const btn = this.querySelector('button[type="submit"]');
     btn.disabled = true;
+    // Блокируем отправку, если тикет не открыт
+    const row = document.querySelector(`.ticket-row[data-ticket-id='${currentChatTicketId}']`);
+    if (row && ['pending','closed'].includes(row.dataset.ticketStatus)) {
+        window.showNotification && window.showNotification('error', 'Нельзя отправлять сообщения для этого статуса');
+        return;
+    }
     try {
         const res = await fetch(`/support-tickets/${currentChatTicketId}/messages`, {
             method: 'POST',
@@ -355,8 +368,20 @@ document.getElementById('modalChatForm').addEventListener('submit', async functi
 .chat-link:hover { color: #1d4ed8; }
 .chat-messages { min-height: 200px; background: #f9fafb; }
 .chat-message { margin-bottom: 18px; padding: 10px 16px; border-radius: 10px; max-width: 80%; word-break: break-word; position: relative; }
-.chat-message-me { background: linear-gradient(135deg, #3b82f6, #60a5fa); color: #fff; margin-left: auto; text-align: right; }
-.chat-message-admin { background: #e5e7eb; color: #222; margin-right: auto; text-align: left; }
+.chat-message-me {
+    background: #e5e7eb;
+    color: #222;
+    margin-left: auto;
+    margin-right: 0;
+    text-align: right;
+}
+.chat-message-admin {
+    background: #f3f4f6;
+    color: #222;
+    margin-right: auto;
+    margin-left: 0;
+    text-align: left;
+}
 .chat-msg-meta { font-size: 12px; color: #64748b; margin-bottom: 4px; display: flex; justify-content: space-between; }
 .chat-msg-author { font-weight: 600; }
 .chat-msg-text { font-size: 15px; }
@@ -368,7 +393,51 @@ document.getElementById('modalChatForm').addEventListener('submit', async functi
     box-shadow: 0 2px 8px rgba(59,130,246,0.07);
     border-radius: 6px;
 }
-.chat-message-me .chat-msg-meta { color: #fff; }
+.chat-message-me .chat-msg-meta { color: #64748b; }
+.chat-msg-meta, .chat-msg-meta-admin {
+    color: #64748b;
+}
+#ticketChatModal .modal-content.chat-modal-centered {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    max-width: 98vw;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+#ticketChatModal .modal-content.chat-modal-centered .modal-body {
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+}
+#ticketChatModal .chat-messages {
+    height: 540px !important;
+    min-height: 300px;
+    max-height: 75vh;
+    background: #f9fafb;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+.ticket-row-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed !important;
+}
+.status-badge.status-completed {
+    background: linear-gradient(135deg, #458dd7 60%, #5fbbd7 100%);
+    color: #fff;
+}
+.status-badge.status-pending {
+    background: linear-gradient(135deg, #eba70e 60%, #f3c138 100%);
+    color: #fff;
+}
+.status-badge.status-cancelled {
+    background: linear-gradient(135deg, #05990b 60%, #56bb93 100%);
+    color: #fff;
+}
 </style>
 @endpush
 @endsection 
