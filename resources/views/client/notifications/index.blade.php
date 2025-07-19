@@ -2,7 +2,9 @@
 
 @section('content')
 <div class="dashboard-container">
-    <h1 class="mb-4">Уведомления</h1>
+    <div class="natification-header">
+        <h1 class="mb-4">Уведомления</h1>
+    </div>
     <form method="get" class="row g-2 mb-3">
         <div class="col-auto">
             <select name="type" class="form-control" onchange="this.form.submit()">
@@ -20,36 +22,43 @@
             </select>
         </div>
     </form>
-    <div class="card">
+    <div class="table-wrapper">
         <div class="card-body p-0">
-            <table class="table table-hover mb-0">
+            <table class="natification-table table-striped">
                 <thead>
                     <tr>
                         <th>Тип</th>
                         <th>Заголовок</th>
                         <th>Дата</th>
                         <th>Статус</th>
-                        <th></th>
+                        <th class="actions-column"></th>
                     </tr>
                 </thead>
                 <tbody>
                 @forelse($notifications as $notification)
                     <tr @if(!$notification->is_read) style="font-weight:bold;" @endif>
-                        <td>{{ ucfirst($notification->type) }}</td>
+                        <td>
+                            <div class="client-info">
+                            
+                                <div class="client-details">
+                                    <div class="client-name">{{ ucfirst($notification->type) }}</div>
+                                </div>
+                            </div>
+                        </td>
                         <td>{{ $notification->title }}</td>
                         <td>{{ $notification->created_at->format('d.m.Y H:i') }}</td>
                         <td>
                             @if($notification->is_read)
-                                <span class="badge badge-success">Прочитано</span>
+                                <span class="badge status-success">Прочитано</span>
                             @else
-                                <span class="badge badge-warning text-dark">Непрочитано</span>
+                                <span class="badge status-warning text-dark">Непрочитано</span>
                             @endif
                         </td>
-                        <td>
-                            @if($notification->url)
+                        <td class="actions-cell">
+                            @if(!$notification->is_read && $notification->url)
                                 <form method="POST" action="{{ route('client.notifications.read', $notification->id) }}" style="display:inline;">
                                     @csrf
-                                    <button type="submit" class="btn btn-sm btn-primary">Открыть</button>
+                                    <button type="submit" class="btn-add-client btn-sm">Открыть</button>
                                 </form>
                             @endif
                         </td>
@@ -59,7 +68,7 @@
                 @endforelse
                 </tbody>
             </table>
-        </div>
+    </div>
         <div class="card-footer">{{ $notifications->withQueryString()->links() }}</div>
     </div>
 </div>

@@ -224,10 +224,10 @@
     <div id="notification"></div>
 @php
     $user = auth()->user();
-    $userPermissions = $user->permissions()->pluck('name')->toArray();
-    $isAdmin = $user->role === 'admin';
-    $project = \App\Models\Admin\Project::find(auth()->user()->project_id);
-    $hasNotificationAccess = $isAdmin || in_array('notifications', $userPermissions);
+    $userPermissions = $user ? $user->permissions()->pluck('name')->toArray() : [];
+    $isAdmin = $user ? $user->role === 'admin' : false;
+    $project = $user ? \App\Models\Admin\Project::find($user->project_id) : null;
+    $hasNotificationAccess = $user && ($isAdmin || in_array('notifications', $userPermissions));
     $unreadNotifications = $hasNotificationAccess ? \App\Models\Notification::where('project_id', $user->project_id)->where('is_read', false)->orderByDesc('created_at')->limit(5)->get() : collect();
     $unreadCount = $hasNotificationAccess ? \App\Models\Notification::where('project_id', $user->project_id)->where('is_read', false)->count() : 0;
 @endphp

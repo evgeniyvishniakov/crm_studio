@@ -25,7 +25,8 @@
 .appointments-header,
 .expenses-header,
 .inventories-header,
-.settings-header{
+.settings-header,
+.natification-header{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -43,7 +44,8 @@
 .appointments-header h1,
 .expenses-header h1,
 .inventories-header h1,
-.settings-header h1{
+.settings-header h1,
+.natification-header h1{
     font-size: 24px;
     font-weight: 600;
     color: #333;
@@ -154,7 +156,8 @@
 .services-table,
 .appointments-table,
 .expenses-table,
-.inventories-table{
+.inventories-table,
+.natification-table{
     width: 100%;
     border-collapse: collapse;
 }
@@ -167,7 +170,8 @@
 .services-table thead,
 .expenses-table thead,
 .appointments-table thead,
-.inventories-table thead{
+.inventories-table thead,
+.natification-table thead{
     background-color: #e0e4e9 !important;
     border-bottom: 1px solid #e5e7eb;
 }
@@ -180,7 +184,8 @@
 .services-table th,
 .appointments-table th,
 .expenses-table th,
-.inventories-table th
+.inventories-table th,
+.natification-table th
 {
     padding: 16px;
     text-align: center;
@@ -199,7 +204,8 @@
 .services-table td,
 .appointments-table td,
 .expenses-table td,
-.inventories-table td{
+.inventories-table td,
+.natification-table td{
     padding: 14px;
     font-size: 14px;
     color: #4b5563;
@@ -214,7 +220,8 @@
 .services-table tr:last-child td,
 .appointments-table th:last-child td,
 .expenses-table th:last-child td,
-.inventories-table th:last-child td{
+.inventories-table th:last-child td,
+.natification-table th:last-child td{
     border-bottom: none;
 }
 

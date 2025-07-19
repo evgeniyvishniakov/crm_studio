@@ -5,12 +5,12 @@
     $newTicketsCount = $openTicketsCount + $pendingTicketsCount;
     $lastTickets = \App\Models\Clients\SupportTicket::with('user')->whereIn('status', ['open','pending'])->orderByDesc('created_at')->limit(5)->get();
     use App\Models\Notification;
-    $unreadNotifications = Notification::where(function($q) use ($user) {
+    $unreadNotifications = ($user && $user->id) ? Notification::where(function($q) use ($user) {
         $q->whereNull('user_id')->orWhere('user_id', $user->id);
-    })->where('is_read', false)->orderByDesc('created_at')->limit(5)->get();
-    $unreadCount = Notification::where(function($q) use ($user) {
+    })->where('is_read', false)->orderByDesc('created_at')->limit(5)->get() : collect();
+    $unreadCount = ($user && $user->id) ? Notification::where(function($q) use ($user) {
         $q->whereNull('user_id')->orWhere('user_id', $user->id);
-    })->where('is_read', false)->count();
+    })->where('is_read', false)->count() : 0;
 @endphp
 @if($user && !empty($user->is_panel_admin))
 <header class="bg-white border-bottom shadow-sm p-3">
@@ -58,7 +58,7 @@
                     <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
                         <i class="fas fa-user"></i>
                     </div>
-                    <span>{{ auth()->user()->name ?? 'Администратор' }}</span>
+                    <span>{{ $user ? $user->name : 'Администратор' }}</span>
                     <i class="fas fa-chevron-down ms-2"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
