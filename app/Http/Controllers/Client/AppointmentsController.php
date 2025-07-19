@@ -667,6 +667,7 @@ class AppointmentsController extends Controller
      */
     public function getAppointmentStatusData(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
         if ($startDate && $endDate) {
@@ -707,7 +708,8 @@ class AppointmentsController extends Controller
             }
         }
 
-        $statuses = Appointment::whereBetween('date', [$startDate, $endDate])
+        $statuses = Appointment::where('project_id', $currentProjectId)
+            ->whereBetween('date', [$startDate, $endDate])
             ->select('status', DB::raw('count(*) as count'))
             ->groupBy('status')
             ->pluck('count', 'status')
@@ -761,6 +763,7 @@ class AppointmentsController extends Controller
      */
     public function getServicePopularityData(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
         if ($startDate && $endDate) {
@@ -801,7 +804,8 @@ class AppointmentsController extends Controller
             }
         }
 
-        $servicePopularity = Appointment::whereBetween('date', [$startDate, $endDate])
+        $servicePopularity = Appointment::where('project_id', $currentProjectId)
+            ->whereBetween('date', [$startDate, $endDate])
             ->join('services', 'appointments.service_id', '=', 'services.id')
             ->select('services.name', DB::raw('count(appointments.id) as count'))
             ->groupBy('services.name')
@@ -830,6 +834,7 @@ class AppointmentsController extends Controller
      */
     public function getAppointmentsByDay(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
         if ($startDate && $endDate) {
@@ -877,6 +882,7 @@ class AppointmentsController extends Controller
             case 'half_year': // Группировка по неделям, только с данными
                 $dateGroupRaw = 'YEARWEEK(date, 1)';
                 $rawData = Appointment::query()
+                    ->where('project_id', $currentProjectId)
                     ->whereBetween('date', $periodRange)
                     ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
                     ->groupBy('date_group')
@@ -893,6 +899,7 @@ class AppointmentsController extends Controller
             case 'year': // Группировка по месяцам, только с данными
                 $dateGroupRaw = 'DATE_FORMAT(date, "%Y-%m")';
                 $rawData = Appointment::query()
+                    ->where('project_id', $currentProjectId)
                     ->whereBetween('date', $periodRange)
                     ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
                     ->groupBy('date_group')
@@ -907,6 +914,7 @@ class AppointmentsController extends Controller
                 $dateGroupFormatter = fn(Carbon $date) => $date->format('Y-m-d');
                 $labelFormatter = fn($dateGroup) => $dateGroup;
                 $data = Appointment::query()
+                    ->where('project_id', $currentProjectId)
                     ->whereBetween('date', $periodRange)
                     ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
                     ->groupBy('date_group')
@@ -932,6 +940,7 @@ class AppointmentsController extends Controller
      */
     public function getTopClientsByRevenue(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
         if ($startDate && $endDate) {
@@ -971,9 +980,10 @@ class AppointmentsController extends Controller
                     break;
             }
         }
-        $clients = Client::select('name', 'id')
-            ->withSum(['appointments as revenue' => function($q) use ($startDate, $endDate) {
-                $q->whereBetween('date', [$startDate, $endDate]);
+        $clients = Client::where('project_id', $currentProjectId)
+            ->select('name', 'id')
+            ->withSum(['appointments as revenue' => function($q) use ($startDate, $endDate, $currentProjectId) {
+                $q->where('project_id', $currentProjectId)->whereBetween('date', [$startDate, $endDate]);
             }], 'price')
             ->orderByDesc('revenue')
             ->limit(5)
@@ -988,6 +998,7 @@ class AppointmentsController extends Controller
      */
     public function getAvgCheckDynamics(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
         if ($startDate && $endDate) {
@@ -1027,7 +1038,8 @@ class AppointmentsController extends Controller
                     break;
             }
         }
-        $checks = Appointment::whereBetween('date', [$startDate, $endDate])
+        $checks = Appointment::where('project_id', $currentProjectId)
+            ->whereBetween('date', [$startDate, $endDate])
             ->selectRaw('date, AVG(price) as avg_check')
             ->groupBy('date')
             ->orderBy('date')
@@ -1042,6 +1054,7 @@ class AppointmentsController extends Controller
      */
     public function getLtvByClientType(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
         if ($startDate && $endDate) {
@@ -1081,7 +1094,11 @@ class AppointmentsController extends Controller
                     break;
             }
         }
-        $types = ClientType::with(['clients.sales'])->get();
+        $types = ClientType::with(['clients' => function($q) use ($currentProjectId) {
+            $q->where('project_id', $currentProjectId);
+        }, 'clients.sales' => function($q) use ($currentProjectId) {
+            $q->where('project_id', $currentProjectId);
+        }])->get();
         $labels = [];
         $data = [];
         foreach ($types as $type) {
@@ -1100,6 +1117,7 @@ class AppointmentsController extends Controller
      */
     public function getTopServicesByRevenue(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
         if ($startDate && $endDate) {
@@ -1140,8 +1158,8 @@ class AppointmentsController extends Controller
             }
         }
         $services = Service::select('name')
-            ->withSum(['appointments as revenue' => function($q) use ($startDate, $endDate) {
-                $q->whereBetween('date', [$startDate, $endDate]);
+            ->withSum(['appointments as revenue' => function($q) use ($startDate, $endDate, $currentProjectId) {
+                $q->where('project_id', $currentProjectId)->whereBetween('date', [$startDate, $endDate]);
             }], 'price')
             ->orderByDesc('revenue')
             ->limit(10)
@@ -1153,6 +1171,7 @@ class AppointmentsController extends Controller
 
     public function getClientAnalyticsData(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->get('start_date');
         $endDate = $request->get('end_date');
         if ($startDate && $endDate) {
@@ -1175,9 +1194,11 @@ class AppointmentsController extends Controller
     public function ajax(Request $request)
     {
         try {
+            $currentProjectId = auth()->user()->project_id;
             $perPage = (int)($request->get('per_page', 11));
             $search = $request->get('search');
-            $query = Appointment::with(['client', 'service']);
+            $query = Appointment::with(['client', 'service'])
+                ->where('project_id', $currentProjectId);
             if ($search) {
                 $query->whereHas('client', function($q) use ($search) {
                     $q->where('name', 'like', "%$search%")

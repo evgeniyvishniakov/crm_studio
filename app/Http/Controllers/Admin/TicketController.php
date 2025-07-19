@@ -67,13 +67,18 @@ class TicketController extends Controller
             'is_admin_param' => $request->input('is_admin'),
         ]);
         if ($request->input('is_admin')) {
-            Notification::create([
-                'type' => 'ticket',
-                'title' => 'Новое сообщение от администратора',
-                'body' => $ticket->subject,
-                'url' => route('client.support-tickets.index') . '#ticket-' . $ticket->id,
-                'project_id' => $ticket->project_id,
-            ]);
+            // Получаем всех админов, кроме текущего
+            $adminUsers = User::where('role', 'admin')->where('id', '!=', $admin->id)->get();
+            foreach ($adminUsers as $adminUser) {
+                Notification::create([
+                    'user_id' => $adminUser->id,
+                    'type' => 'ticket',
+                    'title' => 'Новое сообщение от администратора',
+                    'body' => $ticket->subject,
+                    'url' => route('client.support-tickets.index') . '#ticket-' . $ticket->id,
+                    'project_id' => $ticket->project_id,
+                ]);
+            }
         }
         return response()->json(['success' => true, 'message' => $msg]);
     }

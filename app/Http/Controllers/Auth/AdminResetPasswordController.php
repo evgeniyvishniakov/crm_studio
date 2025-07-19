@@ -46,6 +46,25 @@ class AdminResetPasswordController extends Controller
     }
 
     /**
+     * Правила валидации для сброса/установки пароля
+     */
+    protected function rules()
+    {
+        return [
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'regex:/[a-zA-Z]/', // хотя бы одна буква
+                'regex:/[0-9]/',    // хотя бы одна цифра
+                'confirmed',
+            ],
+        ];
+    }
+
+    /**
      * Reset the given user's password.
      *
      * @param  \Illuminate\Http\Request  $request

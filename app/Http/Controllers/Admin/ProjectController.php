@@ -71,6 +71,19 @@ class ProjectController extends Controller
 
         Project::create($validated);
 
+        // Рассылка уведомлений всем админам, кроме создателя
+        $currentAdmin = auth()->user();
+        $adminUsers = \App\Models\Admin\User::where('role', 'admin')->where('id', '!=', $currentAdmin->id)->get();
+        foreach ($adminUsers as $adminUser) {
+            \App\Models\Notification::create([
+                'user_id' => $adminUser->id,
+                'type' => 'project',
+                'title' => 'Создан новый проект',
+                'body' => 'Создан новый проект: ' . $validated['project_name'],
+                'url' => route('admin.projects.index'),
+            ]);
+        }
+
         return redirect()->route('admin.projects.index')->with('success', 'Проект успешно создан!');
     }
 

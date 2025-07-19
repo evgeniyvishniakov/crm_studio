@@ -29,6 +29,7 @@ class RegisterController extends Controller
                 'max:32',
             ],
             'salon' => 'required|string|max:255',
+            // password убран
         ]);
 
         // Ручная проверка на дубль телефона только в projects
@@ -62,6 +63,21 @@ class RegisterController extends Controller
                 'status' => 'active',
                 'registered_at' => now(),
             ]);
+
+            // Рассылка уведомлений только panel-админам, кроме нового
+            $adminUsers = User::where('role', 'admin')
+                ->where('is_panel_admin', 1)
+                ->where('id', '!=', $admin->id)
+                ->get();
+            foreach ($adminUsers as $adminUser) {
+                \App\Models\Notification::create([
+                    'user_id' => $adminUser->id,
+                    'type' => 'project',
+                    'title' => 'Зарегистрирован новый проект',
+                    'body' => 'Зарегистрирован новый проект: ' . $validated['salon'],
+                    'url' => route('admin.projects.index'),
+                ]);
+            }
 
             // Генерируем токен для создания пароля
             $token = Password::broker('admin_users')->createToken($admin);
