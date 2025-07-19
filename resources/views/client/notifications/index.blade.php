@@ -2,26 +2,22 @@
 
 @section('content')
 <div class="dashboard-container">
-    <div class="natification-header">
-        <h1 class="mb-4">Уведомления</h1>
-    </div>
-    <form method="get" class="row g-2 mb-3">
-        <div class="col-auto">
-            <select name="type" class="form-control" onchange="this.form.submit()">
+    <div class="natification-header" style="display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px;">
+        <h1 class="mb-0">Уведомления</h1>
+        <form method="get" class="table-filters" style="background: #f7fafd; border-radius: 10px; padding: 0; box-shadow: 0 1px 3px rgba(59,130,246,0.04); display: flex; gap: 16px; align-items: center; margin-bottom: 0; border: none;">
+            <select name="type" class="table-filter-select chosen-select" onchange="this.form.submit()">
                 <option value="">Все типы</option>
                 @foreach($types as $type)
                     <option value="{{ $type }}" @if(request('type') == $type) selected @endif>{{ ucfirst($type) }}</option>
                 @endforeach
             </select>
-        </div>
-        <div class="col-auto">
-            <select name="status" class="form-control" onchange="this.form.submit()">
+            <select name="status" class="table-filter-select chosen-select" onchange="this.form.submit()">
                 <option value="">Все статусы</option>
                 <option value="unread" @if(request('status') == 'unread') selected @endif>Непрочитанные</option>
                 <option value="read" @if(request('status') == 'read') selected @endif>Прочитанные</option>
             </select>
-        </div>
-    </form>
+        </form>
+    </div>
     <div class="table-wrapper">
         <div class="card-body p-0">
             <table class="natification-table table-striped">
@@ -73,3 +69,57 @@
     </div>
 </div>
 @endsection 
+
+<style>
+.table-filters {
+    background: #f7fafd;
+    border-radius: 10px;
+    padding: 0;
+    margin-bottom: 0;
+    box-shadow: 0 1px 3px rgba(59,130,246,0.04);
+    border: none !important;
+}
+.natification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+.table-filter-select {
+    padding: 8px 36px 8px 14px;
+    border-radius: 8px;
+    border: 1.5px solid #e0e4e9;
+    background: #fff url('data:image/svg+xml;utf8,<svg fill="gray" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>') no-repeat right 12px center/18px 18px;
+    font-size: 15px;
+    color: #374151;
+    min-width: 160px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    box-shadow: 0 1px 2px rgba(59,130,246,0.03);
+    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+.table-filter-select:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 .2rem rgba(0, 123, 255, .25);
+    border: 1px solid #e5e7eb;
+}
+.table-filter-select option {
+    padding: 8px 16px;
+    color: #374151;
+    background: #f7fafd;
+    font-size: 15px;
+}
+.table-filter-select option:checked, .table-filter-select option[selected] {
+    background: #e0e4e9 !important;
+    color: #2563eb !important;
+}
+</style> 
+@push('scripts')
+<script src="/client/js/lib/chosen/chosen.jquery.min.js"></script>
+<script>$(function() { $('.chosen-select').chosen({width: '160px', disable_search: true}); });</script>
+@endpush 

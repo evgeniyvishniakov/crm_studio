@@ -497,7 +497,7 @@
                         request()->routeIs('admin.settings.*') || 
                         request()->routeIs('admin.email-templates.*') || 
                         request()->routeIs('admin.security.*') || 
-                        request()->routeIs('support-tickets.*') || 
+                        request()->routeIs('client.support-tickets.*') || 
                         request()->routeIs('client.notifications.*') ? 'show' : '' 
                     }}">
                         <li class="{{ request()->routeIs('client.users.*') ? 'active' : '' }}">
@@ -536,9 +536,9 @@
                                 
                             </a>
                         </li>
-                        <li class="{{ request()->routeIs('support-tickets.*') ? 'active' : '' }}">
+                        <li class="{{ request()->routeIs('client.support-tickets.*') || request()->routeIs('support-tickets.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('support-tickets', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.support-tickets.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('client.support-tickets.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }} {{ request()->routeIs('client.support-tickets.*') || request()->routeIs('support-tickets.*') ? 'active' : '' }}">
                                 @if($hasAccess)
                                     <i class="fa fa-life-ring"></i>
                                 @else

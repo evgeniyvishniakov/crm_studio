@@ -25,7 +25,7 @@
             </thead>
             <tbody>
                 @forelse($tickets as $ticket)
-                    <tr class="ticket-row{{ in_array($ticket->status, ['pending','closed']) ? ' ticket-row-disabled' : '' }}" data-ticket-id="{{ $ticket->id }}" data-ticket-subject="{{ $ticket->subject }}" data-ticket-status="{{ $ticket->status }}" style="cursor:{{ in_array($ticket->status, ['pending','closed']) ? 'not-allowed' : 'pointer' }};">
+                    <tr class="ticket-row{{ in_array($ticket->status, ['closed','pending']) ? ' ticket-row-closed' : '' }}" data-ticket-id="{{ $ticket->id }}" data-ticket-subject="{{ $ticket->subject }}" data-ticket-status="{{ $ticket->status }}" style="cursor:{{ in_array($ticket->status, ['pending','closed']) ? 'not-allowed' : 'pointer' }};">
                         <td>{{ $ticket->subject }}</td>
                         <td>
                             <span class="status-badge {{ $ticket->status === 'open' ? 'status-completed' : ($ticket->status === 'pending' ? 'status-pending' : 'status-cancelled') }}">
@@ -437,6 +437,10 @@ document.getElementById('modalChatForm').addEventListener('submit', async functi
 .status-badge.status-cancelled {
     background: linear-gradient(135deg, #05990b 60%, #56bb93 100%);
     color: #fff;
+}
+.ticket-row-closed {
+    background: #f3f4f6 !important;
+    color: #888 !important;
 }
 </style>
 @endpush
