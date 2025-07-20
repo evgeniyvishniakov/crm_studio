@@ -14,7 +14,8 @@ class ProductCategory extends Model
     protected $fillable = [
         'name',
         'description',
-        'status'
+        'status',
+        'project_id',
     ];
 
     protected $casts = [

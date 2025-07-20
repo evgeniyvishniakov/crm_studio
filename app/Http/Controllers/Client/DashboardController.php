@@ -205,16 +205,22 @@ class DashboardController extends Controller
      */
     private function getProfitForDate($date)
     {
-        $productsProfit = \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date) {
-            $q->whereDate('date', $date);
+        $currentProjectId = auth()->user()->project_id;
+        $productsProfit = \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date, $currentProjectId) {
+            $q->whereDate('date', $date)->where('project_id', $currentProjectId);
         })
         ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
         ->value('profit') ?? 0;
         $servicesProfit = \App\Models\Clients\Appointment::whereDate('date', $date)
             ->where('status', 'completed')
+            ->where('project_id', $currentProjectId)
             ->sum('price');
-        $expenses = \App\Models\Clients\Expense::whereDate('date', $date)->sum('amount');
-        $purchases = \App\Models\Clients\Purchase::whereDate('date', $date)->sum('total_amount');
+        $expenses = \App\Models\Clients\Expense::whereDate('date', $date)
+            ->where('project_id', $currentProjectId)
+            ->sum('amount');
+        $purchases = \App\Models\Clients\Purchase::whereDate('date', $date)
+            ->where('project_id', $currentProjectId)
+            ->sum('total_amount');
         return $productsProfit + $servicesProfit - $expenses - $purchases;
     }
 
@@ -223,13 +229,21 @@ class DashboardController extends Controller
      */
     private function getProfitForPeriod($start, $end)
     {
-        $productsProfit = \App\Models\Clients\SaleItem::whereBetween('created_at', [$start, $end])
-            ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
-            ->value('profit') ?? 0;
+        $currentProjectId = auth()->user()->project_id;
+        $productsProfit = \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($start, $end, $currentProjectId) {
+            $q->whereBetween('date', [$start, $end])->where('project_id', $currentProjectId);
+        })
+        ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
+        ->value('profit') ?? 0;
         $servicesProfit = \App\Models\Clients\Appointment::whereBetween('date', [$start, $end])
+            ->where('project_id', $currentProjectId)
             ->sum('price');
-        $expenses = \App\Models\Clients\Expense::whereBetween('date', [$start, $end])->sum('amount');
-        $purchases = \App\Models\Clients\Purchase::whereBetween('date', [$start, $end])->sum('total_amount');
+        $expenses = \App\Models\Clients\Expense::whereBetween('date', [$start, $end])
+            ->where('project_id', $currentProjectId)
+            ->sum('amount');
+        $purchases = \App\Models\Clients\Purchase::whereBetween('date', [$start, $end])
+            ->where('project_id', $currentProjectId)
+            ->sum('total_amount');
         return $productsProfit + $servicesProfit - $expenses - $purchases;
     }
 
@@ -296,8 +310,9 @@ class DashboardController extends Controller
      */
     private function getSalesForDate($date)
     {
-        return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date) {
-                $q->whereDate('date', $date);
+        $currentProjectId = auth()->user()->project_id;
+        return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date, $currentProjectId) {
+                $q->whereDate('date', $date)->where('project_id', $currentProjectId);
             })
             ->selectRaw('SUM(retail_price * quantity) as sales')
             ->value('sales') ?? 0;
@@ -308,8 +323,9 @@ class DashboardController extends Controller
      */
     private function getSalesForPeriod($start, $end)
     {
-        return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($start, $end) {
-                $q->whereBetween('date', [$start, $end]);
+        $currentProjectId = auth()->user()->project_id;
+        return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($start, $end, $currentProjectId) {
+                $q->whereBetween('date', [$start, $end])->where('project_id', $currentProjectId);
             })
             ->selectRaw('SUM(retail_price * quantity) as sales')
             ->value('sales') ?? 0;
@@ -320,6 +336,7 @@ class DashboardController extends Controller
      */
     public function servicesChartData(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $labels = [];
@@ -330,6 +347,7 @@ class DashboardController extends Controller
                 $labels[] = $date->format('d M');
                 $sum = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
                     ->where('status', 'completed')
+                    ->where('project_id', $currentProjectId)
                     ->sum('price');
                 $data[] = round($sum, 2);
             }
@@ -348,6 +366,7 @@ class DashboardController extends Controller
                 $labels[] = $date->format('d M');
                 $sum = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
                     ->where('status', 'completed')
+                    ->where('project_id', $currentProjectId)
                     ->sum('price');
                 $data[] = round($sum, 2);
             }
@@ -370,6 +389,7 @@ class DashboardController extends Controller
             $labels[] = $now->copy()->subDays($i)->format('d M');
             $sum = \App\Models\Clients\Appointment::whereDate('date', $date)
                 ->where('status', 'completed')
+                ->where('project_id', $currentProjectId)
                 ->sum('price');
             $data[] = round($sum, 2);
         }
@@ -384,6 +404,7 @@ class DashboardController extends Controller
      */
     public function expensesChartData(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $labels = [];
@@ -392,7 +413,9 @@ class DashboardController extends Controller
             $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
             foreach ($period as $date) {
                 $labels[] = $date->format('d M');
-                $sum = \App\Models\Clients\Expense::whereDate('date', $date->toDateString())->sum('amount');
+                $sum = \App\Models\Clients\Expense::whereDate('date', $date->toDateString())
+                    ->where('project_id', $currentProjectId)
+                    ->sum('amount');
                 $data[] = round($sum, 2);
             }
             return response()->json([
@@ -408,7 +431,9 @@ class DashboardController extends Controller
             $periodRange = \Carbon\CarbonPeriod::create($start, $end);
             foreach ($periodRange as $date) {
                 $labels[] = $date->format('d M');
-                $sum = \App\Models\Clients\Expense::whereDate('date', $date->toDateString())->sum('amount');
+                $sum = \App\Models\Clients\Expense::whereDate('date', $date->toDateString())
+                    ->where('project_id', $currentProjectId)
+                    ->sum('amount');
                 $data[] = round($sum, 2);
             }
             return response()->json([
@@ -436,8 +461,12 @@ class DashboardController extends Controller
         for ($i = $maxDays; $i >= 0; $i--) {
             $date = $now->copy()->subDays($i)->toDateString();
             $labels[] = $now->copy()->subDays($i)->format('d M');
-            $expenses = \App\Models\Clients\Expense::whereDate('date', $date)->sum('amount');
-            $purchases = \App\Models\Clients\Purchase::whereDate('date', $date)->sum('total_amount');
+            $expenses = \App\Models\Clients\Expense::whereDate('date', $date)
+                ->where('project_id', $currentProjectId)
+                ->sum('amount');
+            $purchases = \App\Models\Clients\Purchase::whereDate('date', $date)
+                ->where('project_id', $currentProjectId)
+                ->sum('total_amount');
             $data[] = round($expenses + $purchases, 2);
         }
         $maxValue = $this->roundExpensesMaxValueForChart(max($data));
@@ -453,6 +482,7 @@ class DashboardController extends Controller
      */
     public function activityChartData(Request $request)
     {
+        $currentProjectId = auth()->user()->project_id;
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $labels = [];
@@ -464,11 +494,18 @@ class DashboardController extends Controller
             foreach ($period as $date) {
                 $labels[] = $date->format('d M');
                 // Услуги: завершённые записи за день
-                $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())->where('status', 'completed')->count();
+                $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
+                    ->where('status', 'completed')
+                    ->where('project_id', $currentProjectId)
+                    ->count();
                 // Клиенты: новые клиенты за день
-                $clientsCount = \App\Models\Clients\Client::whereDate('created_at', $date->toDateString())->count();
+                $clientsCount = \App\Models\Clients\Client::whereDate('created_at', $date->toDateString())
+                    ->where('project_id', $currentProjectId)
+                    ->count();
                 // Записи: все записи за день (по дате услуги, а не по дате создания)
-                $appointmentsCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())->count();
+                $appointmentsCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
+                    ->where('project_id', $currentProjectId)
+                    ->count();
                 $servicesData[] = $servicesCount;
                 $clientsData[] = $clientsCount;
                 $appointmentsData[] = $appointmentsCount;
@@ -489,11 +526,18 @@ class DashboardController extends Controller
             foreach ($periodRange as $date) {
                 $labels[] = $date->format('d M');
                 // Услуги: завершённые записи за день
-                $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())->where('status', 'completed')->count();
+                $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
+                    ->where('status', 'completed')
+                    ->where('project_id', $currentProjectId)
+                    ->count();
                 // Клиенты: новые клиенты за день
-                $clientsCount = \App\Models\Clients\Client::whereDate('created_at', $date->toDateString())->count();
+                $clientsCount = \App\Models\Clients\Client::whereDate('created_at', $date->toDateString())
+                    ->where('project_id', $currentProjectId)
+                    ->count();
                 // Записи: все записи за день (по дате услуги, а не по дате создания)
-                $appointmentsCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())->count();
+                $appointmentsCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
+                    ->where('project_id', $currentProjectId)
+                    ->count();
                 $servicesData[] = $servicesCount;
                 $clientsData[] = $clientsCount;
                 $appointmentsData[] = $appointmentsCount;
@@ -520,11 +564,18 @@ class DashboardController extends Controller
             $date = $now->copy()->subDays($i)->toDateString();
             $labels[] = $now->copy()->subDays($i)->format('d M');
             // Услуги: завершённые записи за день
-            $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date)->where('status', 'completed')->count();
+            $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date)
+                ->where('status', 'completed')
+                ->where('project_id', $currentProjectId)
+                ->count();
             // Клиенты: новые клиенты за день
-            $clientsCount = \App\Models\Clients\Client::whereDate('created_at', $date)->count();
+            $clientsCount = \App\Models\Clients\Client::whereDate('created_at', $date)
+                ->where('project_id', $currentProjectId)
+                ->count();
             // Записи: все записи за день (по дате услуги, а не по дате создания)
-            $appointmentsCount = \App\Models\Clients\Appointment::whereDate('date', $date)->count();
+            $appointmentsCount = \App\Models\Clients\Appointment::whereDate('date', $date)
+                ->where('project_id', $currentProjectId)
+                ->count();
             $servicesData[] = $servicesCount;
             $clientsData[] = $clientsCount;
             $appointmentsData[] = $appointmentsCount;

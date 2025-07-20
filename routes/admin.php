@@ -64,9 +64,9 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     })->name('security.index');
     
     // Логи системы
-    Route::get('/logs', function () {
-        return view('admin.logs.index');
-    })->name('logs.index');
+    Route::get('/logs', [\App\Http\Controllers\Admin\LogController::class, 'index'])->name('logs.index');
+    Route::get('/logs/{id}', [\App\Http\Controllers\Admin\LogController::class, 'show'])->name('logs.show');
+    Route::post('/logs/{id}/fix', [\App\Http\Controllers\Admin\LogController::class, 'fix'])->name('logs.fix');
     
     // Выход из системы
     Route::resource('projects', ProjectController::class);

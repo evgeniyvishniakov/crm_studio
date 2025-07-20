@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Clients\Supplier;
 use Illuminate\Http\Request;
+use App\Models\SystemLog;
 
 class SupplierController extends Controller
 {
@@ -49,14 +50,34 @@ class SupplierController extends Controller
             'note' => 'nullable|string',
             'status' => 'boolean'
         ]);
-
-        $supplier = Supplier::create($validated + ['project_id' => $currentProjectId]);
-
-        return response()->json([
-            'success' => true,
-            'supplier' => $supplier,
-            'message' => 'Поставщик успешно добавлен'
-        ]);
+        try {
+            $data = $validated;
+            $data['project_id'] = $currentProjectId;
+            $supplier = Supplier::create($data);
+            return response()->json([
+                'success' => true,
+                'supplier' => $supplier,
+                'message' => 'Поставщик успешно добавлен'
+            ]);
+        } catch (\Exception $e) {
+            SystemLog::create([
+                'level' => 'error',
+                'module' => 'SupplierController@store',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'create_supplier',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
     }
 
     public function edit(Supplier $supplier)
@@ -81,13 +102,32 @@ class SupplierController extends Controller
         if ($supplier->project_id !== $currentProjectId) {
             return response()->json(['success' => false, 'message' => 'Нет доступа к поставщику'], 403);
         }
-        $supplier->update($validated);
-
-        return response()->json([
-            'success' => true,
-            'supplier' => $supplier,
-            'message' => 'Поставщик успешно обновлен'
-        ]);
+        try {
+            $supplier->update($validated);
+            return response()->json([
+                'success' => true,
+                'supplier' => $supplier,
+                'message' => 'Поставщик успешно обновлен'
+            ]);
+        } catch (\Exception $e) {
+            \App\Models\SystemLog::create([
+                'level' => 'error',
+                'module' => 'SupplierController@update',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'update_supplier',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
     }
 
     public function destroy(Supplier $supplier)
@@ -96,11 +136,30 @@ class SupplierController extends Controller
         if ($supplier->project_id !== $currentProjectId) {
             return response()->json(['success' => false, 'message' => 'Нет доступа к поставщику'], 403);
         }
-        $supplier->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Поставщик успешно удален'
-        ]);
+        try {
+            $supplier->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Поставщик успешно удален'
+            ]);
+        } catch (\Exception $e) {
+            \App\Models\SystemLog::create([
+                'level' => 'error',
+                'module' => 'SupplierController@destroy',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'delete_supplier',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
     }
 }

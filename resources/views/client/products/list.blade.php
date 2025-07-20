@@ -256,7 +256,12 @@
                 <form id="importForm" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="importFile">Выберите файл:</label>
-                        <input type="file" id="importFile" name="file" accept=".xlsx,.xls,.csv" required>
+                        <div class="logo-upload-controls">
+                            <label for="importFile" class="btn btn-outline-secondary" style="cursor:pointer;display:inline-block;">Выбрать файл</label>
+                            <input type="file" id="importFile" name="file" accept=".xlsx,.xls,.csv" required style="display:none;" onchange="document.getElementById('import-filename').textContent = this.files[0]?.name || ''">
+                            <span id="import-filename" style="margin-left:12px;font-size:0.95em;color:#888;"></span>
+                            <small class="form-text text-muted">Excel (.xlsx, .xls), CSV. Максимальный размер: 5MB</small>
+                        </div>
                     </div>
                     
                     <div class="form-actions">
@@ -671,140 +676,49 @@
             });
         }
 
-        // Добавление нового товара
-        document.getElementById('addProductForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
-            const productsTableBody = document.getElementById('productsTableBody');
-
-            clearErrors();
-
-            submitBtn.innerHTML = '<span class="loader"></span> Добавление...';
-            submitBtn.disabled = true;
-
-            fetch("{{ route('products.store') }}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                },
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => Promise.reject(err));
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success && data.product) {
-                        // Создаем новую строку для таблицы
-                        const newRow = document.createElement('tr');
-                        newRow.id = `product-${data.product.id}`;
-
-                        // Форматируем цену
-                        const formattedPrice = new Intl.NumberFormat('ru-RU', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        }).format(data.product.price);
-
-                        // Создаем HTML для фото
-                        let photoHtml = '<div class="no-photo">Нет фото</div>';
-                        if (data.product.photo) {
-                            photoHtml = `<img src="/storage/${data.product.photo}" alt="${data.product.name}" class="product-photo">`;
-                        }
-
-                        // Создаем HTML для новой строки
-                        newRow.innerHTML = `
-                            <td>${photoHtml}</td>
-                            <td>${data.product.name}</td>
-                            <td>${data.product.category?.name ?? '—'}</td>
-                            <td>${data.product.brand?.name ?? '—'}</td>
-                            <td>${formatPrice(data.product.purchase_price)}</td>
-                            <td>${formatPrice(data.product.retail_price)}</td>
-                            <td class="actions-cell">
-                                <button class="btn-edit">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                    </svg>
-                                    
-                                </button>
-                                <button class="btn-delete">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                    
-                                </button>
-                            </td>
-                        `;
-
-                        // Добавляем новую строку в начало таблицы
-                        productsTableBody.insertBefore(newRow, productsTableBody.firstChild);
-
-                        // Показываем уведомление
-                        window.showNotification('success', `Товар ${data.product.name} успешно добавлен`);
-
-                        // Закрываем модальное окно и очищаем форму
-                        closeModal();
-                        this.reset();
-                    } else {
-                        throw new Error('Сервер не вернул данные товара');
-                    }
-                })
-                .catch(error => {
-                    if (error.errors) {
-                        showErrors(error.errors);
-                        window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
-                    } else {
-                        window.showNotification('error', error.message || 'Произошла ошибка при добавлении товара');
-                    }
-                })
-                .finally(() => {
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.disabled = false;
-                });
-        });
 
         // Глобальные переменные для удаления
         let currentDeleteRow = null;
         let currentDeleteId = null;
 
-        // Обработчик клика по кнопке удаления
+        // Исправляю обработчик клика по кнопке удаления
+        // Теперь только открываем модальное окно, а удаление происходит после подтверждения
+
         document.addEventListener('click', function(e) {
             if (e.target.closest('.btn-delete')) {
                 const row = e.target.closest('tr');
                 const productId = row.id.split('-')[1];
-
-                // Сохраняем ссылку на удаляемую строку
                 currentDeleteRow = row;
                 currentDeleteId = productId;
-
-                // Показываем модальное окно подтверждения
                 document.getElementById('confirmationModal').style.display = 'block';
             }
         });
-        // Обработчики для модального окна подтверждения
-        document.getElementById('cancelDelete').addEventListener('click', function() {
-            document.getElementById('confirmationModal').style.display = 'none';
-            currentDeleteRow = null;
-            currentDeleteId = null;
-        });
+
+        // Кнопка подтверждения удаления
+        // (уже реализовано, но оставляю для ясности)
         document.getElementById('confirmDelete').addEventListener('click', function() {
             if (currentDeleteRow && currentDeleteId) {
                 deleteProduct(currentDeleteRow, currentDeleteId);
             }
             document.getElementById('confirmationModal').style.display = 'none';
+            currentDeleteRow = null;
+            currentDeleteId = null;
         });
 
         // Функция для удаления товара
-        function deleteProduct(row, productId) {
-            // Добавляем класс для анимации
-            row.classList.add('row-deleting');
-
-            // Отправляем запрос на удаление
+        function deleteProduct(rowOrId, id) {
+            let row;
+            let productId;
+            if (typeof rowOrId === 'object' && rowOrId !== null && 'classList' in rowOrId) {
+                // Вызов с двумя аргументами: (row, id)
+                row = rowOrId;
+                productId = id;
+            } else {
+                // Вызов с одним аргументом: (id)
+                productId = rowOrId;
+                row = document.getElementById('product-' + productId);
+            }
+            if (row) row.classList.add('row-deleting');
             fetch(`/products/${productId}`, {
                 method: 'DELETE',
                 headers: {
@@ -813,25 +727,24 @@
                     'Content-Type': 'application/json'
                 }
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Ошибка при удалении');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        // Удаляем строку после завершения анимации
-                        setTimeout(() => {
-                            row.remove();
-                            window.showNotification('success', 'Товар успешно удален');
-                        }, 300);
-                    }
-                })
-                .catch(error => {
-                    row.classList.remove('row-deleting');
-                    window.showNotification('error', 'Не удалось удалить товар');
-                });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка при удалении');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    setTimeout(() => {
+                        if (row) row.remove();
+                        window.showNotification('success', 'Товар успешно удален');
+                    }, 300);
+                }
+            })
+            .catch(error => {
+                if (row) row.classList.remove('row-deleting');
+                window.showNotification('error', 'Не удалось удалить товар');
+            });
         }
 
         // Обработчик клика по кнопке редактирования
@@ -1102,7 +1015,7 @@
                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                             </svg>
                         </button>
-                        <button class="btn-delete" onclick="deleteProduct(${product.id})">
+                        <button class="btn-delete">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
@@ -1208,32 +1121,6 @@
                 window.showNotification('error', 'Ошибка добавления товара');
             });
         });
-
-        // Обновляем функцию удаления товара для обновления таблицы
-        function deleteProduct(id) {
-            if (confirm('Вы уверены, что хотите удалить этот товар?')) {
-                fetch(`/products/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Обновляем таблицу после удаления
-                        loadPage(currentPage, searchQuery);
-                        window.showNotification('success', 'Товар успешно удален');
-                    } else {
-                        window.showNotification('error', data.message || 'Ошибка удаления товара');
-                    }
-                })
-                .catch(error => {
-                    window.showNotification('error', 'Ошибка удаления товара');
-                });
-            }
-        }
 
         // Инициализация первой загрузки
         loadPage(1);

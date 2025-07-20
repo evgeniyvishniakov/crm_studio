@@ -25,7 +25,6 @@
     <div class="main-content">
         <!-- Header -->
         @include('admin.components.header')
-        
         <!-- Page Content -->
         <div class="container-fluid">
             @yield('content')

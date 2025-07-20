@@ -51,70 +51,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>{{ now()->format('d.m.Y H:i:s') }}</td>
-                        <td><span class="badge bg-info">INFO</span></td>
-                        <td>Пользователь вошел в систему</td>
-                        <td>admin@example.com</td>
-                        <td>127.0.0.1</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-info">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ now()->subMinutes(5)->format('d.m.Y H:i:s') }}</td>
-                        <td><span class="badge bg-warning">WARNING</span></td>
-                        <td>Неудачная попытка входа</td>
-                        <td>user@example.com</td>
-                        <td>192.168.1.100</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-info">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ now()->subMinutes(10)->format('d.m.Y H:i:s') }}</td>
-                        <td><span class="badge bg-success">SUCCESS</span></td>
-                        <td>Создана новая запись</td>
-                        <td>manager@example.com</td>
-                        <td>192.168.1.101</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-info">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ now()->subMinutes(15)->format('d.m.Y H:i:s') }}</td>
-                        <td><span class="badge bg-danger">ERROR</span></td>
-                        <td>Ошибка подключения к базе данных</td>
-                        <td>system</td>
-                        <td>127.0.0.1</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-info">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
+                    @foreach($logs as $log)
+                        <tr id="log-row-{{ $log->id }}">
+                            <td>{{ $log->created_at->format('d.m.Y H:i:s') }}</td>
+                            <td><span class="badge bg-{{ $log->level === 'error' ? 'danger' : ($log->level === 'warning' ? 'warning' : ($log->level === 'info' ? 'info' : 'secondary')) }}">{{ strtoupper($log->level) }}</span></td>
+                            <td>{{ Str::limit($log->message, 60) }}</td>
+                            <td>{{ $log->user_email ?? 'system' }}</td>
+                            <td>{{ $log->ip }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" data-id="{{ $log->id }}" onclick="showLogDetail({{ $log->id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                @if($log->level === 'error' && $log->status === 'new')
+                                    <button class="btn btn-sm btn-success ms-1" onclick="markLogFixed({{ $log->id }})">
+                                        <i class="fas fa-check"></i> Исправлено
+                                    </button>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
         
         <nav aria-label="Навигация по логам">
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">Предыдущая</a>
-                </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Следующая</a>
-                </li>
-            </ul>
+            {{ $logs->links('pagination::bootstrap-4') }}
         </nav>
     </div>
 </div>
@@ -157,3 +118,60 @@
     </div>
 </div>
 @endsection 
+
+<script>
+function showLogDetail(id) {
+    fetch(`/panel/logs/${id}`)
+        .then(res => res.json())
+        .then(log => {
+            let modal = document.getElementById('logDetailModal');
+            modal.querySelector('.modal-title').textContent = 'Детали лога';
+            let body = modal.querySelector('.modal-body');
+            body.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Время:</strong> ${log.created_at ? new Date(log.created_at).toLocaleString() : ''}<br>
+                        <strong>Уровень:</strong> <span class="badge bg-${log.level === 'error' ? 'danger' : (log.level === 'warning' ? 'warning' : (log.level === 'info' ? 'info' : 'secondary'))}">${log.level.toUpperCase()}</span><br>
+                        <strong>Пользователь:</strong> ${log.user_email ?? 'system'}<br>
+                        <strong>IP адрес:</strong> ${log.ip ?? ''}<br>
+                        <strong>Модуль:</strong> ${log.module ?? ''}<br>
+                        <strong>Действие:</strong> ${log.action ?? ''}<br>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>ID пользователя:</strong> ${log.user_id ?? ''}<br>
+                    </div>
+                </div>
+                <hr>
+                <div>
+                    <strong>Сообщение:</strong><br>
+                    <pre class="bg-light p-3 mt-2">${log.message}</pre>
+                </div>
+                <div>
+                    <strong>Контекст:</strong><br>
+                    <pre class="bg-light p-3 mt-2">${log.context ? JSON.stringify(JSON.parse(log.context), null, 2) : ''}</pre>
+                </div>
+            `;
+            let bsModal = new bootstrap.Modal(modal);
+            bsModal.show();
+        });
+}
+
+function markLogFixed(id) {
+    // Убираю confirm, теперь действие выполняется сразу
+    fetch(`/panel/logs/${id}/fix`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+        },
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('log-row-' + id).remove();
+        } else {
+            alert(data.message || 'Ошибка при изменении статуса');
+        }
+    });
+}
+</script> 

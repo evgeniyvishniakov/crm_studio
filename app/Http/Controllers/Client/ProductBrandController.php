@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Clients\ProductBrand;
 use Illuminate\Http\Request;
+use App\Models\SystemLog;
 
 class ProductBrandController extends Controller
 {
@@ -45,14 +46,34 @@ class ProductBrandController extends Controller
             'description' => 'nullable|string',
             'status' => 'boolean'
         ]);
-
-        $brand = ProductBrand::create($validated + ['project_id' => $currentProjectId]);
-
-        return response()->json([
-            'success' => true,
-            'brand' => $brand,
-            'message' => 'Бренд успешно добавлен'
-        ]);
+        try {
+            $data = $validated;
+            $data['project_id'] = $currentProjectId;
+            $brand = ProductBrand::create($data);
+            return response()->json([
+                'success' => true,
+                'brand' => $brand,
+                'message' => 'Бренд успешно добавлен'
+            ]);
+        } catch (\Exception $e) {
+            SystemLog::create([
+                'level' => 'error',
+                'module' => 'ProductBrandController@store',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'create_brand',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
     }
 
     public function edit(ProductBrand $productBrand)
@@ -69,23 +90,60 @@ class ProductBrandController extends Controller
             'description' => 'nullable|string',
             'status' => 'boolean'
         ]);
-
-        $productBrand->update($validated);
-
-        return response()->json([
-            'success' => true,
-            'brand' => $productBrand,
-            'message' => 'Бренд успешно обновлен'
-        ]);
+        try {
+            $productBrand->update($validated);
+            return response()->json([
+                'success' => true,
+                'brand' => $productBrand,
+                'message' => 'Бренд успешно обновлен'
+            ]);
+        } catch (\Exception $e) {
+            \App\Models\SystemLog::create([
+                'level' => 'error',
+                'module' => 'ProductBrandController@update',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'update_brand',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
     }
 
     public function destroy(ProductBrand $productBrand)
     {
-        $productBrand->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Бренд успешно удален'
-        ]);
+        try {
+            $productBrand->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Бренд успешно удален'
+            ]);
+        } catch (\Exception $e) {
+            \App\Models\SystemLog::create([
+                'level' => 'error',
+                'module' => 'ProductBrandController@destroy',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'delete_brand',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
     }
 }

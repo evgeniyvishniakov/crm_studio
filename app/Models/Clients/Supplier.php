@@ -20,7 +20,8 @@ class Supplier extends Model
         'instagram',
         'inn',
         'note',
-        'status'
+        'status',
+        'project_id',
     ];
 
     protected $casts = [

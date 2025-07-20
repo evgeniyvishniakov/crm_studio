@@ -16,7 +16,8 @@ class ProductBrand extends Model
         'country',
         'website',
         'description',
-        'status'
+        'status',
+        'project_id',
     ];
 
     protected $casts = [

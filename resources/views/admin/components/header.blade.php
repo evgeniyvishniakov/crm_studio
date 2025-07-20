@@ -11,6 +11,14 @@
     $unreadCount = ($user && $user->id) ? Notification::where(function($q) use ($user) {
         $q->whereNull('user_id')->orWhere('user_id', $user->id);
     })->where('is_read', false)->count() : 0;
+    // Критические ошибки за сутки только со статусом 'new'
+    $criticalErrors = \App\Models\SystemLog::where('level', 'error')
+        ->where('status', 'new')
+        ->where('created_at', '>=', now()->subDay())
+        ->orderByDesc('created_at')
+        ->limit(5)
+        ->get();
+    $criticalCount = $criticalErrors->count();
 @endphp
 @if($user && !empty($user->is_panel_admin))
 <header class="bg-white border-bottom shadow-sm p-3">
@@ -23,6 +31,33 @@
         </div>
         
         <div class="d-flex align-items-center">
+            <!-- Критические ошибки -->
+            <div class="dropdown me-3">
+                <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-exclamation-circle"></i>
+                    @if($criticalCount > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ $criticalCount }}
+                        </span>
+                    @endif
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><h6 class="dropdown-header">Критические ошибки</h6></li>
+                    @forelse($criticalErrors as $log)
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.logs.index') }}">
+                                <span class="fw-bold">{{ Str::limit($log->message, 60) }}</span>
+                                <br>
+                                <small class="text-muted">{{ $log->created_at->format('d.m.Y H:i') }}</small>
+                            </a>
+                        </li>
+                    @empty
+                        <li><span class="dropdown-item text-muted">Нет критических ошибок</span></li>
+                    @endforelse
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{{ route('admin.logs.index') }}">Показать все логи</a></li>
+                </ul>
+            </div>
             <!-- Уведомления -->
             <div class="dropdown me-3">
                 <button class="btn btn-link text-dark position-relative" type="button" data-bs-toggle="dropdown">

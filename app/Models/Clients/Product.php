@@ -21,6 +21,7 @@ class Product extends Model
         'photo',
         'purchase_price',
         'retail_price',
+        'project_id',
     ];
 
     protected $appends = ['photo_url'];

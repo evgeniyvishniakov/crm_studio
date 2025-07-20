@@ -68,6 +68,11 @@ Route::middleware('auth:client')->group(function () {
     
     // Управление товарами
     Route::prefix('products')->name('products.')->group(function () {
+
+        Route::get('/import', [ProductImportExportController::class, 'showImportForm'])->name('import.form');
+        Route::post('/import', [ProductImportExportController::class, 'import'])->name('import');
+        Route::get('/export', [ProductImportExportController::class, 'export'])->name('export');
+    
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/create', [ProductController::class, 'create'])->name('create');
         Route::post('/', [ProductController::class, 'store'])->name('store');
@@ -77,11 +82,7 @@ Route::middleware('auth:client')->group(function () {
         Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
         
         // Импорт/экспорт товаров
-        Route::get('/import', [ProductImportExportController::class, 'showImportForm'])->name('import.form');
-        Route::post('/import', [ProductImportExportController::class, 'import'])->name('import');
-        Route::get('/export', [ProductImportExportController::class, 'showExportForm'])->name('export.form');
-        Route::post('/export', [ProductImportExportController::class, 'export'])->name('export');
-    });
+    }); 
     
     // Категории товаров
     Route::prefix('product-categories')->name('product-categories.')->group(function () {

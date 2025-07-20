@@ -13,7 +13,9 @@ class Service extends Model
 
     protected $fillable = [
         'name',
-        'price'
+        'price',
+        'duration',
+        'project_id'
     ];
 
     // Связь с записями (appointments)

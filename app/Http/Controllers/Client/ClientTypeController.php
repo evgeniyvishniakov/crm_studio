@@ -12,7 +12,10 @@ class ClientTypeController extends Controller
     public function index()
     {
         $currentProjectId = auth()->user()->project_id;
-        $clientTypes = ClientType::where('project_id', $currentProjectId)->get();
+        $clientTypes = ClientType::where(function($q) use ($currentProjectId) {
+            $q->where('project_id', $currentProjectId)
+              ->orWhere('is_global', true);
+        })->get();
         return view('client.client-types.list', compact('clientTypes'));
     }
 
@@ -81,7 +84,7 @@ class ClientTypeController extends Controller
 
         try {
             $clientType = ClientType::findOrFail($id);
-            if (in_array($clientType->name, ClientType::FIXED_TYPES)) {
+            if ($clientType->is_global) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Этот тип клиента нельзя изменять и удалить, так как он системный.'
@@ -105,7 +108,7 @@ class ClientTypeController extends Controller
     {
         try {
             $type = ClientType::findOrFail($id);
-            if (in_array($type->name, ClientType::FIXED_TYPES)) {
+            if ($type->is_global) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Этот тип клиента нельзя изменять и удалить, так как он системный.'

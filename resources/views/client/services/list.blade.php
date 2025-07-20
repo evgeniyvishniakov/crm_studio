@@ -34,6 +34,7 @@
                 <tr>
                     <th>Название</th>
                     <th>Цена</th>
+                    <th>Длительность</th>
                     <th class="actions-column">Действия</th>
                 </tr>
                 </thead>
@@ -42,6 +43,17 @@
                     <tr id="service-{{ $service->id }}">
                         <td>{{ $service->name }}</td>
                         <td>{{ $service->price ? ($service->price == (int)$service->price ? (int)$service->price : number_format($service->price, 2, '.', '')) . ' грн' : '—' }}</td>
+                        <td>
+                            @php
+                                $hours = intdiv($service->duration, 60);
+                                $minutes = $service->duration % 60;
+                            @endphp
+                            @if($service->duration > 0)
+                                @if($hours > 0) {{ $hours }} год. @endif @if($minutes > 0) {{ $minutes }} хв. @endif
+                            @else
+                                —
+                            @endif
+                        </td>
                         <td class="actions-cell">
                             <button class="btn-edit">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -84,6 +96,15 @@
                         <label for="servicePrice">Цена (грн)</label>
                         <input type="number" id="servicePrice" name="price" min="0" step="0.01">
                     </div>
+                    <div class="form-group">
+                        <label>Тривалість</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" name="duration_hours" min="0" max="12" value="0" style="width: 60px;" placeholder="Годин">
+                            <span>год.</span>
+                            <input type="number" name="duration_minutes" min="0" max="59" value="0" style="width: 60px;" placeholder="Хв.">
+                            <span>хв.</span>
+                        </div>
+                    </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeModal()">Отмена</button>
                         <button type="submit" class="btn-submit">Добавить</button>
@@ -124,6 +145,15 @@
                     <div class="form-group">
                         <label for="editServicePrice">Цена (грн)</label>
                         <input type="number" id="editServicePrice" name="price" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Тривалість</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" name="duration_hours" min="0" max="12" value="0" style="width: 60px;" placeholder="Годин">
+                            <span>год.</span>
+                            <input type="number" name="duration_minutes" min="0" max="59" value="0" style="width: 60px;" placeholder="Хв.">
+                            <span>хв.</span>
+                        </div>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeEditModal()">Отмена</button>
@@ -212,7 +242,7 @@
             submitBtn.innerHTML = '<span class="loader"></span> Добавление...';
             submitBtn.disabled = true;
 
-            fetch("{{ route('services.store') }}", {
+            fetch("/services", {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -235,6 +265,7 @@
                         newRow.innerHTML = `
                             <td>${data.service.name}</td>
                             <td>${data.service.price ? (Number(parseFloat(data.service.price)) % 1 === 0 ? Number(parseFloat(data.service.price)) : parseFloat(data.service.price).toFixed(2)) + ' грн' : '—'}</td>
+                            <td>${formatDuration(data.service.duration)}</td>
                             <td class="actions-cell">
                                 <button class="btn-edit">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -367,52 +398,54 @@
         });
 
         // Обработчик отправки формы редактирования
-        document.getElementById('editServiceForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        if (document.getElementById('editServiceForm')) {
+            document.getElementById('editServiceForm').addEventListener('submit', function(e) {
+                e.preventDefault();
 
-            const formData = new FormData(this);
-            const serviceId = document.getElementById('editServiceId').value;
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
+                const formData = new FormData(this);
+                const serviceId = document.getElementById('editServiceId').value;
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerHTML;
 
-            submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
-            submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
+                submitBtn.disabled = true;
 
-            fetch(`/services/${serviceId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                    'X-HTTP-Method-Override': 'PUT'
-                },
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => Promise.reject(err));
-                    }
-                    return response.json();
+                fetch(`/services/${serviceId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'X-HTTP-Method-Override': 'PUT'
+                    },
+                    body: formData
                 })
-                .then(data => {
-                    if (data.success) {
-                        updateServiceRow(data.service);
-                        window.showNotification('success', 'Изменения успешно сохранены');
-                        closeEditModal();
-                    }
-                })
-                .catch(error => {
-                    if (error.errors) {
-                        showErrors(error.errors, 'editServiceForm');
-                        window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
-                    } else {
-                        window.showNotification('error', 'Ошибка при сохранении изменений');
-                    }
-                })
-                .finally(() => {
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.disabled = false;
-                });
-        });
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => Promise.reject(err));
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            updateServiceRow(data.service);
+                            window.showNotification('success', 'Изменения успешно сохранены');
+                            closeEditModal();
+                        }
+                    })
+                    .catch(error => {
+                        if (error.errors) {
+                            showErrors(error.errors, 'editServiceForm');
+                            window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
+                        } else {
+                            window.showNotification('error', 'Ошибка при сохранении изменений');
+                        }
+                    })
+                    .finally(() => {
+                        submitBtn.innerHTML = originalBtnText;
+                        submitBtn.disabled = false;
+                    });
+            });
+        }
 
         // Функция для обновления строки услуги в таблице
         function updateServiceRow(service) {
@@ -423,6 +456,7 @@
             if (cells.length >= 2) {
                 cells[0].textContent = service.name;
                 cells[1].textContent = service.price ? (Number(parseFloat(service.price)) % 1 === 0 ? Number(parseFloat(service.price)) : parseFloat(service.price).toFixed(2)) + ' грн' : '—';
+                cells[2].textContent = formatDuration(service.duration);
             }
         }
 
@@ -468,6 +502,7 @@
                 row.innerHTML = `
                     <td>${service.name}</td>
                     <td>${service.price ? (Number(parseFloat(service.price)) % 1 === 0 ? Number(parseFloat(service.price)) : parseFloat(service.price).toFixed(2)) + ' грн' : '—'}</td>
+                    <td>${formatDuration(service.duration)}</td>
                     <td class="actions-cell">
                         <button class="btn-edit">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -550,61 +585,6 @@
             loadPage(1, query);
         }
 
-        // Обновляем функцию добавления услуги для обновления таблицы
-        const originalAddServiceForm = document.getElementById('addServiceForm').addEventListener;
-        document.getElementById('addServiceForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalBtnText = submitBtn.innerHTML;
-
-            submitBtn.innerHTML = '<span class="loader"></span> Добавление...';
-            submitBtn.disabled = true;
-
-            fetch('/services', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => Promise.reject(err));
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success && data.service) {
-                        // Обновляем таблицу после добавления
-                        loadPage(currentPage, searchQuery);
-                        
-                        // Показываем уведомление
-                        window.showNotification('success', `Услуга "${data.service.name}" успешно добавлена`);
-
-                        // Закрываем модальное окно и очищаем форму
-                        closeModal();
-                        this.reset();
-                    } else {
-                        throw new Error('Сервер не вернул данные услуги');
-                    }
-                })
-                .catch(error => {
-                    if (error.errors) {
-                        showErrors(error.errors);
-                        window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
-                    } else {
-                        window.showNotification('error', error.message || 'Произошла ошибка при добавлении услуги');
-                    }
-                })
-                .finally(() => {
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.disabled = false;
-                });
-        });
-
         // Обновляем функцию удаления услуги для обновления таблицы
         function deleteService(row, serviceId) {
             row.classList.add('row-deleting');
@@ -636,6 +616,17 @@
                     row.classList.remove('row-deleting');
                     window.showNotification('error', 'Не удалось удалить услугу');
                 });
+        }
+
+        // Функция для форматирования длительности
+        function formatDuration(duration) {
+            if (!duration || duration <= 0) return '—';
+            const hours = Math.floor(duration / 60);
+            const minutes = duration % 60;
+            let result = '';
+            if (hours > 0) result += hours + ' год. ';
+            if (minutes > 0) result += minutes + ' хв.';
+            return result.trim();
         }
 
         // Инициализация первой загрузки

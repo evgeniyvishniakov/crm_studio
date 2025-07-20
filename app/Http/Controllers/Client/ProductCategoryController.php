@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Clients\ProductCategory;
 use Illuminate\Http\Request;
+use App\Models\SystemLog;
 
 class ProductCategoryController extends Controller
 {
@@ -43,14 +44,34 @@ class ProductCategoryController extends Controller
             'description' => 'nullable|string',
             'status' => 'boolean'
         ]);
-
-        $category = ProductCategory::create($validated + ['project_id' => $currentProjectId]);
-
-        return response()->json([
-            'success' => true,
-            'category' => $category,
-            'message' => 'Категория успешно добавлена'
-        ]);
+        try {
+            $data = $validated;
+            $data['project_id'] = $currentProjectId;
+            $category = ProductCategory::create($data);
+            return response()->json([
+                'success' => true,
+                'category' => $category,
+                'message' => 'Категория успешно добавлена'
+            ]);
+        } catch (\Exception $e) {
+            SystemLog::create([
+                'level' => 'error',
+                'module' => 'ProductCategoryController@store',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'create_category',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
     }
 
     public function edit(ProductCategory $productCategory)
@@ -65,23 +86,60 @@ class ProductCategoryController extends Controller
             'description' => 'nullable|string',
             'status' => 'boolean'
         ]);
-
-        $productCategory->update($validated);
-
-        return response()->json([
-            'success' => true,
-            'category' => $productCategory,
-            'message' => 'Категория успешно обновлена'
-        ]);
+        try {
+            $productCategory->update($validated);
+            return response()->json([
+                'success' => true,
+                'category' => $productCategory,
+                'message' => 'Категория успешно обновлена'
+            ]);
+        } catch (\Exception $e) {
+            \App\Models\SystemLog::create([
+                'level' => 'error',
+                'module' => 'ProductCategoryController@update',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'update_category',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
     }
 
     public function destroy(ProductCategory $productCategory)
     {
-        $productCategory->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Категория успешно удалена'
-        ]);
+        try {
+            $productCategory->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Категория успешно удалена'
+            ]);
+        } catch (\Exception $e) {
+            \App\Models\SystemLog::create([
+                'level' => 'error',
+                'module' => 'ProductCategoryController@destroy',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'delete_category',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
     }
 }

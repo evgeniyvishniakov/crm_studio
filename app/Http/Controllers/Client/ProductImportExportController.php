@@ -31,14 +31,36 @@ class ProductImportExportController extends Controller
      */
     public function export(Request $request)
     {
+        \Log::info('=== EXPORT ROUTE CALLED ===');
         $currentProjectId = auth()->user()->project_id;
         $categoryId = $request->get('category_id');
         $brandId = $request->get('brand_id');
         $photo = $request->get('photo'); // all, with, without
 
-        $export = new ProductsExport($categoryId, $brandId, $photo, $currentProjectId);
-        $fileName = 'products_' . date('Y-m-d_H-i-s') . '.xlsx';
-        return \Maatwebsite\Excel\Facades\Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX);
+        try {
+            $export = new ProductsExport($categoryId, $brandId, $photo, $currentProjectId);
+            $fileName = 'products_' . date('Y-m-d_H-i-s') . '.xlsx';
+            return \Maatwebsite\Excel\Facades\Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX);
+        } catch (\Exception $e) {
+            \App\Models\SystemLog::create([
+                'level' => 'error',
+                'module' => 'ProductImportExportController@export',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id() ?? null,
+                'ip' => request()->ip(),
+                'action' => 'export_products',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'url' => request()->fullUrl(),
+                    'method' => request()->method(),
+                    'trace' => $e->getTraceAsString(),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка экспорта: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

@@ -12,12 +12,14 @@ class ProductsExport implements FromCollection, WithHeadings, WithMapping
     private $categoryId;
     private $brandId;
     private $photo;
+    private $projectId;
 
-    public function __construct($categoryId = null, $brandId = null, $photo = 'all')
+    public function __construct($categoryId = null, $brandId = null, $photo = 'all', $projectId = null)
     {
         $this->categoryId = $categoryId;
         $this->brandId = $brandId;
         $this->photo = $photo;
+        $this->projectId = $projectId;
     }
 
     /**
@@ -26,6 +28,9 @@ class ProductsExport implements FromCollection, WithHeadings, WithMapping
     public function collection()
     {
         $query = Product::with(['category', 'brand']);
+        if ($this->projectId) {
+            $query->where('project_id', $this->projectId);
+        }
         if ($this->categoryId) {
             $query->where('category_id', $this->categoryId);
         }

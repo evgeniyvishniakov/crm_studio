@@ -14,7 +14,9 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
-        $query = Product::with(['category', 'brand'])->where('project_id', $currentProjectId)->orderBy('name');
+        $query = Product::with(['category', 'brand'])
+            ->where('project_id', $currentProjectId)
+            ->orderBy('created_at', 'desc');
 
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
@@ -78,74 +80,163 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:product_categories,id',
-            'brand_id' => 'required|exists:product_brands,id',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'purchase_price' => 'required|numeric|min:0',
-            'retail_price' => 'required|numeric|min:0',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'category_id' => 'required|exists:product_categories,id',
+                'brand_id' => 'required|exists:product_brands,id',
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'purchase_price' => 'required|numeric|min:0',
+                'retail_price' => 'required|numeric|min:0',
+            ]);
 
-        if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('products', 'public');
-            $validated['photo'] = $path;
+            if ($request->hasFile('photo')) {
+                $path = $request->file('photo')->store('products', 'public');
+                $validated['photo'] = $path;
+            }
+
+            $product = Product::create($validated + ['project_id' => $currentProjectId]);
+
+            return response()->json([
+                'success' => true,
+                'product' => $product->load(['category', 'brand'])
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \App\Models\SystemLog::create([
+                'level' => 'error',
+                'module' => 'ProductController@store',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'create_product',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
         }
-
-        $product = Product::create($validated + ['project_id' => $currentProjectId]);
-
-        return response()->json([
-            'success' => true,
-            'product' => $product->load(['category', 'brand'])
-        ]);
     }
 
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:product_categories,id',
-            'brand_id' => 'required|exists:product_brands,id',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'purchase_price' => 'required|numeric|min:0',
-            'retail_price' => 'required|numeric|min:0',
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'category_id' => 'required|exists:product_categories,id',
+                'brand_id' => 'required|exists:product_brands,id',
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'purchase_price' => 'required|numeric|min:0',
+                'retail_price' => 'required|numeric|min:0',
+            ]);
 
-        if ($request->hasFile('photo')) {
-            if ($product->photo) {
-                Storage::disk('public')->delete($product->photo);
+            if ($request->hasFile('photo')) {
+                if ($product->photo) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($product->photo);
+                }
+                $path = $request->file('photo')->store('products', 'public');
+                $validated['photo'] = $path;
             }
-            $path = $request->file('photo')->store('products', 'public');
-            $validated['photo'] = $path;
+
+            $product->update($validated);
+
+            return response()->json([
+                'success' => true,
+                'product' => $product->load(['category', 'brand'])
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \App\Models\SystemLog::create([
+                'level' => 'error',
+                'module' => 'ProductController@update',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'update_product',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
         }
-
-        $product->update($validated);
-
-        return response()->json([
-            'success' => true,
-            'product' => $product->load(['category', 'brand'])
-        ]);
     }
 
     public function destroy(Product $product)
     {
-        if ($product->photo) {
-            Storage::disk('public')->delete($product->photo);
-        }
-        $product->delete();
+        try {
+            if ($product->photo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($product->photo);
+            }
+            $product->delete();
 
-        return response()->json(['success' => true]);
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            \App\Models\SystemLog::create([
+                'level' => 'error',
+                'module' => 'ProductController@destroy',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'delete_product',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
     }
 
     public function removePhoto(Product $product)
     {
-        if ($product->photo) {
-            Storage::disk('public')->delete($product->photo);
-            $product->photo = null;
-            $product->save();
+        try {
+            if ($product->photo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($product->photo);
+                $product->photo = null;
+                $product->save();
+            }
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            \App\Models\SystemLog::create([
+                'level' => 'error',
+                'module' => 'ProductController@removePhoto',
+                'user_email' => auth()->user()->email ?? null,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+                'action' => 'remove_photo',
+                'message' => $e->getMessage(),
+                'context' => json_encode([
+                    'trace' => $e->getTraceAsString(),
+                    'input' => request()->except(['password', 'password_confirmation']),
+                ]),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
         }
-
-        return response()->json(['success' => true]);
     }
 
 }

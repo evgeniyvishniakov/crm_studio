@@ -15,12 +15,15 @@ class ClientType extends Model
         'name',
         'description',
         'discount',
-        'status'
+        'status',
+        'is_global',
+        'project_id',
     ];
 
     protected $casts = [
         'discount' => 'decimal:2',
-        'status' => 'boolean'
+        'status' => 'boolean',
+        'is_global' => 'boolean',
     ];
 
     public const FIXED_TYPES = [

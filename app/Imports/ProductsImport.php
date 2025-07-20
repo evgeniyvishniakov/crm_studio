@@ -23,10 +23,12 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
     use SkipsErrors;
 
     private string $delimiter = ';'; // по умолчанию
+    private $projectId;
 
-    public function __construct(string $delimiter = ';')
+    public function __construct($delimiter = ';', $projectId = null)
     {
         $this->delimiter = $delimiter;
+        $this->projectId = $projectId;
     }
 
     public $currentRow = 0;
@@ -58,57 +60,34 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
         
         \Log::info('Обрабатываем строку ' . $this->currentRow . ': ' . json_encode($row, JSON_UNESCAPED_UNICODE));
         
-        // Если заголовки ещё не найдены, ищем строку с "Название"
-        if (!$this->headerFound) {
-            // Проверяем среди ключей
-            foreach ($row as $key => $value) {
-                \Log::info("Проверяем ключ: '{$key}' = '{$value}'");
-                if (mb_strtolower(trim($key)) === 'название' || mb_strtolower(trim($value)) === 'название') {
-                    $this->headerMap = $row;
-                    $this->headerFound = true;
-                    \Log::info('Найдена строка с заголовками: ' . json_encode($row, JSON_UNESCAPED_UNICODE));
-                    return null;
-                }
-            }
-            // Если не нашли — пропускаем строку
-            \Log::info('Пропущена строка без заголовков: ' . json_encode($row, JSON_UNESCAPED_UNICODE));
-            return null;
-        }
-
-        // Если headerMap заполнен, переопределяем ключи
-        if ($this->headerMap) {
-            $row = array_combine(array_values($this->headerMap), array_values($row));
-        }
-
         // Обрабатываем гиперссылки и формулы в значениях
         $row = $this->processRowValues($row);
 
-        // Универсальный поиск ключа по подстроке
-        $findKeyBySubstring = function($row, $needle) {
-            foreach ($row as $key => $value) {
-                $normalized = mb_strtolower(preg_replace('/\s+/', '', $key));
-                if (mb_strpos($normalized, $needle) !== false) {
-                    return $key;
+        // Универсальный поиск ключа по алиасам (рус, англ, транслит)
+        $findKeyByAlias = function($row, $aliases) {
+            foreach ($aliases as $alias) {
+                foreach ($row as $key => $value) {
+                    if (mb_strtolower($key) === mb_strtolower($alias)) {
+                        return $key;
+                    }
                 }
             }
             return null;
         };
 
-        // Поиск ключей для разных полей
-        $nameKey = $findKeyBySubstring($row, 'название') ?? $findKeyBySubstring($row, 'name');
-        $purchasePriceKey = $findKeyBySubstring($row, 'опт') ?? $findKeyBySubstring($row, 'purchase');
-        $retailPriceKey = $findKeyBySubstring($row, 'розн') ?? $findKeyBySubstring($row, 'retail');
-        $categoryKey = $findKeyBySubstring($row, 'катег') ?? $findKeyBySubstring($row, 'category');
-        $brandKey = $findKeyBySubstring($row, 'бренд') ?? $findKeyBySubstring($row, 'brand');
-        $articleKey = $findKeyBySubstring($row, 'артикул') ?? $findKeyBySubstring($row, 'sku') ?? $findKeyBySubstring($row, 'код');
+        $nameKey = $findKeyByAlias($row, ['название', 'name', 'nazvanie']);
+        $categoryKey = $findKeyByAlias($row, ['категория', 'category', 'kategoriia', 'kategoria']);
+        $brandKey = $findKeyByAlias($row, ['бренд', 'brand', 'brend']);
+        $purchaseKey = $findKeyByAlias($row, ['оптовая цена', 'purchase_price', 'optovaia_cena', 'optovaya_cena']);
+        $retailKey = $findKeyByAlias($row, ['розничная цена', 'retail_price', 'roznicnaia_cena', 'roznichnaya_cena']);
+        $photoKey = $findKeyByAlias($row, ['фото', 'photo', 'foto']);
 
-        // Получаем значения
-        $productName = $nameKey ? trim($row[$nameKey]) : '';
-        $purchasePrice = $purchasePriceKey ? $this->parsePrice($row[$purchasePriceKey]) : null;
-        $retailPrice = $retailPriceKey ? $this->parsePrice($row[$retailPriceKey]) : null;
-        $categoryName = $categoryKey ? trim($row[$categoryKey]) : '';
-        $brandName = $brandKey ? trim($row[$brandKey]) : '';
-        $article = $articleKey ? trim($row[$articleKey]) : '';
+        $productName = $nameKey ? $row[$nameKey] : null;
+        $categoryName = $categoryKey ? $row[$categoryKey] : null;
+        $brandName = $brandKey ? $row[$brandKey] : null;
+        $purchasePrice = $purchaseKey ? $row[$purchaseKey] : null;
+        $retailPrice = $retailKey ? $row[$retailKey] : null;
+        $photo = $photoKey ? $row[$photoKey] : null;
 
         // Проверяем, что у нас есть хотя бы название товара
         if (empty($productName)) {
@@ -120,18 +99,28 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
         $categoryId = $this->determineCategory($categoryName, $productName);
         $brandId = $this->determineBrand($brandName, $productName);
 
-        // Проверяем, существует ли уже товар с таким названием
-        $existingProduct = Product::where('name', $productName)->first();
+        // Проверяем, существует ли уже товар с таким названием в этом проекте
+        $existingProduct = Product::where('name', $productName)
+            ->where('project_id', $this->projectId)
+            ->first();
 
         if ($existingProduct) {
-            // Обновляем существующий товар
-            $existingProduct->update([
+            $updateData = [
                 'category_id' => $categoryId,
                 'brand_id' => $brandId,
                 'purchase_price' => $purchasePrice ?? $existingProduct->purchase_price,
                 'retail_price' => $retailPrice ?? $existingProduct->retail_price,
-                'article' => $article ?: $existingProduct->article,
-            ]);
+            ];
+
+            // Если есть фото — скачиваем и обновляем
+            if ($photo) {
+                $photoPath = $this->processImageUrl($row);
+                if ($photoPath) {
+                    $updateData['photo'] = $photoPath;
+                }
+            }
+
+            $existingProduct->update($updateData);
 
             $this->updatedCount++;
             \Log::info("Обновлен товар: {$productName}");
@@ -143,13 +132,15 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
                 'brand_id' => $brandId,
                 'purchase_price' => $purchasePrice ?? 0,
                 'retail_price' => $retailPrice ?? 0,
-                'article' => $article,
+                'project_id' => $this->projectId,
             ];
 
             // Обрабатываем фото, если есть
-            $photoPath = $this->processImageUrl($row);
-            if ($photoPath) {
-                $productData['photo'] = $photoPath;
+            if ($photo) {
+                $photoPath = $this->processImageUrl($row);
+                if ($photoPath) {
+                    $productData['photo'] = $photoPath;
+                }
             }
 
             Product::create($productData);
@@ -265,7 +256,7 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
     private function processImageUrl($row)
     {
         \Log::info('Ключи строки для фото: ' . json_encode(array_keys($row), JSON_UNESCAPED_UNICODE));
-        $photoKeys = ['фото', 'photo', 'изображение', 'image', 'url', 'ссылка', 'link'];
+        $photoKeys = ['фото', 'photo', 'foto', 'изображение', 'image', 'url', 'ссылка', 'link'];
         $imageUrl = null;
         $foundKey = null;
         foreach ($row as $key => $value) {
