@@ -12,6 +12,9 @@ class ClientAuthController extends Controller
 {
     public function showLoginForm()
     {
+        if (Auth::guard('client')->check()) {
+            return redirect('/');
+        }
         return view('auth.login');
     }
 

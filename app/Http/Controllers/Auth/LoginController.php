@@ -42,6 +42,10 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
+        // Если пользователь уже авторизован и это админ — редирект на /panel
+        if (auth()->check() && !empty(auth()->user()->is_panel_admin)) {
+            return redirect('/panel');
+        }
         // Для админки возвращаем отдельный шаблон
         return view('admin.login');
     }
