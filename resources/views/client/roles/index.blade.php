@@ -16,7 +16,7 @@
         </div>
     </div>
     <div class="table-wrapper">
-        <table class="clients-table">
+        <table class=" table-striped clients-table">
             <thead>
                 <tr>
                     <th>Название</th>
@@ -221,6 +221,11 @@ document.getElementById('roleForm').onsubmit = function(e) {
 
 function addRoleRow(role, perms, label) {
     const tbody = document.querySelector('.clients-table tbody');
+    // Удаляем строку 'Пока нет данных...'
+    const emptyRow = tbody.querySelector('tr td[colspan]');
+    if (emptyRow && emptyRow.textContent.includes('Пока нет данных')) {
+        emptyRow.parentElement.remove();
+    }
     const tr = document.createElement('tr');
     tr.id = 'role-' + String(role.id);
     tr.setAttribute('data-name', role.name);

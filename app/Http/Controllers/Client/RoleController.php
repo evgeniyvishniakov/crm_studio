@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\SystemLog;
 
 class RoleController extends Controller
 {
@@ -46,6 +47,7 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $projectId = auth('client')->user()->project_id;
+        $user = auth('client')->user();
         $validated = $request->validate([
             'name' => 'required|string|max:64',
             'label' => 'required|string|max:128',
@@ -76,6 +78,21 @@ class RoleController extends Controller
                     'permission_id' => $pid
                 ]);
             }
+            // Логирование создания роли
+            SystemLog::create([
+                'level' => 'info',
+                'module' => 'roles',
+                'user_email' => $user->email ?? null,
+                'user_id' => $user->id ?? null,
+                'ip' => $request->ip(),
+                'action' => 'create_role',
+                'message' => 'Создана роль: ' . $validated['label'],
+                'context' => json_encode([
+                    'role_id' => $roleId,
+                    'name' => $validated['name'],
+                    'permissions' => $validated['permissions'] ?? []
+                ]),
+            ]);
             // Получаем имена permissions для ответа
             $permNames = DB::table('permissions')->whereIn('id', $permissionIds)->pluck('name')->toArray();
             DB::commit();
@@ -105,6 +122,7 @@ class RoleController extends Controller
     public function update(Request $request, $id)
     {
         $projectId = auth('client')->user()->project_id;
+        $user = auth('client')->user();
         $validated = $request->validate([
             'label' => 'required|string|max:128',
             'permissions' => 'array',
@@ -136,6 +154,21 @@ class RoleController extends Controller
                     'permission_id' => $pid
                 ]);
             }
+            // Логирование обновления роли
+            SystemLog::create([
+                'level' => 'info',
+                'module' => 'roles',
+                'user_email' => $user->email ?? null,
+                'user_id' => $user->id ?? null,
+                'ip' => $request->ip(),
+                'action' => 'update_role',
+                'message' => 'Изменена роль: ' . $validated['label'],
+                'context' => json_encode([
+                    'role_id' => $id,
+                    'name' => $role->name,
+                    'permissions' => $validated['permissions'] ?? []
+                ]),
+            ]);
             DB::commit();
             return response()->json([
                 'success' => true,
@@ -164,6 +197,7 @@ class RoleController extends Controller
     public function destroy($id)
     {
         $projectId = auth('client')->user()->project_id;
+        $user = auth('client')->user();
         $role = DB::table('roles')->where('id', $id)->where('project_id', $projectId)->first();
         if (!$role || $role->is_system) {
             return response()->json(['success' => false, 'message' => 'Системную роль нельзя удалить'], 403);
@@ -172,6 +206,26 @@ class RoleController extends Controller
         try {
             DB::table('role_permission')->where('role_id', $id)->delete();
             DB::table('roles')->where('id', $id)->delete();
+            // Логирование удаления роли
+            $deletedPermissions = DB::table('role_permission')
+                ->where('role_id', $id)
+                ->join('permissions', 'role_permission.permission_id', '=', 'permissions.id')
+                ->pluck('permissions.name')
+                ->toArray();
+            SystemLog::create([
+                'level' => 'warning',
+                'module' => 'roles',
+                'user_email' => $user->email ?? null,
+                'user_id' => $user->id ?? null,
+                'ip' => request()->ip(),
+                'action' => 'delete_role',
+                'message' => 'Удалена роль: ' . $role->label,
+                'context' => json_encode([
+                    'role_id' => $id,
+                    'name' => $role->name,
+                    'permissions' => $deletedPermissions
+                ]),
+            ]);
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Роль удалена']);
         } catch (\Exception $e) {

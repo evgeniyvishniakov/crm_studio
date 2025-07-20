@@ -44,8 +44,17 @@ class LogController extends Controller
                 ;
             });
         }
+        // Фильтрация по project_id (поиск по context->project_id)
+        if ($request->filled('project_id')) {
+            $query->where(function($q) use ($request) {
+                $q->whereJsonContains('context->project_id', (int)$request->project_id)
+                  ->orWhere('context', 'like', '"project_id":' . (int)$request->project_id . '%'); // для старых логов
+            });
+        }
         $logs = $query->orderByDesc('created_at')->paginate(20);
-        return view('admin.logs.index', compact('logs'));
+        // Получить список проектов для фильтра
+        $projects = \DB::table('projects')->pluck('project_name', 'id');
+        return view('admin.logs.index', compact('logs', 'projects'));
     }
 
     public function show($id)

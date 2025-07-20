@@ -18,24 +18,34 @@
     </div>
     <div class="card-body">
         <div class="row mb-3">
-            <div class="col-md-3">
-                <select class="form-select" id="logLevel">
-                    <option value="">Все уровни</option>
-                    <option value="error">Ошибки</option>
-                    <option value="warning">Предупреждения</option>
-                    <option value="info">Информация</option>
-                    <option value="debug">Отладка</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <input type="date" class="form-control" id="logDate" value="{{ date('Y-m-d') }}">
-            </div>
-            <div class="col-md-4">
-                <input type="text" class="form-control" id="logSearch" placeholder="Поиск в логах...">
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-primary w-100">Фильтр</button>
-            </div>
+            <form method="GET" class="row mb-3">
+                <div class="col-md-2">
+                    <select class="form-select" name="project_id" onchange="this.form.submit()">
+                        <option value="">Все проекты</option>
+                        @foreach($projects as $id => $name)
+                            <option value="{{ $id }}" {{ request('project_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="level" onchange="this.form.submit()">
+                        <option value="">Все уровни</option>
+                        <option value="error" {{ request('level') == 'error' ? 'selected' : '' }}>Ошибки</option>
+                        <option value="warning" {{ request('level') == 'warning' ? 'selected' : '' }}>Предупреждения</option>
+                        <option value="info" {{ request('level') == 'info' ? 'selected' : '' }}>Информация</option>
+                        <option value="debug" {{ request('level') == 'debug' ? 'selected' : '' }}>Отладка</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" name="date" value="{{ request('date', date('Y-m-d')) }}" onchange="this.form.submit()">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" name="search" value="{{ request('search') }}" placeholder="Поиск в логах...">
+                </div>
+                <div class="col-md-2 mt-2 mt-md-0">
+                    <button class="btn btn-primary w-100" type="submit">Фильтр</button>
+                </div>
+            </form>
         </div>
         
         <div class="table-responsive">

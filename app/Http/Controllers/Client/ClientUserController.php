@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Admin\User;
+use App\Models\SystemLog;
 
 class ClientUserController extends Controller
 {
@@ -14,13 +15,17 @@ class ClientUserController extends Controller
     {
         $projectId = auth('client')->user()->project_id;
         $users = User::where('project_id', $projectId)->orderBy('id', 'asc')->get();
-        $roles = config('roles');
+        $roles = \DB::table('roles')
+            ->where('project_id', $projectId)
+            ->where('name', '!=', 'admin')
+            ->pluck('label', 'name');
         return view('client.users.list', compact('users', 'roles'));
     }
 
     public function store(Request $request)
     {
         $projectId = auth('client')->user()->project_id;
+        $user = auth('client')->user();
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'username' => [
@@ -47,7 +52,7 @@ class ClientUserController extends Controller
             'username.min' => 'Логин должен быть не менее 6 символов.',
         ]);
         try {
-            $user = User::create([
+            $userModel = User::create([
                 'name' => $validated['name'],
                 'username' => $validated['username'],
                 'email' => $validated['email'] ?? null,
@@ -57,10 +62,28 @@ class ClientUserController extends Controller
                 'registered_at' => now(),
                 'status' => 'active',
             ]);
+            // Логирование создания пользователя
+            SystemLog::create([
+                'level' => 'info',
+                'module' => 'users',
+                'user_email' => $user->email ?? null,
+                'user_id' => $user->id ?? null,
+                'ip' => $request->ip(),
+                'action' => 'create_user',
+                'message' => 'Создан пользователь: ' . $userModel->name,
+                'context' => json_encode([
+                    'user_id' => $userModel->id,
+                    'name' => $userModel->name,
+                    'username' => $userModel->username,
+                    'email' => $userModel->email,
+                    'role' => $userModel->role,
+                    'project_id' => $userModel->project_id,
+                ]),
+            ]);
             return response()->json([
                 'success' => true,
                 'message' => 'Пользователь успешно добавлен',
-                'user' => $user
+                'user' => $userModel
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -73,16 +96,35 @@ class ClientUserController extends Controller
     public function destroy($id)
     {
         $projectId = auth('client')->user()->project_id;
-        $user = User::where('project_id', $projectId)->findOrFail($id);
+        $user = auth('client')->user();
+        $userModel = User::where('project_id', $projectId)->findOrFail($id);
         // Запрещаем удаление пользователей с уникальной ролью admin
-        if (in_array($user->role, User::FIXED_ROLES)) {
+        if (in_array($userModel->role, User::FIXED_ROLES)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Пользователь с ролью Администратор не может быть удалён.'
             ], 403);
         }
         try {
-            $user->delete();
+            $userModel->delete();
+            // Логирование удаления пользователя
+            SystemLog::create([
+                'level' => 'warning',
+                'module' => 'users',
+                'user_email' => $user->email ?? null,
+                'user_id' => $user->id ?? null,
+                'ip' => $request->ip(),
+                'action' => 'delete_user',
+                'message' => 'Удалён пользователь: ' . $userModel->name,
+                'context' => json_encode([
+                    'user_id' => $userModel->id,
+                    'name' => $userModel->name,
+                    'username' => $userModel->username,
+                    'email' => $userModel->email,
+                    'role' => $userModel->role,
+                    'project_id' => $userModel->project_id,
+                ]),
+            ]);
             return response()->json([
                 'success' => true,
                 'message' => 'Пользователь успешно удалён'
@@ -105,9 +147,10 @@ class ClientUserController extends Controller
     public function update(Request $request, $id)
     {
         $projectId = auth('client')->user()->project_id;
-        $user = User::where('project_id', $projectId)->findOrFail($id);
+        $user = auth('client')->user();
+        $userModel = User::where('project_id', $projectId)->findOrFail($id);
         // Запрещаем любые изменения для пользователей с уникальной ролью admin
-        if (in_array($user->role, User::FIXED_ROLES)) {
+        if (in_array($userModel->role, User::FIXED_ROLES)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Пользователь с ролью Администратор не может быть изменён.'
@@ -127,9 +170,9 @@ class ClientUserController extends Controller
             'role' => [
                 'required',
                 'string',
-                function ($attribute, $value, $fail) use ($user) {
+                function ($attribute, $value, $fail) use ($userModel) {
                     // Запрещаем назначать роль admin кому-либо, кроме уже существующего admin
-                    if (in_array(strtolower($value), User::FIXED_ROLES) && $user->role !== 'admin') {
+                    if (in_array(strtolower($value), User::FIXED_ROLES) && $userModel->role !== 'admin') {
                         $fail('Роль admin зарезервирована и не может быть назначена.');
                     }
                 },
@@ -140,17 +183,36 @@ class ClientUserController extends Controller
             'username.min' => 'Логин должен быть не менее 6 символов.',
         ]);
         try {
-            $user->update([
+            $userModel->update([
                 'name' => $validated['name'],
                 'username' => $validated['username'],
                 'email' => $validated['email'] ?? null,
                 'role' => $validated['role'],
                 'status' => $validated['status'],
             ]);
+            // Логирование обновления пользователя
+            SystemLog::create([
+                'level' => 'info',
+                'module' => 'users',
+                'user_email' => $user->email ?? null,
+                'user_id' => $user->id ?? null,
+                'ip' => $request->ip(),
+                'action' => 'update_user',
+                'message' => 'Изменён пользователь: ' . $userModel->name,
+                'context' => json_encode([
+                    'user_id' => $userModel->id,
+                    'name' => $userModel->name,
+                    'username' => $userModel->username,
+                    'email' => $userModel->email,
+                    'role' => $userModel->role,
+                    'status' => $userModel->status,
+                    'project_id' => $userModel->project_id,
+                ]),
+            ]);
             return response()->json([
                 'success' => true,
                 'message' => 'Пользователь успешно обновлён',
-                'user' => $user
+                'user' => $userModel
             ]);
         } catch (\Exception $e) {
             return response()->json([

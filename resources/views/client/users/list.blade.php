@@ -48,7 +48,7 @@
                         <td><span class="status-badge {{ $user->status === 'active' ? 'status-completed' : 'status-cancelled' }}">{{ $user->status === 'active' ? 'Активен' : 'Неактивен' }}</span></td>
                         <td>{{ $user->registered_at ? \Carbon\Carbon::parse($user->registered_at)->format('d.m.Y H:i') : '' }}</td>
                         <td class="actions-cell" style="vertical-align: middle;">
-                            @if($user->username !== 'admin')
+                            @if($user->role !== 'admin')
                             <button class="btn-edit" title="Редактировать">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
