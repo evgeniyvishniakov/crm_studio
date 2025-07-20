@@ -115,77 +115,82 @@ class ClientReportController extends Controller
         if ($periodRange[0]->gt($periodRange[1])) {
             return ['labels' => [], 'data' => []];
         }
-        $newTypeId = DB::table('client_types')->where('project_id', $currentProjectId)->where('name', 'Новый клиент')->value('id');
-        if (!$newTypeId) {
-            return ['labels' => [], 'data' => []];
-        }
         $dateGroupRaw = '';
-        $periodIterator = null;
-        $dateGroupFormatter = null;
-        $labelFormatter = null;
+        $labels = [];
+        $data = [];
         switch ($periodName) {
             case 'half_year':
                 $dateGroupRaw = 'YEARWEEK(created_at, 1)';
-                $rawData = Client::query()
+                // Считаем недели
+                $start = $periodRange[0]->copy()->startOfWeek();
+                $end = $periodRange[1]->copy()->endOfWeek();
+                $periodIterator = \Carbon\CarbonPeriod::create($start, '1 week', $end);
+                $allWeeks = collect();
+                foreach ($periodIterator as $weekStart) {
+                    $week = $weekStart->format('oW');
+                    $allWeeks->push($week);
+                }
+                $rawData = \App\Models\Clients\Client::query()
                     ->where('project_id', $currentProjectId)
-                    ->whereBetween('created_at', $periodRange)
-                    ->where('client_type_id', $newTypeId)
-                    ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
+                    ->whereBetween('created_at', [$start, $end])
+                    ->selectRaw($dateGroupRaw.' as date_group, COUNT(*) as count')
                     ->groupBy('date_group')
                     ->orderBy('date_group')
-                    ->get();
-                $labels = $rawData->pluck('date_group')->map(function($week) {
-                    $year = substr($week, 0, 4);
-                    $w = (int)substr($week, 4);
-                    $date = Carbon::now()->setISODate($year, $w)->startOfWeek();
-                    return $date->format('d.m') . ' - ' . $date->copy()->endOfWeek()->format('d.m');
-                });
-                $values = $rawData->pluck('count');
-                return ['labels' => $labels, 'data' => $values];
+                    ->get()
+                    ->keyBy('date_group');
+                foreach ($allWeeks as $week) {
+                    $labels[] = \Carbon\Carbon::now()->setISODate(substr($week, 0, 4), substr($week, 4))->startOfWeek()->format('d.m') . ' - ' . \Carbon\Carbon::now()->setISODate(substr($week, 0, 4), substr($week, 4))->endOfWeek()->format('d.m');
+                    $data[] = $rawData->get($week)->count ?? 0;
+                }
+                break;
             case 'year':
                 $dateGroupRaw = 'DATE_FORMAT(created_at, "%Y-%m")';
-                $rawData = Client::query()
+                // Считаем месяцы
+                $start = $periodRange[0]->copy()->startOfMonth();
+                $end = $periodRange[1]->copy()->endOfMonth();
+                $periodIterator = \Carbon\CarbonPeriod::create($start, '1 month', $end);
+                $allMonths = collect();
+                foreach ($periodIterator as $monthStart) {
+                    $allMonths->push($monthStart->format('Y-m'));
+                }
+                $rawData = \App\Models\Clients\Client::query()
                     ->where('project_id', $currentProjectId)
-                    ->whereBetween('created_at', $periodRange)
-                    ->where('client_type_id', $newTypeId)
-                    ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
+                    ->whereBetween('created_at', [$start, $end])
+                    ->selectRaw($dateGroupRaw.' as date_group, COUNT(*) as count')
                     ->groupBy('date_group')
                     ->orderBy('date_group')
-                    ->get();
-                $labels = $rawData->pluck('date_group')->map(fn($d) => Carbon::parse($d.'-01')->translatedFormat('M Y'));
-                $values = $rawData->pluck('count');
-                return ['labels' => $labels, 'data' => $values];
-            case 'month':
-                $dateGroupRaw = 'DATE(created_at)';
-                $periodIterator = CarbonPeriod::create($periodRange[0], '1 day', $periodRange[1]);
-                $dateGroupFormatter = fn(Carbon $date) => $date->format('Y-m-d');
-                $labelFormatter = fn($dateGroup) => $dateGroup;
+                    ->get()
+                    ->keyBy('date_group');
+                foreach ($allMonths as $month) {
+                    $labels[] = \Carbon\Carbon::parse($month.'-01')->translatedFormat('M Y');
+                    $data[] = $rawData->get($month)->count ?? 0;
+                }
                 break;
-            case '2weeks':
-            case 'week':
             default:
                 $dateGroupRaw = 'DATE(created_at)';
-                $periodIterator = CarbonPeriod::create($periodRange[0], '1 day', $periodRange[1]);
-                $dateGroupFormatter = fn(Carbon $date) => $date->format('Y-m-d');
-                $labelFormatter = fn($dateGroup) => $dateGroup;
+                $periodIterator = \Carbon\CarbonPeriod::create($periodRange[0], '1 day', $periodRange[1]);
+                $allDates = collect();
+                foreach ($periodIterator as $date) {
+                    $allDates->push($date->format('Y-m-d'));
+                }
+                $rawData = \App\Models\Clients\Client::query()
+                    ->where('project_id', $currentProjectId)
+                    ->whereBetween('created_at', $periodRange)
+                    ->selectRaw($dateGroupRaw.' as date_group, COUNT(*) as count')
+                    ->groupBy('date_group')
+                    ->orderBy('date_group')
+                    ->get()
+                    ->keyBy('date_group');
+                foreach ($allDates as $date) {
+                    $labels[] = $date;
+                    $data[] = $rawData->get($date)->count ?? 0;
+                }
                 break;
         }
-        $data = Client::query()
-            ->where('project_id', $currentProjectId)
-            ->whereBetween('created_at', $periodRange)
-            ->where('client_type_id', $newTypeId)
-            ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
-            ->groupBy('date_group')
-            ->get()
-            ->keyBy('date_group');
-        $scaffold = [];
-        foreach ($periodIterator as $date) {
-            $key = $dateGroupFormatter($date);
-            $scaffold[$key] = $data->get($key)->count ?? 0;
-        }
-        $labels = collect(array_keys($scaffold))->map($labelFormatter);
-        $values = array_values($scaffold);
-        return ['labels' => $labels, 'data' => $values];
+        return [
+            'labels' => $labels,
+            'data' => $data
+        ];
     }
 
     /**
