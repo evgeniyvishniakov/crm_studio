@@ -382,6 +382,9 @@
             gap: 24px;
             margin-bottom: 20px;
         }
+        .contacts-details .fa{
+            margin-right: 10px;
+        }
         .contact-item{
             margin: 10px 0;
         }
