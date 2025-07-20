@@ -238,15 +238,17 @@ class ClientReportController extends Controller
      */
     private function getClientTypesDistribution(array $periodRange, $currentProjectId): array
     {
-        $clientTypesDistribution = Client::join('client_types', 'clients.client_type_id', '=', 'client_types.id')
-            ->select('client_types.name', DB::raw('COUNT(clients.id) as count'))
+        // Получаем id всех типов, которые глобальные или для этого проекта
+        $typeIds = \App\Models\Clients\ClientType::where('is_global', true)
+            ->orWhere('project_id', $currentProjectId)
+            ->pluck('id');
+        // Собираем распределение только по этим типам
+        $clientTypesDistribution = \App\Models\Clients\Client::join('client_types', 'clients.client_type_id', '=', 'client_types.id')
+            ->select('client_types.name', \DB::raw('COUNT(clients.id) as count'))
             ->where('clients.project_id', $currentProjectId)
-            ->whereIn('clients.id', function ($query) use ($currentProjectId, $periodRange) {
-                $query->select('client_id')
-                    ->from('appointments')
-                    ->where('appointments.project_id', $currentProjectId)
-                    ->whereBetween('date', $periodRange);
-            })
+            ->whereIn('client_types.id', $typeIds)
+            ->whereBetween('clients.created_at', $periodRange)
+            // убран фильтр по appointments
             ->groupBy('client_types.name')
             ->orderByDesc('count')
             ->get();

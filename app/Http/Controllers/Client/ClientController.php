@@ -27,7 +27,10 @@ class ClientController extends Controller
 
         if ($request->ajax()) {
             $clients = $query->paginate(11);
-            $clientTypes = ClientType::where('project_id', $currentProjectId)->where('status', true)->get();
+            $clientTypes = ClientType::where('project_id', $currentProjectId)
+                ->orWhere('is_global', true)
+                ->where('status', true)
+                ->get();
 
             return response()->json([
                 'data' => $clients->items(),
@@ -43,7 +46,10 @@ class ClientController extends Controller
 
         // Для обычных запросов используем пагинацию
         $clients = $query->paginate(11);
-        $clientTypes = ClientType::where('project_id', $currentProjectId)->where('status', true)->get();
+        $clientTypes = ClientType::where('project_id', $currentProjectId)
+            ->orWhere('is_global', true)
+            ->where('status', true)
+            ->get();
         return view('client.clients.list', compact('clients', 'clientTypes'));
     }
 

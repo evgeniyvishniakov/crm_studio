@@ -68,6 +68,10 @@
                         <input type="email" id="clientEmail" name="email" autocomplete="off">
                     </div>
                     <div class="form-group">
+                        <label for="clientNotes">Заметки</label>
+                        <textarea id="clientNotes" name="notes" rows="2" class="form-control" autocomplete="off"></textarea>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">Тип клиента</label>
                         <select class="form-control" name="client_type_id">
                             <option value="">Выберите тип</option>
@@ -130,6 +134,10 @@
                     <div class="form-group">
                         <label for="editClientEmail">Почта</label>
                         <input type="email" id="editClientEmail" name="email" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="editClientNotes">Заметки</label>
+                        <textarea id="editClientNotes" name="notes" rows="2" class="form-control" autocomplete="off"></textarea>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Тип клиента</label>
@@ -370,9 +378,12 @@
         }
 
         .details-row {
-            display: flex;
+        
             gap: 24px;
             margin-bottom: 20px;
+        }
+        .contact-item{
+            margin: 10px 0;
         }
 
         .card {
@@ -1104,12 +1115,28 @@
                     document.getElementById('editClientInstagram').value = client.instagram || '';
                     document.getElementById('editClientPhone').value = client.phone || '';
                     document.getElementById('editClientEmail').value = client.email || '';
-                    document.getElementById('editClientType').value = client.client_type_id || '';
+                    document.getElementById('editClientNotes').value = client.notes || '';
 
-                    // Обновляем описание типа клиента
+                    // --- Исправление: добавить option, если не найден ---
                     const typeSelect = document.getElementById('editClientType');
+                    let found = false;
+                    for (let i = 0; i < typeSelect.options.length; i++) {
+                        if (typeSelect.options[i].value == client.client_type_id) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found && client.client_type) {
+                        const opt = document.createElement('option');
+                        opt.value = client.client_type_id;
+                        opt.text = client.client_type.name;
+                        typeSelect.appendChild(opt);
+                    }
+                    typeSelect.value = client.client_type_id || '';
+
+                    // Обновляем описание типа клиента (с проверкой)
                     const selectedOption = typeSelect.options[typeSelect.selectedIndex];
-                    const description = selectedOption.dataset.description;
+                    const description = selectedOption ? selectedOption.dataset.description : '';
                     document.querySelector('.edit-type-description').textContent = description || '';
 
                     document.getElementById('editClientModal').style.display = 'block';
@@ -1352,10 +1379,7 @@
                         throw new Error('Данные клиента не получены');
                     }
 
-                    console.log('Client data:', client);
-                    console.log('Appointments:', client.appointments);
-                    console.log('Sales:', client.sales);
-
+                    
                     let totalProceduresAmount = 0;
                     let totalSalesAmount = 0;
 
@@ -1425,6 +1449,14 @@
                                 </div>
                             `;
                         }
+                        if (client.notes) {
+                            contactsHtml += `
+                                <div class="contact-item">
+                                    <span class="contact-label">Заметка:</span>
+                                    <span class="contact-value">${client.notes}</span>
+                                </div>
+                            `;
+                        }
                         contactsContainer.innerHTML = contactsHtml;
                     }
 
@@ -1434,7 +1466,7 @@
                         if (client.appointments && client.appointments.length > 0) {
                             let proceduresHtml = '';
                             client.appointments.forEach(appointment => {
-                                console.log('Processing appointment:', appointment);
+                                
 
                                 // Форматируем дату и время
                                 let formattedDate = 'Дата не указана';
@@ -1530,7 +1562,7 @@
                             let productsHtml = '';
 
                             client.sales.forEach(sale => {
-                                console.log('Processing sale:', sale);
+                                
 
                                 // Форматируем дату продажи
                                 let formattedDate = 'Дата не указана';
@@ -1598,9 +1630,7 @@
 
                         // Обновляем общую сумму
                         const totalAmount = totalProceduresAmount + totalSalesAmount;
-                        console.log('Total procedures amount:', totalProceduresAmount);
-                        console.log('Total sales amount:', totalSalesAmount);
-                        console.log('Total amount:', totalAmount);
+                        
 
                         const totalElement = document.getElementById('viewClientTotal');
                         if (totalElement) {
@@ -1780,6 +1810,7 @@
                     if (client.email) {
                         contactsHtml += `<div class="email"><i class="fa fa-envelope"></i>${client.email}</div>`;
                     }
+                   
 
                     // Строка таблицы
                     const row = document.createElement('tr');
@@ -1877,6 +1908,7 @@
                 if (client.email) {
                     contactsHtml += `<div class="email"><i class="fa fa-envelope"></i>${client.email}</div>`;
                 }
+                
                 const row = document.createElement('tr');
                 row.id = `client-${client.id}`;
                 row.innerHTML = `
