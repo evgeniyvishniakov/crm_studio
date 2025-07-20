@@ -36,75 +36,6 @@
                 </thead>
                 <tbody id="clientsTableBody">
                 <!-- Строки будут добавляться динамически через JavaScript -->
-                @foreach($clients as $client)
-                    <tr id="client-{{ $client->id }}">
-                        <td>
-                            <div class="client-info">
-                                <div class="client-avatar" data-name="{{ $client->name }}">
-                                    <span>{{ substr($client->name, 0, 2) }}</span>
-                                </div>
-                                <div class="client-details">
-                                    <div class="client-name">{{ $client->name }}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            @if($client->instagram)
-                                <a href="https://instagram.com/{{ $client->instagram }}" target="_blank" class="instagram-link">
-                                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-                                    </svg>
-                                    {{ $client->instagram }}
-                                </a>
-                            @endif
-                        </td>
-                        <td>
-                            <div class="contacts-details">
-                                @if($client->phone)
-                                    <div class="phone"><i class="fa fa-phone"></i> {{ $client->phone }}</div>
-                                @endif
-                                @if($client->email)
-                                    <div class="email"><i class="fa fa-envelope"></i>{{ $client->email }}</div>
-                                @endif
-                            </div>
-                        </td>
-                        <td>
-                            <div class="client-status">
-                                @if($client->client_type_id)
-                                    <span class="client-type-badge">
-                                        {{ $client->clientType->name }}
-                                        @if($client->clientType->discount)
-                                            <span class="discount-badge">-{{ $client->clientType->discount }}%</span>
-                                        @endif
-                                    </span>
-                                @else
-                                    <span class="client-type-badge">Новый клиент</span>
-                                @endif
-                            </div>
-                        </td>
-                        <td class="actions-cell" style="vertical-align: middle;">
-                            <button class="btn-view">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
-                                </svg>
-
-                            </button>
-                            <button class="btn-edit" >
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                </svg>
-
-                            </button>
-                            <button class="btn-delete" >
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-
-                            </button>
-                        </td>
-                    </tr>
-                @endforeach
                 </tbody>
             </table>
         </div>
@@ -1814,7 +1745,7 @@
 
                 data.clients.forEach(client => {
                     // Формируем HTML для типа клиента
-                    let clientType = client.clientType;
+                    let clientType = client.client_type;
                     if (!clientType && client.client_type_id && window.clientTypesDict) {
                         clientType = window.clientTypesDict[client.client_type_id];
                     }
@@ -1915,7 +1846,7 @@
             }
             
             clients.forEach(client => {
-                let clientType = client.clientType;
+                let clientType = client.client_type;
                 if (!clientType && client.client_type_id && window.clientTypesDict) {
                     clientType = window.clientTypesDict[client.client_type_id];
                 }
