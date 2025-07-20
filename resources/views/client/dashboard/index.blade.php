@@ -168,6 +168,7 @@
                 </div>
             </div>
             <canvas id="universalChart" height="150"></canvas>
+            <div id="custom-month-labels" style="display: none; justify-content: space-between; font-size: 12px; font-weight: 600; color: #22223b; height: 12px;"></div>
         </div>
             <div class="dashboard-widgets-grid-2x2" style="display: grid; grid-template-columns: 34% 64%; gap: 1.6rem; margin: 32px 0 0 0; align-items: stretch;">
                 <!-- 1. Календарь -->
@@ -496,10 +497,7 @@
         let universalChart = null;
         // Функция округления до красивого значения (500 или 1000)
         function getNiceMax(value) {
-            if (value <= 1000) return Math.ceil(value / 100) * 100;
-            if (value <= 5000) return Math.ceil(value / 500) * 500;
-            if (value <= 20000) return Math.ceil(value / 1000) * 1000;
-            return Math.ceil(value / 5000) * 5000;
+            return Math.ceil(value / 1000) * 1000;
         }
         function createUniversalChart(type, labels, data, color, labelText) {
             const ctx = document.getElementById('universalChart').getContext('2d');
@@ -584,11 +582,15 @@
                             grid: { display: false },
                             ticks: {
                                 color: '#22223b',
-                                font: { size: 15, weight: '600' },
+                                font: { size: 11, weight: '600' },
                                 padding: 8,
+                                autoSkip: false,
+                                maxRotation: 0,
+                                minRotation: 0,
+                                stepSize: 1,
                                 callback: function(value, index, ticks) {
-                                    if (currentPeriod === '180' || currentPeriod === '365') {
-                                        return getMonthLabels(this.getLabels().length)[index];
+                                    if (currentPeriod === '90' || currentPeriod === '180' || currentPeriod === '365') {
+                                        return '';
                                     }
                                     if (currentPeriod === '7') return this.getLabelForValue(this.getLabels()[index]);
                                     const date = new Date();
@@ -617,12 +619,7 @@
                 });
             }
             const maxValue = Math.max(...allData);
-            let niceMax;
-            if (labelText === 'Расходы') {
-                niceMax = maxValue > 0 ? Math.ceil(maxValue * 1.15) : 5000;
-            } else {
-                niceMax = maxValue > 0 ? getNiceMax(Math.ceil(maxValue * 1.10)) : undefined;
-            }
+            let niceMax = maxValue > 0 ? getNiceMax(Math.ceil(maxValue * 1.10)) : 5000;
             universalChart.options.scales.y.max = niceMax;
             universalChart.update();
         }
@@ -634,12 +631,13 @@
 
         // Инициализация universalChart только один раз при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            fetch('/api/dashboard/profit-chart?period=30')
+            fetch('/api/dashboard/profit-chart?period=30', { credentials: 'same-origin' })
                 .then(res => res.json())
                 .then(res => {
                     createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
                     universalChart.options.scales.y.max = res.maxValue || undefined;
                     universalChart.update();
+                    renderCustomMonthLabels(res.labels);
                 });
         });
         // Dropdown логика
@@ -670,27 +668,29 @@
 
                 // Если нет — по period (старая логика)
                 if (type === 'profit') {
-                    fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`)
+                    fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`, { credentials: 'same-origin' })
                         .then(res => res.json())
                         .then(res => {
                             createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
                             universalChart.options.scales.y.max = res.maxValue || undefined;
                             universalChart.update();
+                            renderCustomMonthLabels(res.labels);
                         });
                     return;
                 }
                 if (type === 'expenses') {
-                    fetch(`/api/dashboard/expenses-chart?period=${currentPeriod}`)
+                    fetch(`/api/dashboard/expenses-chart?period=${currentPeriod}`, { credentials: 'same-origin' })
                         .then(res => res.json())
                         .then(res => {
                             const data = getCumulativeData(res.data);
                             let labels = res.labels;
                             createUniversalChart('line', labels, data, getMetricColor('expenses'), datasets['expenses'].label);
+                            renderCustomMonthLabels(labels);
                         });
                     return;
                 }
                 if (type === 'sales') {
-                    fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
+                    fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`, { credentials: 'same-origin' })
                         .then(res => res.json())
                         .then(res => {
                             createUniversalChart('bar', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
@@ -707,24 +707,27 @@
                                     animateCounter(salesCard, 0, total, 1500);
                                 }, 100);
                             }
+                            renderCustomMonthLabels(res.labels);
                         });
                     return;
                 }
                 if (type === 'services') {
-                    fetch(`/api/dashboard/services-chart?period=${currentPeriod}`)
+                    fetch(`/api/dashboard/services-chart?period=${currentPeriod}`, { credentials: 'same-origin' })
                         .then(res => res.json())
                         .then(res => {
                             createUniversalChart('bar', res.labels, res.data, getMetricColor('services'), 'Продажи услуг');
                             universalChart.update();
+                            renderCustomMonthLabels(res.labels);
                         });
                     return;
                 }
                 // Для других метрик по умолчанию line
-                fetch(`/api/dashboard/${type}-chart?period=${currentPeriod}`)
+                fetch(`/api/dashboard/${type}-chart?period=${currentPeriod}`, { credentials: 'same-origin' })
                     .then(res => res.json())
                     .then(res => {
                         createUniversalChart('line', res.labels, res.data, getMetricColor(type), datasets[type].label);
                         universalChart.update();
+                        renderCustomMonthLabels(res.labels);
                     });
             });
         });
@@ -739,39 +742,43 @@
                 currentPeriod = this.dataset.period;
                 // Обновляем данные для текущей метрики
                 if (currentMetric === 'profit') {
-                    fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`)
+                    fetch(`/api/dashboard/profit-chart?period=${currentPeriod}`, { credentials: 'same-origin' })
                         .then(res => res.json())
                         .then(res => {
                             createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
                             universalChart.options.scales.y.max = res.maxValue || undefined;
                             universalChart.update();
+                            renderCustomMonthLabels(res.labels);
                         });
                     return;
                 }
                 if (currentMetric === 'expenses') {
-                    fetch(`/api/dashboard/expenses-chart?period=${currentPeriod}`)
+                    fetch(`/api/dashboard/expenses-chart?period=${currentPeriod}`, { credentials: 'same-origin' })
                         .then(res => res.json())
                         .then(res => {
                             const data = getCumulativeData(res.data);
                             createUniversalChart('line', res.labels, data, getMetricColor('expenses'), 'Расходы');
+                            renderCustomMonthLabels(res.labels);
                         });
                     return;
                 }
                 if (currentMetric === 'sales') {
-                    fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`)
+                    fetch(`/api/dashboard/sales-chart?period=${currentPeriod}`, { credentials: 'same-origin' })
                         .then(res => res.json())
                         .then(res => {
                             createUniversalChart('bar', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
                             universalChart.update();
+                            renderCustomMonthLabels(res.labels);
                         });
                     return;
                 }
                 if (currentMetric === 'services') {
-                    fetch(`/api/dashboard/services-chart?period=${currentPeriod}`)
+                    fetch(`/api/dashboard/services-chart?period=${currentPeriod}`, { credentials: 'same-origin' })
                         .then(res => res.json())
                         .then(res => {
                             createUniversalChart('bar', res.labels, res.data, getMetricColor('services'), 'Продажи услуг');
                             universalChart.update();
+                            renderCustomMonthLabels(res.labels);
                         });
                     return;
                 }
@@ -896,7 +903,7 @@
             let profitUrl = startDate && endDate
                 ? `/api/dashboard/profit-chart?start_date=${startDate}&end_date=${endDate}`
                 : `/api/dashboard/profit-chart?period=${period}`;
-            fetch(profitUrl)
+            fetch(profitUrl, { credentials: 'same-origin' })
                 .then(res => res.json())
                 .then(res => {
                     const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
@@ -912,7 +919,7 @@
             let expensesUrl = startDate && endDate
                 ? `/api/dashboard/expenses-chart?start_date=${startDate}&end_date=${endDate}`
                 : `/api/dashboard/expenses-chart?period=${period}`;
-            fetch(expensesUrl)
+            fetch(expensesUrl, { credentials: 'same-origin' })
                 .then(res => res.json())
                 .then(res => {
                     const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
@@ -928,7 +935,7 @@
             let salesUrl = startDate && endDate
                 ? `/api/dashboard/sales-chart?start_date=${startDate}&end_date=${endDate}`
                 : `/api/dashboard/sales-chart?period=${period}`;
-            fetch(salesUrl)
+            fetch(salesUrl, { credentials: 'same-origin' })
                 .then(res => res.json())
                 .then(res => {
                     const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
@@ -944,7 +951,7 @@
             let servicesUrl = startDate && endDate
                 ? `/api/dashboard/services-chart?start_date=${startDate}&end_date=${endDate}`
                 : `/api/dashboard/services-chart?period=${period}`;
-            fetch(servicesUrl)
+            fetch(servicesUrl, { credentials: 'same-origin' })
                 .then(res => res.json())
                 .then(res => {
                     const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
@@ -984,6 +991,48 @@
             updateAllStatCardsByPeriod(null, true, startDate, endDate);
             // ... остальной код ...
         }
+
+        // ... существующий код ...
+        // Вставляю функцию в начало основного <script> блока, до всех fetch/then:
+        function renderCustomMonthLabels(labels) {
+            const container = document.getElementById('custom-month-labels');
+            if (!container) return;
+            container.innerHTML = '';
+            if ((currentPeriod !== '365' && currentPeriod !== '90' && currentPeriod !== '180') || !window.universalChart) {
+                container.style.display = 'none';
+                return;
+            }
+            container.style.display = 'block';
+            container.style.position = 'relative';
+            container.style.height = '12px';
+            container.style.marginTop = '0px';
+            // Получаем координаты точек
+            const meta = universalChart.getDatasetMeta(0);
+            if (!meta || !meta.data) return;
+            const points = meta.data.map(point => point.x);
+            labels.forEach((label, i) => {
+                let text = label;
+                if (currentPeriod === '365') {
+                    const monthNum = label.split('.')[0];
+                    const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+                    const idx = parseInt(monthNum, 10) - 1;
+                    text = months[idx] ?? label;
+                }
+                // Для 90/180 text = label (дата начала недели)
+                const span = document.createElement('span');
+                span.textContent = text;
+                span.style.position = 'absolute';
+                span.style.left = (points[i] - 20) + 'px';
+                span.style.width = '40px';
+                span.style.textAlign = 'center';
+                span.style.fontSize = '12px';
+                span.style.color = '#22223b';
+                span.style.pointerEvents = 'none';
+                span.style.transform = 'translateY(-6px)';
+                container.appendChild(span);
+            });
+        }
+        // ... существующий код ...
     </script>
 @endsection
 
@@ -1159,48 +1208,53 @@
         updateAllStatCardsByPeriod(null, true, startDate, endDate);
         // Определяем текущую метрику
         if (currentMetric === 'profit') {
-            fetch(`/api/dashboard/profit-chart?start_date=${startDate}&end_date=${endDate}`)
+            fetch(`/api/dashboard/profit-chart?start_date=${startDate}&end_date=${endDate}`, { credentials: 'same-origin' })
                 .then(res => res.json())
                 .then(res => {
                     createUniversalChart('line', res.labels, getCumulativeData(res.data), getMetricColor('profit'), 'Прибыль');
                     universalChart.options.scales.y.max = res.maxValue || undefined;
                     universalChart.update();
+                    renderCustomMonthLabels(res.labels);
                 });
             return;
         }
         if (currentMetric === 'expenses') {
-            fetch(`/api/dashboard/expenses-chart?start_date=${startDate}&end_date=${endDate}`)
+            fetch(`/api/dashboard/expenses-chart?start_date=${startDate}&end_date=${endDate}`, { credentials: 'same-origin' })
                 .then(res => res.json())
                 .then(res => {
                     const data = getCumulativeData(res.data);
                     createUniversalChart('line', res.labels, data, getMetricColor('expenses'), 'Расходы');
+                    renderCustomMonthLabels(res.labels);
                 });
             return;
         }
         if (currentMetric === 'sales') {
-            fetch(`/api/dashboard/sales-chart?start_date=${startDate}&end_date=${endDate}`)
+            fetch(`/api/dashboard/sales-chart?start_date=${startDate}&end_date=${endDate}`, { credentials: 'same-origin' })
                 .then(res => res.json())
                 .then(res => {
                     createUniversalChart('bar', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
                     universalChart.update();
+                    renderCustomMonthLabels(res.labels);
                 });
             return;
         }
         if (currentMetric === 'services') {
-            fetch(`/api/dashboard/services-chart?start_date=${startDate}&end_date=${endDate}`)
+            fetch(`/api/dashboard/services-chart?start_date=${startDate}&end_date=${endDate}`, { credentials: 'same-origin' })
                 .then(res => res.json())
                 .then(res => {
                     createUniversalChart('bar', res.labels, res.data, getMetricColor('services'), 'Продажи услуг');
                     universalChart.update();
+                    renderCustomMonthLabels(res.labels);
                 });
             return;
         }
         // Для других метрик по умолчанию line
-        fetch(`/api/dashboard/${currentMetric}-chart?start_date=${startDate}&end_date=${endDate}`)
+        fetch(`/api/dashboard/${currentMetric}-chart?start_date=${startDate}&end_date=${endDate}`, { credentials: 'same-origin' })
             .then(res => res.json())
             .then(res => {
                 createUniversalChart('line', res.labels, res.data, getMetricColor(currentMetric), datasets[currentMetric].label);
                 universalChart.update();
+                renderCustomMonthLabels(res.labels);
             });
     }
 </script>

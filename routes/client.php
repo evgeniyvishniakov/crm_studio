@@ -258,4 +258,11 @@ Route::middleware('auth:client')->group(function () {
     Route::post('/notifications/{notification}/read', [\App\Http\Controllers\Client\NotificationController::class, 'markAsRead'])
         ->name('client.notifications.read')
         ->middleware('rate.limit:notifications'); // Максимум 60 отметок "прочитано" в минуту
+
+    Route::get('/api/dashboard/profit-chart', [\App\Http\Controllers\Client\DashboardController::class, 'profitChartData']);
+    Route::get('/api/dashboard/sales-chart', [\App\Http\Controllers\Client\DashboardController::class, 'salesChartData']);
+    Route::get('/api/dashboard/services-chart', [\App\Http\Controllers\Client\DashboardController::class, 'servicesChartData']);
+    Route::get('/api/dashboard/expenses-chart', [\App\Http\Controllers\Client\DashboardController::class, 'expensesChartData']);
+    Route::get('/api/dashboard/activity-chart', [\App\Http\Controllers\Client\DashboardController::class, 'activityChartData']);
 }); 
+

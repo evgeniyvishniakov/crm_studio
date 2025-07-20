@@ -114,27 +114,21 @@ class DashboardController extends Controller
     }
 
     /**
-     * Округлить максимум для графика прибыли: если < 50000 — 50000, иначе шаг 5000
+     * Округлить максимум для графика прибыли: округление до 1000 вверх
      */
     private function roundProfitMaxValueForChart($maxValue)
     {
         if ($maxValue <= 0) return 5000;
-        if ($maxValue < 50000) {
-            return 50000;
-        }
-        return ceil($maxValue / 5000) * 5000;
+        return ceil($maxValue / 1000) * 1000;
     }
 
     /**
-     * Округлить максимум для графика расходов: если < 40000 — 45000, иначе шаг 5000
+     * Округлить максимум для графика расходов: округление до 1000 вверх
      */
     private function roundExpensesMaxValueForChart($maxValue)
     {
         if ($maxValue <= 0) return 5000;
-        if ($maxValue < 40000) {
-            return 45000;
-        }
-        return ceil($maxValue / 5000) * 5000;
+        return ceil($maxValue / 1000) * 1000;
     }
 
     /**
@@ -153,11 +147,9 @@ class DashboardController extends Controller
                 $profit = $this->getProfitForDate($date->toDateString());
                 $data[] = round($profit, 2);
             }
-            $maxValue = $this->roundProfitMaxValueForChart(max($data));
             return response()->json([
                 'labels' => $labels,
-                'data' => $data,
-                'maxValue' => $maxValue
+                'data' => $data
             ]);
         }
         $period = $request->input('period', 7); // 30, 90, 180, 365
@@ -171,20 +163,71 @@ class DashboardController extends Controller
                 $profit = $this->getProfitForDate($date->toDateString());
                 $data[] = round($profit, 2);
             }
-            $maxValue = $this->roundProfitMaxValueForChart(max($data));
             return response()->json([
                 'labels' => $labels,
-                'data' => $data,
-                'maxValue' => $maxValue
+                'data' => $data
             ]);
         }
+        if ($period == 90) {
+            // Группировка по неделям (13 недель)
+            $weeks = 13;
+            $start = $now->copy()->subWeeks($weeks - 1)->startOfWeek();
+            $end = $now;
+            for ($i = 0; $i < $weeks; $i++) {
+                $weekStart = $start->copy()->addWeeks($i);
+                $weekEnd = $weekStart->copy()->endOfWeek();
+                $label = $weekStart->format('d.m');
+                $labels[] = $label;
+                $profit = $this->getProfitForPeriod($weekStart->toDateString(), $weekEnd->toDateString());
+                $data[] = round($profit, 2);
+            }
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data
+            ]);
+        }
+        if ($period == 180) {
+            // Группировка по 2 неделям (13 точек)
+            $steps = 13;
+            $start = $now->copy()->subWeeks($steps * 2 - 1)->startOfWeek();
+            $end = $now;
+            for ($i = 0; $i < $steps; $i++) {
+                $periodStart = $start->copy()->addWeeks($i * 2);
+                $periodEnd = $periodStart->copy()->addWeeks(1)->endOfWeek();
+                $label = $periodStart->format('d.m');
+                $labels[] = $label;
+                $profit = $this->getProfitForPeriod($periodStart->toDateString(), $periodEnd->toDateString());
+                $data[] = round($profit, 2);
+            }
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data
+            ]);
+        }
+        if ($period == 365) {
+            // Группировка по месяцам
+            $months = 12;
+            $start = $now->copy()->subMonths($months - 1)->startOfMonth();
+            $end = $now;
+            for ($i = 0; $i < $months; $i++) {
+                $monthStart = $start->copy()->addMonths($i);
+                $monthEnd = $monthStart->copy()->endOfMonth();
+                $label = $monthStart->format('m.Y');
+                $labels[] = $label;
+                $profit = $this->getProfitForPeriod($monthStart->toDateString(), $monthEnd->toDateString());
+                $data[] = round($profit, 2);
+            }
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data
+            ]);
+        }
+        // По умолчанию — по дням
         $firstAppointment = \App\Models\Clients\Appointment::orderBy('created_at', 'asc')->first();
         $firstDate = $firstAppointment ? \Carbon\Carbon::parse($firstAppointment->created_at) : $now;
         $daysSinceStart = $now->diffInDays($firstDate);
         $days = 0;
-        if ($period == 90) $days = 89;
-        elseif ($period == 180) $days = 179;
-        elseif ($period == 365) $days = 364;
+        if ($period == 7) $days = 6;
         $maxDays = min($days, $daysSinceStart);
         for ($i = $maxDays; $i >= 0; $i--) {
             $date = $now->copy()->subDays($i)->toDateString();
@@ -192,11 +235,9 @@ class DashboardController extends Controller
             $profit = $this->getProfitForDate($date);
             $data[] = round($profit, 2);
         }
-        $maxValue = $this->roundProfitMaxValueForChart(max($data));
         return response()->json([
             'labels' => $labels,
-            'data' => $data,
-            'maxValue' => $maxValue
+            'data' => $data
         ]);
     }
 
@@ -277,6 +318,42 @@ class DashboardController extends Controller
             foreach ($periodRange as $date) {
                 $labels[] = $date->format('d M');
                 $sales = $this->getSalesForDate($date->toDateString());
+                $data[] = round($sales, 2);
+            }
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data
+            ]);
+        }
+        if ($period == 90 || $period == 180) {
+            // Группировка по неделям
+            $weeks = $period == 90 ? 13 : 26;
+            $start = $now->copy()->subWeeks($weeks - 1)->startOfWeek();
+            $end = $now;
+            for ($i = 0; $i < $weeks; $i++) {
+                $weekStart = $start->copy()->addWeeks($i);
+                $weekEnd = $weekStart->copy()->endOfWeek();
+                $label = $weekStart->format('d.m') . ' - ' . $weekEnd->format('d.m');
+                $labels[] = $label;
+                $sales = $this->getSalesForPeriod($weekStart->toDateString(), $weekEnd->toDateString());
+                $data[] = round($sales, 2);
+            }
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data
+            ]);
+        }
+        if ($period == 365) {
+            // Группировка по месяцам
+            $months = 12;
+            $start = $now->copy()->subMonths($months - 1)->startOfMonth();
+            $end = $now;
+            for ($i = 0; $i < $months; $i++) {
+                $monthStart = $start->copy()->addMonths($i);
+                $monthEnd = $monthStart->copy()->endOfMonth();
+                $label = $monthStart->format('m.Y');
+                $labels[] = $label;
+                $sales = $this->getSalesForPeriod($monthStart->toDateString(), $monthEnd->toDateString());
                 $data[] = round($sales, 2);
             }
             return response()->json([
@@ -375,6 +452,48 @@ class DashboardController extends Controller
                 'data' => $data
             ]);
         }
+        if ($period == 90 || $period == 180) {
+            // Группировка по неделям
+            $weeks = $period == 90 ? 13 : 26;
+            $start = $now->copy()->subWeeks($weeks - 1)->startOfWeek();
+            $end = $now;
+            for ($i = 0; $i < $weeks; $i++) {
+                $weekStart = $start->copy()->addWeeks($i);
+                $weekEnd = $weekStart->copy()->endOfWeek();
+                $label = $weekStart->format('d.m') . ' - ' . $weekEnd->format('d.m');
+                $labels[] = $label;
+                $sum = \App\Models\Clients\Appointment::whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                    ->where('status', 'completed')
+                    ->where('project_id', $currentProjectId)
+                    ->sum('price');
+                $data[] = round($sum, 2);
+            }
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data
+            ]);
+        }
+        if ($period == 365) {
+            // Группировка по месяцам
+            $months = 12;
+            $start = $now->copy()->subMonths($months - 1)->startOfMonth();
+            $end = $now;
+            for ($i = 0; $i < $months; $i++) {
+                $monthStart = $start->copy()->addMonths($i);
+                $monthEnd = $monthStart->copy()->endOfMonth();
+                $label = $monthStart->format('m.Y');
+                $labels[] = $label;
+                $sum = \App\Models\Clients\Appointment::whereBetween('date', [$monthStart->toDateString(), $monthEnd->toDateString()])
+                    ->where('status', 'completed')
+                    ->where('project_id', $currentProjectId)
+                    ->sum('price');
+                $data[] = round($sum, 2);
+            }
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data
+            ]);
+        }
         $firstAppointment = \App\Models\Clients\Appointment::orderBy('date', 'asc')->first();
         $firstDate = $firstAppointment ? \Carbon\Carbon::parse($firstAppointment->date) : $now;
         $daysSinceStart = $now->diffInDays($firstDate);
@@ -441,6 +560,46 @@ class DashboardController extends Controller
                 'data' => $data
             ]);
         }
+        if ($period == 90 || $period == 180) {
+            // Группировка по неделям
+            $weeks = $period == 90 ? 13 : 26;
+            $start = $now->copy()->subWeeks($weeks - 1)->startOfWeek();
+            $end = $now;
+            for ($i = 0; $i < $weeks; $i++) {
+                $weekStart = $start->copy()->addWeeks($i);
+                $weekEnd = $weekStart->copy()->endOfWeek();
+                $label = $weekStart->format('d.m') . ' - ' . $weekEnd->format('d.m');
+                $labels[] = $label;
+                $sum = \App\Models\Clients\Expense::whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                    ->where('project_id', $currentProjectId)
+                    ->sum('amount');
+                $data[] = round($sum, 2);
+            }
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data
+            ]);
+        }
+        if ($period == 365) {
+            // Группировка по месяцам
+            $months = 12;
+            $start = $now->copy()->subMonths($months - 1)->startOfMonth();
+            $end = $now;
+            for ($i = 0; $i < $months; $i++) {
+                $monthStart = $start->copy()->addMonths($i);
+                $monthEnd = $monthStart->copy()->endOfMonth();
+                $label = $monthStart->format('m.Y');
+                $labels[] = $label;
+                $sum = \App\Models\Clients\Expense::whereBetween('date', [$monthStart->toDateString(), $monthEnd->toDateString()])
+                    ->where('project_id', $currentProjectId)
+                    ->sum('amount');
+                $data[] = round($sum, 2);
+            }
+            return response()->json([
+                'labels' => $labels,
+                'data' => $data
+            ]);
+        }
         $firstExpense = \App\Models\Clients\Expense::orderBy('date', 'asc')->first();
         $firstPurchase = \App\Models\Clients\Purchase::orderBy('date', 'asc')->first();
         $firstDate = $now;
@@ -469,11 +628,9 @@ class DashboardController extends Controller
                 ->sum('total_amount');
             $data[] = round($expenses + $purchases, 2);
         }
-        $maxValue = $this->roundExpensesMaxValueForChart(max($data));
         return response()->json([
             'labels' => $labels,
-            'data' => $data,
-            'maxValue' => $maxValue
+            'data' => $data
         ]);
     }
 
@@ -536,6 +693,74 @@ class DashboardController extends Controller
                     ->count();
                 // Записи: все записи за день (по дате услуги, а не по дате создания)
                 $appointmentsCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
+                    ->where('project_id', $currentProjectId)
+                    ->count();
+                $servicesData[] = $servicesCount;
+                $clientsData[] = $clientsCount;
+                $appointmentsData[] = $appointmentsCount;
+            }
+            return response()->json([
+                'labels' => $labels,
+                'services' => $servicesData,
+                'clients' => $clientsData,
+                'appointments' => $appointmentsData
+            ]);
+        }
+        if ($period == 90 || $period == 180) {
+            // Группировка по неделям
+            $weeks = $period == 90 ? 13 : 26;
+            $start = $now->copy()->subWeeks($weeks - 1)->startOfWeek();
+            $end = $now;
+            for ($i = 0; $i < $weeks; $i++) {
+                $weekStart = $start->copy()->addWeeks($i);
+                $weekEnd = $weekStart->copy()->endOfWeek();
+                $label = $weekStart->format('d.m') . ' - ' . $weekEnd->format('d.m');
+                $labels[] = $label;
+                // Услуги: завершённые записи за день
+                $servicesCount = \App\Models\Clients\Appointment::whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                    ->where('status', 'completed')
+                    ->where('project_id', $currentProjectId)
+                    ->count();
+                // Клиенты: новые клиенты за день
+                $clientsCount = \App\Models\Clients\Client::whereBetween('created_at', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                    ->where('project_id', $currentProjectId)
+                    ->count();
+                // Записи: все записи за день (по дате услуги, а не по дате создания)
+                $appointmentsCount = \App\Models\Clients\Appointment::whereBetween('date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                    ->where('project_id', $currentProjectId)
+                    ->count();
+                $servicesData[] = $servicesCount;
+                $clientsData[] = $clientsCount;
+                $appointmentsData[] = $appointmentsCount;
+            }
+            return response()->json([
+                'labels' => $labels,
+                'services' => $servicesData,
+                'clients' => $clientsData,
+                'appointments' => $appointmentsData
+            ]);
+        }
+        if ($period == 365) {
+            // Группировка по месяцам
+            $months = 12;
+            $start = $now->copy()->subMonths($months - 1)->startOfMonth();
+            $end = $now;
+            for ($i = 0; $i < $months; $i++) {
+                $monthStart = $start->copy()->addMonths($i);
+                $monthEnd = $monthStart->copy()->endOfMonth();
+                $label = $monthStart->format('m.Y');
+                $labels[] = $label;
+                // Услуги: завершённые записи за день
+                $servicesCount = \App\Models\Clients\Appointment::whereBetween('date', [$monthStart->toDateString(), $monthEnd->toDateString()])
+                    ->where('status', 'completed')
+                    ->where('project_id', $currentProjectId)
+                    ->count();
+                // Клиенты: новые клиенты за день
+                $clientsCount = \App\Models\Clients\Client::whereBetween('created_at', [$monthStart->toDateString(), $monthEnd->toDateString()])
+                    ->where('project_id', $currentProjectId)
+                    ->count();
+                // Записи: все записи за день (по дате услуги, а не по дате создания)
+                $appointmentsCount = \App\Models\Clients\Appointment::whereBetween('date', [$monthStart->toDateString(), $monthEnd->toDateString()])
                     ->where('project_id', $currentProjectId)
                     ->count();
                 $servicesData[] = $servicesCount;

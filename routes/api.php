@@ -18,9 +18,3 @@ use App\Http\Controllers\Client\DashboardController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-Route::get('/dashboard/profit-chart', [DashboardController::class, 'profitChartData']);
-Route::get('/dashboard/sales-chart', [DashboardController::class, 'salesChartData']);
-Route::get('/dashboard/services-chart', [DashboardController::class, 'servicesChartData']);
-Route::get('/dashboard/expenses-chart', [DashboardController::class, 'expensesChartData']);
-Route::get('/dashboard/activity-chart', [DashboardController::class, 'activityChartData']);
