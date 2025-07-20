@@ -17,7 +17,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $currentProjectId = auth()->user()->project_id;
+        $currentProjectId = $this->getCurrentProjectId();
         // Услуги: только завершённые записи
         $servicesCount = Appointment::where('project_id', $currentProjectId)->where('status', 'completed')->count();
 
@@ -205,7 +205,7 @@ class DashboardController extends Controller
      */
     private function getProfitForDate($date)
     {
-        $currentProjectId = auth()->user()->project_id;
+        $currentProjectId = $this->getCurrentProjectId();
         $productsProfit = \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date, $currentProjectId) {
             $q->whereDate('date', $date)->where('project_id', $currentProjectId);
         })
@@ -229,7 +229,7 @@ class DashboardController extends Controller
      */
     private function getProfitForPeriod($start, $end)
     {
-        $currentProjectId = auth()->user()->project_id;
+        $currentProjectId = $this->getCurrentProjectId();
         $productsProfit = \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($start, $end, $currentProjectId) {
             $q->whereBetween('date', [$start, $end])->where('project_id', $currentProjectId);
         })
@@ -310,7 +310,7 @@ class DashboardController extends Controller
      */
     private function getSalesForDate($date)
     {
-        $currentProjectId = auth()->user()->project_id;
+        $currentProjectId = $this->getCurrentProjectId();
         return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date, $currentProjectId) {
                 $q->whereDate('date', $date)->where('project_id', $currentProjectId);
             })
@@ -323,7 +323,7 @@ class DashboardController extends Controller
      */
     private function getSalesForPeriod($start, $end)
     {
-        $currentProjectId = auth()->user()->project_id;
+        $currentProjectId = $this->getCurrentProjectId();
         return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($start, $end, $currentProjectId) {
                 $q->whereBetween('date', [$start, $end])->where('project_id', $currentProjectId);
             })
@@ -336,7 +336,7 @@ class DashboardController extends Controller
      */
     public function servicesChartData(Request $request)
     {
-        $currentProjectId = auth()->user()->project_id;
+        $currentProjectId = $this->getCurrentProjectId();
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $labels = [];
@@ -404,7 +404,7 @@ class DashboardController extends Controller
      */
     public function expensesChartData(Request $request)
     {
-        $currentProjectId = auth()->user()->project_id;
+        $currentProjectId = $this->getCurrentProjectId();
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $labels = [];
@@ -482,7 +482,7 @@ class DashboardController extends Controller
      */
     public function activityChartData(Request $request)
     {
-        $currentProjectId = auth()->user()->project_id;
+        $currentProjectId = $this->getCurrentProjectId();
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $labels = [];
@@ -586,5 +586,14 @@ class DashboardController extends Controller
             'clients' => $clientsData,
             'appointments' => $appointmentsData
         ]);
+    }
+
+    private function getCurrentProjectId()
+    {
+        $user = auth()->user();
+        if (!$user) {
+            abort(401, 'Unauthorized');
+        }
+        return $user->project_id;
     }
 }

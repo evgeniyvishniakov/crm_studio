@@ -804,13 +804,13 @@ class AppointmentsController extends Controller
             }
         }
 
-        $servicePopularity = Appointment::where('project_id', $currentProjectId)
+        $servicePopularity = Appointment::where('appointments.project_id', $currentProjectId)
             ->whereBetween('date', [$startDate, $endDate])
             ->join('services', 'appointments.service_id', '=', 'services.id')
             ->select('services.name', DB::raw('count(appointments.id) as count'))
             ->groupBy('services.name')
             ->orderBy('count', 'desc')
-            ->limit(10) // Ограничим топ-10 для наглядности
+            ->limit(10)
             ->pluck('count', 'name');
 
         if ($servicePopularity->isEmpty()) {
@@ -1038,13 +1038,31 @@ class AppointmentsController extends Controller
                     break;
             }
         }
+        $groupByRaw = 'date';
+        $labelFormat = fn($d) => date('d.m', strtotime($d));
+        if (isset($period)) {
+            if ($period === 'half_year') {
+                $groupByRaw = 'YEARWEEK(date, 1)';
+                $labelFormat = function($week) {
+                    $year = substr($week, 0, 4);
+                    $w = (int)substr($week, 4);
+                    $date = \Carbon\Carbon::now()->setISODate($year, $w)->startOfWeek();
+                    return $date->format('d.m') . ' - ' . $date->copy()->endOfWeek()->format('d.m');
+                };
+            } elseif ($period === 'year') {
+                $groupByRaw = 'DATE_FORMAT(date, "%Y-%m")';
+                $labelFormat = function($month) {
+                    return \Carbon\Carbon::createFromFormat('Y-m', $month)->format('m.Y');
+                };
+            }
+        }
         $checks = Appointment::where('project_id', $currentProjectId)
             ->whereBetween('date', [$startDate, $endDate])
-            ->selectRaw('date, AVG(price) as avg_check')
-            ->groupBy('date')
-            ->orderBy('date')
+            ->selectRaw($groupByRaw.' as period_group, AVG(price) as avg_check')
+            ->groupBy('period_group')
+            ->orderBy('period_group')
             ->get();
-        $labels = $checks->pluck('date')->map(fn($d)=>date('d.m',strtotime($d)));
+        $labels = $checks->pluck('period_group')->map($labelFormat);
         $data = $checks->pluck('avg_check')->map(fn($v)=>round($v,2));
         return response()->json(['labels'=>$labels,'data'=>$data]);
     }
@@ -1159,7 +1177,7 @@ class AppointmentsController extends Controller
         }
         $services = Service::select('name')
             ->withSum(['appointments as revenue' => function($q) use ($startDate, $endDate, $currentProjectId) {
-                $q->where('project_id', $currentProjectId)->whereBetween('date', [$startDate, $endDate]);
+                $q->where('appointments.project_id', $currentProjectId)->whereBetween('date', [$startDate, $endDate]);
             }], 'price')
             ->orderByDesc('revenue')
             ->limit(10)
