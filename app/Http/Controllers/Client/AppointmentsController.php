@@ -85,10 +85,24 @@ class AppointmentsController extends Controller
                 'price' => 'nullable|numeric|min:0',
                 'notes' => 'nullable|string',
                 'status' => 'nullable|string|in:pending,completed,cancelled,rescheduled',
-                'user_id' => 'nullable|exists:admin_users,id'
+                'user_id' => 'nullable|exists:admin_users,id',
+                'duration_hours' => 'nullable|integer|min:0',
+                'duration_minutes' => 'nullable|integer|min:0|max:59',
             ]);
 
-            $appointment = Appointment::create($validated + ['project_id' => $currentProjectId]);
+            $duration = ($validated['duration_hours'] ?? 0) * 60 + ($validated['duration_minutes'] ?? 0);
+            
+            if ($duration === 0) {
+                $service = Service::find($validated['service_id']);
+                $duration = $service->duration ?? 60;
+            }
+            
+            $appointmentData = $validated + [
+                'project_id' => $currentProjectId,
+                'duration' => $duration
+            ];
+
+            $appointment = Appointment::create($appointmentData);
 
             return response()->json([
                 'success' => true,
@@ -123,7 +137,9 @@ class AppointmentsController extends Controller
                 'sales.*.quantity' => 'required|integer|min:1',
                 'sales.*.price' => 'required|numeric|min:0',
                 'sales.*.purchase_price' => 'required|numeric|min:0',
-                'user_id' => 'nullable|exists:admin_users,id'
+                'user_id' => 'nullable|exists:admin_users,id',
+                'duration_hours' => 'nullable|integer|min:0',
+                'duration_minutes' => 'nullable|integer|min:0|max:59',
             ]);
 
             DB::beginTransaction();
@@ -132,6 +148,12 @@ class AppointmentsController extends Controller
                 $appointment = Appointment::with(['sales.items'])->findOrFail($id);
                 $oldClientId = $appointment->client_id;
                 
+                $duration = ($validated['duration_hours'] ?? 0) * 60 + ($validated['duration_minutes'] ?? 0);
+                if ($duration === 0) {
+                    $service = Service::find($validated['service_id']);
+                    $duration = $service->duration ?? 60;
+                }
+
                 $appointment->update([
                     'date' => $validated['date'],
                     'time' => $validated['time'],
@@ -139,7 +161,8 @@ class AppointmentsController extends Controller
                     'service_id' => $validated['service_id'],
                     'price' => $validated['price'],
                     'status' => $validated['status'] ?? $appointment->status,
-                    'user_id' => $validated['user_id'] ?? null
+                    'user_id' => $validated['user_id'] ?? null,
+                    'duration' => $duration,
                 ]);
 
                 // Если клиент изменился, обновляем client_id во всех связанных продажах
@@ -274,9 +297,18 @@ class AppointmentsController extends Controller
             return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
         }
         try {
+            $appointmentData = $appointment->load(['client', 'service', 'user']);
+            
+            // Определяем длительность: сначала из записи, если нет - из услуги
+            $duration = $appointment->duration ?? $appointment->service->duration ?? 0;
+
+            // Добавляем вычисление часов и минут для формы
+            $appointmentData->duration_hours = floor($duration / 60);
+            $appointmentData->duration_minutes = $duration % 60;
+
             return response()->json([
                 'success' => true,
-                'appointment' => $appointment->load(['client', 'service', 'user']),
+                'appointment' => $appointmentData,
                 'clients' => Client::where('project_id', $currentProjectId)->get(),
                 'services' => Service::where('project_id', $currentProjectId)->get(),
                 'users' => User::where('project_id', $currentProjectId)->get()
@@ -567,7 +599,8 @@ class AppointmentsController extends Controller
                     // Правильное форматирование даты и времени
                     $date = Carbon::parse($appointment->date)->format('Y-m-d');
                     $startDateTime = Carbon::parse($date . ' ' . $appointment->time);
-                    $endDateTime = $startDateTime->copy()->addMinutes($appointment->service->duration ?? 60);
+                    $duration = $appointment->duration ?? $appointment->service->duration ?? 60;
+                    $endDateTime = $startDateTime->copy()->addMinutes($duration);
 
                     $event = [
                         'id' => $appointment->id,
@@ -582,7 +615,8 @@ class AppointmentsController extends Controller
                             'price' => $appointment->price,
                             'notes' => $appointment->notes,
                             'status' => $appointment->status,
-                            'time' => $appointment->time
+                            'time' => $appointment->time,
+                            'duration' => $duration
                         ]
                     ];
 

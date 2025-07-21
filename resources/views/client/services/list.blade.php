@@ -377,9 +377,18 @@
             fetch(`/services/${serviceId}/edit`)
                 .then(response => response.json())
                 .then(service => {
-                    document.getElementById('editServiceId').value = service.id;
-                    document.getElementById('editServiceName').value = service.name;
-                    document.getElementById('editServicePrice').value = service.price || '';
+                    const form = document.getElementById('editServiceForm');
+                    form.querySelector('#editServiceId').value = service.id;
+                    form.querySelector('#editServiceName').value = service.name;
+                    form.querySelector('#editServicePrice').value = service.price || '';
+
+                    // Вычисляем и устанавливаем длительность
+                    const duration = service.duration || 0;
+                    const hours = Math.floor(duration / 60);
+                    const minutes = duration % 60;
+                    form.querySelector('[name="duration_hours"]').value = hours;
+                    form.querySelector('[name="duration_minutes"]').value = minutes;
+
 
                     document.getElementById('editServiceModal').style.display = 'block';
                 })

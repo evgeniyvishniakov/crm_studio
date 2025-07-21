@@ -20,6 +20,7 @@ class Appointment extends Model
         'date',
         'time',
         'price',
+        'duration',
         'notes',
         'status',
         'project_id',

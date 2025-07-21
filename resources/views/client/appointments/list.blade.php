@@ -1160,16 +1160,15 @@
                     const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
                                     'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
                     const date = calendar.getDate();
-                    const view = calendar.view.type;
+                    const view = calendar.view;
                     let title = '';
 
-                    if (view === 'timeGridDay') {
+                    if (view.type === 'timeGridDay') {
                         // Для дневного вида показываем дату в формате "1 января 2024"
                         title = `${date.getDate()} ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
-                    } else if (view === 'timeGridWeek') {
-                        // Для недельного вида показываем номер недели
-                        const weekNumber = Math.ceil((date.getDate() + new Date(date.getFullYear(), date.getMonth(), 1).getDay()) / 7);
-                        title = `${weekNumber}-я неделя ${monthNames[date.getMonth()].toLowerCase()} ${date.getFullYear()}`;
+                    } else if (view.type === 'timeGridWeek') {
+                        // Для недельного вида используем стандартный заголовок с диапазоном дат
+                        title = view.title;
                     } else {
                         // Для месячного вида оставляем как есть
                         title = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
@@ -1180,26 +1179,12 @@
 
                 // Обработчики кнопок навигации
                 document.querySelector('.calendar-prev-button').addEventListener('click', function() {
-                    const view = calendar.view.type;
-                    if (view === 'timeGridDay') {
-                        calendar.prev();
-                    } else if (view === 'timeGridWeek') {
-                        calendar.prev();
-                    } else {
-                        calendar.prev();
-                    }
+                    calendar.prev();
                     updateTitle();
                 });
 
                 document.querySelector('.calendar-next-button').addEventListener('click', function() {
-                    const view = calendar.view.type;
-                    if (view === 'timeGridDay') {
-                        calendar.next();
-                    } else if (view === 'timeGridWeek') {
-                        calendar.next();
-                    } else {
-                        calendar.next();
-                    }
+                    calendar.next();
                     updateTitle();
                 });
 
@@ -1286,7 +1271,9 @@
                             <select name="service_id" class="form-control" required>
                                 <option value="">Выберите услугу</option>
                                 @foreach($services as $service)
-                                <option value="{{ $service->id }}" data-price="{{ $service->price }}">
+                                <option value="{{ $service->id }}" 
+                                        data-price="{{ $service->price }}"
+                                        data-duration="{{ $service->duration }}">
                                     {{ $service->name }}
                                 </option>
                                 @endforeach
@@ -1303,6 +1290,15 @@
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Длительность</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="number" name="duration_hours" min="0" value="0" style="width: 60px;" class="form-control">
+                                <span style="margin-right: 10px;">час.</span>
+                                <input type="number" name="duration_minutes" min="0" max="59" value="0" style="width: 60px;" class="form-control">
+                                <span>мин.</span>
+                            </div>
                         </div>
                     </div>
 
@@ -2339,7 +2335,7 @@
                 const data = await response.json();
                 if (data.success) {
                     renderEditAppointmentForm(data.appointment);
-                    allUsers = data.users;
+                    allUsers = data.users; // Убедитесь, что allUsers обновляется
                 } else {
                     throw new Error(data.message || 'Ошибка при загрузке записи');
                 }
@@ -2404,6 +2400,7 @@
                                 ${allServices.map(service => `
                                     <option value="${service.id}"
                                             data-price="${service.price}"
+                                            data-duration="${service.duration}"
                                             ${service.id == appointment.service_id ? 'selected' : ''}>
                                         ${escapeHtml(service.name)}
                                     </option>
@@ -2424,6 +2421,17 @@
                                 `).join('')}
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label>Длительность</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="number" name="duration_hours" min="0" value="${appointment.duration_hours || 0}" style="width: 60px;" class="form-control">
+                                <span style="margin-right: 10px;">час.</span>
+                                <input type="number" name="duration_minutes" min="0" max="59" value="${appointment.duration_minutes || 0}" style="width: 60px;" class="form-control">
+                                <span>мин.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-group">
                             <label>Стоимость (Грн)</label>
                             <input type="number" step="0.01" name="price" value="${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)}" class="form-control" min="0">
@@ -2452,13 +2460,10 @@
             `;
 
             // Обработчик изменения выбора процедуры
-            document.querySelector('#editAppointmentModal [name="service_id"]')?.addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
-                const priceInput = document.querySelector('#editAppointmentModal [name="price"]');
-                if (selectedOption?.dataset.price) {
-                    priceInput.value = selectedOption.dataset.price;
-                }
-            });
+            const editServiceSelect = document.querySelector('#editAppointmentForm [name="service_id"]');
+            if(editServiceSelect) {
+                editServiceSelect.addEventListener('change', () => handleServiceChange(editServiceSelect));
+            }
 
             // Обработчик формы редактирования
             document.getElementById('editAppointmentForm')?.addEventListener('submit', async function(e) {
@@ -3363,6 +3368,38 @@
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
         }
+
+        // Функция для обработки изменения услуги
+        function handleServiceChange(selectElement) {
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const form = selectElement.closest('form');
+            
+            if (selectedOption) {
+                const price = selectedOption.dataset.price;
+                const duration = parseInt(selectedOption.dataset.duration || 0);
+                
+                const priceInput = form.querySelector('[name="price"]');
+                if (priceInput) {
+                    priceInput.value = price || '';
+                }
+                
+                const hoursInput = form.querySelector('[name="duration_hours"]');
+                const minutesInput = form.querySelector('[name="duration_minutes"]');
+                
+                if (hoursInput && minutesInput) {
+                    hoursInput.value = Math.floor(duration / 60);
+                    minutesInput.value = duration % 60;
+                }
+            }
+        }
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            // Привязываем обработчик к модальному окну добавления
+            const addServiceSelect = document.querySelector('#appointmentForm [name="service_id"]');
+            if(addServiceSelect) {
+                addServiceSelect.addEventListener('change', () => handleServiceChange(addServiceSelect));
+            }
+        });
     </script>
 </div>
 @endsection

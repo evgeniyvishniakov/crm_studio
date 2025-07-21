@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('support_ticket_messages', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('appointments', function (Blueprint $table) {
+            $table->integer('duration')->nullable()->after('price')->comment('Длительность процедуры в минутах');
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('support_ticket_messages');
+        Schema::table('appointments', function (Blueprint $table) {
+            $table->dropColumn('duration');
+        });
     }
 };
