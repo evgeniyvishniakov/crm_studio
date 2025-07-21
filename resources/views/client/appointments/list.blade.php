@@ -4,6 +4,47 @@
 <div class="dashboard-container">
     <style>
 
+        /* События FullCalendar в режиме День — всё в одну строку */
+#calendar .fc-timegrid-event .fc-event-main {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    gap: 0.5em;
+    font-size: 1.08em !important;
+    padding: 0 2px;
+}
+/* Пересекающиеся события: визуально одно над другим, усиленная тень, без уменьшения ширины */
+#calendar .fc-timegrid-event {
+    box-shadow: 0 6px 24px rgba(60, 72, 88, 0.5), 0 1.5px 4px rgba(60, 72, 88, 0.10);
+    border-radius: 10px !important;
+
+    z-index: 2;
+}
+#calendar .fc-timegrid-event.fc-event-end {
+    margin-right: 0 !important;
+}
+#calendar .fc-timegrid-event .fc-event-time {
+    font-weight: 700;
+    margin-right: 0.5em;
+    color: #fff !important;
+    flex-shrink: 0;
+}
+#calendar .fc-timegrid-event .fc-event-title {
+    color: #fff !important;
+    font-weight: 500;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* Новое требование: .fc-v-event .fc-event-main-frame в одну строку, выравнивание по низу */
+#calendar .fc-v-event .fc-event-main-frame {
+    flex-direction: row !important;
+    height: auto !important;
+    align-items: end !important;
+}
+
         .status-badge {
             padding: 6px 12px;
             border-radius: 4px;
@@ -77,260 +118,206 @@
         /* Стили для календаря */
         .calendar-wrapper {
             background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(60, 72, 88, 0.10), 0 1.5px 4px rgba(60, 72, 88, 0.06);
+            padding: 32px 24px 24px 24px;
+            margin-bottom: 32px;
+            transition: box-shadow 0.3s;
         }
     
         .calendar-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
-        }
-    
-        .calendar-view-switcher {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .fc-daygrid-day{
-            cursor: pointer;
-        }
-        .view-switch-btn {
-            display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #64748b;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-    
-        .view-switch-btn:hover {
-            border-color: #3b82f6;
-            color: #3b82f6;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-        }
-    
-        .view-switch-btn.active {
-            background: linear-gradient(135deg, #3b82f6, #60a5fa);
-            border-color: #3b82f6;
-            color: white;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-    
-        .today-button {
-            background: #28a745;
-            color: white !important;
-            border: none !important;
-        }
-    
-        .today-button:hover {
-            background: #218838;
-            color: white !important;
-            border: none !important;
+            margin-bottom: 24px;
         }
     
         .calendar-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2c3e50;
-            padding: 8px 16px;
-            background: #fff;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-            display: inline-block;
-        }
-    
-        .calendar-nav {
-    
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #22223b;
+            display: flex;
+            align-items: center;
             gap: 10px;
+            background: none;
+            border: none;
+            padding: 0;
         }
-    
+        .calendar-title:before {
+            content: "";
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background: url('data:image/svg+xml;utf8,<svg fill="%232563eb" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="16" rx="4"/><rect x="7" y="2" width="2" height="6" rx="1"/><rect x="15" y="2" width="2" height="6" rx="1"/></svg>') no-repeat center/contain;
+            margin-right: 8px;
+        }
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
         .calendar-nav-btn {
-            background: #f8f9fa;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #2563eb;
+            box-shadow: 0 1px 4px rgba(60, 72, 88, 0.08);
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .calendar-nav-btn:hover {
+            background: #e0e7ff;
+            color: #1d4ed8;
+            box-shadow: 0 2px 8px rgba(60, 72, 88, 0.12);
+        }
+        .calendar-view-switcher {
+            display: flex;
+            gap: 12px;
+        }
+        .view-switch-btn {
+            border-radius: 8px;
+            border: 1.5px solid #e5e7eb;
+            background: #fff;
+            color: #2563eb;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 8px 20px;
+            box-shadow: 0 1px 4px rgba(60, 72, 88, 0.06);
+            transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
+        }
+        .view-switch-btn.active, .view-switch-btn.today-button {
+            background: linear-gradient(135deg, #2563eb 60%, #60a5fa 100%);
+            color: #fff !important;
+            border-color: #2563eb;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+        }
+        .view-switch-btn:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #f0f7ff;
+        }
+        .fc {
+            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+            font-size: 1rem;
+        }
+        .fc-daygrid-day {
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.15s;
+        }
+        .fc-daygrid-day:hover {
+            background: #f3f4f6;
+        }
+        .fc-day-today {
+            background: #e0e7ff !important;
+            border-radius: 10px;
+        }
+        .fc-daygrid-event {
+            background: linear-gradient(90deg, #2563eb 60%, #60a5fa 100%);
+            color: #fff;
             border: none;
             border-radius: 8px;
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #2c3e50;
+            padding: 4px 10px;
+            font-size: 0.98em;
+            font-weight: 500;
+            margin-bottom: 2px;
+            box-shadow: 0 1px 4px rgba(60, 72, 88, 0.10);
+            transition: box-shadow 0.2s;
         }
-    
-        .calendar-nav-btn:hover {
-            background: #e9ecef;
+        .fc-daygrid-event:hover {
+            box-shadow: 0 4px 16px rgba(60, 72, 88, 0.18);
         }
-    
-        /* Стили для FullCalendar */
-        #calendar {
-            margin-top: 20px;
-        }
-    
-        .fc-toolbar {
-            display: none !important;
-        }
-    
-        .fc-event {
-            border: none !important;
-            padding: 2px 4px !important;
-            margin: 1px 0 !important;
-            cursor: pointer;
-            border-radius: 4px !important;
-            position: relative;
-        }
-    
-        .fc-time-grid-event {
-            border-radius: 4px;
-            margin: 1px 0;
-        }
-    
-        .fc-time {
-            font-weight: bold !important;
-        }
-    
-        .fc-title {
-            font-size: 0.9em !important;
+        .fc-event-main {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-    
-        .fc-day-header {
-            font-weight: 600 !important;
-            padding: 8px 0 !important;
-        }
-    
-        .fc-day-number {
-            padding: 8px !important;
-            font-weight: 600 !important;
-        }
-    
-        .fc-today {
-            background-color: #e3f2fd !important;
-        }
-    
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-        }
-    
-        .calendar-weekday {
-            text-align: center;
-            font-weight: 600;
-            color: #6c757d;
-            padding: 10px;
-            font-size: 0.9rem;
-        }
-    
-        .calendar-day {
-            aspect-ratio: 1;
-            border-radius: 8px;
-            background: #f8f9fa;
-            padding: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-    
-        .calendar-day:hover {
-            background: #e9ecef;
-        }
-    
-        .calendar-day.today {
-            background: #e3f2fd;
-            border: 2px solid #2196f3;
-        }
-    
-        .calendar-day.selected {
-            background: #bbdefb;
-        }
-    
-        .calendar-day.has-events {
+        .appointment-tooltip {
+            position: fixed;
             background: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: 0 8px 32px rgba(60, 72, 88, 0.18);
+            z-index: 1000;
+            display: none;
+            width: 270px;
+            font-size: 1rem;
+            color: #22223b;
+            animation: fadeInTooltip 0.18s ease;
         }
-    
-        .calendar-day.has-events::after {
-            content: '';
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #2196f3;
+        @keyframes fadeInTooltip {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-    
-        .calendar-day.other-month {
-            opacity: 0.5;
+        .appointment-tooltip-content p {
+            margin: 0 0 6px 0;
+            font-size: 1rem;
         }
-    
-        .calendar-day-number {
+        .appointment-tooltip-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .tooltip-btn {
+            border-radius: 6px;
+            font-size: 0.98rem;
+            padding: 6px 14px;
+            font-weight: 500;
+            box-shadow: 0 1px 4px rgba(60, 72, 88, 0.08);
+            transition: background 0.2s, color 0.2s;
+        }
+        .fc-scrollgrid, .fc-scrollgrid-section {
+            border: none !important;
+        }
+        .fc-col-header-cell {
+            background: none;
+            font-weight: 700;
+            color: #64748b;
+            font-size: 1.05rem;
+            border-bottom: 1.5px solid #e5e7eb !important;
+            padding: 10px 0;
+        }
+        .fc-daygrid-day-number {
             font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 4px;
+            color: #22223b;
+            font-size: 1.08rem;
+            margin-bottom: 2px;
         }
-    
-        .calendar-day-events {
-            font-size: 0.8rem;
-            color: #6c757d;
+        .fc-day-other {
+            opacity: 0.45;
         }
-    
-        .calendar-legend {
-            display: flex;
-            gap: 20px;
-            margin-top: 20px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-    
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-    
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-    
-        /* Адаптивность для мобильных устройств */
-        @media (max-width: 768px) {
+        /* Мобильная адаптация */
+        @media (max-width: 900px) {
             .calendar-wrapper {
-                padding: 10px;
+                padding: 10px 2px 10px 2px;
             }
-    
             .calendar-title {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
-    
-            .calendar-weekday {
-                font-size: 0.8rem;
-                padding: 5px;
+            .calendar-header {
+                flex-direction: column;
+                gap: 10px;
             }
-    
-            .calendar-day {
-                padding: 4px;
+        }
+        @media (max-width: 600px) {
+            .calendar-title {
+                font-size: 1rem;
             }
-    
-            .calendar-day-number {
-                font-size: 0.9rem;
+            .calendar-nav-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+            .view-switch-btn {
+                font-size: 0.95rem;
+                padding: 6px 10px;
             }
         }
     
@@ -986,9 +973,14 @@
                     hour12: false
                 },
                 slotMinTime: '08:00:00',
-                slotMaxTime: '20:00:00',
+                slotMaxTime: '21:00:00',
                 allDaySlot: false,
                 slotDuration: '00:30:00',
+                slotLabelFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                },
 
                 // Обработчик наведения на событие
                 eventMouseEnter: function(info) {
@@ -1082,6 +1074,7 @@
                         // Перетаскивание события (записи)
                         const appointmentId = info.event.id;
                         const newDate = info.event.startStr.slice(0, 10);
+                        const newTime = info.event.startStr.slice(11, 16); // HH:mm
                         fetch(`/appointments/${appointmentId}/move`, {
                             method: 'POST',
                             headers: {
@@ -1089,12 +1082,12 @@
                                 'Accept': 'application/json',
                                 'Content-Type': 'application/json'
                             },
-                            body: JSON.stringify({ date: newDate })
+                            body: JSON.stringify({ date: newDate, time: newTime })
                         })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                window.showNotification('success', 'Дата записи и продаж успешно обновлена');
+                                window.showNotification('success', 'Дата и время записи и продаж успешно обновлены');
                                 calendar.refetchEvents();
                             } else {
                                 window.showNotification('error', data.message || 'Ошибка при переносе записи');

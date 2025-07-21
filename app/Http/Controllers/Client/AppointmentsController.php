@@ -1316,19 +1316,23 @@ class AppointmentsController extends Controller
         $currentProjectId = auth()->user()->project_id;
         $request->validate([
             'date' => 'required|date',
+            'time' => 'required',
         ]);
         if ($appointment->project_id !== $currentProjectId) {
             return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
         }
         try {
             DB::beginTransaction();
-            $appointment->update(['date' => $request->date]);
+            $appointment->update([
+                'date' => $request->date,
+                'time' => $request->time
+            ]);
             // Обновить дату во всех связанных продажах
             foreach ($appointment->sales as $sale) {
                 $sale->update(['date' => $request->date]);
             }
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Дата записи и продаж успешно обновлена']);
+            return response()->json(['success' => true, 'message' => 'Дата и время записи и продаж успешно обновлены']);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Ошибка при переносе: ' . $e->getMessage()], 500);
