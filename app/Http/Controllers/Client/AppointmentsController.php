@@ -56,7 +56,12 @@ class AppointmentsController extends Controller
                 ];
             });
 
-        $users = User::where('project_id', $currentProjectId)->get();
+        $users = User::select('id', 'name', 'role', 'project_id')
+            ->where('project_id', $currentProjectId)
+            ->get();
+
+        // Отладочная информация
+        \Log::info('Users for project ' . $currentProjectId . ':', $users->toArray());
 
         return view('client.appointments.list', compact(
             'appointments',

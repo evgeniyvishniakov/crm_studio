@@ -1114,10 +1114,27 @@
 
                 // Функция создания записи при клике на дату
                 function createAppointment(dateStr) {
+                    const modal = document.getElementById('appointmentModal');
+                    const form = document.getElementById('appointmentForm');
+
+                    // Сбрасываем форму и очищаем ошибки
+                    form.reset();
+                    clearErrors('appointmentForm');
+                    
                     // Устанавливаем выбранную дату в поле формы
-                    document.querySelector('#appointmentModal input[name="date"]').value = dateStr;
+                    form.querySelector('input[name="date"]').value = dateStr;
+                    
+                    // Автоматически выбираем админа текущего проекта
+                    const userSelect = form.querySelector('select[name="user_id"]');
+                    if (userSelect) {
+                        const adminUser = allUsers.find(u => u.role === 'admin' && u.project_id == currentProjectId);
+                        if (adminUser) {
+                            userSelect.value = adminUser.id;
+                        }
+                    }
+
                     // Открываем модальное окно
-                    toggleModal('appointmentModal');
+                    toggleModal('appointmentModal', true);
                 }
 
                 // Функция обновления заголовка
@@ -1347,6 +1364,7 @@
         let allServices = @json($services);
         let currentAppointmentId = null;
         let allUsers = @json($users);
+        let currentProjectId = {{ auth()->user()->project_id }};
         let allProducts = @json($products);
         let temporaryProducts = [];
         let isDeletingAppointment = false;
@@ -2525,9 +2543,28 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Обработчики кнопок
             document.getElementById('addAppointmentBtn')?.addEventListener('click', () => {
+                const modal = document.getElementById('appointmentModal');
+                const form = modal.querySelector('#appointmentForm');
+                
+                // Сбрасываем форму и очищаем ошибки
+                form.reset();
+                clearErrors('appointmentForm');
+
+                // Устанавливаем сегодняшнюю дату
                 const today = new Date().toISOString().split('T')[0];
-                document.querySelector('#appointmentModal input[name="date"]').value = today;
-                toggleModal('appointmentModal');
+                form.querySelector('input[name="date"]').value = today;
+
+                // Автоматически выбираем админа текущего проекта
+                const userSelect = form.querySelector('select[name="user_id"]');
+                if (userSelect) {
+                    const adminUser = allUsers.find(u => u.role === 'admin' && u.project_id == currentProjectId);
+                    if (adminUser) {
+                        userSelect.value = adminUser.id;
+                    }
+                }
+                
+                // Открываем модальное окно
+                toggleModal('appointmentModal', true);
             });
 
             // Единый обработчик для кнопки отмены
@@ -3277,7 +3314,28 @@
             }, 3000);
         };
 
-       
+        // Функция для открытия модального окна добавления записи
+        function openAddAppointmentModal() {
+            const modal = document.getElementById('addAppointmentModal');
+            const modalBody = modal.querySelector('.modal-body');
+            
+            // Очищаем форму
+            const form = modalBody.querySelector('form');
+            form.reset();
+            
+            // Автоматически выбираем админа текущего проекта
+            const userSelect = form.querySelector('select[name="user_id"]');
+            if (userSelect) {
+                // Находим пользователя с ролью admin из текущего проекта
+                const adminUser = allUsers.find(u => u.role === 'admin' && u.project_id === currentProjectId);
+                if (adminUser) {
+                    userSelect.value = adminUser.id.toString();
+                }
+            }
+            
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
     </script>
 </div>
 @endsection
