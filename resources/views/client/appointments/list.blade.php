@@ -173,13 +173,7 @@
             width: 1.25rem;
             height: 1.25rem;
         }
-        #calendar .fc-timegrid-event,
-#calendar .fc-timegrid-event *,
-#calendar .fc-timegrid-event .fc-event-main,
-#calendar .fc-timegrid-event .fc-event-title,
-#calendar .fc-timegrid-event .fc-event-time {
-    color: #fff 
-}
+        
     
         /* Стили для календаря */
         .calendar-wrapper {
@@ -193,7 +187,7 @@
         .calendar-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: start;
             margin-bottom: 24px;
         }
    
@@ -245,26 +239,30 @@
             gap: 12px;
         }
         .view-switch-btn {
-            border-radius: 8px;
-            border: 1.5px solid #e5e7eb;
-            background: #fff;
-            color: #2563eb;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            font-size: 0.9rem;
             font-weight: 600;
-            font-size: 1rem;
-            padding: 8px 20px;
-            box-shadow: 0 1px 4px rgba(60, 72, 88, 0.06);
-            transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
-        }
-        .view-switch-btn.active, .view-switch-btn.today-button {
-            background: linear-gradient(135deg, #2563eb 60%, #60a5fa 100%);
-            color: #fff !important;
-            border-color: #2563eb;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
         .view-switch-btn:hover {
-            border-color: #2563eb;
-            color: #2563eb;
-            background: #f0f7ff;
+            
+            border-color: #3b82f6;
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+        .view-switch-btn.active {
+                background: linear-gradient(135deg, #3b82f6, #60a5fa);
+                border: 2px solid #3b82f6;
         }
         .fc {
             font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
@@ -537,9 +535,9 @@
         }
     
         .view-switch-btn.active {
-            background: #2196f3;
+            
             color: #fff;
-            border-color: #2196f3;
+            
         }
     
         .today-button {
@@ -548,10 +546,7 @@
             border-color: #28a745;
         }
     
-        .today-button:hover {
-            background: #218838;
-            color: white !important;
-        }
+        
     
         /* Стили для календаря */
         #calendar {
