@@ -3,7 +3,47 @@
 @section('content')
 <div class="dashboard-container">
     <style>
+/* Цвет текста событий в Неделя и День — белый */
+#calendar .fc-timegrid-event .fc-event-main,
+#calendar .fc-timegrid-event .fc-event-title,
+#calendar .fc-timegrid-event .fc-event-time {
+    color: #fff !important;
+}
 
+/* Возвращаем кружочки-статусы для dayGridMonth */
+#calendar .fc-daygrid-event-dot {
+    width: 8px !important;
+    height: 8px !important;
+    min-width: 8px !important;
+    min-height: 8px !important;
+    max-width: 8px !important;
+    max-height: 8px !important;
+    border-radius: 50% !important;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 2px 0 0;
+    background: #fff !important;
+    border-width: 2px !important;
+    border-style: solid !important;
+    box-sizing: border-box !important;
+    pointer-events: none;
+}
+#calendar .fc-daygrid-event.status-completed .fc-daygrid-event-dot {
+    border-color: #10b981 !important;
+    background: #10b981 !important;
+}
+#calendar .fc-daygrid-event.status-pending .fc-daygrid-event-dot {
+    border-color: #f59e0b !important;
+    background: #f59e0b !important;
+}
+#calendar .fc-daygrid-event.status-cancelled .fc-daygrid-event-dot {
+    border-color: #ef4444 !important;
+    background: #ef4444 !important;
+}
+#calendar .fc-daygrid-event.status-rescheduled .fc-daygrid-event-dot {
+    border-color: #3b82f6 !important;
+    background: #3b82f6 !important;
+}
         /* События FullCalendar в режиме День — всё в одну строку */
 #calendar .fc-timegrid-event .fc-event-main {
     display: flex;
@@ -956,6 +996,17 @@
                 height: 'auto',
                 selectable: true,
                 editable: true,
+                eventContent: function(info) {
+                    const viewType = info.view.type;
+                    if (viewType === 'timeGridDay' && info.event.extendedProps.title_day) {
+                        return { html: `<div style='color:white!important'>${info.event.extendedProps.title_day}</div>` };
+                    }
+                    if (viewType === 'timeGridWeek' && info.event.extendedProps.title_week) {
+                        return { html: `<div style='color:white!important'>${info.event.extendedProps.title_week}</div>` };
+                    }
+                    // Для dayGridMonth возвращаем true — стандартный рендеринг с кружочками
+                    return true;
+                },
                 events: function(info, successCallback, failureCallback) {
                     fetch('/appointments/calendar-events')
                         .then(response => response.json())

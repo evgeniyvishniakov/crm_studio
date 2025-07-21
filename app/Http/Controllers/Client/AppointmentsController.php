@@ -604,7 +604,7 @@ class AppointmentsController extends Controller
 
                     $event = [
                         'id' => $appointment->id,
-                        'title' => $appointment->client->name . ' - ' . $appointment->service->name,
+                        'title' => $startDateTime->format('H:i') . ' ' . $appointment->client->name,
                         'start' => $startDateTime->format('Y-m-d\TH:i:s'),
                         'end' => $endDateTime->format('Y-m-d\TH:i:s'),
                         'date' => $date,
@@ -616,7 +616,9 @@ class AppointmentsController extends Controller
                             'notes' => $appointment->notes,
                             'status' => $appointment->status,
                             'time' => $appointment->time,
-                            'duration' => $duration
+                            'duration' => $duration,
+                            'title_week' => $startDateTime->format('H:i') . ' ' . $appointment->client->name,
+                            'title_day' => $startDateTime->format('H:i') . ' - ' . $endDateTime->format('H:i') . ' ' . $appointment->client->name
                         ]
                     ];
 
