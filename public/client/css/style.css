@@ -3136,13 +3136,13 @@ footer.site-footer {
 }
 
 /* Убираем заливку и цвет текста у событий FullCalendar */
-.fc-event, .fc-daygrid-event {
+/*.fc-event, .fc-daygrid-event {
     background: transparent !important;
     color: inherit !important;
     border: none !important;
     box-shadow: none !important;
 }
-
+*/
 /* Применяем шрифт Inter ко всем элементам FullCalendar */
 .fc, .fc * {
     font-family: 'Inter', Arial, sans-serif !important;
