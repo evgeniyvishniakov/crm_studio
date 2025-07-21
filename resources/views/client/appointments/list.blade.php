@@ -98,6 +98,20 @@
             background: linear-gradient(135deg, #eba70e 60%, #f3c138 100%);
             color: #fff;
         }
+        #calendar .fc-timegrid-event .event-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(60,72,88,0.10);
+}
+#calendar .fc-timegrid-event .event-dot.status-completed { background: #10b981; }
+#calendar .fc-timegrid-event .event-dot.status-pending { background: #f59e0b; }
+#calendar .fc-timegrid-event .event-dot.status-cancelled { background: #ef4444; }
+#calendar .fc-timegrid-event .event-dot.status-rescheduled { background: #3b82f6; }
     
         .status-completed {
             background: linear-gradient(135deg, #4CAF50 60%, #56bb93 100%);
@@ -119,6 +133,12 @@
             border-collapse: collapse;
             margin-bottom: 1rem;
         }
+        #calendar .fc-timegrid-event .event-chip.status-completed,
+#calendar .fc-timegrid-event .event-chip.status-pending,
+#calendar .fc-timegrid-event .event-chip.status-cancelled,
+#calendar .fc-timegrid-event .event-chip.status-rescheduled {
+    background: transparent !important;
+}
     
         .products-table th,
         .products-table td {
@@ -999,21 +1019,20 @@
                 eventContent: function(info) {
                     const viewType = info.view.type;
                     if (viewType === 'timeGridWeek' && info.event.extendedProps.title_week) {
-                        let bg = '#10b981'; // completed
-                        if (info.event.classNames.includes('status-pending')) bg = '#f59e0b';
-                        if (info.event.classNames.includes('status-cancelled')) bg = '#ef4444';
-                        if (info.event.classNames.includes('status-rescheduled')) bg = '#3b82f6';
+                        // Разделяем время и имя
+                        const parts = info.event.extendedProps.title_week.split(' ');
+                        const time = parts.shift();
+                        const name = parts.join(' ');
+                        // Определяем статус
+                        let status = 'completed';
+                        if (info.event.classNames.includes('status-pending')) status = 'pending';
+                        if (info.event.classNames.includes('status-cancelled')) status = 'cancelled';
+                        if (info.event.classNames.includes('status-rescheduled')) status = 'rescheduled';
                         return {
-                            html: `<span style="
-                                background: ${bg};
-                                color: #fff;
-                                padding: 4px 16px;
-                                border-radius: 16px;
-                                font-weight: 600;
-                                font-size: 1.05em;
-                                display: inline-block;
-                                box-shadow: 0 2px 8px rgba(60,72,88,0.10);">
-                                ${info.event.extendedProps.title_week}
+                            html: `<span class="event-chip status-${status}">
+                                <span class="event-dot status-${status}"></span>
+                                <span class="event-time">${time}</span>
+                                <span class="event-title">${name}</span>
                             </span>`
                         };
                     }
@@ -1052,6 +1071,7 @@
                     minute: '2-digit',
                     hour12: false
                 },
+                slotEventOverlap: false,
 
                 // Обработчик наведения на событие
                 eventMouseEnter: function(info) {
