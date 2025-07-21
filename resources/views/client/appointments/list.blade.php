@@ -173,7 +173,13 @@
             width: 1.25rem;
             height: 1.25rem;
         }
-    
+        #calendar .fc-timegrid-event,
+#calendar .fc-timegrid-event *,
+#calendar .fc-timegrid-event .fc-event-main,
+#calendar .fc-timegrid-event .fc-event-title,
+#calendar .fc-timegrid-event .fc-event-time {
+    color: #fff 
+}
     
         /* Стили для календаря */
         .calendar-wrapper {
@@ -184,14 +190,13 @@
             margin-bottom: 32px;
             transition: box-shadow 0.3s;
         }
-    
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
         }
-    
+   
         .calendar-title {
             font-size: 1.5rem;
             font-weight: 700;
@@ -277,17 +282,16 @@
             background: #e0e7ff !important;
             border-radius: 10px;
         }
-        .fc-daygrid-event {
-            background: linear-gradient(90deg, #2563eb 60%, #60a5fa 100%);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 4px 10px;
-            font-size: 0.98em;
-            font-weight: 500;
-            margin-bottom: 2px;
-            box-shadow: 0 1px 4px rgba(60, 72, 88, 0.10);
-            transition: box-shadow 0.2s;
+        #calendar .fc-daygrid-event {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+        #calendar .fc-daygrid-event.status-completed,
+        #calendar .fc-daygrid-event.status-pending,
+        #calendar .fc-daygrid-event.status-cancelled,
+        #calendar .fc-daygrid-event.status-rescheduled {
+            background: transparent !important;
         }
         .fc-daygrid-event:hover {
             box-shadow: 0 4px 16px rgba(60, 72, 88, 0.18);
@@ -1018,25 +1022,23 @@
                 editable: true,
                 eventContent: function(info) {
                     const viewType = info.view.type;
+                    if (viewType === 'timeGridDay' && info.event.extendedProps.title_day) {
+                        return {
+                            html: `<span style=\"color:#fff; font-weight:600; font-size:1.08em;\">${info.event.extendedProps.title_day}</span>`
+                        };
+                    }
                     if (viewType === 'timeGridWeek' && info.event.extendedProps.title_week) {
-                        // Разделяем время и имя
                         const parts = info.event.extendedProps.title_week.split(' ');
                         const time = parts.shift();
                         const name = parts.join(' ');
-                        // Определяем статус
                         let status = 'completed';
                         if (info.event.classNames.includes('status-pending')) status = 'pending';
                         if (info.event.classNames.includes('status-cancelled')) status = 'cancelled';
                         if (info.event.classNames.includes('status-rescheduled')) status = 'rescheduled';
                         return {
-                            html: `<span class="event-chip status-${status}">
-                                <span class="event-dot status-${status}"></span>
-                                <span class="event-time">${time}</span>
-                                <span class="event-title">${name}</span>
-                            </span>`
+                            html: `<span class=\"event-chip status-${status}\">\n<span class=\"event-dot status-${status}\"></span>\n<span class=\"event-time\">${time}</span>\n<span class=\"event-title\">${name}</span>\n</span>`
                         };
                     }
-                    // Остальные режимы — стандартно
                     return true;
                 },
                 eventDidMount: function(info) {
