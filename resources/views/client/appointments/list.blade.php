@@ -807,6 +807,7 @@
                     <th>Время</th>
                     <th>Клиент</th>
                     <th>Услуга</th>
+                    <th>Мастер</th>
                     <th>Статус</th>
                     <th>Стоимость</th>
                     <th>Действия</th>
@@ -830,6 +831,7 @@
                         @endif
                     </td>
                     <td>{{ $appointment->service->name }}</td>
+                    <td>{{ $appointment->user->name ?? 'Не назначен' }}</td>
                     <td>
                         <span class="status-badge status-{{ $appointment->status }}">
                             @php
@@ -1257,9 +1259,23 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Стоимость (Грн)</label> <!-- Убрал * -->
-                        <input type="number" step="0.01" name="price" class="form-control" min="0">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Мастер/Сотрудник</label>
+                            <select name="user_id" class="form-control">
+                                <option value="">Не назначен</option>
+                                @foreach($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Стоимость (Грн)</label>
+                            <input type="number" step="0.01" name="price" class="form-control" min="0">
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -1330,6 +1346,7 @@
         let allClients = @json($clients->toArray());
         let allServices = @json($services);
         let currentAppointmentId = null;
+        let allUsers = @json($users);
         let allProducts = @json($products);
         let temporaryProducts = [];
         let isDeletingAppointment = false;
@@ -1481,6 +1498,9 @@
         <div class="details-row">
             <div><span class="details-label">Дата:</span> ${new Date(appointment.date).toLocaleDateString('ru-RU')}</div>
             <div><span class="details-label">Время:</span> ${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</div>
+        </div>
+        <div class="details-row">
+            <div><span class="details-label">Мастер:</span> ${appointment.user ? escapeHtml(appointment.user.name) : 'Не назначен'}</div>
         </div>
         <div class="card procedure-card">
             <div class="card-title">Услуга</div>
@@ -1926,6 +1946,7 @@
                         ` : ''}
                     </td>
                     <td>${appointment.service ? appointment.service.name : 'Услуга удалена'}</td>
+                    <td>${appointment.user ? appointment.user.name : 'Не назначен'}</td>
                     <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
                     <td>${formatPrice(appointment.price)} грн</td>
                     <td>
@@ -2279,6 +2300,7 @@
                 const data = await response.json();
                 if (data.success) {
                     renderEditAppointmentForm(data.appointment);
+                    allUsers = data.users;
                 } else {
                     throw new Error(data.message || 'Ошибка при загрузке записи');
                 }
@@ -2351,11 +2373,23 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Стоимость (Грн)</label>
-                        <input type="number" step="0.01" name="price" value="${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)}" class="form-control" min="0">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Мастер/Сотрудник</label>
+                            <select name="user_id" class="form-control">
+                                <option value="">Не назначен</option>
+                                ${allUsers.map(user => `
+                                    <option value="${user.id}" ${appointment.user_id == user.id ? 'selected' : ''}>
+                                        ${escapeHtml(user.name)}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Стоимость (Грн)</label>
+                            <input type="number" step="0.01" name="price" value="${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)}" class="form-control" min="0">
+                        </div>
                     </div>
-
                     <div class="form-group">
                         <label>Примечания</label>
                         <textarea name="notes" rows="2" class="form-control">${escapeHtml(appointment.notes || '')}</textarea>
@@ -2978,6 +3012,7 @@
                                     (<a href="https://instagram.com/${escapeHtml(appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(appointment.client.instagram)}</a>)` : ''}
                             </td>
                             <td>${escapeHtml(appointment.service.name)}</td>
+                            <td>${appointment.user ? escapeHtml(appointment.user.name) : 'Не назначен'}</td>
                             <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
                             <td>${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)} грн</td>
                             <td>
@@ -3054,6 +3089,7 @@
                                     (<a href="https://instagram.com/${escapeHtml(data.appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(data.appointment.client.instagram)}</a>)` : ''}
                             </td>
                             <td>${escapeHtml(data.appointment.service.name)}</td>
+                            <td>${data.appointment.user ? escapeHtml(data.appointment.user.name) : 'Не назначен'}</td>
                             <td><span class="status-badge status-${data.appointment.status}">${getStatusName(data.appointment.status)}</span></td>
                             <td>${Number(parseFloat(data.appointment.price)) % 1 === 0 ? Number(parseFloat(data.appointment.price)) : parseFloat(data.appointment.price).toFixed(2)} грн</td>
                             <td>

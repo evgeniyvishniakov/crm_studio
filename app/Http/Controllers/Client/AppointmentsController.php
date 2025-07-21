@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Http\Controllers\Controller;
+use App\Models\Admin\User;
 
 class AppointmentsController extends Controller
 {
@@ -22,7 +23,7 @@ class AppointmentsController extends Controller
         $currentProjectId = auth()->user()->project_id;
         $viewType = $request->get('view', 'list'); // list или calendar
 
-        $appointments = Appointment::with(['client', 'service'])
+        $appointments = Appointment::with(['client', 'service', 'user'])
             ->where('project_id', $currentProjectId)
             ->orderBy('date', 'desc')
             ->orderBy('time', 'desc')
@@ -55,12 +56,15 @@ class AppointmentsController extends Controller
                 ];
             });
 
+        $users = User::where('project_id', $currentProjectId)->get();
+
         return view('client.appointments.list', compact(
             'appointments',
             'clients',
             'services',
             'viewType',
-            'products'
+            'products',
+            'users'
         ));
     }
 
@@ -75,14 +79,15 @@ class AppointmentsController extends Controller
                 'time' => 'required',
                 'price' => 'nullable|numeric|min:0',
                 'notes' => 'nullable|string',
-                'status' => 'nullable|string|in:pending,completed,cancelled,rescheduled'
+                'status' => 'nullable|string|in:pending,completed,cancelled,rescheduled',
+                'user_id' => 'nullable|exists:admin_users,id'
             ]);
 
             $appointment = Appointment::create($validated + ['project_id' => $currentProjectId]);
 
             return response()->json([
                 'success' => true,
-                'appointment' => $appointment->load(['client', 'service'])
+                'appointment' => $appointment->load(['client', 'service', 'user'])
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -112,7 +117,8 @@ class AppointmentsController extends Controller
                 'sales.*.product_id' => 'required|exists:products,id',
                 'sales.*.quantity' => 'required|integer|min:1',
                 'sales.*.price' => 'required|numeric|min:0',
-                'sales.*.purchase_price' => 'required|numeric|min:0'
+                'sales.*.purchase_price' => 'required|numeric|min:0',
+                'user_id' => 'nullable|exists:admin_users,id'
             ]);
 
             DB::beginTransaction();
@@ -127,7 +133,8 @@ class AppointmentsController extends Controller
                     'client_id' => $validated['client_id'],
                     'service_id' => $validated['service_id'],
                     'price' => $validated['price'],
-                    'status' => $validated['status'] ?? $appointment->status
+                    'status' => $validated['status'] ?? $appointment->status,
+                    'user_id' => $validated['user_id'] ?? null
                 ]);
 
                 // Если клиент изменился, обновляем client_id во всех связанных продажах
@@ -264,9 +271,10 @@ class AppointmentsController extends Controller
         try {
             return response()->json([
                 'success' => true,
-                'appointment' => $appointment->load(['client', 'service']),
+                'appointment' => $appointment->load(['client', 'service', 'user']),
                 'clients' => Client::where('project_id', $currentProjectId)->get(),
-                'services' => Service::where('project_id', $currentProjectId)->get()
+                'services' => Service::where('project_id', $currentProjectId)->get(),
+                'users' => User::where('project_id', $currentProjectId)->get()
             ]);
 
         } catch (\Exception $e) {
@@ -281,7 +289,7 @@ class AppointmentsController extends Controller
     {
         $currentProjectId = auth()->user()->project_id;
         try {
-            $appointment = Appointment::with(['client', 'service', 'sales.items.product'])
+            $appointment = Appointment::with(['client', 'service', 'sales.items.product', 'user'])
                 ->where('project_id', $currentProjectId)
                 ->findOrFail($id);
 
@@ -1215,7 +1223,7 @@ class AppointmentsController extends Controller
             $currentProjectId = auth()->user()->project_id;
             $perPage = (int)($request->get('per_page', 11));
             $search = $request->get('search');
-            $query = Appointment::with(['client', 'service'])
+            $query = Appointment::with(['client', 'service', 'user'])
                 ->where('project_id', $currentProjectId);
             if ($search) {
                 $query->whereHas('client', function($q) use ($search) {
@@ -1242,6 +1250,7 @@ class AppointmentsController extends Controller
                         'id' => $a->service->id,
                         'name' => $a->service->name
                     ] : null,
+                    'user' => $a->user ? ['name' => $a->user->name] : null,
                     'status' => $a->status,
                     'price' => $a->price,
                 ];

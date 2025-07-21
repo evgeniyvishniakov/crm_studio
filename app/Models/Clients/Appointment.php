@@ -6,20 +6,24 @@ namespace App\Models\Clients;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Admin\User;
+use App\Models\Clients\Client;
+use App\Models\Clients\Sale;
 
 class Appointment extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'service_id',
         'client_id',
+        'service_id',
         'date',
         'time',
         'price',
         'notes',
         'status',
-        'project_id', // для мультипроктности
+        'project_id',
+        'user_id'
     ];
 
     protected $casts = [
@@ -40,6 +44,11 @@ class Appointment extends Model
     public function sales()
     {
         return $this->hasMany(Sale::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function totalAmount()
