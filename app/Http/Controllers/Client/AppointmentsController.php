@@ -185,7 +185,7 @@ class AppointmentsController extends Controller
 
                 DB::commit();
 
-                $appointment = $appointment->fresh(['client', 'service', 'sales.items.product.warehouse']);
+                $appointment = $appointment->fresh(['client', 'service', 'sales.items.product.warehouse', 'user']);
                 $products = Product::with('warehouse')
                     ->whereHas('warehouse', function($query) {
                         $query->where('quantity', '>', 0);

@@ -803,8 +803,7 @@
             <table class="table-striped appointments-table" id="appointmentsTable">
                 <thead>
                 <tr>
-                    <th>Дата</th>
-                    <th>Время</th>
+                    <th>Дата и время</th>
                     <th>Клиент</th>
                     <th>Услуга</th>
                     <th>Мастер</th>
@@ -816,8 +815,11 @@
                 <tbody>
                 @foreach($appointments as $appointment)
                 <tr data-appointment-id="{{ $appointment->id }}">
-                    <td>{{ \Carbon\Carbon::parse($appointment->date)->format('d.m.Y') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($appointment->time)->format('H:i') }}</td>
+                    <td>
+                        {{ \Carbon\Carbon::parse($appointment->date)->format('d.m.Y') }}
+                        <br>
+                        <small class="text-muted">{{ \Carbon\Carbon::parse($appointment->time)->format('H:i') }}</small>
+                    </td>
                     <td>
                         {{ $appointment->client->name }}
                         @if($appointment->client->instagram)
@@ -1949,8 +1951,11 @@
         function renderAppointmentsList(appointments) {
             return appointments.map(appointment => `
                 <tr data-appointment-id="${appointment.id}">
-                    <td>${formatDate(appointment.date)}</td>
-                    <td>${appointment.time ? appointment.time.slice(0,5) : ''}</td>
+                    <td>
+                        ${formatDate(appointment.date)}
+                        <br>
+                        <small class="text-muted">${appointment.time ? appointment.time.slice(0,5) : ''}</small>
+                    </td>
                     <td>
                         ${appointment.client ? appointment.client.name : 'Клиент удален'}
                         ${appointment.client && appointment.client.instagram ? `
@@ -3041,8 +3046,11 @@
                         newRow.setAttribute('data-appointment-id', appointment.id);
 
                         newRow.innerHTML = `
-                            <td>${new Date(appointment.date).toLocaleDateString('ru-RU')}</td>
-                            <td>${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</td>
+                            <td>
+                                ${new Date(appointment.date).toLocaleDateString('ru-RU')}
+                                <br>
+                                <small class="text-muted">${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</small>
+                            </td>
                             <td>
                                 ${escapeHtml(appointment.client.name)}
                                 ${appointment.client.instagram ? `
@@ -3118,8 +3126,11 @@
                     const row = document.querySelector(`tr[data-appointment-id="${data.appointment.id}"]`);
                     if (row) {
                         row.innerHTML = `
-                            <td>${new Date(data.appointment.date).toLocaleDateString('ru-RU')}</td>
-                            <td>${escapeHtml(data.appointment.time.split(':').slice(0, 2).join(':'))}</td>
+                            <td>
+                                ${new Date(data.appointment.date).toLocaleDateString('ru-RU')}
+                                <br>
+                                <small class="text-muted">${escapeHtml(data.appointment.time.split(':').slice(0, 2).join(':'))}</small>
+                            </td>
                             <td>
                                 ${escapeHtml(data.appointment.client.name)}
                                 ${data.appointment.client.instagram ? `
