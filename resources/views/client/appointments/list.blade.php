@@ -998,14 +998,34 @@
                 editable: true,
                 eventContent: function(info) {
                     const viewType = info.view.type;
-                    if (viewType === 'timeGridDay' && info.event.extendedProps.title_day) {
-                        return { html: `<div style='color:white!important'>${info.event.extendedProps.title_day}</div>` };
-                    }
                     if (viewType === 'timeGridWeek' && info.event.extendedProps.title_week) {
-                        return { html: `<div style='color:white!important'>${info.event.extendedProps.title_week}</div>` };
+                        let bg = '#10b981'; // completed
+                        if (info.event.classNames.includes('status-pending')) bg = '#f59e0b';
+                        if (info.event.classNames.includes('status-cancelled')) bg = '#ef4444';
+                        if (info.event.classNames.includes('status-rescheduled')) bg = '#3b82f6';
+                        return {
+                            html: `<span style="
+                                background: ${bg};
+                                color: #fff;
+                                padding: 4px 16px;
+                                border-radius: 16px;
+                                font-weight: 600;
+                                font-size: 1.05em;
+                                display: inline-block;
+                                box-shadow: 0 2px 8px rgba(60,72,88,0.10);">
+                                ${info.event.extendedProps.title_week}
+                            </span>`
+                        };
                     }
-                    // Для dayGridMonth возвращаем true — стандартный рендеринг с кружочками
+                    // Остальные режимы — стандартно
                     return true;
+                },
+                eventDidMount: function(info) {
+                    if (info.view.type === 'timeGridWeek') {
+                        info.el.style.background = 'transparent';
+                        info.el.style.boxShadow = 'none';
+                        info.el.style.border = 'none';
+                    }
                 },
                 events: function(info, successCallback, failureCallback) {
                     fetch('/appointments/calendar-events')
