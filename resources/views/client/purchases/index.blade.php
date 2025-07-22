@@ -193,10 +193,35 @@
         </div>
     </div>
 
+    <!-- Модальное окно подтверждения отмены -->
+    <div id="cancelPurchaseModal" class="confirmation-modal" style="display: none;">
+        <div class="confirmation-content">
+            <h3>Подтверждение отмены</h3>
+            <p>Вы уверены, что хотите отменить создание закупки? Все несохранённые данные будут потеряны.</p>
+            <div class="confirmation-buttons">
+                <button class="cancel-btn" id="cancelCancelPurchase">Отмена</button>
+                <button class="confirm-btn" id="confirmCancelPurchaseBtn">Да, отменить</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Глобальные переменные
         let currentDeleteId = null;
         let itemCounter = 1; // Этот счетчик будет заменен динамическим расчетом
+
+        // Универсальная функция для уведомлений
+        window.showNotification = function(type, message) {
+            const notification = document.getElementById('notification');
+            if (notification) {
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                notification.style.display = 'block';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 3000);
+            }
+        }
 
         // Функции для работы с модальными окнами
         function openPurchaseModal() {
@@ -207,10 +232,37 @@
             document.getElementById('purchaseModal').style.display = 'block';
         }
 
-        function closePurchaseModal() {
-            document.getElementById('purchaseModal').style.display = 'none';
-            clearErrors('purchaseForm');
-            resetPurchaseForm();
+        function closePurchaseModal(force = false) {
+            if (force) {
+                document.getElementById('purchaseModal').style.display = 'none';
+                clearErrors('purchaseForm');
+                resetPurchaseForm();
+                return;
+            }
+
+            const form = document.getElementById('purchaseForm');
+            const supplier = form.querySelector('[name="supplier_id"]').value;
+            const notes = form.querySelector('[name="notes"]').value;
+
+            // Проверяем, есть ли данные в первом ряду товара, который не является шаблоном
+            const firstItemRow = form.querySelector('.item-row:not(.template)');
+            let firstProduct = '';
+            if (firstItemRow) {
+                const productInput = firstItemRow.querySelector('[name*="[product_id]"]');
+                if (productInput) {
+                    firstProduct = productInput.value;
+                }
+            }
+            
+            const otherRows = form.querySelectorAll('.item-row:not(.template)').length > 1;
+
+            if (supplier || notes || firstProduct || otherRows) {
+                document.getElementById('cancelPurchaseModal').style.display = 'block';
+            } else {
+                document.getElementById('purchaseModal').style.display = 'none';
+                clearErrors('purchaseForm');
+                resetPurchaseForm();
+            }
         }
 
         function closeEditPurchaseModal() {
@@ -219,14 +271,14 @@
 
         // Закрытие модальных окон при клике вне их
         window.onclick = function(event) {
-            if (event.target == document.getElementById('purchaseModal')) {
-                closePurchaseModal();
-            }
             if (event.target == document.getElementById('editPurchaseModal')) {
                 closeEditPurchaseModal();
             }
             if (event.target == document.getElementById('confirmationModal')) {
                 document.getElementById('confirmationModal').style.display = 'none';
+            }
+            if (event.target == document.getElementById('cancelPurchaseModal')) {
+                document.getElementById('cancelPurchaseModal').style.display = 'none';
             }
         }
 
@@ -524,6 +576,17 @@
             }
             document.getElementById('confirmationModal').style.display = 'none';
             currentDeleteId = null;
+        });
+
+        // Логика для модального окна отмены
+        document.getElementById('cancelCancelPurchase').addEventListener('click', function() {
+            document.getElementById('cancelPurchaseModal').style.display = 'none';
+        });
+
+        document.getElementById('confirmCancelPurchaseBtn').addEventListener('click', function() {
+            document.getElementById('cancelPurchaseModal').style.display = 'none';
+            closePurchaseModal(true); // Принудительно закрыть и сбросить
+            window.showNotification('error', 'Создание закупки отменено');
         });
 
         // Функция для удаления закупки
