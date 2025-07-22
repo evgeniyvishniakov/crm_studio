@@ -15,6 +15,7 @@ class Expense extends Model
         'date',
         'comment',
         'amount',
+        'category',
         'project_id', // для мультипроктности
     ];
 

@@ -311,29 +311,8 @@
                                 grid: {display: false},
                                 ticks: {
                                     callback: function (value, index, values) {
-                                        const label = this.getLabelForValue(value);
-                                        // Определяем период по длине массива
-                                        const total = values.length;
-                                        // Форматируем дату
-                                        const date = new Date(label);
-                                        const day = date.getDate().toString().padStart(2, '0');
-                                        const month = date.toLocaleString('ru-RU', {month: 'short'});
-                                        // За неделю/2 недели — каждый день
-                                        if (total <= 14) {
-                                            return `${day} ${month}`;
-                                        }
-                                        // За месяц/полгода — только начало недели (Пн)
-                                        if (total <= 31 * 2) {
-                                            if (date.getDay() === 1 || index === 0) {
-                                                return `Пн ${day} ${month}`;
-                                            }
-                                            return '';
-                                        }
-                                        // За год — только первый день месяца
-                                        if (date.getDate() === 1) {
-                                            return month;
-                                        }
-                                        return '';
+                                        // Используем labels для отображения (они уже отформатированы)
+                                        return this.getLabelForValue(value);
                                     }
                                 }
                             }
@@ -363,14 +342,8 @@
                                 grid: {display: false},
                                 ticks: {
                                     callback: function (value, index, values) {
-                                        const label = this.getLabelForValue(value);
-                                        const total = values.length;
-                                        const date = new Date(label);
-                                        const day = date.getDate().toString().padStart(2, '0');
-                                        const month = date.toLocaleString('ru-RU', {month: 'short'});
-                                        if (total <= 14) return `${day} ${month}`;
-                                        if (total <= 31 * 2) return date.getDay() === 1 || index === 0 ? `Пн ${day} ${month}` : '';
-                                        return date.getDate() === 1 ? month : '';
+                                        // Используем labels для отображения (они уже отформатированы)
+                                        return this.getLabelForValue(value);
                                     }
                                 }
                             }
@@ -527,11 +500,9 @@
                                     label: function (context) {
                                         const i = context.dataIndex;
                                         const label = data.type.labels[i];
-                                        const count = data.type.data[i];
                                         const sum = data.type.sums[i];
                                         return [
                                             `${label}`,
-                                            `Количество: ${count} шт`,
                                             `Сумма: ${sum.toLocaleString('ru-RU')} грн`
                                         ];
                                     }

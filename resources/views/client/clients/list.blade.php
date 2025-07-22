@@ -1569,9 +1569,9 @@
 
                                 // Форматируем дату продажи
                                 let formattedDate = 'Дата не указана';
-                                if (sale.created_at) {
+                                if (sale.date) {
                                     try {
-                                        const date = new Date(sale.created_at);
+                                        const date = new Date(sale.date);
                                         if (!isNaN(date.getTime())) {
                                             formattedDate = date.toLocaleDateString('ru-RU');
                                         }

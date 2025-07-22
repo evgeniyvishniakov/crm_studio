@@ -205,43 +205,87 @@ class TurnoverReportController extends Controller
         $typeCounts = [null, null]; // Не используем количество, только суммы
         $typeSums = [$goodsSum, $servicesTotalSum];
 
-        // Динамика по дням (только по датам, где есть данные)
-        $salesByDay = $salesQuery->with('items')->get()->groupBy(function($sale) {
-            return $sale->date->format('Y-m-d');
+        // Определяем интервал группировки в зависимости от периода
+        $groupInterval = 'day'; // По умолчанию по дням
+        if ($period === 'За полгода') {
+            $groupInterval = 'week'; // За полгода - по неделям
+        } elseif ($period === 'За год') {
+            $groupInterval = 'biweek'; // За год - по 2 недели
+        }
+
+        // Функция для группировки дат
+        $dateGroupFunction = function($date) use ($groupInterval) {
+            $carbonDate = \Carbon\Carbon::parse($date);
+            switch ($groupInterval) {
+                case 'week':
+                    // Группируем по неделям (понедельник каждой недели)
+                    return $carbonDate->startOfWeek()->format('Y-m-d');
+                case 'biweek':
+                    // Группируем по 2 недели
+                    $weekNumber = $carbonDate->weekOfYear;
+                    $biweekNumber = ceil($weekNumber / 2);
+                    return $carbonDate->startOfYear()->addWeeks(($biweekNumber - 1) * 2)->startOfWeek()->format('Y-m-d');
+                default:
+                    // По дням
+                    return $carbonDate->format('Y-m-d');
+            }
+        };
+
+        // Динамика с учетом интервала
+        $salesByPeriod = $salesQuery->with('items')->get()->groupBy(function($sale) use ($dateGroupFunction) {
+            return $dateGroupFunction($sale->date->format('Y-m-d'));
         })->map(function($sales) {
             return $sales->flatMap->items->sum('total');
         });
-        $purchasesByDay = $purchasesQuery->get()->groupBy(function($purchase) {
-            return $purchase->date->format('Y-m-d');
+
+        $purchasesByPeriod = $purchasesQuery->get()->groupBy(function($purchase) use ($dateGroupFunction) {
+            return $dateGroupFunction($purchase->date->format('Y-m-d'));
         })->map(function($purchases) {
             return $purchases->sum('total_amount');
         });
-        // Собираем только те даты, где есть хотя бы продажи или закупки, и которые попадают в диапазон
-        $allDates = collect($salesByDay->keys())->merge($purchasesByDay->keys())
-            ->unique()
-            ->filter(function($date) use ($startDate, $endDate) {
-                return (!$startDate || $date >= $startDate) && (!$endDate || $date <= $endDate);
-            })
-            ->sort()
-            ->values();
-        $dynamicLabels = $allDates->toArray();
-        $dynamicSales = array_map(fn($d) => $salesByDay[$d] ?? 0, $dynamicLabels);
-        $dynamicPurchases = array_map(fn($d) => $purchasesByDay[$d] ?? 0, $dynamicLabels);
 
-        // Расчет валовой прибыли по дням
-        $grossProfitByDay = $salesQuery->with('items')->get()->groupBy(function ($sale) {
-            return $sale->date->format('Y-m-d');
+        // Расчет валовой прибыли с учетом интервала
+        $grossProfitByPeriod = $salesQuery->with('items')->get()->groupBy(function ($sale) use ($dateGroupFunction) {
+            return $dateGroupFunction($sale->date->format('Y-m-d'));
         })->map(function ($sales) {
             return $sales->flatMap->items->sum(function ($item) {
                 // Валовая прибыль = (Розничная цена - Закупочная цена) * Количество
-                return ($item->retail_price - $item->purchase_price) * $item->quantity;
+                return ($item->retail_price - ($item->wholesale_price ?? 0)) * $item->quantity;
             });
         });
-        $dynamicGrossProfit = array_map(fn($d) => $grossProfitByDay[$d] ?? 0, $dynamicLabels);
+
+        // Собираем все периоды и фильтруем по диапазону
+        $allPeriods = collect($salesByPeriod->keys())->merge($purchasesByPeriod->keys())
+            ->unique()
+            ->filter(function($period) use ($startDate, $endDate) {
+                return (!$startDate || $period >= $startDate) && (!$endDate || $period <= $endDate);
+            })
+            ->sort()
+            ->values();
+
+        // Лейблы для отображения и оригинальные даты для парсинга
+        $dynamicLabels = $allPeriods->map(function($period) use ($groupInterval) {
+            $date = \Carbon\Carbon::parse($period);
+            switch ($groupInterval) {
+                case 'week':
+                case 'biweek':
+                    // Простой формат: 26.05.25
+                    return $date->format('d.m.y');
+                default:
+                    return $date->format('d.m.y');
+            }
+        })->toArray();
+        
+        // Оригинальные даты для JavaScript парсинга
+        $dynamicDatesForJS = $allPeriods->toArray();
+
+        $dynamicSales = $allPeriods->map(fn($p) => $salesByPeriod[$p] ?? 0)->toArray();
+        $dynamicPurchases = $allPeriods->map(fn($p) => $purchasesByPeriod[$p] ?? 0)->toArray();
+        $dynamicGrossProfit = $allPeriods->map(fn($p) => $grossProfitByPeriod[$p] ?? 0)->toArray();
 
 
         // Если нет данных за период — возвращаем пустые массивы для графиков
-        if (empty($dynamicLabels)) {
+        if ($allPeriods->isEmpty()) {
             return response()->json([
                 'category' => [ 'labels' => [], 'data' => [], 'sums' => [] ],
                 'brand'    => [ 'labels' => [], 'data' => [], 'sums' => [] ],
@@ -274,13 +318,14 @@ class TurnoverReportController extends Controller
             ],
             'dynamic' => [
                 'labels' => $dynamicLabels,
+                'dates' => $dynamicDatesForJS,
                 'sales' => $dynamicSales,
                 'purchases' => $dynamicPurchases,
                 'gross_profit' => $dynamicGrossProfit,
             ],
             // Добавляем реальные даты периода
-            'actual_start_date' => $dynamicLabels[0] ?? $startDate,
-            'actual_end_date' => end($dynamicLabels) ?: $endDate,
+            'actual_start_date' => $allPeriods->first() ?? $startDate,
+            'actual_end_date' => $allPeriods->last() ?? $endDate,
         ];
         return response()->json($data);
     }

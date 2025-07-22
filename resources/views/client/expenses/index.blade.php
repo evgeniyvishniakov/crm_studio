@@ -29,6 +29,7 @@
                 <thead>
                 <tr>
                     <th>Дата</th>
+                    <th>Категория</th>
                     <th>Комментарий</th>
                     <th>Сумма</th>
                     <th>Действия</th>
@@ -56,6 +57,15 @@
                     <div class="form-group">
                         <label>Дата *</label>
                         <input type="date" name="date" required class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Категория *</label>
+                        <select name="category" required class="form-control">
+                            <option value="">Выберите категорию</option>
+                            @foreach($categories ?? [] as $category)
+                                <option value="{{ $category }}">{{ $category }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Комментарий *</label>
@@ -140,6 +150,7 @@
                     document.getElementById('modalTitle').textContent = 'Редактировать расход';
                     document.getElementById('expenseId').value = expense.id;
                     document.querySelector('#expenseForm [name="date"]').value = expense.date;
+                    document.querySelector('#expenseForm [name="category"]').value = expense.category || '';
                     document.querySelector('#expenseForm [name="comment"]').value = expense.comment;
                     document.querySelector('#expenseForm [name="amount"]').value = expense.amount;
                     document.getElementById('expenseModal').style.display = 'block';
@@ -250,6 +261,7 @@
                 
                 row.innerHTML = `
                     <td>${expense.date ? new Date(expense.date).toLocaleDateString('ru-RU') : '—'}</td>
+                    <td>${escapeHtml(expense.category || 'Не указано')}</td>
                     <td>${escapeHtml(expense.comment || '')}</td>
                     <td>${formattedAmount} грн</td>
                     <td>

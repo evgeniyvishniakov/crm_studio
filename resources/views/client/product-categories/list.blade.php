@@ -34,7 +34,7 @@
                 </tr>
                 </thead>
                 <tbody id="servicesTableBody">
-                @foreach($categories as $category)
+                @foreach($categories ?? [] as $category)
                     <tr id="category-{{ $category->id }}">
                         <td>{{ $category->name }}</td>
                         <td>{{ $category->description ?? '—' }}</td>

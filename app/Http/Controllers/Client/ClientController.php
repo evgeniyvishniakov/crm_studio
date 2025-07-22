@@ -63,7 +63,7 @@ class ClientController extends Controller
             },
             'appointments.service',
             'sales' => function($query) {
-                $query->orderBy('created_at', 'desc');
+                $query->orderBy('date', 'desc');
             },
             'sales.items.product'
         ])->findOrFail($id);

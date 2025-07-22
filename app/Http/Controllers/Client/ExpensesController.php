@@ -23,6 +23,14 @@ class ExpensesController extends Controller
 
         if ($request->ajax()) {
             $expenses = $query->paginate(11);
+            $categories = config('expenses.categories', [
+                'Аренда и коммуналка',
+                'Зарплата', 
+                'Материалы',
+                'Реклама',
+                'Налоги',
+                'Прочее'
+            ]);
             return response()->json([
                 'data' => $expenses->items(),
                 'meta' => [
@@ -31,11 +39,21 @@ class ExpensesController extends Controller
                     'per_page' => $expenses->perPage(),
                     'total' => $expenses->total(),
                 ],
+                'categories' => $categories,
             ]);
         }
 
         $expenses = $query->paginate(11);
-        return view('client.expenses.index', compact('expenses'));
+        $categories = config('expenses.categories', [
+            'Аренда и коммуналка',
+            'Зарплата', 
+            'Материалы',
+            'Реклама',
+            'Налоги',
+            'Прочее'
+        ]);
+        
+        return view('client.expenses.index', compact('expenses', 'categories'));
     }
 
     public function store(Request $request)
@@ -45,7 +63,8 @@ class ExpensesController extends Controller
             $validated = $request->validate([
                 'date' => 'required|date',
                 'comment' => 'required|string',
-                'amount' => 'required|numeric|min:0'
+                'amount' => 'required|numeric|min:0',
+                'category' => 'required|string|in:' . implode(',', config('expenses.categories'))
             ]);
 
             $expense = Expense::create($validated + ['project_id' => $currentProjectId]);
@@ -71,7 +90,8 @@ class ExpensesController extends Controller
             $validated = $request->validate([
                 'date' => 'required|date',
                 'comment' => 'required|string',
-                'amount' => 'required|numeric|min:0'
+                'amount' => 'required|numeric|min:0',
+                'category' => 'required|string|in:' . implode(',', config('expenses.categories'))
             ]);
 
             if ($expense->project_id !== $currentProjectId) {
@@ -129,6 +149,7 @@ class ExpensesController extends Controller
                     'date' => $expense->date ? $expense->date->format('Y-m-d') : null,
                     'comment' => $expense->comment,
                     'amount' => $expense->amount,
+                    'category' => $expense->category,
                 ]
             ]);
         } catch (\Exception $e) {

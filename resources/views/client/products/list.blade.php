@@ -124,7 +124,7 @@
                         <label for="productCategory">Категория *</label>
                         <select id="productCategory" name="category_id" required class="form-control">
                             <option value="">Выберите категорию</option>
-                            @foreach($categories as $category)
+                            @foreach($categories ?? [] as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
                         </select>
@@ -192,7 +192,7 @@
                         <label for="editProductCategory">Категория *</label>
                         <select id="editProductCategory" name="category_id" required class="form-control">
                             <option value="">Выберите категорию</option>
-                            @foreach($categories as $category)
+                            @foreach($categories ?? [] as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
                         </select>
@@ -295,7 +295,7 @@
                             <label for="exportCategory">Категория:</label>
                             <select id="exportCategory" name="category_id">
                                 <option value="">Все</option>
-                                @foreach($categories as $cat)
+                                @foreach($categories ?? [] as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                 @endforeach
                             </select>
