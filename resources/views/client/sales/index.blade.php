@@ -90,6 +90,15 @@
                             <label>Дата *</label>
                             <input type="date" name="date" required class="form-control">
                         </div>
+                        <div class="form-group">
+                            <label>Сотрудник (мастер) *</label>
+                            <select name="employee_id" class="form-control" required>
+                                <option value="">Выберите сотрудника</option>
+                                @foreach($employees as $employee)
+                                    <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Примечания</label>
@@ -430,6 +439,10 @@
                             `<option value="${product.id}">${product.name}</option>`
                         ).join('');
 
+                        const employeeOptions = (data.employees || []).map(employee =>
+                            `<option value="${employee.id}" ${String(data.sale.employee_id) == String(employee.id) ? 'selected' : ''}>${employee.name}</option>`
+                        ).join('');
+
                         modalBody.innerHTML = `
                         <form id="editSaleForm" novalidate>
                             @csrf
@@ -455,6 +468,13 @@
                                 <div class="form-group">
                                     <label>Дата *</label>
                                     <input type="date" name="date" value="${formatDateForInput(data.sale.date)}" required class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Сотрудник (мастер) *</label>
+                                    <select name="employee_id" class="form-control" required>
+                                        <option value="">Выберите сотрудника</option>
+                                        ${employeeOptions}
+                                    </select>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -783,6 +803,7 @@
             const formData = {
                 date: form.querySelector('[name="date"]').value,
                 client_id: form.querySelector('[name="client_id"]').value,
+                employee_id: form.querySelector('[name="employee_id"]').value,
                 notes: form.querySelector('[name="notes"]').value,
                 items: []
             };
@@ -897,11 +918,10 @@
                 _method: 'PUT',
                 date: form.querySelector('[name="date"]').value,
                 client_id: form.querySelector('[name="client_id"]').value,
+                employee_id: form.querySelector('[name="employee_id"]').value,
                 notes: form.querySelector('[name="notes"]').value,
                 items: items
             };
-
-    
 
             // Отправляем данные на сервер
             fetch(`/sales/${id}`, {
@@ -932,7 +952,6 @@
                     }
                 })
                 .catch(error => {
-                
                     window.showNotification(error.message || 'Ошибка при обновлении продажи', 'error');
                 });
         }

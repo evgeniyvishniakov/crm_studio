@@ -156,23 +156,30 @@
             background-color: #f8fafc;
         }
     
-        .btn-delete-product {
-            background: none;
+                .btn-delete-product {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
             border: none;
-            color: #ef4444;
+            border-radius: 6px;
             cursor: pointer;
-            padding: 0.25rem;
-            transition: color 0.2s;
+            padding: 4px 8px;
+            margin: 0 2px;
+            transition: all 0.2s;
+            font-size: 0.875rem;
         }
-    
+
         .btn-delete-product:hover {
-            color: #dc2626;
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #b91c1c, #dc2626);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
         }
     
         .btn-delete-product .icon {
             width: 1.25rem;
             height: 1.25rem;
         }
+
+
         
     
         /* Стили для календаря */
@@ -1888,7 +1895,7 @@
         function addProductToAppointment() {
             const modal = document.getElementById('viewAppointmentModal');
             if (!modal) {
-                showNotification('Модальное окно не найдено', 'error');
+                window.showNotification('error', 'Модальное окно не найдено');
                 return;
             }
 
@@ -1901,24 +1908,24 @@
 
             // Проверки
             if (!productId || productId === '' || !productName || productName === '') {
-                showNotification('Пожалуйста, начните вводить название товара и выберите его из появившегося списка', 'error');
+                window.showNotification('error', 'Пожалуйста, начните вводить название товара и выберите его из появившегося списка');
                 return;
             }
 
             if (!quantity || parseInt(quantity) <= 0) {
-                showNotification('Укажите корректное количество', 'error');
+                window.showNotification('error', 'Укажите корректное количество');
                 return;
             }
 
             if (!price || parseFloat(price) <= 0) {
-                showNotification('Укажите корректную цену', 'error');
+                window.showNotification('error', 'Укажите корректную цену');
                 return;
             }
 
             // Находим товар в доступных товарах
             let product = allProducts.find(p => p.id == productId);
             if (!product) {
-                showNotification('Выбранный товар не найден в списке доступных товаров', 'error');
+                window.showNotification('error', 'Выбранный товар не найден в списке доступных товаров');
                 return;
             }
 
@@ -1960,9 +1967,9 @@
             }
 
             if (existingProductIndex !== -1) {
-                showNotification(`Количество товара "${product.name}" обновлено`);
+                window.showNotification('success', `Количество товара "${product.name}" обновлено`);
             } else {
-                showNotification(`Товар "${product.name}" успешно добавлен`);
+                window.showNotification('success', `Товар "${product.name}" успешно добавлен`);
             }
         }
 

@@ -10,6 +10,7 @@ use App\Models\Clients\Product;
 use App\Models\Clients\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Admin\User;
 
 class SaleController extends Controller
 {
@@ -99,6 +100,7 @@ class SaleController extends Controller
         // Для обычного запроса (не AJAX) возвращаем все продажи
         $sales = $query->get();
         $clients = Client::where('project_id', $currentProjectId)->select('id', 'name', 'instagram', 'phone', 'email')->get();
+        $employees = User::where('project_id', $currentProjectId)->get(['id', 'name']);
 
         // Получаем только товары, которые есть на складе
         $products = Product::where('project_id', $currentProjectId)
@@ -116,7 +118,7 @@ class SaleController extends Controller
                 return $product;
             });
 
-        return view('client.sales.index', compact('sales', 'clients', 'products'));
+        return view('client.sales.index', compact('sales', 'clients', 'products', 'employees'));
     }
 
     public function store(Request $request)
@@ -125,6 +127,7 @@ class SaleController extends Controller
         $validated = $request->validate([
             'date' => 'required|date',
             'client_id' => 'required|exists:clients,id',
+            'employee_id' => 'required|exists:admin_users,id',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
@@ -137,12 +140,13 @@ class SaleController extends Controller
         try {
             // Проверяем наличие всех товаров на складе перед созданием продажи
             foreach ($validated['items'] as $item) {
-                Warehouse::checkAvailability($item['product_id'], $item['quantity']);
+                Warehouse::checkAvailability($item['product_id'], $item['quantity'], $currentProjectId);
             }
 
             $sale = Sale::create([
                 'date' => $validated['date'],
                 'client_id' => $validated['client_id'],
+                'employee_id' => $validated['employee_id'],
                 'notes' => $validated['notes'] ?? null,
                 'total_amount' => 0,
                 'project_id' => $currentProjectId
@@ -168,7 +172,7 @@ class SaleController extends Controller
                 ]);
 
                 // Уменьшаем количество на складе
-                Warehouse::decreaseQuantity($item['product_id'], $item['quantity']);
+                Warehouse::decreaseQuantity($item['product_id'], $item['quantity'], $currentProjectId);
             }
 
             $sale->total_amount = $totalAmount;
@@ -211,6 +215,7 @@ class SaleController extends Controller
         $validated = $request->validate([
             'date' => 'required|date',
             'client_id' => 'required|exists:clients,id',
+            'employee_id' => 'required|exists:admin_users,id',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.retail_price' => 'required|numeric',
@@ -234,28 +239,29 @@ class SaleController extends Controller
                 if ($oldQty) {
                     if ($newQty > $oldQty) {
                         $delta = $newQty - $oldQty;
-                        Warehouse::checkAvailability($productId, $delta);
-                        Warehouse::decreaseQuantity($productId, $delta);
+                        Warehouse::checkAvailability($productId, $delta, $sale->project_id);
+                        Warehouse::decreaseQuantity($productId, $delta, $sale->project_id);
                     } elseif ($newQty < $oldQty) {
                         $delta = $oldQty - $newQty;
-                        Warehouse::increaseQuantity($productId, $delta);
+                        Warehouse::increaseQuantity($productId, $delta, $sale->project_id);
                     }
                     unset($oldItems[(string)$productId]);
                 } else {
-                    Warehouse::checkAvailability($productId, $newQty);
-                    Warehouse::decreaseQuantity($productId, $newQty);
+                    Warehouse::checkAvailability($productId, $newQty, $sale->project_id);
+                    Warehouse::decreaseQuantity($productId, $newQty, $sale->project_id);
                 }
             }
 
             // 2. Все товары, которые были в старой продаже, но их нет в новых — вернуть на склад
             foreach ($oldItems as $oldItem) {
-                Warehouse::increaseQuantity($oldItem->product_id, $oldItem->quantity);
+                Warehouse::increaseQuantity($oldItem->product_id, $oldItem->quantity, $sale->project_id);
             }
 
             // 3. Обновить продажу
             $sale->update([
                 'date' => $validated['date'],
                 'client_id' => $validated['client_id'],
+                'employee_id' => $validated['employee_id'],
                 'notes' => $validated['notes'] ?? null,
                 'total_amount' => 0
             ]);
@@ -328,7 +334,7 @@ class SaleController extends Controller
         try {
             // Возвращаем товары на склад
             foreach ($sale->items as $item) {
-                Warehouse::increaseQuantity($item->product_id, $item->quantity);
+                Warehouse::increaseQuantity($item->product_id, $item->quantity, $sale->project_id);
             }
 
             // Удаляем продажу
@@ -365,7 +371,7 @@ class SaleController extends Controller
                     $product->wholesale_price = $product->warehouse->purchase_price;
                     return $product;
                 });
-
+            $employees = User::where('project_id', $sale->project_id)->get(['id', 'name']);
             return response()->json([
                 'success' => true,
                 'sale' => [
@@ -383,7 +389,8 @@ class SaleController extends Controller
                     }),
                 ],
                 'clients' => $clients,
-                'products' => $products
+                'products' => $products,
+                'employees' => $employees,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -392,18 +399,18 @@ class SaleController extends Controller
             ], 500);
         }
     }
-    public function deleteItem($saleId, $itemId)
+    public function deleteItem($sale, $item)
     {
         DB::beginTransaction();
 
         try {
-            $sale = Sale::findOrFail($saleId);
-            $item = $sale->items()->findOrFail($itemId);
+            $sale = Sale::findOrFail($sale);
+            $saleItem = $sale->items()->findOrFail($item);
 
             // Возвращаем товар на склад
-            Warehouse::increaseQuantity($item->product_id, $item->quantity);
+            Warehouse::increaseQuantity($saleItem->product_id, $saleItem->quantity, $sale->project_id);
 
-            $item->delete();
+            $saleItem->delete();
 
             // Проверяем, остались ли товары в продаже
             $itemsRemaining = $sale->items()->count();

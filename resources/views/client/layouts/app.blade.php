@@ -350,7 +350,7 @@
                         
                     </a>
                 </li>
-                <li class="{{ request()->routeIs('reports.turnover.*') ? 'active' : '' }}">
+                <li class="{{ request()->routeIs('reports.turnover') || request()->routeIs('reports.turnover.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('analytics', $userPermissions); @endphp
                     <a href="{{ $hasAccess ? route('reports.turnover') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
                         @if($hasAccess)
@@ -484,7 +484,7 @@
                         request()->routeIs('admin.settings.*') || 
                         request()->routeIs('admin.email-templates.*') || 
                         request()->routeIs('admin.security.*') || 
-                        request()->routeIs('support-tickets.*') || 
+                        request()->routeIs('client.support-tickets.*') || 
                         request()->routeIs('client.notifications.*') ? 'true' : 'false' 
                     }}" class="dropdown-toggle">
                         <i class="menu-icon fa fa-cogs"></i>Настройки

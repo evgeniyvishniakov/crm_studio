@@ -18,6 +18,7 @@ class Sale extends Model
         'total_amount',
         'notes',
         'project_id',
+        'employee_id',
     ];
 
     public function client()
