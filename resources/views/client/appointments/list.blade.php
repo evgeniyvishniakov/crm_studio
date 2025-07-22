@@ -1044,10 +1044,39 @@
                     return true;
                 },
                 eventDidMount: function(info) {
-                    if (info.view.type === 'timeGridWeek') {
-                        info.el.style.background = 'transparent';
+                    if (info.view.type === 'timeGridWeek' || info.view.type === 'timeGridDay') {
+                        // Убираем только тень и границу, оставляем заливку
                         info.el.style.boxShadow = 'none';
                         info.el.style.border = 'none';
+                        
+                        // Делаем текст белым более эффективно с максимальной специфичностью
+                        info.el.style.setProperty('color', '#ffffff', 'important');
+                        
+                        // Применяем белый цвет ко всем дочерним элементам с максимальной специфичностью
+                        const allElements = info.el.querySelectorAll('*');
+                        allElements.forEach(el => {
+                            el.style.setProperty('color', '#ffffff', 'important');
+                        });
+                        
+                        // Дополнительно для заголовка и времени с максимальной специфичностью
+                        const eventTitle = info.el.querySelector('.fc-event-title');
+                        if (eventTitle) {
+                            eventTitle.style.setProperty('color', '#ffffff', 'important');
+                            eventTitle.style.setProperty('text-shadow', '0 1px 2px rgba(0,0,0,0.5)', 'important');
+                        }
+                        
+                        const eventTime = info.el.querySelector('.fc-event-time');
+                        if (eventTime) {
+                            eventTime.style.setProperty('color', '#ffffff', 'important');
+                            eventTime.style.setProperty('text-shadow', '0 1px 2px rgba(0,0,0,0.5)', 'important');
+                        }
+                        
+                        // Применяем ко всем элементам событий
+                        const eventElements = info.el.querySelectorAll('.fc-event-main, .fc-event-title, .fc-event-time');
+                        eventElements.forEach(el => {
+                            el.style.setProperty('color', '#ffffff', 'important');
+                            el.style.setProperty('text-shadow', '0 1px 2px rgba(0,0,0,0.5)', 'important');
+                        });
                     }
                 },
                 events: function(info, successCallback, failureCallback) {
