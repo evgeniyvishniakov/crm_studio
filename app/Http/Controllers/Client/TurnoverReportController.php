@@ -159,27 +159,37 @@ class TurnoverReportController extends Controller
             if ($startDate) $q->whereDate('date', '>=', $startDate);
             if ($endDate) $q->whereDate('date', '<=', $endDate);
         }])->where('project_id', $currentProjectId)->get();
-        $supplierSums = $supplierData->map(function($sup) {
-            return $sup->purchases->sum('total_amount');
-        })->toArray();
-        $supplierCounts = $supplierData->map(function($sup) {
-            return $sup->purchases->flatMap->items->sum('quantity');
-        })->toArray();
-        $supplierLabels = $supplierData->pluck('name')->toArray();
-        // Фильтрация по сумме > 0 (без unzip)
-        $filteredSuppliers = [];
-        foreach ($supplierLabels as $i => $label) {
-            if ($supplierSums[$i] > 0) {
-                $filteredSuppliers[] = [
-                    'label' => $label,
-                    'sum' => $supplierSums[$i],
-                    'count' => $supplierCounts[$i]
-                ];
-            }
+        
+        $allSuppliers = $supplierData->map(function($sup) {
+            return [
+                'label' => $sup->name,
+                'sum' => $sup->purchases->sum('total_amount'),
+                'count' => $sup->purchases->flatMap->items->sum('quantity')
+            ];
+        })->filter(function($sup) {
+            return $sup['sum'] > 0;
+        })->sortByDesc('sum')->values();
+
+        if ($allSuppliers->count() > 5) {
+            $topSuppliers = $allSuppliers->slice(0, 5);
+            $otherSuppliers = $allSuppliers->slice(5);
+
+            $otherSum = $otherSuppliers->sum('sum');
+            $otherCount = $otherSuppliers->sum('count');
+
+            $topSuppliers->push([
+                'label' => 'Остальные',
+                'sum' => $otherSum,
+                'count' => $otherCount
+            ]);
+            $filteredSuppliers = $topSuppliers;
+        } else {
+            $filteredSuppliers = $allSuppliers;
         }
-        $supplierLabels = array_column($filteredSuppliers, 'label');
-        $supplierSums = array_column($filteredSuppliers, 'sum');
-        $supplierCounts = array_column($filteredSuppliers, 'count');
+
+        $supplierLabels = $filteredSuppliers->pluck('label')->toArray();
+        $supplierSums = $filteredSuppliers->pluck('sum')->toArray();
+        $supplierCounts = $filteredSuppliers->pluck('count')->toArray();
 
         // Типы (Товары/Услуги) — считаем сумму
         $allSaleItems = $salesQuery->with('items')->get()->flatMap->items;
