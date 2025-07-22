@@ -57,12 +57,13 @@
 }
 </style>
 <div class="dashboard-container">
-    <h1 class="dashboard-title">Отчеты</h1>
+    <h1 class="dashboard-title">Работа с клиентами</h1>
 
     <!-- Навигация по вкладкам -->
     <div class="dashboard-tabs">
         <button class="tab-button active" data-tab="clients-analytics"><i class="fa fa-users"></i> Аналитика по клиентам</button>
         <button class="tab-button" data-tab="appointments-analytics"><i class="fa fa-calendar"></i> Аналитика по записям</button>
+        <button class="tab-button" data-tab="employees-analytics"><i class="fa fa-user-md"></i> Аналитика по сотрудникам</button>
         <button class="tab-button" data-tab="complex-analytics"><i class="fa fa-money"></i> Финансовая аналитика</button>
     </div>
 
@@ -155,6 +156,42 @@
                         <h4 class="mb-3">Популярность услуг</h4>
                         <p class="text-muted">Рейтинг услуг по количеству записей.</p>
                         <canvas id="servicesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка "Аналитика по сотрудникам" -->
+        <div class="tab-pane" id="employees-analytics" style="display: none;">
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Топ сотрудников по количеству процедур</h4>
+                        <p class="text-muted">Сотрудники с наибольшим количеством выполненных процедур.</p>
+                        <canvas id="topEmployeesProceduresBar"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Динамика процедур по сотрудникам</h4>
+                        <p class="text-muted">Как менялось количество процедур каждого сотрудника во времени.</p>
+                        <canvas id="employeesProceduresDynamicsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Топ сотрудников по выручке от процедур</h4>
+                        <p class="text-muted">Сотрудники с наибольшей выручкой от выполненных процедур.</p>
+                        <canvas id="topEmployeesRevenueBar"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Средний чек по сотрудникам</h4>
+                        <p class="text-muted">Средняя сумма одной процедуры у каждого сотрудника.</p>
+                        <canvas id="employeesAverageCheckBar"></canvas>
                     </div>
                 </div>
             </div>
@@ -291,7 +328,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Финансовая аналитика
             topClientsByRevenueChart: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } },
             avgCheckChart: { type: 'line', options: { scales: { y: { grid: { display: false } }, x: { grid: { display: false } } } } },
-            topServicesByRevenueChart: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } }
+            topServicesByRevenueChart: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } },
+            // Аналитика по сотрудникам
+            topEmployeesProceduresBar: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } },
+            employeesProceduresDynamicsChart: { type: 'line', options: { scales: { y: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, x: { grid: { display: false } } } } },
+            topEmployeesRevenueBar: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } },
+            employeesAverageCheckBar: { type: 'bar', options: { scales: { y: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } } }
         };
 
         Object.keys(chartConfigs).forEach(id => {
@@ -682,6 +724,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateAppointmentsAnalytics(period);
                     updateAppointmentStatusAnalytics(period);
                     updateServicePopularityAnalytics(period);
+                } else if (targetPaneId === 'employees-analytics') {
+                    updateEmployeesProceduresAnalytics(period);
+                    updateEmployeesProceduresDynamicsAnalytics(period);
+                    updateEmployeesRevenueAnalytics(period);
+                    updateEmployeesAverageCheckAnalytics(period);
                 } else if (targetPaneId === 'complex-analytics') {
                     updateTopClientsByRevenueAnalytics(period);
                     updateAvgCheckDynamicsAnalytics(period);
@@ -730,6 +777,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateAppointmentsAnalytics(period);
                     updateAppointmentStatusAnalytics(period);
                     updateServicePopularityAnalytics(period);
+                } else if (activeTabId === 'employees-analytics') {
+                    updateEmployeesProceduresAnalytics(period);
+                    updateEmployeesProceduresDynamicsAnalytics(period);
+                    updateEmployeesRevenueAnalytics(period);
+                    updateEmployeesAverageCheckAnalytics(period);
                 } else if (activeTabId === 'complex-analytics') {
                     updateTopClientsByRevenueAnalytics(period);
                     updateAvgCheckDynamicsAnalytics(period);
@@ -759,6 +811,11 @@ document.addEventListener('DOMContentLoaded', function() {
         updateAppointmentsAnalytics(initialPeriod);
         updateAppointmentStatusAnalytics(initialPeriod);
         updateServicePopularityAnalytics(initialPeriod);
+    } else if (initialTabId === 'employees-analytics') {
+        updateEmployeesProceduresAnalytics(initialPeriod);
+        updateEmployeesProceduresDynamicsAnalytics(initialPeriod);
+        updateEmployeesRevenueAnalytics(initialPeriod);
+        updateEmployeesAverageCheckAnalytics(initialPeriod);
     } else if (initialTabId === 'complex-analytics') {
         updateTopClientsByRevenueAnalytics(initialPeriod);
         updateAvgCheckDynamicsAnalytics(initialPeriod);
@@ -893,6 +950,120 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // --- Функции для аналитики по сотрудникам ---
+    
+    // Топ-5 сотрудников по количеству процедур
+    async function updateEmployeesProceduresAnalytics(period = 'week', params = null) {
+        let url = '/reports/employees-procedures-count';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
+        if (!charts.topEmployeesProceduresBar) return;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Ошибка сети');
+            const data = await response.json();
+            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i]})`);
+            const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
+            const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(59, 130, 246, 0.7)');
+            updateChart(charts.topEmployeesProceduresBar, labelsWithCounts, [{
+                label: 'Количество процедур',
+                data: data.data,
+                backgroundColor: colors,
+                borderColor: colors,
+                borderWidth: 1
+            }]);
+        } catch (e) {
+            // console.error('Ошибка загрузки топ-5 по процедурам', e);
+        }
+    }
+
+
+
+    // Динамика процедур по сотрудникам
+    async function updateEmployeesProceduresDynamicsAnalytics(period = 'week', params = null) {
+        let url = '/reports/employees-procedures-dynamics';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
+        if (!charts.employeesProceduresDynamicsChart) return;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Ошибка сети');
+            const data = await response.json();
+            const datasets = Object.keys(data.datasets).map((employee, i) => ({
+                label: employee,
+                data: data.datasets[employee],
+                borderColor: ['#2563eb','#10b981','#f59e42','#7c3aed','#ef4444','#0ea5e9'][i % 6],
+                backgroundColor: 'rgba(0,0,0,0)',
+                fill: false,
+                tension: 0.4
+            }));
+            updateChart(charts.employeesProceduresDynamicsChart, data.labels, datasets);
+        } catch (e) {
+            // console.error('Ошибка загрузки динамики процедур', e);
+        }
+    }
+
+
+
+    // Топ-5 сотрудников по выручке от процедур
+    async function updateEmployeesRevenueAnalytics(period = 'week', params = null) {
+        let url = '/reports/employees-revenue';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
+        if (!charts.topEmployeesRevenueBar) return;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Ошибка сети');
+            const data = await response.json();
+            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i].toLocaleString('ru-RU')} грн)`);
+            const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
+            const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(139, 92, 246, 0.7)');
+            updateChart(charts.topEmployeesRevenueBar, labelsWithCounts, [{
+                label: 'Выручка (грн)',
+                data: data.data,
+                backgroundColor: colors,
+                borderColor: colors,
+                borderWidth: 1
+            }]);
+        } catch (e) {
+            // console.error('Ошибка загрузки топ-5 по выручке', e);
+        }
+    }
+
+    // Средний чек по сотрудникам
+    async function updateEmployeesAverageCheckAnalytics(period = 'week', params = null) {
+        let url = '/reports/employees-average-check';
+        if (params) {
+            url += '?' + params;
+        } else {
+            url += `?period=${period}`;
+        }
+        if (!charts.employeesAverageCheckBar) return;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Ошибка сети');
+            const data = await response.json();
+            updateChart(charts.employeesAverageCheckBar, data.labels, [{
+                label: 'Средний чек (грн)',
+                data: data.data,
+                backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                borderColor: 'rgba(16, 185, 129, 1)',
+                borderWidth: 1
+            }]);
+        } catch (e) {
+            // console.error('Ошибка загрузки среднего чека', e);
+        }
+    }
+
     // --- Логика для календаря ---
     const calendarBtn = document.getElementById('dateRangePicker');
     const calendarRangeDisplay = document.getElementById('calendarRangeDisplay');
@@ -943,6 +1114,10 @@ document.addEventListener('DOMContentLoaded', function() {
         updateAppointmentsAnalytics(null, params);
         updateAppointmentStatusAnalytics(null, params);
         updateServicePopularityAnalytics(null, params);
+        updateEmployeesProceduresAnalytics(null, params);
+        updateEmployeesProceduresDynamicsAnalytics(null, params);
+        updateEmployeesRevenueAnalytics(null, params);
+        updateEmployeesAverageCheckAnalytics(null, params);
         updateTopClientsByRevenueAnalytics(null, params);
         updateAvgCheckDynamicsAnalytics(null, params);
         updateLtvByClientTypeAnalytics(null, params);

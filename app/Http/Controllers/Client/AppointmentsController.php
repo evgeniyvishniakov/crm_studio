@@ -1340,4 +1340,282 @@ class AppointmentsController extends Controller
             return response()->json(['success' => false, 'message' => 'Ошибка при переносе: ' . $e->getMessage()], 500);
         }
     }
+
+    // --- Аналитика по сотрудникам ---
+
+    /**
+     * Топ-5 сотрудников по количеству процедур
+     */
+    public function getEmployeesProceduresCount(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $period = $request->input('period', 'week');
+
+        $query = Appointment::where('project_id', $currentProjectId)
+            ->where('status', 'completed');
+
+        // Применяем фильтры по дате
+        if ($startDate && $endDate) {
+            $query->whereBetween('date', [$startDate, $endDate]);
+        } else {
+            $this->applyPeriodFilter($query, $period);
+        }
+
+        $employeesData = $query->with('user:id,name')
+            ->get()
+            ->groupBy('user_id')
+            ->map(function($appointments, $userId) {
+                $user = $appointments->first()->user;
+                return [
+                    'name' => $user ? $user->name : '—',
+                    'count' => $appointments->count()
+                ];
+            })
+            ->sortByDesc('count')
+            ->take(5)
+            ->values();
+
+        return response()->json([
+            'labels' => $employeesData->pluck('name')->toArray(),
+            'data' => $employeesData->pluck('count')->toArray()
+        ]);
+    }
+
+    /**
+     * Структура процедур по сотрудникам (доли)
+     */
+    public function getEmployeesProceduresStructure(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $period = $request->input('period', 'week');
+
+        $query = Appointment::where('project_id', $currentProjectId)
+            ->where('status', 'completed');
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('date', [$startDate, $endDate]);
+        } else {
+            $this->applyPeriodFilter($query, $period);
+        }
+
+        $employeesData = $query->with('user:id,name')
+            ->get()
+            ->groupBy('user_id')
+            ->map(function($appointments, $userId) {
+                $user = $appointments->first()->user;
+                return [
+                    'name' => $user ? $user->name : '—',
+                    'count' => $appointments->count()
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'labels' => $employeesData->pluck('name')->toArray(),
+            'data' => $employeesData->pluck('count')->toArray()
+        ]);
+    }
+
+    /**
+     * Динамика процедур по сотрудникам (по месяцам)
+     */
+    public function getEmployeesProceduresDynamics(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $period = $request->input('period', 'week');
+
+        $query = Appointment::where('project_id', $currentProjectId)
+            ->where('status', 'completed');
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('date', [$startDate, $endDate]);
+        } else {
+            $this->applyPeriodFilter($query, $period);
+        }
+
+        $appointments = $query->with('user:id,name')->get();
+
+        // Группируем по месяцам
+        $byMonth = $appointments->groupBy(function($appointment) {
+            return Carbon::parse($appointment->date)->format('m.Y');
+        });
+
+        $allMonths = $byMonth->keys()->sort()->values()->all();
+        
+        // Получаем всех сотрудников
+        $employees = $appointments->groupBy('user_id')->map(function($appointments, $userId) {
+            $user = $appointments->first()->user;
+            return $user ? $user->name : '—';
+        })->values()->all();
+
+        $datasets = [];
+        foreach ($employees as $employeeName) {
+            $datasets[$employeeName] = [];
+            foreach ($allMonths as $month) {
+                $count = $byMonth[$month]->filter(function($appointment) use ($employeeName) {
+                    $user = $appointment->user;
+                    return $user && $user->name === $employeeName;
+                })->count();
+                $datasets[$employeeName][] = $count;
+            }
+        }
+
+        return response()->json([
+            'labels' => $allMonths,
+            'datasets' => $datasets
+        ]);
+    }
+
+    /**
+     * Среднее время процедуры по сотрудникам
+     */
+    public function getEmployeesAverageTime(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $period = $request->input('period', 'week');
+
+        $query = Appointment::where('project_id', $currentProjectId)
+            ->where('status', 'completed')
+            ->whereNotNull('duration');
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('date', [$startDate, $endDate]);
+        } else {
+            $this->applyPeriodFilter($query, $period);
+        }
+
+        $employeesData = $query->with('user:id,name')
+            ->get()
+            ->groupBy('user_id')
+            ->map(function($appointments, $userId) {
+                $user = $appointments->first()->user;
+                return [
+                    'name' => $user ? $user->name : '—',
+                    'avg_duration' => round($appointments->avg('duration'), 1)
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'labels' => $employeesData->pluck('name')->toArray(),
+            'data' => $employeesData->pluck('avg_duration')->toArray()
+        ]);
+    }
+
+    /**
+     * Топ-5 сотрудников по выручке от процедур
+     */
+    public function getEmployeesRevenue(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $period = $request->input('period', 'week');
+
+        $query = Appointment::where('project_id', $currentProjectId)
+            ->where('status', 'completed');
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('date', [$startDate, $endDate]);
+        } else {
+            $this->applyPeriodFilter($query, $period);
+        }
+
+        $employeesData = $query->with('user:id,name')
+            ->get()
+            ->groupBy('user_id')
+            ->map(function($appointments, $userId) {
+                $user = $appointments->first()->user;
+                $totalRevenue = $appointments->sum('price') ?? 0;
+                return [
+                    'name' => $user ? $user->name : '—',
+                    'revenue' => $totalRevenue
+                ];
+            })
+            ->sortByDesc('revenue')
+            ->take(5)
+            ->values();
+
+        return response()->json([
+            'labels' => $employeesData->pluck('name')->toArray(),
+            'data' => $employeesData->pluck('revenue')->toArray()
+        ]);
+    }
+
+    /**
+     * Средний чек по сотрудникам
+     */
+    public function getEmployeesAverageCheck(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $period = $request->input('period', 'week');
+
+        $query = Appointment::where('project_id', $currentProjectId)
+            ->where('status', 'completed')
+            ->whereNotNull('price')
+            ->where('price', '>', 0);
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('date', [$startDate, $endDate]);
+        } else {
+            $this->applyPeriodFilter($query, $period);
+        }
+
+        $employeesData = $query->with('user:id,name')
+            ->get()
+            ->groupBy('user_id')
+            ->map(function($appointments, $userId) {
+                $user = $appointments->first()->user;
+                return [
+                    'name' => $user ? $user->name : '—',
+                    'avg_check' => round($appointments->avg('price'), 2)
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'labels' => $employeesData->pluck('name')->toArray(),
+            'data' => $employeesData->pluck('avg_check')->toArray()
+        ]);
+    }
+
+    /**
+     * Вспомогательный метод для применения фильтров по периодам
+     */
+    private function applyPeriodFilter($query, $period)
+    {
+        $end = Carbon::now();
+        
+        switch ($period) {
+            case 'week':
+                $start = $end->copy()->startOfWeek();
+                break;
+            case '2weeks':
+                $start = $end->copy()->subWeeks(2)->startOfWeek();
+                break;
+            case 'month':
+                $start = $end->copy()->startOfMonth();
+                break;
+            case 'half_year':
+                $start = $end->copy()->subMonths(6)->startOfMonth();
+                break;
+            case 'year':
+                $start = $end->copy()->subYear()->startOfMonth();
+                break;
+            default:
+                $start = $end->copy()->startOfWeek();
+        }
+        
+        $query->whereBetween('date', [$start->format('Y-m-d'), $end->format('Y-m-d')]);
+    }
 }

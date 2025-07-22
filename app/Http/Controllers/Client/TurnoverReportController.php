@@ -488,4 +488,235 @@ class TurnoverReportController extends Controller
             'avgTurnoverDays' => $avgTurnoverDays,
         ]);
     }
+
+    /**
+     * Аналитика: расходы по месяцам
+     */
+    public function expensesByMonth(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $query = \App\Models\Clients\Expense::where('project_id', $currentProjectId);
+        if ($startDate) $query->whereDate('date', '>=', $startDate);
+        if ($endDate) $query->whereDate('date', '<=', $endDate);
+        $expenses = $query->get();
+        $months = $expenses->groupBy(function($item) { return \Carbon\Carbon::parse($item->date)->format('Y-m'); });
+        $labels = [];
+        $data = [];
+        foreach ($months as $month => $items) {
+            $labels[] = \Carbon\Carbon::parse($month.'-01')->format('m.Y');
+            $data[] = $items->sum('amount');
+        }
+        return response()->json(['labels' => $labels, 'data' => $data]);
+    }
+
+    /**
+     * Аналитика: структура расходов по категориям
+     */
+    public function expensesByCategory(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $query = \App\Models\Clients\Expense::where('project_id', $currentProjectId);
+        if ($startDate) $query->whereDate('date', '>=', $startDate);
+        if ($endDate) $query->whereDate('date', '<=', $endDate);
+        $expenses = $query->get();
+        $categories = config('expenses.categories', []);
+        $labels = $categories;
+        $data = [];
+        foreach ($categories as $cat) {
+            $data[] = $expenses->where('category', $cat)->sum('amount');
+        }
+        return response()->json(['labels' => $labels, 'data' => $data]);
+    }
+
+    /**
+     * Аналитика: динамика расходов по категориям
+     */
+    public function expensesCategoryDynamics(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $query = \App\Models\Clients\Expense::where('project_id', $currentProjectId);
+        if ($startDate) $query->whereDate('date', '>=', $startDate);
+        if ($endDate) $query->whereDate('date', '<=', $endDate);
+        $expenses = $query->get();
+        $categories = config('expenses.categories', []);
+        $months = $expenses->groupBy(function($item) { return \Carbon\Carbon::parse($item->date)->format('Y-m'); });
+        $labels = [];
+        $datasets = [];
+        foreach ($categories as $cat) {
+            $datasets[$cat] = [];
+        }
+        foreach ($months as $month => $items) {
+            $labels[] = \Carbon\Carbon::parse($month.'-01')->format('m.Y');
+            foreach ($categories as $cat) {
+                $datasets[$cat][] = $items->where('category', $cat)->sum('amount');
+            }
+        }
+        return response()->json(['labels' => $labels, 'datasets' => $datasets]);
+    }
+
+    /**
+     * Аналитика: средний расход по категориям
+     */
+    public function expensesAverageByCategory(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $query = \App\Models\Clients\Expense::where('project_id', $currentProjectId);
+        if ($startDate) $query->whereDate('date', '>=', $startDate);
+        if ($endDate) $query->whereDate('date', '<=', $endDate);
+        $expenses = $query->get();
+        $categories = config('expenses.categories', []);
+        $monthCount = $expenses->groupBy(function($item) { return \Carbon\Carbon::parse($item->date)->format('Y-m'); })->count();
+        $labels = $categories;
+        $data = [];
+        foreach ($categories as $cat) {
+            $sum = $expenses->where('category', $cat)->sum('amount');
+            $data[] = $monthCount ? round($sum / $monthCount, 2) : 0;
+        }
+        return response()->json(['labels' => $labels, 'data' => $data]);
+    }
+
+    /**
+     * Аналитика: топ-3 месяца по расходам
+     */
+    public function expensesTopMonths(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $query = \App\Models\Clients\Expense::where('project_id', $currentProjectId);
+        if ($startDate) $query->whereDate('date', '>=', $startDate);
+        if ($endDate) $query->whereDate('date', '<=', $endDate);
+        $expenses = $query->get();
+        $months = $expenses->groupBy(function($item) { return \Carbon\Carbon::parse($item->date)->format('Y-m'); });
+        $monthSums = [];
+        foreach ($months as $month => $items) {
+            $monthSums[$month] = $items->sum('amount');
+        }
+        arsort($monthSums);
+        $labels = [];
+        $data = [];
+        foreach (array_slice($monthSums, 0, 3, true) as $month => $sum) {
+            $labels[] = \Carbon\Carbon::parse($month.'-01')->format('m.Y');
+            $data[] = $sum;
+        }
+        return response()->json(['labels' => $labels, 'data' => $data]);
+    }
+
+    /**
+     * Аналитика: доля фиксированных и переменных расходов
+     */
+    public function expensesFixedVariable(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $query = \App\Models\Clients\Expense::where('project_id', $currentProjectId);
+        if ($startDate) $query->whereDate('date', '>=', $startDate);
+        if ($endDate) $query->whereDate('date', '<=', $endDate);
+        $expenses = $query->get();
+        $fixed = ['Аренда и коммуналка', 'Зарплата', 'Налоги'];
+        $variable = ['Материалы', 'Реклама', 'Прочее'];
+        $fixedSum = $expenses->whereIn('category', $fixed)->sum('amount');
+        $variableSum = $expenses->whereIn('category', $variable)->sum('amount');
+        return response()->json([
+            'labels' => ['Фиксированные', 'Переменные'],
+            'data' => [$fixedSum, $variableSum]
+        ]);
+    }
+
+    // --- Аналитика по сотрудникам ---
+    public function employeesAnalytics(Request $request)
+    {
+        $currentProjectId = auth()->user()->project_id;
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        
+        // Получаем продажи с данными о сотрудниках
+        $salesQuery = \App\Models\Clients\Sale::where('project_id', $currentProjectId);
+        if ($startDate) $salesQuery->whereDate('date', '>=', $startDate);
+        if ($endDate) $salesQuery->whereDate('date', '<=', $endDate);
+        $sales = $salesQuery->get();
+
+        // Получаем всех сотрудников проекта
+        $employees = \App\Models\Admin\User::where('project_id', $currentProjectId)->get(['id', 'name'])->keyBy('id');
+
+        // Топ-5 сотрудников по объему продаж
+        $topEmployees = $sales->groupBy('employee_id')->map(function($sales, $id) use ($employees) {
+            $name = $employees->get($id)->name ?? '—';
+            return [
+                'label' => $name,
+                'sum' => $sales->sum('total_amount')
+            ];
+        })->sortByDesc('sum')->take(5)->values()->all();
+
+        // Структура продаж по сотрудникам (доли)
+        $employeesStructure = $sales->groupBy('employee_id')->map(function($sales, $id) use ($employees) {
+            $name = $employees->get($id)->name ?? '—';
+            return [
+                'label' => $name,
+                'sum' => $sales->sum('total_amount')
+            ];
+        })->values()->all();
+
+        // Динамика продаж по сотрудникам (по месяцам)
+        $employeesDynamics = [];
+        $employeesDynamicsLabels = [];
+        $byMonth = $sales->groupBy(function($sale) {
+            return \Carbon\Carbon::parse($sale->date)->format('m.Y');
+        });
+        $allMonths = $byMonth->keys()->sort()->values()->all();
+        
+        // Получаем имена сотрудников из продаж
+        $employeeNames = [];
+        foreach ($sales->groupBy('employee_id') as $employeeId => $employeeSales) {
+            $name = $employees->get($employeeId)->name ?? '—';
+            $employeeNames[] = $name;
+        }
+        
+        foreach ($employeeNames as $name) {
+            $employeesDynamics[$name] = [];
+            foreach ($allMonths as $month) {
+                $sum = $byMonth[$month]->filter(function($sale) use ($employees, $name) {
+                    $employeeId = $sale->employee_id;
+                    $employeeName = $employees->get($employeeId)->name ?? '—';
+                    return $employeeName === $name;
+                })->sum('total_amount');
+                $employeesDynamics[$name][] = $sum;
+            }
+        }
+        $employeesDynamicsLabels = $allMonths;
+
+        // Средний чек по сотрудникам
+        $employeesAverage = [
+            'labels' => [],
+            'data' => []
+        ];
+        $avg = $sales->groupBy('employee_id')->map(function($sales, $id) use ($employees) {
+            $name = $employees->get($id)->name ?? '—';
+            return [
+                'label' => $name,
+                'avg' => $sales->avg('total_amount')
+            ];
+        })->values();
+        foreach ($avg as $row) {
+            $employeesAverage['labels'][] = $row['label'];
+            $employeesAverage['data'][] = $row['avg'];
+        }
+
+        return response()->json([
+            'topEmployees' => $topEmployees,
+            'employeesStructure' => $employeesStructure,
+            'employeesDynamics' => $employeesDynamics,
+            'employeesDynamicsLabels' => $employeesDynamicsLabels,
+            'employeesAverage' => $employeesAverage,
+        ]);
+    }
 } 

@@ -3488,6 +3488,90 @@
                 addServiceSelect.addEventListener('change', () => handleServiceChange(addServiceSelect));
             }
         });
+
+        // --- Функция для обновления графиков сотрудников ---
+        function updateEmployeesAnalytics(params = '') {
+            // 1. Топ-5 сотрудников по объему продаж
+            fetch('/analytics/top-employees-by-sales' + (params ? '?' + params : ''))
+                .then(r => r.json())
+                .then(data => {
+                    const ctx = document.getElementById('topEmployeesBar').getContext('2d');
+                    if (charts.topEmployeesBar) charts.topEmployeesBar.destroy();
+                    charts.topEmployeesBar = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Сумма продаж',
+                                data: data.data,
+                                backgroundColor: '#6366f1'
+                            }]
+                        },
+                        options: {scales: {y: {beginAtZero: true}}}
+                    });
+                });
+
+            // 2. Структура продаж по сотрудникам
+            fetch('/analytics/employees-sales-structure' + (params ? '?' + params : ''))
+                .then(r => r.json())
+                .then(data => {
+                    const ctx = document.getElementById('employeesStructurePie').getContext('2d');
+                    if (charts.employeesStructurePie) charts.employeesStructurePie.destroy();
+                    charts.employeesStructurePie = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                data: data.data,
+                                backgroundColor: [
+                                    '#2563eb','#10b981','#f59e42','#7c3aed','#ef4444','#0ea5e9'
+                                ]
+                            }]
+                        }
+                    });
+                });
+
+            // 3. Динамика продаж по сотрудникам
+            fetch('/analytics/employees-sales-dynamics' + (params ? '?' + params : ''))
+                .then(r => r.json())
+                .then(data => {
+                    const ctx = document.getElementById('employeesDynamicsChart').getContext('2d');
+                    if (charts.employeesDynamicsChart) charts.employeesDynamicsChart.destroy();
+                    const datasets = (data.datasets || []).map((ds, i) => ({
+                        label: ds.label,
+                        data: ds.data,
+                        borderColor: ['#2563eb','#10b981','#f59e42','#7c3aed','#ef4444','#0ea5e9'][i % 6],
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        fill: false,
+                        tension: 0.4
+                    }));
+                    charts.employeesDynamicsChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {labels: data.labels, datasets},
+                        options: {scales: {y: {beginAtZero: true}}}
+                    });
+                });
+
+            // 4. Средняя сумма продажи по сотрудникам
+            fetch('/analytics/employees-average-sale' + (params ? '?' + params : ''))
+                .then(r => r.json())
+                .then(data => {
+                    const ctx = document.getElementById('employeesAverageBar').getContext('2d');
+                    if (charts.employeesAverageBar) charts.employeesAverageBar.destroy();
+                    charts.employeesAverageBar = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Средняя сумма продажи',
+                                data: data.data,
+                                backgroundColor: '#f59e42'
+                            }]
+                        },
+                        options: {scales: {y: {beginAtZero: true}}}
+                    });
+                });
+        }
     </script>
 </div>
 @endsection

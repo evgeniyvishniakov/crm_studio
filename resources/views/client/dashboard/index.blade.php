@@ -1053,11 +1053,60 @@
                 events: '/appointments/calendar-events',
 
                 eventDidMount: function(info) {
+                    // Получаем дату текущего события
+                    const currentEventDate = info.event.start ? info.event.start.toISOString().slice(0,10) : null;
+                    
+                    // Получаем все события на этот день
+                    const dayEvents = calendar.getEvents().filter(ev => {
+                        const evDate = ev.start ? ev.start.toISOString().slice(0,10) : null;
+                        return evDate === currentEventDate;
+                    });
+                    
+                    // Отладочная информация
+                    console.log('День:', currentEventDate, 'Записей:', dayEvents.length);
+                    
+                    // Создаем индикатор для всех дней с записями
+                    if (dayEvents.length > 0) {
+                        const dayEl = info.el.closest('.fc-daygrid-day');
+                        if (dayEl) {
+                            // Проверяем, есть ли уже индикатор
+                            let existingIndicator = dayEl.querySelector('.appointment-count-indicator');
+                            
+                            if (!existingIndicator) {
+                                console.log('Создаем индикатор для', dayEvents.length, 'записей');
+                                
+                                // Создаем новый индикатор
+                                const indicator = document.createElement('div');
+                                indicator.className = 'appointment-count-indicator';
+                                indicator.textContent = dayEvents.length;
+                                indicator.style.cssText = `
+                                    position: absolute;
+                                    bottom: 40%;
+                                    left: 50%;
+                                    transform: translate(-50%, 50%);
+                                    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+                                    color: #ffffff !important;
+                                    border-radius: 4px;
+                                    padding: 2px 6px;
+                                    font-size: 11px;
+                                    font-weight: 600;
+                                    z-index: 10;
+                                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                                    min-width: 16px;
+                                    text-align: center;
+                                    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+                                `;
+                                dayEl.style.position = 'relative';
+                                dayEl.appendChild(indicator);
+                                console.log('Индикатор создан');
+                            }
+                        }
+                    }
+                    
+                    // Скрываем все точки
                     const dotEl = info.el.querySelector('.fc-daygrid-event-dot');
                     if (dotEl) {
-                        const status = info.event.extendedProps.status || 'default';
-                        const color = getStatusColor(status);
-                        dotEl.style.borderColor = color;
+                        dotEl.style.display = 'none';
                     }
                 },
 

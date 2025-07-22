@@ -10,6 +10,8 @@
             <button class="tab-button active" data-tab="dynamic-analytics"><i class="fa fa-line-chart"></i> Динамика и структура</button>
             <button class="tab-button" data-tab="tops-analytics"><i class="fa fa-star"></i> Топы</button>
             <button class="tab-button" data-tab="suppliers-analytics"><i class="fa fa-truck"></i> Поставщики и остатки</button>
+            <button class="tab-button" data-tab="expenses-analytics"><i class="fa fa-credit-card"></i> Расходы</button>
+            <button class="tab-button" data-tab="employees-analytics"><i class="fa fa-users"></i> Сотрудники</button>
         </div>
 
         <!-- Фильтры периода -->
@@ -164,6 +166,122 @@
                 </div>
             </div>
         </div>
+        <div class="tab-pane" id="expenses-analytics" style="display: none;">
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Доля фиксированных и переменных расходов</h4>
+                        <p class="text-muted">Сравнение фиксированных и переменных расходов.</p>
+                        <canvas id="expensesFixedVariablePie"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Структура расходов по категориям</h4>
+                        <p class="text-muted">Доля каждой категории в общих расходах.</p>
+                        <canvas id="expensesByCategoryPie"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Динамика расходов по категориям</h4>
+                        <p class="text-muted">Как менялись расходы по каждой категории во времени.</p>
+                        <canvas id="expensesCategoryDynamicsChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Динамика расходов по месяцам</h4>
+                        <p class="text-muted">Как менялись общие расходы по месяцам.</p>
+                        <canvas id="expensesByMonthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Топ-3 месяца по расходам</h4>
+                        <p class="text-muted">Месяцы с наибольшими расходами.</p>
+                        <canvas id="expensesTopMonthsBar"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Средний расход по категориям</h4>
+                        <p class="text-muted">Средний ежемесячный расход по каждой категории.</p>
+                        <canvas id="expensesAverageByCategoryBar"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="employees-analytics" style="display: none;">
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Топ-5 сотрудников по объему продаж</h4>
+                        <p class="text-muted">Сотрудники с наибольшей суммой продаж за период.</p>
+                        <canvas id="topEmployeesBar"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Структура продаж по сотрудникам</h4>
+                        <p class="text-muted">Доля каждого сотрудника в общих продажах.</p>
+                        <canvas id="employeesStructurePie"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Динамика продаж по сотрудникам</h4>
+                        <p class="text-muted">Как менялись продажи каждого сотрудника во времени.</p>
+                        <canvas id="employeesDynamicsChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Средняя сумма продажи по сотрудникам</h4>
+                        <p class="text-muted">Средняя сумма одной продажи у каждого сотрудника.</p>
+                        <canvas id="employeesAverageBar"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Топ-5 сотрудников по количеству процедур</h4>
+                        <p class="text-muted">Сотрудники с наибольшим количеством выполненных процедур.</p>
+                        <canvas id="topEmployeesProceduresBar"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Структура процедур по сотрудникам</h4>
+                        <p class="text-muted">Доля каждого сотрудника в общем количестве процедур.</p>
+                        <canvas id="employeesProceduresStructurePie"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Динамика процедур по сотрудникам</h4>
+                        <p class="text-muted">Как менялось количество процедур каждого сотрудника во времени.</p>
+                        <canvas id="employeesProceduresDynamicsChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="report-card">
+                        <h4 class="mb-3">Среднее время процедуры по сотрудникам</h4>
+                        <p class="text-muted">Средняя продолжительность одной процедуры у каждого сотрудника.</p>
+                        <canvas id="employeesAverageTimeBar"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -218,6 +336,7 @@
         updateTurnoverAnalytics(params);
         updateTopsAnalytics(params);
         updateSuppliersAnalytics(params);
+        // updateExpensesAnalytics(params); // Убрано - будет вызвано при переключении на вкладку
 
         if (document.getElementById('stockTotalQty')) {
             document.getElementById('stockTotalQty').textContent = stockTotalQty.toLocaleString('ru-RU');
@@ -269,6 +388,10 @@
                 updateTopsAnalytics(params);
             } else if (targetPaneId === 'suppliers-analytics') {
                 updateSuppliersAnalytics(params);
+            } else if (targetPaneId === 'expenses-analytics') {
+                updateExpensesAnalytics(params);
+            } else if (targetPaneId === 'employees-analytics') {
+                updateEmployeesAnalytics(params);
             }
         });
     });
@@ -733,6 +856,10 @@
                 updateTopsAnalytics(params);
             } else if (activeTabId === 'suppliers-analytics') {
                 updateSuppliersAnalytics(params);
+            } else if (activeTabId === 'expenses-analytics') {
+                updateExpensesAnalytics(params);
+            } else if (activeTabId === 'employees-analytics') {
+                updateEmployeesAnalytics(params);
             }
         });
     });
@@ -767,6 +894,10 @@
                             updateTopsAnalytics(params);
                         } else if (activeTabId === 'suppliers-analytics') {
                             updateSuppliersAnalytics(params);
+                        } else if (activeTabId === 'expenses-analytics') {
+                            updateExpensesAnalytics(params);
+                        } else if (activeTabId === 'employees-analytics') {
+                            updateEmployeesAnalytics(params);
                         }
                     }
                 }
@@ -1000,6 +1131,275 @@
                 if (document.getElementById('avgTurnoverDaysValue')) {
                     const val = data.avgTurnoverDays;
                     document.getElementById('avgTurnoverDaysValue').textContent = val !== null ? val + ' дней' : '—';
+                }
+            });
+    }
+
+    // --- Функция для обновления графиков расходов ---
+    function updateExpensesAnalytics(params = '') {
+        // 1. Динамика по месяцам
+        fetch('/analytics/expenses-by-month' + (params ? '?' + params : ''))
+            .then(r => r.json())
+            .then(data => {
+                const ctx = document.getElementById('expensesByMonthChart').getContext('2d');
+                if (charts.expensesByMonthChart) charts.expensesByMonthChart.destroy();
+                charts.expensesByMonthChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Общие расходы',
+                            data: data.data,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239,68,68,0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {scales: {y: {beginAtZero: true}}}
+                });
+            });
+        // 2. Структура по категориям
+        fetch('/analytics/expenses-by-category' + (params ? '?' + params : ''))
+            .then(r => r.json())
+            .then(data => {
+                const ctx = document.getElementById('expensesByCategoryPie').getContext('2d');
+                if (charts.expensesByCategoryPie) charts.expensesByCategoryPie.destroy();
+                charts.expensesByCategoryPie = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            data: data.data,
+                            backgroundColor: [
+                                '#2563eb','#10b981','#f59e42','#7c3aed','#ef4444','#0ea5e9'
+                            ]
+                        }]
+                    }
+                });
+            });
+        // 3. Динамика по категориям
+        fetch('/analytics/expenses-category-dynamics' + (params ? '?' + params : ''))
+            .then(r => r.json())
+            .then(data => {
+                const ctx = document.getElementById('expensesCategoryDynamicsChart').getContext('2d');
+                if (charts.expensesCategoryDynamicsChart) charts.expensesCategoryDynamicsChart.destroy();
+                const datasets = Object.keys(data.datasets).map((cat, i) => ({
+                    label: cat,
+                    data: data.datasets[cat],
+                    borderColor: ['#2563eb','#10b981','#f59e42','#7c3aed','#ef4444','#0ea5e9'][i % 6],
+                    backgroundColor: 'rgba(0,0,0,0)',
+                    fill: false,
+                    tension: 0.4
+                }));
+                charts.expensesCategoryDynamicsChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {labels: data.labels, datasets},
+                    options: {scales: {y: {beginAtZero: true}}}
+                });
+            });
+        // 4. Средний расход по категориям
+        fetch('/analytics/expenses-average-by-category' + (params ? '?' + params : ''))
+            .then(r => r.json())
+            .then(data => {
+                const ctx = document.getElementById('expensesAverageByCategoryBar').getContext('2d');
+                if (charts.expensesAverageByCategoryBar) charts.expensesAverageByCategoryBar.destroy();
+                charts.expensesAverageByCategoryBar = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Средний расход',
+                            data: data.data,
+                            backgroundColor: '#f59e42'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                suggestedMax: Math.max(...data.data) * 1.1
+                            }
+                        }
+                    }
+                });
+            });
+        // 5. Топ-3 месяца
+        fetch('/analytics/expenses-top-months' + (params ? '?' + params : ''))
+            .then(r => r.json())
+            .then(data => {
+                const ctx = document.getElementById('expensesTopMonthsBar').getContext('2d');
+                if (charts.expensesTopMonthsBar) charts.expensesTopMonthsBar.destroy();
+                charts.expensesTopMonthsBar = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Расходы',
+                            data: data.data,
+                            backgroundColor: '#7c3aed'
+                        }]
+                    },
+                    options: {scales: {y: {beginAtZero: true}}}
+                });
+            });
+        // 6. Фикс/переменные
+        fetch('/analytics/expenses-fixed-variable' + (params ? '?' + params : ''))
+            .then(r => r.json())
+            .then(data => {
+                const ctx = document.getElementById('expensesFixedVariablePie').getContext('2d');
+                if (charts.expensesFixedVariablePie) charts.expensesFixedVariablePie.destroy();
+                charts.expensesFixedVariablePie = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            data: data.data,
+                            backgroundColor: ['#2563eb','#ef4444']
+                        }]
+                    }
+                });
+            });
+    }
+
+    function updateEmployeesAnalytics(params = '') {
+        let url = '/analytics/employees-analytics';
+        if (params) url += '?' + params;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Топ-5 сотрудников по объему продаж
+                if (charts.topEmployeesBar) charts.topEmployeesBar.destroy();
+                const topEmployeesBar = document.getElementById('topEmployeesBar');
+                if (topEmployeesBar) {
+                    const maxValue = data.topEmployees.length > 0 ? Math.max(...data.topEmployees.map(e => e.sum)) : 0;
+                    const ctx = topEmployeesBar.getContext('2d');
+                    const area = {left: 0, right: topEmployeesBar.width};
+                    const grad = ctx.createLinearGradient(area.left, 0, area.right, 0);
+                    grad.addColorStop(0, 'rgba(59,130,246,0.2)');
+                    grad.addColorStop(0.5, 'rgba(59,130,246,0.5)');
+                    grad.addColorStop(1, 'rgba(59,130,246,0.9)');
+                    charts.topEmployeesBar = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.topEmployees.map(e => e.label),
+                            datasets: [{
+                                label: 'Продажи, грн',
+                                data: data.topEmployees.map(e => e.sum),
+                                backgroundColor: grad,
+                                borderColor: 'rgba(59,130,246,0.3)',
+                                borderRadius: 8,
+                                borderSkipped: false
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                    suggestedMax: maxValue * 1.1,
+                                    grid: { display: true, color: '#e5e7eb' },
+                                    ticks: {
+                                        callback: function(value) { return value.toLocaleString('ru-RU'); },
+                                        padding: 8
+                                    }
+                                },
+                                y: {
+                                    grid: { display: false },
+                                    ticks: {
+                                        callback: function(value) {
+                                            const label = this.getLabelForValue(value);
+                                            return label.length > 15 ? label.slice(0, 15) + '...' : label;
+                                        },
+                                        padding: 8
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Структура продаж по сотрудникам (круговая диаграмма)
+                if (charts.employeesStructurePie) charts.employeesStructurePie.destroy();
+                const employeesStructurePie = document.getElementById('employeesStructurePie');
+                if (employeesStructurePie) {
+                    const pieColors = ['#2563eb', '#10b981', '#f59e42', '#7c3aed', '#ef4444', '#64748b'];
+                    const ctx = employeesStructurePie.getContext('2d');
+                    charts.employeesStructurePie = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.employeesStructure.map(e => e.label),
+                            datasets: [{
+                                data: data.employeesStructure.map(e => e.sum),
+                                backgroundColor: pieColors,
+                                borderColor: 'rgba(255,255,255,0.7)',
+                                borderWidth: 2,
+                                hoverOffset: 12,
+                            }]
+                        },
+                        options: {
+                             plugins: {
+                                legend: { position: 'top' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            const label = context.label || '';
+                                            const value = context.raw || 0;
+                                            return `${label}: ${value.toLocaleString('ru-RU')} грн`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Динамика продаж по сотрудникам
+                if (charts.employeesDynamicsChart) charts.employeesDynamicsChart.destroy();
+                const employeesDynamicsChart = document.getElementById('employeesDynamicsChart');
+                if (employeesDynamicsChart) {
+                    const ctx = employeesDynamicsChart.getContext('2d');
+                    const datasets = Object.keys(data.employeesDynamics).map((emp, i) => ({
+                        label: emp,
+                        data: data.employeesDynamics[emp],
+                        borderColor: ['#2563eb','#10b981','#f59e42','#7c3aed','#ef4444','#0ea5e9'][i % 6],
+                        backgroundColor: 'rgba(0,0,0,0)',
+                        fill: false,
+                        tension: 0.4
+                    }));
+                    charts.employeesDynamicsChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {labels: data.employeesDynamicsLabels, datasets},
+                        options: {scales: {y: {beginAtZero: true}}}
+                    });
+                }
+
+                // Средняя сумма продажи по сотрудникам
+                if (charts.employeesAverageBar) charts.employeesAverageBar.destroy();
+                const employeesAverageBar = document.getElementById('employeesAverageBar');
+                if (employeesAverageBar) {
+                    const ctx = employeesAverageBar.getContext('2d');
+                    if (charts.employeesAverageBar) charts.employeesAverageBar.destroy();
+                    charts.employeesAverageBar = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.employeesAverage.labels,
+                            datasets: [{
+                                label: 'Средняя сумма продажи',
+                                data: data.employeesAverage.data,
+                                backgroundColor: '#f59e42'
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    suggestedMax: Math.max(...data.employeesAverage.data) * 1.1
+                                }
+                            }
+                        }
+                    });
                 }
             });
     }

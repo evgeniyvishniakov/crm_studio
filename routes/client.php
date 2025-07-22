@@ -220,6 +220,25 @@ Route::middleware('auth:client')->group(function () {
         Route::get('/avg-check-dynamics', [AppointmentsController::class, 'getAvgCheckDynamics']);
         Route::get('/ltv-by-client-type', [AppointmentsController::class, 'getLtvByClientType']);
         Route::get('/top-services-by-revenue', [AppointmentsController::class, 'getTopServicesByRevenue']);
+        // Аналитика по сотрудникам
+        Route::get('/employees-procedures-count', [AppointmentsController::class, 'getEmployeesProceduresCount']);
+        Route::get('/employees-procedures-structure', [AppointmentsController::class, 'getEmployeesProceduresStructure']);
+        Route::get('/employees-procedures-dynamics', [AppointmentsController::class, 'getEmployeesProceduresDynamics']);
+        Route::get('/employees-average-time', [AppointmentsController::class, 'getEmployeesAverageTime']);
+        Route::get('/employees-revenue', [AppointmentsController::class, 'getEmployeesRevenue']);
+        Route::get('/employees-average-check', [AppointmentsController::class, 'getEmployeesAverageCheck']);
+    });
+
+    // Аналитика расходов
+    Route::prefix('analytics')->group(function () {
+        Route::get('expenses-by-month', [TurnoverReportController::class, 'expensesByMonth']);
+        Route::get('expenses-by-category', [TurnoverReportController::class, 'expensesByCategory']);
+        Route::get('expenses-category-dynamics', [TurnoverReportController::class, 'expensesCategoryDynamics']);
+        Route::get('expenses-average-by-category', [TurnoverReportController::class, 'expensesAverageByCategory']);
+        Route::get('expenses-top-months', [TurnoverReportController::class, 'expensesTopMonths']);
+        Route::get('expenses-fixed-variable', [TurnoverReportController::class, 'expensesFixedVariable']);
+        // Добавлено:
+        Route::get('employees-analytics', [TurnoverReportController::class, 'employeesAnalytics']);
     });
 
     Route::get('/users', [\App\Http\Controllers\Client\ClientUserController::class, 'index'])->name('client.users.index');
