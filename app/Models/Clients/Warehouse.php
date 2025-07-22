@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Clients;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Warehouse extends Model
 {
@@ -23,9 +24,11 @@ class Warehouse extends Model
     }
 
     // Метод для проверки доступного количества
-    public static function checkAvailability($productId, $quantity)
+    public static function checkAvailability($productId, $quantity, $projectId)
     {
-        $item = self::where('product_id', $productId)->first();
+        $item = self::where('product_id', $productId)
+            ->where('project_id', $projectId)
+            ->first();
 
         if (!$item) {
             throw new \Exception('Товар отсутствует на складе');
@@ -39,9 +42,13 @@ class Warehouse extends Model
     }
 
     // Метод для уменьшения количества на складе
-    public static function decreaseQuantity($productId, $quantity)
+    public static function decreaseQuantity($productId, $quantity, $projectId)
     {
-        $projectId = auth()->check() ? auth()->user()->project_id : null;
+        if (!$projectId) {
+            Log::error("Warehouse::decreaseQuantity called with null project_id for product {$productId}");
+            return null; // или выбросить исключение
+        }
+
         $item = self::where('product_id', $productId)
             ->where('project_id', $projectId)
             ->first();
@@ -62,21 +69,29 @@ class Warehouse extends Model
     }
 
     // Метод для увеличения количества на складе
-    public static function increaseQuantity($productId, $quantity)
+    public static function increaseQuantity($productId, $quantity, $projectId)
     {
-        $item = self::where('product_id', $productId)->first();
+        if (!$projectId) {
+            Log::error("Warehouse::increaseQuantity called with null project_id for product {$productId}");
+            return null; // или выбросить исключение
+        }
+
+        $item = self::where('product_id', $productId)
+            ->where('project_id', $projectId)
+            ->first();
+            
         if (!$item) {
             // Если склада нет — получаем цены из Product
             $product = Product::find($productId);
             $purchasePrice = $product ? $product->purchase_price : 0;
             $retailPrice = $product ? $product->retail_price : 0;
-            $projectId = $product && isset($product->project_id) ? $product->project_id : (auth()->check() ? auth()->user()->project_id : null);
+            
             $item = self::create([
                 'product_id' => $productId,
                 'quantity' => $quantity,
                 'purchase_price' => $purchasePrice,
                 'retail_price' => $retailPrice,
-                'project_id' => $projectId, // обязательно для мультипроктности
+                'project_id' => $projectId, 
             ]);
         } else {
             $item->quantity += $quantity;
@@ -84,5 +99,4 @@ class Warehouse extends Model
         }
         return $item;
     }
-
 }

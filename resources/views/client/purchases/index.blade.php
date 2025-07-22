@@ -234,9 +234,9 @@
 
         function closePurchaseModal(force = false) {
             if (force) {
-                document.getElementById('purchaseModal').style.display = 'none';
-                clearErrors('purchaseForm');
-                resetPurchaseForm();
+            document.getElementById('purchaseModal').style.display = 'none';
+            clearErrors('purchaseForm');
+            resetPurchaseForm();
                 return;
             }
 
@@ -661,8 +661,8 @@
                 .then(data => {
                     if (data.success) {
                         window.showNotification('success', 'Закупка успешно добавлена');
-                        closePurchaseModal();
-                        resetPurchaseForm();
+                        closePurchaseModal(true); // Принудительно закрываем и сбрасываем форму
+                        // resetPurchaseForm(); // Этот вызов больше не нужен, так как он есть в closePurchaseModal(true)
                         // Перезагружаем текущую страницу для отображения новой закупки
                         loadPurchases(currentPage);
                     } else {

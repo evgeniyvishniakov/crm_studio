@@ -95,7 +95,7 @@ class PurchaseController extends Controller
                 ]);
 
                 // Обновляем склад через модельный метод
-                \App\Models\Clients\Warehouse::increaseQuantity($item['product_id'], $item['quantity']);
+                \App\Models\Clients\Warehouse::increaseQuantity($item['product_id'], $item['quantity'], $currentProjectId);
 
                 // Обновляем цены в Product
                 Product::where('id', $item['product_id'])
@@ -184,17 +184,17 @@ class PurchaseController extends Controller
 
                 if ($oldQty && !$newQty) {
                     // Товар был, но его удалили — уменьшить на oldQty
-                    \App\Models\Clients\Warehouse::decreaseQuantity($productId, $oldQty);
+                    \App\Models\Clients\Warehouse::decreaseQuantity($productId, $oldQty, $currentProjectId);
                 } elseif (!$oldQty && $newQty) {
                     // Новый товар — добавить на склад
-                    \App\Models\Clients\Warehouse::increaseQuantity($productId, $newQty);
+                    \App\Models\Clients\Warehouse::increaseQuantity($productId, $newQty, $currentProjectId);
                 } elseif ($oldQty && $newQty && $oldQty != $newQty) {
                     // Изменилось количество — скорректировать разницу
                     $diff = $newQty - $oldQty;
                     if ($diff > 0) {
-                        \App\Models\Clients\Warehouse::increaseQuantity($productId, $diff);
+                        \App\Models\Clients\Warehouse::increaseQuantity($productId, $diff, $currentProjectId);
                     } else {
-                        \App\Models\Clients\Warehouse::decreaseQuantity($productId, abs($diff));
+                        \App\Models\Clients\Warehouse::decreaseQuantity($productId, abs($diff), $currentProjectId);
             }
                 }
                 // Если oldQty == newQty — ничего не делать
@@ -258,7 +258,7 @@ class PurchaseController extends Controller
         try {
             // Возвращаем товары на склад (уменьшаем количество)
             foreach ($purchase->items as $item) {
-                \App\Models\Clients\Warehouse::decreaseQuantity($item->product_id, $item->quantity);
+                \App\Models\Clients\Warehouse::decreaseQuantity($item->product_id, $item->quantity, $purchase->project_id);
             }
 
             // Удаляем закупку
