@@ -185,7 +185,7 @@ class TurnoverReportController extends Controller
             $filteredSuppliers = $topSuppliers;
         } else {
             $filteredSuppliers = $allSuppliers;
-        }
+            }
 
         $supplierLabels = $filteredSuppliers->pluck('label')->toArray();
         $supplierSums = $filteredSuppliers->pluck('sum')->toArray();
@@ -228,6 +228,18 @@ class TurnoverReportController extends Controller
         $dynamicSales = array_map(fn($d) => $salesByDay[$d] ?? 0, $dynamicLabels);
         $dynamicPurchases = array_map(fn($d) => $purchasesByDay[$d] ?? 0, $dynamicLabels);
 
+        // Расчет валовой прибыли по дням
+        $grossProfitByDay = $salesQuery->with('items')->get()->groupBy(function ($sale) {
+            return $sale->date->format('Y-m-d');
+        })->map(function ($sales) {
+            return $sales->flatMap->items->sum(function ($item) {
+                // Валовая прибыль = (Розничная цена - Закупочная цена) * Количество
+                return ($item->retail_price - $item->purchase_price) * $item->quantity;
+            });
+        });
+        $dynamicGrossProfit = array_map(fn($d) => $grossProfitByDay[$d] ?? 0, $dynamicLabels);
+
+
         // Если нет данных за период — возвращаем пустые массивы для графиков
         if (empty($dynamicLabels)) {
             return response()->json([
@@ -235,7 +247,7 @@ class TurnoverReportController extends Controller
                 'brand'    => [ 'labels' => [], 'data' => [], 'sums' => [] ],
                 'supplier' => [ 'labels' => [], 'data' => [], 'sums' => [] ],
                 'type'     => [ 'labels' => [], 'data' => [], 'sums' => [] ],
-                'dynamic'  => [ 'labels' => [], 'sales' => [], 'purchases' => [] ],
+                'dynamic'  => [ 'labels' => [], 'sales' => [], 'purchases' => [], 'gross_profit' => [] ],
             ]);
         }
 
@@ -264,6 +276,7 @@ class TurnoverReportController extends Controller
                 'labels' => $dynamicLabels,
                 'sales' => $dynamicSales,
                 'purchases' => $dynamicPurchases,
+                'gross_profit' => $dynamicGrossProfit,
             ],
             // Добавляем реальные даты периода
             'actual_start_date' => $dynamicLabels[0] ?? $startDate,
@@ -346,18 +359,31 @@ class TurnoverReportController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        // Топ-6 поставщиков по объёму закупок
-        $topSuppliers = Supplier::where('project_id', $currentProjectId)
-            ->with(['purchases' => function($q) use ($startDate, $endDate, $currentProjectId) {
-                $q->where('project_id', $currentProjectId);
+        // Получаем данные по всем поставщикам
+        $allSuppliersData = Supplier::where('project_id', $currentProjectId)
+            ->with(['purchases' => function($q) use ($startDate, $endDate) {
                 if ($startDate) $q->whereDate('date', '>=', $startDate);
                 if ($endDate) $q->whereDate('date', '<=', $endDate);
-            }])->get()->map(function($sup) {
+            }])->get();
+
+        $allSuppliers = $allSuppliersData->map(function($sup) {
                 return [
                     'label' => $sup->name,
                     'sum' => (float)$sup->purchases->sum('total_amount')
                 ];
-            })->sortByDesc('sum')->take(6)->values();
+        })->filter(fn($s) => $s['sum'] > 0)->sortByDesc('sum')->values();
+
+        // Данные для столбчатой диаграммы (Топ-6)
+        $topSuppliersForBar = $allSuppliers->take(6);
+
+        // Данные для круговой диаграммы (Топ-5 + Остальные)
+        $supplierStructureForPie = $allSuppliers;
+        if ($allSuppliers->count() > 5) {
+            $topPart = $allSuppliers->slice(0, 5);
+            $otherSum = $allSuppliers->slice(5)->sum('sum');
+            $topPart->push(['label' => 'Остальные', 'sum' => $otherSum]);
+            $supplierStructureForPie = $topPart;
+        }
 
         // Остатки по категориям
         $categories = ProductCategory::where('project_id', $currentProjectId)
@@ -374,26 +400,25 @@ class TurnoverReportController extends Controller
                 'wholesale' => round($wholesale),
                 'retail' => round($retail)
             ];
-        })->filter(fn($row) => $row['qty'] > 0)->values();
-        $stockTotalWholesale = $stockByCategory->sum('wholesale');
-        $stockTotalRetail = $stockByCategory->sum('retail');
+        })->filter(fn($row) => $row['qty'] > 0)->sortByDesc('qty')->values();
 
-        // Товары с максимальным сроком без продажи (залежалые)
-        $slowMovingProducts = Product::where('project_id', $currentProjectId)
-            ->with('inventoryItem')
-            ->get()
-            ->filter(fn($p) => optional($p->inventoryItem)->quantity > 0)
-            ->map(function($p) {
-                $lastSale = $p->saleItems()->orderByDesc('created_at')->first();
-                $days = $lastSale ? now()->diffInDays($lastSale->created_at) : null;
-                return [
-                    'label' => $p->name,
-                    'days' => $days ?? 9999
-                ];
-            })
-            ->sortByDesc('days')
-            ->take(6)
-            ->values();
+        // Оставляем только топ-5 категорий, остальные объединяем в "Остальные"
+        if ($stockByCategory->count() > 5) {
+            $topCategories = $stockByCategory->slice(0, 5);
+            $other = $stockByCategory->slice(5);
+            $otherQty = $other->sum('qty');
+            $otherWholesale = $other->sum('wholesale');
+            $otherRetail = $other->sum('retail');
+            $topCategories->push([
+                'label' => 'Остальные',
+                'qty' => $otherQty,
+                'wholesale' => $otherWholesale,
+                'retail' => $otherRetail
+            ]);
+            $stockByCategory = $topCategories->values();
+        }
+
+        $stockTotalQty = $stockByCategory->sum('qty');
 
         // Средний срок оборачиваемости (по всем товарам с продажами)
         $turnoverDays = Product::where('project_id', $currentProjectId)
@@ -409,11 +434,12 @@ class TurnoverReportController extends Controller
         $avgTurnoverDays = $turnoverDays ? round($turnoverDays) : null;
 
         return response()->json([
-            'topSuppliers' => $topSuppliers,
+            'topSuppliers' => $topSuppliersForBar,
+            'supplierStructure' => $supplierStructureForPie,
             'stockByCategory' => $stockByCategory,
-            'stockTotalWholesale' => $stockTotalWholesale,
-            'stockTotalRetail' => $stockTotalRetail,
-            'slowMovingProducts' => $slowMovingProducts,
+            'stockTotalQty' => $stockTotalQty,
+            'stockTotalWholesale' => $stockByCategory->sum('wholesale'),
+            'stockTotalRetail' => $stockByCategory->sum('retail'),
             'avgTurnoverDays' => $avgTurnoverDays,
         ]);
     }

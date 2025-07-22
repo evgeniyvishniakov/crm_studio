@@ -60,9 +60,9 @@
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Структура по поставщикам</h4>
-                        <p class="text-muted">Доля поставщиков в закупках.</p>
-                        <canvas id="turnoverSupplierPie"></canvas>
+                        <h4 class="mb-3">Динамика валовой прибыли</h4>
+                        <p class="text-muted">Разница между суммой продаж и себестоимостью товаров.</p>
+                        <canvas id="grossProfitChart"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
@@ -113,6 +113,23 @@
             </div>
         </div>
         <div class="tab-pane" id="suppliers-analytics" style="display: none;">
+            <div class="row mb-4" id="stockSummaryRow">
+                <div class="col-lg-4 mb-2">
+                    <div class="stat-card" style="background:#f3f4f6;padding:18px 24px;border-radius:10px;font-size:1.1rem;font-weight:600;">
+                        <span>Общее количество товаров на складе: </span><span id="stockTotalQty">—</span> шт
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-2">
+                    <div class="stat-card" style="background:#f3f4f6;padding:18px 24px;border-radius:10px;font-size:1.1rem;font-weight:600;">
+                        <span>Общая сумма опта на складе: </span><span id="stockTotalWholesale">—</span> грн
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-2">
+                    <div class="stat-card" style="background:#f3f4f6;padding:18px 24px;border-radius:10px;font-size:1.1rem;font-weight:600;">
+                        <span>Общая сумма розници на складе: </span><span id="stockTotalRetail">—</span> грн
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
@@ -124,38 +141,25 @@
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Товары с максимальным сроком без продажи</h4>
-                        <p class="text-muted">Товары, которые не продавались дольше всего (залежалые остатки).</p>
-                        <canvas id="slowMovingProductsBar"></canvas>
-                        <div class="no-data" id="slowMovingProductsNoData" style="display:none;text-align:center;color:#888;font-size:1.1rem;padding:32px 0;">Нет данных для отображения</div>
-                    </div>
-                </div>
-            </div>
-            <div class="row align-items-center mb-3">
-                <div class="col-lg-6 mb-2">
-                    <div class="stat-card" style="background:#f3f4f6;padding:18px 24px;border-radius:10px;font-size:1.1rem;font-weight:600;">
-                        <span>Общая сумма опта на складе: </span><span id="stockTotalWholesale">—</span> грн
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-2">
-                    <div class="stat-card" style="background:#f3f4f6;padding:18px 24px;border-radius:10px;font-size:1.1rem;font-weight:600;">
-                        <span>Общая сумма розници на складе: </span><span id="stockTotalRetail">—</span> грн
+                        <h4 class="mb-3">Структура по поставщикам</h4>
+                        <p class="text-muted">Доля топ-5 поставщиков в общем объеме закупок.</p>
+                        <canvas id="supplierStructurePie"></canvas>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Остатки на складе по категориям</h4>
-                        <p class="text-muted">Количество и сумма остатков по оптовой и розничной цене для каждой категории товаров.</p>
-                        <canvas id="stockByCategoryBar"></canvas>
+                        <h4 class="mb-3">Поставщики по объёму закупок</h4>
+                        <p class="text-muted">Топ-6 поставщиков с наибольшим объемом закупок за период.</p>
+                        <canvas id="topSuppliersBar"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Поставщики по объёму закупок</h4>
-                        <p class="text-muted">Поставщики с наибольшим объемом закупок.</p>
-                        <canvas id="topSuppliersBar"></canvas>
+                        <h4 class="mb-3">Остатки на складе по категориям</h4>
+                        <p class="text-muted">Количество и сумма остатков по оптовой и розничной цене для каждой категории товаров.</p>
+                        <canvas id="stockByCategoryBar"></canvas>
                     </div>
                 </div>
             </div>
@@ -212,7 +216,12 @@
         // Формируем параметры для месяца
         const params = getPeriodParams('За месяц');
         updateTurnoverAnalytics(params);
+        updateTopsAnalytics(params);
+        updateSuppliersAnalytics(params);
 
+        if (document.getElementById('stockTotalQty')) {
+            document.getElementById('stockTotalQty').textContent = stockTotalQty.toLocaleString('ru-RU');
+        }
         if (document.getElementById('stockTotalWholesale')) {
             document.getElementById('stockTotalWholesale').textContent = stockTotalWholesale.toLocaleString('ru-RU');
         }
@@ -220,16 +229,6 @@
             document.getElementById('stockTotalRetail').textContent = stockTotalRetail.toLocaleString('ru-RU');
         }
 
-        // Скрываем фильтры на вкладке 'Поставщики и остатки'
-        const periodFiltersSection = document.getElementById('periodFiltersSection');
-        const suppliersTab = document.querySelector('.tab-button[data-tab="suppliers-analytics"]');
-        if (suppliersTab) {
-            suppliersTab.addEventListener('click', () => {
-                if (periodFiltersSection) {
-                    periodFiltersSection.style.display = 'none';
-                }
-            });
-        }
     });
 
     // Переключение вкладок
@@ -249,47 +248,27 @@
                     if (chart && chart.resize) chart.resize();
                 });
             }, 120);
-            // Если выбрана вкладка Топы — обновляем топы
-            if (targetPaneId === 'tops-analytics') {
-                // Определяем активный период
+            
+            // Определяем активный период и обновляем данные для ВСЕХ вкладок при переключении
+            // Это гарантирует, что данные всегда соответствуют фильтру
                 const activeBtn = document.querySelector('.filter-section .filter-button.active');
                 let params = '';
-                if (activeBtn) {
+            if (activeBtn && activeBtn.id !== 'dateRangePicker') {
                     const period = activeBtn.textContent.trim();
                     params = getPeriodParams(period);
-                }
-                // Если выбран календарь — берём даты из calendarRangeDisplay
-                if (activeBtn && activeBtn.id === 'dateRangePicker' && window.selectedRange) {
+            } else if (window.selectedRange) {
                     const formatISO = d => d.toISOString().slice(0, 10);
                     params = `start_date=${formatISO(window.selectedRange.start)}&end_date=${formatISO(window.selectedRange.end)}`;
-                }
-                updateTopsAnalytics(params);
-            }
-            // Если выбрана вкладка Поставщики — обновляем аналитику
-            if (targetPaneId === 'suppliers-analytics') {
-                // Определяем активный период
-                const activeBtn = document.querySelector('.filter-section .filter-button.active');
-                let params = '';
-                if (activeBtn) {
-                    const period = activeBtn.textContent.trim();
-                    params = getPeriodParams(period);
-                }
-                // Если выбран календарь — берём даты из calendarRangeDisplay
-                if (activeBtn && activeBtn.id === 'dateRangePicker' && window.selectedRange) {
-                    const formatISO = d => d.toISOString().slice(0,10);
-                    params = `start_date=${formatISO(window.selectedRange.start)}&end_date=${formatISO(window.selectedRange.end)}`;
-                }
-                updateSuppliersAnalytics(params);
-            }
-            // Скрываем фильтры на вкладке 'Поставщики и остатки'
-            if (targetPaneId === 'suppliers-analytics') {
-                if (periodFiltersSection) {
-                    periodFiltersSection.style.display = 'none';
-                }
             } else {
-                if (periodFiltersSection) {
-                    periodFiltersSection.style.display = '';
+                 params = getPeriodParams('За месяц'); // Фоллбэк на месяц, если ничего не выбрано
                 }
+
+            if (targetPaneId === 'dynamic-analytics') {
+                updateTurnoverAnalytics(params);
+            } else if (targetPaneId === 'tops-analytics') {
+                updateTopsAnalytics(params);
+            } else if (targetPaneId === 'suppliers-analytics') {
+                updateSuppliersAnalytics(params);
             }
         });
     });
@@ -355,6 +334,43 @@
                                             return month;
                                         }
                                         return '';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+                // Валовая прибыль
+                const grossProfitConfig = {
+                    type: 'line',
+                    data: {
+                        labels: data.dynamic.labels,
+                        datasets: [
+                            {
+                                label: 'Валовая прибыль',
+                                data: data.dynamic.gross_profit,
+                                borderColor: 'rgb(245, 158, 11)',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {beginAtZero: true, grid: {display: true, color: '#e5e7eb'}},
+                            x: {
+                                grid: {display: false},
+                                ticks: {
+                                    callback: function (value, index, values) {
+                                        const label = this.getLabelForValue(value);
+                                        const total = values.length;
+                                        const date = new Date(label);
+                                        const day = date.getDate().toString().padStart(2, '0');
+                                        const month = date.toLocaleString('ru-RU', {month: 'short'});
+                                        if (total <= 14) return `${day} ${month}`;
+                                        if (total <= 31 * 2) return date.getDay() === 1 || index === 0 ? `Пн ${day} ${month}` : '';
+                                        return date.getDate() === 1 ? month : '';
                                     }
                                 }
                             }
@@ -527,6 +543,7 @@
                 // Инициализация графиков
                 const chartMap = [
                     {id: 'turnoverDynamicChart', config: dynamicConfig},
+                    {id: 'grossProfitChart', config: grossProfitConfig},
                     {id: 'turnoverCategoryPie', config: categoryConfig},
                     {id: 'turnoverBrandPie', config: brandConfig},
                     {id: 'turnoverSupplierPie', config: supplierConfig},
@@ -731,14 +748,20 @@
             button.classList.add('active');
             // Очищаем отображение диапазона дат при выборе любого периода
             if (calendarRangeDisplay) calendarRangeDisplay.textContent = '';
-            // Определяем период
+            
             const period = button.textContent.trim();
             const params = getPeriodParams(period);
-            updateTurnoverAnalytics(params);
-            // Если активна вкладка Топы — обновляем топы
+            
+            // Обновляем данные на активной вкладке
             const activeTab = document.querySelector('.tab-button.active');
-            if (activeTab && activeTab.getAttribute('data-tab') === 'tops-analytics') {
+            const activeTabId = activeTab ? activeTab.getAttribute('data-tab') : 'dynamic-analytics';
+
+            if (activeTabId === 'dynamic-analytics') {
+                updateTurnoverAnalytics(params);
+            } else if (activeTabId === 'tops-analytics') {
                 updateTopsAnalytics(params);
+            } else if (activeTabId === 'suppliers-analytics') {
+                updateSuppliersAnalytics(params);
             }
         });
     });
@@ -761,14 +784,18 @@
                         // Форматируем для запроса
                         const formatISO = d => d.toISOString().slice(0, 10);
                         const params = `start_date=${formatISO(selectedDates[0])}&end_date=${formatISO(selectedDates[1])}`;
-                        updateTurnoverAnalytics(params);
                         window.selectedRange = {start: selectedDates[0], end: selectedDates[1]};
-                        // Если активна вкладка Топы — обновляем топы
+                        
+                        // Обновляем данные на активной вкладке
                         const activeTab = document.querySelector('.tab-button.active');
-                        if (activeTab && activeTab.getAttribute('data-tab') === 'tops-analytics') {
-                            const formatISO = d => d.toISOString().slice(0, 10);
-                            const params = `start_date=${formatISO(selectedDates[0])}&end_date=${formatISO(selectedDates[1])}`;
+                        const activeTabId = activeTab ? activeTab.getAttribute('data-tab') : 'dynamic-analytics';
+
+                        if (activeTabId === 'dynamic-analytics') {
+                            updateTurnoverAnalytics(params);
+                        } else if (activeTabId === 'tops-analytics') {
                             updateTopsAnalytics(params);
+                        } else if (activeTabId === 'suppliers-analytics') {
+                            updateSuppliersAnalytics(params);
                         }
                     }
                 }
@@ -836,6 +863,42 @@
                         }
                     });
                 }
+
+                // --- Структура по поставщикам (круговая диаграмма) ---
+                if (charts.supplierStructurePie) charts.supplierStructurePie.destroy();
+                const supplierStructurePie = document.getElementById('supplierStructurePie');
+                if (supplierStructurePie) {
+                    const pieColors = ['#2563eb', '#10b981', '#f59e42', '#7c3aed', '#ef4444', '#64748b'];
+                    const ctx = supplierStructurePie.getContext('2d');
+                    charts.supplierStructurePie = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.supplierStructure.map(s => s.label),
+                            datasets: [{
+                                data: data.supplierStructure.map(s => s.sum),
+                                backgroundColor: pieColors,
+                                borderColor: 'rgba(255,255,255,0.7)',
+                                borderWidth: 2,
+                                hoverOffset: 12,
+                            }]
+                        },
+                        options: {
+                             plugins: {
+                                legend: { position: 'top' },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            const label = context.label || '';
+                                            const value = context.raw || 0;
+                                            return `${label}: ${value.toLocaleString('ru-RU')} грн`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
                 // --- Остатки по категориям ---
                 if (charts.stockByCategoryBar) charts.stockByCategoryBar.destroy();
                 const stockByCategoryBar = document.getElementById('stockByCategoryBar');
@@ -863,7 +926,24 @@
                             }]
                         },
                         options: {
-                            plugins: { legend: { display: false } },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const i = context.dataIndex;
+                                            const cat = data.stockByCategory[i];
+                                            return [
+                                                `Категория: ${cat.label}`,
+                                                `Остаток: ${cat.qty} шт`,
+                                                `Опт: ${cat.wholesale.toLocaleString('ru-RU')} грн`,
+                                                `Розница: ${cat.retail.toLocaleString('ru-RU')} грн`
+                                            ];
+                                        }
+                                    }
+                                }
+                            },
+                            // indexAxis: 'y', // УБРАНО! Теперь график снова вертикальный
                             scales: {
                                 x: {
                                     grid: { display: false },
@@ -891,72 +971,16 @@
                     });
                 }
                 // --- Общая сумма остатков ---
+                if (document.getElementById('stockTotalQty')) {
+                    document.getElementById('stockTotalQty').textContent = data.stockTotalQty.toLocaleString('ru-RU');
+                }
                 if (document.getElementById('stockTotalWholesale')) {
                     document.getElementById('stockTotalWholesale').textContent = data.stockTotalWholesale.toLocaleString('ru-RU');
                 }
                 if (document.getElementById('stockTotalRetail')) {
                     document.getElementById('stockTotalRetail').textContent = data.stockTotalRetail.toLocaleString('ru-RU');
                 }
-                // --- Топ-6 самых залежалых товаров ---
-                if (charts.slowMovingProductsBar) charts.slowMovingProductsBar.destroy();
-                const slowMovingProductsBar = document.getElementById('slowMovingProductsBar');
-                const slowMovingProductsNoData = document.getElementById('slowMovingProductsNoData');
-                if (slowMovingProductsBar) {
-                    if (data.slowMovingProducts.length === 0) {
-                        slowMovingProductsBar.style.display = 'none';
-                        if (slowMovingProductsNoData) slowMovingProductsNoData.style.display = 'block';
-                    } else {
-                        slowMovingProductsBar.style.display = 'block';
-                        if (slowMovingProductsNoData) slowMovingProductsNoData.style.display = 'none';
-                        const maxValue = Math.max(...data.slowMovingProducts.map(p => p.days));
-                        const ctx = slowMovingProductsBar.getContext('2d');
-                        const area = {left: 0, right: slowMovingProductsBar.width};
-                        const grad = ctx.createLinearGradient(area.left, 0, area.right, 0);
-                        grad.addColorStop(0, 'rgba(139,92,246,0.4)');
-                        grad.addColorStop(0.5, 'rgba(139,92,246,0.7)');
-                        grad.addColorStop(1, 'rgba(139,92,246,1)');
-                        charts.slowMovingProductsBar = new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: data.slowMovingProducts.map(p => p.label),
-                                datasets: [{
-                                    label: 'Дней без продажи',
-                                    data: data.slowMovingProducts.map(p => p.days),
-                                    backgroundColor: grad,
-                                    borderColor: 'rgba(139,92,246,0.3)',
-                                    borderRadius: 8,
-                                    borderSkipped: false
-                                }]
-                            },
-                            options: {
-                                indexAxis: 'y',
-                                plugins: { legend: { display: false } },
-                                scales: {
-                                    x: {
-                                        beginAtZero: true,
-                                        suggestedMax: maxValue + 1,
-                                        grid: { display: true, color: '#e5e7eb' },
-                                        ticks: {
-                                            callback: function(value) { return Number.isInteger(value) ? value : ''; },
-                                            stepSize: 1,
-                                            padding: 8
-                                        }
-                                    },
-                                    y: {
-                                        grid: { display: false },
-                                        ticks: {
-                                            callback: function(value) {
-                                                const label = this.getLabelForValue(value);
-                                                return label.length > 15 ? label.slice(0, 15) + '...' : label;
-                                            },
-                                            padding: 8
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
+
                 // --- Средний срок оборачиваемости ---
                 const turnoverDaysChart = document.getElementById('turnoverDaysChart');
                 if (turnoverDaysChart) {
