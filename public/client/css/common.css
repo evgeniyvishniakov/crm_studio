@@ -1442,3 +1442,51 @@
 .collapse {
     transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Стили для полей даты */
+input[type="date"] {
+    cursor: pointer !important;
+    transition: all 0.3s ease;
+}
+
+input[type="date"]:focus {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+}
+
+/* Стили для обертки календаря flatpickr */
+.date-picker-wrapper {
+    cursor: pointer !important;
+    transition: all 0.3s ease;
+}
+
+.date-picker-wrapper input {
+    cursor: pointer !important;
+}
+
+.date-picker-wrapper input:focus {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+    outline: none !important;
+}
+
+/* Стили для иконки календаря */
+.calendar-icon {
+    cursor: pointer !important;
+    transition: color 0.3s ease;
+}
+
+/* Мобильные стили */
+@media (max-width: 768px) {
+    input[type="date"] {
+        cursor: pointer !important;
+    }
+    
+    .date-picker-wrapper {
+        cursor: pointer !important;
+    }
+    
+    .calendar-icon {
+        cursor: pointer !important;
+    }
+}

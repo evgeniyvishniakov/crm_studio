@@ -997,6 +997,11 @@
 
                 // Открываем модальное окно
                 toggleModal('appointmentModal', true);
+                
+                // Устанавливаем дату в календаре flatpickr если он инициализирован
+                if (dateInput && typeof setTodayDate === 'function') {
+                    setTodayDate(dateInput);
+                }
             }
         }
 
@@ -1018,7 +1023,7 @@
             calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
                 initialView: 'dayGridMonth',
                 headerToolbar: false,
-                locale: 'ru',
+                locale: '{{ app()->getLocale() }}',
                 height: 'auto',
                 selectable: true,
                 editable: true,
@@ -1105,6 +1110,9 @@
                     hour12: false
                 },
                 slotEventOverlap: false,
+                dayHeaderFormat: {
+                    weekday: 'short'
+                },
 
                 // Обработчик наведения на событие
                 eventMouseEnter: function(info) {
@@ -1115,18 +1123,18 @@
                     const deleteBtn = tooltip.querySelector('.tooltip-btn-delete');
 
                     // Форматируем время
-                    const startTime = event.start ? new Date(event.start).toLocaleTimeString('ru-RU', {
+                    const startTime = event.start ? new Date(event.start).toLocaleTimeString('{{ app()->getLocale() }}', {
                         hour: '2-digit',
                         minute: '2-digit'
                     }) : '';
 
                     // Формируем содержимое всплывающей подсказки
                     tooltipContent.innerHTML = `
-                        <p><strong>Время:</strong> ${startTime}</p>
-                        <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
-                        <p><strong>Услуга:</strong> ${event.extendedProps.service}</p>
-                        <p><strong>Цена:</strong> <span class="currency-amount" data-amount="${event.extendedProps.price}">${formatPrice(event.extendedProps.price)}</span></p>
-                        <p><strong>Статус:</strong> ${getStatusName(event.extendedProps.status)}</p>
+                        <p><strong>{{ __('messages.time') }}:</strong> ${startTime}</p>
+                        <p><strong>{{ __('messages.client') }}:</strong> ${event.extendedProps.client}</p>
+                        <p><strong>{{ __('messages.service') }}:</strong> ${event.extendedProps.service}</p>
+                        <p><strong>{{ __('messages.price') }}:</strong> <span class="currency-amount" data-amount="${event.extendedProps.price}">${formatPrice(event.extendedProps.price)}</span></p>
+                        <p><strong>{{ __('messages.status') }}:</strong> ${getStatusName(event.extendedProps.status)}</p>
                     `;
 
                     // Позиционируем всплывающую подсказку
@@ -1248,7 +1256,8 @@
                     const dateString = `${year}-${month}-${day}`;
 
                     // Устанавливаем выбранную дату в поле формы
-                    form.querySelector('input[name="date"]').value = dateString;
+                    const dateInput = form.querySelector('input[name="date"]');
+                    dateInput.value = dateString;
 
                     // Если в строке есть время (для timeGrid видов), устанавливаем его
                     if (dateStr.includes('T')) {
@@ -1270,12 +1279,17 @@
 
                     // Открываем модальное окно
                     toggleModal('appointmentModal', true);
+                    
+                    // Устанавливаем дату в календаре flatpickr если он инициализирован
+                    if (dateInput && typeof setTodayDate === 'function') {
+                        setTodayDate(dateInput);
+                    }
                 }
 
                 // Функция обновления заголовка
                 function updateTitle() {
-                    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-                                    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+                    const monthNames = ['{{ __('messages.january') }}', '{{ __('messages.february') }}', '{{ __('messages.march') }}', '{{ __('messages.april') }}', '{{ __('messages.may') }}', '{{ __('messages.june') }}',
+                                    '{{ __('messages.july') }}', '{{ __('messages.august') }}', '{{ __('messages.september') }}', '{{ __('messages.october') }}', '{{ __('messages.november') }}', '{{ __('messages.december') }}'];
                     const date = calendar.getDate();
                     const view = calendar.view;
                     let title = '';
@@ -1351,7 +1365,17 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>{{ __('messages.date') }} *</label>
-                            <input type="date" name="date" required class="form-control">
+                            <input type="date" name="date" required class="form-control"
+                                   data-month-names="{{ json_encode([
+                                       __('messages.january'), __('messages.february'), __('messages.march'),
+                                       __('messages.april'), __('messages.may'), __('messages.june'),
+                                       __('messages.july'), __('messages.august'), __('messages.september'),
+                                       __('messages.october'), __('messages.november'), __('messages.december')
+                                   ]) }}"
+                                   data-day-names="{{ json_encode([
+                                       __('messages.sun'), __('messages.mon'), __('messages.tue'),
+                                       __('messages.wed'), __('messages.thu'), __('messages.fri'), __('messages.sat')
+                                   ]) }}">
                         </div>
                         <div class="form-group">
                             <label>{{ __('messages.time') }} *</label>
@@ -1412,9 +1436,9 @@
                             <label>{{ __('messages.duration') }}</label>
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <input type="number" name="duration_hours" min="0" value="0" style="width: 60px;" class="form-control">
-                                <span style="margin-right: 10px;">{{ __('messages.hours') }}</span>
+                                <span style="margin-right: 10px;">{{ __('messages.hours_short') }}</span>
                                 <input type="number" name="duration_minutes" min="0" max="59" value="0" style="width: 60px;" class="form-control">
-                                <span>{{ __('messages.minutes') }}</span>
+                                <span>{{ __('messages.minutes_short') }}</span>
                             </div>
                         </div>
                     </div>
@@ -2482,11 +2506,12 @@
                     <input type="hidden" name="id" value="${appointment.id}">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Дата *</label>
-                            <input type="date" name="date" value="${formatDateForInput(appointment.date)}" required class="form-control">
+                            <label>{{ __('messages.date') }} *</label>
+                            <input type="date" name="date" value="${formatDateForInput(appointment.date)}" required class="form-control"
+                                   data-locale="{{ app()->getLocale() }}">
                         </div>
                         <div class="form-group">
-                            <label>Время *</label>
+                            <label>{{ __('messages.time') }} *</label>
                             <input type="time" name="time" value="${escapeHtml(appointment.time)}" required class="form-control">
                         </div>
                     </div>
@@ -2504,16 +2529,6 @@
                                 <div class="client-dropdown" style="display: none;">
                                     <div class="client-dropdown-list"></div>
                                 </div>
-                                <select name="client_id" class="form-control client-select" style="display: none;" required>
-                                    <option value="">{{ __('messages.select_client') }}</option>
-                                    ${allClients.map(client => `
-                                        <option value="${client.id}" ${client.id == appointment.client_id ? 'selected' : ''}>
-                                            ${escapeHtml(client.name)}
-                                            ${client.instagram ? `(${escapeHtml(client.instagram)})` : ''}
-                                            ${client.phone ? ` - ${escapeHtml(client.phone)}` : ''}
-                                        </option>
-                                    `).join('')}
-                                </select>
                             </div>
                         </div>
                         <div class="form-group">
@@ -2548,9 +2563,9 @@
                             <label>{{ __('messages.duration') }}</label>
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <input type="number" name="duration_hours" min="0" value="${appointment.duration_hours || 0}" style="width: 60px;" class="form-control">
-                                <span style="margin-right: 10px;">{{ __('messages.hours') }}</span>
+                                <span style="margin-right: 10px;">{{ __('messages.hours_short') }}</span>
                                 <input type="number" name="duration_minutes" min="0" max="59" value="${appointment.duration_minutes || 0}" style="width: 60px;" class="form-control">
-                                <span>{{ __('messages.minutes') }}</span>
+                                <span>{{ __('messages.minutes_short') }}</span>
                             </div>
                         </div>
                     </div>
@@ -2577,7 +2592,7 @@
 
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeEditAppointmentModal()">{{ __('messages.cancel') }}</button>
-                        <button type="submit" class="btn-submit">Сохранить изменения</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.save_changes') }}</button>
                     </div>
                 </form>
             `;
@@ -2593,6 +2608,12 @@
                 e.preventDefault();
                 await submitEditAppointmentForm(this, currentAppointmentId);
             });
+            
+            // Инициализация календаря для поля даты
+            const dateInput = document.querySelector('#editAppointmentForm input[name="date"]');
+            if (dateInput && typeof initializeDatePicker === 'function') {
+                initializeDatePicker(dateInput);
+            }
         }
 
         function getClientDisplayName(clientId) {
@@ -3490,6 +3511,17 @@
             
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
+            
+            // Устанавливаем сегодняшнюю дату в поле даты
+            const dateInput = form.querySelector('input[name="date"]');
+            if (dateInput) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                const todayStr = `${year}-${month}-${day}`;
+                dateInput.value = todayStr;
+            }
         }
 
         // Функция для обработки изменения услуги

@@ -765,10 +765,10 @@ class AppointmentsController extends Controller
             ->all();
         
         $statusLabels = [
-            'completed' => 'Выполнено',
-            'cancelled' => 'Отменено',
-            'pending' => 'В ожидании',
-            'rescheduled' => 'Перенесено',
+            'completed' => __('messages.completed'),
+            'cancelled' => __('messages.cancelled'),
+            'pending' => __('messages.pending'),
+            'rescheduled' => __('messages.rescheduled'),
         ];
         
         $labels = [];
@@ -791,7 +791,7 @@ class AppointmentsController extends Controller
         
         if (empty($labels)) {
             return response()->json([
-                'labels' => ['Нет данных'],
+                'labels' => [__('messages.no_data')],
                 'data' => [0],
                 'colors' => ['#d1d5db']
             ]);
@@ -864,7 +864,7 @@ class AppointmentsController extends Controller
 
         if ($servicePopularity->isEmpty()) {
             return response()->json([
-                'labels' => ['Нет данных'],
+                'labels' => [__('messages.no_data')],
                 'data' => [0]
             ]);
         }

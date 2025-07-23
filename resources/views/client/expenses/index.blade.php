@@ -4,7 +4,7 @@
 <div class="dashboard-container">
     <div class="expenses-container">
         <div class="expenses-header">
-            <h1>Расходы</h1>
+            <h1>{{ __('messages.expenses') }}</h1>
             <div id="notification" class="notification">
                 <!-- Уведомления будут появляться здесь -->
             </div>
@@ -13,13 +13,13 @@
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
-                    Добавить расход
+                    {{ __('messages.add_expense') }}
                 </button>
                 <div class="search-box">
                     <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
-                    <input type="text" placeholder="Поиск..." id="searchInput" autocomplete="off">
+                    <input type="text" placeholder="{{ __('messages.search') }}..." id="searchInput" autocomplete="off">
                 </div>
             </div>
         </div>
@@ -28,11 +28,11 @@
             <table class="table-striped expenses-table" id="expensesTable">
                 <thead>
                 <tr>
-                    <th>Дата</th>
-                    <th>Категория</th>
-                    <th>Комментарий</th>
-                    <th>Сумма</th>
-                    <th>Действия</th>
+                    <th>{{ __('messages.date') }}</th>
+                    <th>{{ __('messages.category') }}</th>
+                    <th>{{ __('messages.comment') }}</th>
+                    <th>{{ __('messages.amount') }}</th>
+                    <th>{{ __('messages.actions') }}</th>
                 </tr>
                 </thead>
                 <tbody id="expensesTableBody">
@@ -47,7 +47,7 @@
     <div id="expenseModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Добавить расход</h2>
+                <h2 id="modalTitle">{{ __('messages.add_expense') }}</h2>
                 <span class="close" onclick="closeExpenseModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -55,29 +55,40 @@
                     @csrf
                     <input type="hidden" name="expense_id" id="expenseId">
                     <div class="form-group">
-                        <label>Дата *</label>
-                        <input type="date" name="date" required class="form-control">
+                        <label>{{ __('messages.date') }} *</label>
+                        <input type="date" name="date" required class="form-control" data-locale="{{ app()->getLocale() }}"
+                               data-locale="{{ app()->getLocale() }}"
+                               data-month-names="{{ json_encode([
+                                   __('messages.january'), __('messages.february'), __('messages.march'),
+                                   __('messages.april'), __('messages.may'), __('messages.june'),
+                                   __('messages.july'), __('messages.august'), __('messages.september'),
+                                   __('messages.october'), __('messages.november'), __('messages.december')
+                               ]) }}"
+                               data-day-names="{{ json_encode([
+                                   __('messages.sun'), __('messages.mon'), __('messages.tue'),
+                                   __('messages.wed'), __('messages.thu'), __('messages.fri'), __('messages.sat')
+                               ]) }}">
                     </div>
                     <div class="form-group">
-                        <label>Категория *</label>
+                        <label>{{ __('messages.category') }} *</label>
                         <select name="category" required class="form-control">
-                            <option value="">Выберите категорию</option>
+                            <option value="">{{ __('messages.select_category') }}</option>
                             @foreach($categories ?? [] as $category)
                                 <option value="{{ $category }}">{{ $category }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Комментарий *</label>
+                        <label>{{ __('messages.comment') }} *</label>
                         <textarea name="comment" required class="form-control" rows="3"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Сумма *</label>
+                        <label>{{ __('messages.amount') }} *</label>
                         <input type="number" step="0.01" name="amount" required class="form-control" min="0">
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeExpenseModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Сохранить</button>
+                        <button type="button" class="btn-cancel" onclick="closeExpenseModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.save') }}</button>
                     </div>
                 </form>
             </div>
@@ -88,14 +99,14 @@
     <div id="confirmationModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Подтверждение удаления</h2>
+                <h2>{{ __('messages.delete_confirmation') }}</h2>
                 <span class="close" onclick="closeConfirmationModal()">&times;</span>
             </div>
             <div class="modal-body">
-                <p>Вы уверены, что хотите удалить этот расход?</p>
+                <p>{{ __('messages.confirm_delete_expense') }}</p>
                 <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="closeConfirmationModal()">Отмена</button>
-                    <button type="button" class="btn-delete" onclick="deleteExpense()">Удалить</button>
+                    <button type="button" class="btn-cancel" onclick="closeConfirmationModal()">{{ __('messages.cancel') }}</button>
+                    <button type="button" class="btn-delete" onclick="deleteExpense()">{{ __('messages.delete') }}</button>
                 </div>
             </div>
         </div>
@@ -117,13 +128,16 @@
 
         // Функции для работы с модальными окнами
         function openExpenseModal() {
-            document.getElementById('modalTitle').textContent = 'Добавить расход';
+            document.getElementById('modalTitle').textContent = '{{ __('messages.add_expense') }}';
             document.getElementById('expenseId').value = '';
             document.getElementById('expenseForm').reset();
-            // Устанавливаем текущую дату
-            const today = new Date().toISOString().split('T')[0];
-            document.querySelector('#expenseForm [name="date"]').value = today;
             document.getElementById('expenseModal').style.display = 'block';
+            
+            // Устанавливаем сегодняшнюю дату в поле даты
+            const dateInput = document.querySelector('#expenseForm [name="date"]');
+            if (dateInput && typeof setTodayDate === 'function') {
+                setTodayDate(dateInput);
+            }
         }
 
         function closeExpenseModal() {
@@ -158,7 +172,7 @@
 
                 if (data.success) {
                     const expense = data.expense;
-                    document.getElementById('modalTitle').textContent = 'Редактировать расход';
+                    document.getElementById('modalTitle').textContent = '{{ __('messages.edit_expense') }}';
                     document.getElementById('expenseId').value = expense.id;
                     document.querySelector('#expenseForm [name="date"]').value = expense.date;
                     document.querySelector('#expenseForm [name="category"]').value = expense.category || '';
@@ -166,10 +180,10 @@
                     document.querySelector('#expenseForm [name="amount"]').value = expense.amount;
                     document.getElementById('expenseModal').style.display = 'block';
                 } else {
-                    window.showNotification('Ошибка загрузки данных', 'error');
+                    window.showNotification('{{ __('messages.error_loading_data') }}', 'error');
                 }
             } catch (error) {
-                window.showNotification('Ошибка при загрузке данных', 'error');
+                window.showNotification('{{ __('messages.error_loading_data') }}', 'error');
             }
         }
 
@@ -194,14 +208,14 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    window.showNotification('success', 'Расход успешно удален');
+                    window.showNotification('success', '{{ __('messages.expense_deleted') }}');
                     // Перезагружаем текущую страницу
                     loadExpenses(currentPage);
                 } else {
-                    window.showNotification('error', data.message || 'Ошибка при удалении');
+                    window.showNotification('error', data.message || '{{ __('messages.error_deleting_expense') }}');
                 }
             } catch (error) {
-                window.showNotification('error', 'Ошибка при удалении');
+                window.showNotification('error', '{{ __('messages.error_deleting_expense') }}');
             }
 
             closeConfirmationModal();
@@ -230,12 +244,12 @@
             const data = await response.json();
 
             if (data.success) {
-                window.showNotification('success', data.message || 'Расход успешно сохранен');
+                window.showNotification('success', data.message || '{{ __('messages.expense_saved') }}');
                 closeExpenseModal();
                 // Перезагружаем текущую страницу для отображения изменений
                 loadExpenses(currentPage);
             } else {
-                window.showNotification('error', data.message || 'Ошибка при сохранении');
+                window.showNotification('error', data.message || '{{ __('messages.error_saving_expense') }}');
             }
         });
 
@@ -270,22 +284,22 @@
                 const amount = parseFloat(expense.amount);
                 row.innerHTML = `
                     <td>${expense.date ? new Date(expense.date).toLocaleDateString('ru-RU') : '—'}</td>
-                    <td>${escapeHtml(expense.category || 'Не указано')}</td>
+                    <td>${escapeHtml(expense.category || '{{ __('messages.not_specified') }}')}</td>
                     <td>${escapeHtml(expense.comment || '')}</td>
                     <td class="currency-amount" data-amount="${expense.amount}">${formatCurrency(expense.amount)}</td>
                     <td>
                         <div class="expense-actions">
-                            <button class="btn-edit" onclick="editExpense(event, ${expense.id})" title="Редактировать">
+                            <button class="btn-edit" onclick="editExpense(event, ${expense.id})" title="{{ __('messages.edit') }}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                 </svg>
-                                Ред.
+                                {{ __('messages.edit_short') }}
                             </button>
-                            <button class="btn-delete" onclick="confirmDeleteExpense(event, ${expense.id})" title="Удалить">
+                            <button class="btn-delete" onclick="confirmDeleteExpense(event, ${expense.id})" title="{{ __('messages.delete') }}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                 </svg>
-                                Удалить
+                                {{ __('messages.delete') }}
                             </button>
                         </div>
                     </td>
@@ -369,11 +383,11 @@
                     renderExpenses(data.data);
                     renderPagination(data.meta);
                 } else {
-                    window.showNotification('Ошибка при загрузке данных', 'error');
+                    window.showNotification('{{ __('messages.error_loading_data') }}', 'error');
                 }
             })
             .catch(error => {
-                window.showNotification('Ошибка при загрузке данных', 'error');
+                window.showNotification('{{ __('messages.error_loading_data') }}', 'error');
             });
         }
 

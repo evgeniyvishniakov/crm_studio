@@ -15,7 +15,7 @@
     @endphp
     <div class="sales-container">
         <div class="sales-header">
-            <h1>Продажи</h1>
+            <h1>{{ __('messages.sales') }}</h1>
             <div id="notification" class="notification">
                 <!-- Уведомления будут появляться здесь -->
             </div>
@@ -24,13 +24,13 @@
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
-                    Добавить продажу
+                    {{ __('messages.add_sale') }}
                 </button>
                 <div class="search-box">
                     <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
-                    <input type="text" placeholder="Поиск..." id="searchInput">
+                    <input type="text" placeholder="{{ __('messages.search') }}..." id="searchInput">
                 </div>
             </div>
         </div>
@@ -39,15 +39,15 @@
             <table class="table-striped sale-table" id="salesTable">
                 <thead>
                 <tr>
-                    <th>Дата</th>
-                    <th>Клиент</th>
-                    <th>Товар</th>
-                    <th>Фото</th>
-                    <th>Опт. цена</th>
-                    <th>Розн. цена</th>
-                    <th>Кол-во</th>
-                    <th>Сумма</th>
-                    <th>Действия</th>
+                    <th>{{ __('messages.date') }}</th>
+                    <th>{{ __('messages.client') }}</th>
+                    <th>{{ __('messages.product') }}</th>
+                    <th>{{ __('messages.photo') }}</th>
+                    <th>{{ __('messages.wholesale_price') }}</th>
+                    <th>{{ __('messages.retail_price') }}</th>
+                    <th>{{ __('messages.quantity') }}</th>
+                    <th>{{ __('messages.sum') }}</th>
+                    <th>{{ __('messages.actions') }}</th>
                 </tr>
                 </thead>
                 <tbody id="salesTableBody">
@@ -62,7 +62,7 @@
     <div id="saleModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Добавить продажу</h2>
+                <h2>{{ __('messages.add_sale') }}</h2>
                 <span class="close" onclick="closeSaleModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -70,16 +70,16 @@
                     @csrf
                     <div class="form-row date-client-row">
                         <div class="form-group">
-                            <label>Клиент *</label>
+                            <label>{{ __('messages.client') }} *</label>
                             <div class="client-search-container">
                                 <input type="text" class="client-search-input form-control"
-                                       placeholder="Начните вводить имя, инстаграм или email клиента..."
+                                       placeholder="{{ __('messages.start_typing_client_info') }}"
                                        oninput="searchClients(this)" onfocus="showClientDropdown(this)" autocomplete="off">
                                 <div class="client-dropdown" style="display: none;">
                                     <div class="client-dropdown-list"></div>
                                 </div>
                                 <select name="client_id" class="form-control client-select" style="display: none;" required>
-                                    <option value="">Выберите клиента</option>
+                                    <option value="">{{ __('messages.select_client') }}</option>
                                     @foreach($clients as $client)
                                         <option value="{{ $client->id }}">
                                             {{ $client->name }}
@@ -91,13 +91,20 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Дата *</label>
-                            <input type="date" name="date" required class="form-control">
+                            <label>{{ __('messages.date') }} *</label>
+                            <input type="date" name="date" required class="form-control" 
+                                   data-locale="{{ app()->getLocale() }}"
+                                       __('messages.october'), __('messages.november'), __('messages.december')
+                                   ]) }}"
+                                   data-day-names="{{ json_encode([
+                                       __('messages.sun'), __('messages.mon'), __('messages.tue'),
+                                       __('messages.wed'), __('messages.thu'), __('messages.fri'), __('messages.sat')
+                                   ]) }}">
                         </div>
                         <div class="form-group">
-                            <label>Сотрудник (мастер) *</label>
+                            <label>{{ __('messages.employee_master') }} *</label>
                             <select name="employee_id" class="form-control" required>
-                                <option value="">Выберите сотрудника</option>
+                                <option value="">{{ __('messages.select_employee') }}</option>
                                 @foreach($employees as $employee)
                                     <option value="{{ $employee->id }}">{{ $employee->name }}</option>
                                 @endforeach
@@ -105,19 +112,19 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Примечания</label>
+                        <label>{{ __('messages.notes') }}</label>
                         <textarea name="notes" rows="2" class="form-control"></textarea>
                     </div>
 
                     <div class="items-container" id="itemsContainer">
-                        <h3>Товары</h3>
+                        <h3>{{ __('messages.products') }}</h3>
                         <div class="item-row template" style="display: none;">
                             <div class="form-row">
                                 <div class="form-group product-field">
-                                    <label>Товар *</label>
+                                    <label>{{ __('messages.product') }} *</label>
                                     <div class="product-search-container">
                                         <input type="text" class="product-search-input form-control"
-                                               placeholder="Начните вводить название товара..."
+                                               placeholder="{{ __('messages.start_typing_product_name') }}"
                                                oninput="searchProducts(this)"
                                                onfocus="showProductDropdown(this)" autocomplete="off">
                                         <div class="product-dropdown" style="display: none;">
@@ -125,7 +132,7 @@
                                         </div>
                                         <select name="items[0][product_id]" class="form-control product-select" style="display: none;"
                                                 onchange="updateProductPrices(this)">
-                                            <option value="">Выберите товар</option>
+                                            <option value="">{{ __('messages.select_product') }}</option>
                                             @foreach($products as $product)
                                                 <option value="{{ $product->id }}"
                                                         data-wholesale="{{ $product->wholesale_price }}"
@@ -138,17 +145,17 @@
                                     </div>
                                 </div>
                                 <div class="form-group price-field">
-                                    <label>Оптовая цена *</label>
+                                    <label>{{ __('messages.wholesale_price') }} *</label>
                                     <input type="number" step="0.01" name="items[0][wholesale_price]"
                                             class="form-control wholesale-price" min="0.01" readonly>
                                 </div>
                                 <div class="form-group price-field">
-                                    <label>Розничная цена *</label>
+                                    <label>{{ __('messages.retail_price') }} *</label>
                                     <input type="number" step="0.01" name="items[0][retail_price]"
                                             class="form-control retail-price" min="0.01" >
                                 </div>
                                 <div class="form-group quantity-field">
-                                    <label>Кол-во *</label>
+                                    <label>{{ __('messages.quantity') }} *</label>
                                     <input type="number" name="items[0][quantity]"
                                            class="form-control quantity" min="1" value="1" max="1"
                                            oninput="validateQuantity(this)">
@@ -165,10 +172,10 @@
                         <div class="item-row">
                             <div class="form-row">
                                 <div class="form-group product-field">
-                                    <label>Товар *</label>
+                                    <label>{{ __('messages.product') }} *</label>
                                     <div class="product-search-container">
                                         <input type="text" class="product-search-input form-control"
-                                               placeholder="Начните вводить название товара..."
+                                               placeholder="{{ __('messages.start_typing_product_name') }}"
                                                oninput="searchProducts(this)"
                                                onfocus="showProductDropdown(this)" autocomplete="off">
                                         <div class="product-dropdown" style="display: none;">
@@ -176,7 +183,7 @@
                                         </div>
                                         <select name="items[0][product_id]" class="form-control product-select" style="display: none;"
                                                 onchange="updateProductPrices(this)">
-                                            <option value="">Выберите товар</option>
+                                            <option value="">{{ __('messages.select_product') }}</option>
                                             @foreach($products as $product)
                                                 <option value="{{ $product->id }}"
                                                         data-wholesale="{{ $product->wholesale_price }}"
@@ -189,17 +196,17 @@
                                     </div>
                                 </div>
                                 <div class="form-group price-field">
-                                    <label>Оптовая цена *</label>
+                                    <label>{{ __('messages.wholesale_price') }} *</label>
                                     <input type="number" step="0.01" name="items[0][wholesale_price]"
                                            required class="form-control wholesale-price" min="0.01" readonly>
                                 </div>
                                 <div class="form-group price-field">
-                                    <label>Розничная цена *</label>
+                                    <label>{{ __('messages.retail_price') }} *</label>
                                     <input type="number" step="0.01" name="items[0][retail_price]"
                                            required class="form-control retail-price" min="0.01" >
                                 </div>
                                 <div class="form-group quantity-field">
-                                    <label>Кол-во *</label>
+                                    <label>{{ __('messages.quantity') }} *</label>
                                     <input type="number" name="items[0][quantity]" required
                                            class="form-control quantity" min="1" value="1" max="1"
                                            oninput="validateQuantity(this)">
@@ -219,10 +226,10 @@
                             <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                             </svg>
-                            Добавить товар
+                            {{ __('messages.add_product') }}
                         </button>
-                        <button type="button" class="btn-cancel" onclick="closeSaleModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Сохранить продажу</button>
+                        <button type="button" class="btn-cancel" onclick="closeSaleModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.save_sale') }}</button>
                     </div>
                 </form>
             </div>
@@ -233,7 +240,7 @@
     <div id="editSaleModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Редактировать продажу</h2>
+                <h2>{{ __('messages.edit_sale') }}</h2>
                 <span class="close" onclick="closeEditSaleModal()">&times;</span>
             </div>
             <div class="modal-body" id="editSaleModalBody">
@@ -245,11 +252,11 @@
     <!-- Модальное окно подтверждения удаления -->
     <div id="confirmationModal" class="confirmation-modal">
         <div class="confirmation-content">
-            <h3>Подтверждение удаления</h3>
-            <p>Вы уверены, что хотите удалить эту продажу?</p>
+            <h3>{{ __('messages.confirm_delete') }}</h3>
+            <p>{{ __('messages.are_you_sure_delete') }}</p>
             <div class="confirmation-buttons">
-                <button class="cancel-btn" id="cancelDelete">Отмена</button>
-                <button class="confirm-btn" id="confirmDeleteBtn">Удалить</button>
+                <button class="cancel-btn" id="cancelDelete">{{ __('messages.cancel') }}</button>
+                <button class="confirm-btn" id="confirmDeleteBtn">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
@@ -266,10 +273,13 @@
         // Функции для работы с модальными окнами
         function openSaleModal() {
             document.getElementById('saleForm').reset();
-            // Устанавливаем текущую дату
-            const today = new Date().toISOString().split('T')[0];
-            document.querySelector('#saleForm [name="date"]').value = today;
             document.getElementById('saleModal').style.display = 'block';
+            
+            // Устанавливаем сегодняшнюю дату в поле даты
+            const dateInput = document.querySelector('#saleForm [name="date"]');
+            if (dateInput && typeof setTodayDate === 'function') {
+                setTodayDate(dateInput);
+            }
         }
 
         function closeSaleModal() {
@@ -370,7 +380,7 @@
 
             if (value > max) {
                 input.value = max;
-                alert(`Максимально доступное количество: ${max}`);
+                alert(`{{ __('messages.max_quantity') }}: ${max}`);
             }
         }
 
@@ -454,9 +464,9 @@
                         <input type="hidden" name="id" value="${data.sale.id}">
                             <div class="form-row date-client-row">
                                 <div class="form-group">
-                                    <label>Клиент *</label>
+                                    <label>{{ __('messages.client') }} *</label>
                                     <div class="client-search-container">
-                                        <input type="text" class="client-search-input form-control" placeholder="Начните вводить имя, инстаграм или email клиента..."
+                                        <input type="text" class="client-search-input form-control" placeholder="{{ __('messages.start_typing_client_info') }}"
                                                value="${data.sale.client.name}${data.sale.client.instagram ? ` (@${data.sale.client.instagram})` : ''}"
                                                oninput="searchClients(this)"
                                                onfocus="showClientDropdown(this)" autocomplete="off">
@@ -464,58 +474,59 @@
                                             <div class="client-dropdown-list"></div>
                                         </div>
                                         <select name="client_id" class="form-control client-select" style="display: none;">
-                                            <option value="">Выберите клиента</option>
+                                            <option value="">{{ __('messages.select_client') }}</option>
                                             ${clientOptions}
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Дата *</label>
-                                    <input type="date" name="date" value="${formatDateForInput(data.sale.date)}" required class="form-control">
+                                    <label>{{ __('messages.date') }} *</label>
+                                    <input type="date" name="date" value="${formatDateForInput(data.sale.date)}" required class="form-control"
+                                           data-locale="{{ app()->getLocale() }}">
                                 </div>
                                 <div class="form-group">
-                                    <label>Сотрудник (мастер) *</label>
+                                    <label>{{ __('messages.employee_master') }} *</label>
                                     <select name="employee_id" class="form-control" required>
-                                        <option value="">Выберите сотрудника</option>
+                                        <option value="">{{ __('messages.select_employee') }}</option>
                                         ${employeeOptions}
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Примечания</label>
+                                <label>{{ __('messages.notes') }}</label>
                                 <textarea name="notes" rows="2" class="form-control">${data.sale.notes || ''}</textarea>
                             </div>
 
                             <div class="items-container" id="editItemsContainer">
-                                <h3>Товары</h3>
+                                <h3>{{ __('messages.products') }}</h3>
                                 <div class="item-row template" style="display: none;">
                                     <div class="form-row">
                                         <div class="form-group product-field">
-                                            <label>Товар *</label>
+                                            <label>{{ __('messages.product') }} *</label>
                                             <div class="product-search-container">
-                                                <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
+                                                <input type="text" class="product-search-input form-control" placeholder="{{ __('messages.start_typing_product_name') }}"
                                                        oninput="searchProducts(this)"
                                                        onfocus="showProductDropdown(this)" autocomplete="off">
                                                 <div class="product-dropdown" style="display: none;">
                                                     <div class="product-dropdown-list"></div>
                                                 </div>
                                                 <select name="items[0][product_id]" class="form-control product-select" style="display: none;">
-                                                    <option value="">Выберите товар</option>
+                                                    <option value="">{{ __('messages.select_product') }}</option>
                                                     ${productOptions}
                                                 </select>
                                                 <input type="hidden" name="items[0][product_id]" class="product-id-hidden" value="">
                                             </div>
                                         </div>
                                         <div class="form-group price-field">
-                                            <label>Оптовая цена *</label>
+                                            <label>{{ __('messages.wholesale_price') }} *</label>
                                             <input type="number" step="0.01" name="items[0][wholesale_price]"  class="form-control wholesale-price" min="0.01" readonly>
                                         </div>
                                         <div class="form-group price-field">
-                                            <label>Розничная цена *</label>
+                                            <label>{{ __('messages.retail_price') }} *</label>
                                             <input type="number" step="0.01" name="items[0][retail_price]"  class="form-control retail-price" min="0.01">
                                         </div>
                                         <div class="form-group quantity-field">
-                                            <label>Кол-во *</label>
+                                            <label>{{ __('messages.quantity') }} *</label>
                                             <input type="number" name="items[0][quantity]" class="form-control" min="1" value="1">
                                         </div>
                                         <div class="form-group remove-field">
@@ -531,9 +542,9 @@
                                     <div class="item-row">
                                         <div class="form-row">
                                             <div class="form-group product-field">
-                                                <label>Товар *</label>
+                                                <label>{{ __('messages.product') }} *</label>
                                                 <div class="product-search-container">
-                                                    <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
+                                                    <input type="text" class="product-search-input form-control" placeholder="{{ __('messages.start_typing_product_name') }}"
                                                            value="${item.product.name}"
                                                            oninput="searchProducts(this)"
                                                            onfocus="showProductDropdown(this)" autocomplete="off">
@@ -541,7 +552,7 @@
                                                         <div class="product-dropdown-list"></div>
                                                     </div>
                                                     <select name="items[${index}][product_id]" class="form-control product-select" style="display: none;">
-                                                        <option value="">Выберите товар</option>
+                                                        <option value="">{{ __('messages.select_product') }}</option>
                                                         ${data.products.map(product =>
                             `<option value="${product.id}" ${item.product_id == product.id ? 'selected' : ''}>${product.name}</option>`
                         ).join('')}
@@ -550,15 +561,15 @@
                                                 </div>
                                             </div>
                                             <div class="form-group price-field">
-                                                <label>Оптовая цена *</label>
+                                                <label>{{ __('messages.wholesale_price') }} *</label>
                                                 <input type="number" step="0.01" name="items[${index}][wholesale_price]" value="${item.wholesale_price}"  class="form-control" min="0.01" readonly>
                                             </div>
                                             <div class="form-group price-field">
-                                                <label>Розничная цена *</label>
+                                                <label>{{ __('messages.retail_price') }} *</label>
                                                 <input type="number" step="0.01" name="items[${index}][retail_price]" value="${item.retail_price}"  class="form-control" min="0.01">
                                             </div>
                                             <div class="form-group quantity-field">
-                                                <label>Кол-во *</label>
+                                                <label>{{ __('messages.quantity') }} *</label>
                                                 <input type="number" name="items[${index}][quantity]" value="${item.quantity}"  class="form-control" min="1">
                                             </div>
                                             <div class="form-group remove-field">
@@ -577,10 +588,10 @@
                                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                                     </svg>
-                                    Добавить товар
+                                    {{ __('messages.add_product') }}
                                 </button>
-                                <button type="button" class="btn-cancel" onclick="closeEditSaleModal()">Отмена</button>
-                                <button type="submit" class="btn-submit">Сохранить изменения</button>
+                                <button type="button" class="btn-cancel" onclick="closeEditSaleModal()">{{ __('messages.cancel') }}</button>
+                                <button type="submit" class="btn-submit">{{ __('messages.save_changes') }}</button>
                             </div>
                         </form>
                     `;
@@ -627,6 +638,12 @@
                             e.preventDefault();
                             submitEditSaleForm(this);
                         });
+                        
+                        // Инициализация календаря для поля даты
+                        const dateInput = document.querySelector('#editSaleForm input[name="date"]');
+                        if (dateInput && typeof initializeDatePicker === 'function') {
+                            initializeDatePicker(dateInput);
+                        }
                     } else {
                         throw new Error(data.error || 'Unknown error');
                     }
@@ -635,9 +652,9 @@
                     
                     modalBody.innerHTML = `
                     <div class="alert alert-danger">
-                        Ошибка загрузки данных: ${error.message}
+                        {{ __('messages.error_loading_data') }}: ${error.message}
                     </div>
-                    <button class="btn-cancel" onclick="closeEditSaleModal()">Закрыть</button>
+                    <button class="btn-cancel" onclick="closeEditSaleModal()">{{ __('messages.close') }}</button>
                 `;
                 });
         }
@@ -680,7 +697,7 @@
                 select.selectedIndex = 0;
 
                 // Формируем опции с data-атрибутами для цен и количества
-                select.innerHTML = `<option value="">Выберите товар</option>` +
+                select.innerHTML = `<option value="">{{ __('messages.select_product') }}</option>` +
                     allProducts.map(product =>
                         `<option value="${product.id}" data-wholesale="${product.wholesale_price}" data-retail="${product.retail_price}" data-quantity="${product.available_quantity}">${product.name}</option>`
                     ).join('');
@@ -740,7 +757,7 @@
             currentDeleteSaleId = null;
             currentDeleteItemId = null;
             document.getElementById('confirmationModal').style.display = 'block';
-            document.querySelector('.confirmation-content p').textContent = 'Вы уверены, что хотите удалить эту продажу?';
+            document.querySelector('.confirmation-content p').textContent = '{{ __('messages.are_you_sure_delete') }}';
         }
 
         function confirmDeleteItem(event, saleId, itemId) {
@@ -749,7 +766,7 @@
             currentDeleteSaleId = saleId;
             currentDeleteItemId = itemId;
             document.getElementById('confirmationModal').style.display = 'block';
-            document.querySelector('.confirmation-content p').textContent = 'Вы уверены, что хотите удалить этот товар из продажи?';
+            document.querySelector('.confirmation-content p').textContent = '{{ __('messages.are_you_sure_delete_item') }}';
         }
 
         document.getElementById('cancelDelete').addEventListener('click', function() {
@@ -782,18 +799,18 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.showNotification('success', 'Продажа успешно удалена');
+                        window.showNotification('success', '{{ __('messages.sale_deleted') }}');
                         // Удаляем все строки таблицы, относящиеся к этой продаже
                         document.querySelectorAll(`tr[data-sale-id="${id}"]`).forEach(row => {
                             row.remove();
                         });
                     } else {
-                        window.showNotification('Ошибка при удалении продажи', 'error');
+                        window.showNotification('{{ __('messages.error_deleting_sale') }}', 'error');
                     }
                 })
                 .catch(error => {
                     
-                    window.showNotification('Ошибка при удалении продажи', 'error');
+                    window.showNotification('{{ __('messages.error_deleting_sale') }}', 'error');
                 });
         }
 
@@ -823,7 +840,7 @@
 
                 // Проверка валидности цен
                 if (isNaN(item.retail_price)) {
-                    window.showNotification('Укажите корректную розничную цену', 'error');
+                    window.showNotification('{{ __('messages.invalid_retail_price') }}', 'error');
                     return;
                 }
 
@@ -842,18 +859,18 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.showNotification('success', 'Продажа успешно добавлена!');
+                        window.showNotification('success', '{{ __('messages.sale_added') }}');
                         closeSaleModal();
                         resetSaleForm(); // Очищаем форму
                         // Перезагружаем текущую страницу для отображения новой продажи
                         loadSales(currentPage);
                     } else {
-                        window.showNotification(data.message || 'Ошибка сохранения', 'error');
+                        window.showNotification(data.message || '{{ __('messages.error_saving') }}', 'error');
                     }
                 })
                 .catch(error => {
                    
-                    window.showNotification('Ошибка соединения', 'error');
+                    window.showNotification('{{ __('messages.connection_error') }}', 'error');
                 });
         }
 
@@ -869,7 +886,7 @@
 
             // Проверяем, что есть хотя бы один товар
             if (itemRows.length === 0) {
-                window.showNotification('Добавьте хотя бы один товар', 'error');
+                window.showNotification('{{ __('messages.add_at_least_one_product') }}', 'error');
                 return;
             }
 
@@ -886,7 +903,7 @@
                 if (!productId ||
                     !retailInput || !retailInput.value ||
                     !quantityInput || !quantityInput.value) {
-                    window.showNotification('Заполните все поля для товара #' + (index + 1), 'error');
+                    window.showNotification('{{ __('messages.fill_all_fields_for_product', ['number' => ' + (index + 1) + ']) }}', 'error');
                     hasError = true;
                     return;
                 }
@@ -900,7 +917,7 @@
 
                 // Проверяем валидность цен
                 if (isNaN(item.retail_price)) {
-                    window.showNotification('Некорректная розничная цена для товара #' + (index + 1), 'error');
+                    window.showNotification('{{ __('messages.invalid_retail_price_for_product', ['number' => ' + (index + 1) + ']) }}', 'error');
                     hasError = true;
                     return;
                 }
@@ -913,7 +930,7 @@
             }
 
             if (!items.length) {
-                window.showNotification('Добавьте хотя бы один товар', 'error');
+                window.showNotification('{{ __('messages.add_at_least_one_product') }}', 'error');
                 return;
             }
 
@@ -945,18 +962,18 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        window.showNotification('success', 'Продажа успешно обновлена');
+                        window.showNotification('success', '{{ __('messages.sale_updated') }}');
                         closeEditSaleModal();
                         updateSaleInTable(data.sale);
                     } else {
-                        window.showNotification(data.message || 'Ошибка при обновлении продажи', 'error');
+                        window.showNotification(data.message || '{{ __('messages.error_updating_sale') }}', 'error');
                         if (data.errors) {
                             displayErrors(data.errors, 'editSaleForm');
                         }
                     }
                 })
                 .catch(error => {
-                    window.showNotification(error.message || 'Ошибка при обновлении продажи', 'error');
+                    window.showNotification(error.message || '{{ __('messages.error_updating_sale') }}', 'error');
                 });
         }
 
@@ -996,12 +1013,12 @@
             <td class="currency-amount" data-amount="${item.retail_price * item.quantity}">${formatPriceJS(item.retail_price * item.quantity)}</td>
             <td>
                 <div class="sale-actions">
-                    <button class="btn-edit" onclick="editSale(event, ${sale.id})" title="Редактировать">
+                    <button class="btn-edit" onclick="editSale(event, ${sale.id})" title="{{ __('messages.edit') }}">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                         </svg>
                     </button>
-                    <button class="btn-delete" onclick="confirmDeleteItem(event, ${sale.id}, ${item.id})" title="Удалить">
+                    <button class="btn-delete" onclick="confirmDeleteItem(event, ${sale.id}, ${item.id})" title="{{ __('messages.delete') }}">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                         </svg>
@@ -1392,12 +1409,12 @@
                         <td class="currency-amount" data-amount="${item.retail_price * item.quantity}">${formatPriceJS(item.retail_price * item.quantity)}</td>
                         <td>
                             <div class="sale-actions">
-                                <button class="btn-edit" onclick="editSale(event, ${sale.id})" title="Редактировать">
+                                <button class="btn-edit" onclick="editSale(event, ${sale.id})" title="{{ __('messages.edit') }}">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                     </svg>
                                 </button>
-                                <button class="btn-delete" onclick="confirmDeleteItem(event, ${sale.id}, ${item.id})" title="Удалить">
+                                <button class="btn-delete" onclick="confirmDeleteItem(event, ${sale.id}, ${item.id})" title="{{ __('messages.delete') }}">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                     </svg>

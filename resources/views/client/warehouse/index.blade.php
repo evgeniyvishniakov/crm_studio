@@ -8,7 +8,7 @@
     </div>
 
     <div class="warehouse-header">
-        <h1>Склад</h1>
+        <h1>{{ __('messages.warehouse') }}</h1>
         <div id="notification" class="notification">
             <!-- Уведомления будут появляться здесь -->
         </div>
@@ -17,13 +17,13 @@
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                 </svg>
-                Добавить на склад
+                {{ __('messages.add_to_warehouse') }}
             </button>
             <div class="search-box">
                 <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                 </svg>
-                <input type="text" placeholder="Поиск..." id="searchInput">
+                <input type="text" placeholder="{{ __('messages.search') }}..." id="searchInput">
             </div>
         </div>
     </div>
@@ -32,12 +32,12 @@
         <table class="table-striped warehouse-table">
             <thead>
             <tr>
-                <th>Фото</th>
-                <th>Товар</th>
-                <th>Закупочная цена</th>
-                <th>Розничная цена</th>
-                <th>Остатки</th>
-                <th>Действия</th>
+                <th>{{ __('messages.photo') }}</th>
+                <th>{{ __('messages.product') }}</th>
+                <th>{{ __('messages.purchase_price') }}</th>
+                <th>{{ __('messages.retail_price') }}</th>
+                <th>{{ __('messages.stock') }}</th>
+                <th>{{ __('messages.actions') }}</th>
             </tr>
             </thead>
             <tbody id="warehouseTableBody">
@@ -53,17 +53,17 @@
     <div id="addModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Добавить товар на склад</h2>
+                <h2>{{ __('messages.add_product_to_warehouse') }}</h2>
                 <span class="close" onclick="closeModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <form id="addForm">
                     @csrf
                     <div class="form-group">
-                        <label>Товар *</label>
+                        <label>{{ __('messages.product') }} *</label>
                         <div class="product-search-container">
                             <input type="text" class="product-search-input form-control"
-                                   placeholder="Начните вводить название товара..."
+                                   placeholder="{{ __('messages.start_typing_product_name') }}..."
                                    oninput="searchProducts(this)"
                                    onfocus="showProductDropdown(this)"
                                    autocomplete="off">
@@ -71,7 +71,7 @@
                                 <div class="product-dropdown-list"></div>
                             </div>
                             <select id="productSelect" name="product_id" class="form-control product-select" style="display: none;" required>
-                                <option value="">Выберите товар</option>
+                                <option value="">{{ __('messages.select_product') }}</option>
                                 @foreach($products as $product)
                                     <option value="{{ $product->id }}" data-purchase="{{ $product->purchase_price }}" data-retail="{{ $product->retail_price }}">{{ $product->name }}</option>
                                 @endforeach
@@ -79,20 +79,20 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Закупочная цена *</label>
+                        <label>{{ __('messages.purchase_price') }} *</label>
                         <input type="number" step="0.01" name="purchase_price" required>
                     </div>
                     <div class="form-group">
-                        <label>Розничная цена *</label>
+                        <label>{{ __('messages.retail_price') }} *</label>
                         <input type="number" step="0.01" name="retail_price" required>
                     </div>
                     <div class="form-group">
-                        <label>Количество *</label>
+                        <label>{{ __('messages.quantity') }} *</label>
                         <input type="number" name="quantity" required>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Добавить</button>
+                        <button type="button" class="btn-cancel" onclick="closeModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.add') }}</button>
                     </div>
                 </form>
             </div>
@@ -103,7 +103,7 @@
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Редактировать товар на складе</h2>
+                <h2>{{ __('messages.edit_product_on_warehouse') }}</h2>
                 <span class="close" onclick="closeEditModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -112,7 +112,7 @@
                     @method('PUT')
                     <input type="hidden" id="editItemId" name="id">
                     <div class="form-group">
-                        <label>Товар</label>
+                        <label>{{ __('messages.product') }}</label>
                         <input type="text" id="editProductName" readonly>
                     </div>
                     <div class="form-group">
@@ -124,12 +124,12 @@
                         <input type="number" step="0.01" id="editRetailPrice" name="retail_price" required>
                     </div>
                     <div class="form-group">
-                        <label>Количество *</label>
+                        <label>{{ __('messages.quantity') }} *</label>
                         <input type="number" id="editQuantity" name="quantity" required>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeEditModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Сохранить</button>
+                        <button type="button" class="btn-cancel" onclick="closeEditModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.save') }}</button>
                     </div>
                 </form>
             </div>
@@ -139,11 +139,11 @@
     <!-- Модальное окно подтверждения удаления -->
     <div id="confirmationModal" class="confirmation-modal">
         <div class="confirmation-content">
-            <h3>Подтверждение удаления</h3>
-            <p>Вы уверены, что хотите удалить этот товар со склада?</p>
+            <h3>{{ __('messages.delete_confirmation') }}</h3>
+            <p>{{ __('messages.confirm_delete_product_from_warehouse') }}</p>
             <div class="confirmation-buttons">
-                <button class="cancel-btn" id="cancelDelete">Отмена</button>
-                <button class="confirm-btn" id="confirmDeleteBtn">Удалить</button>
+                <button class="cancel-btn" id="cancelDelete">{{ __('messages.cancel') }}</button>
+                <button class="confirm-btn" id="confirmDeleteBtn">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
@@ -168,7 +168,7 @@
             }).slice(0, 5); // Ограничиваем результаты первыми 5 товарами
 
             if (filteredProducts.length === 0) {
-                dropdownList.innerHTML = '<div class="product-dropdown-item">Товары не найдены</div>';
+                dropdownList.innerHTML = '<div class="product-dropdown-item">{{ __('messages.products_not_found') }}</div>';
             } else {
                 dropdownList.innerHTML = filteredProducts.map(product => `
                     <div class="product-dropdown-item"
@@ -314,27 +314,27 @@
                         @method('PUT')
                         <input type="hidden" id="editItemId" name="id" value="${data.warehouse.id}">
                     <div class="form-group">
-                        <label>Товар</label>
+                        <label>{{ __('messages.product') }}</label>
                         <input type="text" class="form-control" value="${data.warehouse.product_name}" readonly>
                     </div>
                     <div class="form-group">
-                        <label>Закупочная цена *</label>
+                        <label>{{ __('messages.purchase_price') }} *</label>
                         <input type="number" step="0.01" id="editPurchasePrice" name="purchase_price"
                                value="${data.warehouse.purchase_price}" required>
                     </div>
                     <div class="form-group">
-                        <label>Розничная цена *</label>
+                        <label>{{ __('messages.retail_price') }} *</label>
                         <input type="number" step="0.01" id="editRetailPrice" name="retail_price"
                                value="${data.warehouse.retail_price}" required>
                     </div>
                     <div class="form-group">
-                        <label>Количество *</label>
+                        <label>{{ __('messages.quantity') }} *</label>
                         <input type="number" id="editQuantity" name="quantity"
                                value="${data.warehouse.quantity}" required>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeEditModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Сохранить</button>
+                        <button type="button" class="btn-cancel" onclick="closeEditModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.save') }}</button>
                     </div>
                 </form>
             `;
@@ -351,9 +351,9 @@
                 .catch(error => {
                     modalBody.innerHTML = `
             <div class="alert alert-danger">
-                Ошибка загрузки данных: ${error.message || 'Произошла ошибка'}
+                {{ __('messages.error_loading_data') }}: ${error.message || '{{ __('messages.an_error_occurred') }}'}
             </div>
-            <button class="btn-cancel" onclick="closeEditModal()">Закрыть</button>
+            <button class="btn-cancel" onclick="closeEditModal()">{{ __('messages.close') }}</button>
         `;
                 });
         }
@@ -407,7 +407,7 @@
                     }
                 })
                 .catch(error => {
-                    window.showNotification('error', error.message || 'Ошибка при сохранении изменений');
+                    window.showNotification('error', error.message || '{{ __('messages.error_saving_changes') }}');
                 })
                 .finally(() => {
                     submitBtn.innerHTML = originalText;
@@ -499,13 +499,13 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        window.showNotification('success', 'Товар успешно удален со склада');
+                        window.showNotification('success', '{{ __('messages.product_successfully_deleted_from_warehouse') }}');
                         // Перезагружаем текущую страницу
                         loadWarehouseItems(currentPage);
                     }
                 })
                 .catch(error => {
-                    window.showNotification('error', 'Не удалось удалить товар');
+                    window.showNotification('error', '{{ __('messages.failed_to_delete_product') }}');
                 });
         }
 
@@ -522,7 +522,7 @@
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.innerHTML;
 
-            submitBtn.innerHTML = '<span class="loader"></span> Добавление...';
+            submitBtn.innerHTML = '<span class="loader"></span> {{ __('messages.adding') }}...';
             submitBtn.disabled = true;
 
             fetch("/warehouses", {
@@ -543,7 +543,7 @@
                     if (data.success && data.warehouse) {
                         closeModal();
                         this.reset();
-                        window.showNotification('success', 'Товар успешно добавлен на склад');
+                        window.showNotification('success', '{{ __('messages.product_successfully_added_to_warehouse') }}');
                         // Перезагружаем текущую страницу для отображения нового товара
                         loadWarehouseItems(currentPage);
                     }
@@ -553,7 +553,7 @@
                         showErrors(error.errors);
                         window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
                     } else {
-                        window.showNotification('error', error.message || 'Произошла ошибка при добавлении товара');
+                        window.showNotification('error', error.message || '{{ __('messages.error_adding_product') }}');
                     }
                 })
                 .finally(() => {
@@ -605,7 +605,7 @@
                         showErrors(error.errors, 'editForm');
                         window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
                     } else {
-                        window.showNotification('error', error.message || 'Произошла ошибка при сохранении изменений');
+                        window.showNotification('error', error.message || '{{ __('messages.error_saving_changes') }}');
                     }
                 })
                 .finally(() => {
@@ -640,7 +640,7 @@
             items.forEach(item => {
                 const photoHtml = item.product.photo ?
                     `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` :
-                    '<div class="no-photo">Нет фото</div>';
+                    '<div class="no-photo">{{ __('messages.no_photo') }}</div>';
                 
                 const row = document.createElement('tr');
                 row.id = `warehouse-${item.id}`;
@@ -655,13 +655,13 @@
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                             </svg>
-                            Ред.
+                            {{ __('messages.edit') }}
                         </button>
                         <button class="btn-delete" onclick="confirmDelete(${item.id})">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
-                            Удалить
+                            {{ __('messages.delete') }}
                         </button>
                     </td>
                 `;

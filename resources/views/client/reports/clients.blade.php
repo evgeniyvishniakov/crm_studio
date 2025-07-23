@@ -57,14 +57,14 @@
 }
 </style>
 <div class="dashboard-container">
-    <h1 class="dashboard-title">Работа с клиентами</h1>
+    <h1 class="dashboard-title">{{ __('messages.client_work') }}</h1>
 
     <!-- Навигация по вкладкам -->
     <div class="dashboard-tabs">
-        <button class="tab-button active" data-tab="clients-analytics"><i class="fa fa-users"></i> Аналитика по клиентам</button>
-        <button class="tab-button" data-tab="appointments-analytics"><i class="fa fa-calendar"></i> Аналитика по записям</button>
-        <button class="tab-button" data-tab="employees-analytics"><i class="fa fa-user-md"></i> Аналитика по сотрудникам</button>
-        <button class="tab-button" data-tab="complex-analytics"><i class="fa fa-money"></i> Финансовая аналитика</button>
+        <button class="tab-button active" data-tab="clients-analytics"><i class="fa fa-users"></i> {{ __('messages.client_analytics') }}</button>
+        <button class="tab-button" data-tab="appointments-analytics"><i class="fa fa-calendar"></i> {{ __('messages.appointments_analytics') }}</button>
+        <button class="tab-button" data-tab="employees-analytics"><i class="fa fa-user-md"></i> {{ __('messages.employees_analytics') }}</button>
+        <button class="tab-button" data-tab="complex-analytics"><i class="fa fa-money"></i> {{ __('messages.financial_analytics') }}</button>
     </div>
 
     <!-- Новый блок фильтров -->
@@ -73,19 +73,19 @@
             <span class="period-tooltip" tabindex="0">
                 <i class="fa fa-question-circle" aria-hidden="true"></i>
                 <span class="period-tooltip-text">
-                    <b>Пояснения к периодам:</b><br>
-                    <b>За неделю</b>: с последнего понедельника по сегодня.<br>
-                    <b>За 2 недели</b>: с предпоследнего понедельника по сегодня.<br>
-                    <b>За месяц</b>: с 1-го числа текущего месяца по сегодня.<br>
-                    <b>За полгода</b>: с 1-го числа месяца первой продажи за последние 6 месяцев по сегодня (или просто с 1-го числа 6 месяцев назад, если нет продаж).<br>
-                    <b>За год</b>: с 1-го числа месяца первой продажи за последние 12 месяцев по сегодня (или просто с 1-го числа 12 месяцев назад, если нет продаж).
+                    <b>{{ __('messages.period_explanations') }}:</b><br>
+                    <b>{{ __('messages.for_week') }}</b>: {{ __('messages.week_explanation') }}<br>
+                    <b>{{ __('messages.for_2_weeks') }}</b>: {{ __('messages.2weeks_explanation') }}<br>
+                    <b>{{ __('messages.for_month') }}</b>: {{ __('messages.month_explanation') }}<br>
+                    <b>{{ __('messages.for_half_year') }}</b>: {{ __('messages.half_year_explanation') }}<br>
+                    <b>{{ __('messages.for_year') }}</b>: {{ __('messages.year_explanation') }}
                 </span>
             </span>
-            <button class="filter-button active">За неделю</button>
-            <button class="filter-button">За 2 недели</button>
-            <button class="filter-button">За месяц</button>
-            <button class="filter-button">За полгода</button>
-            <button class="filter-button">За год</button>
+            <button class="filter-button active">{{ __('messages.for_week') }}</button>
+            <button class="filter-button">{{ __('messages.for_2_weeks') }}</button>
+            <button class="filter-button">{{ __('messages.for_month') }}</button>
+            <button class="filter-button">{{ __('messages.for_half_year') }}</button>
+            <button class="filter-button">{{ __('messages.for_year') }}</button>
             <button class="filter-button calendar-button" id="dateRangePicker">
                 <i class="fa fa-calendar"></i>
             </button>
@@ -100,15 +100,15 @@
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Динамика клиентской базы</h4>
-                        <p class="text-muted">Количество новых клиентов за выбранный период.</p>
+                        <h4 class="mb-3">{{ __('messages.client_base_dynamics') }}</h4>
+                        <p class="text-muted">{{ __('messages.new_clients_count_period') }}</p>
                         <canvas id="clientDynamicsChart"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Топ-5 клиентов по визитам</h4>
-                        <p class="text-muted">Самые частые посетители за период.</p>
+                        <h4 class="mb-3">{{ __('messages.top_5_clients_by_visits') }}</h4>
+                        <p class="text-muted">{{ __('messages.most_frequent_visitors') }}</p>
                         <canvas id="topClientsByVisitsChart"></canvas>
                     </div>
                 </div>
@@ -117,15 +117,15 @@
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Визиты: Первичные / Повторные</h4>
-                        <p class="text-muted">Соотношение первичных и повторных визитов за период.</p>
+                        <h4 class="mb-3">{{ __('messages.visits_primary_returning') }}</h4>
+                        <p class="text-muted">{{ __('messages.primary_returning_visits_ratio') }}</p>
                         <canvas id="newVsReturningChart"></canvas>
                     </div>
                 </div>
                  <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Распределение по типам клиентов</h4>
-                        <p class="text-muted">Соотношение клиентов по реальным типам из вашего справочника.</p>
+                        <h4 class="mb-3">{{ __('messages.client_types_distribution') }}</h4>
+                        <p class="text-muted">{{ __('messages.client_types_ratio') }}</p>
                         <canvas id="clientTypesChart"></canvas>
                     </div>
                 </div>
@@ -137,15 +137,15 @@
             <div class="row">
                 <div class="col-lg-7 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Загруженность по дням</h4>
-                        <p class="text-muted">Количество записей по дням в течение недели.</p>
+                        <h4 class="mb-3">{{ __('messages.load_by_days') }}</h4>
+                        <p class="text-muted">{{ __('messages.appointments_count_by_days') }}</p>
                         <canvas id="loadChart"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-5 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Статусы записей</h4>
-                        <p class="text-muted">Соотношение выполненных, отмененных и пропущенных визитов.</p>
+                        <h4 class="mb-3">{{ __('messages.appointment_statuses') }}</h4>
+                        <p class="text-muted">{{ __('messages.completed_cancelled_missed_ratio') }}</p>
                         <canvas id="statusChart"></canvas>
                     </div>
                 </div>
@@ -153,8 +153,8 @@
             <div class="row">
                 <div class="col-lg-12 mb-4">
                      <div class="report-card">
-                        <h4 class="mb-3">Популярность услуг</h4>
-                        <p class="text-muted">Рейтинг услуг по количеству записей.</p>
+                        <h4 class="mb-3">{{ __('messages.services_popularity') }}</h4>
+                        <p class="text-muted">{{ __('messages.services_rating_by_appointments') }}</p>
                         <canvas id="servicesChart"></canvas>
                     </div>
                 </div>
@@ -166,15 +166,15 @@
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Топ сотрудников по количеству процедур</h4>
-                        <p class="text-muted">Сотрудники с наибольшим количеством выполненных процедур.</p>
+                        <h4 class="mb-3">{{ __('messages.top_employees_by_procedures') }}</h4>
+                        <p class="text-muted">{{ __('messages.employees_most_procedures') }}</p>
                         <canvas id="topEmployeesProceduresBar"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Динамика процедур по сотрудникам</h4>
-                        <p class="text-muted">Как менялось количество процедур каждого сотрудника во времени.</p>
+                        <h4 class="mb-3">{{ __('messages.procedures_dynamics_by_employees') }}</h4>
+                        <p class="text-muted">{{ __('messages.procedures_change_over_time') }}</p>
                         <canvas id="employeesProceduresDynamicsChart"></canvas>
                     </div>
                 </div>
@@ -182,15 +182,15 @@
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Топ сотрудников по выручке от процедур</h4>
-                        <p class="text-muted">Сотрудники с наибольшей выручкой от выполненных процедур.</p>
+                        <h4 class="mb-3">{{ __('messages.top_employees_by_revenue') }}</h4>
+                        <p class="text-muted">{{ __('messages.employees_most_revenue') }}</p>
                         <canvas id="topEmployeesRevenueBar"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Средний чек по сотрудникам</h4>
-                        <p class="text-muted">Средняя сумма одной процедуры у каждого сотрудника.</p>
+                        <h4 class="mb-3">{{ __('messages.average_check_by_employees') }}</h4>
+                        <p class="text-muted">{{ __('messages.average_procedure_amount') }}</p>
                         <canvas id="employeesAverageCheckBar"></canvas>
                     </div>
                 </div>
@@ -202,15 +202,15 @@
              <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Топ-5 клиентов по выручке</h4>
-                        <p class="text-muted">Клиенты, принесшие больше всего денег за период.</p>
+                        <h4 class="mb-3">{{ __('messages.top_5_clients_by_revenue') }}</h4>
+                        <p class="text-muted">{{ __('messages.clients_most_money') }}</p>
                         <canvas id="topClientsByRevenueChart"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Динамика среднего чека</h4>
-                        <p class="text-muted">Средняя сумма, которую клиент тратит за один визит.</p>
+                        <h4 class="mb-3">{{ __('messages.average_check_dynamics') }}</h4>
+                        <p class="text-muted">{{ __('messages.average_amount_per_visit') }}</p>
                         <canvas id="avgCheckChart"></canvas>
                     </div>
                 </div>
@@ -218,8 +218,8 @@
              <div class="row">
                 <div class="col-lg-12 mb-12">
                     <div class="report-card">
-                        <h4 class="mb-3">Популярность услуг по выручке</h4>
-                        <p class="text-muted">Топ-10 услуг по сумме выручки за период.</p>
+                        <h4 class="mb-3">{{ __('messages.services_popularity_by_revenue') }}</h4>
+                        <p class="text-muted">{{ __('messages.top_10_services_by_revenue') }}</p>
                         <canvas id="topServicesByRevenueChart"></canvas>
                     </div>
                 </div>
@@ -272,12 +272,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                     const label = tooltipItems[0].label;
                                     if (label && /^\d{4}-\d{2}-\d{2}$/.test(label)) {
                                         const date = new Date(label);
-                                        return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+                                        return date.toLocaleDateString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { day: 'numeric', month: 'long', year: 'numeric' });
                                     }
                                     return label;
                                 },
                                 label: function(context) {
-                                    return `Новые клиенты: ${context.parsed.y}`;
+                                    return `{{ __('messages.new_clients') }}: ${context.parsed.y}`;
                                 }
                             }
                         }
@@ -302,12 +302,39 @@ document.addEventListener('DOMContentLoaded', function() {
                                     const label = tooltipItems[0].label;
                                     if (label && /^\d{4}-\d{2}-\d{2}$/.test(label)) {
                                         const date = new Date(label);
-                                        return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+                                        return date.toLocaleDateString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { day: 'numeric', month: 'long', year: 'numeric' });
+                                    }
+                                    return label;
+                                },
+                            }
+                        }
+                    }
+                }
+            },
+            clientTypesChart: { type: 'pie', options: {} },
+            newVsReturningChart: { type: 'doughnut', options: {} },
+            topClientsByVisitsChart: { type: 'bar', options: { scales: { y: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' }, ticks: { precision: 0 } }, x: { grid: { display: false } } } } },
+            // Аналитика по записям
+            loadChart: { 
+                type: 'bar', 
+                options: { 
+                    scales: { 
+                        y: { beginAtZero: true, ticks: { precision: 0 }, grid: { display: true, color: '#e5e7eb' } },
+                        x: { ticks: { autoSkip: true, maxRotation: 0 }, grid: { display: false } }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const label = tooltipItems[0].label;
+                                    if (label && /^\d{4}-\d{2}-\d{2}$/.test(label)) {
+                                        const date = new Date(label);
+                                        return date.toLocaleDateString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { day: 'numeric', month: 'long', year: 'numeric' });
                                     }
                                     return label;
                                 },
                                 label: function(context) {
-                                    return `Записи: ${context.parsed.y}`;
+                                    return `{{ __('messages.appointments') }}: ${context.parsed.y}`;
                                 }
                             }
                         }
@@ -422,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 const totalNew = data.clientDynamics.data.reduce((a, b) => a + b, 0);
                 updateChart(charts.clientDynamicsChart, data.clientDynamics.labels, [{
-                    label: `Новые клиенты (${totalNew})`,
+                    label: `{{ __('messages.new_clients') }} (${totalNew})`,
                     data: data.clientDynamics.data,
                     borderColor: 'rgb(59, 130, 246)',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -462,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateChart(charts.topClientsByVisitsChart, [], []);
                     setTimeout(() => {
                         updateChart(charts.topClientsByVisitsChart, labelsWithCounts, [{
-                            label: 'Рейтинг визитов',
+                            label: '{{ __('messages.visits_rating') }}',
                             data: values,
                             backgroundColor: colors.slice(),
                             borderColor: colors.slice(),
@@ -538,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 delete loadChart.options.scales.y.suggestedMax;
             }
             updateChart(loadChart, data.labels, [{
-                label: 'Записи',
+                label: '{{ __('messages.appointments') }}',
                 data: data.data,
                 backgroundColor: 'rgba(59, 130, 246, 0.7)',
                 borderColor: 'rgba(59, 130, 246, 1)',
@@ -617,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function() {
             gradient.addColorStop(1, 'rgba(139, 92, 246, 0.4)');
 
             updateChart(servicesChart, labelsWithCounts, [{
-                label: 'Количество записей',
+                label: '{{ __('messages.appointments_count') }}',
                 data: data.data,
                 backgroundColor: gradient,
                 borderColor: 'rgba(139, 92, 246, 0.3)',
@@ -760,11 +787,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const filterButtons = document.querySelectorAll('.filter-section .filter-button');
     const periodMapping = {
-        'За неделю': 'week',
-        'За 2 недели': '2weeks',
-        'За месяц': 'month',
-        'За полгода': 'half_year',
-        'За год': 'year'
+        '{{ __('messages.for_week') }}': 'week',
+        '{{ __('messages.for_2_weeks') }}': '2weeks',
+        '{{ __('messages.for_month') }}': 'month',
+        '{{ __('messages.for_half_year') }}': 'half_year',
+        '{{ __('messages.for_year') }}': 'year'
     };
 
     filterButtons.forEach(button => {
@@ -809,7 +836,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeCharts();
     // Сразу выбираем период 'За месяц'
     const filterButtonsArr = Array.from(document.querySelectorAll('.filter-section .filter-button'));
-    const monthBtn = filterButtonsArr.find(btn => btn.textContent.trim() === 'За месяц');
+    const monthBtn = filterButtonsArr.find(btn => btn.textContent.trim() === '{{ __('messages.for_month') }}');
     if (monthBtn) {
         filterButtonsArr.forEach(btn => btn.classList.remove('active'));
         monthBtn.classList.add('active');
@@ -884,7 +911,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
             const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(234, 88, 12, 0.7)');
             updateChart(charts.topClientsByRevenueChart, labelsWithCounts, [{
-                label: 'Выручка',
+                label: '{{ __('messages.revenue') }}',
                 data: data.data,
                 backgroundColor: colors,
                 borderColor: colors,
@@ -908,7 +935,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
             updateChart(charts.avgCheckChart, data.labels, [{
-                label: 'Средний чек',
+                label: '{{ __('messages.average_check') }}',
                 data: data.data
             }]);
         } catch (e) {
@@ -954,7 +981,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Формируем labels с числами в скобках
             const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i]})`);
             updateChart(charts.topServicesByRevenueChart, labelsWithCounts, [{
-                label: 'Выручка',
+                label: '{{ __('messages.revenue') }}',
                 data: data.data
             }]);
         } catch (e) {
@@ -981,7 +1008,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
             const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(59, 130, 246, 0.7)');
             updateChart(charts.topEmployeesProceduresBar, labelsWithCounts, [{
-                label: 'Количество процедур',
+                label: '{{ __('messages.procedures_count') }}',
                 data: data.data,
                 backgroundColor: colors,
                 borderColor: colors,
@@ -1040,7 +1067,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
             const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(139, 92, 246, 0.7)');
             updateChart(charts.topEmployeesRevenueBar, labelsWithCounts, [{
-                label: 'Выручка',
+                label: '{{ __('messages.revenue') }}',
                 data: data.data,
                 backgroundColor: colors,
                 borderColor: colors,
@@ -1065,7 +1092,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
             updateChart(charts.employeesAverageCheckBar, data.labels, [{
-                label: 'Средний чек',
+                label: '{{ __('messages.average_check') }}',
                 data: data.data,
                 backgroundColor: 'rgba(16, 185, 129, 0.7)',
                 borderColor: 'rgba(16, 185, 129, 1)',
@@ -1086,7 +1113,7 @@ document.addEventListener('DOMContentLoaded', function() {
             calendarInstance = flatpickr(calendarBtn, {
                 mode: 'range',
                 dateFormat: 'Y-m-d',
-                locale: 'ru',
+                locale: '{{ app()->getLocale() }}',
                 onClose: function(selectedDates, dateStr) {
                     if (selectedDates.length === 2) {
                         selectedRange = {
@@ -1096,7 +1123,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         filterButtons.forEach(btn => btn.classList.remove('active'));
                         calendarBtn.classList.add('active');
                         // Отображаем выбранный диапазон
-                        const format = d => d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+                        const format = d => d.toLocaleDateString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { day: '2-digit', month: '2-digit' });
                         calendarRangeDisplay.textContent = `${format(selectedRange.start)} – ${format(selectedRange.end)}`;
                         calendarRangeDisplay.style.minWidth = '110px';
                         updateAllChartsWithRange(selectedRange.start, selectedRange.end);

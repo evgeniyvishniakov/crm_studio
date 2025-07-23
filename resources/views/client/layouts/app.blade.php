@@ -37,10 +37,13 @@
     <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/min/moment.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/ru.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/en.global.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/uk.global.min.js'></script>
     <script src="{{ asset('client/js/main.js') }}"></script>
     <script src="/client/js/notifications.js"></script>
     <script src="/client/js/currency-manager.js"></script>
     <script src="/client/js/language-manager.js"></script>
+    <script src="/client/js/calendar-localization.js"></script>
 
     <!-- Данные валюты для JavaScript -->
     @php
@@ -55,6 +58,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/en.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ua.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">

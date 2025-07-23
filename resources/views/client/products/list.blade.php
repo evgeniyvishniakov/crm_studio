@@ -4,38 +4,38 @@
 <div class="dashboard-container">
     <div class="products-container">
         <div class="products-header">
-            <h1>Товары</h1>
+            <h1>{{ __('messages.products') }}</h1>
             <div id="notification" class="notification alert alert-success" role="alert">
                 <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                 </svg>
-                <span class="notification-message">Товар успешно добавлен!</span>
+                <span class="notification-message">{{ __('messages.product_successfully_added') }}</span>
             </div>
             <div class="header-actions">
                 <button class="btn-export" onclick="openExportModal()">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
                     </svg>
-                    Экспорт
+                    {{ __('messages.export') }}
                 </button>
                 <button class="btn-import" onclick="openImportModal()">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
-                    Импорт
+                    {{ __('messages.import') }}
                 </button>
                 <button class="btn-add-product" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
-                    Добавить товар
+                    {{ __('messages.add_product') }}
                 </button>
 
                 <div class="search-box">
                     <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                     </svg>
-                    <input type="text" id="searchInput" placeholder="Поиск..." onkeyup="handleSearch()">
+                    <input type="text" id="searchInput" placeholder="{{ __('messages.search') }}..." onkeyup="handleSearch()">
                 </div>
             </div>
         </div>
@@ -44,13 +44,13 @@
             <table class="table-striped products-table">
                 <thead>
                 <tr>
-                    <th>Фото</th>
-                    <th>Название</th>
-                    <th>Категория</th>
-                    <th>Бренд</th>
-                    <th>Опт. цена</th>
-                    <th>Розн. цена</th>
-                    <th class="actions-column">Действия</th>
+                    <th>{{ __('messages.photo') }}</th>
+                    <th>{{ __('messages.name') }}</th>
+                    <th>{{ __('messages.category') }}</th>
+                    <th>{{ __('messages.brand') }}</th>
+                    <th>{{ __('messages.purchase_price') }}</th>
+                    <th>{{ __('messages.retail_price') }}</th>
+                    <th class="actions-column">{{ __('messages.actions') }}</th>
                 </tr>
                 </thead>
                 <tbody id="productsTableBody">
@@ -62,7 +62,7 @@
                                     <img src="{{ Storage::url($product->photo) }}" alt="{{ $product->name }}" class="product-photo">
                                 </a>
                             @else
-                                <div class="no-photo">Нет фото</div>
+                                <div class="no-photo">{{ __('messages.no_photo') }}</div>
                             @endif
                         </td>
                         <td>{{ $product->name }}</td>
@@ -87,13 +87,13 @@
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
-                                
+                                {{ __('messages.edit_short') }}
                             </button>
                             <button class="btn-delete">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
-                                
+                                {{ __('messages.delete') }}
                             </button>
                         </td>
                     </tr>
@@ -110,50 +110,50 @@
     <div id="addProductModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Добавить новый товар</h2>
+                <h2>{{ __('messages.add_new_product') }}</h2>
                 <span class="close" onclick="closeModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <form id="addProductForm" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
-                        <label for="productName">Название *</label>
+                        <label for="productName">{{ __('messages.name') }} *</label>
                         <input type="text" id="productName" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label for="productCategory">Категория *</label>
+                        <label for="productCategory">{{ __('messages.category') }} *</label>
                         <select id="productCategory" name="category_id" required class="form-control">
-                            <option value="">Выберите категорию</option>
+                            <option value="">{{ __('messages.select_category') }}</option>
                             @foreach($categories ?? [] as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="productBrand">Бренд *</label>
+                        <label for="productBrand">{{ __('messages.brand') }} *</label>
                         <select id="productBrand" name="brand_id" required class="form-control">
-                            <option value="">Выберите бренд</option>
+                            <option value="">{{ __('messages.select_brand') }}</option>
                             @foreach($brands as $brand)
                                 <option value="{{ $brand->id }}">{{ $brand->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="productPhoto">Фото</label>
+                        <label for="productPhoto">{{ __('messages.photo') }}</label>
                         <input type="file" id="productPhoto" name="photo" accept="image/jpeg,image/png,image/jpg">
-                        <small class="form-text text-muted">Максимальный размер: 2MB. Допустимые форматы: JPEG, PNG, JPG</small>
+                        <small class="form-text text-muted">{{ __('messages.max_file_size_2mb') }} {{ __('messages.allowed_formats_jpeg_png_jpg') }}</small>
                     </div>
                     <div class="form-group">
-                        <label for="productPurchasePrice">Оптовая цена *</label>
+                        <label for="productPurchasePrice">{{ __('messages.purchase_price') }} *</label>
                         <input type="number" id="productPurchasePrice" name="purchase_price" min="0" step="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label for="productRetailPrice">Розничная цена *</label>
+                        <label for="productRetailPrice">{{ __('messages.retail_price') }} *</label>
                         <input type="number" id="productRetailPrice" name="retail_price" min="0" step="0.01" required>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Добавить</button>
+                        <button type="button" class="btn-cancel" onclick="closeModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.add') }}</button>
                     </div>
                 </form>
             </div>
@@ -163,11 +163,11 @@
     <!-- Модальное окно подтверждения удаления -->
     <div id="confirmationModal" class="confirmation-modal">
         <div class="confirmation-content">
-            <h3>Подтверждение удаления</h3>
-            <p>Вы уверены, что хотите удалить этот товар?</p>
+            <h3>{{ __('messages.confirmation_delete') }}</h3>
+            <p>{{ __('messages.are_you_sure_you_want_to_delete_this_product') }}</p>
             <div class="confirmation-buttons">
-                <button id="cancelDelete" class="cancel-btn">Отмена</button>
-                <button id="confirmDelete" class="confirm-btn">Удалить</button>
+                <button id="cancelDelete" class="cancel-btn">{{ __('messages.cancel') }}</button>
+                <button id="confirmDelete" class="confirm-btn">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
@@ -176,7 +176,7 @@
     <div id="editProductModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Редактировать товар</h2>
+                <h2>{{ __('messages.edit_product') }}</h2>
                 <span class="close" onclick="closeEditModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -185,44 +185,44 @@
                     @method('PUT')
                     <input type="hidden" id="editProductId" name="id">
                     <div class="form-group">
-                        <label for="editProductName">Название *</label>
+                        <label for="editProductName">{{ __('messages.name') }} *</label>
                         <input type="text" id="editProductName" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label for="editProductCategory">Категория *</label>
+                        <label for="editProductCategory">{{ __('messages.category') }} *</label>
                         <select id="editProductCategory" name="category_id" required class="form-control">
-                            <option value="">Выберите категорию</option>
+                            <option value="">{{ __('messages.select_category') }}</option>
                             @foreach($categories ?? [] as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="editProductBrand">Бренд *</label>
+                        <label for="editProductBrand">{{ __('messages.brand') }} *</label>
                         <select id="editProductBrand" name="brand_id" required class="form-control">
-                            <option value="">Выберите бренд</option>
+                            <option value="">{{ __('messages.select_brand') }}</option>
                             @foreach($brands as $brand)
                                 <option value="{{ $brand->id }}">{{ $brand->name }}</option>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="editProductPhoto">Фото</label>
+                        <label for="editProductPhoto">{{ __('messages.photo') }}</label>
                         <input type="file" id="editProductPhoto" name="photo" accept="image/jpeg,image/png,image/jpg">
-                        <small class="form-text text-muted">Максимальный размер: 2MB. Допустимые форматы: JPEG, PNG, JPG</small>
+                        <small class="form-text text-muted">{{ __('messages.max_file_size_2mb') }} {{ __('messages.allowed_formats_jpeg_png_jpg') }}</small>
                         <div id="currentPhotoContainer" class="mt-2"></div>
                     </div>
                     <div class="form-group">
-                        <label for="editProductPurchasePrice">Оптовая цена *</label>
+                        <label for="editProductPurchasePrice">{{ __('messages.purchase_price') }} *</label>
                         <input type="number" id="editProductPurchasePrice" name="purchase_price" min="0" step="0.01" required>
                     </div>
                     <div class="form-group">
-                        <label for="editProductRetailPrice">Розничная цена *</label>
+                        <label for="editProductRetailPrice">{{ __('messages.retail_price') }} *</label>
                         <input type="number" id="editProductRetailPrice" name="retail_price" min="0" step="0.01" required>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeEditModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Сохранить</button>
+                        <button type="button" class="btn-cancel" onclick="closeEditModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.save') }}</button>
                     </div>
                 </form>
             </div>
@@ -233,40 +233,40 @@
     <div id="importModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Импорт товаров</h2>
+                <h2>{{ __('messages.import_products') }}</h2>
                 <span class="close" onclick="closeImportModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <div class="import-info">
-                    <h3>Информация об импорте</h3>
+                    <h3>{{ __('messages.import_info') }}</h3>
                     <ul>
-                        <li>Файл должен содержать колонки: Название, Категория, Бренд, Оптовая цена, Розничная цена, <strong>Фото</strong> или <strong>Изображение</strong></li>
-                        <li>Если категория или бренд не указаны, система попытается определить их по названию товара</li>
-                        <li><strong>Фото</strong></li>
+                        <li>{{ __('messages.file_must_contain_columns') }}</li>
+                        <li>{{ __('messages.if_category_or_brand_not_specified') }}</li>
+                        <li>{{ __('messages.photo_column') }}</li>
                         <ul style="margin-left: 20px; margin-top: 5px;">
-                            <li>Вставьте ссылку на изображение в колонку "Фото" — программа сама всё обработает</li>
-                            <li>Поддерживаются форматы ссылок: http/https (JPG, JPEG, PNG)</li>
-                            <li>Можно просто вставлять гиперссылку — не нужно преобразовывать в текст</li>
+                            <li>{{ __('messages.insert_image_link_in_photo_column') }}</li>
+                            <li>{{ __('messages.supported_link_formats_http_https_jpg_jpeg_png') }}</li>
+                            <li>{{ __('messages.can_simply_paste_hyperlink') }}</li>
                         </ul>
-                        <li><strong>Поддерживаемые форматы файлов: Excel (.xlsx, .xls) и CSV (.csv)</strong></li>
-                        <li>Максимальный размер файла: 5MB</li>
+                        <li>{{ __('messages.supported_file_formats_excel_xlsx_xls_csv_csv') }}</li>
+                        <li>{{ __('messages.max_file_size_5mb') }}</li>
                     </ul>
                 </div>
                 
                 <form id="importForm" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="importFile">Выберите файл:</label>
+                        <label for="importFile">{{ __('messages.select_file') }}:</label>
                         <div class="logo-upload-controls">
-                            <label for="importFile" class="btn btn-outline-secondary" style="cursor:pointer;display:inline-block;">Выбрать файл</label>
+                            <label for="importFile" class="btn btn-outline-secondary" style="cursor:pointer;display:inline-block;">{{ __('messages.choose_file') }}</label>
                             <input type="file" id="importFile" name="file" accept=".xlsx,.xls,.csv" required style="display:none;" onchange="document.getElementById('import-filename').textContent = this.files[0]?.name || ''">
                             <span id="import-filename" style="margin-left:12px;font-size:0.95em;color:#888;"></span>
-                            <small class="form-text text-muted">Excel (.xlsx, .xls), CSV. Максимальный размер: 5MB</small>
+                            <small class="form-text text-muted">{{ __('messages.excel_xlsx_xls_csv_max_size_5mb') }}</small>
                         </div>
                     </div>
                     
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeImportModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Импортировать</button>
+                        <button type="button" class="btn-cancel" onclick="closeImportModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.import') }}</button>
                     </div>
                 </form>
             </div>
@@ -277,50 +277,50 @@
     <div id="exportModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Экспорт товаров</h2>
+                <h2>{{ __('messages.export_products') }}</h2>
                 <span class="close" onclick="closeExportModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <div class="import-info">
-                    <h3>Экспорт в Excel</h3>
+                    <h3>{{ __('messages.export_to_excel') }}</h3>
                     <ul>
-                        <li>Выберите фильтры для экспорта (по категории, бренду, наличию фото).</li>
-                        <li>Файл будет скачан в формате <b>Excel (.xlsx)</b>.</li>
-                        <li>Откроется в Excel без проблем с кириллицей и разделителями.</li>
+                        <li>{{ __('messages.select_filters_for_export') }}</li>
+                        <li>{{ __('messages.file_will_be_downloaded_in_xlsx_format') }}</li>
+                        <li>{{ __('messages.will_open_in_excel_without_problems_with_cyrillic_and_separators') }}</li>
                     </ul>
                 </div>
                 <form id="exportForm" onsubmit="event.preventDefault(); exportProducts();">
                     <div class="export-filters-row">
                         <div class="form-group">
-                            <label for="exportCategory">Категория:</label>
+                            <label for="exportCategory">{{ __('messages.category') }}:</label>
                             <select id="exportCategory" name="category_id">
-                                <option value="">Все</option>
+                                <option value="">{{ __('messages.all') }}</option>
                                 @foreach($categories ?? [] as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="exportBrand">Бренд:</label>
+                            <label for="exportBrand">{{ __('messages.brand') }}:</label>
                             <select id="exportBrand" name="brand_id">
-                                <option value="">Все</option>
+                                <option value="">{{ __('messages.all') }}</option>
                                 @foreach($brands as $brand)
                                     <option value="{{ $brand->id }}">{{ $brand->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="exportPhoto">Фото:</label>
+                            <label for="exportPhoto">{{ __('messages.photo') }}:</label>
                             <select id="exportPhoto" name="photo">
-                                <option value="all">Все товары</option>
-                                <option value="with">Только с фото</option>
-                                <option value="without">Только без фото</option>
+                                <option value="all">{{ __('messages.all_products') }}</option>
+                                <option value="with">{{ __('messages.only_with_photo') }}</option>
+                                <option value="without">{{ __('messages.only_without_photo') }}</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeExportModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Скачать Excel</button>
+                        <button type="button" class="btn-cancel" onclick="closeExportModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.download_excel') }}</button>
                     </div>
                 </form>
             </div>
@@ -748,13 +748,13 @@
                 if (data.success) {
                     setTimeout(() => {
                         if (row) row.remove();
-                        window.showNotification('success', 'Товар успешно удален');
+                        window.showNotification('success', '{{ __('messages.product_successfully_deleted') }}');
                     }, 300);
                 }
             })
             .catch(error => {
                 if (row) row.classList.remove('row-deleting');
-                window.showNotification('error', 'Не удалось удалить товар');
+                window.showNotification('error', '{{ __('messages.failed_to_delete_product') }}');
             });
         }
 
@@ -791,7 +791,7 @@
                                 <img src="/storage/${product.photo}" alt="Текущее фото" style="max-width: 200px; margin-top: 10px;">
                             `;
                         } else {
-                            photoContainer.innerHTML = '<p>Нет фото</p>';
+                            photoContainer.innerHTML = '<p>{{ __('messages.no_photo') }}</p>';
                         }
 
                         // Подставляем цены
@@ -800,11 +800,11 @@
 
                         document.getElementById('editProductModal').style.display = 'block';
                     } else {
-                        window.showNotification('error', data.message || 'Ошибка загрузки данных товара');
+                        window.showNotification('error', data.message || '{{ __('messages.error_loading_product_data') }}');
                     }
                 })
                 .catch(error => {
-                    window.showNotification('error', 'Ошибка загрузки данных товара');
+                    window.showNotification('error', '{{ __('messages.error_loading_product_data') }}');
                 });
         }
 
@@ -826,7 +826,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.showNotification('success', 'Товар успешно обновлен');
+                    window.showNotification('success', '{{ __('messages.product_successfully_updated') }}');
                     closeEditModal();
                     // Обновляем строку в таблице
                     const row = document.getElementById(`product-${productId}`);
@@ -849,11 +849,11 @@
                         row.querySelector('td:nth-child(6)').textContent = formatPrice(data.product.retail_price);
                     }
                 } else {
-                    window.showNotification('error', data.message || 'Ошибка обновления товара');
+                    window.showNotification('error', data.message || '{{ __('messages.error_updating_product') }}');
                 }
             })
             .catch(error => {
-                window.showNotification('error', 'Ошибка обновления товара');
+                window.showNotification('error', '{{ __('messages.error_updating_product') }}');
             });
         });
 
@@ -908,7 +908,7 @@
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
             
-            submitBtn.textContent = 'Импортирование...';
+            submitBtn.textContent = '{{ __('messages.importing') }}...';
             submitBtn.disabled = true;
             
             fetch('{{ route("products.import") }}', {
@@ -925,11 +925,11 @@
                         window.location.reload();
                     }, 1500);
                 } else {
-                    window.showNotification('error', 'Ошибка: ' + data.message);
+                    window.showNotification('error', '{{ __('messages.error') }}: ' + data.message);
                 }
             })
             .catch(error => {
-                window.showNotification('error', 'Ошибка при импорте файла');
+                window.showNotification('error', '{{ __('messages.error_importing_file') }}');
             })
             .finally(() => {
                 submitBtn.textContent = originalText;
@@ -1001,7 +1001,7 @@
                 renderPagination(data.meta);
             })
             .catch(error => {
-                window.showNotification('error', 'Ошибка загрузки данных');
+                window.showNotification('error', '{{ __('messages.error_loading_data') }}');
             });
         }
 
@@ -1125,15 +1125,15 @@
                     // Обновляем таблицу после добавления
                     loadPage(currentPage, searchQuery);
                     
-                    window.showNotification('success', 'Товар успешно добавлен');
+                    window.showNotification('success', '{{ __('messages.product_successfully_added') }}');
                     closeModal();
                     this.reset();
                 } else {
-                    window.showNotification('error', data.message || 'Ошибка добавления товара');
+                    window.showNotification('error', data.message || '{{ __('messages.error_adding_product') }}');
                 }
             })
             .catch(error => {
-                window.showNotification('error', 'Ошибка добавления товара');
+                window.showNotification('error', '{{ __('messages.error_adding_product') }}');
             });
         });
 

@@ -208,7 +208,7 @@ class ClientReportController extends Controller
             ->limit(5)
             ->get();
         $labels = $data->map(function ($item) {
-            return $item->client ? $item->client->name : 'Удалённый клиент';
+            return $item->client ? $item->client->name : __('messages.deleted_client');
         });
         $values = $data->pluck('visits_count');
         return ['labels' => $labels, 'data' => $values];
@@ -228,7 +228,7 @@ class ClientReportController extends Controller
         $primary = $visits->filter(fn($cnt) => $cnt === 1)->count();
         $returning = $visits->filter(fn($cnt) => $cnt > 1)->count();
         return [
-            'labels' => ['Первичные визиты', 'Повторные визиты'],
+            'labels' => [__('messages.primary_visits'), __('messages.returning_visits')],
             'data' => [$primary, $returning]
         ];
     }
@@ -252,7 +252,13 @@ class ClientReportController extends Controller
             ->groupBy('client_types.name')
             ->orderByDesc('count')
             ->get();
-        $labels = $clientTypesDistribution->pluck('name');
+        $labels = $clientTypesDistribution->map(function($item) {
+            $translations = [
+                'Новый клиент' => __('messages.new_client'),
+                'Постоянный клиент' => __('messages.regular_client'),
+            ];
+            return $translations[$item->name] ?? $item->name;
+        });
         $values = $clientTypesDistribution->pluck('count');
         return ['labels' => $labels, 'data' => $values];
     }

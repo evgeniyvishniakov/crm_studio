@@ -3,7 +3,7 @@
 @section('content')
     <div class="dashboard-container">
         <div class="purchases-header">
-            <h1>Закупки</h1>
+            <h1>{{ __('messages.purchases') }}</h1>
             <div id="notification" class="notification">
                 <!-- Уведомления будут появляться здесь -->
             </div>
@@ -12,13 +12,13 @@
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
-                    Добавить закупку
+                    {{ __('messages.add_purchase') }}
                 </button>
                 <div class="search-box">
                     <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
-                    <input type="text" placeholder="Поиск..." id="searchInput">
+                    <input type="text" placeholder="{{ __('messages.search') }}..." id="searchInput">
                 </div>
             </div>
         </div>
@@ -26,11 +26,11 @@
         <table class="table purchases-table">
             <thead>
                 <tr>
-                    <th>Дата</th>
-                    <th>Поставщик</th>
-                    <th>Оптовая сумма</th>
-                    <th>Примечания</th>
-                    <th>Действия</th>
+                    <th>{{ __('messages.date') }}</th>
+                    <th>{{ __('messages.supplier') }}</th>
+                    <th>{{ __('messages.wholesale_amount') }}</th>
+                    <th>{{ __('messages.notes') }}</th>
+                    <th>{{ __('messages.actions') }}</th>
                 </tr>
             </thead>
             <tbody id="purchasesListBody">
@@ -44,7 +44,7 @@
     <div id="purchaseModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Добавить закупку</h2>
+                <h2>{{ __('messages.add_purchase') }}</h2>
                 <span class="close" onclick="closePurchaseModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -52,13 +52,14 @@
                     @csrf
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Дата </label>
-                            <input type="date" name="date" required class="form-control">
+                            <label>{{ __('messages.date') }} </label>
+                            <input type="date" name="date" required class="form-control"
+                                   data-locale="{{ app()->getLocale() }}">
                         </div>
                         <div class="form-group">
-                            <label>Поставщик </label>
+                            <label>{{ __('messages.supplier') }} </label>
                             <select name="supplier_id" required class="form-control">
-                                <option value="">Выберите поставщика</option>
+                                <option value="">{{ __('messages.select_supplier') }}</option>
                                 @foreach($suppliers as $supplier)
                                     <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                 @endforeach
@@ -66,12 +67,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Примечания</label>
+                        <label>{{ __('messages.notes') }}</label>
                         <textarea name="notes" rows="2" class="form-control"></textarea>
                     </div>
 
                     <div class="items-container" id="itemsContainer">
-                        <h3>Товары</h3>
+                        <h3>{{ __('messages.products') }}</h3>
                         <div class="item-row template" style="display: none;">
                             <div class="form-row">
                                 <div class="form-group">
@@ -92,11 +93,11 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Закупочная цена </label>
+                                    <label>{{ __('messages.purchase_price') }} </label>
                                     <input type="number"  name="items[0][purchase_price]" class="form-control" >
                                 </div>
                                 <div class="form-group">
-                                    <label>Розничная цена </label>
+                                    <label>{{ __('messages.retail_price') }} </label>
                                     <input type="number" name="items[0][retail_price]" class="form-control" >
                                 </div>
                                 <div class="form-group">
@@ -160,8 +161,8 @@
                             </svg>
                             Добавить товар
                         </button>
-                        <button type="button" class="btn-cancel" onclick="closePurchaseModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Сохранить закупку</button>
+                        <button type="button" class="btn-cancel" onclick="closePurchaseModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.save_purchase') }}</button>
                     </div>
                 </form>
             </div>
@@ -172,7 +173,7 @@
     <div id="editPurchaseModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Редактировать закупку</h2>
+                <h2>{{ __('messages.edit_purchase') }}</h2>
                 <span class="close" onclick="closeEditPurchaseModal()">&times;</span>
             </div>
             <div class="modal-body" id="editPurchaseModalBody">
@@ -184,8 +185,8 @@
     <!-- Модальное окно подтверждения удаления -->
     <div id="confirmationModal" class="confirmation-modal">
         <div class="confirmation-content">
-            <h3>Подтверждение удаления</h3>
-            <p>Вы уверены, что хотите удалить эту закупку?</p>
+            <h3>{{ __('messages.delete_confirmation') }}</h3>
+            <p>{{ __('messages.confirm_delete_purchase') }}</p>
             <div class="confirmation-buttons">
                 <button class="cancel-btn" id="cancelDelete">Отмена</button>
                 <button class="confirm-btn" id="confirmDeleteBtn">Удалить</button>
@@ -196,11 +197,11 @@
     <!-- Модальное окно подтверждения отмены -->
     <div id="cancelPurchaseModal" class="confirmation-modal" style="display: none;">
         <div class="confirmation-content">
-            <h3>Подтверждение отмены</h3>
-            <p>Вы уверены, что хотите отменить создание закупки? Все несохранённые данные будут потеряны.</p>
+            <h3>{{ __('messages.cancel_confirmation') }}</h3>
+            <p>{{ __('messages.confirm_cancel_purchase_creation') }}</p>
             <div class="confirmation-buttons">
-                <button class="cancel-btn" id="cancelCancelPurchase">Отмена</button>
-                <button class="confirm-btn" id="confirmCancelPurchaseBtn">Да, отменить</button>
+                <button class="cancel-btn" id="cancelCancelPurchase">{{ __('messages.cancel') }}</button>
+                <button class="confirm-btn" id="confirmCancelPurchaseBtn">{{ __('messages.yes_cancel') }}</button>
             </div>
         </div>
     </div>
@@ -237,10 +238,13 @@
         // Функции для работы с модальными окнами
         function openPurchaseModal() {
             document.getElementById('purchaseForm').reset();
-            // Устанавливаем текущую дату
-            const today = new Date().toISOString().split('T')[0];
-            document.querySelector('#purchaseForm [name="date"]').value = today;
             document.getElementById('purchaseModal').style.display = 'block';
+            
+            // Устанавливаем сегодняшнюю дату в поле даты
+            const dateInput = document.querySelector('#purchaseForm [name="date"]');
+            if (dateInput && typeof setTodayDate === 'function') {
+                setTodayDate(dateInput);
+            }
         }
 
         function closePurchaseModal(force = false) {
@@ -426,8 +430,9 @@
                                 @method('PUT')
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label>Дата </label>
-                                        <input type="date" name="date" required class="form-control" value="${purchase.date}">
+                                        <label>{{ __('messages.date') }} </label>
+                                        <input type="date" name="date" required class="form-control" value="${purchase.date}"
+                                               data-locale="{{ app()->getLocale() }}">
                                     </div>
                                     <div class="form-group">
                                         <label>Поставщик </label>
@@ -512,6 +517,12 @@
                         document.getElementById('editPurchaseForm').addEventListener('submit', function(e) {
                             e.preventDefault();
                             const formData = new FormData(this);
+                            
+                        // Инициализация календаря для поля даты
+                        const dateInput = document.querySelector('#editPurchaseForm input[name="date"]');
+                        if (dateInput && typeof initializeDatePicker === 'function') {
+                            initializeDatePicker(dateInput);
+                        }
                             const items = [];
 
                             // Собираем данные о товарах
@@ -548,24 +559,24 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    window.showNotification('success', 'Закупка успешно обновлена');
+                                    window.showNotification('success', '{{ __('messages.purchase_successfully_updated') }}');
                                     closeEditPurchaseModal();
                                     // Обновляем данные на странице
                                     updatePurchaseRowInDOM(data.purchase);
                                 } else {
-                                    window.showNotification('error', data.message || 'Ошибка обновления закупки');
+                                    window.showNotification('error', data.message || '{{ __('messages.error_updating_purchase') }}');
                                 }
                             })
                             .catch(error => {
-                                window.showNotification('error', 'Ошибка обновления закупки');
+                                window.showNotification('error', '{{ __('messages.error_updating_purchase') }}');
                             });
                         });
                     } else {
-                        window.showNotification('error', data.message || 'Ошибка загрузки данных закупки');
+                        window.showNotification('error', data.message || '{{ __('messages.error_loading_purchase_data') }}');
                     }
                 })
                 .catch(error => {
-                    window.showNotification('error', 'Ошибка загрузки данных закупки');
+                    window.showNotification('error', '{{ __('messages.error_loading_purchase_data') }}');
                 });
         }
 
@@ -597,7 +608,7 @@
         document.getElementById('confirmCancelPurchaseBtn').addEventListener('click', function() {
             document.getElementById('cancelPurchaseModal').style.display = 'none';
             closePurchaseModal(true); // Принудительно закрыть и сбросить
-            window.showNotification('error', 'Создание закупки отменено');
+            window.showNotification('error', '{{ __('messages.purchase_creation_cancelled') }}');
         });
 
         // Функция для удаления закупки
@@ -613,15 +624,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.showNotification('success', 'Закупка успешно удалена');
+                        window.showNotification('success', '{{ __('messages.purchase_successfully_deleted') }}');
                         // Перезагружаем текущую страницу
                         loadPurchases(currentPage);
                     } else {
-                        window.showNotification('error', 'Ошибка при удалении закупки');
+                        window.showNotification('error', '{{ __('messages.error_deleting_purchase') }}');
                     }
                 })
                 .catch(error => {
-                    window.showNotification('error', 'Ошибка при удалении закупки');
+                    window.showNotification('error', '{{ __('messages.error_deleting_purchase') }}');
                 });
         }
 
@@ -671,7 +682,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        window.showNotification('success', 'Закупка успешно добавлена');
+                        window.showNotification('success', '{{ __('messages.purchase_successfully_added') }}');
                         closePurchaseModal(true); // Принудительно закрываем и сбрасываем форму
                         // resetPurchaseForm(); // Этот вызов больше не нужен, так как он есть в closePurchaseModal(true)
                         // Перезагружаем текущую страницу для отображения новой закупки
@@ -680,12 +691,12 @@
                         if (data.errors) {
                             displayErrors(data.errors, 'purchaseForm');
                         } else {
-                            window.showNotification('error', data.message || 'Ошибка при добавлении закупки');
+                            window.showNotification('error', data.message || '{{ __('messages.error_adding_purchase') }}');
                         }
                     }
                 })
                 .catch(error => {
-                    window.showNotification('error', error.message || 'Ошибка при добавлении закупки');
+                    window.showNotification('error', error.message || '{{ __('messages.error_adding_purchase') }}');
                 });
         }
 
@@ -698,7 +709,7 @@
                     month: '2-digit',
                     year: 'numeric'
                 }).replace(/\./g, '.')
-                : 'Нет даты';
+                : '{{ __('messages.no_date') }}';
 
             // Генерируем HTML для товаров в детальной строке
             const itemsHTML = purchase.items.map(item => {
@@ -730,10 +741,10 @@
                     <td>
                         <div class="purchases-actions">
                             <button class="btn-edit" onclick="editPurchase(event, ${purchase.id})">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg> Ред.
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg> {{ __('messages.edit') }}
                             </button>
                             <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> Удалить
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> {{ __('messages.delete') }}
                             </button>
                         </div>
                     </td>
@@ -745,12 +756,12 @@
                             <table class="table-wrapper table-striped purchases-table">
                                 <thead>
                                     <tr>
-                                        <th>Фото</th>
-                                        <th>Товар</th>
-                                        <th>Закупочная цена</th>
-                                        <th>Розничная цена</th>
-                                        <th>Количество</th>
-                                        <th>Сумма</th>
+                                        <th>{{ __('messages.photo') }}</th>
+                                        <th>{{ __('messages.product') }}</th>
+                                        <th>{{ __('messages.purchase_price') }}</th>
+                                        <th>{{ __('messages.retail_price') }}</th>
+                                        <th>{{ __('messages.quantity') }}</th>
+                                        <th>{{ __('messages.sum') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -903,11 +914,11 @@
                         <div class="purchases-actions">
                             <button class="btn-edit" onclick="editPurchase(event, ${purchase.id})">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
-                                Ред.
+                                {{ __('messages.edit') }}
                             </button>
                             <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                                Удалить
+                                {{ __('messages.delete') }}
                             </button>
                         </div>
                     </td>
@@ -927,7 +938,7 @@
                             <td>
                                 ${item.product.photo ? 
                                     `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` : 
-                                    '<div class="no-photo">Нет фото</div>'
+                                    '<div class="no-photo">{{ __('messages.no_photo') }}</div>'
                                 }
                             </td>
                             <td>${item.product.name}</td>
@@ -946,12 +957,12 @@
                             <table class="table-wrapper table-striped purchases-table">
                                 <thead>
                                 <tr>
-                                    <th>Фото</th>
-                                    <th>Товар</th>
-                                    <th>Опт</th>
-                                    <th>Розница</th>
-                                    <th>Количество</th>
-                                    <th>Сумма</th>
+                                    <th>{{ __('messages.photo') }}</th>
+                                    <th>{{ __('messages.product') }}</th>
+                                    <th>{{ __('messages.wholesale') }}</th>
+                                    <th>{{ __('messages.retail') }}</th>
+                                    <th>{{ __('messages.quantity') }}</th>
+                                    <th>{{ __('messages.sum') }}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -1040,7 +1051,7 @@
                 renderPagination(data.meta);
             })
             .catch(error => {
-                window.showNotification('error', 'Ошибка при загрузке данных');
+                window.showNotification('error', '{{ __('messages.error_loading_data') }}');
             });
         }
 
@@ -1072,7 +1083,7 @@
             );
 
             if (filteredProducts.length === 0) {
-                dropdownList.innerHTML = '<div class="product-dropdown-item">Товары не найдены</div>';
+                dropdownList.innerHTML = '<div class="product-dropdown-item">{{ __('messages.products_not_found') }}</div>';
             } else {
                 dropdownList.innerHTML = filteredProducts.map(product => `
             <div class="product-dropdown-item"
