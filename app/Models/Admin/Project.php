@@ -20,6 +20,7 @@ class Project extends Model
         'email',
         'registered_at',
         'language',
+        'currency',
         'status',
         'phone',
         'website',

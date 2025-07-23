@@ -12,7 +12,7 @@
                 </div>
                 <div class="stat-content">
                     <h3 class="stat-title">Прибыль</h3>
-                    <p class="stat-value">{{ number_format($totalProfit, 2, '.', ' ') }} грн</p>
+                    <p class="stat-value currency-amount" data-amount="{{ $totalProfit }}">{{ \App\Helpers\CurrencyHelper::format($totalProfit) }}</p>
                     @if($showDynamics)
                         <p class="stat-change positive">
                             <i class="fas fa-arrow-up"></i>
@@ -31,7 +31,7 @@
                         </div>
                         <div class="stat-content">
                             <h3 class="stat-title">Продажи товаров</h3>
-                            <p class="stat-value">{{ number_format($productsRevenue, 2, '.', ' ') }} грн</p>
+                            <p class="stat-value currency-amount" data-amount="{{ $productsRevenue }}">{{ \App\Helpers\CurrencyHelper::format($productsRevenue) }}</p>
                             @if($showDynamics)
                                 <p class="stat-change positive">
                                     <i class="fas fa-arrow-up"></i>
@@ -46,7 +46,7 @@
                         </div>
                         <div class="stat-content">
                             <h3 class="stat-title">Продажи услуг</h3>
-                            <p class="stat-value">{{ number_format($servicesRevenue, 2, '.', ' ') }} грн</p>
+                            <p class="stat-value currency-amount" data-amount="{{ $servicesRevenue }}">{{ \App\Helpers\CurrencyHelper::format($servicesRevenue) }}</p>
                             @if($showDynamics)
                                 <p class="stat-change positive">
                                     <i class="fas fa-arrow-up"></i>
@@ -61,7 +61,7 @@
                         </div>
                         <div class="stat-content">
                             <h3 class="stat-title">Расходы</h3>
-                            <p class="stat-value">{{ number_format($totalExpenses, 2, '.', ' ') }} грн</p>
+                            <p class="stat-value currency-amount" data-amount="{{ $totalExpenses }}">{{ \App\Helpers\CurrencyHelper::format($totalExpenses) }}</p>
                             @if($showDynamics)
                                 <p class="stat-change negative">
                                     <i class="fas fa-arrow-down"></i>
@@ -233,7 +233,7 @@
                                             <td>{{ $appointment->client->name ?? 'Клиент не найден' }}</td>
                                             <td>{{ $appointment->service->name ?? 'Услуга не найдена' }}</td>
                                             <td><span class="status-badge status-{{ $statusInfo['class'] }}">{{ $statusInfo['name'] }}</span></td>
-                                            <td>{{ number_format($appointment->price, 0, '.', ' ') }} грн</td>
+                                            <td class="currency-amount" data-amount="{{ $appointment->price }}">{{ \App\Helpers\CurrencyHelper::format($appointment->price) }}</td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -263,7 +263,7 @@
                                     <i class="fas fa-spa item-icon"></i>
                                     <span class="item-label">Прибыль с услуг</span>
                                 </div>
-                                <div class="item-value">{{ number_format($todayServicesProfit ?? 2000, 0, '.', ' ') }} <small>грн</small></div>
+                                <div class="item-value currency-amount" data-amount="{{ $todayServicesProfit ?? 2000 }}">{{ \App\Helpers\CurrencyHelper::format($todayServicesProfit ?? 2000) }}</div>
                             </div>
                             <!-- 2. Прибыль Товары -->
                             <div class="summary-grid-item products-profit">
@@ -271,7 +271,7 @@
                                     <i class="fas fa-boxes-stacked item-icon"></i>
                                     <span class="item-label">Прибыль с товаров</span>
                                 </div>
-                                <div class="item-value">{{ number_format($todayProductsProfit ?? 1200, 0, '.', ' ') }} <small>грн</small></div>
+                                <div class="item-value currency-amount" data-amount="{{ $todayProductsProfit ?? 1200 }}">{{ \App\Helpers\CurrencyHelper::format($todayProductsProfit ?? 1200) }}</div>
                             </div>
                             <!-- 3. Услуг оказано -->
                             <div class="summary-grid-item services-count">
@@ -318,61 +318,20 @@
         let currentMetric = 'profit';
         let currentPeriod = document.querySelector('.period-filters .tab-button.active')?.dataset.period || '30';
 
-        // Анимация счетчика для карточек
-        function animateCounter(element, start, end, duration = 1500) {
-            const startTime = performance.now();
-            const originalText = element.textContent;
-            const isCurrency = originalText.includes('грн');
+        // Функция анимации удалена для совместимости с системой валют
 
-            function updateCounter(currentTime) {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-
-                // Плавная анимация с easeOutQuart
-                const easeProgress = 1 - Math.pow(1 - progress, 4);
-                const current = start + (end - start) * easeProgress;
-
-                if (isCurrency) {
-                    element.textContent = new Intl.NumberFormat('ru-RU', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }).format(current) + ' грн';
-                } else {
-                    element.textContent = Math.floor(current).toLocaleString('ru-RU');
-                }
-
-                if (progress < 1) {
-                    requestAnimationFrame(updateCounter);
-                }
-            }
-
-            requestAnimationFrame(updateCounter);
-        }
-
-        // Запускаем анимацию для всех карточек
+        // Убираем анимацию для совместимости с системой валют
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.stat-value');
-
-            cards.forEach((card, index) => {
-                const finalValue = card.textContent;
-                const numericValue = parseFloat(finalValue.replace(/[^\d.-]/g, ''));
-                const isCurrency = finalValue.includes('грн');
-
-                if (!isNaN(numericValue)) {
-                    card.textContent = '0' + (isCurrency ? ' грн' : '');
-                    card.classList.add('animated');
-                    setTimeout(() => {
-                        animateCounter(card, 0, numericValue, 1500);
-                    }, index * 200);
-                } else {
-                    card.classList.add('animated');
-                }
+            
+            // Просто добавляем класс animated без анимации
+            cards.forEach((card) => {
+                card.classList.add('animated');
             });
-            // --- Обновляем карточки после анимации ---
-            setTimeout(() => {
-                currentPeriod = document.querySelector('.period-filters .tab-button.active')?.dataset.period || '30';
-                updateAllStatCardsByPeriod(currentPeriod, true); // true — запускать анимацию
-            }, cards.length * 200 + 1600); // чуть больше времени, чем длится вся анимация
+            
+            // Обновляем карточки сразу
+            currentPeriod = document.querySelector('.period-filters .tab-button.active')?.dataset.period || '30';
+            updateAllStatCardsByPeriod(currentPeriod, false); // false — без анимации
         });
 
         // Данные для графика (пример)
@@ -695,17 +654,18 @@
                         .then(res => {
                             createUniversalChart('bar', res.labels, res.data, getMetricColor('sales'), 'Продажи товаров');
                             universalChart.update();
-                            // Анимация для карточки "Продажи товаров"
+                            // Обновляем карточку "Продажи товаров" без анимации
                             const salesCard = document.querySelector('.stat-card.sales-card .stat-value');
                             if (salesCard && Array.isArray(res.data)) {
                                 const total = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
-                                salesCard.classList.remove('animated');
-                                salesCard.textContent = '0 грн';
-                                void salesCard.offsetWidth;
-                                salesCard.classList.add('animated');
-                                setTimeout(() => {
-                                    animateCounter(salesCard, 0, total, 1500);
-                                }, 100);
+                                // Используем систему валют
+                                salesCard.className = 'stat-value currency-amount';
+                                salesCard.setAttribute('data-amount', total);
+                                if (window.CurrencyManager) {
+                                    salesCard.textContent = window.CurrencyManager.formatAmount(total);
+                                } else {
+                                    salesCard.textContent = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(total) + ' грн';
+                                }
                             }
                             renderCustomMonthLabels(res.labels);
                         });
@@ -890,8 +850,15 @@
             const card = document.querySelector(selector);
             if (card) {
                 card.classList.remove('animated');
-                card.textContent = (type === 'expenses' ? '' : '') +
-                    new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value) + ' грн';
+                // Используем систему валют
+                card.className = 'stat-value currency-amount';
+                card.setAttribute('data-amount', value);
+                if (window.CurrencyManager) {
+                    card.textContent = window.CurrencyManager.formatAmount(value);
+                } else {
+                    // Fallback если CurrencyManager не загружен
+                    card.textContent = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value) + ' грн';
+                }
                 void card.offsetWidth;
                 card.classList.add('animated');
             }
@@ -908,12 +875,7 @@
                 .then(res => {
                     const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
                     const card = document.querySelector('.stat-card.profit-card .stat-value');
-                    if (animate && card) {
-                        card.textContent = '0 грн';
-                        animateCounter(card, 0, value, 1500);
-                    } else {
-                        updateStatCardValue('profit', value);
-                    }
+                    updateStatCardValue('profit', value);
                 });
             // Расходы
             let expensesUrl = startDate && endDate
@@ -924,12 +886,7 @@
                 .then(res => {
                     const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
                     const card = document.querySelector('.stat-card.expenses-card .stat-value');
-                    if (animate && card) {
-                        card.textContent = '0 грн';
-                        animateCounter(card, 0, value, 1500);
-                    } else {
-                        updateStatCardValue('expenses', value);
-                    }
+                    updateStatCardValue('expenses', value);
                 });
             // Продажи товаров
             let salesUrl = startDate && endDate
@@ -940,12 +897,7 @@
                 .then(res => {
                     const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
                     const card = document.querySelector('.stat-card.sales-card .stat-value');
-                    if (animate && card) {
-                        card.textContent = '0 грн';
-                        animateCounter(card, 0, value, 1500);
-                    } else {
-                        updateStatCardValue('sales', value);
-                    }
+                    updateStatCardValue('sales', value);
                 });
             // Продажи услуг
             let servicesUrl = startDate && endDate
@@ -956,12 +908,7 @@
                 .then(res => {
                     const value = res.data.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
                     const card = document.querySelector('.stat-card.services-card .stat-value');
-                    if (animate && card) {
-                        card.textContent = '0 грн';
-                        animateCounter(card, 0, value, 1500);
-                    } else {
-                        updateStatCardValue('services', value);
-                    }
+                    updateStatCardValue('services', value);
                 });
         }
 
@@ -969,7 +916,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Синхронизируем currentPeriod с активной кнопкой
             currentPeriod = document.querySelector('.period-filters .tab-button.active')?.dataset.period || '30';
-            updateAllStatCardsByPeriod(currentPeriod, true); // true — запускать анимацию
+            updateAllStatCardsByPeriod(currentPeriod, false); // false — без анимации
         });
 
         // --- Везде, где меняется период или диапазон, вызываем обновление карточек ---
@@ -982,13 +929,13 @@
                 calendarRangeDisplay.textContent = '';
                 selectedRange = null;
                 currentPeriod = this.dataset.period;
-                updateAllStatCardsByPeriod(currentPeriod, true);
+                updateAllStatCardsByPeriod(currentPeriod, false);
                 // ... остальной код ...
             });
         });
         // В updateChartByRange:
         function updateChartByRange(startDate, endDate) {
-            updateAllStatCardsByPeriod(null, true, startDate, endDate);
+            updateAllStatCardsByPeriod(null, false, startDate, endDate);
             // ... остальной код ...
         }
 

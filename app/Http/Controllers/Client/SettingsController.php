@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Admin\Project;
+use App\Helpers\CurrencyHelper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
@@ -39,6 +40,8 @@ class SettingsController extends Controller
             'facebook' => 'nullable|url|max:255',
             'tiktok' => 'nullable|url|max:255',
             'logo' => 'nullable|image|max:2048',
+            'language' => 'nullable|string|in:ru,en,ua',
+            'currency' => 'nullable|string|in:UAH,USD,EUR',
         ]);
 
         // Обновление полей
@@ -52,6 +55,55 @@ class SettingsController extends Controller
 
         $project->save();
 
+        // Если это AJAX запрос, возвращаем JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Настройки успешно обновлены.',
+                'currency' => $project->currency
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Настройки успешно обновлены.');
+    }
+
+    public function updateLanguageCurrency(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $project = Project::where('id', $user->project_id ?? null)->firstOrFail();
+
+            $validated = $request->validate([
+                'language' => 'nullable|string|in:ru,en,ua',
+                'currency' => 'nullable|string|in:UAH,USD,EUR',
+            ]);
+
+            // Обновляем только язык и валюту
+            $project->fill($validated);
+            $project->save();
+
+            // Устанавливаем валюту в сессию
+            if (isset($validated['currency'])) {
+                CurrencyHelper::setCurrency($validated['currency']);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Настройки языка и валюты успешно обновлены.',
+                'currency' => $project->currency,
+                'language' => $project->language
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Произошла ошибка при сохранении настроек'
+            ], 500);
+        }
     }
 }

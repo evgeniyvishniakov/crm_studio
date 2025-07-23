@@ -218,7 +218,7 @@
                     </div>
 
                     <div class="details-footer">
-                        <span>Потрачено: <b id="viewClientTotal">0 грн</b></span>
+                        <span>Потрачено: <b id="viewClientTotal" class="currency-amount" data-amount="0">0 грн</b></span>
                         <button type="button" class="btn-cancel" onclick="closeViewModal()">Закрыть</button>
                     </div>
                 </div>
@@ -410,7 +410,6 @@
             align-items: center;
             cursor: pointer;
             padding: 12px;
-            background: #f9fafb;
             border-radius: 8px;
             gap: 8px;
         }
@@ -1346,10 +1345,14 @@
 
         // Функция для форматирования суммы
         function formatAmount(amount) {
-            const roundedAmount = Math.round(amount * 100) / 100;
-            return roundedAmount % 1 === 0
-                ? `${roundedAmount} грн`
-                : `${roundedAmount.toFixed(2)} грн`;
+            if (window.CurrencyManager) {
+                return window.CurrencyManager.formatAmount(amount);
+            } else {
+                const roundedAmount = Math.round(amount * 100) / 100;
+                return roundedAmount % 1 === 0
+                    ? `${roundedAmount} грн`
+                    : `${roundedAmount.toFixed(2)} грн`;
+            }
         }
 
         // Функция для открытия модального окна просмотра
@@ -1525,7 +1528,7 @@
                                             </div>
                                             <div class="procedure-header">
                                                 <span class="procedure-name">${appointment.service ? appointment.service.name : 'Неизвестная услуга'}</span>
-                                                <span class="procedure-price">${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)} грн</span>
+                                                <span class="procedure-price currency-amount" data-amount="${appointment.price}">${formatAmount(appointment.price)}</span>
                                             </div>
 
                                             ${appointment.notes ? `
@@ -1603,7 +1606,7 @@
                                                         <span class="product-name">${item.product ? item.product.name : 'Неизвестный товар'}</span>
                                                         <span class="product-quantity">${item.quantity || 1} шт.</span>
                                                     </div>
-                                                    <span class="product-price">${(item.retail_price || 0) * (item.quantity || 1)} грн</span>
+                                                    <span class="product-price currency-amount" data-amount="${(item.retail_price || 0) * (item.quantity || 1)}">${formatAmount((item.retail_price || 0) * (item.quantity || 1))}</span>
                                                 </div>
                                             `).join('') : ''}
                                         </div>
@@ -1637,6 +1640,8 @@
 
                         const totalElement = document.getElementById('viewClientTotal');
                         if (totalElement) {
+                            totalElement.className = 'currency-amount';
+                            totalElement.setAttribute('data-amount', totalAmount);
                             totalElement.textContent = formatAmount(totalAmount);
                         }
                     }

@@ -39,6 +39,16 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/ru.global.min.js'></script>
     <script src="{{ asset('client/js/main.js') }}"></script>
     <script src="/client/js/notifications.js"></script>
+    <script src="/client/js/currency.js"></script>
+
+    <!-- Данные валюты для JavaScript -->
+    @php
+        use App\Helpers\CurrencyHelper;
+        $currencyData = CurrencyHelper::getCurrencyData();
+    @endphp
+    <script>
+        window.currencyData = @json($currencyData);
+    </script>
 
     <!-- Page-specific scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

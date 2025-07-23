@@ -2,6 +2,7 @@
 
 @section('title', 'Настройки')
 @section('content')
+
 <div class="dashboard-container">
     <div class="settings-header">
         <h1>Общие настройки</h1>
@@ -208,16 +209,16 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         <!-- Язык и Валюта -->
         <div class="settings-pane" id="tab-language" style="display:none;">
-            <form>
+            <form id="language-currency-form">
                 <h5>Язык и Валюта</h5>
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-4">
                             <label>Язык интерфейса</label>
                             <select class="form-control" name="language">
-                                <option value="ru" selected>Русский</option>
-                                <option value="en">Украинский</option>
-                                <option value="en">English</option>
+                                <option value="ru" {{ ($project->language ?? 'ru') == 'ru' ? 'selected' : '' }}>Русский</option>
+                                <option value="ua" {{ ($project->language ?? 'ru') == 'ua' ? 'selected' : '' }}>Украинский</option>
+                                <option value="en" {{ ($project->language ?? 'ru') == 'en' ? 'selected' : '' }}>English</option>
                             </select>
                         </div>
                     </div>
@@ -225,14 +226,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="form-group mb-4">
                             <label>Валюта</label>
                             <select class="form-control" name="currency">
-                                <option value="UAH" selected>UAH (₴)</option>
-                                <option value="USD">USD ($)</option>
-                                <option value="EUR">EUR (€)</option>
+                                <option value="UAH" {{ ($project->currency ?? 'UAH') == 'UAH' ? 'selected' : '' }}>UAH (₴)</option>
+                                <option value="USD" {{ ($project->currency ?? 'UAH') == 'USD' ? 'selected' : '' }}>USD ($)</option>
+                                <option value="EUR" {{ ($project->currency ?? 'UAH') == 'EUR' ? 'selected' : '' }}>EUR (€)</option>
                             </select>
                         </div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Сохранить</button>
+                <div id="language-currency-notification" style="margin-top:16px;"></div>
             </form>
         </div>
         <!-- Подписки -->
@@ -321,6 +323,51 @@ document.querySelectorAll('.settings-accordion .accordion-header').forEach(heade
         const body = this.nextElementSibling;
         body.classList.toggle('open');
     });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработка формы языка и валюты
+    var languageCurrencyForm = document.getElementById('language-currency-form');
+    if (languageCurrencyForm) {
+        languageCurrencyForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(languageCurrencyForm);
+            fetch('{{ route("client.settings.update-language-currency") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(function(response) {
+                if (response.ok) return response.json();
+                return response.json().then(function(data) { throw data; });
+            })
+            .then(function(data) {
+                window.showNotification('success', data.message || 'Настройки языка и валюты успешно сохранены.');
+                // Обновляем валюту глобально
+                if (window.CurrencyManager) {
+                    window.CurrencyManager.updateCurrency(formData.get('currency'));
+                }
+            })
+            .catch(function(error) {
+                var msg = 'Ошибка при сохранении. Попробуйте ещё раз.';
+                if (error && error.errors) {
+                    if (typeof error.errors === 'object') {
+                        msg = Object.values(error.errors).flat().join('<br>');
+                    } else {
+                        msg = error.errors;
+                    }
+                } else if (error && error.message) {
+                    msg = error.message;
+                }
+                window.showNotification('error', msg);
+            });
+        });
+    }
 });
 </script>
 @endsection 

@@ -254,8 +254,7 @@ Route::middleware('auth:client')->group(function () {
     Route::delete('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, 'destroy'])->name('roles.destroy');
     Route::get('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, 'show'])->name('client.roles.show');
 
-    Route::get('/settings', [\App\Http\Controllers\Client\SettingsController::class, 'index'])->name('client.settings.index');
-    Route::post('/settings', [\App\Http\Controllers\Client\SettingsController::class, 'update'])->name('client.settings.update');
+
     Route::post('/security/email', [SecurityController::class, 'changeEmail'])->name('client.security.email');
     Route::post('/security/2fa/enable', [SecurityController::class, 'enable2fa'])->name('client.security.2fa.enable');
     Route::post('/security/2fa/disable', [SecurityController::class, 'disable2fa'])->name('client.security.2fa.disable');
@@ -283,5 +282,17 @@ Route::middleware('auth:client')->group(function () {
     Route::get('/api/dashboard/services-chart', [\App\Http\Controllers\Client\DashboardController::class, 'servicesChartData']);
     Route::get('/api/dashboard/expenses-chart', [\App\Http\Controllers\Client\DashboardController::class, 'expensesChartData']);
     Route::get('/api/dashboard/activity-chart', [\App\Http\Controllers\Client\DashboardController::class, 'activityChartData']);
+
+    // Настройки
+    Route::prefix('settings')->name('client.settings.')->group(function () {
+        Route::get('/', [SettingsController::class, 'index'])->name('index');
+        Route::post('/update', [SettingsController::class, 'update'])->name('update');
+        Route::post('/update-language-currency', [SettingsController::class, 'updateLanguageCurrency'])->name('update-language-currency');
+    });
+    
+    // Тест валюты
+    Route::get('/currency-test', function () {
+        return view('client.currency-test');
+    })->name('currency.test');
 }); 
 

@@ -1,5 +1,11 @@
 @extends('client.layouts.app')
 
+@php
+use App\Helpers\CurrencyHelper;
+$currency = $project->currency ?? 'UAH';
+$currencySymbol = CurrencyHelper::getSymbol($currency);
+@endphp
+
 @section('content')
 <div class="dashboard-container">
     <div class="report-header">
@@ -123,12 +129,12 @@
                 </div>
                 <div class="col-lg-4 mb-2">
                     <div class="stat-card" style="background:#f3f4f6;padding:18px 24px;border-radius:10px;font-size:1.1rem;font-weight:600;">
-                        <span>Общая сумма опта на складе: </span><span id="stockTotalWholesale">—</span> грн
+                        <span>Общая сумма опта на складе: </span><span id="stockTotalWholesale" data-currency data-amount="0">—</span> {{ $currencySymbol }}
                     </div>
                 </div>
                 <div class="col-lg-4 mb-2">
                     <div class="stat-card" style="background:#f3f4f6;padding:18px 24px;border-radius:10px;font-size:1.1rem;font-weight:600;">
-                        <span>Общая сумма розници на складе: </span><span id="stockTotalRetail">—</span> грн
+                        <span>Общая сумма розници на складе: </span><span id="stockTotalRetail" data-currency data-amount="0">—</span> {{ $currencySymbol }}
                     </div>
                 </div>
             </div>
