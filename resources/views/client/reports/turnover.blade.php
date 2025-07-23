@@ -249,38 +249,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-lg-6 mb-4">
-                    <div class="report-card">
-                        <h4 class="mb-3">Топ-5 сотрудников по количеству процедур</h4>
-                        <p class="text-muted">Сотрудники с наибольшим количеством выполненных процедур.</p>
-                        <canvas id="topEmployeesProceduresBar"></canvas>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="report-card">
-                        <h4 class="mb-3">Структура процедур по сотрудникам</h4>
-                        <p class="text-muted">Доля каждого сотрудника в общем количестве процедур.</p>
-                        <canvas id="employeesProceduresStructurePie"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-6 mb-4">
-                    <div class="report-card">
-                        <h4 class="mb-3">Динамика процедур по сотрудникам</h4>
-                        <p class="text-muted">Как менялось количество процедур каждого сотрудника во времени.</p>
-                        <canvas id="employeesProceduresDynamicsChart"></canvas>
-                    </div>
-                </div>
-                <div class="col-lg-6 mb-4">
-                    <div class="report-card">
-                        <h4 class="mb-3">Среднее время процедуры по сотрудникам</h4>
-                        <p class="text-muted">Средняя продолжительность одной процедуры у каждого сотрудника.</p>
-                        <canvas id="employeesAverageTimeBar"></canvas>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 </div>
