@@ -39,7 +39,7 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/ru.global.min.js'></script>
     <script src="{{ asset('client/js/main.js') }}"></script>
     <script src="/client/js/notifications.js"></script>
-    <script src="/client/js/currency.js"></script>
+    <script src="/client/js/currency-manager.js"></script>
 
     <!-- Данные валюты для JavaScript -->
     @php

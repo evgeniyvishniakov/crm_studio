@@ -210,6 +210,17 @@
         let currentDeleteId = null;
         let itemCounter = 1; // Этот счетчик будет заменен динамическим расчетом
 
+        // Функция форматирования валюты
+        function formatCurrency(value) {
+            if (window.CurrencyManager) {
+                return window.CurrencyManager.formatAmount(value);
+            } else {
+                value = parseFloat(value);
+                if (isNaN(value)) return '0';
+                return (value % 1 === 0 ? value.toFixed(0) : value.toFixed(2)) + ' грн';
+            }
+        }
+
         // Универсальная функция для уведомлений
         window.showNotification = function(type, message) {
             const notification = document.getElementById('notification');
@@ -702,10 +713,10 @@
                         ${item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` : `<div class="no-photo">Нет фото</div>`}
                     </td>
                     <td>${item.product.name}</td>
-                    <td>${Number(purchasePrice)} грн</td>
-                    <td>${Number(retailPrice)} грн</td>
+                    <td class="currency-amount" data-amount="${purchasePrice}">${formatCurrency(purchasePrice)}</td>
+                    <td class="currency-amount" data-amount="${retailPrice}">${formatCurrency(retailPrice)}</td>
                     <td>${quantity} шт</td>
-                    <td>${Number(total)} грн</td>
+                    <td class="currency-amount" data-amount="${total}">${formatCurrency(total)}</td>
                 </tr>`;
             }).join('');
 
@@ -714,7 +725,7 @@
                 <tr class="purchase-summary-row" id="purchase-row-${purchase.id}" onclick="togglePurchaseDetailsRow(${purchase.id})">
                     <td class="purchase-date">${formattedDate}</td>
                     <td class="purchase-supplier">${purchase.supplier ? purchase.supplier.name : '—'}</td>
-                    <td class="purchase-total">${Number(purchase.total_amount)} грн</td>
+                    <td class="purchase-total currency-amount" data-amount="${purchase.total_amount}">${formatCurrency(purchase.total_amount)}</td>
                     <td class="purchase-notes-cell" title="${purchase.notes || ''}">${purchase.notes || '—'}</td>
                     <td>
                         <div class="purchases-actions">
@@ -769,7 +780,10 @@
 
             purchaseRow.querySelector('.purchase-date').textContent = formattedDate;
             purchaseRow.querySelector('.purchase-supplier').textContent = purchase.supplier ? purchase.supplier.name : '—';
-            purchaseRow.querySelector('.purchase-total').textContent = `${Number(purchase.total_amount)} грн`;
+            const totalElement = purchaseRow.querySelector('.purchase-total');
+            totalElement.className = 'purchase-total currency-amount';
+            totalElement.setAttribute('data-amount', purchase.total_amount);
+            totalElement.textContent = formatCurrency(purchase.total_amount);
             const notesCell = purchaseRow.querySelector('.purchase-notes-cell');
             notesCell.textContent = purchase.notes || '—';
             notesCell.title = purchase.notes || '';
@@ -786,10 +800,10 @@
                         ${item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` : `<div class="no-photo">Нет фото</div>`}
                     </td>
                     <td>${item.product.name}</td>
-                    <td>${Number(purchasePrice)} грн</td>
-                    <td>${Number(retailPrice)} грн</td>
+                    <td class="currency-amount" data-amount="${purchasePrice}">${formatCurrency(purchasePrice)}</td>
+                    <td class="currency-amount" data-amount="${retailPrice}">${formatCurrency(retailPrice)}</td>
                     <td>${quantity} шт</td>
-                    <td>${Number(total)} грн</td>
+                    <td class="currency-amount" data-amount="${total}">${formatCurrency(total)}</td>
                 </tr>`;
             }).join('');
 
@@ -883,7 +897,7 @@
                 summaryRow.innerHTML = `
                     <td class="purchase-date">${purchase.date ? new Date(purchase.date).toLocaleDateString('ru-RU') : '—'}</td>
                     <td class="purchase-supplier">${purchase.supplier ? purchase.supplier.name : '—'}</td>
-                    <td class="purchase-total">${parseFloat(purchase.total_amount).toFixed(2)} грн</td>
+                    <td class="purchase-total currency-amount" data-amount="${purchase.total_amount}">${formatCurrency(purchase.total_amount)}</td>
                     <td class="purchase-notes-cell" title="${purchase.notes || '—'}">${purchase.notes || '—'}</td>
                     <td>
                         <div class="purchases-actions">
@@ -917,10 +931,10 @@
                                 }
                             </td>
                             <td>${item.product.name}</td>
-                            <td>${parseFloat(item.purchase_price).toFixed(2)} грн</td>
-                            <td>${parseFloat(item.retail_price).toFixed(2)} грн</td>
+                            <td class="currency-amount" data-amount="${item.purchase_price}">${formatCurrency(item.purchase_price)}</td>
+                            <td class="currency-amount" data-amount="${item.retail_price}">${formatCurrency(item.retail_price)}</td>
                             <td>${item.quantity} шт</td>
-                            <td>${parseFloat(item.total).toFixed(2)} грн</td>
+                            <td class="currency-amount" data-amount="${item.total}">${formatCurrency(item.total)}</td>
                         </tr>
                     `).join('');
                 }

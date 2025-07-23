@@ -87,4 +87,15 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     Route::post('/notifications/{notification}/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])
         ->name('notifications.read')
         ->middleware('rate.limit:notifications'); // Максимум 60 отметок "прочитано" в минуту
+
+    // Управление валютами
+    Route::get('/currencies', [\App\Http\Controllers\Admin\CurrencyController::class, 'index'])->name('currencies.index');
+    Route::get('/currencies/create', [\App\Http\Controllers\Admin\CurrencyController::class, 'create'])->name('currencies.create');
+    Route::post('/currencies', [\App\Http\Controllers\Admin\CurrencyController::class, 'store'])->name('currencies.store');
+    Route::get('/currencies/{currency}/edit', [\App\Http\Controllers\Admin\CurrencyController::class, 'edit'])->name('currencies.edit');
+    Route::put('/currencies/{currency}', [\App\Http\Controllers\Admin\CurrencyController::class, 'update'])->name('currencies.update');
+    Route::delete('/currencies/{currency}', [\App\Http\Controllers\Admin\CurrencyController::class, 'destroy'])->name('currencies.destroy');
+    Route::post('/currencies/{currency}/set-default', [\App\Http\Controllers\Admin\CurrencyController::class, 'setDefault'])->name('currencies.set-default');
+    Route::post('/currencies/{currency}/toggle-active', [\App\Http\Controllers\Admin\CurrencyController::class, 'toggleActive'])->name('currencies.toggle-active');
+    Route::post('/currencies/clear-cache', [\App\Http\Controllers\Admin\CurrencyController::class, 'clearCache'])->name('currencies.clear-cache');
 }); 

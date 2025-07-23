@@ -2,16 +2,51 @@
 
 namespace App\Helpers;
 
+use App\Models\Currency;
 use Illuminate\Support\Facades\Session;
 
 class CurrencyHelper
 {
     /**
-     * Получить текущую валюту из сессии или по умолчанию
+     * Получить текущую валюту из сессии, проекта или по умолчанию
      */
     public static function getCurrentCurrency()
     {
-        return Session::get('currency', 'UAH');
+        // Сначала проверяем валюту проекта (если пользователь авторизован)
+        if (auth('client')->check()) {
+            $user = auth('client')->user();
+            if ($user && $user->project_id) {
+                $project = \App\Models\Admin\Project::with('currency')->find($user->project_id);
+                if ($project && $project->currency && $project->currency->is_active) {
+                    return $project->currency->code;
+                }
+            }
+        }
+
+        // Затем проверяем сессию
+        $sessionCurrency = Session::get('currency');
+        if ($sessionCurrency) {
+            return $sessionCurrency;
+        }
+
+        // Наконец, возвращаем валюту по умолчанию
+        $default = Currency::getDefault();
+        return $default ? $default->code : 'UAH';
+    }
+
+    /**
+     * Получить валюту проекта (для отладки)
+     */
+    public static function getProjectCurrency()
+    {
+        if (auth('client')->check()) {
+            $user = auth('client')->user();
+            if ($user && $user->project_id) {
+                $project = \App\Models\Admin\Project::with('currency')->find($user->project_id);
+                return $project && $project->currency ? $project->currency->code : null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -23,13 +58,19 @@ class CurrencyHelper
             $currency = self::getCurrentCurrency();
         }
 
+        $currencyModel = Currency::getByCode($currency);
+        if ($currencyModel) {
+            return $currencyModel->symbol;
+        }
+
+        // Fallback для старых валют
         $symbols = [
-            'UAH' => 'грн',
+            'UAH' => '₴',
             'USD' => '$',
             'EUR' => '€',
         ];
 
-        return $symbols[$currency] ?? 'грн';
+        return $symbols[$currency] ?? '₴';
     }
 
     /**
@@ -41,6 +82,12 @@ class CurrencyHelper
             $currency = self::getCurrentCurrency();
         }
 
+        $currencyModel = Currency::getByCode($currency);
+        if ($currencyModel) {
+            return $currencyModel->name;
+        }
+
+        // Fallback для старых валют
         $names = [
             'UAH' => 'Украинская гривна',
             'USD' => 'Доллар США',
@@ -59,12 +106,45 @@ class CurrencyHelper
             $currency = self::getCurrentCurrency();
         }
 
+        $currencyModel = Currency::getByCode($currency);
+        if ($currencyModel) {
+            return $currencyModel->formatAmount($amount);
+        }
+
+        // Fallback для старых валют
         $symbol = self::getSymbol($currency);
-        
-        // Форматируем число с разделителями тысяч
         $formattedAmount = number_format($amount, 0, '.', ' ');
-        
         return $formattedAmount . ' ' . $symbol;
+    }
+
+    /**
+     * Форматировать сумму с валютой (для отладки)
+     */
+    public static function formatDebug($amount, $currency = null)
+    {
+        if ($currency === null) {
+            $currency = self::getCurrentCurrency();
+        }
+
+        $currencyModel = Currency::getByCode($currency);
+        
+        $debug = [
+            'amount' => $amount,
+            'currency_code' => $currency,
+            'currency_model' => $currencyModel ? 'найден' : 'не найден',
+            'symbol' => self::getSymbol($currency),
+            'result' => ''
+        ];
+
+        if ($currencyModel) {
+            $debug['result'] = $currencyModel->formatAmount($amount);
+        } else {
+            $symbol = self::getSymbol($currency);
+            $formattedAmount = number_format($amount, 0, '.', ' ');
+            $debug['result'] = $formattedAmount . ' ' . $symbol;
+        }
+
+        return $debug;
     }
 
     /**
@@ -72,11 +152,23 @@ class CurrencyHelper
      */
     public static function getAvailableCurrencies()
     {
-        return [
-            'UAH' => 'UAH (₴)',
-            'USD' => 'USD ($)',
-            'EUR' => 'EUR (€)',
-        ];
+        $currencies = Currency::getActive();
+        $result = [];
+        
+        foreach ($currencies as $currency) {
+            $result[$currency->code] = $currency->code . ' (' . $currency->symbol . ')';
+        }
+
+        // Fallback для старых валют, если нет в базе
+        if (empty($result)) {
+            $result = [
+                'UAH' => 'UAH (₴)',
+                'USD' => 'USD ($)',
+                'EUR' => 'EUR (€)',
+            ];
+        }
+
+        return $result;
     }
 
     /**
@@ -93,10 +185,24 @@ class CurrencyHelper
     public static function getCurrencyData()
     {
         $current = self::getCurrentCurrency();
-        return [
+        $currencyModel = Currency::getByCode($current);
+        
+        $data = [
             'current' => $current,
             'symbol' => self::getSymbol($current),
             'available' => self::getAvailableCurrencies()
         ];
+
+        // Добавляем настройки форматирования, если есть модель валюты
+        if ($currencyModel) {
+            $data['formatting'] = [
+                'symbol_position' => $currencyModel->symbol_position,
+                'decimal_places' => $currencyModel->decimal_places,
+                'decimal_separator' => $currencyModel->decimal_separator,
+                'thousands_separator' => $currencyModel->thousands_separator,
+            ];
+        }
+
+        return $data;
     }
 } 

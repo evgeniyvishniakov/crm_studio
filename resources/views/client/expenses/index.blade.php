@@ -104,6 +104,17 @@
     <script>
         let currentExpenseId = null;
 
+        // Функция форматирования валюты
+        function formatCurrency(value) {
+            if (window.CurrencyManager) {
+                return window.CurrencyManager.formatAmount(value);
+            } else {
+                value = parseFloat(value);
+                if (isNaN(value)) return '0';
+                return (value % 1 === 0 ? value.toFixed(0) : value.toFixed(2)) + ' грн';
+            }
+        }
+
         // Функции для работы с модальными окнами
         function openExpenseModal() {
             document.getElementById('modalTitle').textContent = 'Добавить расход';
@@ -257,13 +268,11 @@
                 row.setAttribute('data-expense-id', expense.id);
                 
                 const amount = parseFloat(expense.amount);
-                const formattedAmount = amount % 1 === 0 ? amount.toString() : amount.toFixed(2);
-                
                 row.innerHTML = `
                     <td>${expense.date ? new Date(expense.date).toLocaleDateString('ru-RU') : '—'}</td>
                     <td>${escapeHtml(expense.category || 'Не указано')}</td>
                     <td>${escapeHtml(expense.comment || '')}</td>
-                    <td>${formattedAmount} грн</td>
+                    <td class="currency-amount" data-amount="${expense.amount}">${formatCurrency(expense.amount)}</td>
                     <td>
                         <div class="expense-actions">
                             <button class="btn-edit" onclick="editExpense(event, ${expense.id})" title="Редактировать">

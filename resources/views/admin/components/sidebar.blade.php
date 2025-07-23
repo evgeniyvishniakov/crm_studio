@@ -47,6 +47,12 @@
                 </a>
             </li>
             <li class="nav-item mb-2">
+                <a href="{{ route('admin.currencies.index') }}" class="nav-link text-white {{ request()->routeIs('admin.currencies.*') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-dollar-sign me-2"></i>
+                    Валюты
+                </a>
+            </li>
+            <li class="nav-item mb-2">
                 <a href="{{ route('admin.email-templates.index') }}" class="nav-link text-white {{ request()->routeIs('admin.email-templates.index') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-envelope me-2"></i>
                     Email шаблоны

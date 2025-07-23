@@ -225,10 +225,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="form-col">
                         <div class="form-group mb-4">
                             <label>Валюта</label>
-                            <select class="form-control" name="currency">
-                                <option value="UAH" {{ ($project->currency ?? 'UAH') == 'UAH' ? 'selected' : '' }}>UAH (₴)</option>
-                                <option value="USD" {{ ($project->currency ?? 'UAH') == 'USD' ? 'selected' : '' }}>USD ($)</option>
-                                <option value="EUR" {{ ($project->currency ?? 'UAH') == 'EUR' ? 'selected' : '' }}>EUR (€)</option>
+                            <select class="form-control" name="currency_id" id="currency-selector">
+                                @php
+                                    $currencies = \App\Models\Currency::where('is_active', true)->get();
+                                    if ($currencies->isEmpty()) {
+                                        // Fallback если валюты не загружены
+                                        $currencies = collect([
+                                            (object)['id' => 1, 'code' => 'UAH', 'symbol' => '₴'],
+                                            (object)['id' => 2, 'code' => 'USD', 'symbol' => '$'],
+                                            (object)['id' => 3, 'code' => 'EUR', 'symbol' => '€']
+                                        ]);
+                                    }
+                                    
+                                    // Определяем выбранную валюту
+                                    $selectedCurrencyId = $project->currency_id ?? 1;
+                                @endphp
+                                @foreach($currencies as $currency)
+                                    @php
+                                        $isSelected = $selectedCurrencyId == $currency->id;
+                                    @endphp
+                                    <option value="{{ $currency->id }}" {{ $isSelected ? 'selected' : '' }}>
+                                        {{ $currency->code }} ({{ $currency->symbol }})
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -269,6 +288,18 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== SETTINGS PAGE LOADED ===');
+    
+    // Проверяем селектор валюты при загрузке
+    const currencySelector = document.getElementById('currency-selector');
+    if (currencySelector) {
+        console.log('Currency selector found on page load');
+        console.log('Initial value:', currencySelector.value);
+        console.log('Initial selected option:', currencySelector.options[currencySelector.selectedIndex]);
+    } else {
+        console.log('Currency selector NOT found on page load');
+    }
+    
     function activateTabFromHash() {
         var hash = window.location.hash.replace('#', '');
         if (!hash) return;
@@ -348,9 +379,45 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(function(data) {
                 window.showNotification('success', data.message || 'Настройки языка и валюты успешно сохранены.');
-                // Обновляем валюту глобально
-                if (window.CurrencyManager) {
-                    window.CurrencyManager.updateCurrency(formData.get('currency'));
+                console.log('Server response:', data);
+                
+                // Обновляем валюту глобально после успешного сохранения
+                                    if (window.CurrencyManager && data.currency_code) {
+                        // Используем данные из сервера
+                        const currencyCode = data.currency_code;
+                        const currencyId = data.currency_id;
+                        
+                        // Обновляем CurrencyManager
+                        window.CurrencyManager.currentCurrency = currencyCode;
+                        window.CurrencyManager.updateAllCurrencyDisplays();
+                    
+                    // Обновляем селектор, чтобы показать выбранную валюту
+                    setTimeout(() => {
+                        const currencySelector = document.getElementById('currency-selector');
+                        if (currencySelector) {
+                            currencySelector.value = currencyId;
+                            console.log('Updated selector value to:', currencyId);
+                            
+                            // Принудительно обновляем отображение селектора
+                            currencySelector.dispatchEvent(new Event('change', { bubbles: true }));
+                            
+                            // Также обновляем выбранную опцию
+                            const selectedOption = currencySelector.options[currencySelector.selectedIndex];
+                            console.log('Selected option after update:', selectedOption ? selectedOption.textContent : 'null');
+                            
+                            // Альтернативный способ обновления через jQuery (если доступен)
+                            if (typeof $ !== 'undefined') {
+                                $('#currency-selector').val(currencyId).trigger('change');
+                                console.log('Updated via jQuery');
+                            }
+                            
+                            // Еще один способ - через прямое обновление опций
+                            Array.from(currencySelector.options).forEach(option => {
+                                option.selected = (option.value == currencyId);
+                            });
+                            console.log('Updated via direct option selection');
+                        }
+                    }, 100);
                 }
             })
             .catch(function(error) {
@@ -367,6 +434,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.showNotification('error', msg);
             });
         });
+    }
+
+    // Обработчик изменения валюты в селекторе
+    const currencySelector = document.getElementById('currency-selector');
+    if (currencySelector) {
+        // Отладка: показываем все опции
+        console.log('Currency selector options:');
+        Array.from(currencySelector.options).forEach((option, index) => {
+            console.log(`Option ${index}: value="${option.value}", text="${option.textContent}", selected="${option.selected}"`);
+        });
+        
+        // Проверяем текущее значение селектора
+        console.log('Current selector value:', currencySelector.value);
+        console.log('Current selected option:', currencySelector.options[currencySelector.selectedIndex]);
+        
+        // Убираем автоматическое сохранение при изменении селектора
+        // Теперь валюта будет сохраняться только при нажатии кнопки "Сохранить"
     }
 });
 </script>

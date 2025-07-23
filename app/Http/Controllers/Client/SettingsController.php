@@ -19,7 +19,16 @@ class SettingsController extends Controller
         // Получаем проект текущего пользователя (админ/руководитель)
         $user = Auth::user();
         // Предполагаем, что у пользователя есть project_id или связь project
-        $project = Project::where('id', $user->project_id ?? null)->first();
+        $project = Project::with('currency')->where('id', $user->project_id ?? null)->first();
+        
+        // Отладка
+        \Log::info('Settings page loaded', [
+            'user_id' => $user->id,
+            'project_id' => $user->project_id,
+            'project_currency_id' => $project ? $project->currency_id : null,
+            'project_currency_code' => $project && $project->currency ? $project->currency->code : null,
+        ]);
+        
         // Можно добавить Gate::authorize('view-settings', $project); для ограничения доступа
         return view('client.settings.index', compact('project'));
     }
@@ -27,7 +36,10 @@ class SettingsController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-        $project = Project::where('id', $user->project_id ?? null)->firstOrFail();
+        $project = Project::with('currency')->where('id', $user->project_id ?? null)->firstOrFail();
+
+        // Получаем доступные валюты из базы данных
+        $availableCurrencyIds = \App\Models\Currency::getActive()->pluck('id')->toArray();
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -41,7 +53,7 @@ class SettingsController extends Controller
             'tiktok' => 'nullable|url|max:255',
             'logo' => 'nullable|image|max:2048',
             'language' => 'nullable|string|in:ru,en,ua',
-            'currency' => 'nullable|string|in:UAH,USD,EUR',
+            'currency_id' => 'nullable|integer|in:' . implode(',', $availableCurrencyIds),
         ]);
 
         // Обновление полей
@@ -60,7 +72,7 @@ class SettingsController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Настройки успешно обновлены.',
-                'currency' => $project->currency
+                'currency' => $project->currency ? $project->currency->code : null
             ]);
         }
 
@@ -71,25 +83,51 @@ class SettingsController extends Controller
     {
         try {
             $user = Auth::user();
-            $project = Project::where('id', $user->project_id ?? null)->firstOrFail();
+            $project = Project::with('currency')->where('id', $user->project_id ?? null)->firstOrFail();
+
+            // Получаем доступные валюты из базы данных
+            $availableCurrencyIds = \App\Models\Currency::getActive()->pluck('id')->toArray();
 
             $validated = $request->validate([
                 'language' => 'nullable|string|in:ru,en,ua',
-                'currency' => 'nullable|string|in:UAH,USD,EUR',
+                'currency_id' => 'nullable|integer|in:' . implode(',', $availableCurrencyIds),
             ]);
 
+            // Отладка до сохранения
+            \Log::info('Before saving project', [
+                'validated' => $validated,
+                'old_currency_id' => $project->currency_id,
+            ]);
+            
             // Обновляем только язык и валюту
             $project->fill($validated);
             $project->save();
 
+            // Отладка после сохранения
+            \Log::info('After saving project', [
+                'new_currency_id' => $project->currency_id,
+                'project_fresh' => $project->fresh()->currency_id,
+            ]);
+
             // Устанавливаем валюту в сессию
-            if (isset($validated['currency'])) {
-                CurrencyHelper::setCurrency($validated['currency']);
+            if (isset($validated['currency_id'])) {
+                $currency = \App\Models\Currency::find($validated['currency_id']);
+                if ($currency) {
+                    CurrencyHelper::setCurrency($currency->code);
+                    // Также устанавливаем в сессию напрямую для надежности
+                    session(['currency' => $currency->code]);
+                }
             }
 
+            // Перезагружаем проект с обновленными данными
+            $project->refresh();
+            $project->load('currency');
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Настройки языка и валюты успешно обновлены.',
+                'currency_id' => $project->currency_id,
+                'currency_code' => $project->currency ? $project->currency->code : null,
                 'currency' => $project->currency,
                 'language' => $project->language
             ]);

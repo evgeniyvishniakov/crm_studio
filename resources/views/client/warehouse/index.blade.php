@@ -389,8 +389,17 @@
                         // Update the table row
                         const row = document.getElementById(`warehouse-${id}`);
                         if (row) {
-                            row.querySelector('.purchase-price').textContent = parseFloat(data.warehouse.purchase_price).toFixed(2) + ' грн';
-                            row.querySelector('.retail-price').textContent = parseFloat(data.warehouse.retail_price).toFixed(2) + ' грн';
+                            const purchasePriceElement = row.querySelector('.purchase-price');
+                            const retailPriceElement = row.querySelector('.retail-price');
+                            
+                            purchasePriceElement.className = 'purchase-price currency-amount';
+                            retailPriceElement.className = 'retail-price currency-amount';
+                            
+                            purchasePriceElement.setAttribute('data-amount', data.warehouse.purchase_price);
+                            retailPriceElement.setAttribute('data-amount', data.warehouse.retail_price);
+                            
+                            purchasePriceElement.textContent = formatPrice(data.warehouse.purchase_price);
+                            retailPriceElement.textContent = formatPrice(data.warehouse.retail_price);
                             row.querySelector('.quantity').textContent = data.warehouse.quantity + ' шт';
                         }
                         closeEditModal();
@@ -607,9 +616,13 @@
 
         // Функция форматирования цены (без .00 для целых)
         function formatPrice(value) {
-            value = parseFloat(value);
-            if (isNaN(value)) return '0';
-            return (value % 1 === 0 ? value.toFixed(0) : value.toFixed(2)) + ' грн';
+            if (window.CurrencyManager) {
+                return window.CurrencyManager.formatAmount(value);
+            } else {
+                value = parseFloat(value);
+                if (isNaN(value)) return '0';
+                return (value % 1 === 0 ? value.toFixed(0) : value.toFixed(2)) + ' грн';
+            }
         }
 
         // --- AJAX пагинация ---
@@ -634,8 +647,8 @@
                 row.innerHTML = `
                     <td>${photoHtml}</td>
                     <td>${item.product.name}</td>
-                    <td class="purchase-price">${formatPrice(item.purchase_price)}</td>
-                    <td class="retail-price">${formatPrice(item.retail_price)}</td>
+                    <td class="purchase-price currency-amount" data-amount="${item.purchase_price}">${formatPrice(item.purchase_price)}</td>
+                    <td class="retail-price currency-amount" data-amount="${item.retail_price}">${formatPrice(item.retail_price)}</td>
                     <td class="quantity">${item.quantity} шт</td>
                     <td class="actions-cell">
                         <button class="btn-edit" onclick="openEditModal(${item.id})">

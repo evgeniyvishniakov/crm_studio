@@ -232,6 +232,18 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Функция для форматирования валюты
+    function formatCurrency(amount) {
+        if (window.CurrencyManager) {
+            return window.CurrencyManager.formatAmount(amount);
+        } else {
+            const roundedAmount = Math.round(amount * 100) / 100;
+            return roundedAmount % 1 === 0
+                ? `${roundedAmount} грн`
+                : `${roundedAmount.toFixed(2)} грн`;
+        }
+    }
+
     // Глобальные переменные для хранения экземпляров графиков
     let charts = {};
 
@@ -1024,11 +1036,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(url);
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
-            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i].toLocaleString('ru-RU')} грн)`);
+            const labelsWithCounts = data.labels.map((label, i) => `${label} (${formatCurrency(data.data[i])})`);
             const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
             const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(139, 92, 246, 0.7)');
             updateChart(charts.topEmployeesRevenueBar, labelsWithCounts, [{
-                label: 'Выручка (грн)',
+                label: 'Выручка',
                 data: data.data,
                 backgroundColor: colors,
                 borderColor: colors,
@@ -1053,7 +1065,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
             updateChart(charts.employeesAverageCheckBar, data.labels, [{
-                label: 'Средний чек (грн)',
+                label: 'Средний чек',
                 data: data.data,
                 backgroundColor: 'rgba(16, 185, 129, 0.7)',
                 borderColor: 'rgba(16, 185, 129, 1)',

@@ -89,6 +89,14 @@
                         </select>
                     </div>
                     <div class="mb-3">
+                        <label for="project-currency" class="form-label">Валюта</label>
+                        <select class="form-select" id="project-currency" name="currency_id" required>
+                            @foreach(\App\Models\Currency::where('is_active', true)->get() as $currency)
+                                <option value="{{ $currency->id }}">{{ $currency->code }} ({{ $currency->symbol }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="project-status" class="form-label">Статус</label>
                         <select class="form-select" id="project-status" name="status" required>
                             <option value="active">Активный</option>
@@ -244,6 +252,14 @@
                             <option value="ua" @if($project->language=='ua') selected @endif>Украинский</option>
                             <option value="ru" @if($project->language=='ru') selected @endif>Русский</option>
                             <option value="en" @if($project->language=='en') selected @endif>Английский</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-project-currency-{{ $project->id }}" class="form-label">Валюта</label>
+                        <select class="form-select" id="edit-project-currency-{{ $project->id }}" name="currency_id" required>
+                            @foreach(\App\Models\Currency::where('is_active', true)->get() as $currency)
+                                <option value="{{ $currency->id }}" @if($project->currency_id == $currency->id) selected @endif>{{ $currency->code }} ({{ $currency->symbol }})</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="mb-3">

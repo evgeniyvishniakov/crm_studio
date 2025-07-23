@@ -42,7 +42,7 @@
                 @foreach($services as $service)
                     <tr id="service-{{ $service->id }}">
                         <td>{{ $service->name }}</td>
-                        <td>{{ $service->price ? ($service->price == (int)$service->price ? (int)$service->price : number_format($service->price, 2, '.', '')) . ' грн' : '—' }}</td>
+                        <td class="currency-amount" data-amount="{{ $service->price }}">{{ $service->price ? ($service->price == (int)$service->price ? (int)$service->price : number_format($service->price, 2, '.', '')) . ' грн' : '—' }}</td>
                         <td>
                             @php
                                 $hours = intdiv($service->duration, 60);
@@ -93,7 +93,7 @@
                         <input type="text" id="serviceName" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label for="servicePrice">Цена (грн)</label>
+                        <label for="servicePrice">Цена</label>
                         <input type="number" id="servicePrice" name="price" min="0" step="0.01">
                     </div>
                     <div class="form-group">
@@ -143,7 +143,7 @@
                         <input type="text" id="editServiceName" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label for="editServicePrice">Цена (грн)</label>
+                        <label for="editServicePrice">Цена</label>
                         <input type="number" id="editServicePrice" name="price" min="0" step="0.01">
                     </div>
                     <div class="form-group">
@@ -165,6 +165,17 @@
     </div>
 
     <script>
+        // Функция форматирования валюты
+        function formatCurrency(value) {
+            if (window.CurrencyManager) {
+                return window.CurrencyManager.formatAmount(value);
+            } else {
+                value = parseFloat(value);
+                if (isNaN(value)) return '0';
+                return (value % 1 === 0 ? value.toFixed(0) : value.toFixed(2)) + ' грн';
+            }
+        }
+
         // Функции для работы с модальным окном
         function openModal() {
             document.getElementById('addServiceModal').style.display = 'block';
@@ -264,7 +275,7 @@
 
                         newRow.innerHTML = `
                             <td>${data.service.name}</td>
-                            <td>${data.service.price ? (Number(parseFloat(data.service.price)) % 1 === 0 ? Number(parseFloat(data.service.price)) : parseFloat(data.service.price).toFixed(2)) + ' грн' : '—'}</td>
+                            <td class="currency-amount" data-amount="${data.service.price}">${data.service.price ? formatCurrency(data.service.price) : '—'}</td>
                             <td>${formatDuration(data.service.duration)}</td>
                             <td class="actions-cell">
                                 <button class="btn-edit">
@@ -464,7 +475,10 @@
             const cells = row.querySelectorAll('td');
             if (cells.length >= 2) {
                 cells[0].textContent = service.name;
-                cells[1].textContent = service.price ? (Number(parseFloat(service.price)) % 1 === 0 ? Number(parseFloat(service.price)) : parseFloat(service.price).toFixed(2)) + ' грн' : '—';
+                const priceCell = cells[1];
+                priceCell.className = 'currency-amount';
+                priceCell.setAttribute('data-amount', service.price);
+                priceCell.textContent = service.price ? formatCurrency(service.price) : '—';
                 cells[2].textContent = formatDuration(service.duration);
             }
         }
@@ -510,7 +524,7 @@
                 row.id = `service-${service.id}`;
                 row.innerHTML = `
                     <td>${service.name}</td>
-                    <td>${service.price ? (Number(parseFloat(service.price)) % 1 === 0 ? Number(parseFloat(service.price)) : parseFloat(service.price).toFixed(2)) + ' грн' : '—'}</td>
+                    <td class="currency-amount" data-amount="${service.price}">${service.price ? formatCurrency(service.price) : '—'}</td>
                     <td>${formatDuration(service.duration)}</td>
                     <td class="actions-cell">
                         <button class="btn-edit">

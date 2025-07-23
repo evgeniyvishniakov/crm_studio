@@ -68,14 +68,14 @@
                         <td>{{ $product->name }}</td>
                         <td>{{ $product->category->name ?? '—' }}</td>
                         <td>{{ $product->brand->name ?? '—' }}</td>
-                        <td>
+                        <td class="currency-amount" data-amount="{{ $product->purchase_price }}">
                             @if(fmod($product->purchase_price, 1) == 0)
                                 {{ (int)$product->purchase_price }} грн
                             @else
                                 {{ number_format($product->purchase_price, 2) }} грн
                             @endif
                         </td>
-                        <td>
+                        <td class="currency-amount" data-amount="{{ $product->retail_price }}">
                             @if(fmod($product->retail_price, 1) == 0)
                                 {{ (int)$product->retail_price }} грн
                             @else
@@ -617,6 +617,17 @@
     </style>
 
     <script>
+        // Функция форматирования валюты
+        function formatCurrency(value) {
+            if (window.CurrencyManager) {
+                return window.CurrencyManager.formatAmount(value);
+            } else {
+                value = parseFloat(value);
+                if (isNaN(value)) return '0';
+                return (value % 1 === 0 ? value.toFixed(0) : value.toFixed(2)) + ' грн';
+            }
+        }
+
         // Основные функции управления модальными окнами
         function openModal() {
             document.getElementById('addProductModal').style.display = 'block';
@@ -867,10 +878,14 @@
 
         // Форматирование цены как в Blade
         function formatPrice(price) {
-            if (price % 1 === 0) {
-                return parseInt(price) + ' грн';
+            if (window.CurrencyManager) {
+                return window.CurrencyManager.formatAmount(price);
             } else {
-                return Number(price).toFixed(2) + ' грн';
+                if (price % 1 === 0) {
+                    return parseInt(price) + ' грн';
+                } else {
+                    return Number(price).toFixed(2) + ' грн';
+                }
             }
         }
 

@@ -900,7 +900,7 @@
                             {{ $statusNames[$appointment->status] ?? 'Ожидается' }}
                         </span>
                     </td>
-                    <td>{{ rtrim(rtrim(number_format($appointment->price, 2, '.', ''), '0'), '.') }} грн</td>
+                    <td class="currency-amount" data-amount="{{ $appointment->price }}">{{ \App\Helpers\CurrencyHelper::format($appointment->price) }}</td>
                     <td>
                         <div class="appointment-actions actions-cell">
                             <button class="btn-view" data-appointment-id="{{ $appointment->id }}" title="Просмотр">
@@ -1125,7 +1125,7 @@
                         <p><strong>Время:</strong> ${startTime}</p>
                         <p><strong>Клиент:</strong> ${event.extendedProps.client}</p>
                         <p><strong>Услуга:</strong> ${event.extendedProps.service}</p>
-                        <p><strong>Цена:</strong> ${event.extendedProps.price} грн</p>
+                        <p><strong>Цена:</strong> <span class="currency-amount" data-amount="${event.extendedProps.price}">${formatPrice(event.extendedProps.price)}</span></p>
                         <p><strong>Статус:</strong> ${getStatusName(event.extendedProps.status)}</p>
                     `;
 
@@ -1421,7 +1421,7 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Стоимость (Грн)</label>
+                            <label>Стоимость</label>
                             <input type="number" step="0.01" name="price" class="form-control" min="0">
                         </div>
                     </div>
@@ -1655,7 +1655,7 @@
             <div class="card-title">Услуга</div>
             <div class="procedure-info">
                 <span class="service-name">${escapeHtml(appointment.service.name)}</span>
-                <span class="procedure-price">${Number(servicePrice) % 1 === 0 ? Number(servicePrice) : servicePrice.toFixed(2)} грн</span>
+                <span class="procedure-price currency-amount" data-amount="${servicePrice}">${formatPrice(servicePrice)}</span>
             </div>
         </div>
         <div class="card sales-card">
@@ -1715,7 +1715,7 @@
             </div>
         </div>
         <div class="details-footer">
-            <span>Итого: <b>${Number(totalAmount) % 1 === 0 ? Number(totalAmount) : totalAmount.toFixed(2)} грн</b></span>
+            <span>Итого: <b class="currency-amount" data-amount="${totalAmount}">${formatPrice(totalAmount)}</b></span>
             <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">Закрыть</button>
             <button type="button" class="btn-submit" id="saveAppointmentChanges">Сохранить изменения</button>
         </div>
@@ -1745,9 +1745,9 @@
                             <tr data-index="${index}">
                                 <td>${escapeHtml(sale.name)}</td>
                                 <td>${sale.quantity}</td>
-                                <td>${Number(sale.price) % 1 === 0 ? Number(sale.price) : Number(sale.price).toFixed(2)} грн</td>
-                                <td>${Number(sale.purchase_price) % 1 === 0 ? Number(sale.purchase_price) : Number(sale.purchase_price).toFixed(2)} грн</td>
-                                <td>${Number(total) % 1 === 0 ? Number(total) : Number(total).toFixed(2)} грн</td>
+                                <td class="currency-amount" data-amount="${sale.price}">${formatPrice(sale.price)}</td>
+                                <td class="currency-amount" data-amount="${sale.purchase_price}">${formatPrice(sale.purchase_price)}</td>
+                                <td class="currency-amount" data-amount="${total}">${formatPrice(total)}</td>
                                 <td>
                                     <button class="btn-delete btn-delete-product"
                                             data-product-id="${sale.product_id}"
@@ -2100,7 +2100,7 @@
                     <td>${appointment.service ? appointment.service.name : 'Услуга удалена'}</td>
                     <td>${appointment.user ? appointment.user.name : 'Не назначен'}</td>
                     <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
-                    <td>${formatPrice(appointment.price)} грн</td>
+                    <td class="currency-amount" data-amount="${appointment.price}">${formatPrice(appointment.price)}</td>
                     <td>
                         <div class="appointment-actions actions-cell">
                             <button class="btn-view" data-appointment-id="${appointment.id}" title="Просмотр">
@@ -2133,8 +2133,8 @@
             if (!modal) return;
 
             // Получаем цену услуги
-            const priceText = modal.querySelector('.procedure-price')?.textContent;
-            const servicePrice = parseFloat(priceText?.replace('грн', '').trim()) || 0;
+            const priceElement = modal.querySelector('.procedure-price');
+            const servicePrice = parseFloat(priceElement?.getAttribute('data-amount')) || 0;
 
             // Сумма товаров
             const productsTotal = temporaryProducts.reduce((sum, product) => {
@@ -2146,7 +2146,9 @@
             // Обновляем итог в футере
             const totalElement = modal.querySelector('.details-footer span b');
             if (totalElement) {
-                totalElement.textContent = `${Number(totalAmount) % 1 === 0 ? Number(totalAmount) : totalAmount.toFixed(2)} грн`;
+                totalElement.className = 'currency-amount';
+                totalElement.setAttribute('data-amount', totalAmount);
+                totalElement.textContent = formatPrice(totalAmount);
             }
         }
 
@@ -2230,9 +2232,13 @@
         }
 
         function formatPrice(price) {
-            const parsedPrice = parseFloat(price);
-            if (isNaN(parsedPrice)) return price;
-            return Number.isInteger(parsedPrice) ? parsedPrice.toString() : parsedPrice.toFixed(2);
+            if (window.CurrencyManager) {
+                return window.CurrencyManager.formatAmount(price);
+            } else {
+                const parsedPrice = parseFloat(price);
+                if (isNaN(parsedPrice)) return price;
+                return (Number.isInteger(parsedPrice) ? parsedPrice.toString() : parsedPrice.toFixed(2)) + ' грн';
+            }
         }
 
         // Закрытие выпадающего списка при клике вне его
@@ -2262,7 +2268,7 @@
                                     data-retail-price="${retailPrice}"
                                     data-wholesale-price="${wholesalePrice}"
                                     data-name="${escapeHtml(p.name)}">
-                                    ${escapeHtml(p.name)} (${formatPrice(retailPrice)} грн, остаток: ${quantity})
+                                    ${escapeHtml(p.name)} (${formatPrice(retailPrice)}, остаток: ${quantity})
                             </option>
                         `;
             }).join('')}
@@ -2550,7 +2556,7 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Стоимость (Грн)</label>
+                            <label>Стоимость</label>
                             <input type="number" step="0.01" name="price" value="${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)}" class="form-control" min="0">
                         </div>
                     </div>
@@ -2836,8 +2842,8 @@
             const serviceElement = modal.querySelector('.service-name');
             const serviceName = serviceElement?.textContent?.trim();
             const service = serviceName ? allServices.find(s => s.name.trim() === serviceName) : null;
-            const priceText = modal.querySelector('.procedure-price')?.textContent;
-            const price = parseFloat(priceText?.replace('грн', '').trim()) || 0;
+            const priceElement = modal.querySelector('.procedure-price');
+            const price = parseFloat(priceElement?.getAttribute('data-amount')) || 0;
 
             const date = modal.querySelector('input[name="date"]')?.value || '';
             const time = modal.querySelector('input[name="time"]')?.value || '';
@@ -2985,9 +2991,9 @@
                                 <tr data-index="${index}">
                                     <td>${product.name}</td>
                                     <td>${quantity}</td>
-                                    <td>${Number(retailPrice) % 1 === 0 ? Number(retailPrice) : retailPrice.toFixed(2)} грн</td>
-                                    <td>${Number(wholesalePrice) % 1 === 0 ? Number(wholesalePrice) : wholesalePrice.toFixed(2)} грн</td>
-                                    <td>${Number(total) % 1 === 0 ? Number(total) : total.toFixed(2)} грн</td>
+                                    <td class="currency-amount" data-amount="${retailPrice}">${formatPrice(retailPrice)}</td>
+                                    <td class="currency-amount" data-amount="${wholesalePrice}">${formatPrice(wholesalePrice)}</td>
+                                    <td class="currency-amount" data-amount="${total}">${formatPrice(total)}</td>
                                     <td>
                                         <button class="btn-delete btn-delete-product" onclick="deleteProduct(${index})" data-product-id="${product.product_id}" title="Удалить">
                                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -3197,7 +3203,7 @@
                             <td>${escapeHtml(appointment.service.name)}</td>
                             <td>${appointment.user ? escapeHtml(appointment.user.name) : 'Не назначен'}</td>
                             <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
-                            <td>${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)} грн</td>
+                            <td class="currency-amount" data-amount="${appointment.price}">${formatPrice(appointment.price)}</td>
                             <td>
                                 <div class="appointment-actions actions-cell">
                                     <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
@@ -3277,7 +3283,7 @@
                             <td>${escapeHtml(data.appointment.service.name)}</td>
                             <td>${data.appointment.user ? escapeHtml(data.appointment.user.name) : 'Не назначен'}</td>
                             <td><span class="status-badge status-${data.appointment.status}">${getStatusName(data.appointment.status)}</span></td>
-                            <td>${Number(parseFloat(data.appointment.price)) % 1 === 0 ? Number(parseFloat(data.appointment.price)) : parseFloat(data.appointment.price).toFixed(2)} грн</td>
+                            <td class="currency-amount" data-amount="${data.appointment.price}">${formatPrice(data.appointment.price)}</td>
                             <td>
                                 <div class="appointment-actions actions-cell">
                                     <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
@@ -3335,9 +3341,9 @@
                                 <tr data-index="${index}">
                                     <td>${product.name}</td>
                                     <td>${quantity}</td>
-                                    <td>${formatPrice(retailPrice)} грн</td>
-                                    <td>${formatPrice(wholesalePrice)} грн</td>
-                                    <td>${formatPrice(total)} грн</td>
+                                    <td class="currency-amount" data-amount="${retailPrice}">${formatPrice(retailPrice)}</td>
+                                    <td class="currency-amount" data-amount="${wholesalePrice}">${formatPrice(wholesalePrice)}</td>
+                                    <td class="currency-amount" data-amount="${total}">${formatPrice(total)}</td>
                                     <td>
                                         <button class="btn-delete btn-delete-product" onclick="deleteProduct(${index})" data-product-id="${product.product_id}" title="Удалить">
                                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">

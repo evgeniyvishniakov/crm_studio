@@ -5,7 +5,11 @@
     @php
     if (!function_exists('formatPrice')) {
         function formatPrice($price) {
-            return (fmod($price, 1) == 0.0) ? (int)$price : number_format($price, 2, '.', '');
+            if (fmod($price, 1) == 0.0) {
+                return (int)$price;
+            } else {
+                return number_format($price, 2, '.', '');
+            }
         }
     }
     @endphp
@@ -986,10 +990,10 @@
                     `<img src="/storage/${item.product.photo}" class="product-photo" alt="Фото" style="height: 50px;">` :
                     '<div class="no-photo">Нет фото</div>'}
             </td>
-            <td>${formatPriceJS(item.wholesale_price)} грн</td>
-            <td>${formatPriceJS(item.retail_price)} грн</td>
+            <td class="currency-amount" data-amount="${item.wholesale_price}">${formatPriceJS(item.wholesale_price)}</td>
+            <td class="currency-amount" data-amount="${item.retail_price}">${formatPriceJS(item.retail_price)}</td>
             <td>${item.quantity}</td>
-            <td>${formatPriceJS(item.retail_price * item.quantity)} грн</td>
+            <td class="currency-amount" data-amount="${item.retail_price * item.quantity}">${formatPriceJS(item.retail_price * item.quantity)}</td>
             <td>
                 <div class="sale-actions">
                     <button class="btn-edit" onclick="editSale(event, ${sale.id})" title="Редактировать">
@@ -1336,8 +1340,12 @@
 
         function formatPriceJS(price) {
             if (price === null || price === undefined || isNaN(price)) return '';
-            price = parseFloat(price);
-            return (price % 1 === 0) ? price.toString() : price.toFixed(2);
+            if (window.CurrencyManager) {
+                return window.CurrencyManager.formatAmount(price);
+            } else {
+                price = parseFloat(price);
+                return (price % 1 === 0) ? price.toString() : price.toFixed(2);
+            }
         }
 
         // --- AJAX пагинация ---
@@ -1378,10 +1386,10 @@
                         </td>
                         <td>${item.product.name}</td>
                         <td>${photoHtml}</td>
-                        <td>${item.wholesale_price !== null ? formatPriceJS(item.wholesale_price) : '—'} грн</td>
-                        <td>${item.retail_price !== null ? formatPriceJS(item.retail_price) : '—'} грн</td>
+                        <td class="currency-amount" data-amount="${item.wholesale_price}">${item.wholesale_price !== null ? formatPriceJS(item.wholesale_price) : '—'}</td>
+                        <td class="currency-amount" data-amount="${item.retail_price}">${item.retail_price !== null ? formatPriceJS(item.retail_price) : '—'}</td>
                         <td>${item.quantity}</td>
-                        <td>${formatPriceJS(item.retail_price * item.quantity)} грн</td>
+                        <td class="currency-amount" data-amount="${item.retail_price * item.quantity}">${formatPriceJS(item.retail_price * item.quantity)}</td>
                         <td>
                             <div class="sale-actions">
                                 <button class="btn-edit" onclick="editSale(event, ${sale.id})" title="Редактировать">

@@ -44,6 +44,17 @@ Route::middleware('auth:client')->group(function () {
     // Главная страница клиентской части
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
+    // Тестовая страница валют
+    
+    
+    // API маршруты для валют
+    Route::prefix('api/currencies')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\CurrencyController::class, 'index']);
+        Route::get('/current', [\App\Http\Controllers\Api\CurrencyController::class, 'current']);
+        Route::post('/set/{code}', [\App\Http\Controllers\Api\CurrencyController::class, 'setCurrency']);
+        Route::get('/format/{amount}', [\App\Http\Controllers\Api\CurrencyController::class, 'formatAmount']);
+    });
+    
     // Управление клиентами
     Route::prefix('clients')->name('clients.')->group(function () {
         Route::get('/', [ClientController::class, 'index'])->name('list');
@@ -290,9 +301,6 @@ Route::middleware('auth:client')->group(function () {
         Route::post('/update-language-currency', [SettingsController::class, 'updateLanguageCurrency'])->name('update-language-currency');
     });
     
-    // Тест валюты
-    Route::get('/currency-test', function () {
-        return view('client.currency-test');
-    })->name('currency.test');
+
 }); 
 

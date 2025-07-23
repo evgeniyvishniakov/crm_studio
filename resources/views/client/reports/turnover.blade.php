@@ -264,6 +264,17 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
 @push('scripts')
 <script>
     var charts = {};
+
+    // Функция форматирования валюты
+    function formatCurrency(value) {
+        if (window.CurrencyManager) {
+            return window.CurrencyManager.formatAmount(value);
+        } else {
+            value = parseFloat(value);
+            if (isNaN(value)) return '0';
+            return value.toLocaleString('ru-RU') + ' грн';
+        }
+    }
     // --- Функция для вычисления диапазона дат по календарным периодам ---
     function getPeriodParams(period) {
         const end = new Date();
@@ -506,7 +517,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                                         return [
                                             `${label}`,
                                             `Количество: ${count} шт`,
-                                            `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                            `Сумма: ${formatCurrency(sum)}`
                                         ];
                                     }
                                 }
@@ -539,7 +550,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                                         return [
                                             `${label}`,
                                             `Количество: ${count} шт`,
-                                            `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                            `Сумма: ${formatCurrency(sum)}`
                                         ];
                                     }
                                 }
@@ -570,7 +581,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                                         const sum = data.supplier.data[i];
                                         return [
                                             `${label}`,
-                                            `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                            `Сумма: ${formatCurrency(sum)}`
                                         ];
                                     }
                                 }
@@ -601,7 +612,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                                         const sum = data.type.sums[i];
                                         return [
                                             `${label}`,
-                                            `Сумма: ${sum.toLocaleString('ru-RU')} грн`
+                                            `Сумма: ${formatCurrency(sum)}`
                                         ];
                                     }
                                 }
@@ -762,7 +773,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         data: {
                             labels: data.topClients.labels,
                             datasets: [{
-                                label: 'Покупки, грн',
+                                label: 'Покупки',
                                 data: data.topClients.data,
                                 backgroundColor: grad,
                                 borderColor: 'rgba(245,158,11,0.3)',
@@ -904,7 +915,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         data: {
                             labels: data.topSuppliers.map(s => s.label),
                             datasets: [{
-                                label: 'Закупки, грн',
+                                label: 'Закупки',
                                 data: data.topSuppliers.map(s => s.sum),
                                 backgroundColor: grad,
                                 borderColor: 'rgba(139,92,246,0.3)',
@@ -967,7 +978,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                                         label: function (context) {
                                             const label = context.label || '';
                                             const value = context.raw || 0;
-                                            return `${label}: ${value.toLocaleString('ru-RU')} грн`;
+                                            return `${label}: ${formatCurrency(value)}`;
                                         }
                                     }
                                 }
@@ -1013,8 +1024,8 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                                             return [
                                                 `Категория: ${cat.label}`,
                                                 `Остаток: ${cat.qty} шт`,
-                                                `Опт: ${cat.wholesale.toLocaleString('ru-RU')} грн`,
-                                                `Розница: ${cat.retail.toLocaleString('ru-RU')} грн`
+                                                `Опт: ${formatCurrency(cat.wholesale)}`,
+                                                `Розница: ${formatCurrency(cat.retail)}`
                                             ];
                                         }
                                     }
@@ -1259,7 +1270,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         data: {
                             labels: data.topEmployees.map(e => e.label),
                             datasets: [{
-                                label: 'Продажи, грн',
+                                label: 'Продажи',
                                 data: data.topEmployees.map(e => e.sum),
                                 backgroundColor: grad,
                                 borderColor: 'rgba(59,130,246,0.3)',
@@ -1321,7 +1332,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                                         label: function (context) {
                                             const label = context.label || '';
                                             const value = context.raw || 0;
-                                            return `${label}: ${value.toLocaleString('ru-RU')} грн`;
+                                            return `${label}: ${formatCurrency(value)}`;
                                         }
                                     }
                                 }
