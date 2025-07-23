@@ -193,24 +193,100 @@
 <script>
 let isEditMode = false;
 
-function openCreateModal() {
+// Обновляем предварительный просмотр при изменении полей
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Функция для очистки дублированных элементов preview
+    function cleanupPreviewElements() {
+        const modal = document.getElementById('currencyModal');
+        if (modal) {
+            const modalBody = modal.querySelector('.modal-body');
+            if (modalBody) {
+                const existingPreviews = modalBody.querySelectorAll('#preview');
+                if (existingPreviews.length > 1) {
+                    // Оставляем только первый элемент, удаляем остальные
+                    for (let i = 1; i < existingPreviews.length; i++) {
+                        const container = existingPreviews[i].closest('.mb-3');
+                        if (container) {
+                            container.remove();
+                        } else {
+                            existingPreviews[i].remove();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // Очищаем дублированные элементы при загрузке
+    cleanupPreviewElements();
+    
+    // Делаем функции глобальными
+    window.openCreateModal = function() {
     isEditMode = false;
     document.getElementById('modalTitle').textContent = 'Добавить валюту';
     document.getElementById('currencyForm').reset();
     document.getElementById('currencyId').value = '';
-    document.getElementById('preview').textContent = 'Введите данные для предварительного просмотра';
     
     const modal = new bootstrap.Modal(document.getElementById('currencyModal'));
     modal.show();
-}
-
-function editCurrency(id) {
+        
+        // Обновляем предварительный просмотр после показа модального окна
+        setTimeout(() => {
+            // Проверяем, есть ли элемент preview
+            let previewElement = document.getElementById('preview');
+            if (!previewElement) {
+                const modal = document.getElementById('currencyModal');
+                if (modal) {
+                    const modalBody = modal.querySelector('.modal-body');
+                    if (modalBody) {
+                        // Удаляем все существующие элементы preview и их контейнеры
+                        const existingPreviews = modalBody.querySelectorAll('#preview');
+                        existingPreviews.forEach(el => {
+                            const container = el.closest('.mb-3');
+                            if (container) {
+                                container.remove();
+                            } else {
+                                el.remove();
+                            }
+                        });
+                        
+                        // Создаем новый элемент preview
+                        const previewContainer = document.createElement('div');
+                        previewContainer.className = 'mb-3';
+                        previewContainer.innerHTML = `
+                            <label class="form-label">Предварительный просмотр:</label>
+                            <div class="alert alert-info" id="preview">Введите данные для предварительного просмотра</div>
+                        `;
+                        
+                        // Добавляем в конец формы
+                        const form = modalBody.querySelector('#currencyForm');
+                        if (form) {
+                            form.appendChild(previewContainer);
+                        }
+                    }
+                }
+            }
+            
+            // Добавляем обработчики событий к полям формы
+            addFormEventListeners();
+            // Обновляем предварительный просмотр
+            updatePreview();
+        }, 100);
+    };
+    
+    window.editCurrency = function(id) {
     isEditMode = true;
     document.getElementById('modalTitle').textContent = 'Редактировать валюту';
     
     // Загружаем данные валюты
-    fetch(`/admin/currencies/${id}/edit`)
-        .then(response => response.json())
+        fetch(`/panel/currencies/${id}/data`)
+        .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 const currency = data.currency;
@@ -225,21 +301,77 @@ function editCurrency(id) {
                 document.getElementById('is_active').checked = currency.is_active;
                 document.getElementById('is_default').checked = currency.is_default;
                 
-                updatePreview();
-                
                 const modal = new bootstrap.Modal(document.getElementById('currencyModal'));
                 modal.show();
+                    
+                    // Добавляем обработчики событий к полям формы
+                    setTimeout(() => {
+                        // Проверяем, есть ли элемент preview
+                        let previewElement = document.getElementById('preview');
+                        if (!previewElement) {
+                            const modal = document.getElementById('currencyModal');
+                            if (modal) {
+                                const modalBody = modal.querySelector('.modal-body');
+                                if (modalBody) {
+                                    // Удаляем все существующие элементы preview и их контейнеры
+                                    const existingPreviews = modalBody.querySelectorAll('#preview');
+                                    existingPreviews.forEach(el => {
+                                        const container = el.closest('.mb-3');
+                                        if (container) {
+                                            container.remove();
+                                        } else {
+                                            el.remove();
+                                        }
+                                    });
+                                    
+                                    // Создаем новый элемент preview
+                                    const previewContainer = document.createElement('div');
+                                    previewContainer.className = 'mb-3';
+                                    previewContainer.innerHTML = `
+                                        <label class="form-label">Предварительный просмотр:</label>
+                                        <div class="alert alert-info" id="preview">Введите данные для предварительного просмотра</div>
+                                    `;
+                                    
+                                    // Добавляем в конец формы
+                                    const form = modalBody.querySelector('#currencyForm');
+                                    if (form) {
+                                        form.appendChild(previewContainer);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        addFormEventListeners();
+                        updatePreview();
+                    }, 100);
+            } else {
+                alert('Ошибка загрузки валюты: ' + data.message);
             }
+        })
+        .catch(error => {
+                alert('Ошибка при редактировании валюты: ' + error.message);
         });
-}
+    };
 
-function saveCurrency() {
+    window.saveCurrency = function() {
     const form = document.getElementById('currencyForm');
     const formData = new FormData(form);
+        
+        // Правильно обрабатываем чекбоксы
+        const isActiveCheckbox = document.getElementById('is_active');
+        const isDefaultCheckbox = document.getElementById('is_default');
+        
+        // Удаляем старые значения чекбоксов
+        formData.delete('is_active');
+        formData.delete('is_default');
+        
+        // Добавляем правильные значения
+        formData.append('is_active', isActiveCheckbox.checked ? '1' : '0');
+        formData.append('is_default', isDefaultCheckbox.checked ? '1' : '0');
     
     const url = isEditMode 
-        ? `/admin/currencies/${document.getElementById('currencyId').value}`
-        : '/admin/currencies';
+            ? `/panel/currencies/${document.getElementById('currencyId').value}`
+            : '/panel/currencies';
     
     const method = isEditMode ? 'PUT' : 'POST';
     
@@ -251,7 +383,24 @@ function saveCurrency() {
         },
         body: formData
     })
-    .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 422) {
+                    return response.json().then(data => {
+                        // Обрабатываем валидационные ошибки
+                        let errorMessage = 'Ошибки валидации:\n';
+                        if (data.errors) {
+                            Object.keys(data.errors).forEach(field => {
+                                errorMessage += `- ${data.errors[field].join(', ')}\n`;
+                            });
+                        }
+                        throw new Error(errorMessage);
+                    });
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
     .then(data => {
         if (data.success) {
             // Закрываем модальное окно
@@ -265,74 +414,288 @@ function saveCurrency() {
         }
     })
     .catch(error => {
-        alert('Произошла ошибка при сохранении');
-    });
-}
-
-function deleteCurrency(id) {
-    if (confirm('Вы уверены, что хотите удалить эту валюту?')) {
-        fetch(`/admin/currencies/${id}`, {
+            alert('Произошла ошибка при сохранении: ' + error.message);
+        });
+    };
+    
+    window.deleteCurrency = function(id) {
+        // Создаем модальное окно подтверждения
+        const confirmModal = document.createElement('div');
+        confirmModal.className = 'modal fade';
+        confirmModal.id = 'confirmDeleteModal';
+        confirmModal.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Подтверждение удаления</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Вы уверены, что хотите удалить эту валюту?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete(${id})">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Добавляем модальное окно на страницу
+        document.body.appendChild(confirmModal);
+        
+        // Показываем модальное окно
+        const modal = new bootstrap.Modal(confirmModal);
+        modal.show();
+        
+        // Удаляем модальное окно после скрытия
+        confirmModal.addEventListener('hidden.bs.modal', function() {
+            document.body.removeChild(confirmModal);
+        });
+    };
+    
+    window.confirmDelete = function(id) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            alert('Ошибка: CSRF токен не найден');
+            return;
+        }
+        
+        // Закрываем модальное окно подтверждения
+        const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
+        if (confirmModal) {
+            confirmModal.hide();
+        }
+        
+        fetch(`/panel/currencies/${id}`, {
             method: 'DELETE',
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-CSRF-TOKEN': csrfToken.content,
                 'Accept': 'application/json',
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 window.location.reload();
             } else {
                 alert('Ошибка: ' + data.message);
             }
+        })
+        .catch(error => {
+            alert('Ошибка при удалении валюты: ' + error.message);
         });
-    }
-}
-
-function setDefault(id) {
-    fetch(`/admin/currencies/${id}/set-default`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            window.location.reload();
-        } else {
-            alert('Ошибка: ' + data.message);
-        }
-    });
-}
-
-function toggleActive(id) {
-    fetch(`/admin/currencies/${id}/toggle-active`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            window.location.reload();
-        } else {
-            alert('Ошибка: ' + data.message);
-        }
-    });
-}
-
-function updatePreview() {
-    const symbol = document.getElementById('symbol').value;
-    const symbolPosition = document.getElementById('symbol_position').value;
-    const decimalPlaces = document.getElementById('decimal_places').value;
-    const decimalSeparator = document.getElementById('decimal_separator').value;
-    const thousandsSeparator = document.getElementById('thousands_separator').value;
+    };
     
-    if (symbol && decimalPlaces !== '') {
+    window.setDefault = function(id) {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            alert('Ошибка: CSRF токен не найден');
+            return;
+        }
+        
+        fetch(`/panel/currencies/${id}/set-default`, {
+        method: 'POST',
+        headers: {
+                'X-CSRF-TOKEN': csrfToken.content,
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Ошибка: ' + data.message);
+        }
+    })
+    .catch(error => {
+            alert('Ошибка при установке валюты по умолчанию: ' + error.message);
+    });
+    };
+
+    window.toggleActive = function(id) {
+        fetch(`/panel/currencies/${id}/toggle-active`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Ошибка: ' + data.message);
+        }
+    })
+    .catch(error => {
+            alert('Ошибка при переключении активности валюты: ' + error.message);
+        });
+    };
+    
+    window.refreshClientCurrencies = function() {
+        // Создаем модальное окно подтверждения
+        const confirmModal = document.createElement('div');
+        confirmModal.className = 'modal fade';
+        confirmModal.id = 'confirmRefreshModal';
+        confirmModal.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Обновление валют в клиентах</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Это обновит валюты во всех открытых клиентских сессиях. Продолжить?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-success" onclick="confirmRefresh()">Обновить</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Добавляем модальное окно на страницу
+        document.body.appendChild(confirmModal);
+        
+        // Показываем модальное окно
+        const modal = new bootstrap.Modal(confirmModal);
+        modal.show();
+        
+        // Удаляем модальное окно после скрытия
+        confirmModal.addEventListener('hidden.bs.modal', function() {
+            document.body.removeChild(confirmModal);
+        });
+    };
+    
+    window.confirmRefresh = function() {
+        // Закрываем модальное окно подтверждения
+        const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmRefreshModal'));
+        if (confirmModal) {
+            confirmModal.hide();
+        }
+        
+        const csrfToken = document.querySelector('meta[name="csrf-token"]');
+        if (!csrfToken) {
+            alert('Ошибка: CSRF токен не найден');
+            return;
+        }
+        
+        // Отправляем AJAX запрос для очистки кэша
+        fetch('/panel/currencies/clear-cache', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken.content,
+                'Accept': 'application/json',
+            }
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert('Кэш валют очищен. Клиенты увидят изменения при обновлении страницы.');
+            } else {
+                alert('Ошибка при очистке кэша: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Ошибка при очистке кэша: ' + error.message);
+        });
+    };
+    
+    // Функция для обновления предварительного просмотра
+    function updatePreview() {
+        const symbolElement = document.getElementById('symbol');
+        const symbolPositionElement = document.getElementById('symbol_position');
+        const decimalPlacesElement = document.getElementById('decimal_places');
+        const decimalSeparatorElement = document.getElementById('decimal_separator');
+        const thousandsSeparatorElement = document.getElementById('thousands_separator');
+        let previewElement = document.getElementById('preview');
+        
+        // Проверяем, что все элементы существуют
+        if (!symbolElement || !symbolPositionElement || !decimalPlacesElement || 
+            !decimalSeparatorElement || !thousandsSeparatorElement) {
+            return;
+        }
+        
+        // Если элемент preview не найден, попробуем его найти в модальном окне
+        if (!previewElement) {
+            const modal = document.getElementById('currencyModal');
+            if (modal) {
+                previewElement = modal.querySelector('#preview');
+            }
+        }
+        
+        // Если элемент preview все еще не найден, создаем его заново
+        if (!previewElement) {
+            const modal = document.getElementById('currencyModal');
+            if (modal) {
+                const modalBody = modal.querySelector('.modal-body');
+                if (modalBody) {
+                    // Удаляем все существующие элементы preview и их контейнеры
+                    const existingPreviews = modalBody.querySelectorAll('#preview');
+                    existingPreviews.forEach(el => {
+                        const container = el.closest('.mb-3');
+                        if (container) {
+                            container.remove();
+                        } else {
+                            el.remove();
+                        }
+                    });
+                    
+                    // Создаем новый элемент preview
+                    const previewContainer = document.createElement('div');
+                    previewContainer.className = 'mb-3';
+                    previewContainer.innerHTML = `
+                        <label class="form-label">Предварительный просмотр:</label>
+                        <div class="alert alert-info" id="preview">Введите данные для предварительного просмотра</div>
+                    `;
+                    
+                    // Добавляем в конец формы
+                    const form = modalBody.querySelector('#currencyForm');
+                    if (form) {
+                        form.appendChild(previewContainer);
+                    } else {
+                        modalBody.appendChild(previewContainer);
+                    }
+                    
+                    previewElement = modalBody.querySelector('#preview');
+                }
+            }
+        }
+        
+        if (!previewElement) {
+            return;
+        }
+        
+        const symbol = symbolElement.value || '[Символ]';
+        const symbolPosition = symbolPositionElement.value || 'after';
+        const decimalPlaces = decimalPlacesElement.value || '2';
+        const decimalSeparator = decimalSeparatorElement.value || '.';
+        const thousandsSeparator = thousandsSeparatorElement.value || ',';
+        
+        try {
         const amount = 1234.56;
         const formatted = new Intl.NumberFormat('en-US', {
             minimumFractionDigits: parseInt(decimalPlaces),
@@ -344,40 +707,122 @@ function updatePreview() {
             ? `${symbol}${formatted}`
             : `${formatted} ${symbol}`;
             
-        document.getElementById('preview').textContent = `Пример: ${preview}`;
+            previewElement.textContent = `Пример: ${preview}`;
+        } catch (error) {
+            previewElement.textContent = 'Пример: [Ошибка форматирования]';
     }
 }
 
-// Обновляем предварительный просмотр при изменении полей
-document.addEventListener('DOMContentLoaded', function() {
+    // Функция для добавления обработчиков событий к полям формы
+    function addFormEventListeners() {
     const fields = ['symbol', 'symbol_position', 'decimal_places', 'decimal_separator', 'thousands_separator'];
     fields.forEach(field => {
-        document.getElementById(field).addEventListener('input', updatePreview);
-    });
-});
-
-// Функция для обновления валют в клиентской части
-function refreshClientCurrencies() {
-    // Отправляем уведомление всем активным клиентам через WebSocket или Server-Sent Events
-    // Пока что просто показываем уведомление
-    if (confirm('Это обновит валюты во всех открытых клиентских сессиях. Продолжить?')) {
-        // Здесь можно добавить WebSocket уведомление
-        alert('Валюты будут обновлены в клиентских сессиях при следующем обновлении страницы.');
-        
-        // Также можно отправить AJAX запрос для очистки кэша
-        fetch('/admin/currencies/clear-cache', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-            }
-        }).then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Кэш валют очищен. Клиенты увидят изменения при обновлении страницы.');
+            const element = document.getElementById(field);
+            if (element) {
+                // Удаляем все старые обработчики
+                element.removeEventListener('input', updatePreview);
+                element.removeEventListener('change', updatePreview);
+                
+                // Добавляем обработчики событий
+                element.addEventListener('input', function() {
+                    updatePreview();
+                });
+                element.addEventListener('change', function() {
+                    updatePreview();
+                });
             }
         });
     }
-}
+    
+    addFormEventListeners();
+    
+    // Добавляем обработчик события показа модального окна
+    const modal = document.getElementById('currencyModal');
+    if (modal) {
+        modal.addEventListener('shown.bs.modal', function() {
+            // Принудительно восстанавливаем элемент preview при каждом открытии
+            setTimeout(() => {
+                // Проверяем, есть ли элемент preview
+                let previewElement = document.getElementById('preview');
+                if (!previewElement) {
+                    const modalBody = modal.querySelector('.modal-body');
+                    if (modalBody) {
+                        // Удаляем все существующие элементы preview и их контейнеры
+                        const existingPreviews = modalBody.querySelectorAll('#preview');
+                        existingPreviews.forEach(el => {
+                            const container = el.closest('.mb-3');
+                            if (container) {
+                                container.remove();
+                            } else {
+                                el.remove();
+                            }
+                        });
+                        
+                        // Создаем новый элемент preview
+                        const previewContainer = document.createElement('div');
+                        previewContainer.className = 'mb-3';
+                        previewContainer.innerHTML = `
+                            <label class="form-label">Предварительный просмотр:</label>
+                            <div class="alert alert-info" id="preview">Введите данные для предварительного просмотра</div>
+                        `;
+                        
+                        // Добавляем в конец формы
+                        const form = modalBody.querySelector('#currencyForm');
+                        if (form) {
+                            form.appendChild(previewContainer);
+                        }
+                    }
+                }
+                
+                addFormEventListeners();
+                updatePreview();
+            }, 50);
+        });
+        
+
+    }
+    
+    // Принудительно обновляем предварительный просмотр каждые 5 секунд (уменьшили частоту)
+    const previewInterval = setInterval(() => {
+        const modal = document.getElementById('currencyModal');
+        if (modal && modal.classList.contains('show')) {
+            // Проверяем, что элемент preview существует перед обновлением
+            const previewElement = document.getElementById('preview');
+            if (previewElement) {
+                updatePreview();
+            }
+        }
+    }, 5000);
+    
+    // Отслеживаем изменения в DOM модального окна (упрощенная версия)
+    const modalForObserver = document.getElementById('currencyModal');
+    if (modalForObserver) {
+        const observer = new MutationObserver(function(mutations) {
+            let shouldUpdate = false;
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.target.id === 'preview') {
+                    shouldUpdate = true;
+                }
+            });
+            if (shouldUpdate) {
+                setTimeout(() => {
+                    updatePreview();
+                }, 100);
+            }
+        });
+        
+        observer.observe(modalForObserver, {
+            childList: true,
+            subtree: true
+        });
+    }
+    
+    // Очищаем интервал при скрытии модального окна
+    if (modal) {
+        modal.addEventListener('hidden.bs.modal', function() {
+            clearInterval(previewInterval);
+        });
+    }
+});
 </script>
 @endsection 

@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="dashboard-container">
-        <h1 class="dashboard-title">Панель управления</h1>
+        <h1 class="dashboard-title">{{ __('messages.dashboard') }}</h1>
 
         <div class="stats-grid">
             <!-- Левая колонка: прибыль -->
@@ -11,12 +11,12 @@
                     <i class="fas fa-coins"></i>
                 </div>
                 <div class="stat-content">
-                    <h3 class="stat-title">Прибыль</h3>
+                    <h3 class="stat-title">{{ __('messages.profit') }}</h3>
                     <p class="stat-value currency-amount" data-amount="{{ $totalProfit }}">{{ \App\Helpers\CurrencyHelper::format($totalProfit) }}</p>
                     @if($showDynamics)
                         <p class="stat-change positive">
                             <i class="fas fa-arrow-up"></i>
-                            15.3% с прошлого месяца
+                            15.3% {{ __('messages.from_last_month') }}
                         </p>
                     @endif
                 </div>
@@ -30,12 +30,12 @@
                             <i class="fas fa-shopping-cart"></i>
                         </div>
                         <div class="stat-content">
-                            <h3 class="stat-title">Продажи товаров</h3>
+                            <h3 class="stat-title">{{ __('messages.product_sales') }}</h3>
                             <p class="stat-value currency-amount" data-amount="{{ $productsRevenue }}">{{ \App\Helpers\CurrencyHelper::format($productsRevenue) }}</p>
                             @if($showDynamics)
                                 <p class="stat-change positive">
                                     <i class="fas fa-arrow-up"></i>
-                                    8.7% с прошлого месяца
+                                    8.7% {{ __('messages.from_last_month') }}
                                 </p>
                             @endif
                         </div>
@@ -45,12 +45,12 @@
                             <i class="fas fa-spa"></i>
                         </div>
                         <div class="stat-content">
-                            <h3 class="stat-title">Продажи услуг</h3>
+                            <h3 class="stat-title">{{ __('messages.service_sales') }}</h3>
                             <p class="stat-value currency-amount" data-amount="{{ $servicesRevenue }}">{{ \App\Helpers\CurrencyHelper::format($servicesRevenue) }}</p>
                             @if($showDynamics)
                                 <p class="stat-change positive">
                                     <i class="fas fa-arrow-up"></i>
-                                    12.5% с прошлого месяца
+                                    12.5% {{ __('messages.from_last_month') }}
                                 </p>
                             @endif
                         </div>
@@ -60,12 +60,12 @@
                             <i class="fas fa-credit-card"></i>
                         </div>
                         <div class="stat-content">
-                            <h3 class="stat-title">Расходы</h3>
+                            <h3 class="stat-title">{{ __('messages.expenses') }}</h3>
                             <p class="stat-value currency-amount" data-amount="{{ $totalExpenses }}">{{ \App\Helpers\CurrencyHelper::format($totalExpenses) }}</p>
                             @if($showDynamics)
                                 <p class="stat-change negative">
                                     <i class="fas fa-arrow-down"></i>
-                                    5.2% с прошлого месяца
+                                    5.2% {{ __('messages.from_last_month') }}
                                 </p>
                             @endif
                         </div>
@@ -78,12 +78,12 @@
                             <i class="fas fa-spa"></i>
                         </div>
                         <div class="stat-content">
-                            <h3 class="stat-title">Услуги</h3>
+                            <h3 class="stat-title">{{ __('messages.services') }}</h3>
                             <p class="stat-value">{{ $servicesCount }}</p>
                             @if($showDynamics)
                                 <p class="stat-change positive">
                                     <i class="fas fa-arrow-up"></i>
-                                    18.2% с прошлого месяца
+                                    18.2% {{ __('messages.from_last_month') }}
                                 </p>
                             @endif
                         </div>
@@ -93,12 +93,12 @@
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="stat-content">
-                            <h3 class="stat-title">Клиенты</h3>
+                            <h3 class="stat-title">{{ __('messages.clients') }}</h3>
                             <p class="stat-value">{{ $clientsCount }}</p>
                             @if($showDynamics)
                                 <p class="stat-change positive">
                                     <i class="fas fa-arrow-up"></i>
-                                    12% с прошлого месяца
+                                    12% {{ __('messages.from_last_month') }}
                                 </p>
                             @endif
                         </div>
@@ -108,12 +108,12 @@
                             <i class="fas fa-calendar-check"></i>
                         </div>
                         <div class="stat-content">
-                            <h3 class="stat-title">Записи</h3>
+                            <h3 class="stat-title">{{ __('messages.appointments') }}</h3>
                             <p class="stat-value">{{ $appointmentsCount }}</p>
                             @if($showDynamics)
                                 <p class="stat-change positive">
                                     <i class="fas fa-arrow-up"></i>
-                                    5.2% с прошлой недели
+                                    5.2% {{ __('messages.from_last_week') }}
                                 </p>
                             @endif
                         </div>
@@ -126,11 +126,11 @@
         <div class="dashboard-tabs">
             <button class="tab-button active" data-tab="finances">
                 <i class="fas fa-chart-pie"></i>
-                Финансы
+                {{ __('messages.finances') }}
             </button>
             <button class="tab-button" data-tab="activity">
                 <i class="fas fa-chart-bar"></i>
-                Активность
+                {{ __('messages.activity') }}
             </button>
         </div>
 
@@ -139,7 +139,7 @@
             <div class="widget-header-modern">
                 <div class="widget-title-container">
                     <i class="fas fa-chart-line chart-icon"></i>
-                    <span class="widget-title">Динамика показателей</span>
+                    <span class="widget-title">{{ __('messages.dynamics') }}</span>
                 </div>
             </div>
             <div class="chart-toolbar" style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 1rem; width: 100%;">
@@ -147,22 +147,22 @@
                 <div class="dropdown metric-dropdown" style="position: relative; flex-grow: 1;">
                     <button class="dropdown-toggle metric-toggle" type="button" style="display: flex; align-items: center; gap: 0.5rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; min-width: 140px;">
                         <i class="fas fa-coins"></i>
-                        <span id="selectedMetricLabel">Прибыль</span>
+                        <span id="selectedMetricLabel">{{ __('messages.profit') }}</span>
                         <i class="fas fa-chevron-down" style="margin-left: 0.5rem;"></i>
                     </button>
                     <div class="dropdown-menu metric-menu">
-                        <button class="dropdown-item metric-item" data-type="profit"><i class="fas fa-coins"></i> Прибыль</button>
-                        <button class="dropdown-item metric-item" data-type="sales"><i class="fas fa-shopping-cart"></i> Продажи товаров</button>
-                        <button class="dropdown-item metric-item" data-type="services"><i class="fas fa-spa"></i> Продажи услуг</button>
-                        <button class="dropdown-item metric-item" data-type="expenses"><i class="fas fa-credit-card"></i> Расходы</button>
+                        <button class="dropdown-item metric-item" data-type="profit"><i class="fas fa-coins"></i> {{ __('messages.profit') }}</button>
+                        <button class="dropdown-item metric-item" data-type="sales"><i class="fas fa-shopping-cart"></i> {{ __('messages.product_sales') }}</button>
+                        <button class="dropdown-item metric-item" data-type="services"><i class="fas fa-spa"></i> {{ __('messages.service_sales') }}</button>
+                        <button class="dropdown-item metric-item" data-type="expenses"><i class="fas fa-credit-card"></i> {{ __('messages.expenses') }}</button>
                     </div>
                 </div>
                 <!-- Фильтры справа -->
                 <div class="period-filters" style="display: flex; gap: 0.5rem; margin-left: auto; min-width: 340px; justify-content: flex-end;">
-                    <button class="tab-button" data-period="30">За месяц</button>
-                    <button class="tab-button" data-period="90">За 3 месяца</button>
-                    <button class="tab-button" data-period="180">За 6 месяцев</button>
-                    <button class="tab-button" data-period="365">За год</button>
+                    <button class="tab-button" data-period="30">{{ __('messages.per_month') }}</button>
+                    <button class="tab-button" data-period="90">{{ __('messages.per_3_months') }}</button>
+                    <button class="tab-button" data-period="180">{{ __('messages.per_6_months') }}</button>
+                    <button class="tab-button" data-period="365">{{ __('messages.per_year') }}</button>
                     <button class="tab-button calendar-button" id="dateRangePicker"><i class="fas fa-calendar"></i></button>
                     <span id="calendarRangeDisplay" style="min-width:110px;text-align:center;vertical-align:middle;font-family:inherit;font-size:14px;font-weight:600;color: #64748b;"></span>
                 </div>
@@ -177,7 +177,7 @@
                         <div class="widget-header-modern">
                             <div class="widget-title-container">
                                 <i class="fas fa-calendar-alt calendar-icon"></i>
-                                <span class="widget-title">Календарь</span>
+                                <span class="widget-title">{{ __('messages.calendar') }}</span>
                             </div>
                             <div class="calendar-nav">
                                 <span id="calendarMonthYearTitle" class="calendar-month-title"></span>
@@ -196,29 +196,29 @@
                         <div class="widget-header-modern">
                             <div class="widget-title-container">
                                 <i class="fas fa-rectangle-list list-icon"></i>
-                                <span class="widget-title">Записи</span>
+                                <span class="widget-title">{{ __('messages.appointments') }}</span>
                             </div>
-                            <button class="tab-button active" id="addWidgetAppointmentBtn">Добавить новую</button>
+                            <button class="tab-button active" id="addWidgetAppointmentBtn">{{ __('messages.add_new') }}</button>
                         </div>
                         <div class="appointments-table-block">
                             <table class="table-striped appointments-table">
                                 <thead>
                                     <tr>
-                                        <th>ДАТА</th>
-                                        <th>КЛИЕНТ</th>
-                                        <th>УСЛУГА</th>
-                                        <th>СТАТУС</th>
-                                        <th>СТОИМОСТЬ</th>
+                                        <th>{{ __('messages.date') }}</th>
+                                        <th>{{ __('messages.client') }}</th>
+                                        <th>{{ __('messages.service') }}</th>
+                                        <th>{{ __('messages.status') }}</th>
+                                        <th>{{ __('messages.cost') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @php
                                         function getStatusInfo($status) {
                                             $map = [
-                                                'completed' => ['class' => 'done', 'name' => 'Завершено'],
-                                                'pending' => ['class' => 'pending', 'name' => 'Ожидается'],
-                                                'cancelled' => ['class' => 'cancel', 'name' => 'Отменено'],
-                                                'rescheduled' => ['class' => 'rescheduled', 'name' => 'Перенесено'],
+                                                'completed' => ['class' => 'done', 'name' => __('messages.completed')],
+                                                'pending' => ['class' => 'pending', 'name' => __('messages.pending')],
+                                                'cancelled' => ['class' => 'cancel', 'name' => __('messages.cancelled')],
+                                                'rescheduled' => ['class' => 'rescheduled', 'name' => __('messages.rescheduled')],
                                             ];
                                             return $map[$status] ?? ['class' => 'default', 'name' => ucfirst($status)];
                                         }
@@ -227,18 +227,18 @@
                                         @php $statusInfo = getStatusInfo($appointment->status); @endphp
                                         <tr>
                                             <td>
-                                                <span class="appt-date">{{ \Carbon\Carbon::parse($appointment->date)->isToday() ? 'Сегодня' : 'Завтра' }}</span><br>
+                                                <span class="appt-date">{{ \Carbon\Carbon::parse($appointment->date)->isToday() ? __('messages.today') : __('messages.tomorrow') }}</span><br>
                                                 <span class="appt-time">{{ \Carbon\Carbon::parse($appointment->time)->format('H:i') }}</span>
                                             </td>
-                                            <td>{{ $appointment->client->name ?? 'Клиент не найден' }}</td>
-                                            <td>{{ $appointment->service->name ?? 'Услуга не найдена' }}</td>
+                                            <td>{{ $appointment->client->name ?? __('messages.client_not_found') }}</td>
+                                            <td>{{ $appointment->service->name ?? __('messages.service_not_found') }}</td>
                                             <td><span class="status-badge status-{{ $statusInfo['class'] }}">{{ $statusInfo['name'] }}</span></td>
                                             <td class="currency-amount" data-amount="{{ $appointment->price }}">{{ \App\Helpers\CurrencyHelper::format($appointment->price) }}</td>
                                         </tr>
                                     @empty
                                         <tr>
                                             <td colspan="5" style="text-align: center; padding: 20px; color: #888;">
-                                                На сегодня и завтра активных записей нет.
+                                                {{ __('messages.no_active_appointments') }}
                                             </td>
                                         </tr>
                                     @endforelse
@@ -253,7 +253,7 @@
                         <div class="widget-header-modern">
                             <div class="widget-title-container">
                                 <i class="fas fa-clipboard-list summary-icon"></i>
-                                <span class="widget-title">Краткий отчёт за сегодня</span>
+                                <span class="widget-title">{{ __('messages.daily_summary') }}</span>
                             </div>
                         </div>
                         <div class="daily-summary-grid">
@@ -261,7 +261,7 @@
                             <div class="summary-grid-item services-profit">
                                 <div class="item-header">
                                     <i class="fas fa-spa item-icon"></i>
-                                    <span class="item-label">Прибыль с услуг</span>
+                                    <span class="item-label">{{ __('messages.services_profit') }}</span>
                                 </div>
                                 <div class="item-value currency-amount" data-amount="{{ $todayServicesProfit ?? 2000 }}">{{ \App\Helpers\CurrencyHelper::format($todayServicesProfit ?? 2000) }}</div>
                             </div>
@@ -269,7 +269,7 @@
                             <div class="summary-grid-item products-profit">
                                 <div class="item-header">
                                     <i class="fas fa-boxes-stacked item-icon"></i>
-                                    <span class="item-label">Прибыль с товаров</span>
+                                    <span class="item-label">{{ __('messages.products_profit') }}</span>
                                 </div>
                                 <div class="item-value currency-amount" data-amount="{{ $todayProductsProfit ?? 1200 }}">{{ \App\Helpers\CurrencyHelper::format($todayProductsProfit ?? 1200) }}</div>
                             </div>
@@ -277,7 +277,7 @@
                             <div class="summary-grid-item services-count">
                                 <div class="item-header">
                                     <i class="fas fa-check-circle item-icon"></i>
-                                    <span class="item-label">Услуг оказано</span>
+                                    <span class="item-label">{{ __('messages.services_completed') }}</span>
                                 </div>
                                 <div class="item-value">{{ $todayCompletedServices ?? 4 }}</div>
                             </div>
@@ -285,7 +285,7 @@
                             <div class="summary-grid-item products-count">
                                 <div class="item-header">
                                     <i class="fas fa-shopping-basket item-icon"></i>
-                                    <span class="item-label">Товаров продано</span>
+                                    <span class="item-label">{{ __('messages.products_sold') }}</span>
                                 </div>
                                 <div class="item-value">{{ $todaySoldProducts ?? 8 }}</div>
                             </div>
@@ -298,10 +298,10 @@
                         <div class="widget-header-modern">
                             <div class="widget-title-container">
                                 <i class="fas fa-list-check todo-icon"></i>
-                                <span class="widget-title">To Do List</span>
+                                <span class="widget-title">{{ __('messages.todo_list') }}</span>
                             </div>
                             <div class="todo-add-form">
-                                <input type="text" id="newTodoInput" placeholder="Новая задача...">
+                                <input type="text" id="newTodoInput" placeholder="{{ __('messages.task_placeholder') }}">
                                 <button id="addTodoBtn"><i class="fas fa-plus"></i></button>
                             </div>
                         </div>
@@ -337,7 +337,7 @@
         // Данные для графика (пример)
         const datasets = {
             profit: {
-                label: "Прибыль",
+                label: "{{ __('messages.profit') }}",
                 icon: "fa-coins",
                 data: {
                     7: [18000, 17500, 17000, 16800, 16500, 16200, 16000],
@@ -346,7 +346,7 @@
                 }
             },
             sales: {
-                label: "Продажи товаров",
+                label: "{{ __('messages.product_sales') }}",
                 icon: "fa-shopping-cart",
                 data: {
                     7: [14000, 13500, 13000, 12800, 12500, 12200, 12000],
@@ -355,7 +355,7 @@
                 }
             },
             services: {
-                label: "Продажи услуг",
+                label: "{{ __('messages.service_sales') }}",
                 icon: "fa-spa",
                 data: {
                     7: [4500, 4400, 4300, 4280, 4250, 4220, 4200],
@@ -364,7 +364,7 @@
                 }
             },
             expenses: {
-                label: "Расходы",
+                label: "{{ __('messages.expenses') }}",
                 icon: "fa-credit-card",
                 data: {
                     7: [2900, 2850, 2800, 2780, 2750, 2720, 2700],
@@ -373,7 +373,7 @@
                 }
             },
             clients: {
-                label: "Клиенты",
+                label: "{{ __('messages.clients') }}",
                 icon: "fa-users",
                 data: {
                     7: [90, 88, 85, 83, 80, 78, 75],
@@ -382,7 +382,7 @@
                 }
             },
             appointments: {
-                label: "Записи",
+                label: "{{ __('messages.appointments') }}",
                 icon: "fa-calendar-check",
                 data: {
                     7: [35, 34, 33, 32, 31, 30, 28],
@@ -393,7 +393,7 @@
         };
         // Формируем activity только после определения всех метрик
         datasets.activity = {
-            label: 'Активность',
+            label: '{{ __('messages.activity') }}',
             icon: 'fa-bolt',
             data: {
                 clients: datasets.clients ? datasets.clients.data : {},
@@ -664,7 +664,7 @@
                                 if (window.CurrencyManager) {
                                     salesCard.textContent = window.CurrencyManager.formatAmount(total);
                                 } else {
-                                    salesCard.textContent = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(total) + ' грн';
+                                    salesCard.textContent = new Intl.NumberFormat('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(total) + ' грн';
                                 }
                             }
                             renderCustomMonthLabels(res.labels);
@@ -774,7 +774,7 @@
             for (let i = n - 1; i >= 0; i--) {
                 const d = new Date(now);
                 d.setDate(now.getDate() - i);
-                arr.push(d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', ''));
+                arr.push(d.toLocaleDateString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { day: 'numeric', month: 'short' }).replace('.', ''));
             }
             return arr;
         }
@@ -787,7 +787,7 @@
             for (let i = weeks - 1; i >= 0; i--) {
                 const d = new Date(monday);
                 d.setDate(monday.getDate() - i * 7);
-                arr.push(d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', ''));
+                arr.push(d.toLocaleDateString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { day: 'numeric', month: 'short' }).replace('.', ''));
             }
             return arr;
         }
@@ -801,7 +801,7 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             for (let i = 1; i <= now.getDate(); i++) {
                 const d = new Date(year, month, i);
-                arr.push(d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', ''));
+                arr.push(d.toLocaleDateString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { day: 'numeric', month: 'short' }).replace('.', ''));
             }
             return arr;
         }
@@ -825,7 +825,7 @@
             for (let i = n - 1; i >= 0; i--) {
                 const d = new Date(now);
                 d.setDate(now.getDate() - i);
-                const month = d.toLocaleDateString('ru-RU', { month: 'short' });
+                const month = d.toLocaleDateString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { month: 'short' });
                 if (prevMonth !== month) {
                     arr.push(month.charAt(0).toUpperCase() + month.slice(1));
                     prevMonth = month;
@@ -857,7 +857,7 @@
                     card.textContent = window.CurrencyManager.formatAmount(value);
                 } else {
                     // Fallback если CurrencyManager не загружен
-                    card.textContent = new Intl.NumberFormat('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value) + ' грн';
+                    card.textContent = new Intl.NumberFormat('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value) + ' грн';
                 }
                 void card.offsetWidth;
                 card.classList.add('animated');
@@ -993,7 +993,7 @@
             const calendarEl = document.getElementById('dashboardCalendar');
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                locale: 'ru',
+                locale: '{{ app()->getLocale() }}',
                 height: 'auto',
                 firstDay: 1,
                 headerToolbar: false,
@@ -1128,26 +1128,26 @@
         const closeBtn = document.getElementById('closeDayModalBtn');
         // Форматируем дату
         const d = new Date(dateStr);
-        title.textContent = 'Записи на ' + d.toLocaleDateString('ru-RU');
+        title.textContent = '{{ __('messages.appointments_for_day') }} ' + d.toLocaleDateString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}');
         // Фильтруем события по дате
         const events = allEvents.filter(ev => {
             const evDate = ev.extendedProps.date || (ev.start ? ev.start.toISOString().slice(0,10) : null);
             return evDate === dateStr;
         });
         if (events.length === 0) {
-            eventsBlock.innerHTML = '<div style="color:#888;">Нет записей на этот день</div>';
+            eventsBlock.innerHTML = '<div style="color:#888;">{{ __('messages.no_appointments_for_day') }}</div>';
         } else {
             eventsBlock.innerHTML = events.map(ev => {
-                const time = ev.extendedProps.time ? ev.extendedProps.time.slice(0, 5) : (ev.start ? new Date(ev.start).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '');
+                const time = ev.extendedProps.time ? ev.extendedProps.time.slice(0, 5) : (ev.start ? new Date(ev.start).toLocaleTimeString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { hour: '2-digit', minute: '2-digit' }) : '');
                 // Получаем статус
                 const status = ev.extendedProps.status || ev.status || 'pending';
                 let statusName = '';
                 let statusClass = '';
                 switch (status) {
-                    case 'completed': statusName = 'Завершено'; statusClass = 'done'; break;
-                    case 'pending': statusName = 'Ожидается'; statusClass = 'pending'; break;
-                    case 'cancelled': statusName = 'Отменено'; statusClass = 'cancel'; break;
-                    case 'rescheduled': statusName = 'Перенесено'; statusClass = 'rescheduled'; break;
+                    case 'completed': statusName = '{{ __('messages.completed') }}'; statusClass = 'done'; break;
+                    case 'pending': statusName = '{{ __('messages.pending') }}'; statusClass = 'pending'; break;
+                    case 'cancelled': statusName = '{{ __('messages.cancelled') }}'; statusClass = 'cancel'; break;
+                    case 'rescheduled': statusName = '{{ __('messages.rescheduled') }}'; statusClass = 'rescheduled'; break;
                     default: statusName = status; statusClass = 'default'; break;
                 }
                 return `<div style='margin-bottom:0.7em; display:flex; align-items:center; gap:0.5em;'>
@@ -1181,12 +1181,12 @@
             calendarInstance = flatpickr(calendarBtn, {
                 mode: 'range',
                 dateFormat: 'Y-m-d',
-                locale: 'ru',
+                locale: '{{ app()->getLocale() }}',
                 onClose: function (selectedDates, dateStr) {
                     if (selectedDates.length === 2) {
                         document.querySelectorAll('.period-filters .tab-button').forEach(btn => btn.classList.remove('active'));
                         calendarBtn.classList.add('active');
-                        const format = d => d.toLocaleDateString('ru-RU', {day: '2-digit', month: '2-digit'});
+                        const format = d => d.toLocaleDateString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', {day: '2-digit', month: '2-digit'});
                         calendarRangeDisplay.textContent = `${format(selectedDates[0])} — ${format(selectedDates[1])}`;
                         selectedRange = {start: selectedDates[0], end: selectedDates[1]};
                         // Форматируем для запроса
@@ -1259,9 +1259,9 @@
 <div id="calendarDayModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:9999; align-items:center; justify-content:center;">
   <div style="background:#fff; border-radius:12px; max-width:500px; width:96vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
     <button id="closeDayModalBtn" style="position:absolute; right:12px; top:10px; background:none; border:none; font-size:1.5em; color:#aaa; cursor:pointer;">&times;</button>
-    <h3 id="modalDayTitle" style="margin-bottom:1em; font-size:1.1em;">Записи на день</h3>
+    <h3 id="modalDayTitle" style="margin-bottom:1em; font-size:1.1em;">{{ __('messages.appointments_for_day') }}</h3>
     <div id="modalDayEvents"></div>
-    <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:linear-gradient(135deg, #3b82f6, #60a5fa); color:#fff; border:2px solid #3b82f6; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer; transition:all 0.3s ease; box-shadow:0 2px 8px rgba(59,130,246,0.15);">Добавить новую</button>
+          <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:linear-gradient(135deg, #3b82f6, #60a5fa); color:#fff; border:2px solid #3b82f6; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer; transition:all 0.3s ease; box-shadow:0 2px 8px rgba(59,130,246,0.15);">{{ __('messages.add_new') }}</button>
   </div>
 </div>
 
@@ -1283,7 +1283,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderTodos() {
         todoListContainer.innerHTML = '';
         if (todos.length === 0) {
-            todoListContainer.innerHTML = `<li class="todo-empty-state">Задач пока нет.</li>`;
+            todoListContainer.innerHTML = `<li class="todo-empty-state">{{ __('messages.no_tasks_yet') }}</li>`;
             return;
         }
         todos.forEach((todo, index) => {

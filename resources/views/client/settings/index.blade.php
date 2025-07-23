@@ -1,37 +1,37 @@
 @extends('client.layouts.app')
 
-@section('title', 'Настройки')
+@section('title', __('messages.settings'))
 @section('content')
 
 <div class="dashboard-container">
     <div class="settings-header">
-        <h1>Общие настройки</h1>
+        <h1>{{ __('messages.settings') }}</h1>
         <div id="notification"></div>
     </div>
     <div class="dashboard-tabs" style="margin-bottom:28px;">
-        <button class="tab-button active" data-tab="profile"><i class="fa fa-user" style="margin-right:8px;"></i>Профиль</button>
-        <button class="tab-button" data-tab="security"><i class="fa fa-shield-alt" style="margin-right:8px;"></i>Безопасность</button>
-        <button class="tab-button" data-tab="notifications"><i class="fa fa-bell" style="margin-right:8px;"></i>Уведомления</button>
-        <button class="tab-button" data-tab="language"><i class="fa fa-globe" style="margin-right:8px;"></i>Язык и Валюта</button>
-        <button class="tab-button" data-tab="subscription"><i class="fa fa-credit-card" style="margin-right:8px;"></i>Подписки</button>
-        <button class="tab-button" data-tab="delete"><i class="fa fa-trash" style="margin-right:8px;"></i>Удаление</button>
+        <button class="tab-button active" data-tab="profile"><i class="fa fa-user" style="margin-right:8px;"></i>{{ __('messages.profile') }}</button>
+        <button class="tab-button" data-tab="security"><i class="fa fa-shield-alt" style="margin-right:8px;"></i>{{ __('messages.security') }}</button>
+        <button class="tab-button" data-tab="notifications"><i class="fa fa-bell" style="margin-right:8px;"></i>{{ __('messages.notifications') }}</button>
+        <button class="tab-button" data-tab="language"><i class="fa fa-globe" style="margin-right:8px;"></i>{{ __('messages.language_and_currency') }}</button>
+        <button class="tab-button" data-tab="subscription"><i class="fa fa-credit-card" style="margin-right:8px;"></i>{{ __('messages.subscription') }}</button>
+        <button class="tab-button" data-tab="delete"><i class="fa fa-trash" style="margin-right:8px;"></i>{{ __('messages.delete') }}</button>
     </div>
     <div class="settings-content">
         <!-- Профиль -->
         <div class="settings-pane" id="tab-profile">
             <form method="POST" action="{{ route('client.settings.update') }}" enctype="multipart/form-data">
                 @csrf
-                <h5>Профиль</h5>
+                <h5>{{ __('messages.profile') }}</h5>
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Имя</label>
+                            <label>{{ __('messages.name') }}</label>
                             <input type="text" name="name" class="form-control" value="{{ old('name', $project->name ?? '') }}">
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Название проекта</label>
+                            <label>{{ __('messages.project_name') }}</label>
                             <input type="text" name="project_name" class="form-control" value="{{ old('project_name', $project->project_name ?? '') }}">
                         </div>
                     </div>
@@ -39,13 +39,13 @@
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Email</label>
+                            <label>{{ __('messages.email') }}</label>
                             <input type="email" name="email" class="form-control" value="{{ old('email', $project->email ?? '') }}" readonly>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Телефон</label>
+                            <label>{{ __('messages.phone') }}</label>
                             <input type="text" name="phone" class="form-control" value="{{ old('phone', $project->phone ?? '') }}">
                         </div>
                     </div>
@@ -53,13 +53,13 @@
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Адрес</label>
+                            <label>{{ __('messages.address') }}</label>
                             <input type="text" name="address" class="form-control" value="{{ old('address', $project->address ?? '') }}">
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Веб-сайт</label>
+                            <label>{{ __('messages.website') }}</label>
                             <input type="url" name="website" class="form-control" value="{{ old('website', $project->website ?? '') }}">
                         </div>
                     </div>
@@ -67,13 +67,13 @@
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Instagram</label>
+                            <label>{{ __('messages.instagram') }}</label>
                             <input type="url" name="instagram" class="form-control" value="{{ old('instagram', $project->instagram ?? '') }}" placeholder="https://instagram.com/yourpage">
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Facebook</label>
+                            <label>{{ __('messages.facebook') }}</label>
                             <input type="url" name="facebook" class="form-control" value="{{ old('facebook', $project->facebook ?? '') }}" placeholder="https://facebook.com/yourpage">
                         </div>
                     </div>
@@ -81,7 +81,7 @@
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>TikTok</label>
+                            <label>{{ __('messages.tiktok') }}</label>
                             <input type="url" name="tiktok" class="form-control" value="{{ old('tiktok', $project->tiktok ?? '') }}" placeholder="https://tiktok.com/@yourpage">
                         </div>
                     </div>
@@ -89,7 +89,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group mb-4">
-                        <label>Логотип компании или проекта</label>
+                        <label>{{ __('messages.company_logo') }}</label>
                         <div class="logo-upload-row">
                             <div class="logo-preview">
                                 @if(!empty($project->logo))
@@ -109,37 +109,37 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group mb-4">
-                        <label>Дата регистрации</label>
+                        <label>{{ __('messages.registration_date') }}</label>
                         <input type="text" class="form-control" value="{{ $project->registered_at ? \Carbon\Carbon::parse($project->registered_at)->format('d.m.Y H:i') : ($project->created_at ? \Carbon\Carbon::parse($project->created_at)->format('d.m.Y H:i') : '') }}" disabled style="max-width:220px; display:inline-block;">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="submit" class="btn btn-primary">{{ __('messages.save') }}</button>
             </form>
         </div>
         <!-- Безопасность -->
         <div class="settings-pane" id="tab-security" style="display:none;">
-            <h5>Смена пароля</h5>
-            <a href="{{ route('password.request') }}" class="btn btn-primary mb-4">Забыли пароль?</a>
+            <h5>{{ __('messages.change_password') }}</h5>
+            <a href="{{ route('password.request') }}" class="btn btn-primary mb-4">{{ __('messages.forgot_password') }}</a>
             <hr>
             <!-- Смена почты -->
             <form method="POST" action="{{ route('client.security.email') }}" class="mb-4" id="change-email-form">
                 @csrf
-                <h5>Смена почты</h5>
+                <h5>{{ __('messages.change_email') }}</h5>
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Новый email</label>
+                            <label>{{ __('messages.new_email') }}</label>
                             <input type="email" name="new_email" class="form-control" required>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Текущий пароль</label>
+                            <label>{{ __('messages.current_password') }}</label>
                             <input type="password" name="current_password" class="form-control" required>
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Изменить email</button>
+                <button type="submit" class="btn btn-primary">{{ __('messages.change_email') }}</button>
                 <div id="change-email-notification" style="margin-top:16px;"></div>
             </form>
             <script>
@@ -164,10 +164,10 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(function(data) {
                 form.reset();
-                window.showNotification('success', 'На новую почту отправлено письмо для подтверждения. Пожалуйста, проверьте ваш email.');
+                window.showNotification('success', '{{ __('messages.email_confirmation_sent') }}');
             })
             .catch(function(error) {
-                var msg = 'Ошибка при отправке. Попробуйте ещё раз.';
+                var msg = '{{ __('messages.send_error') }}';
                 if (error && error.errors) {
                     msg = Object.values(error.errors).join('<br>');
                 }
@@ -180,51 +180,73 @@ document.addEventListener('DOMContentLoaded', function() {
             <hr>
             <!-- Двухфакторная аутентификация -->
             <div class="mb-4">
-                <h5>Двухфакторная аутентификация (2FA)</h5>
-                <p>Для повышения безопасности вы можете включить двухфакторную аутентификацию через приложение Google Authenticator или аналогичное.</p>
+                <h5>{{ __('messages.two_factor_auth') }}</h5>
+                <p>{{ __('messages.two_factor_auth_desc') }}</p>
                 <form method="POST" action="{{ route('client.security.2fa.enable') }}" style="display:inline-block;">
                     @csrf
-                    <button type="submit" class="btn btn-outline-primary">Включить 2FA</button>
+                    <button type="submit" class="btn btn-outline-primary">{{ __('messages.enable_2fa') }}</button>
                 </form>
                 <form method="POST" action="{{ route('client.security.2fa.disable') }}" style="display:inline-block;margin-left:10px;">
                     @csrf
-                    <button type="submit" class="btn btn-outline-danger">Отключить 2FA</button>
+                    <button type="submit" class="btn btn-outline-danger">{{ __('messages.disable_2fa') }}</button>
                 </form>
             </div>
         </div>
         <!-- Уведомления -->
         <div class="settings-pane" id="tab-notifications" style="display:none;">
             <form>
-                <h5>Уведомления</h5>
+                <h5>{{ __('messages.notifications') }}</h5>
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" id="notif1" checked>
-                    <label class="form-check-label" for="notif1">Получать email-уведомления о новых записях</label>
+                    <label class="form-check-label" for="notif1">{{ __('messages.get_email_notifications') }}</label>
                 </div>
                 <div class="form-check mb-4">
                     <input class="form-check-input" type="checkbox" id="notif2">
-                    <label class="form-check-label" for="notif2">Получать напоминания о предстоящих визитах</label>
+                    <label class="form-check-label" for="notif2">{{ __('messages.get_appointment_reminders') }}</label>
                 </div>
-                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <button type="submit" class="btn btn-primary">{{ __('messages.save') }}</button>
             </form>
         </div>
         <!-- Язык и Валюта -->
         <div class="settings-pane" id="tab-language" style="display:none;">
             <form id="language-currency-form">
-                <h5>Язык и Валюта</h5>
+                <h5>{{ __('messages.language_and_currency') }}</h5>
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-4">
-                            <label>Язык интерфейса</label>
-                            <select class="form-control" name="language">
-                                <option value="ru" {{ ($project->language ?? 'ru') == 'ru' ? 'selected' : '' }}>Русский</option>
-                                <option value="ua" {{ ($project->language ?? 'ru') == 'ua' ? 'selected' : '' }}>Украинский</option>
-                                <option value="en" {{ ($project->language ?? 'ru') == 'en' ? 'selected' : '' }}>English</option>
+                            <label>{{ __('messages.interface_language') }}</label>
+                            <select class="form-control" name="language_id" data-language-selector>
+                                @php
+                                    use App\Models\Language;
+                                    $languages = Language::where('is_active', true)->get();
+                                    if ($languages->isEmpty()) {
+                                        // Fallback если языки не загружены
+                                        $languages = collect([
+                                            (object)['id' => 1, 'name' => 'Русский', 'native_name' => 'Русский'],
+                                            (object)['id' => 2, 'name' => 'English', 'native_name' => 'English'],
+                                            (object)['id' => 3, 'name' => 'Українська', 'native_name' => 'Українська']
+                                        ]);
+                                    }
+                                    
+                                    // Определяем выбранный язык
+                                    $selectedLanguageId = $project->language_id ?? 1;
+                                    
+
+                                @endphp
+                                @foreach($languages as $language)
+                                    @php
+                                        $isSelected = $selectedLanguageId == $language->id;
+                                    @endphp
+                                    <option value="{{ $language->id }}" {{ $isSelected ? 'selected="selected"' : '' }}>
+                                        {{ $language->name }} ({{ $language->native_name }})
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group mb-4">
-                            <label>Валюта</label>
+                            <label>{{ __('messages.currency') }}</label>
                             <select class="form-control" name="currency_id" id="currency-selector">
                                 @php
                                     $currencies = \App\Models\Currency::where('is_active', true)->get();
@@ -252,93 +274,178 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Сохранить</button>
-                <div id="language-currency-notification" style="margin-top:16px;"></div>
+                <button type="submit" class="btn btn-primary">{{ __('messages.save') }}</button>
+                
+                <script>
+                // Обработчик формы языка и валюты
+                document.getElementById('language-currency-form').addEventListener('submit', async function(e) {
+                    e.preventDefault(); // Предотвращаем обычную отправку формы
+                    
+                    const formData = new FormData(this);
+                    const languageId = formData.get('language_id');
+                    const currencyId = formData.get('currency_id');
+                    
+                    // Показываем индикатор загрузки
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    const originalText = submitButton.textContent;
+                    submitButton.textContent = '{{ __('messages.saving') }}';
+                    submitButton.disabled = true;
+                    
+                    try {
+                        // Отправляем запрос на сервер
+                        const response = await fetch('/api/settings/update', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                language_id: languageId,
+                                currency_id: currencyId
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            // Показываем уведомление об успешном сохранении
+                            // if (window.showNotification) {
+                            //     let message = 'Настройки успешно сохранены!';
+                            //     if (data.language && data.currency) {
+                            //         message = `Язык изменен на ${data.language.name}, валюта изменена на ${data.currency.code}`;
+                            //     } else if (data.language) {
+                            //         message = `Язык изменен на ${data.language.name}`;
+                            //     } else if (data.currency) {
+                            //         message = `Валюта изменена на ${data.currency.code}`;
+                            //     }
+                            //     window.showNotification('success', message);
+                            // }
+                            
+                            // Обновляем менеджеры
+                            if (window.LanguageManager) {
+                                window.LanguageManager.refresh();
+                            }
+                            if (window.CurrencyManager) {
+                                window.CurrencyManager.refresh();
+                            }
+                            
+                            // НЕ перезагружаем страницу - просто обновляем селекторы
+                            
+                        } else {
+                            throw new Error(data.message || 'Ошибка сохранения');
+                        }
+                        
+                    } catch (error) {
+                        
+                        // Используем существующую систему уведомлений
+                        if (window.showNotification) {
+                            window.showNotification('error', 'Ошибка сохранения настроек: ' + error.message);
+                        }
+                    } finally {
+                        // Восстанавливаем кнопку
+                        submitButton.textContent = originalText;
+                        submitButton.disabled = false;
+                    }
+                });
+                
+                // Отключаем автоматическое обновление селекторов менеджерами
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Отключаем обновление селекторов в LanguageManager
+                    if (window.LanguageManager) {
+                        const originalUpdateLanguageSelectors = window.LanguageManager.updateLanguageSelectors;
+                        window.LanguageManager.updateLanguageSelectors = function() {
+                            return;
+                        };
+                    }
+                    
+                    // Отключаем обновление селекторов в CurrencyManager
+                    if (window.CurrencyManager) {
+                        const originalUpdateCurrencySelectors = window.CurrencyManager.updateCurrencySelectors;
+                        window.CurrencyManager.updateCurrencySelectors = function() {
+                            return;
+                        };
+                    }
+                });
+                </script>
             </form>
         </div>
         <!-- Подписки -->
         <div class="settings-pane" id="tab-subscription" style="display:none;">
-            <h5>Подписки</h5>
+            <h5>{{ __('messages.subscription') }}</h5>
             <div class="alert alert-info">
-                Здесь будет информация о вашей подписке, тарифе и истории платежей.
+                {{ __('messages.subscription_info') }}
             </div>
         </div>
         <!-- Удаление аккаунта -->
         <div class="settings-pane" id="tab-delete" style="display:none;">
-            <h5>Удаление аккаунта</h5>
+            <h5>{{ __('messages.delete_account') }}</h5>
             <div class="alert alert-danger mb-4" style="font-size:1rem;">
-                <b>Внимание!</b> Удаление аккаунта необратимо. Все ваши данные будут удалены.
+                <b>{{ __('messages.warning') }}!</b> {{ __('messages.delete_account_warning') }}
             </div>
-            <button class="btn btn-danger">Удалить аккаунт</button>
+            <button class="btn btn-danger">{{ __('messages.delete_account_button') }}</button>
         </div>
     </div>
 </div>
 <script>
-    // JS для переключения вкладок
+    // Единый скрипт для управления вкладками
+    function switchTab(tabName) {
+        // Убираем активный класс со всех кнопок
+        document.querySelectorAll('.dashboard-container .tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Скрываем все панели
+        document.querySelectorAll('.dashboard-container .settings-pane').forEach(pane => {
+            pane.style.display = 'none';
+        });
+        
+        // Активируем нужную кнопку
+        const activeButton = document.querySelector(`.dashboard-container .tab-button[data-tab="${tabName}"]`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+        }
+        
+        // Показываем нужную панель
+        const activePane = document.getElementById(`tab-${tabName}`);
+        if (activePane) {
+            activePane.style.display = '';
+        }
+        
+        // Обновляем hash в URL
+        window.location.hash = tabName;
+    }
+    
+    // Добавляем обработчики для всех кнопок вкладок
     document.querySelectorAll('.dashboard-container .tab-button').forEach(btn => {
         btn.addEventListener('click', function() {
-            document.querySelectorAll('.dashboard-container .tab-button').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            const tab = this.dataset.tab;
-            document.querySelectorAll('.dashboard-container .settings-pane').forEach(pane => {
-                pane.style.display = pane.id === 'tab-' + tab ? '' : 'none';
-            });
+            const tabName = this.dataset.tab;
+            switchTab(tabName);
         });
     });
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('=== SETTINGS PAGE LOADED ===');
     
-    // Проверяем селектор валюты при загрузке
-    const currencySelector = document.getElementById('currency-selector');
-    if (currencySelector) {
-        console.log('Currency selector found on page load');
-        console.log('Initial value:', currencySelector.value);
-        console.log('Initial selected option:', currencySelector.options[currencySelector.selectedIndex]);
+    // Инициализация: показываем вкладку из hash или профиль по умолчанию
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+        switchTab(hash);
     } else {
-        console.log('Currency selector NOT found on page load');
+        // По умолчанию показываем профиль
+        switchTab('profile');
     }
     
-    function activateTabFromHash() {
-        var hash = window.location.hash.replace('#', '');
-        if (!hash) return;
-        // Деактивируем все вкладки и панели
-        document.querySelectorAll('.dashboard-tabs .tab-button').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.settings-pane').forEach(pane => pane.style.display = 'none');
-        // Активируем нужную
-        var btn = document.querySelector('.dashboard-tabs .tab-button[data-tab="' + hash + '"]');
-        var pane = document.getElementById('tab-' + hash);
-        if (btn && pane) {
-            btn.classList.add('active');
-            pane.style.display = '';
+    // Обработчик изменения hash
+    window.addEventListener('hashchange', function() {
+        const newHash = window.location.hash.replace('#', '');
+        if (newHash) {
+            switchTab(newHash);
         }
-    }
-    activateTabFromHash();
-    window.addEventListener('hashchange', activateTabFromHash);
-    // Меняем hash при клике на вкладку
-    document.querySelectorAll('.dashboard-tabs .tab-button').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            var tab = btn.getAttribute('data-tab');
-            if (tab) {
-                window.location.hash = tab;
-            }
-        });
     });
 });
 </script>
-<script>
-    // Добавить обработку вкладки Поддержка
-    const supportTab = document.querySelector('.dashboard-tabs .tab-button[data-tab="support"]');
-    if (supportTab) {
-        supportTab.addEventListener('click', function() {
-            document.querySelectorAll('.dashboard-tabs .tab-button').forEach(btn => btn.classList.remove('active'));
-            supportTab.classList.add('active');
-            document.querySelectorAll('.dashboard-container .settings-pane').forEach(pane => pane.style.display = 'none');
-            document.getElementById('tab-support').style.display = '';
-        });
-    }
-</script>
+
 
 <style>
 .settings-accordion { margin-top: 32px; }
@@ -379,7 +486,6 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(function(data) {
                 window.showNotification('success', data.message || 'Настройки языка и валюты успешно сохранены.');
-                console.log('Server response:', data);
                 
                 // Обновляем валюту глобально после успешного сохранения
                                     if (window.CurrencyManager && data.currency_code) {
@@ -396,26 +502,22 @@ document.addEventListener('DOMContentLoaded', function() {
                         const currencySelector = document.getElementById('currency-selector');
                         if (currencySelector) {
                             currencySelector.value = currencyId;
-                            console.log('Updated selector value to:', currencyId);
                             
                             // Принудительно обновляем отображение селектора
                             currencySelector.dispatchEvent(new Event('change', { bubbles: true }));
                             
                             // Также обновляем выбранную опцию
                             const selectedOption = currencySelector.options[currencySelector.selectedIndex];
-                            console.log('Selected option after update:', selectedOption ? selectedOption.textContent : 'null');
                             
                             // Альтернативный способ обновления через jQuery (если доступен)
                             if (typeof $ !== 'undefined') {
                                 $('#currency-selector').val(currencyId).trigger('change');
-                                console.log('Updated via jQuery');
                             }
                             
                             // Еще один способ - через прямое обновление опций
                             Array.from(currencySelector.options).forEach(option => {
                                 option.selected = (option.value == currencyId);
                             });
-                            console.log('Updated via direct option selection');
                         }
                     }, 100);
                 }
@@ -439,16 +541,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчик изменения валюты в селекторе
     const currencySelector = document.getElementById('currency-selector');
     if (currencySelector) {
-        // Отладка: показываем все опции
-        console.log('Currency selector options:');
-        Array.from(currencySelector.options).forEach((option, index) => {
-            console.log(`Option ${index}: value="${option.value}", text="${option.textContent}", selected="${option.selected}"`);
-        });
-        
-        // Проверяем текущее значение селектора
-        console.log('Current selector value:', currencySelector.value);
-        console.log('Current selected option:', currencySelector.options[currencySelector.selectedIndex]);
-        
         // Убираем автоматическое сохранение при изменении селектора
         // Теперь валюта будет сохраняться только при нажатии кнопки "Сохранить"
     }

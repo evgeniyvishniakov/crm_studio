@@ -21,13 +21,11 @@ class CurrencyManager {
         try {
             // Очищаем старый кэш для отладки
             localStorage.removeItem('currencies');
-            console.log('Кэш валют очищен');
             
             await this.loadCurrencies();
             this.setupEventListeners();
             this.updateAllCurrencyDisplays();
         } catch (error) {
-            console.error('Ошибка инициализации CurrencyManager:', error);
             this.setupFallback();
         }
     }
@@ -44,13 +42,11 @@ class CurrencyManager {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log('Данные валют получены:', data);
                     this.currencies = data.currencies;
                     // Приоритет: текущая валюта (уже определена на сервере) > валюта по умолчанию
                     this.currentCurrency = data.current || data.default;
                     this.defaultCurrency = data.default;
                     this.isLoaded = true;
-                    console.log('Текущая валюта установлена:', this.currentCurrency);
                     
                     // Сохраняем в localStorage для кэширования
                     localStorage.setItem('currencies', JSON.stringify({
@@ -67,7 +63,6 @@ class CurrencyManager {
                 }
             })
             .catch(error => {
-                console.error('Ошибка загрузки валют:', error);
                 // Пробуем загрузить из кэша
                 this.loadFromCache();
                 throw error;
@@ -97,7 +92,7 @@ class CurrencyManager {
                     return true;
                 }
             } catch (error) {
-                console.error('Ошибка загрузки из кэша:', error);
+                // Ошибка загрузки из кэша
             }
         }
         return false;
@@ -181,9 +176,7 @@ class CurrencyManager {
      */
     async changeCurrency(code) {
         try {
-            console.log('Changing currency to:', code);
             const url = `/api/currencies/set/${code}`;
-            console.log('Request URL:', url);
             
             const response = await fetch(url, {
                 method: 'POST',
@@ -199,20 +192,14 @@ class CurrencyManager {
                 this.currentCurrency = code;
                 this.updateAllCurrencyDisplays();
                 
-                // Показываем уведомление
-                if (window.showNotification) {
-                    window.showNotification('success', `Валюта изменена на ${data.currency.name}`);
-                }
+                // НЕ показываем уведомление - оно будет показано в форме настроек
                 
                 return true;
             } else {
                 throw new Error(data.message);
             }
         } catch (error) {
-            console.error('Ошибка изменения валюты:', error);
-            if (window.showNotification) {
-                window.showNotification('error', 'Ошибка изменения валюты');
-            }
+            // НЕ показываем уведомление об ошибке - оно будет показано в форме настроек
             return false;
         }
     }
@@ -299,6 +286,8 @@ class CurrencyManager {
             childList: true,
             subtree: true
         });
+        
+
     }
 
     /**
@@ -316,6 +305,63 @@ class CurrencyManager {
     }
 
 
+
+    /**
+     * Обработка формы языка и валюты
+     */
+    async handleLanguageCurrencyForm(form) {
+        try {
+            const formData = new FormData(form);
+            const languageId = formData.get('language_id');
+            const currencyId = formData.get('currency_id');
+            
+
+            
+            // Находим валюту по ID
+            const currency = this.currencies.find(curr => curr.id == currencyId);
+            if (!currency) {
+                throw new Error('Валюта не найдена');
+            }
+            
+            // Изменяем валюту
+            const success = await this.changeCurrency(currency.code);
+            
+            if (success) {
+                // Показываем уведомление об успехе
+                const notification = document.getElementById('language-currency-notification');
+                if (notification) {
+                    notification.innerHTML = '<div class="alert alert-success">Настройки успешно сохранены!</div>';
+                    setTimeout(() => {
+                        notification.innerHTML = '';
+                    }, 3000);
+                }
+                
+                // Обновляем селектор
+                this.updateCurrencySelectors();
+            }
+            
+        } catch (error) {
+            console.error('Ошибка сохранения настроек:', error);
+            
+            // Показываем уведомление об ошибке
+            const notification = document.getElementById('language-currency-notification');
+            if (notification) {
+                notification.innerHTML = '<div class="alert alert-danger">Ошибка сохранения настроек: ' + error.message + '</div>';
+            }
+        }
+    }
+
+    /**
+     * Обновить селекторы валют
+     */
+    updateCurrencySelectors() {
+        const selectors = document.querySelectorAll('#currency-selector');
+        selectors.forEach(selector => {
+            if (selector.value !== this.currentCurrency) {
+                selector.value = this.currentCurrency;
+            }
+        });
+    }
 
     /**
      * Принудительное обновление валют

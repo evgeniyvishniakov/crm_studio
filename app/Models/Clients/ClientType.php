@@ -31,6 +31,16 @@ class ClientType extends Model
         'Новый клиент',
     ];
 
+    public function getTranslatedNameAttribute()
+    {
+        $translations = [
+            'Новый клиент' => __('messages.new_client'),
+            'Постоянный клиент' => __('messages.regular_client'),
+        ];
+
+        return $translations[$this->name] ?? $this->name;
+    }
+
     public function clients()
     {
         return $this->hasMany(Client::class);

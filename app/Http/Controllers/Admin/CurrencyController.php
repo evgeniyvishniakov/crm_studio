@@ -68,6 +68,17 @@ class CurrencyController extends Controller
     }
 
     /**
+     * Получить данные валюты для редактирования (AJAX)
+     */
+    public function getCurrencyData(Currency $currency): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'currency' => $currency
+        ]);
+    }
+
+    /**
      * Обновить валюту
      */
     public function update(Request $request, Currency $currency): JsonResponse

@@ -93,9 +93,20 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     Route::get('/currencies/create', [\App\Http\Controllers\Admin\CurrencyController::class, 'create'])->name('currencies.create');
     Route::post('/currencies', [\App\Http\Controllers\Admin\CurrencyController::class, 'store'])->name('currencies.store');
     Route::get('/currencies/{currency}/edit', [\App\Http\Controllers\Admin\CurrencyController::class, 'edit'])->name('currencies.edit');
+    Route::get('/currencies/{currency}/data', [\App\Http\Controllers\Admin\CurrencyController::class, 'getCurrencyData'])->name('currencies.data');
     Route::put('/currencies/{currency}', [\App\Http\Controllers\Admin\CurrencyController::class, 'update'])->name('currencies.update');
     Route::delete('/currencies/{currency}', [\App\Http\Controllers\Admin\CurrencyController::class, 'destroy'])->name('currencies.destroy');
     Route::post('/currencies/{currency}/set-default', [\App\Http\Controllers\Admin\CurrencyController::class, 'setDefault'])->name('currencies.set-default');
     Route::post('/currencies/{currency}/toggle-active', [\App\Http\Controllers\Admin\CurrencyController::class, 'toggleActive'])->name('currencies.toggle-active');
     Route::post('/currencies/clear-cache', [\App\Http\Controllers\Admin\CurrencyController::class, 'clearCache'])->name('currencies.clear-cache');
+
+    // Управление языками
+    Route::get('/languages', [\App\Http\Controllers\Admin\LanguageController::class, 'index'])->name('languages.index');
+    Route::post('/languages', [\App\Http\Controllers\Admin\LanguageController::class, 'store'])->name('languages.store');
+    Route::get('/languages/{language}/data', [\App\Http\Controllers\Admin\LanguageController::class, 'getLanguageData'])->name('languages.data');
+    Route::put('/languages/{language}', [\App\Http\Controllers\Admin\LanguageController::class, 'update'])->name('languages.update');
+    Route::delete('/languages/{language}', [\App\Http\Controllers\Admin\LanguageController::class, 'destroy'])->name('languages.destroy');
+    Route::post('/languages/{language}/set-default', [\App\Http\Controllers\Admin\LanguageController::class, 'setDefault'])->name('languages.set-default');
+    Route::post('/languages/{language}/toggle-active', [\App\Http\Controllers\Admin\LanguageController::class, 'toggleActive'])->name('languages.toggle-active');
+    Route::post('/languages/clear-cache', [\App\Http\Controllers\Admin\LanguageController::class, 'clearCache'])->name('languages.clear-cache');
 }); 

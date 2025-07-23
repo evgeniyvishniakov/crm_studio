@@ -19,7 +19,7 @@ class Project extends Model
         'project_name', // Название проекта
         'email',
         'registered_at',
-        'language',
+        'language_id',
         'currency_id',
         'status',
         'phone',
@@ -42,10 +42,26 @@ class Project extends Model
     }
 
     /**
+     * Связь с языком
+     */
+    public function language()
+    {
+        return $this->belongsTo(\App\Models\Language::class, 'language_id');
+    }
+
+    /**
      * Получить код валюты (для обратной совместимости)
      */
     public function getCurrencyCodeAttribute()
     {
         return $this->currency ? $this->currency->code : null;
+    }
+
+    /**
+     * Получить код языка (для обратной совместимости)
+     */
+    public function getLanguageCodeAttribute()
+    {
+        return $this->language ? $this->language->code : null;
     }
 } 

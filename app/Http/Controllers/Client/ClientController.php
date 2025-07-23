@@ -32,6 +32,11 @@ class ClientController extends Controller
                 ->where('status', true)
                 ->get();
 
+            // Добавляем переведенные названия для типов клиентов
+            foreach ($clientTypes as $type) {
+                $type->translated_name = $type->translated_name;
+            }
+
             return response()->json([
                 'data' => $clients->items(),
                 'meta' => [
@@ -67,6 +72,11 @@ class ClientController extends Controller
             },
             'sales.items.product'
         ])->findOrFail($id);
+
+        // Добавляем переведенное название типа клиента
+        if ($client->clientType) {
+            $client->clientType->translated_name = $client->clientType->translated_name;
+        }
 
         return response()->json($client);
     }

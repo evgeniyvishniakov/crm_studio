@@ -118,7 +118,6 @@ class CurrencyController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Валюта изменена',
             'currency' => [
                 'code' => $currency->code,
                 'name' => $currency->name,

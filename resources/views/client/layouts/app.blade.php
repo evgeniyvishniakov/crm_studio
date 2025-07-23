@@ -40,6 +40,7 @@
     <script src="{{ asset('client/js/main.js') }}"></script>
     <script src="/client/js/notifications.js"></script>
     <script src="/client/js/currency-manager.js"></script>
+    <script src="/client/js/language-manager.js"></script>
 
     <!-- Данные валюты для JavaScript -->
     @php

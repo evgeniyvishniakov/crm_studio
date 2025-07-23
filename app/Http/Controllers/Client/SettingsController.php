@@ -19,14 +19,18 @@ class SettingsController extends Controller
         // Получаем проект текущего пользователя (админ/руководитель)
         $user = Auth::user();
         // Предполагаем, что у пользователя есть project_id или связь project
-        $project = Project::with('currency')->where('id', $user->project_id ?? null)->first();
+        $project = Project::with(['currency', 'language'])->where('id', $user->project_id ?? null)->first();
         
         // Отладка
         \Log::info('Settings page loaded', [
             'user_id' => $user->id,
+            'user_email' => $user->email,
             'project_id' => $user->project_id,
+            'project_name' => $project ? $project->name : null,
             'project_currency_id' => $project ? $project->currency_id : null,
             'project_currency_code' => $project && $project->currency ? $project->currency->code : null,
+            'project_language_id' => $project ? $project->language_id : null,
+            'project_language_name' => $project && $project->language ? $project->language->name : null,
         ]);
         
         // Можно добавить Gate::authorize('view-settings', $project); для ограничения доступа
@@ -52,7 +56,7 @@ class SettingsController extends Controller
             'facebook' => 'nullable|url|max:255',
             'tiktok' => 'nullable|url|max:255',
             'logo' => 'nullable|image|max:2048',
-            'language' => 'nullable|string|in:ru,en,ua',
+            'language_id' => 'nullable|integer|exists:languages,id',
             'currency_id' => 'nullable|integer|in:' . implode(',', $availableCurrencyIds),
         ]);
 
@@ -83,13 +87,13 @@ class SettingsController extends Controller
     {
         try {
             $user = Auth::user();
-            $project = Project::with('currency')->where('id', $user->project_id ?? null)->firstOrFail();
+            $project = Project::with(['currency', 'language'])->where('id', $user->project_id ?? null)->firstOrFail();
 
             // Получаем доступные валюты из базы данных
             $availableCurrencyIds = \App\Models\Currency::getActive()->pluck('id')->toArray();
 
             $validated = $request->validate([
-                'language' => 'nullable|string|in:ru,en,ua',
+                'language_id' => 'nullable|integer|exists:languages,id',
                 'currency_id' => 'nullable|integer|in:' . implode(',', $availableCurrencyIds),
             ]);
 
@@ -125,7 +129,6 @@ class SettingsController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Настройки языка и валюты успешно обновлены.',
                 'currency_id' => $project->currency_id,
                 'currency_code' => $project->currency ? $project->currency->code : null,
                 'currency' => $project->currency,

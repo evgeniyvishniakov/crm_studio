@@ -820,33 +820,33 @@
 }
 </style>
     <div class="appointments-header">
-        <h1>Записи</h1>
+        <h1>{{ __('messages.appointments') }}</h1>
         <div class="header-actions">
             <div class="view-switcher">
                 <button class="btn-view-switch {{ $viewType === 'list' ? 'active' : '' }}" data-view="list">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
                     </svg>
-                    Список
+                    {{ __('messages.list_view') }}
                 </button>
                 <button class="btn-view-switch {{ $viewType === 'calendar' ? 'active' : '' }}" data-view="calendar">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
                     </svg>
-                    Календарь
+                    {{ __('messages.calendar_view') }}
                 </button>
             </div>
             <button class="btn-add-appointment" id="addAppointmentBtn">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                 </svg>
-                Добавить запись
+                {{ __('messages.add_appointment') }}
             </button>
             <div class="search-box">
                 <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                 </svg>
-                <input type="text" placeholder="Поиск..." id="searchInput">
+                <input type="text" placeholder="{{ __('messages.search_appointments') }}" id="searchInput">
             </div>
         </div>
     </div>
@@ -856,13 +856,13 @@
             <table class="table-striped appointments-table" id="appointmentsTable">
                 <thead>
                 <tr>
-                    <th>Дата и время</th>
-                    <th>Клиент</th>
-                    <th>Услуга</th>
-                    <th>Мастер</th>
-                    <th>Статус</th>
-                    <th>Стоимость</th>
-                    <th>Действия</th>
+                    <th>{{ __('messages.date_and_time') }}</th>
+                    <th>{{ __('messages.client') }}</th>
+                    <th>{{ __('messages.service') }}</th>
+                    <th>{{ __('messages.master') }}</th>
+                    <th>{{ __('messages.status') }}</th>
+                    <th>{{ __('messages.cost') }}</th>
+                    <th>{{ __('messages.actions') }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -886,35 +886,35 @@
                         @endif
                     </td>
                     <td>{{ $appointment->service->name }}</td>
-                    <td>{{ $appointment->user->name ?? 'Не назначен' }}</td>
+                    <td>{{ $appointment->user->name ?? __('messages.not_assigned') }}</td>
                     <td>
                         <span class="status-badge status-{{ $appointment->status }}">
                             @php
                                 $statusNames = [
-                                    'pending' => 'Ожидается',
-                                    'completed' => 'Завершено',
-                                    'cancelled' => 'Отменено',
-                                    'rescheduled' => 'Перенесено'
+                                    'pending' => __('messages.status_pending'),
+                                    'completed' => __('messages.status_completed'),
+                                    'cancelled' => __('messages.status_cancelled'),
+                                    'rescheduled' => __('messages.status_rescheduled')
                                 ];
                             @endphp
-                            {{ $statusNames[$appointment->status] ?? 'Ожидается' }}
+                            {{ $statusNames[$appointment->status] ?? __('messages.status_pending') }}
                         </span>
                     </td>
                     <td class="currency-amount" data-amount="{{ $appointment->price }}">{{ \App\Helpers\CurrencyHelper::format($appointment->price) }}</td>
                     <td>
                         <div class="appointment-actions actions-cell">
-                            <button class="btn-view" data-appointment-id="{{ $appointment->id }}" title="Просмотр">
+                            <button class="btn-view" data-appointment-id="{{ $appointment->id }}" title="{{ __('messages.view') }}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                                     <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                                 </svg>
                             </button>
-                            <button class="btn-edit" data-appointment-id="{{ $appointment->id }}" title="Редактировать">
+                            <button class="btn-edit" data-appointment-id="{{ $appointment->id }}" title="{{ __('messages.edit') }}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                 </svg>
                             </button>
-                            <button class="btn-delete" data-appointment-id="{{ $appointment->id }}"  title="Удалить">
+                            <button class="btn-delete" data-appointment-id="{{ $appointment->id }}"  title="{{ __('messages.delete') }}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                 </svg>
@@ -938,22 +938,22 @@
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                         </svg>
-                        Редактировать
+                        {{ __('messages.edit') }}
                     </button>
                     <button class="tooltip-btn tooltip-btn-delete">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                         </svg>
-                        Удалить
+                        {{ __('messages.delete') }}
                     </button>
                 </div>
             </div>
             <div class="calendar-header">
                 <div class="calendar-view-switcher">
-                    <button class="view-switch-btn today-button">Сегодня</button>
-                    <button class="view-switch-btn" data-view="timeGridDay">День</button>
-                    <button class="view-switch-btn" data-view="timeGridWeek">Неделя</button>
-                    <button class="view-switch-btn active" data-view="dayGridMonth">Месяц</button>
+                    <button class="view-switch-btn today-button">{{ __('messages.today') }}</button>
+                    <button class="view-switch-btn" data-view="timeGridDay">{{ __('messages.day') }}</button>
+                    <button class="view-switch-btn" data-view="timeGridWeek">{{ __('messages.week') }}</button>
+                    <button class="view-switch-btn active" data-view="dayGridMonth">{{ __('messages.month') }}</button>
                 </div>
                 <div class="calendar-nav">
                     <button class="calendar-nav-btn calendar-prev-button">
@@ -1211,15 +1211,15 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                window.showNotification('success', 'Дата и время записи и продаж успешно обновлены');
+                                window.showNotification('success', '{{ __('messages.appointment_and_sales_updated_successfully') }}');
                                 calendar.refetchEvents();
                             } else {
-                                window.showNotification('error', data.message || 'Ошибка при переносе записи');
+                                window.showNotification('error', data.message || '{{ __('messages.error_moving_appointment') }}');
                                 info.revert();
                             }
                         })
                         .catch(() => {
-                            window.showNotification('error', 'Ошибка при переносе записи');
+                            window.showNotification('error', '{{ __('messages.error_moving_appointment') }}');
                             info.revert();
                         });
                     },
@@ -1342,7 +1342,7 @@
     <div id="appointmentModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Добавить запись</h2>
+                <h2>{{ __('messages.add_appointment') }}</h2>
                 <span class="close" onclick="closeAppointmentModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -1350,21 +1350,21 @@
                     @csrf
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Дата *</label>
+                            <label>{{ __('messages.date') }} *</label>
                             <input type="date" name="date" required class="form-control">
                         </div>
                         <div class="form-group">
-                            <label>Время *</label>
+                            <label>{{ __('messages.time') }} *</label>
                             <input type="time" name="time" required class="form-control">
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Клиент *</label>
+                            <label>{{ __('messages.client') }} *</label>
                             <div class="client-search-container">
                                 <input type="text" class="client-search-input form-control"
-                                       placeholder="Начните вводить имя, инстаграм или email клиента..."
+                                       placeholder="{{ __('messages.start_typing_client') }}"
                                        oninput="searchClients(this)"
                                        onfocus="searchClients(this)" autocomplete="off">
                                 <input type="hidden" name="client_id" class="client-id-hidden" value="">
@@ -1372,7 +1372,7 @@
                                     <div class="client-dropdown-list"></div>
                                 </div>
                                 <select name="client_id" class="form-control client-select" style="display: none;" required>
-                                    <option value="">Выберите клиента</option>
+                                    <option value="">{{ __('messages.select_client') }}</option>
                                     @foreach($clients as $client)
                                     <option value="{{ $client['id'] }}">
                                         {{ $client['name'] }}
@@ -1384,9 +1384,9 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Услуга *</label>
+                            <label>{{ __('messages.service') }} *</label>
                             <select name="service_id" class="form-control" required>
-                                <option value="">Выберите услугу</option>
+                                <option value="">{{ __('messages.select_service') }}</option>
                                 @foreach($services as $service)
                                 <option value="{{ $service->id }}" 
                                         data-price="{{ $service->price }}"
@@ -1400,50 +1400,50 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Мастер/Сотрудник</label>
+                            <label>{{ __('messages.master') }}/{{ __('messages.employee') }}</label>
                             <select name="user_id" class="form-control">
-                                <option value="">Не назначен</option>
+                                <option value="">{{ __('messages.not_assigned') }}</option>
                                 @foreach($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Длительность</label>
+                            <label>{{ __('messages.duration') }}</label>
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <input type="number" name="duration_hours" min="0" value="0" style="width: 60px;" class="form-control">
-                                <span style="margin-right: 10px;">час.</span>
+                                <span style="margin-right: 10px;">{{ __('messages.hours') }}</span>
                                 <input type="number" name="duration_minutes" min="0" max="59" value="0" style="width: 60px;" class="form-control">
-                                <span>мин.</span>
+                                <span>{{ __('messages.minutes') }}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Стоимость</label>
+                            <label>{{ __('messages.cost') }}</label>
                             <input type="number" step="0.01" name="price" class="form-control" min="0">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Примечания</label>
+                        <label>{{ __('messages.notes') }}</label>
                         <textarea name="notes" rows="2" class="form-control"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label>Статус</label>
+                        <label>{{ __('messages.status') }}</label>
                         <select name="status" class="form-control">
-                            <option value="pending">Ожидается</option>
-                            <option value="completed">Завершено</option>
-                            <option value="cancelled">Отменено</option>
-                            <option value="rescheduled">Перенесено</option>
+                            <option value="pending">{{ __('messages.status_pending') }}</option>
+                            <option value="completed">{{ __('messages.status_completed') }}</option>
+                            <option value="cancelled">{{ __('messages.status_cancelled') }}</option>
+                            <option value="rescheduled">{{ __('messages.status_rescheduled') }}</option>
                         </select>
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeAppointmentModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Сохранить запись</button>
+                        <button type="button" class="btn-cancel" onclick="closeAppointmentModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.save_appointment') }}</button>
                     </div>
                 </form>
             </div>
@@ -1454,7 +1454,7 @@
     <div id="editAppointmentModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Редактировать запись</h2>
+                <h2>{{ __('messages.edit_appointment') }}</h2>
                 <span class="close" onclick="closeEditAppointmentModal()">&times;</span>
             </div>
             <div class="modal-body" id="editAppointmentModalBody">
@@ -1466,11 +1466,11 @@
     <!-- Модальное окно подтверждения удаления -->
     <div id="confirmationModal" class="confirmation-modal">
         <div class="confirmation-content">
-            <h3>Подтверждение удаления</h3>
-            <p>Вы уверены, что хотите удалить эту запись?</p>
+            <h3>{{ __('messages.confirm_delete') }}</h3>
+            <p>{{ __('messages.confirm_delete_appointment') }}</p>
             <div class="confirmation-buttons">
-                <button class="cancel-btn" id="cancelDelete">Отмена</button>
-                <button class="confirm-btn" id="confirmDeleteBtn">Удалить</button>
+                <button class="cancel-btn" id="cancelDelete">{{ __('messages.cancel') }}</button>
+                <button class="confirm-btn" id="confirmDeleteBtn">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
@@ -1479,7 +1479,7 @@
     <div id="viewAppointmentModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Детали записи</h2>
+                <h2>{{ __('messages.appointment_details') }}</h2>
                 <span class="close" onclick="closeViewAppointmentModal()">&times;</span>
             </div>
             <div class="modal-body" id="viewAppointmentModalBody">
@@ -1515,12 +1515,12 @@
 
         function getStatusName(status) {
             const statusNames = {
-                'pending': 'Ожидается',
-                'completed': 'Завершено',
-                'cancelled': 'Отменено',
-                'rescheduled': 'Перенесено'
+                'pending': '{{ __('messages.status_pending') }}',
+                'completed': '{{ __('messages.status_completed') }}',
+                'cancelled': '{{ __('messages.status_cancelled') }}',
+                'rescheduled': '{{ __('messages.status_rescheduled') }}'
             };
-            return statusNames[status] || 'Ожидается';
+            return statusNames[status] || '{{ __('messages.status_pending') }}';
         }
 
         document.addEventListener('click', function(e) {
@@ -1617,10 +1617,10 @@
             }, 0);
             const totalAmount = servicePrice + productsTotal;
             const statusNames = {
-                'pending': 'Ожидается',
-                'completed': 'Завершено',
-                'cancelled': 'Отменено',
-                'rescheduled': 'Перенесено'
+                'pending': '{{ __('messages.status_pending') }}',
+                'completed': '{{ __('messages.status_completed') }}',
+                'cancelled': '{{ __('messages.status_cancelled') }}',
+                'rescheduled': '{{ __('messages.status_rescheduled') }}'
             };
             // Добавляем скрытое поле с client_id
             modalBody.innerHTML = `
@@ -1645,40 +1645,40 @@
             </div>
         </div>
         <div class="details-row">
-            <div><span class="details-label">Дата:</span> ${new Date(appointment.date).toLocaleDateString('ru-RU')}</div>
-            <div><span class="details-label">Время:</span> ${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</div>
+            <div><span class="details-label">{{ __('messages.date') }}:</span> ${new Date(appointment.date).toLocaleDateString('ru-RU')}</div>
+            <div><span class="details-label">{{ __('messages.time') }}:</span> ${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</div>
         </div>
         <div class="details-row">
-            <div><span class="details-label">Мастер:</span> ${appointment.user ? escapeHtml(appointment.user.name) : 'Не назначен'}</div>
+            <div><span class="details-label">{{ __('messages.master') }}:</span> ${appointment.user ? escapeHtml(appointment.user.name) : '{{ __('messages.not_assigned') }}'}</div>
         </div>
         <div class="card procedure-card">
-            <div class="card-title">Услуга</div>
+            <div class="card-title">{{ __('messages.service') }}</div>
             <div class="procedure-info">
                 <span class="service-name">${escapeHtml(appointment.service.name)}</span>
                 <span class="procedure-price currency-amount" data-amount="${servicePrice}">${formatPrice(servicePrice)}</span>
             </div>
         </div>
         <div class="card sales-card">
-            <div class="card-title">Продажи</div>
+            <div class="card-title">{{ __('messages.sales') }}</div>
             <div class="products-section">
                 ${temporaryProducts.length === 0 ? `<div class="empty-state">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z"/></svg>
-                    <div>Товары не добавлены</div>
+                    <div>{{ __('messages.products_not_added') }}</div>
                 </div>` : renderProductsList(temporaryProducts)}
                 <button class="btn-add-appointment btn-add-product" id="showAddProductFormBtn">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
-                    Добавить
+                    {{ __('messages.add') }}
                 </button>
                 <div id="addProductForm" style="display: none; margin-top: 20px;">
                     <div class="form-row-appointment">
                         <div class="form-group" style="flex: 2;">
-                            <label>Товар *</label>
+                            <label>{{ __('messages.product') }} *</label>
                             <div class="product-search-container">
                                 <input type="text" class="product-search-input form-control"
                                        id="productSearchInput"
-                                       placeholder="Начните вводить название товара..."
+                                       placeholder="{{ __('messages.start_typing_product_name') }}"
                                        oninput="searchProducts(this)"
                                        onfocus="showProductDropdown(this)" autocomplete="off">
                                 <div class="product-dropdown" style="display: none;">
@@ -1690,52 +1690,52 @@
                     </div>
                     <div id="productDetails" class="form-row-appointment" style="display: none; margin-top: 15px;">
                         <div class="form-group-appointment" style="display: none;">
-                            <label>Количество *</label>
+                            <label>{{ __('messages.quantity') }} *</label>
                             <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
                         </div>
                         <div class="form-group-appointment" style="display: none;">
-                            <label>Опт</label>
+                            <label>{{ __('messages.wholesale') }}</label>
                             <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
                         </div>
                         <div class="form-group-appointment" style="display: none;">
-                            <label>Цена *</label>
+                            <label>{{ __('messages.price') }} *</label>
                             <input type="number" step="0.01" id="productPrice" class="form-control" required>
                         </div>
                     </div>
                     <div class="form-actions" style="margin-top: 15px;">
-                        <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
+                        <button type="button" class="btn-cancel" id="cancelAddProduct">{{ __('messages.cancel') }}</button>
                         <button type="button" class="btn-submit" id="submitAddProduct">
                             <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                             </svg>
-                            Добавить
+                            {{ __('messages.add') }}
                         </button>
                     </div>
                 </div>
             </div>
         </div>
         <div class="details-footer">
-            <span>Итого: <b class="currency-amount" data-amount="${totalAmount}">${formatPrice(totalAmount)}</b></span>
-            <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">Закрыть</button>
-            <button type="button" class="btn-submit" id="saveAppointmentChanges">Сохранить изменения</button>
+            <span>{{ __('messages.total') }}: <b class="currency-amount" data-amount="${totalAmount}">${formatPrice(totalAmount)}</b></span>
+            <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">{{ __('messages.close') }}</button>
+            <button type="button" class="btn-submit" id="saveAppointmentChanges">{{ __('messages.save_changes') }}</button>
         </div>
     </div>`;
     setupProductHandlers();
 }
 
         function renderProductsList(sales) {
-            if (!sales || sales.length === 0) return '<p>Товары не добавлены</p>';
+            if (!sales || sales.length === 0) return '<p>{{ __('messages.products_not_added') }}</p>';
 
             return `
                 <table class="products-table">
                     <thead>
                         <tr>
-                            <th>Товар</th>
-                            <th>Количество</th>
-                            <th>Розничная цена</th>
-                            <th>Оптовая цена</th>
-                            <th>Сумма</th>
-                            <th>Действия</th>
+                            <th>{{ __('messages.product') }}</th>
+                            <th>{{ __('messages.quantity') }}</th>
+                            <th>{{ __('messages.retail_price') }}</th>
+                            <th>{{ __('messages.wholesale_price') }}</th>
+                            <th>{{ __('messages.sum') }}</th>
+                            <th>{{ __('messages.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1771,7 +1771,7 @@
             const newPrice = prompt("Введите цену для новой услуги:");
 
             if (!selectedServiceId || !newPrice) {
-                alert("Услуга и цена обязательны");
+                alert("{{ __('messages.service_and_price_required') }}");
                 return;
             }
 
@@ -1790,9 +1790,9 @@
             const result = await response.json();
 
             if (result.success) {
-                alert("Услуга добавлена как новая запись");
+                alert("{{ __('messages.service_added_as_new_appointment') }}");
             } else {
-                alert("Ошибка: " + result.message);
+                alert("{{ __('messages.error') }}: " + result.message);
             }
         }
 
@@ -1924,7 +1924,7 @@
         function addProductToAppointment() {
             const modal = document.getElementById('viewAppointmentModal');
             if (!modal) {
-                window.showNotification('error', 'Модальное окно не найдено');
+                window.showNotification('error', '{{ __('messages.modal_not_found') }}');
                 return;
             }
 
@@ -1937,24 +1937,24 @@
 
             // Проверки
             if (!productId || productId === '' || !productName || productName === '') {
-                window.showNotification('error', 'Пожалуйста, начните вводить название товара и выберите его из появившегося списка');
+                window.showNotification('error', '{{ __('messages.please_start_typing_product') }}');
                 return;
             }
 
             if (!quantity || parseInt(quantity) <= 0) {
-                window.showNotification('error', 'Укажите корректное количество');
+                window.showNotification('error', '{{ __('messages.enter_valid_quantity') }}');
                 return;
             }
 
             if (!price || parseFloat(price) <= 0) {
-                window.showNotification('error', 'Укажите корректную цену');
+                window.showNotification('error', '{{ __('messages.enter_valid_price') }}');
                 return;
             }
 
             // Находим товар в доступных товарах
             let product = allProducts.find(p => p.id == productId);
             if (!product) {
-                window.showNotification('error', 'Выбранный товар не найден в списке доступных товаров');
+                window.showNotification('error', '{{ __('messages.selected_product_not_found') }}');
                 return;
             }
 
@@ -1996,9 +1996,9 @@
             }
 
             if (existingProductIndex !== -1) {
-                window.showNotification('success', `Количество товара "${product.name}" обновлено`);
+                window.showNotification('success', `{{ __('messages.product_quantity_updated') }} "${product.name}"`);
             } else {
-                window.showNotification('success', `Товар "${product.name}" успешно добавлен`);
+                window.showNotification('success', `{{ __('messages.product_successfully_added') }} "${product.name}"`);
             }
         }
 
@@ -2020,16 +2020,16 @@
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                 </svg>
-                Добавить
+                {{ __('messages.add') }}
             </button>
             <div id="addProductForm" style="display: none; margin-top: 20px;">
                 <div class="form-row-appointment">
                     <div class="form-group" style="flex: 2;">
-                        <label>Товар *</label>
+                        <label>{{ __('messages.product') }} *</label>
                         <div class="product-search-container">
                             <input type="text" class="product-search-input form-control"
                                    id="productSearchInput"
-                                   placeholder="Начните вводить название товара..."
+                                   placeholder="{{ __('messages.start_typing_product_name') }}"
                                    oninput="searchProducts(this)"
                                    onfocus="showProductDropdown(this)" autocomplete="off">
                             <div class="product-dropdown" style="display: none;">
@@ -2040,24 +2040,24 @@
                     </div>
                     <div id="productDetails" class="form-row-appointment" style="display: flex; margin-top: 15px;">
                         <div class="form-group-appointment" style="display: none;">
-                        <label>Количество *</label>
+                        <label>{{ __('messages.quantity') }} *</label>
                         <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
                     </div>
                         <div class="form-group-appointment" style="display: none;">
-                        <label>Опт</label>
+                        <label>{{ __('messages.wholesale') }}</label>
                         <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
                     </div>
                         <div class="form-group-appointment" style="display: none;">
-                        <label>Цена *</label>
+                        <label>{{ __('messages.price') }} *</label>
                         <input type="number" step="0.01" id="productPrice" class="form-control" required>
                         </div>
                     </div>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
+                    <button type="button" class="btn-cancel" id="cancelAddProduct">{{ __('messages.cancel') }}</button>
                     <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                </svg>Добавить</button>
+                </svg>{{ __('messages.add') }}</button>
                 </div>
             </div>
         `;
@@ -2086,7 +2086,7 @@
                         <small class="text-muted">${appointment.time ? appointment.time.slice(0,5) : ''}</small>
                     </td>
                     <td>
-                        ${appointment.client ? appointment.client.name : 'Клиент удален'}
+                        ${appointment.client ? appointment.client.name : '{{ __('messages.client_deleted') }}'}
                         ${appointment.client && appointment.client.instagram ? `
                             <br>
                             <a href="https://instagram.com/${appointment.client.instagram}" class="instagram-link" target="_blank" rel="noopener noreferrer">
@@ -2097,24 +2097,24 @@
                             </a>
                         ` : ''}
                     </td>
-                    <td>${appointment.service ? appointment.service.name : 'Услуга удалена'}</td>
-                    <td>${appointment.user ? appointment.user.name : 'Не назначен'}</td>
+                    <td>${appointment.service ? appointment.service.name : '{{ __('messages.service_deleted') }}'}</td>
+                    <td>${appointment.user ? appointment.user.name : '{{ __('messages.not_assigned') }}'}</td>
                     <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
                     <td class="currency-amount" data-amount="${appointment.price}">${formatPrice(appointment.price)}</td>
                     <td>
                         <div class="appointment-actions actions-cell">
-                            <button class="btn-view" data-appointment-id="${appointment.id}" title="Просмотр">
+                            <button class="btn-view" data-appointment-id="${appointment.id}" title="{{ __('messages.view') }}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                                     <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                                 </svg>
                             </button>
-                            <button class="btn-edit" data-appointment-id="${appointment.id}" title="Редактировать">
+                            <button class="btn-edit" data-appointment-id="${appointment.id}" title="{{ __('messages.edit') }}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                 </svg>
                             </button>
-                            <button class="btn-delete" data-appointment-id="${appointment.id}"  title="Удалить">
+                            <button class="btn-delete" data-appointment-id="${appointment.id}"  title="{{ __('messages.delete') }}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                 </svg>
@@ -2186,7 +2186,7 @@
                                  data-product-id="${product.id}"
                                  data-price="${price}"
                                  onclick="selectProduct(this, '${product.id}', '${name}', ${price})">
-                            ${name} (${product.quantity || 0} шт)
+                            ${name} (${product.quantity || 0} {{ __('messages.pieces') }})
                         </div>
                     `;
                 }).join('');
@@ -2255,7 +2255,7 @@
                 <div class="form-group">
                     <label>Товар</label>
                     <select id="productSelect" class="form-control">
-                        <option value="">Выберите товар</option>
+                                                        <option value="">{{ __('messages.select_product') }}</option>
                         ${products.map(p => {
                 const quantity = p.warehouse?.quantity || 0;
                 if (quantity <= 0) return '';
@@ -2316,7 +2316,7 @@
             });
             document.getElementById('saveAppointmentChanges')?.addEventListener('click', async function() {
                 // Здесь можно добавить логику для сохранения всех изменений
-                window.showNotification('success', 'Изменения сохранены');
+                window.showNotification('success', '{{ __('messages.changes_saved') }}');
                 closeViewAppointmentModal();
                 // При необходимости обновите данные на странице
             });
@@ -2328,7 +2328,7 @@
             try {
                 const appointmentId = document.getElementById('appointmentId')?.value;
                 if (!appointmentId) {
-                    window.showNotification('error', 'Не удалось определить запись');
+                    window.showNotification('error', '{{ __('messages.cannot_determine_appointment') }}');
                     return;
                 }
 
@@ -2337,7 +2337,7 @@
                     temporaryProducts.splice(currentDeleteIndex, 1);
                     updateProductsList();
                     updateTotalAmount();
-                    window.showNotification('success', 'Товар удален');
+                    window.showNotification('success', '{{ __('messages.product_deleted') }}');
                     return;
                 }
 
@@ -2358,11 +2358,11 @@
 
                     // После успешного удаления перезагружаем данные записи
                     await viewAppointment(appointmentId);
-                    window.showNotification('success', 'Товар успешно удален');
+                    window.showNotification('success', '{{ __('messages.product_successfully_deleted') }}');
                 }
             } catch (err) {
                 console.error(err);
-                window.showNotification('error', err.message || 'Ошибка при удалении товара');
+                window.showNotification('error', err.message || '{{ __('messages.error_deleting_product') }}');
             } finally {
                 currentDeleteProductId = null;
                 currentDeleteIndex = null;
@@ -2434,7 +2434,7 @@
         // Функции для работы с записями
         async function editAppointment(id) {
             if (!id) {
-                window.showNotification('error', 'Ошибка: ID записи не указан');
+                window.showNotification('error', '{{ __('messages.error_appointment_id_not_specified') }}');
                 return;
             }
 
@@ -2493,10 +2493,10 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Клиент *</label>
+                            <label>{{ __('messages.client') }} *</label>
                             <div class="client-search-container">
                                 <input type="text" class="client-search-input form-control"
-                                       placeholder="Начните вводить имя, инстаграм или email клиента..."
+                                       placeholder="{{ __('messages.start_typing_client_info') }}"
                                        value="${escapeHtml(getClientDisplayName(appointment.client_id))}"
                                        oninput="searchClients(this)"
                                        onfocus="searchClients(this)" autocomplete="off">
@@ -2505,7 +2505,7 @@
                                     <div class="client-dropdown-list"></div>
                                 </div>
                                 <select name="client_id" class="form-control client-select" style="display: none;" required>
-                                    <option value="">Выберите клиента</option>
+                                    <option value="">{{ __('messages.select_client') }}</option>
                                     ${allClients.map(client => `
                                         <option value="${client.id}" ${client.id == appointment.client_id ? 'selected' : ''}>
                                             ${escapeHtml(client.name)}
@@ -2517,9 +2517,9 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Услуга *</label>
+                            <label>{{ __('messages.service') }} *</label>
                             <select name="service_id" class="form-control" required>
-                                <option value="">Выберите услугу</option>
+                                <option value="">{{ __('messages.select_service') }}</option>
                                 ${allServices.map(service => `
                                     <option value="${service.id}"
                                             data-price="${service.price}"
@@ -2534,9 +2534,9 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Мастер/Сотрудник</label>
+                            <label>{{ __('messages.master_employee') }}</label>
                             <select name="user_id" class="form-control">
-                                <option value="">Не назначен</option>
+                                <option value="">{{ __('messages.not_assigned') }}</option>
                                 ${allUsers.map(user => `
                                     <option value="${user.id}" ${appointment.user_id == user.id ? 'selected' : ''}>
                                         ${escapeHtml(user.name)}
@@ -2545,38 +2545,38 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Длительность</label>
+                            <label>{{ __('messages.duration') }}</label>
                             <div style="display: flex; gap: 10px; align-items: center;">
                                 <input type="number" name="duration_hours" min="0" value="${appointment.duration_hours || 0}" style="width: 60px;" class="form-control">
-                                <span style="margin-right: 10px;">час.</span>
+                                <span style="margin-right: 10px;">{{ __('messages.hours') }}</span>
                                 <input type="number" name="duration_minutes" min="0" max="59" value="${appointment.duration_minutes || 0}" style="width: 60px;" class="form-control">
-                                <span>мин.</span>
+                                <span>{{ __('messages.minutes') }}</span>
                             </div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Стоимость</label>
+                            <label>{{ __('messages.cost') }}</label>
                             <input type="number" step="0.01" name="price" value="${Number(appointment.price) % 1 === 0 ? Number(appointment.price) : Number(appointment.price).toFixed(2)}" class="form-control" min="0">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Примечания</label>
+                        <label>{{ __('messages.notes') }}</label>
                         <textarea name="notes" rows="2" class="form-control">${escapeHtml(appointment.notes || '')}</textarea>
                     </div>
 
                     <div class="form-group">
-                        <label>Статус</label>
+                        <label>{{ __('messages.status') }}</label>
                         <select name="status" class="form-control">
-                            <option value="pending" ${appointment.status === 'pending' ? 'selected' : ''}>Ожидается</option>
-                            <option value="completed" ${appointment.status === 'completed' ? 'selected' : ''}>Завершено</option>
-                            <option value="cancelled" ${appointment.status === 'cancelled' ? 'selected' : ''}>Отменено</option>
-                            <option value="rescheduled" ${appointment.status === 'rescheduled' ? 'selected' : ''}>Перенесено</option>
+                            <option value="pending" ${appointment.status === 'pending' ? 'selected' : ''}>{{ __('messages.status_pending') }}</option>
+                            <option value="completed" ${appointment.status === 'completed' ? 'selected' : ''}>{{ __('messages.status_completed') }}</option>
+                            <option value="cancelled" ${appointment.status === 'cancelled' ? 'selected' : ''}>{{ __('messages.status_cancelled') }}</option>
+                            <option value="rescheduled" ${appointment.status === 'rescheduled' ? 'selected' : ''}>{{ __('messages.status_rescheduled') }}</option>
                         </select>
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeEditAppointmentModal()">Отмена</button>
+                        <button type="button" class="btn-cancel" onclick="closeEditAppointmentModal()">{{ __('messages.cancel') }}</button>
                         <button type="submit" class="btn-submit">Сохранить изменения</button>
                     </div>
                 </form>
@@ -2641,13 +2641,13 @@
                         toggleModal('viewAppointmentModal', false);
                     }
 
-                    window.showNotification('success', 'Запись успешно удалена');
+                    window.showNotification('success', '{{ __('messages.appointment_successfully_deleted') }}');
                 } else {
                     throw new Error(data.message || 'Ошибка при удалении записи');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                window.showNotification('error', error.message || 'Ошибка при удалении записи');
+                window.showNotification('error', error.message || '{{ __('messages.error_deleting_appointment') }}');
             }
         }
 
@@ -2835,7 +2835,7 @@
             const clientId = modal.querySelector('#clientId')?.value;
 
             if (!clientId) {
-                window.showNotification('error', 'Не удалось определить клиента');
+                window.showNotification('error', '{{ __('messages.cannot_determine_client') }}');
                 return;
             }
 
@@ -2864,7 +2864,7 @@
 
             // Валидация на клиенте
             if (!requestData.service_id) {
-                window.showNotification('error', 'Необходимо указать услугу');
+                window.showNotification('error', '{{ __('messages.service_required') }}');
                 return;
             }
 
@@ -2894,7 +2894,7 @@
                 }
 
                 if (data.success) {
-                    window.showNotification('success', 'Изменения успешно сохранены');
+                    window.showNotification('success', '{{ __('messages.changes_successfully_saved') }}');
                     toggleModal('viewAppointmentModal', false);
                     if (typeof calendar !== 'undefined' && calendar) {
                         calendar.refetchEvents();
@@ -2904,7 +2904,7 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                window.showNotification('error', error.message || 'Ошибка при сохранении');
+                window.showNotification('error', error.message || '{{ __('messages.error_saving') }}');
             }
         }
 
@@ -2951,7 +2951,7 @@
                                      data-retail-price="${retailPrice}"
                                      data-wholesale-price="${wholesalePrice}"
                                      onclick="selectProduct(this, '${product.id}', '${name}', ${retailPrice})">
-                                ${name} (${product.quantity} шт)
+                                ${name} (${product.quantity} {{ __('messages.pieces') }})
                             </div>
                         `;
                     }).join('');
@@ -2972,12 +2972,12 @@
                     <table class="products-table">
                         <thead>
                             <tr>
-                                <th>Товар</th>
-                                <th>Количество</th>
-                                <th>Розничная цена</th>
-                                <th>Оптовая цена</th>
-                                <th>Сумма</th>
-                                <th>Действия</th>
+                                <th>{{ __('messages.product') }}</th>
+                                <th>{{ __('messages.quantity') }}</th>
+                                <th>{{ __('messages.retail_price') }}</th>
+                                <th>{{ __('messages.wholesale_price') }}</th>
+                                <th>{{ __('messages.sum') }}</th>
+                                <th>{{ __('messages.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -3010,16 +3010,16 @@
                         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                         </svg>
-                        Добавить
+                        {{ __('messages.add') }}
                     </button>
                     <div id="addProductForm" style="display: none; margin-top: 20px;">
                         <div class="form-row-appointment">
                             <div class="form-group" style="flex: 2;">
-                                <label>Товар *</label>
+                                <label>{{ __('messages.product') }} *</label>
                                 <div class="product-search-container">
                                     <input type="text" class="product-search-input form-control"
                                            id="productSearchInput"
-                                           placeholder="Начните вводить название товара..."
+                                           placeholder="{{ __('messages.start_typing_product_name') }}"
                                            oninput="searchProducts(this)"
                                            onfocus="showProductDropdown(this)" autocomplete="off">
                                     <div class="product-dropdown" style="display: none;">
@@ -3029,23 +3029,23 @@
                                 </div>
                             </div>
                             <div class="form-group-appointment" style="display: none;">
-                                <label>Количество *</label>
+                                <label>{{ __('messages.quantity') }} *</label>
                                 <input type="number" id="productQuantity" class="form-control" min="1" value="1" required>
                             </div>
                             <div class="form-group-appointment" style="display: none;">
-                                <label>Опт</label>
+                                <label>{{ __('messages.wholesale') }}</label>
                                 <input type="number" step="0.01" id="productWholesale" class="form-control" readonly style="background-color: #f0f0f0;">
                             </div>
                             <div class="form-group-appointment" style="display: none;">
-                                <label>Цена *</label>
+                                <label>{{ __('messages.price') }} *</label>
                                 <input type="number" step="0.01" id="productPrice" class="form-control" required>
                             </div>
                         </div>
                         <div class="form-actions">
-                            <button type="button" class="btn-cancel" id="cancelAddProduct">Отмена</button>
+                            <button type="button" class="btn-cancel" id="cancelAddProduct">{{ __('messages.cancel') }}</button>
                             <button type="button" class="btn-submit" id="submitAddProduct"><svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                </svg>Добавить</button>
+                </svg>{{ __('messages.add') }}</button>
                 </div>
             </div>
         `;
@@ -3174,7 +3174,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    window.showNotification('success', 'Запись успешно создана');
+                    window.showNotification('success', '{{ __('messages.appointment_successfully_created') }}');
                     closeAppointmentModal();
 
                     if (typeof calendar !== 'undefined' && calendar) {
@@ -3201,23 +3201,23 @@
                                     (<a href="https://instagram.com/${escapeHtml(appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(appointment.client.instagram)}</a>)` : ''}
                             </td>
                             <td>${escapeHtml(appointment.service.name)}</td>
-                            <td>${appointment.user ? escapeHtml(appointment.user.name) : 'Не назначен'}</td>
+                            <td>${appointment.user ? escapeHtml(appointment.user.name) : '{{ __('messages.not_assigned') }}'}</td>
                             <td><span class="status-badge status-${appointment.status}">${getStatusName(appointment.status)}</span></td>
                             <td class="currency-amount" data-amount="${appointment.price}">${formatPrice(appointment.price)}</td>
                             <td>
                                 <div class="appointment-actions actions-cell">
-                                    <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
+                                    <button class="btn-view" data-appointment-id="${data.appointment.id}" title="{{ __('messages.view') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                                             <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                                         </svg>
                                     </button>
-                                    <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="Редактировать">
+                                    <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="{{ __('messages.edit') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                         </svg>
                                     </button>
-                                    <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
+                                    <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="{{ __('messages.delete') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                         </svg>
@@ -3231,11 +3231,11 @@
                 } else if (data.errors) {
                     displayErrors(data.errors, 'appointmentForm');
                 } else {
-                    throw new Error(data.message || 'Ошибка при создании записи');
+                    throw new Error(data.message || '{{ __('messages.error_creating_appointment') }}');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                window.showNotification('error', error.message || 'Ошибка при создании записи');
+                window.showNotification('error', error.message || '{{ __('messages.error_creating_appointment') }}');
             }
         }
 
@@ -3258,7 +3258,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    window.showNotification('success', 'Запись успешно обновлена');
+                    window.showNotification('success', '{{ __('messages.appointment_updated_successfully') }}');
                     closeEditAppointmentModal();
 
                     // Обновляем календарь
@@ -3281,23 +3281,23 @@
                                     (<a href="https://instagram.com/${escapeHtml(data.appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(data.appointment.client.instagram)}</a>)` : ''}
                             </td>
                             <td>${escapeHtml(data.appointment.service.name)}</td>
-                            <td>${data.appointment.user ? escapeHtml(data.appointment.user.name) : 'Не назначен'}</td>
+                            <td>${data.appointment.user ? escapeHtml(data.appointment.user.name) : '{{ __('messages.not_assigned') }}'}</td>
                             <td><span class="status-badge status-${data.appointment.status}">${getStatusName(data.appointment.status)}</span></td>
                             <td class="currency-amount" data-amount="${data.appointment.price}">${formatPrice(data.appointment.price)}</td>
                             <td>
                                 <div class="appointment-actions actions-cell">
-                                    <button class="btn-view" data-appointment-id="${data.appointment.id}" title="Просмотр">
+                                    <button class="btn-view" data-appointment-id="${data.appointment.id}" title="{{ __('messages.view') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                                             <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                                         </svg>
                                     </button>
-                                    <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="Редактировать">
+                                    <button class="btn-edit" data-appointment-id="${data.appointment.id}" title="{{ __('messages.edit') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                         </svg>
                                     </button>
-                                    <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="Удалить">
+                                    <button class="btn-delete" data-appointment-id="${data.appointment.id}" title="{{ __('messages.delete') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                         </svg>
@@ -3322,12 +3322,12 @@
                 <table class="products-table">
                     <thead>
                         <tr>
-                            <th>Название</th>
-                            <th>Количество</th>
-                            <th>Розничная цена</th>
-                            <th>Оптовая цена</th>
-                            <th>Итого</th>
-                            <th>Действия</th>
+                            <th>{{ __('messages.name') }}</th>
+                            <th>{{ __('messages.quantity') }}</th>
+                            <th>{{ __('messages.retail_price') }}</th>
+                            <th>{{ __('messages.wholesale_price') }}</th>
+                            <th>{{ __('messages.total') }}</th>
+                            <th>{{ __('messages.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>

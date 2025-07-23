@@ -4,21 +4,21 @@
 
     <div class="dashboard-container">
         <div class="clients-header">
-            <h1>Клиенты</h1>
+            <h1>{{ __('messages.clients') }}</h1>
             <div id="notification"></div>
             <div class="header-actions">
                 <button class="btn-add-client" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
-                    Добавить клиента
+                    {{ __('messages.add_client') }}
                 </button>
 
                 <div class="search-box">
                     <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                     </svg>
-                    <input type="text" placeholder="Поиск..." autocomplete="off">
+                    <input type="text" placeholder="{{ __('messages.search') }}" autocomplete="off">
                 </div>
             </div>
         </div>
@@ -27,11 +27,11 @@
             <table class="table-striped clients-table">
                 <thead>
                 <tr>
-                    <th>Имя</th>
-                    <th>Инстаграм</th>
-                    <th>Контакты</th>
-                    <th>Тип клиента</th>
-                    <th class="actions-column">Действия</th>
+                    <th>{{ __('messages.name') }}</th>
+                    <th>{{ __('messages.instagram') }}</th>
+                    <th>{{ __('messages.contacts') }}</th>
+                    <th>{{ __('messages.client_type') }}</th>
+                    <th class="actions-column">{{ __('messages.actions') }}</th>
                 </tr>
                 </thead>
                 <tbody id="clientsTableBody">
@@ -45,41 +45,41 @@
     <div id="addClientModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Добавить нового клиента</h2>
+                <h2>{{ __('messages.add_new_client') }}</h2>
                 <span class="close" onclick="closeModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <form id="addClientForm">
                     @csrf
                     <div class="form-group">
-                        <label for="clientName">Имя *</label>
+                        <label for="clientName">{{ __('messages.name') }} *</label>
                         <input type="text" id="clientName" name="name" required autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="clientInstagram">Инстаграм</label>
+                        <label for="clientInstagram">{{ __('messages.instagram') }}</label>
                         <input type="text" id="clientInstagram" name="instagram" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="clientPhone">Телефон</label>
+                        <label for="clientPhone">{{ __('messages.phone') }}</label>
                         <input type="tel" id="clientPhone" name="phone" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="clientEmail">Почта</label>
+                        <label for="clientEmail">{{ __('messages.email') }}</label>
                         <input type="email" id="clientEmail" name="email" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="clientNotes">Заметки</label>
+                        <label for="clientNotes">{{ __('messages.notes') }}</label>
                         <textarea id="clientNotes" name="notes" rows="2" class="form-control" autocomplete="off"></textarea>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Тип клиента</label>
+                        <label class="form-label">{{ __('messages.client_type') }}</label>
                         <select class="form-control" name="client_type_id">
-                            <option value="">Выберите тип</option>
+                            <option value="">{{ __('messages.select_type') }}</option>
                             @foreach($clientTypes as $type)
                             <option value="{{ $type->id }}" data-discount="{{ $type->discount }}" data-description="{{ $type->description }}">
-                                {{ $type->name }}
+                                {{ $type->translated_name }}
                                 @if($type->discount)
-                                (Скидка: {{ $type->discount }}%)
+                                ({{ __('messages.discount') }}: {{ $type->discount }}%)
                                 @endif
                             </option>
                             @endforeach
@@ -87,8 +87,8 @@
                         <small class="form-text text-muted type-description"></small>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Добавить</button>
+                        <button type="button" class="btn-cancel" onclick="closeModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.add') }}</button>
                     </div>
                 </form>
             </div>
@@ -98,11 +98,11 @@
     <!-- Модальное окно подтверждения удаления -->
     <div id="confirmationModal" class="confirmation-modal">
         <div class="confirmation-content">
-            <h3>Подтверждение удаления</h3>
-            <p>Вы уверены, что хотите удалить этого клиента?</p>
+            <h3>{{ __('messages.delete_confirmation') }}</h3>
+            <p>{{ __('messages.delete_client_confirm') }}</p>
             <div class="confirmation-buttons">
-                <button id="cancelDelete" class="cancel-btn">Отмена</button>
-                <button id="confirmDelete" class="confirm-btn">Удалить</button>
+                <button id="cancelDelete" class="cancel-btn">{{ __('messages.cancel') }}</button>
+                <button id="confirmDelete" class="confirm-btn">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
@@ -111,7 +111,7 @@
     <div id="editClientModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Редактировать клиента</h2>
+                <h2>{{ __('messages.edit_client') }}</h2>
                 <span class="close" onclick="closeEditModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -120,34 +120,34 @@
                     @method('PUT')
                     <input type="hidden" id="editClientId" name="id">
                     <div class="form-group">
-                        <label for="editClientName">Имя *</label>
+                        <label for="editClientName">{{ __('messages.name') }} *</label>
                         <input type="text" id="editClientName" name="name" required autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="editClientInstagram">Инстаграм</label>
+                        <label for="editClientInstagram">{{ __('messages.instagram') }}</label>
                         <input type="text" id="editClientInstagram" name="instagram" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="editClientPhone">Телефон</label>
+                        <label for="editClientPhone">{{ __('messages.phone') }}</label>
                         <input type="tel" id="editClientPhone" name="phone" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="editClientEmail">Почта</label>
+                        <label for="editClientEmail">{{ __('messages.email') }}</label>
                         <input type="email" id="editClientEmail" name="email" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="editClientNotes">Заметки</label>
+                        <label for="editClientNotes">{{ __('messages.notes') }}</label>
                         <textarea id="editClientNotes" name="notes" rows="2" class="form-control" autocomplete="off"></textarea>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Тип клиента</label>
+                        <label class="form-label">{{ __('messages.client_type') }}</label>
                         <select class="form-control" name="client_type_id" id="editClientType">
-                            <option value="">Выберите тип</option>
+                            <option value="">{{ __('messages.select_type') }}</option>
                             @foreach($clientTypes as $type)
                             <option value="{{ $type->id }}" data-discount="{{ $type->discount }}" data-description="{{ $type->description }}">
-                                {{ $type->name }}
+                                {{ $type->translated_name }}
                                 @if($type->discount)
-                                (Скидка: {{ $type->discount }}%)
+                                ({{ __('messages.discount') }}: {{ $type->discount }}%)
                                 @endif
                             </option>
                             @endforeach
@@ -155,8 +155,8 @@
                         <small class="form-text text-muted edit-type-description"></small>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeEditModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Сохранить</button>
+                        <button type="button" class="btn-cancel" onclick="closeEditModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.save') }}</button>
                     </div>
                 </form>
             </div>
@@ -167,7 +167,7 @@
     <div id="viewClientModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Информация о клиенте</h2>
+                <h2>{{ __('messages.client_information') }}</h2>
                 <span class="close" onclick="closeViewModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -191,7 +191,7 @@
 
                     <div class="card procedures-card">
                         <div class="card-title accordion-header" onclick="toggleAccordion('proceduresAccordion')">
-                            <span>Услуги (<span id="proceduresCount">0</span>)</span>
+                            <span>{{ __('messages.services') }} (<span id="proceduresCount">0</span>)</span>
                             <svg class="accordion-icon" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M7 10l5 5 5-5z"/>
                             </svg>
@@ -205,7 +205,7 @@
 
                     <div class="card sales-card">
                         <div class="card-title accordion-header" onclick="toggleAccordion('salesAccordion')">
-                            <span>Продажи (<span id="salesCount">0</span>)</span>
+                            <span>{{ __('messages.sales') }} (<span id="salesCount">0</span>)</span>
                             <svg class="accordion-icon" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M7 10l5 5 5-5z"/>
                             </svg>
@@ -218,8 +218,8 @@
                     </div>
 
                     <div class="details-footer">
-                        <span>Потрачено: <b id="viewClientTotal" class="currency-amount" data-amount="0">0 грн</b></span>
-                        <button type="button" class="btn-cancel" onclick="closeViewModal()">Закрыть</button>
+                        <span>{{ __('messages.spent') }}: <b id="viewClientTotal" class="currency-amount" data-amount="0">0 грн</b></span>
+                        <button type="button" class="btn-cancel" onclick="closeViewModal()">{{ __('messages.close') }}</button>
                     </div>
                 </div>
             </div>
@@ -755,6 +755,15 @@
                 : name.substring(0, 2).toUpperCase();
         }
 
+        // Функция для перевода названий типов клиентов
+        function getTranslatedClientTypeName(typeName) {
+            const translations = {
+                'Новый клиент': '{{ __('messages.new_client') }}',
+                'Постоянный клиент': '{{ __('messages.regular_client') }}'
+            };
+            return translations[typeName] || typeName;
+        }
+
         // Функция для инициализации аватара
         function initializeAvatar(avatar) {
             if (!avatar) return;
@@ -839,13 +848,13 @@
 
             clearErrors();
 
-            submitBtn.innerHTML = '<span class="loader"></span> Добавление...';
+            submitBtn.innerHTML = '<span class="loader"></span> {{ __('messages.adding') }}';
             submitBtn.disabled = true;
 
             // Валидация поля Instagram: только латинские буквы, цифры и _ . -
             const instagramInput = document.getElementById('clientInstagram');
             if (instagramInput.value && !/^[a-zA-Z0-9_.-]+$/.test(instagramInput.value)) {
-                showNotification('error', 'Instagram может содержать только латинские буквы, цифры и символы _ . -');
+                showNotification('error', '{{ __('messages.instagram_validation_error') }}');
                 instagramInput.focus();
                 e.preventDefault();
                 return false;
@@ -873,11 +882,11 @@
 
                         // Формируем HTML для типа клиента (учитываем оба варианта)
                         const clientType = data.client.clientType || data.client.client_type;
-                        let typeHtml = '<span class="client-type-badge">Новый клиент</span>';
+                        let typeHtml = '<span class="client-type-badge">{{ __('messages.new_client') }}</span>';
                         if (clientType) {
                             typeHtml = `
                                 <span class="client-type-badge">
-                                    ${clientType.name}
+                                    ${getTranslatedClientTypeName(clientType.name)}
                                     ${clientType.discount ? `<span class="discount-badge">-${clientType.discount}%</span>` : ''}
                                 </span>
                             `;
@@ -938,7 +947,7 @@
                         clientsTableBody.insertBefore(newRow, clientsTableBody.firstChild);
 
                         // Показываем уведомление
-                        showNotification('success', `Клиент ${data.client.name} успешно добавлен`);
+                        showNotification('success', `{{ __('messages.client_added_successfully') }}`.replace(':name', data.client.name));
 
                         // Закрываем модальное окно и очищаем форму
                         closeModal();
@@ -952,9 +961,9 @@
 
                     if (error.errors) {
                         showErrors(error.errors);
-                        showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
+                        showNotification('error', '{{ __('messages.please_fix_errors') }}');
                     } else {
-                        showNotification('error', error.message || 'Произошла ошибка при добавлении клиента');
+                        showNotification('error', error.message || '{{ __('messages.error_adding_client') }}');
                     }
                 })
                 .finally(() => {
@@ -997,11 +1006,11 @@
                             const errorElement = document.createElement('div');
                             errorElement.className = 'error-message';
 
-                            // Русские сообщения об ошибках
+                            // Сообщения об ошибках
                             const errorMessages = {
-                                'instagram': 'Клиент с таким Instagram уже существует',
-                                'phone': 'Клиент с таким номером телефона уже существует',
-                                'email': 'Клиент с такой почтой уже существует'
+                                'instagram': '{{ __('messages.instagram_exists') }}',
+                                'phone': '{{ __('messages.phone_exists') }}',
+                                'email': '{{ __('messages.email_exists') }}'
                             };
 
                             errorElement.textContent = errorMessages[fieldName] || 'Это значение уже используется';
@@ -1088,14 +1097,14 @@
                         // Удаляем строку после завершения анимации
                         setTimeout(() => {
                             row.remove();
-                            showNotification('success', 'Клиент успешно удален');
+                            showNotification('success', '{{ __('messages.client_deleted_successfully') }}');
                         }, 300);
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка:', error);
                     row.classList.remove('row-deleting');
-                    showNotification('error', 'Не удалось удалить клиента');
+                    showNotification('error', '{{ __('messages.error_deleting_client') }}');
                 });
         }
 
@@ -1145,7 +1154,7 @@
                 })
                 .catch(error => {
                     console.error('Ошибка при получении данных клиента:', error);
-                    showNotification('Ошибка при загрузке данных клиента', 'error');
+                    showNotification('error', '{{ __('messages.error_loading_client') }}');
                 });
         }
 
@@ -1171,7 +1180,7 @@
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.innerHTML;
 
-            submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
+            submitBtn.innerHTML = '<span class="loader"></span> {{ __('messages.saving') }}';
             submitBtn.disabled = true;
 
             fetch(`/clients/${clientId}`, {
@@ -1193,7 +1202,7 @@
                     if (data.success) {
                         // Обновляем строку в таблице
                         updateClientRow(data.client);
-                        showNotification('success', 'Изменения успешно сохранены');
+                        showNotification('success', '{{ __('messages.client_updated_successfully') }}');
                         closeEditModal();
                     }
                 })
@@ -1201,9 +1210,9 @@
                     console.error('Ошибка:', error);
                     if (error.errors) {
                         showErrors(error.errors, 'editClientForm');
-                        showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
+                        showNotification('error', '{{ __('messages.please_fix_errors') }}');
                     } else {
-                        showNotification('error', 'Ошибка при сохранении изменений');
+                        showNotification('error', '{{ __('messages.error_updating_client') }}');
                     }
                 })
                 .finally(() => {
@@ -1255,20 +1264,20 @@
                 contactsCell.innerHTML = contactsHtml;
             }
 
-            // Обновляем тип клиента
-            const typeCell = row.querySelector('.client-status');
-            if (typeCell) {
-                if (client.client_type) {
-                    typeCell.innerHTML = `
-                        <span class="client-type-badge">
-                            ${client.client_type.name}
-                            ${client.client_type.discount ? `<span class="discount-badge">-${client.client_type.discount}%</span>` : ''}
-                        </span>
-                    `;
-                } else {
-                    typeCell.innerHTML = '<span class="client-type-badge">Новый клиент</span>';
+                            // Обновляем тип клиента
+                const typeCell = row.querySelector('.client-status');
+                if (typeCell) {
+                    if (client.client_type) {
+                        typeCell.innerHTML = `
+                            <span class="client-type-badge">
+                                ${getTranslatedClientTypeName(client.client_type.name)}
+                                ${client.client_type.discount ? `<span class="discount-badge">-${client.client_type.discount}%</span>` : ''}
+                            </span>
+                        `;
+                    } else {
+                        typeCell.innerHTML = '<span class="client-type-badge">{{ __('messages.new_client') }}</span>';
+                    }
                 }
-            }
         }
 
         // Обновите функцию showErrors для работы с формой редактирования
@@ -1426,12 +1435,12 @@
                         if (client.client_type) {
                             typeContainer.innerHTML = `
                                 <span class="client-type-badge">
-                                    ${client.client_type.name}
+                                    ${getTranslatedClientTypeName(client.client_type.name)}
                                     ${client.client_type.discount ? `<span class="discount-badge">-${client.client_type.discount}%</span>` : ''}
                                 </span>
                             `;
                         } else {
-                            typeContainer.innerHTML = '<span class="client-type-badge">Новый клиент</span>';
+                            typeContainer.innerHTML = '<span class="client-type-badge">{{ __('messages.new_client') }}</span>';
                         }
                     }
 
@@ -1442,7 +1451,7 @@
                         if (client.phone) {
                             contactsHtml += `
                                 <div class="contact-item">
-                                    <span class="contact-label">Телефон:</span>
+                                    <span class="contact-label">{{ __('messages.phone') }}:</span>
                                     <span class="contact-value">${client.phone}</span>
                                 </div>
                             `;
@@ -1450,7 +1459,7 @@
                         if (client.email) {
                             contactsHtml += `
                                 <div class="contact-item">
-                                    <span class="contact-label">Email:</span>
+                                    <span class="contact-label">{{ __('messages.email') }}:</span>
                                     <span class="contact-value">${client.email}</span>
                                 </div>
                             `;
@@ -1458,7 +1467,7 @@
                         if (client.notes) {
                             contactsHtml += `
                                 <div class="contact-item">
-                                    <span class="contact-label">Заметка:</span>
+                                    <span class="contact-label">{{ __('messages.notes') }}:</span>
                                     <span class="contact-value">${client.notes}</span>
                                 </div>
                             `;
@@ -1475,7 +1484,7 @@
                                 
 
                                 // Форматируем дату и время
-                                let formattedDate = 'Дата не указана';
+                                let formattedDate = '{{ __('messages.date_not_specified') }}';
                                 let formattedTime = '';
 
                                 if (appointment.date) {
@@ -1527,7 +1536,7 @@
                                                 <span class="procedure-status ${appointment.status || 'pending'}">${getStatusText(appointment.status)}</span>
                                             </div>
                                             <div class="procedure-header">
-                                                <span class="procedure-name">${appointment.service ? appointment.service.name : 'Неизвестная услуга'}</span>
+                                                <span class="procedure-name">${appointment.service ? appointment.service.name : '{{ __('messages.unknown_service') }}'}</span>
                                                 <span class="procedure-price currency-amount" data-amount="${appointment.price}">${formatAmount(appointment.price)}</span>
                                             </div>
 
@@ -1555,7 +1564,7 @@
                                     <svg viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z"/>
                                     </svg>
-                                    <div>Нет выполненных услуг</div>
+                                    <div>{{ __('messages.no_services') }}</div>
                                 </div>
                             `;
                         }
@@ -1571,7 +1580,7 @@
                                 
 
                                 // Форматируем дату продажи
-                                let formattedDate = 'Дата не указана';
+                                let formattedDate = '{{ __('messages.date_not_specified') }}';
                                 if (sale.date) {
                                     try {
                                         const date = new Date(sale.date);
@@ -1603,8 +1612,8 @@
                                             ${sale.items ? sale.items.map(item => `
                                                 <div class="product-item">
                                                     <div class="product-info">
-                                                        <span class="product-name">${item.product ? item.product.name : 'Неизвестный товар'}</span>
-                                                        <span class="product-quantity">${item.quantity || 1} шт.</span>
+                                                        <span class="product-name">${item.product ? item.product.name : '{{ __('messages.unknown_product') }}'}</span>
+                                                        <span class="product-quantity">${item.quantity || 1} {{ __('messages.pieces') }}</span>
                                                     </div>
                                                     <span class="product-price currency-amount" data-amount="${(item.retail_price || 0) * (item.quantity || 1)}">${formatAmount((item.retail_price || 0) * (item.quantity || 1))}</span>
                                                 </div>
@@ -1629,7 +1638,7 @@
                                     <svg viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.5h-2v-2h2v2zm0-4h-2V7h2v5.5z"/>
                                     </svg>
-                                    <div>Нет продаж</div>
+                                    <div>{{ __('messages.no_sales') }}</div>
                                 </div>
                             `;
                         }
@@ -1652,7 +1661,7 @@
                 })
                 .catch(error => {
                     console.error('Ошибка при получении данных клиента:', error);
-                    showNotification('error', 'Ошибка при загрузке данных клиента');
+                    showNotification('error', '{{ __('messages.error_loading_client') }}');
                 });
         }
 
@@ -1676,6 +1685,7 @@
                     window.clientTypesDict[{{ $type->id }}] = {
                         id: {{ $type->id }},
                         name: '{{ $type->name }}',
+                        translated_name: '{{ $type->translated_name }}',
                         discount: {{ $type->discount ?? 0 }},
                         description: '{{ $type->description ?? '' }}'
                     };
@@ -1744,20 +1754,20 @@
 
         function getSaleStatusText(status) {
             const statusMap = {
-                'completed': 'Завершено',
-                'pending': 'Ожидается',
-                'cancelled': 'Отменено',
-                'refunded': 'Возвращено'
+                'completed': '{{ __('messages.completed') }}',
+                'pending': '{{ __('messages.pending') }}',
+                'cancelled': '{{ __('messages.cancelled') }}',
+                'refunded': '{{ __('messages.refunded') }}'
             };
-            return statusMap[status] || 'Завершено';
+            return statusMap[status] || '{{ __('messages.completed') }}';
         }
 
         function getStatusText(status) {
             const statusMap = {
-                'completed': 'Завершено',
-                'pending': 'Ожидается',
-                'cancelled': 'Отменено',
-                'rescheduled': 'Перенесено'
+                'completed': '{{ __('messages.completed') }}',
+                'pending': '{{ __('messages.pending') }}',
+                'cancelled': '{{ __('messages.cancelled') }}',
+                'rescheduled': '{{ __('messages.rescheduled') }}'
             };
             return statusMap[status] || status;
         }
@@ -1787,11 +1797,11 @@
                     if (!clientType && client.client_type_id && window.clientTypesDict) {
                         clientType = window.clientTypesDict[client.client_type_id];
                     }
-                    let typeHtml = '<span class="client-type-badge">Новый клиент</span>';
+                    let typeHtml = '<span class="client-type-badge">{{ __('messages.new_client') }}</span>';
                     if (clientType && clientType.name) {
                         typeHtml = `
                             <span class="client-type-badge">
-                                ${clientType.name}
+                                ${getTranslatedClientTypeName(clientType.name)}
                                 ${clientType.discount ? `<span class="discount-badge">-${clientType.discount}%</span>` : ''}
                             </span>
                         `;
@@ -1889,11 +1899,11 @@
                 if (!clientType && client.client_type_id && window.clientTypesDict) {
                     clientType = window.clientTypesDict[client.client_type_id];
                 }
-                let typeHtml = '<span class="client-type-badge">Новый клиент</span>';
+                let typeHtml = '<span class="client-type-badge">{{ __('messages.new_client') }}</span>';
                 if (clientType && clientType.name) {
                     typeHtml = `
                         <span class="client-type-badge">
-                            ${clientType.name}
+                            ${getTranslatedClientTypeName(clientType.name)}
                             ${clientType.discount ? `<span class="discount-badge">-${clientType.discount}%</span>` : ''}
                         </span>
                     `;
@@ -2034,7 +2044,10 @@
                 if (data.clientTypes) {
                     window.clientTypesDict = {};
                     data.clientTypes.forEach(type => {
-                        window.clientTypesDict[type.id] = type;
+                        window.clientTypesDict[type.id] = {
+                            ...type,
+                            translated_name: getTranslatedClientTypeName(type.name)
+                        };
                     });
                 }
                 

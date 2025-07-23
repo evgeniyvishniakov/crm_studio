@@ -55,6 +55,19 @@ Route::middleware('auth:client')->group(function () {
         Route::get('/format/{amount}', [\App\Http\Controllers\Api\CurrencyController::class, 'formatAmount']);
     });
     
+    // API маршруты для языков
+    Route::prefix('api/languages')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\LanguageController::class, 'index']);
+        Route::get('/current', [\App\Http\Controllers\Api\LanguageController::class, 'current']);
+        Route::post('/set/{code}', [\App\Http\Controllers\Api\LanguageController::class, 'setLanguage']);
+        Route::get('/translations', [\App\Http\Controllers\Api\LanguageController::class, 'translations']);
+    });
+    
+    // API маршруты для настроек
+    Route::prefix('api/settings')->group(function () {
+        Route::post('/update', [SettingsController::class, 'updateLanguageCurrency']);
+    });
+    
     // Управление клиентами
     Route::prefix('clients')->name('clients.')->group(function () {
         Route::get('/', [ClientController::class, 'index'])->name('list');

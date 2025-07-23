@@ -53,6 +53,12 @@
                 </a>
             </li>
             <li class="nav-item mb-2">
+                <a href="{{ route('admin.languages.index') }}" class="nav-link text-white {{ request()->routeIs('admin.languages.*') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-globe me-2"></i>
+                    Языки
+                </a>
+            </li>
+            <li class="nav-item mb-2">
                 <a href="{{ route('admin.email-templates.index') }}" class="nav-link text-white {{ request()->routeIs('admin.email-templates.index') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-envelope me-2"></i>
                     Email шаблоны
