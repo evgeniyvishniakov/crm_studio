@@ -228,6 +228,57 @@ label {
 .notification.shake {
     animation: shake 0.5s;
 }
+
+/* Стили для таблицы услуг мастеров */
+#userServicesTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#userServicesTable thead {
+    background-color: #e0e4e9 !important;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+#userServicesTable th {
+    padding: 16px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#userServicesTable td {
+    padding: 14px;
+    font-size: 14px;
+    color: #4b5563;
+    vertical-align: middle;
+    text-align: center;
+}
+
+#userServicesTable tr:last-child td {
+    border-bottom: none;
+}
+
+/* Стили для бейджей статуса */
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-success {
+    background-color: #10b981;
+    color: white;
+}
+
+.badge-secondary {
+    background-color: #6b7280;
+    color: white;
+}
 </style>
 
 <div class="dashboard-container">
@@ -489,9 +540,9 @@ label {
              </div>
 
              <!-- Таблица услуг мастеров -->
-             <div class="table-responsive">
-                 <table class="table table-bordered">
-                     <thead class="thead-light">
+             <div class="table-wrapper">
+                 <table class="table-striped sale-table" id="userServicesTable">
+                     <thead>
                          <tr>
                              <th>Мастер</th>
                              <th>Услуга</th>
@@ -515,12 +566,16 @@ label {
                                          <span class="badge badge-secondary">Неактивна</span>
                                      @endif
                                  </td>
-                                 <td>
-                                     <button type="button" class="btn btn-sm btn-outline-primary" onclick="editUserService({{ $userService->id }})">
-                                         <i class="fas fa-edit"></i>
+                                 <td class="actions-cell">
+                                     <button type="button" class="btn-view" onclick="editUserService({{ $userService->id }})" title="Редактировать">
+                                         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                         </svg>
                                      </button>
-                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteUserService({{ $userService->id }})">
-                                         <i class="fas fa-trash"></i>
+                                     <button type="button" class="btn-delete" onclick="deleteUserService({{ $userService->id }})" title="Удалить">
+                                         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                             <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                         </svg>
                                      </button>
                                  </td>
                              </tr>
@@ -1231,12 +1286,16 @@ function addUserServiceToTable(userService) {
                 '<span class="badge badge-secondary">Неактивна</span>'
             }
         </td>
-        <td>
-            <button type="button" class="btn btn-sm btn-outline-primary" onclick="editUserService(${userService.id})">
-                <i class="fas fa-edit"></i>
+        <td class="actions-cell">
+            <button type="button" class="btn-view" onclick="editUserService(${userService.id})" title="Редактировать">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteUserService(${userService.id})">
-                <i class="fas fa-trash"></i>
+            <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="Удалить">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
             </button>
         </td>
     `;
