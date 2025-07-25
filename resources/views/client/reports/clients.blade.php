@@ -834,7 +834,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Первоначальная загрузка для первой активной вкладки ---
     initializeCharts();
-    // Сразу выбираем период 'За месяц'
+    // Сразу выбираем период месяц
     const filterButtonsArr = Array.from(document.querySelectorAll('.filter-section .filter-button'));
     const monthBtn = filterButtonsArr.find(btn => btn.textContent.trim() === '{{ __('messages.for_month') }}');
     if (monthBtn) {

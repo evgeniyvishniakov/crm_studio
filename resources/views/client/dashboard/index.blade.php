@@ -582,7 +582,7 @@
             universalChart.options.scales.y.max = niceMax;
             universalChart.update();
         }
-        // По умолчанию активна кнопка 'За месяц'
+        // По умолчанию активна кнопка месяц
         document.querySelectorAll('.period-filters .tab-button').forEach(btn => {
             btn.classList.remove('active');
             if (btn.getAttribute('data-period') === '30') btn.classList.add('active');
@@ -912,7 +912,7 @@
                 });
         }
 
-        // --- Вызов при загрузке страницы (по умолчанию за месяц) ---
+        // --- Вызов при загрузке страницы (по умолчанию месяц) ---
         document.addEventListener('DOMContentLoaded', function() {
             // Синхронизируем currentPeriod с активной кнопкой
             currentPeriod = document.querySelector('.period-filters .tab-button.active')?.dataset.period || '30';

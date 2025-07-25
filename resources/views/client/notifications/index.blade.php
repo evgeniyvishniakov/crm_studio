@@ -3,18 +3,18 @@
 @section('content')
 <div class="dashboard-container">
     <div class="natification-header" style="display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px;">
-        <h1 class="mb-0">Уведомления</h1>
+        <h1 class="mb-0">{{ __('messages.notifications') }}</h1>
         <form method="get" class="table-filters" style="background: #f7fafd; border-radius: 10px; padding: 0; box-shadow: 0 1px 3px rgba(59,130,246,0.04); display: flex; gap: 16px; align-items: center; margin-bottom: 0; border: none;">
             <select name="type" class="table-filter-select chosen-select" onchange="this.form.submit()">
-                <option value="">Все типы</option>
+                <option value="">{{ __('messages.all_types') }}</option>
                 @foreach($types as $type)
                     <option value="{{ $type }}" @if(request('type') == $type) selected @endif>{{ ucfirst($type) }}</option>
                 @endforeach
             </select>
             <select name="status" class="table-filter-select chosen-select" onchange="this.form.submit()">
-                <option value="">Все статусы</option>
-                <option value="unread" @if(request('status') == 'unread') selected @endif>Непрочитанные</option>
-                <option value="read" @if(request('status') == 'read') selected @endif>Прочитанные</option>
+                <option value="">{{ __('messages.all_statuses') }}</option>
+                <option value="unread" @if(request('status') == 'unread') selected @endif>{{ __('messages.unread') }}</option>
+                <option value="read" @if(request('status') == 'read') selected @endif>{{ __('messages.read') }}</option>
             </select>
         </form>
     </div>
@@ -23,10 +23,10 @@
             <table class="natification-table table-striped">
                 <thead>
                     <tr>
-                        <th>Тип</th>
-                        <th>Заголовок</th>
-                        <th>Дата</th>
-                        <th>Статус</th>
+                        <th>{{ __('messages.type') }}</th>
+                        <th>{{ __('messages.title') }}</th>
+                        <th>{{ __('messages.date') }}</th>
+                        <th>{{ __('messages.status') }}</th>
                         <th class="actions-column"></th>
                     </tr>
                 </thead>
@@ -45,22 +45,22 @@
                         <td>{{ $notification->created_at->format('d.m.Y H:i') }}</td>
                         <td>
                             @if($notification->is_read)
-                                <span class="badge status-success">Прочитано</span>
+                                <span class="badge status-success">{{ __('messages.read') }}</span>
                             @else
-                                <span class="badge status-warning text-dark">Непрочитано</span>
+                                <span class="badge status-warning text-dark">{{ __('messages.unread') }}</span>
                             @endif
                         </td>
                         <td class="actions-cell">
                             @if(!$notification->is_read && $notification->url)
                                 <form method="POST" action="{{ route('client.notifications.read', $notification->id) }}" style="display:inline;">
                                     @csrf
-                                    <button type="submit" class="btn-add-client btn-sm">Открыть</button>
+                                    <button type="submit" class="btn-add-client btn-sm">{{ __('messages.open') }}</button>
                                 </form>
                             @endif
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="text-center">Нет уведомлений</td></tr>
+                    <tr><td colspan="5" class="text-center">{{ __('messages.no_notifications') }}</td></tr>
                 @endforelse
                 </tbody>
             </table>

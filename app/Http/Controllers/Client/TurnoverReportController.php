@@ -31,8 +31,8 @@ class TurnoverReportController extends Controller
 
         // Корректируем startDate для "За полгода" и "За год":
         $period = $request->input('period');
-        if (in_array($period, ['За полгода', 'За год'])) {
-            $months = $period === 'За полгода' ? 6 : 12;
+        if (in_array($period, [__('messages.for_half_year'), __('messages.for_year')])) {
+            $months = $period === __('messages.for_half_year') ? 6 : 12;
             $dateFrom = now()->copy()->subMonths($months - 1)->startOfMonth();
             $firstSale = Sale::where('project_id', $currentProjectId)->whereDate('date', '>=', $dateFrom->toDateString())
                 ->orderBy('date', 'asc')
@@ -201,15 +201,15 @@ class TurnoverReportController extends Controller
         });
         $goodsSum = $retailSum - $wholesaleSum;
         $servicesTotalSum = $appointmentsQuery->sum('price');
-        $typeLabels = ['Товары', 'Услуги'];
+        $typeLabels = [__('messages.products'), __('messages.services')];
         $typeCounts = [null, null]; // Не используем количество, только суммы
         $typeSums = [$goodsSum, $servicesTotalSum];
 
         // Определяем интервал группировки в зависимости от периода
         $groupInterval = 'day'; // По умолчанию по дням
-        if ($period === 'За полгода') {
+        if ($period === __('messages.for_half_year')) {
             $groupInterval = 'week'; // За полгода - по неделям
-        } elseif ($period === 'За год') {
+        } elseif ($period === __('messages.for_year')) {
             $groupInterval = 'biweek'; // За год - по 2 недели
         }
 
@@ -627,7 +627,7 @@ class TurnoverReportController extends Controller
         $fixedSum = $expenses->whereIn('category', $fixed)->sum('amount');
         $variableSum = $expenses->whereIn('category', $variable)->sum('amount');
         return response()->json([
-            'labels' => ['Фиксированные', 'Переменные'],
+            'labels' => [__('messages.fixed'), __('messages.variable')],
             'data' => [$fixedSum, $variableSum]
         ]);
     }

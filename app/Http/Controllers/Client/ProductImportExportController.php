@@ -58,7 +58,7 @@ class ProductImportExportController extends Controller
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка экспорта: ' . $e->getMessage()
+                'message' => __('messages.error_exporting') . ': ' . $e->getMessage()
             ], 500);
         }
     }
@@ -97,7 +97,7 @@ class ProductImportExportController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка при чтении файла: ' . $e->getMessage()
+                'message' => __('messages.error_reading_file') . ': ' . $e->getMessage()
             ], 400);
         }
     }
@@ -117,7 +117,7 @@ class ProductImportExportController extends Controller
             \Log::error('Файл не найден в запросе');
             return response()->json([
                 'success' => false,
-                'message' => 'Файл не найден в запросе'
+                'message' => __('messages.file_not_found_in_request')
             ], 400);
         }
         
@@ -195,7 +195,7 @@ class ProductImportExportController extends Controller
             
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка при импорте: ' . $e->getMessage()
+                'message' => __('messages.error_importing') . ': ' . $e->getMessage()
             ], 400);
         }
     }
@@ -210,7 +210,7 @@ class ProductImportExportController extends Controller
         if (empty($productName)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Название товара не может быть пустым'
+                'message' => __('messages.product_name_cannot_be_empty')
             ]);
         }
 

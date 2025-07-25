@@ -99,10 +99,10 @@
                                 @endif
                             </div>
                             <div class="logo-upload-controls">
-                                <label for="logo-input" class="btn btn-outline-secondary" style="cursor:pointer;display:inline-block;">Выбрать файл</label>
+                                <label for="logo-input" class="btn btn-outline-secondary" style="cursor:pointer;display:inline-block;">{{ __('messages.select_file') }}</label>
                                 <input type="file" id="logo-input" name="logo" accept="image/*" style="display:none;" onchange="document.getElementById('logo-filename').textContent = this.files[0]?.name || ''">
                                 <span id="logo-filename" style="margin-left:12px;font-size:0.95em;color:#888;"></span>
-                                <small class="form-text text-muted">PNG/JPG, до 2 МБ, квадратное изображение</small>
+                                <small class="form-text text-muted">{{ __('messages.logo_upload_requirements') }}</small>
                             </div>
                         </div>
                     </div>
@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Используем существующую систему уведомлений
                         if (window.showNotification) {
-                            window.showNotification('error', 'Ошибка сохранения настроек: ' + error.message);
+                            window.showNotification('error', '{{ __('messages.error_saving_settings') }}: ' + error.message);
                         }
                     } finally {
                         // Восстанавливаем кнопку
@@ -485,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json().then(function(data) { throw data; });
             })
             .then(function(data) {
-                window.showNotification('success', data.message || 'Настройки языка и валюты успешно сохранены.');
+                window.showNotification('success', data.message || '{{ __('messages.language_currency_settings_saved') }}');
                 
                 // Обновляем валюту глобально после успешного сохранения
                                     if (window.CurrencyManager && data.currency_code) {
@@ -523,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(function(error) {
-                var msg = 'Ошибка при сохранении. Попробуйте ещё раз.';
+                var msg = '{{ __('messages.error_saving_try_again') }}';
                 if (error && error.errors) {
                     if (typeof error.errors === 'object') {
                         msg = Object.values(error.errors).flat().join('<br>');

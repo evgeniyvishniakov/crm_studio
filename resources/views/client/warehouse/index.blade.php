@@ -116,11 +116,11 @@
                         <input type="text" id="editProductName" readonly>
                     </div>
                     <div class="form-group">
-                        <label>Закупочная цена *</label>
+                        <label>{{ __('messages.purchase_price') }} *</label>
                         <input type="number" step="0.01" id="editPurchasePrice" name="purchase_price" required>
                     </div>
                     <div class="form-group">
-                        <label>Розничная цена *</label>
+                        <label>{{ __('messages.retail_price') }} *</label>
                         <input type="number" step="0.01" id="editRetailPrice" name="retail_price" required>
                     </div>
                     <div class="form-group">
@@ -365,7 +365,7 @@
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
 
-            submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
+            submitBtn.innerHTML = '<span class="loader"></span> {{ __('messages.saving') }}...';
             submitBtn.disabled = true;
 
             fetch(`/warehouses/${id}`, {
@@ -400,10 +400,10 @@
                             
                             purchasePriceElement.textContent = formatPrice(data.warehouse.purchase_price);
                             retailPriceElement.textContent = formatPrice(data.warehouse.retail_price);
-                            row.querySelector('.quantity').textContent = data.warehouse.quantity + ' шт';
+                            row.querySelector('.quantity').textContent = data.warehouse.quantity + ' {{ __('messages.units') }}';
                         }
                         closeEditModal();
-                        window.showNotification('success', 'Изменения успешно сохранены');
+                        window.showNotification('success', '{{ __('messages.changes_successfully_saved') }}');
                     }
                 })
                 .catch(error => {
@@ -494,7 +494,7 @@
                 }
             })
                 .then(response => {
-                    if (!response.ok) throw new Error('Ошибка при удалении');
+                    if (!response.ok) throw new Error('{{ __('messages.error_deleting') }}');
                     return response.json();
                 })
                 .then(data => {
@@ -551,7 +551,7 @@
                 .catch(error => {
                     if (error.errors) {
                         showErrors(error.errors);
-                        window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
+                        window.showNotification('error', '{{ __('messages.please_fix_form_errors') }}');
                     } else {
                         window.showNotification('error', error.message || '{{ __('messages.error_adding_product') }}');
                     }
@@ -570,7 +570,7 @@
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.innerHTML;
 
-            submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
+            submitBtn.innerHTML = '<span class="loader"></span> {{ __('messages.saving') }}...';
             submitBtn.disabled = true;
 
             fetch(`/warehouses/${id}`, {
@@ -597,13 +597,13 @@
                             row.querySelector('.quantity').textContent = data.warehouse.quantity;
                         }
                         closeEditModal();
-                        window.showNotification('success', 'Изменения успешно сохранены');
+                        window.showNotification('success', '{{ __('messages.changes_successfully_saved') }}');
                     }
                 })
                 .catch(error => {
                     if (error.errors) {
                         showErrors(error.errors, 'editForm');
-                        window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
+                        window.showNotification('error', '{{ __('messages.please_fix_form_errors') }}');
                     } else {
                         window.showNotification('error', error.message || '{{ __('messages.error_saving_changes') }}');
                     }
@@ -638,18 +638,18 @@
             }
             
             items.forEach(item => {
-                const photoHtml = item.product.photo ?
-                    `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` :
+                const photoHtml = item.product && item.product.photo ?
+                    `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` :
                     '<div class="no-photo">{{ __('messages.no_photo') }}</div>';
                 
                 const row = document.createElement('tr');
                 row.id = `warehouse-${item.id}`;
                 row.innerHTML = `
                     <td>${photoHtml}</td>
-                    <td>${item.product.name}</td>
+                    <td>${item.product ? item.product.name : 'Товар не найден'}</td>
                     <td class="purchase-price currency-amount" data-amount="${item.purchase_price}">${formatPrice(item.purchase_price)}</td>
                     <td class="retail-price currency-amount" data-amount="${item.retail_price}">${formatPrice(item.retail_price)}</td>
-                    <td class="quantity">${item.quantity} шт</td>
+                    <td class="quantity">${item.quantity} {{ __('messages.units') }}</td>
                     <td class="actions-cell">
                         <button class="btn-edit" onclick="openEditModal(${item.id})">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">

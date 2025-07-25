@@ -182,12 +182,29 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         try {
-            if ($product->photo) {
+            // ВСЕГДА используем мягкое удаление для сохранения исторических данных
+            // Связанные записи (продажи, закупки) остаются в базе для отчетов
+            
+            // Удаляем фото только если товар не имеет связанных данных
+            $hasRelatedData = $product->saleItems()->exists() || 
+                             $product->purchaseItems()->exists() || 
+                             $product->warehouse()->exists();
+
+            if (!$hasRelatedData && $product->photo) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($product->photo);
             }
+            
+            // Мягкое удаление товара
             $product->delete();
-
-            return response()->json(['success' => true]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => $hasRelatedData 
+                    ? 'Товар перемещен в корзину (сохранены исторические данные)' 
+                    : 'Товар успешно удален',
+                'soft_deleted' => true
+            ]);
+            
         } catch (\Exception $e) {
             \App\Models\SystemLog::create([
                 'level' => 'error',
@@ -205,6 +222,91 @@ class ProductController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
+    }
+
+    // Метод для восстановления товара
+    public function restore($id)
+    {
+        try {
+            $product = Product::withTrashed()->findOrFail($id);
+            
+            // Проверяем, существует ли файл изображения
+            if ($product->photo && !Storage::disk('public')->exists($product->photo)) {
+                // Если файл не существует, очищаем поле photo
+                $product->photo = null;
+            }
+            
+            $product->restore();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Товар успешно восстановлен'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при восстановлении товара'
+            ], 500);
+        }
+    }
+
+    // Метод для принудительного удаления
+    public function forceDelete($id)
+    {
+        try {
+            $product = Product::withTrashed()->findOrFail($id);
+            $product->forceDelete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Товар полностью удален'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при полном удалении товара'
+            ], 500);
+        }
+    }
+
+    // Метод для просмотра удаленных товаров
+    public function trashed()
+    {
+        try {
+            $currentProjectId = auth()->user()->project_id;
+            
+            // Логируем для диагностики
+            \Log::info('Loading trashed products for project: ' . $currentProjectId);
+            
+            // Проверяем есть ли project_id
+            if (!$currentProjectId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Не удалось определить проект пользователя'
+                ], 400);
+            }
+            
+            $deletedProducts = Product::withTrashed()
+                ->where('project_id', $currentProjectId)
+                ->whereNotNull('deleted_at')
+                ->with(['category', 'brand'])
+                ->get();
+
+            \Log::info('Found ' . $deletedProducts->count() . ' deleted products');
+
+            return response()->json([
+                'success' => true,
+                'products' => $deletedProducts
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error in trashed method: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при загрузке удаленных товаров: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -235,6 +337,57 @@ class ProductController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Внутренняя ошибка сервера. Пожалуйста, попробуйте позже.'
+            ], 500);
+        }
+    }
+
+    // Метод для удаления всех удаленных товаров навсегда
+    public function forceDeleteAll()
+    {
+        try {
+            $currentProjectId = auth()->user()->project_id;
+            
+            if (!$currentProjectId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Не удалось определить проект пользователя'
+                ], 400);
+            }
+            
+            // Получаем все удаленные товары для текущего проекта
+            $deletedProducts = Product::withTrashed()
+                ->where('project_id', $currentProjectId)
+                ->whereNotNull('deleted_at')
+                ->get();
+            
+            $deletedCount = $deletedProducts->count();
+            
+            if ($deletedCount === 0) {
+                return response()->json([
+                    'success' => true,
+                    'message' => __('messages.no_products_to_delete')
+                ]);
+            }
+            
+            // Удаляем каждый товар навсегда
+            foreach ($deletedProducts as $product) {
+                $product->forceDelete();
+            }
+            
+            \Log::info("Удалено {$deletedCount} товаров навсегда для проекта {$currentProjectId}");
+            
+            return response()->json([
+                'success' => true,
+                'message' => "Удалено {$deletedCount} товаров навсегда"
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error in forceDeleteAll method: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при удалении всех товаров: ' . $e->getMessage()
             ], 500);
         }
     }

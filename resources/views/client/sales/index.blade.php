@@ -1001,10 +1001,10 @@
                     ${sale.client.instagram}
                 </a>` : ''}
             </td>
-            <td>${item.product.name}</td>
+            <td>${item.product ? item.product.name : 'Товар не найден'}</td>
             <td>
-                ${item.product.photo ?
-                    `<img src="/storage/${item.product.photo}" class="product-photo" alt="Фото" style="height: 50px;">` :
+                ${item.product && item.product.photo ?
+                    `<img src="/storage/${item.product.photo}" class="product-photo" alt="Фото" style="height: 50px;" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` :
                     '<div class="no-photo">Нет фото</div>'}
             </td>
             <td class="currency-amount" data-amount="${item.wholesale_price}">${formatPriceJS(item.wholesale_price)}</td>
@@ -1391,8 +1391,8 @@
                             ${sale.client.instagram}
                         </a>` : '';
 
-                    const photoHtml = item.product.photo ? 
-                        `<img src="/storage/${item.product.photo}" class="product-photo" alt="Фото" style="height: 50px;">` : 
+                    const photoHtml = item.product && item.product.photo ? 
+                        `<img src="/storage/${item.product.photo}" class="product-photo" alt="Фото" style="height: 50px;" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` : 
                         '<div class="no-photo">Нет фото</div>';
 
                     row.innerHTML = `
@@ -1401,7 +1401,7 @@
                             ${sale.client.name}
                             ${instagramLink}
                         </td>
-                        <td>${item.product.name}</td>
+                        <td>${item.product ? item.product.name : 'Товар не найден'}</td>
                         <td>${photoHtml}</td>
                         <td class="currency-amount" data-amount="${item.wholesale_price}">${item.wholesale_price !== null ? formatPriceJS(item.wholesale_price) : '—'}</td>
                         <td class="currency-amount" data-amount="${item.retail_price}">${item.retail_price !== null ? formatPriceJS(item.retail_price) : '—'}</td>

@@ -6,13 +6,14 @@ namespace App\Models\Clients;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Clients\SaleItem;
 use App\Models\Clients\PurchaseItem;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -28,7 +29,10 @@ class Product extends Model
 
     public function getPhotoUrlAttribute()
     {
-        return $this->photo ? Storage::url($this->photo) : null;
+        if ($this->photo && Storage::disk('public')->exists($this->photo)) {
+            return Storage::url($this->photo);
+        }
+        return null;
     }
 
     public function deletePhoto()
@@ -42,7 +46,8 @@ class Product extends Model
     {
         parent::boot();
 
-        static::deleting(function ($product) {
+        // Удаляем фото только при принудительном удалении (forceDelete), а не при soft delete
+        static::forceDeleting(function ($product) {
             $product->deletePhoto();
         });
 
@@ -82,5 +87,23 @@ class Product extends Model
     public function purchaseItems()
     {
         return $this->hasMany(PurchaseItem::class, 'product_id');
+    }
+
+    // Метод для восстановления товара
+    public function restoreProduct()
+    {
+        return $this->restore();
+    }
+
+    // Метод для принудительного удаления (включая связанные данные)
+    public function forceDeleteProduct()
+    {
+        // Удаляем связанные записи
+        $this->warehouse()->delete();
+        $this->saleItems()->delete();
+        $this->purchaseItems()->delete();
+        
+        // Принудительно удаляем сам товар
+        return parent::forceDelete();
     }
 }

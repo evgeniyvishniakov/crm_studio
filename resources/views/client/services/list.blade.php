@@ -4,26 +4,26 @@
 <div class="dashboard-container">
     <div class="services-container">
         <div class="services-header">
-            <h1>Услуги</h1>
+            <h1>{{ __('messages.services') }}</h1>
             <div id="notification" class="notification alert alert-success" role="alert">
                 <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                 </svg>
-                <span class="notification-message">Услуга успешно добавлена!</span>
+                <span class="notification-message">{{ __('messages.service_successfully_added') }}!</span>
             </div>
             <div class="header-actions">
                 <button class="btn-add-service" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
-                    Добавить услугу
+                    {{ __('messages.add_service') }}
                 </button>
 
                 <div class="search-box">
                     <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                     </svg>
-                    <input type="text" id="searchInput" placeholder="Поиск..." onkeyup="handleSearch()">
+                    <input type="text" id="searchInput" placeholder="{{ __('messages.search_placeholder') }}" onkeyup="handleSearch()">
                 </div>
             </div>
         </div>
@@ -32,10 +32,10 @@
             <table class=" table-striped services-table">
                 <thead>
                 <tr>
-                    <th>Название</th>
-                    <th>Цена</th>
-                    <th>Длительность</th>
-                    <th class="actions-column">Действия</th>
+                    <th>{{ __('messages.service_name') }}</th>
+                    <th>{{ __('messages.service_price') }}</th>
+                    <th>{{ __('messages.service_duration') }}</th>
+                    <th class="actions-column">{{ __('messages.actions') }}</th>
                 </tr>
                 </thead>
                 <tbody id="servicesTableBody">
@@ -49,7 +49,7 @@
                                 $minutes = $service->duration % 60;
                             @endphp
                             @if($service->duration > 0)
-                                @if($hours > 0) {{ $hours }} год. @endif @if($minutes > 0) {{ $minutes }} хв. @endif
+                                @if($hours > 0) {{ $hours }} {{ __('messages.hours_short') }} @endif @if($minutes > 0) {{ $minutes }} {{ __('messages.minutes_short') }} @endif
                             @else
                                 —
                             @endif
@@ -59,13 +59,13 @@
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
-                                Ред.
+                                {{ __('messages.edit_short') }}
                             </button>
                             <button class="btn-delete">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
-                                Удалить
+                                {{ __('messages.delete') }}
                             </button>
                         </td>
                     </tr>
@@ -82,32 +82,32 @@
     <div id="addServiceModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Добавить новую услугу</h2>
+                <h2>{{ __('messages.add_new_service') }}</h2>
                 <span class="close" onclick="closeModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <form id="addServiceForm">
                     @csrf
                     <div class="form-group">
-                        <label for="serviceName">Название *</label>
+                        <label for="serviceName">{{ __('messages.service_name') }} *</label>
                         <input type="text" id="serviceName" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label for="servicePrice">Цена</label>
+                        <label for="servicePrice">{{ __('messages.service_price') }}</label>
                         <input type="number" id="servicePrice" name="price" min="0" step="0.01">
                     </div>
                     <div class="form-group">
-                        <label>Тривалість</label>
+                        <label>{{ __('messages.service_duration') }}</label>
                         <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="number" name="duration_hours" min="0" max="12" value="0" style="width: 60px;" placeholder="Годин">
-                            <span>год.</span>
-                            <input type="number" name="duration_minutes" min="0" max="59" value="0" style="width: 60px;" placeholder="Хв.">
-                            <span>хв.</span>
+                            <input type="number" name="duration_hours" min="0" max="12" value="0" style="width: 60px;" placeholder="{{ __('messages.service_duration_hours') }}">
+                            <span>{{ __('messages.hours_short') }}</span>
+                            <input type="number" name="duration_minutes" min="0" max="59" value="0" style="width: 60px;" placeholder="{{ __('messages.service_duration_minutes') }}">
+                            <span>{{ __('messages.minutes_short') }}</span>
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Добавить</button>
+                        <button type="button" class="btn-cancel" onclick="closeModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.add_service') }}</button>
                     </div>
                 </form>
             </div>
@@ -117,11 +117,11 @@
     <!-- Модальное окно подтверждения удаления -->
     <div id="confirmationModal" class="confirmation-modal">
         <div class="confirmation-content">
-            <h3>Подтверждение удаления</h3>
-            <p>Вы уверены, что хотите удалить эту услугу?</p>
+            <h3>{{ __('messages.confirm_delete_service') }}</h3>
+            <p>{{ __('messages.confirm_delete_service') }}</p>
             <div class="confirmation-buttons">
-                <button id="cancelDelete" class="cancel-btn">Отмена</button>
-                <button id="confirmDelete" class="confirm-btn">Удалить</button>
+                <button id="cancelDelete" class="cancel-btn">{{ __('messages.cancel') }}</button>
+                <button id="confirmDelete" class="confirm-btn">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
@@ -130,7 +130,7 @@
     <div id="editServiceModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Редактировать услугу</h2>
+                <h2>{{ __('messages.edit_service') }}</h2>
                 <span class="close" onclick="closeEditModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -139,25 +139,25 @@
                     @method('PUT')
                     <input type="hidden" id="editServiceId" name="id">
                     <div class="form-group">
-                        <label for="editServiceName">Название *</label>
+                        <label for="editServiceName">{{ __('messages.service_name') }} *</label>
                         <input type="text" id="editServiceName" name="name" required>
                     </div>
                     <div class="form-group">
-                        <label for="editServicePrice">Цена</label>
+                        <label for="editServicePrice">{{ __('messages.service_price') }}</label>
                         <input type="number" id="editServicePrice" name="price" min="0" step="0.01">
                     </div>
                     <div class="form-group">
-                        <label>Тривалість</label>
+                        <label>{{ __('messages.service_duration') }}</label>
                         <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="number" name="duration_hours" min="0" max="12" value="0" style="width: 60px;" placeholder="Годин">
-                            <span>год.</span>
-                            <input type="number" name="duration_minutes" min="0" max="59" value="0" style="width: 60px;" placeholder="Хв.">
-                            <span>хв.</span>
+                            <input type="number" name="duration_hours" min="0" max="12" value="0" style="width: 60px;" placeholder="{{ __('messages.service_duration_hours') }}">
+                            <span>{{ __('messages.hours_short') }}</span>
+                            <input type="number" name="duration_minutes" min="0" max="59" value="0" style="width: 60px;" placeholder="{{ __('messages.service_duration_minutes') }}">
+                            <span>{{ __('messages.minutes_short') }}</span>
                         </div>
                     </div>
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" onclick="closeEditModal()">Отмена</button>
-                        <button type="submit" class="btn-submit">Сохранить</button>
+                        <button type="button" class="btn-cancel" onclick="closeEditModal()">{{ __('messages.cancel') }}</button>
+                        <button type="submit" class="btn-submit">{{ __('messages.save') }}</button>
                     </div>
                 </form>
             </div>
@@ -250,7 +250,7 @@
 
             clearErrors();
 
-            submitBtn.innerHTML = '<span class="loader"></span> Добавление...';
+                                    submitBtn.innerHTML = '<span class="loader"></span> {{ __('messages.add_service') }}...';
             submitBtn.disabled = true;
 
             fetch("/services", {
@@ -282,13 +282,13 @@
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
-                                    Ред.
+                                    {{ __('messages.edit_short') }}
                                 </button>
                                 <button class="btn-delete">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                     </svg>
-                                    Удалить
+                                    {{ __('messages.delete') }}
                                 </button>
                             </td>
                         `;
@@ -297,21 +297,21 @@
                         servicesTableBody.insertBefore(newRow, servicesTableBody.firstChild);
 
                         // Показываем уведомление
-                        window.showNotification('success', `Услуга "${data.service.name}" успешно добавлена`);
+                        window.showNotification('success', `{{ __('messages.service_successfully_added') }} "${data.service.name}"`);
 
                         // Закрываем модальное окно и очищаем форму
                         closeModal();
                         this.reset();
                     } else {
-                        throw new Error('Сервер не вернул данные услуги');
+                        throw new Error('{{ __('messages.error_loading_service_data') }}');
                     }
                 })
                 .catch(error => {
                     if (error.errors) {
                         showErrors(error.errors);
-                        window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
+                        window.showNotification('error', '{{ __('messages.please_fix_form_errors') }}');
                     } else {
-                        window.showNotification('error', error.message || 'Произошла ошибка при добавлении услуги');
+                        window.showNotification('error', error.message || '{{ __('messages.error_adding_service') }}');
                     }
                 })
                 .finally(() => {
@@ -373,7 +373,7 @@
                     if (data.success) {
                         setTimeout(() => {
                             row.remove();
-                            window.showNotification('success', 'Услуга успешно удалена');
+                            window.showNotification('success', '{{ __('messages.service_successfully_deleted') }}');
                         }, 300);
                     }
                 })
@@ -404,7 +404,7 @@
                     document.getElementById('editServiceModal').style.display = 'block';
                 })
                 .catch(error => {
-                    window.showNotification('error', 'Не удалось загрузить данные услуги');
+                    window.showNotification('error', '{{ __('messages.error_loading_service_data') }}');
                 });
         }
 
@@ -427,7 +427,7 @@
                 const submitBtn = this.querySelector('button[type="submit"]');
                 const originalBtnText = submitBtn.innerHTML;
 
-                submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
+                submitBtn.innerHTML = '<span class="loader"></span> {{ __('messages.save') }}...';
                 submitBtn.disabled = true;
 
                 fetch(`/services/${serviceId}`, {
@@ -448,16 +448,16 @@
                     .then(data => {
                         if (data.success) {
                             updateServiceRow(data.service);
-                            window.showNotification('success', 'Изменения успешно сохранены');
+                            window.showNotification('success', '{{ __('messages.service_successfully_updated') }}');
                             closeEditModal();
                         }
                     })
                     .catch(error => {
                         if (error.errors) {
                             showErrors(error.errors, 'editServiceForm');
-                            window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
+                            window.showNotification('error', '{{ __('messages.please_fix_form_errors') }}');
                         } else {
-                            window.showNotification('error', 'Ошибка при сохранении изменений');
+                            window.showNotification('error', '{{ __('messages.error_updating_service') }}');
                         }
                     })
                     .finally(() => {
@@ -511,7 +511,7 @@
                 renderPagination(data.meta);
             })
             .catch(error => {
-                window.showNotification('error', 'Ошибка загрузки данных');
+                window.showNotification('error', '{{ __('messages.loading_data_error') }}');
             });
         }
 
@@ -531,13 +531,13 @@
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                             </svg>
-                            Ред.
+                            {{ __('messages.edit_short') }}
                         </button>
                         <button class="btn-delete">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
-                            Удалить
+                            {{ __('messages.delete') }}
                         </button>
                     </td>
                 `;
@@ -631,7 +631,7 @@
                         setTimeout(() => {
                             // Обновляем таблицу после удаления
                             loadPage(currentPage, searchQuery);
-                            window.showNotification('success', 'Услуга успешно удалена');
+                            window.showNotification('success', '{{ __('messages.service_successfully_deleted') }}');
                         }, 300);
                     }
                 })
@@ -647,8 +647,8 @@
             const hours = Math.floor(duration / 60);
             const minutes = duration % 60;
             let result = '';
-            if (hours > 0) result += hours + ' год. ';
-            if (minutes > 0) result += minutes + ' хв.';
+            if (hours > 0) result += hours + ' {{ __('messages.hours_short') }} ';
+            if (minutes > 0) result += minutes + ' {{ __('messages.minutes_short') }}';
             return result.trim();
         }
 

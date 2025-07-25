@@ -51,12 +51,12 @@ class ProductsExport implements FromCollection, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
-            'Название',
-            'Категория',
-            'Бренд',
-            'Оптовая цена',
-            'Розничная цена',
-            'Фото'
+            __('messages.name'),
+            __('messages.category'),
+            __('messages.brand'),
+            __('messages.purchase_price'),
+            __('messages.retail_price'),
+            __('messages.photo')
         ];
     }
 

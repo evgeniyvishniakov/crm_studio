@@ -76,16 +76,16 @@
                         <div class="item-row template" style="display: none;">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Товар </label>
+                                    <label>{{ __('messages.product_label') }} </label>
                                     <div class="product-search-container">
-                                        <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
+                                        <input type="text" class="product-search-input form-control" placeholder="{{ __('messages.start_typing_product_name_for_purchase') }}"
                                                oninput="searchProducts(this)"
                                                onfocus="showProductDropdown(this)" autocomplete="off">
                                         <div class="product-dropdown" style="display: none;">
                                             <div class="product-dropdown-list"></div>
                                         </div>
                                         <select name="items[0][product_id]" class="form-control product-select" style="display: none;">
-                                            <option value="">Выберите товар</option>
+                                            <option value="">{{ __('messages.select_product') }}</option>
                                             @foreach($products as $product)
                                                 <option value="{{ $product->id }}" data-purchase="{{ $product->purchase_price }}" data-retail="{{ $product->retail_price }}">{{ $product->name }}</option>
                                             @endforeach
@@ -93,15 +93,15 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>{{ __('messages.purchase_price') }} </label>
+                                    <label>{{ __('messages.purchase_price_label') }} </label>
                                     <input type="number"  name="items[0][purchase_price]" class="form-control" >
                                 </div>
                                 <div class="form-group">
-                                    <label>{{ __('messages.retail_price') }} </label>
+                                    <label>{{ __('messages.retail_price_label') }} </label>
                                     <input type="number" name="items[0][retail_price]" class="form-control" >
                                 </div>
                                 <div class="form-group">
-                                    <label>Количество </label>
+                                    <label>{{ __('messages.quantity_label') }} </label>
                                     <input type="number" name="items[0][quantity]" required class="form-control" min="1" value="1">
                                 </div>
                                 <div class="form-group">
@@ -116,16 +116,16 @@
                         <div class="item-row">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Товар </label>
+                                    <label>{{ __('messages.product_label') }} </label>
                                     <div class="product-search-container">
-                                        <input type="text" class="product-search-input form-control" placeholder="Начните вводить название товара..."
+                                        <input type="text" class="product-search-input form-control" placeholder="{{ __('messages.start_typing_product_name_for_purchase') }}"
                                                oninput="searchProducts(this)"
                                                onfocus="showProductDropdown(this)" autocomplete="off">
                                         <div class="product-dropdown" style="display: none;">
                                             <div class="product-dropdown-list"></div>
                                         </div>
                                         <select name="items[0][product_id]" class="form-control product-select" style="display: none;">
-                                            <option value="">Выберите товар</option>
+                                            <option value="">{{ __('messages.select_product') }}</option>
                                             @foreach($products as $product)
                                                 <option value="{{ $product->id }}" data-purchase="{{ $product->purchase_price }}" data-retail="{{ $product->retail_price }}">{{ $product->name }}</option>
                                             @endforeach
@@ -133,15 +133,15 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Закупочная цена </label>
+                                    <label>{{ __('messages.purchase_price_label') }} </label>
                                     <input type="number" step="0.01" name="items[0][purchase_price]" required class="form-control" min="0.01">
                                 </div>
                                 <div class="form-group">
-                                    <label>Розничная цена </label>
+                                    <label>{{ __('messages.retail_price_label') }} </label>
                                     <input type="number" step="0.01" name="items[0][retail_price]" required class="form-control" min="0.01">
                                 </div>
                                 <div class="form-group">
-                                    <label>Количество </label>
+                                    <label>{{ __('messages.quantity_label') }} </label>
                                     <input type="number" name="items[0][quantity]" required class="form-control" min="1" value="1">
                                 </div>
                                 <div class="form-group">
@@ -159,7 +159,7 @@
                             <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                             </svg>
-                            Добавить товар
+                            {{ __('messages.add_product') }}
                         </button>
                         <button type="button" class="btn-cancel" onclick="closePurchaseModal()">{{ __('messages.cancel') }}</button>
                         <button type="submit" class="btn-submit">{{ __('messages.save_purchase') }}</button>
@@ -188,8 +188,8 @@
             <h3>{{ __('messages.delete_confirmation') }}</h3>
             <p>{{ __('messages.confirm_delete_purchase') }}</p>
             <div class="confirmation-buttons">
-                <button class="cancel-btn" id="cancelDelete">Отмена</button>
-                <button class="confirm-btn" id="confirmDeleteBtn">Удалить</button>
+                <button class="cancel-btn" id="cancelDelete">{{ __('messages.cancel') }}</button>
+                <button class="confirm-btn" id="confirmDeleteBtn">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
@@ -211,6 +211,8 @@
         let currentDeleteId = null;
         let itemCounter = 1; // Этот счетчик будет заменен динамическим расчетом
 
+
+
         // Функция форматирования валюты
         function formatCurrency(value) {
             if (window.CurrencyManager) {
@@ -226,11 +228,21 @@
         window.showNotification = function(type, message) {
             const notification = document.getElementById('notification');
             if (notification) {
-                notification.className = `notification ${type}`;
-                notification.textContent = message;
-                notification.style.display = 'block';
+                notification.className = `notification ${type} show`;
+
+                const icon = type === 'success' ?
+                    '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>' :
+                    '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>';
+
+                notification.innerHTML = `
+                    <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
+                        ${icon}
+                    </svg>
+                    <span class="notification-message">${message}</span>
+                `;
+
                 setTimeout(() => {
-                    notification.style.display = 'none';
+                    notification.className = `notification ${type}`;
                 }, 3000);
             }
         }
@@ -435,9 +447,9 @@
                                                data-locale="{{ app()->getLocale() }}">
                                     </div>
                                     <div class="form-group">
-                                        <label>Поставщик </label>
+                                        <label>{{ __('messages.supplier_label') }} </label>
                                         <select name="supplier_id" required class="form-control">
-                                            <option value="">Выберите поставщика</option>
+                                            <option value="">{{ __('messages.select_supplier') }}</option>
                                             @foreach($suppliers as $supplier)
                                                 <option value="{{ $supplier->id }}" ${purchase.supplier_id == {{ $supplier->id }} ? 'selected' : ''}>
                                                     {{ $supplier->name }}
@@ -447,21 +459,21 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label>Примечания</label>
+                                    <label>{{ __('messages.notes_label') }}</label>
                                     <textarea name="notes" rows="2" class="form-control">${purchase.notes || ''}</textarea>
                                 </div>
                                 <div class="items-container" id="editItemsContainer">
-                                    <h3>Товары</h3>
+                                    <h3>{{ __('messages.products_label') }}</h3>
                                     ${purchase.items.map((item, index) => `
                                         <div class="item-row">
                                             <div class="form-row">
                                                  <div class="form-group">
-                                                    <label>Товар</label>
+                                                    <label>{{ __('messages.product_label') }}</label>
                                                     <div class="product-search-container">
                                                         <input type="text"
                                                                id="product-search-edit-${index}"
                                                                class="product-search-input form-control"
-                                                               placeholder="Начните вводить название товара..."
+                                                               placeholder="{{ __('messages.start_typing_product_name_for_purchase') }}"
                                                                oninput="searchProducts(this)"
                                                                onfocus="showProductDropdown(this)"
                                                                value="${item.product_name}"
@@ -475,15 +487,15 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>Закупочная цена</label>
+                                                    <label>{{ __('messages.purchase_price_label') }}</label>
                                                     <input type="number" step="0.01" name="items[${index}][purchase_price]" required class="form-control" value="${item.purchase_price}">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>Розничная цена</label>
+                                                    <label>{{ __('messages.retail_price_label') }}</label>
                                                     <input type="number" step="0.01" name="items[${index}][retail_price]" required class="form-control" value="${item.retail_price}">
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>Количество</label>
+                                                    <label>{{ __('messages.quantity_label') }}</label>
                                                     <input type="number" name="items[${index}][quantity]" required class="form-control" value="${item.quantity}">
                                                 </div>
                                                 <div class="form-group">
@@ -502,16 +514,23 @@
                                         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                                         </svg>
-                                        Добавить товар
+                                        {{ __('messages.add_product') }}
                                     </button>
-                                    <button type="button" class="btn-cancel" onclick="closeEditPurchaseModal()">Отмена</button>
-                                    <button type="submit" class="btn-submit">Сохранить изменения</button>
+                                    <button type="button" class="btn-cancel" onclick="closeEditPurchaseModal()">{{ __('messages.cancel') }}</button>
+                                    <button type="submit" class="btn-submit">{{ __('messages.save_changes') }}</button>
                                 </div>
                             </form>
                         `;
 
                         modalBody.innerHTML = formHtml;
                         document.getElementById('editPurchaseModal').style.display = 'block';
+
+                        // Удаляем старый обработчик, если он есть
+                        const oldForm = document.getElementById('editPurchaseForm');
+                        if (oldForm) {
+                            const newForm = oldForm.cloneNode(true);
+                            oldForm.parentNode.replaceChild(newForm, oldForm);
+                        }
 
                         // Добавляем обработчик отправки формы
                         document.getElementById('editPurchaseForm').addEventListener('submit', function(e) {
@@ -721,9 +740,9 @@
                 return `
                 <tr>
                     <td>
-                        ${item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` : `<div class="no-photo">Нет фото</div>`}
+                        ${item.product && item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` : `<div class="no-photo">{{ __('messages.no_photo') }}</div>`}
                     </td>
-                    <td>${item.product.name}</td>
+                    <td>${item.product ? item.product.name : 'Товар не найден'}</td>
                     <td class="currency-amount" data-amount="${purchasePrice}">${formatCurrency(purchasePrice)}</td>
                     <td class="currency-amount" data-amount="${retailPrice}">${formatCurrency(retailPrice)}</td>
                     <td>${quantity} шт</td>
@@ -756,11 +775,11 @@
                             <table class="table-wrapper table-striped purchases-table">
                                 <thead>
                                     <tr>
-                                        <th>{{ __('messages.photo') }}</th>
-                                        <th>{{ __('messages.product') }}</th>
-                                        <th>{{ __('messages.purchase_price') }}</th>
-                                        <th>{{ __('messages.retail_price') }}</th>
-                                        <th>{{ __('messages.quantity') }}</th>
+                                        <th>{{ __('messages.photo_label') }}</th>
+                                        <th>{{ __('messages.product_label') }}</th>
+                                        <th>{{ __('messages.purchase_price_label') }}</th>
+                                        <th>{{ __('messages.retail_price_label') }}</th>
+                                        <th>{{ __('messages.quantity_label') }}</th>
                                         <th>{{ __('messages.sum') }}</th>
                                     </tr>
                                 </thead>
@@ -808,9 +827,9 @@
                 return `
                 <tr>
                     <td>
-                        ${item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` : `<div class="no-photo">Нет фото</div>`}
+                        ${item.product && item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` : `<div class="no-photo">{{ __('messages.no_photo') }}</div>`}
                     </td>
-                    <td>${item.product.name}</td>
+                    <td>${item.product ? item.product.name : 'Товар не найден'}</td>
                     <td class="currency-amount" data-amount="${purchasePrice}">${formatCurrency(purchasePrice)}</td>
                     <td class="currency-amount" data-amount="${retailPrice}">${formatCurrency(retailPrice)}</td>
                     <td>${quantity} шт</td>
@@ -825,12 +844,12 @@
                     <table class="table-wrapper table-striped purchases-table">
                         <thead>
                             <tr>
-                                <th>Фото</th>
-                                <th>Товар</th>
-                                <th>Закупочная цена</th>
-                                <th>Розничная цена</th>
-                                <th>Количество</th>
-                                <th>Сумма</th>
+                                <th>{{ __('messages.photo_label') }}</th>
+                                <th>{{ __('messages.product_label') }}</th>
+                                <th>{{ __('messages.purchase_price_label') }}</th>
+                                <th>{{ __('messages.retail_price_label') }}</th>
+                                <th>{{ __('messages.quantity_label') }}</th>
+                                <th>{{ __('messages.sum') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -936,12 +955,12 @@
                     itemsHtml = purchase.items.map(item => `
                         <tr>
                             <td>
-                                ${item.product.photo ? 
-                                    `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` : 
+                                ${item.product && item.product.photo ? 
+                                    `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` : 
                                     '<div class="no-photo">{{ __('messages.no_photo') }}</div>'
                                 }
                             </td>
-                            <td>${item.product.name}</td>
+                            <td>${item.product ? item.product.name : 'Товар не найден'}</td>
                             <td class="currency-amount" data-amount="${item.purchase_price}">${formatCurrency(item.purchase_price)}</td>
                             <td class="currency-amount" data-amount="${item.retail_price}">${formatCurrency(item.retail_price)}</td>
                             <td>${item.quantity} шт</td>
@@ -1208,25 +1227,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 1rem;
-            z-index: 1050;
-            display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            min-width: 250px;
-            text-align: center;
-        }
-        .notification.success {
-            background: linear-gradient(135deg, #28a745, #34d399);
-        }
-        .notification.error {
-            background: linear-gradient(135deg, #dc3545, #ef4444);
-        }
+
     </style>
 @endsection

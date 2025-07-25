@@ -9,15 +9,15 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
 @section('content')
 <div class="dashboard-container">
     <div class="report-header">
-        <h1 class="dashboard-title">Аналитика по товарообороту</h1>
+        <h1 class="dashboard-title">{{ __('messages.turnover_analytics') }}</h1>
 
         <!-- Навигация по вкладкам -->
         <div class="dashboard-tabs">
-            <button class="tab-button active" data-tab="dynamic-analytics"><i class="fa fa-line-chart"></i> Динамика и структура</button>
-            <button class="tab-button" data-tab="tops-analytics"><i class="fa fa-star"></i> Топы</button>
-            <button class="tab-button" data-tab="suppliers-analytics"><i class="fa fa-truck"></i> Поставщики и остатки</button>
-            <button class="tab-button" data-tab="expenses-analytics"><i class="fa fa-credit-card"></i> Расходы</button>
-            <button class="tab-button" data-tab="employees-analytics"><i class="fa fa-users"></i> Сотрудники</button>
+            <button class="tab-button active" data-tab="dynamic-analytics"><i class="fa fa-line-chart"></i> {{ __('messages.dynamics_and_structure') }}</button>
+            <button class="tab-button" data-tab="tops-analytics"><i class="fa fa-star"></i> {{ __('messages.tops') }}</button>
+            <button class="tab-button" data-tab="suppliers-analytics"><i class="fa fa-truck"></i> {{ __('messages.suppliers_and_stock') }}</button>
+            <button class="tab-button" data-tab="expenses-analytics"><i class="fa fa-credit-card"></i> {{ __('messages.expenses') }}</button>
+            <button class="tab-button" data-tab="employees-analytics"><i class="fa fa-users"></i> {{ __('messages.employees') }}</button>
         </div>
 
         <!-- Фильтры периода -->
@@ -26,19 +26,19 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                 <span class="period-tooltip" tabindex="0">
                     <i class="fa fa-question-circle" aria-hidden="true"></i>
                     <span class="period-tooltip-text">
-                        <b>Пояснения к периодам:</b><br>
-                        <b>За неделю</b>: с последнего понедельника по сегодня.<br>
-                        <b>За 2 недели</b>: с предпоследнего понедельника по сегодня.<br>
-                        <b>За месяц</b>: с 1-го числа текущего месяца по сегодня.<br>
-                        <b>За полгода</b>: с 1-го числа месяца первой продажи за последние 6 месяцев по сегодня (или просто с 1-го числа 6 месяцев назад, если нет продаж).<br>
-                        <b>За год</b>: с 1-го числа месяца первой продажи за последние 12 месяцев по сегодня (или просто с 1-го числа 12 месяцев назад, если нет продаж).
+                        <b>{{ __('messages.period_explanations') }}:</b><br>
+                        <b>{{ __('messages.for_week') }}</b>: {{ __('messages.week_explanation') }}<br>
+                        <b>{{ __('messages.for_2_weeks') }}</b>: {{ __('messages.2weeks_explanation') }}<br>
+                        <b>{{ __('messages.for_month') }}</b>: {{ __('messages.month_explanation') }}<br>
+                        <b>{{ __('messages.for_half_year') }}</b>: {{ __('messages.half_year_explanation') }}<br>
+                        <b>{{ __('messages.for_year') }}</b>: {{ __('messages.year_explanation') }}
                     </span>
                 </span>
-                <button class="filter-button active">За неделю</button>
-                <button class="filter-button">За 2 недели</button>
-                <button class="filter-button">За месяц</button>
-                <button class="filter-button">За полгода</button>
-                <button class="filter-button">За год</button>
+                <button class="filter-button active">{{ __('messages.for_week') }}</button>
+                <button class="filter-button">{{ __('messages.for_2_weeks') }}</button>
+                <button class="filter-button">{{ __('messages.for_month') }}</button>
+                <button class="filter-button">{{ __('messages.for_half_year') }}</button>
+                <button class="filter-button">{{ __('messages.for_year') }}</button>
                 <button class="filter-button calendar-button" id="dateRangePicker">
                     <i class="fa fa-calendar"></i>
                 </button>
@@ -52,15 +52,15 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Структура продаж по категориям</h4>
-                        <p class="text-muted">Распределение по категориям.</p>
+                        <h4 class="mb-3">{{ __('messages.sales_structure_by_categories') }}</h4>
+                        <p class="text-muted">{{ __('messages.distribution_by_categories') }}</p>
                         <canvas id="turnoverCategoryPie"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Структура продаж по брендам</h4>
-                        <p class="text-muted">Распределение по брендам.</p>
+                        <h4 class="mb-3">{{ __('messages.sales_structure_by_brands') }}</h4>
+                        <p class="text-muted">{{ __('messages.distribution_by_brands') }}</p>
                         <canvas id="turnoverBrandPie"></canvas>
                     </div>
                 </div>
@@ -68,15 +68,15 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Динамика валовой прибыли</h4>
-                        <p class="text-muted">Разница между суммой продаж и себестоимостью товаров.</p>
+                        <h4 class="mb-3">{{ __('messages.gross_profit_dynamics') }}</h4>
+                        <p class="text-muted">{{ __('messages.difference_between_sales_and_cost') }}</p>
                         <canvas id="grossProfitChart"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Структура по типам товаров</h4>
-                        <p class="text-muted">Распределение услуги/товары.</p>
+                        <h4 class="mb-3">{{ __('messages.structure_by_product_types') }}</h4>
+                        <p class="text-muted">{{ __('messages.distribution_services_products') }}</p>
                         <canvas id="turnoverTypePie"></canvas>
                     </div>
                 </div>
@@ -84,8 +84,8 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-12 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Динамика товарооборота</h4>
-                        <p class="text-muted">Общий объем продаж и закупок по дням.</p>
+                        <h4 class="mb-3">{{ __('messages.turnover_dynamics') }}</h4>
+                        <p class="text-muted">{{ __('messages.total_sales_and_purchases_by_days') }}</p>
                         <canvas id="turnoverDynamicChart"></canvas>
                     </div>
                 </div>
@@ -95,8 +95,8 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-12 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Топ-5 товаров по продажам</h4>
-                        <p class="text-muted">Самые продаваемые товары за период.</p>
+                        <h4 class="mb-3">{{ __('messages.top_5_products_by_sales') }}</h4>
+                        <p class="text-muted">{{ __('messages.most_sold_products_for_period') }}</p>
                         <canvas id="topSalesBar"></canvas>
                     </div>
                 </div>
@@ -104,8 +104,8 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-12 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Топ-5 товаров по закупкам</h4>
-                        <p class="text-muted">Товары с наибольшим объемом закупок.</p>
+                        <h4 class="mb-3">{{ __('messages.top_5_products_by_purchases') }}</h4>
+                        <p class="text-muted">{{ __('messages.products_with_highest_purchase_volume') }}</p>
                         <canvas id="topPurchasesBar"></canvas>
                     </div>
                 </div>
@@ -113,8 +113,8 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-12 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Топ-5 клиентов по объёму покупок товаров</h4>
-                        <p class="text-muted">Клиенты, купившие товаров наибольшую сумму за период.</p>
+                        <h4 class="mb-3">{{ __('messages.top_5_clients_by_product_purchases') }}</h4>
+                        <p class="text-muted">{{ __('messages.clients_who_bought_products_for_highest_amount') }}</p>
                         <canvas id="topClientsBySalesBar"></canvas>
                     </div>
                 </div>
@@ -124,33 +124,33 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row mb-4" id="stockSummaryRow">
                 <div class="col-lg-4 mb-2">
                     <div class="stat-card" style="background:#f3f4f6;padding:18px 24px;border-radius:10px;font-size:1.1rem;font-weight:600;">
-                        <span>Общее количество товаров на складе: </span><span id="stockTotalQty">—</span> шт
+                        <span>{{ __('messages.total_products_on_warehouse') }}: </span><span id="stockTotalQty">—</span> {{ __('messages.pieces') }}
                     </div>
                 </div>
                 <div class="col-lg-4 mb-2">
                     <div class="stat-card" style="background:#f3f4f6;padding:18px 24px;border-radius:10px;font-size:1.1rem;font-weight:600;">
-                        <span>Общая сумма опта на складе: </span><span id="stockTotalWholesale" data-currency data-amount="0">—</span> {{ $currencySymbol }}
+                        <span>{{ __('messages.total_wholesale_amount_on_warehouse') }}: </span><span id="stockTotalWholesale" data-currency data-amount="0">—</span> {{ $currencySymbol }}
                     </div>
                 </div>
                 <div class="col-lg-4 mb-2">
                     <div class="stat-card" style="background:#f3f4f6;padding:18px 24px;border-radius:10px;font-size:1.1rem;font-weight:600;">
-                        <span>Общая сумма розници на складе: </span><span id="stockTotalRetail" data-currency data-amount="0">—</span> {{ $currencySymbol }}
+                        <span>{{ __('messages.total_retail_amount_on_warehouse') }}: </span><span id="stockTotalRetail" data-currency data-amount="0">—</span> {{ $currencySymbol }}
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Средний срок оборачиваемости</h4>
-                        <p class="text-muted">Среднее время между закупкой и продажей товара.</p>
+                        <h4 class="mb-3">{{ __('messages.average_turnover_period') }}</h4>
+                        <p class="text-muted">{{ __('messages.average_time_between_purchase_and_sale') }}</p>
                         <canvas id="turnoverDaysChart"></canvas>
                         <div id="avgTurnoverDaysValue" style="font-size:1.2rem;font-weight:600;margin-top:12px;"></div>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Структура по поставщикам</h4>
-                        <p class="text-muted">Доля топ-5 поставщиков в общем объеме закупок.</p>
+                        <h4 class="mb-3">{{ __('messages.structure_by_suppliers') }}</h4>
+                        <p class="text-muted">{{ __('messages.share_of_top_5_suppliers_in_total_purchases') }}</p>
                         <canvas id="supplierStructurePie"></canvas>
                     </div>
                 </div>
@@ -158,15 +158,15 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Поставщики по объёму закупок</h4>
-                        <p class="text-muted">Топ-6 поставщиков с наибольшим объемом закупок за период.</p>
+                        <h4 class="mb-3">{{ __('messages.suppliers_by_purchase_volume') }}</h4>
+                        <p class="text-muted">{{ __('messages.top_6_suppliers_with_highest_purchase_volume') }}</p>
                         <canvas id="topSuppliersBar"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Остатки на складе по категориям</h4>
-                        <p class="text-muted">Количество и сумма остатков по оптовой и розничной цене для каждой категории товаров.</p>
+                        <h4 class="mb-3">{{ __('messages.warehouse_stock_by_categories') }}</h4>
+                        <p class="text-muted">{{ __('messages.quantity_and_amount_of_stock_by_wholesale_and_retail_price') }}</p>
                         <canvas id="stockByCategoryBar"></canvas>
                     </div>
                 </div>
@@ -176,15 +176,15 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Доля фиксированных и переменных расходов</h4>
-                        <p class="text-muted">Сравнение фиксированных и переменных расходов.</p>
+                        <h4 class="mb-3">{{ __('messages.share_of_fixed_and_variable_expenses') }}</h4>
+                        <p class="text-muted">{{ __('messages.comparison_of_fixed_and_variable_expenses') }}</p>
                         <canvas id="expensesFixedVariablePie"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Структура расходов по категориям</h4>
-                        <p class="text-muted">Доля каждой категории в общих расходах.</p>
+                        <h4 class="mb-3">{{ __('messages.expenses_structure_by_categories') }}</h4>
+                        <p class="text-muted">{{ __('messages.share_of_each_category_in_total_expenses') }}</p>
                         <canvas id="expensesByCategoryPie"></canvas>
                     </div>
                 </div>
@@ -192,15 +192,15 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Динамика расходов по категориям</h4>
-                        <p class="text-muted">Как менялись расходы по каждой категории во времени.</p>
+                        <h4 class="mb-3">{{ __('messages.expenses_dynamics_by_categories') }}</h4>
+                        <p class="text-muted">{{ __('messages.how_expenses_changed_by_each_category_over_time') }}</p>
                         <canvas id="expensesCategoryDynamicsChart"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Динамика расходов по месяцам</h4>
-                        <p class="text-muted">Как менялись общие расходы по месяцам.</p>
+                        <h4 class="mb-3">{{ __('messages.expenses_dynamics_by_months') }}</h4>
+                        <p class="text-muted">{{ __('messages.how_total_expenses_changed_by_months') }}</p>
                         <canvas id="expensesByMonthChart"></canvas>
                     </div>
                 </div>
@@ -208,15 +208,15 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Топ-3 месяца по расходам</h4>
-                        <p class="text-muted">Месяцы с наибольшими расходами.</p>
+                        <h4 class="mb-3">{{ __('messages.top_3_months_by_expenses') }}</h4>
+                        <p class="text-muted">{{ __('messages.months_with_highest_expenses') }}</p>
                         <canvas id="expensesTopMonthsBar"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Средний расход по категориям</h4>
-                        <p class="text-muted">Средний ежемесячный расход по каждой категории.</p>
+                        <h4 class="mb-3">{{ __('messages.average_expense_by_categories') }}</h4>
+                        <p class="text-muted">{{ __('messages.average_monthly_expense_by_each_category') }}</p>
                         <canvas id="expensesAverageByCategoryBar"></canvas>
                     </div>
                 </div>
@@ -226,15 +226,15 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Топ-5 сотрудников по объему продаж</h4>
-                        <p class="text-muted">Сотрудники с наибольшей суммой продаж за период.</p>
+                        <h4 class="mb-3">{{ __('messages.top_5_employees_by_sales_volume') }}</h4>
+                        <p class="text-muted">{{ __('messages.employees_with_highest_sales_amount_for_period') }}</p>
                         <canvas id="topEmployeesBar"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Структура продаж по сотрудникам</h4>
-                        <p class="text-muted">Доля каждого сотрудника в общих продажах.</p>
+                        <h4 class="mb-3">{{ __('messages.sales_structure_by_employees') }}</h4>
+                        <p class="text-muted">{{ __('messages.share_of_each_employee_in_total_sales') }}</p>
                         <canvas id="employeesStructurePie"></canvas>
                     </div>
                 </div>
@@ -242,15 +242,15 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Динамика продаж по сотрудникам</h4>
-                        <p class="text-muted">Как менялись продажи каждого сотрудника во времени.</p>
+                        <h4 class="mb-3">{{ __('messages.sales_dynamics_by_employees') }}</h4>
+                        <p class="text-muted">{{ __('messages.how_sales_of_each_employee_changed_over_time') }}</p>
                         <canvas id="employeesDynamicsChart"></canvas>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="report-card">
-                        <h4 class="mb-3">Средняя сумма продажи по сотрудникам</h4>
-                        <p class="text-muted">Средняя сумма одной продажи у каждого сотрудника.</p>
+                        <h4 class="mb-3">{{ __('messages.average_sale_amount_by_employees') }}</h4>
+                        <p class="text-muted">{{ __('messages.average_amount_of_one_sale_for_each_employee') }}</p>
                         <canvas id="employeesAverageBar"></canvas>
                     </div>
                 </div>
@@ -280,21 +280,21 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
         const end = new Date();
         let start;
         switch (period) {
-            case 'За неделю':
+            case '{{ __('messages.for_week') }}':
                 start = new Date(end);
                 start.setDate(end.getDate() - ((end.getDay() + 6) % 7)); // последний понедельник
                 break;
-            case 'За 2 недели':
+            case '{{ __('messages.for_2_weeks') }}':
                 start = new Date(end);
                 start.setDate(end.getDate() - ((end.getDay() + 6) % 7) - 7); // предпоследний понедельник
                 break;
-            case 'За месяц':
+            case '{{ __('messages.for_month') }}':
                 start = new Date(end.getFullYear(), end.getMonth(), 1); // строго 1-е число месяца
                 break;
-            case 'За полгода':
+            case '{{ __('messages.for_half_year') }}':
                 start = new Date(end.getFullYear(), end.getMonth() - 5, 1);
                 break;
-            case 'За год':
+            case '{{ __('messages.for_year') }}':
                 start = new Date(end.getFullYear(), end.getMonth() - 11, 1);
                 break;
             default:
@@ -310,15 +310,15 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
     document.addEventListener('DOMContentLoaded', function () {
         // --- Удалён первый fetch('/reports/turnover-analytics') ---
         // --- Инициализация при загрузке (по умолчанию за месяц) ---
-        // Снимаем выделение со всех кнопок и выделяем 'За месяц'
+        // Снимаем выделение со всех кнопок и выделяем месяц
         const filterButtonsArr = Array.from(document.querySelectorAll('.filter-section .filter-button'));
-        const monthBtn = filterButtonsArr.find(btn => btn.textContent.trim() === 'За месяц');
+        const monthBtn = filterButtonsArr.find(btn => btn.textContent.trim() === '{{ __('messages.for_month') }}');
         if (monthBtn) {
             filterButtonsArr.forEach(btn => btn.classList.remove('active'));
             monthBtn.classList.add('active');
         }
         // Формируем параметры для месяца
-        const params = getPeriodParams('За месяц');
+        const params = getPeriodParams('{{ __('messages.for_month') }}');
         updateTurnoverAnalytics(params);
         updateTopsAnalytics(params);
         updateSuppliersAnalytics(params);
@@ -365,7 +365,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                     const formatISO = d => d.toISOString().slice(0, 10);
                     params = `start_date=${formatISO(window.selectedRange.start)}&end_date=${formatISO(window.selectedRange.end)}`;
             } else {
-                 params = getPeriodParams('За месяц'); // Фоллбэк на месяц, если ничего не выбрано
+                 params = getPeriodParams('{{ __('messages.for_month') }}'); // Фоллбэк на месяц, если ничего не выбрано
                 }
 
             if (targetPaneId === 'dynamic-analytics') {
@@ -396,7 +396,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         labels: data.dynamic.labels,
                         datasets: [
                             {
-                                label: 'Продажи',
+                                label: '{{ __('messages.sales') }}',
                                 data: data.dynamic.sales,
                                 borderColor: 'rgb(59, 130, 246)',
                                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -404,7 +404,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                                 tension: 0.4
                             },
                             {
-                                label: 'Закупки',
+                                label: '{{ __('messages.purchases') }}',
                                 data: data.dynamic.purchases,
                                 borderColor: 'rgb(16, 185, 129)',
                                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -435,7 +435,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         labels: data.dynamic.labels,
                         datasets: [
                             {
-                                label: 'Валовая прибыль',
+                                label: '{{ __('messages.gross_profit') }}',
                                 data: data.dynamic.gross_profit,
                                 borderColor: 'rgb(245, 158, 11)',
                                 backgroundColor: 'rgba(245, 158, 11, 0.1)',
@@ -508,19 +508,19 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         plugins: {
                             ...pieOptions.plugins,
                             tooltip: {
-                                callbacks: {
-                                    label: function (context) {
-                                        const i = context.dataIndex;
-                                        const label = data.category.labels[i];
-                                        const count = data.category.data[i];
-                                        const sum = data.category.sums[i];
-                                        return [
-                                            `${label}`,
-                                            `Количество: ${count} шт`,
-                                            `Сумма: ${formatCurrency(sum)}`
-                                        ];
+                                                                    callbacks: {
+                                        label: function (context) {
+                                            const i = context.dataIndex;
+                                            const label = data.category.labels[i];
+                                            const count = data.category.data[i];
+                                            const sum = data.category.sums[i];
+                                            return [
+                                                `${label}`,
+                                                `{{ __('messages.quantity') }}: ${count} {{ __('messages.pieces') }}`,
+                                                `{{ __('messages.sum') }}: ${formatCurrency(sum)}`
+                                            ];
+                                        }
                                     }
-                                }
                             }
                         }
                     }
@@ -541,19 +541,19 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         plugins: {
                             ...pieOptions.plugins,
                             tooltip: {
-                                callbacks: {
-                                    label: function (context) {
-                                        const i = context.dataIndex;
-                                        const label = data.brand.labels[i];
-                                        const count = data.brand.data[i];
-                                        const sum = data.brand.sums[i];
-                                        return [
-                                            `${label}`,
-                                            `Количество: ${count} шт`,
-                                            `Сумма: ${formatCurrency(sum)}`
-                                        ];
+                                                                    callbacks: {
+                                        label: function (context) {
+                                            const i = context.dataIndex;
+                                            const label = data.brand.labels[i];
+                                            const count = data.brand.data[i];
+                                            const sum = data.brand.sums[i];
+                                            return [
+                                                `${label}`,
+                                                `{{ __('messages.quantity') }}: ${count} {{ __('messages.pieces') }}`,
+                                                `{{ __('messages.sum') }}: ${formatCurrency(sum)}`
+                                            ];
+                                        }
                                     }
-                                }
                             }
                         }
                     }
@@ -574,17 +574,17 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         plugins: {
                             ...pieOptions.plugins,
                             tooltip: {
-                                callbacks: {
-                                    label: function (context) {
-                                        const i = context.dataIndex;
-                                        const label = data.supplier.labels[i];
-                                        const sum = data.supplier.data[i];
-                                        return [
-                                            `${label}`,
-                                            `Сумма: ${formatCurrency(sum)}`
-                                        ];
+                                                                    callbacks: {
+                                        label: function (context) {
+                                            const i = context.dataIndex;
+                                            const label = data.supplier.labels[i];
+                                            const sum = data.supplier.data[i];
+                                            return [
+                                                `${label}`,
+                                                `{{ __('messages.sum') }}: ${formatCurrency(sum)}`
+                                            ];
+                                        }
                                     }
-                                }
                             }
                         }
                     }
@@ -605,17 +605,17 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         plugins: {
                             ...pieOptions.plugins,
                             tooltip: {
-                                callbacks: {
-                                    label: function (context) {
-                                        const i = context.dataIndex;
-                                        const label = data.type.labels[i];
-                                        const sum = data.type.sums[i];
-                                        return [
-                                            `${label}`,
-                                            `Сумма: ${formatCurrency(sum)}`
-                                        ];
+                                                                    callbacks: {
+                                        label: function (context) {
+                                            const i = context.dataIndex;
+                                            const label = data.type.labels[i];
+                                            const sum = data.type.sums[i];
+                                            return [
+                                                `${label}`,
+                                                `{{ __('messages.sum') }}: ${formatCurrency(sum)}`
+                                            ];
+                                        }
                                     }
-                                }
                             }
                         }
                     }
@@ -667,7 +667,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         data: {
                             labels: data.topSales.labels,
                             datasets: [{
-                                label: 'Продажи, шт',
+                                label: '{{ __('messages.sales') }}, {{ __('messages.pieces') }}',
                                 data: data.topSales.data,
                                 backgroundColor: grad,
                                 borderColor: 'rgba(59,130,246,0.3)',
@@ -719,7 +719,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         data: {
                             labels: data.topPurchases.labels,
                             datasets: [{
-                                label: 'Закупки, шт',
+                                label: '{{ __('messages.purchases') }}, {{ __('messages.pieces') }}',
                                 data: data.topPurchases.data,
                                 backgroundColor: grad,
                                 borderColor: 'rgba(16,185,129,0.3)',
@@ -773,7 +773,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         data: {
                             labels: data.topClients.labels,
                             datasets: [{
-                                label: 'Покупки',
+                                label: '{{ __('messages.purchases') }}',
                                 data: data.topClients.data,
                                 backgroundColor: grad,
                                 borderColor: 'rgba(245,158,11,0.3)',
@@ -815,11 +815,11 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
     // --- Обработка фильтров периода ---
     const filterButtons = document.querySelectorAll('.filter-section .filter-button');
     const periodMapping = {
-        'За неделю': 7,
-        'За 2 недели': 14,
-        'За месяц': 30,
-        'За полгода': 182,
-        'За год': 365
+        '{{ __('messages.for_week') }}': 7,
+        '{{ __('messages.for_2_weeks') }}': 14,
+        '{{ __('messages.for_month') }}': 30,
+        '{{ __('messages.for_half_year') }}': 182,
+        '{{ __('messages.for_year') }}': 365
     };
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -827,7 +827,10 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             filterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
             // Очищаем отображение диапазона дат при выборе любого периода
-            if (calendarRangeDisplay) calendarRangeDisplay.textContent = '';
+            if (calendarRangeDisplay) {
+                calendarRangeDisplay.textContent = '';
+                calendarRangeDisplay.style.minWidth = '';
+            }
             
             const period = button.textContent.trim();
             const params = getPeriodParams(period);
@@ -858,13 +861,14 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
             calendarInstance = flatpickr(calendarBtn, {
                 mode: 'range',
                 dateFormat: 'Y-m-d',
-                locale: 'ru',
+                locale: '{{ app()->getLocale() }}',
                 onClose: function (selectedDates, dateStr) {
                     if (selectedDates.length === 2) {
                         filterButtons.forEach(btn => btn.classList.remove('active'));
                         calendarBtn.classList.add('active');
-                        const format = d => d.toLocaleDateString('ru-RU', {day: '2-digit', month: '2-digit'});
+                        const format = d => d.toLocaleDateString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', {day: '2-digit', month: '2-digit'});
                         calendarRangeDisplay.textContent = `${format(selectedDates[0])} — ${format(selectedDates[1])}`;
+                        calendarRangeDisplay.style.minWidth = '110px';
                         // Форматируем для запроса
                         const formatISO = d => d.toISOString().slice(0, 10);
                         const params = `start_date=${formatISO(selectedDates[0])}&end_date=${formatISO(selectedDates[1])}`;
@@ -915,7 +919,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         data: {
                             labels: data.topSuppliers.map(s => s.label),
                             datasets: [{
-                                label: 'Закупки',
+                                label: '{{ __('messages.purchases') }}',
                                 data: data.topSuppliers.map(s => s.sum),
                                 backgroundColor: grad,
                                 borderColor: 'rgba(139,92,246,0.3)',
@@ -1005,7 +1009,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         data: {
                             labels: data.stockByCategory.map(c => c.label),
                             datasets: [{
-                                label: 'Остаток, шт',
+                                label: '{{ __('messages.stock') }}, {{ __('messages.pieces') }}',
                                 data: data.stockByCategory.map(c => c.qty),
                                 backgroundColor: grad,
                                 borderColor: 'rgba(59,130,246,0.3)',
@@ -1021,12 +1025,12 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                                         label: function(context) {
                                             const i = context.dataIndex;
                                             const cat = data.stockByCategory[i];
-                                            return [
-                                                `Категория: ${cat.label}`,
-                                                `Остаток: ${cat.qty} шт`,
-                                                `Опт: ${formatCurrency(cat.wholesale)}`,
-                                                `Розница: ${formatCurrency(cat.retail)}`
-                                            ];
+                                                                                    return [
+                                            `{{ __('messages.category') }}: ${cat.label}`,
+                                            `{{ __('messages.stock') }}: ${cat.qty} {{ __('messages.pieces') }}`,
+                                            `{{ __('messages.wholesale') }}: ${formatCurrency(cat.wholesale)}`,
+                                            `{{ __('messages.retail') }}: ${formatCurrency(cat.retail)}`
+                                        ];
                                         }
                                     }
                                 }
@@ -1076,14 +1080,14 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                     if (charts.turnoverDaysChart) charts.turnoverDaysChart.destroy();
                     charts.turnoverDaysChart = new Chart(ctx, {
                         type: 'doughnut',
-                        data: {
-                            labels: ['Средний срок, дней'],
-                            datasets: [{
-                                data: [data.avgTurnoverDays ?? 0, (data.avgTurnoverDays ? 100 - data.avgTurnoverDays : 100)],
-                                backgroundColor: ['#6366f1', '#e5e7eb'],
-                                borderWidth: 0
-                            }]
-                        },
+                                            data: {
+                        labels: ['{{ __('messages.average_period_days') }}'],
+                        datasets: [{
+                            data: [data.avgTurnoverDays ?? 0, (data.avgTurnoverDays ? 100 - data.avgTurnoverDays : 100)],
+                            backgroundColor: ['#6366f1', '#e5e7eb'],
+                            borderWidth: 0
+                        }]
+                    },
                         options: {
                             cutout: '80%',
                             plugins: {
@@ -1116,7 +1120,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                 // После получения данных из API, добавить вывод значения с подписью 'дней'
                 if (document.getElementById('avgTurnoverDaysValue')) {
                     const val = data.avgTurnoverDays;
-                    document.getElementById('avgTurnoverDaysValue').textContent = val !== null ? val + ' дней' : '—';
+                    document.getElementById('avgTurnoverDaysValue').textContent = val !== null ? val + ' {{ __('messages.days') }}' : '—';
                 }
             });
     }
@@ -1134,7 +1138,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                     data: {
                         labels: data.labels,
                         datasets: [{
-                            label: 'Общие расходы',
+                            label: '{{ __('messages.total_expenses') }}',
                             data: data.data,
                             borderColor: '#ef4444',
                             backgroundColor: 'rgba(239,68,68,0.1)',
@@ -1194,11 +1198,11 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                     type: 'bar',
                     data: {
                         labels: data.labels,
-                        datasets: [{
-                            label: 'Средний расход',
-                            data: data.data,
-                            backgroundColor: '#f59e42'
-                        }]
+                                                    datasets: [{
+                                label: '{{ __('messages.average_expense') }}',
+                                data: data.data,
+                                backgroundColor: '#f59e42'
+                            }]
                     },
                     options: {
                         scales: {
@@ -1220,16 +1224,16 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                     type: 'bar',
                     data: {
                         labels: data.labels,
-                        datasets: [{
-                            label: 'Расходы',
-                            data: data.data,
-                            backgroundColor: '#7c3aed'
-                        }]
+                                                    datasets: [{
+                                label: '{{ __('messages.expenses') }}',
+                                data: data.data,
+                                backgroundColor: '#7c3aed'
+                            }]
                     },
                     options: {scales: {y: {beginAtZero: true}}}
                 });
             });
-        // 6. Фикс/переменные
+        // 6. Фиксированные/переменные
         fetch('/analytics/expenses-fixed-variable' + (params ? '?' + params : ''))
             .then(r => r.json())
             .then(data => {
@@ -1270,7 +1274,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         data: {
                             labels: data.topEmployees.map(e => e.label),
                             datasets: [{
-                                label: 'Продажи',
+                                label: '{{ __('messages.sales') }}',
                                 data: data.topEmployees.map(e => e.sum),
                                 backgroundColor: grad,
                                 borderColor: 'rgba(59,130,246,0.3)',
@@ -1372,7 +1376,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         data: {
                             labels: data.employeesAverage.labels,
                             datasets: [{
-                                label: 'Средняя сумма продажи',
+                                label: '{{ __('messages.average_sale_amount') }}',
                                 data: data.employeesAverage.data,
                                 backgroundColor: '#f59e42'
                             }]

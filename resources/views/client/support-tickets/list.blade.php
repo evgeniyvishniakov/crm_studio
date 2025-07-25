@@ -3,14 +3,14 @@
 @section('content')
 <div class="dashboard-container">
     <div class="clients-header">
-        <h1>Поддержка</h1>
+        <h1>{{ __('messages.support') }}</h1>
         <div id="notification"></div>
         <div class="header-actions">
             <button class="btn-add-client" onclick="openTicketModal()">
                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                 </svg>
-                Создать тикет
+                {{ __('messages.create_ticket') }}
             </button>
         </div>
     </div>
@@ -18,9 +18,9 @@
         <table class="clients-table">
             <thead>
                 <tr>
-                    <th>Тема</th>
-                    <th>Статус</th>
-                    <th>Дата создания</th>
+                    <th>{{ __('messages.subject') }}</th>
+                    <th>{{ __('messages.status') }}</th>
+                    <th>{{ __('messages.created_date') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,13 +29,13 @@
                         <td>{{ $ticket->subject }}</td>
                         <td>
                             <span class="status-badge {{ $ticket->status === 'open' ? 'status-completed' : ($ticket->status === 'pending' ? 'status-pending' : 'status-cancelled') }}">
-                                {{ $ticket->status === 'open' ? 'Открыт' : ($ticket->status === 'pending' ? 'Ожидается' : 'Закрыт') }}
+                                {{ $ticket->status === 'open' ? __('messages.open') : ($ticket->status === 'pending' ? __('messages.pending') : __('messages.closed')) }}
                             </span>
                         </td>
                         <td>{{ $ticket->created_at->format('d.m.Y H:i') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="3">Тикетов пока нет</td></tr>
+                    <tr><td colspan="3">{{ __('messages.no_tickets_yet') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -47,24 +47,24 @@
 <div id="createTicketModal" class="modal" style="display:none;">
     <div class="modal-content" style="width: 600px; max-width: 98vw;">
         <div class="modal-header">
-            <h2>Создать тикет</h2>
+            <h2>{{ __('messages.create_ticket') }}</h2>
             <span class="close" onclick="closeTicketModal()">&times;</span>
         </div>
         <form method="POST" action="{{ route('support-tickets.store') }}" id="createTicketForm">
             @csrf
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Тема *</label>
+                    <label>{{ __('messages.subject') }} *</label>
                     <input type="text" name="subject" class="form-control" required maxlength="255">
                 </div>
                 <div class="form-group">
-                    <label>Сообщение *</label>
+                    <label>{{ __('messages.message') }} *</label>
                     <textarea name="message" class="form-control" required rows="4"></textarea>
                 </div>
             </div>
             <div class="modal-footer form-actions">
-                <button type="button" class="btn-cancel" onclick="closeTicketModal()">Отмена</button>
-                <button type="submit" class="btn-submit">Отправить</button>
+                <button type="button" class="btn-cancel" onclick="closeTicketModal()">{{ __('messages.cancel') }}</button>
+                <button type="submit" class="btn-submit">{{ __('messages.send') }}</button>
             </div>
         </form>
     </div>
@@ -74,15 +74,15 @@
 <div id="ticketChatModal" class="modal" style="display:none;">
     <div class="modal-content chat-modal-centered">
         <div class="modal-header">
-            <h2 id="chatModalTitle">Тикет</h2>
+            <h2 id="chatModalTitle">{{ __('messages.ticket') }}</h2>
             <span class="close" onclick="closeTicketChatModal()">&times;</span>
         </div>
         <div class="modal-body">
             <div class="chat-messages" id="modalChatMessages" style="height: 350px; overflow-y: auto; background: #f9fafb; border-radius: 10px; padding: 24px; margin-bottom: 0; border-bottom: 1px solid #e5e7eb;"></div>
             <form id="modalChatForm" class="chat-form" style="display: flex; gap: 12px; padding: 16px; border-top: 1px solid #e5e7eb; background: #fff;">
                 @csrf
-                <input type="text" name="message" class="form-control" placeholder="Введите сообщение..." required style="flex:1;">
-                <button type="submit" class="btn-submit">Отправить</button>
+                <input type="text" name="message" class="form-control" placeholder="{{ __('messages.enter_message') }}..." required style="flex:1;">
+                <button type="submit" class="btn-submit">{{ __('messages.send') }}</button>
             </form>
         </div>
     </div>
@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const submitBtn = form.querySelector('.btn-submit');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Отправка...';
+            submitBtn.textContent = '{{ __('messages.sending') }}...';
             const formData = new FormData(form);
             fetch(form.action, {
                 method: 'POST',
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.textContent = 'Отправить';
                 if (response.ok) {
                     const data = await response.json().catch(() => ({}));
-                    window.showNotification('success', 'Тикет успешно создан!');
+                    window.showNotification('success', '{{ __('messages.ticket_successfully_created') }}');
                     closeTicketModal();
                     // Добавляем тикет в таблицу без перезагрузки
                     const tbody = document.querySelector('table tbody');
@@ -165,13 +165,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     newRow.style.opacity = 0;
                     newRow.innerHTML = `
                         <td>${ticket.subject}</td>
-                        <td><span class="status-badge status-completed">Открыт</span></td>
+                        <td><span class="status-badge status-completed">{{ __('messages.open') }}</span></td>
                         <td>${dateStr}</td>
                     `;
                     tbody.prepend(newRow);
                     // Удаляем строку 'Тикетов пока нет', если есть
                     const emptyRow = tbody.querySelector('tr td[colspan]');
-                    if (emptyRow && emptyRow.textContent.includes('Тикетов пока нет')) {
+                    if (emptyRow && emptyRow.textContent.includes('{{ __('messages.no_tickets_yet') }}')) {
                         emptyRow.parentElement.remove();
                     }
                     // Навешиваем обработчик клика на новую строку
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     setTimeout(() => { newRow.style.transition = 'opacity 0.5s'; newRow.style.opacity = 1; }, 10);
                 } else {
-                    let msg = 'Ошибка при создании тикета';
+                    let msg = '{{ __('messages.error_creating_ticket') }}';
                     try {
                         const data = await response.json();
                         if (data.errors) {
@@ -195,8 +195,8 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(() => {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Отправить';
-                window.showNotification('error', 'Ошибка сети');
+                submitBtn.textContent = '{{ __('messages.send') }}';
+                window.showNotification('error', '{{ __('messages.network_error') }}');
             });
         });
     }
@@ -208,7 +208,7 @@ let chatPollingInterval = null;
 
 function openTicketChatModal(ticketId, subject) {
     currentChatTicketId = ticketId;
-    document.getElementById('chatModalTitle').textContent = 'Тикет: ' + subject;
+    document.getElementById('chatModalTitle').textContent = '{{ __('messages.ticket') }}: ' + subject;
     document.getElementById('ticketChatModal').style.display = 'block';
     loadModalChatMessages(true);
     if (chatPollingInterval) clearInterval(chatPollingInterval);
@@ -216,7 +216,7 @@ function openTicketChatModal(ticketId, subject) {
     // Проверяем статус тикета
     const row = document.querySelector(`.ticket-row[data-ticket-id='${ticketId}']`);
     if (row && ['pending','closed'].includes(row.dataset.ticketStatus)) {
-        window.showNotification && window.showNotification('error', 'Чат недоступен для этого статуса');
+        window.showNotification && window.showNotification('error', '{{ __('messages.chat_unavailable_for_status') }}');
         return;
     }
 }
@@ -231,7 +231,7 @@ async function loadModalChatMessages(scrollToEnd = false) {
     const chatMessages = document.getElementById('modalChatMessages');
     // Показываем лоадер только если сообщений ещё нет
     if (!chatMessages.children.length) {
-        chatMessages.innerHTML = '<div class="chat-loading">Загрузка...</div>';
+        chatMessages.innerHTML = '<div class="chat-loading">{{ __('messages.loading') }}...</div>';
     }
     try {
         const res = await fetch(`/support-tickets/${currentChatTicketId}/messages`, {
@@ -242,14 +242,14 @@ async function loadModalChatMessages(scrollToEnd = false) {
         renderModalChatMessages(data.messages);
         if (scrollToEnd) chatMessages.scrollTop = chatMessages.scrollHeight;
     } catch (e) {
-        chatMessages.innerHTML = '<div class="chat-error">Ошибка загрузки сообщений</div>';
+        chatMessages.innerHTML = '<div class="chat-error">{{ __('messages.error_loading_messages') }}</div>';
     }
 }
 function renderModalChatMessages(messages) {
     const chatMessages = document.getElementById('modalChatMessages');
     chatMessages.innerHTML = '';
     if (!messages.length) {
-        chatMessages.innerHTML = '<div class="chat-empty">Сообщений пока нет</div>';
+        chatMessages.innerHTML = '<div class="chat-empty">{{ __('messages.no_messages_yet') }}</div>';
         return;
     }
     messages.forEach(msg => {
@@ -258,7 +258,7 @@ function renderModalChatMessages(messages) {
         msgDiv.className = 'chat-message' + (isMe ? ' chat-message-me' : ' chat-message-admin');
         msgDiv.innerHTML = `
             <div class="chat-msg-meta">
-                <span class="chat-msg-author">${isMe ? 'Вы' : 'Админ'}</span>
+                <span class="chat-msg-author">${isMe ? '{{ __('messages.you') }}' : '{{ __('messages.admin') }}'}</span>
                 <span class="chat-msg-date">${new Date(msg.created_at).toLocaleString('ru-RU', {hour: '2-digit', minute:'2-digit', day:'2-digit', month:'2-digit', year:'2-digit'})}</span>
             </div>
             <div class="chat-msg-text">${escapeHtml(msg.message)}</div>
@@ -290,7 +290,7 @@ document.getElementById('modalChatForm').addEventListener('submit', async functi
     // Блокируем отправку, если тикет не открыт
     const row = document.querySelector(`.ticket-row[data-ticket-id='${currentChatTicketId}']`);
     if (row && ['pending','closed'].includes(row.dataset.ticketStatus)) {
-        window.showNotification && window.showNotification('error', 'Нельзя отправлять сообщения для этого статуса');
+        window.showNotification && window.showNotification('error', '{{ __('messages.cannot_send_messages_for_status') }}');
         return;
     }
     try {
@@ -308,12 +308,12 @@ document.getElementById('modalChatForm').addEventListener('submit', async functi
         if (data.success) {
             input.value = '';
             await loadModalChatMessages(true);
-            window.showNotification('success', 'Сообщение отправлено');
+            window.showNotification('success', '{{ __('messages.message_sent') }}');
         } else {
-            window.showNotification('error', 'Ошибка отправки');
+            window.showNotification('error', '{{ __('messages.error_sending') }}');
         }
     } catch (e) {
-        window.showNotification('error', 'Ошибка сети');
+        window.showNotification('error', '{{ __('messages.network_error') }}');
     } finally {
         btn.disabled = false;
     }

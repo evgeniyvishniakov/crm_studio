@@ -52,13 +52,33 @@ class SupportTicketController extends Controller
             'ip' => $request->ip()
         ]);
         
-        // После создания тикета:
-        Notification::create([
-            'type' => 'ticket',
-            'title' => 'Новый тикет',
-            'body' => $ticket->subject,
-            'url' => route('admin.tickets.index') . '#ticket-' . $ticket->id,
-        ]);
+        // После создания тикета - уведомляем пользователей с доступом к поддержке
+        $usersWithSupportAccess = \App\Models\Admin\User::where('project_id', $ticket->project_id)
+            ->whereHas('roleModel.permissions', function($query) {
+                $query->where('name', 'support');
+            })
+            ->get();
+        
+        foreach ($usersWithSupportAccess as $user) {
+            // Проверяем, не создано ли уже уведомление для этого пользователя
+            $existingNotification = Notification::where('user_id', $user->id)
+                ->where('type', 'ticket')
+                ->where('title', 'Новый тикет')
+                ->where('project_id', $ticket->project_id)
+                ->where('created_at', '>=', now()->subMinutes(1))
+                ->first();
+            
+            if (!$existingNotification) {
+                Notification::create([
+                    'user_id' => $user->id,
+                    'type' => 'ticket',
+                    'title' => 'Новый тикет',
+                    'body' => $ticket->subject,
+                    'url' => route('admin.tickets.index') . '#ticket-' . $ticket->id,
+                    'project_id' => $ticket->project_id,
+                ]);
+            }
+        }
         
         if ($request->ajax()) {
             return response()->json(['success' => true, 'ticket' => $ticket]);

@@ -24,6 +24,12 @@
                     </svg>
                     {{ __('messages.import') }}
                 </button>
+                <button id="deletedProductsBtn" class="btn-trash" onclick="showTrashedProducts()" title="{{ __('messages.show_deleted_products') }}" style="display: none;">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                    {{ __('messages.deleted_products') }}
+                </button>
                 <button class="btn-add-product" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -70,30 +76,28 @@
                         <td>{{ $product->brand->name ?? '—' }}</td>
                         <td class="currency-amount" data-amount="{{ $product->purchase_price }}">
                             @if(fmod($product->purchase_price, 1) == 0)
-                                {{ (int)$product->purchase_price }} грн
+                                {!! \App\Helpers\CurrencyHelper::getSymbol() !!}{{ (int)$product->purchase_price }}
                             @else
-                                {{ number_format($product->purchase_price, 2) }} грн
+                                {!! \App\Helpers\CurrencyHelper::getSymbol() !!}{{ number_format($product->purchase_price, 2) }}
                             @endif
                         </td>
                         <td class="currency-amount" data-amount="{{ $product->retail_price }}">
                             @if(fmod($product->retail_price, 1) == 0)
-                                {{ (int)$product->retail_price }} грн
+                                {!! \App\Helpers\CurrencyHelper::getSymbol() !!}{{ (int)$product->retail_price }}
                             @else
-                                {{ number_format($product->retail_price, 2) }} грн
+                                {!! \App\Helpers\CurrencyHelper::getSymbol() !!}{{ number_format($product->retail_price, 2) }}
                             @endif
                         </td>
                         <td class="actions-cell">
-                            <button class="btn-edit">
+                            <button class="btn-edit" title="{{ __('messages.edit') }}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
-                                {{ __('messages.edit_short') }}
                             </button>
-                            <button class="btn-delete">
+                            <button class="btn-delete" title="{{ __('messages.delete') }}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
-                                {{ __('messages.delete') }}
                             </button>
                         </td>
                     </tr>
@@ -172,6 +176,30 @@
         </div>
     </div>
 
+    <!-- Модальное окно подтверждения удаления всех товаров -->
+    <div id="confirmationDeleteAllModal" class="confirmation-modal">
+        <div class="confirmation-content">
+            <h3>{{ __('messages.confirmation_delete') }}</h3>
+            <p>{{ __('messages.are_you_sure_you_want_to_delete_all_products') }}</p>
+            <div class="confirmation-buttons">
+                <button id="cancelDeleteAll" class="cancel-btn">{{ __('messages.cancel') }}</button>
+                <button id="confirmDeleteAll" class="confirm-btn">{{ __('messages.delete') }}</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения принудительного удаления товара -->
+    <div id="confirmationForceDeleteModal" class="confirmation-modal">
+        <div class="confirmation-content">
+            <h3>{{ __('messages.confirmation_delete') }}</h3>
+            <p>{{ __('messages.are_you_sure_you_want_to_permanently_delete_this_product') }}</p>
+            <div class="confirmation-buttons">
+                <button id="cancelForceDelete" class="cancel-btn">{{ __('messages.cancel') }}</button>
+                <button id="confirmForceDelete" class="confirm-btn">{{ __('messages.delete') }}</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Модальное окно для редактирования товара -->
     <div id="editProductModal" class="modal">
         <div class="modal-content">
@@ -241,6 +269,46 @@
                     <h3>{{ __('messages.import_info') }}</h3>
                     <ul>
                         <li>{{ __('messages.file_must_contain_columns') }}</li>
+                        <li><strong>{{ __('messages.multilingual_column_support') }}</strong></li>
+                        <li><strong>{{ __('messages.column_names_examples') }}</strong></li>
+                        <ul style="margin-left: 20px; margin-top: 5px; color: #666; font-size: 0.9em;">
+                            @php 
+                                $currentLocale = app()->getLocale();
+                                $examples = [
+                                    'ru' => [
+                                        'name' => ['название', 'name', 'title', 'назва', 'nazvanie'],
+                                        'category' => ['категория', 'category', 'категорія', 'kategoriia'],
+                                        'brand' => ['бренд', 'brand', 'марка', 'brend'],
+                                        'purchase_price' => ['оптовая цена', 'purchase_price', 'оптова ціна', 'optovaia_cena'],
+                                        'retail_price' => ['розничная цена', 'retail_price', 'рознична ціна', 'roznicnaia_cena'],
+                                        'photo' => ['фото', 'photo', 'зображення', 'foto'],
+                                    ],
+                                    'en' => [
+                                        'name' => ['name', 'title', 'product_name'],
+                                        'category' => ['category', 'product_category'],
+                                        'brand' => ['brand', 'product_brand'],
+                                        'purchase_price' => ['purchase_price', 'wholesale_price', 'cost_price'],
+                                        'retail_price' => ['retail_price', 'selling_price', 'price'],
+                                        'photo' => ['photo', 'image', 'picture'],
+                                    ],
+                                    'ua' => [
+                                        'name' => ['назва', 'name', 'title', 'название', 'nazvanie'],
+                                        'category' => ['категорія', 'category', 'категория', 'kategoriia'],
+                                        'brand' => ['бренд', 'brand', 'марка', 'brend'],
+                                        'purchase_price' => ['оптова ціна', 'purchase_price', 'оптовая цена', 'optovaia_cena'],
+                                        'retail_price' => ['рознична ціна', 'retail_price', 'розничная цена', 'roznicnaia_cena'],
+                                        'photo' => ['зображення', 'photo', 'фото', 'foto'],
+                                    ],
+                                ];
+                                $currentExamples = $examples[$currentLocale] ?? $examples['en'];
+                            @endphp
+                            <li>{{ __('messages.column_name_name') }}: {{ implode(', ', $currentExamples['name']) }}</li>
+                            <li>{{ __('messages.column_name_category') }}: {{ implode(', ', $currentExamples['category']) }}</li>
+                            <li>{{ __('messages.column_name_brand') }}: {{ implode(', ', $currentExamples['brand']) }}</li>
+                            <li>{{ __('messages.column_name_purchase_price') }}: {{ implode(', ', $currentExamples['purchase_price']) }}</li>
+                            <li>{{ __('messages.column_name_retail_price') }}: {{ implode(', ', $currentExamples['retail_price']) }}</li>
+                            <li>{{ __('messages.column_name_photo') }}: {{ implode(', ', $currentExamples['photo']) }}</li>
+                        </ul>
                         <li>{{ __('messages.if_category_or_brand_not_specified') }}</li>
                         <li>{{ __('messages.photo_column') }}</li>
                         <ul style="margin-left: 20px; margin-top: 5px;">
@@ -333,6 +401,26 @@
         <img id="modalImage" src="" style="max-width:90vw;max-height:90vh;box-shadow:0 0 20px #000;border-radius:8px;z-index:10000;">
     </div>
 
+    <!-- Модальное окно для удаленных товаров -->
+    <div id="trashedModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>{{ __('messages.deleted_products') }}</h2>
+                <span class="close" onclick="closeTrashedModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="trashedProductsList">
+                    <div class="loading">{{ __('messages.loading') }}...</div>
+                </div>
+                <div class="modal-footer" style="margin-top: 20px; text-align: center; display: none;" id="trashedModalFooter">
+                                            <button onclick="showDeleteAllConfirmation()" class="btn-force-delete-all">
+                        {{ __('messages.delete_all_products') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <style>
         .btn-add-product {
             display: flex;
@@ -400,6 +488,27 @@
             color: #212529;
             text-decoration: none;
         }
+        .btn-trash {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            color: white;
+            border: 2px solid #dc3545;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+        }
+        .btn-trash:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #c0392b, #dc3545);
+            border-color: #c0392b;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
 
         /* Специальные стили для модального окна импорта */
         #importModal .modal-content {
@@ -432,22 +541,130 @@
             padding-left: 20px;
         }
 
-        #importModal .import-info li {
-            margin-bottom: 8px;
-            line-height: 1.5;
-            color: #495057;
-            text-align: left;
-        }
-
         #importModal .import-info ul ul {
-            margin-top: 10px;
-            margin-bottom: 10px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+            background-color: #ffffff;
+            border-radius: 6px;
+            padding: 12px 16px;
+            border: 1px solid #e9ecef;
         }
 
         #importModal .import-info ul ul li {
+            margin-bottom: 4px;
+            font-family: 'Courier New', monospace;
+            color: #495057;
+        }
+
+        #importModal .import-info ul ul li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Стили для модального окна удаленных товаров */
+        .trashed-product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+        }
+
+        .trashed-product-item .product-info {
+            flex: 1;
+        }
+
+        .trashed-product-item .product-info strong {
+            display: block;
+            color: #495057;
             margin-bottom: 5px;
-            font-size: 13px;
+        }
+
+        .trashed-product-item .product-info small {
+            display: block;
             color: #6c757d;
+            font-size: 0.85em;
+            margin-bottom: 2px;
+        }
+
+        .trashed-product-item .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-restore {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #28a745, #34d399);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-restore:hover {
+            background: linear-gradient(135deg, #218838, #28a745);
+            transform: translateY(-1px);
+        }
+
+        .btn-force-delete {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-force-delete:hover {
+            background: linear-gradient(135deg, #c0392b, #dc3545);
+            transform: translateY(-1px);
+        }
+
+        .btn-force-delete-all {
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            color: white;
+            border: 2px solid #dc3545;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 12px 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+        }
+
+        .btn-force-delete-all:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #c0392b, #dc3545);
+            border-color: #c0392b;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .no-data {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .error {
+            text-align: center;
+            color: #dc3545;
+            padding: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6c757d;
+            padding: 20px;
         }
 
         #importModal .form-group {
@@ -624,7 +841,8 @@
             } else {
                 value = parseFloat(value);
                 if (isNaN(value)) return '0';
-                return (value % 1 === 0 ? value.toFixed(0) : value.toFixed(2)) + ' грн';
+                const symbol = '{{ \App\Helpers\CurrencyHelper::getSymbol() }}';
+                return (value % 1 === 0 ? Math.floor(value) : value.toFixed(2)) + ' ' + symbol;
             }
         }
 
@@ -716,6 +934,36 @@
             currentDeleteId = null;
         });
 
+        // Кнопка отмены удаления
+        document.getElementById('cancelDelete').addEventListener('click', function() {
+            document.getElementById('confirmationModal').style.display = 'none';
+            currentDeleteRow = null;
+            currentDeleteId = null;
+        });
+
+        // Кнопка подтверждения удаления всех товаров
+        document.getElementById('confirmDeleteAll').addEventListener('click', function() {
+            forceDeleteAllProducts();
+            document.getElementById('confirmationDeleteAllModal').style.display = 'none';
+        });
+
+        // Кнопка отмены удаления всех товаров
+        document.getElementById('cancelDeleteAll').addEventListener('click', function() {
+            document.getElementById('confirmationDeleteAllModal').style.display = 'none';
+        });
+
+        // Кнопка подтверждения принудительного удаления товара
+        document.getElementById('confirmForceDelete').addEventListener('click', function() {
+            const productId = document.getElementById('confirmationForceDeleteModal').dataset.productId;
+            forceDeleteProduct(productId);
+            document.getElementById('confirmationForceDeleteModal').style.display = 'none';
+        });
+
+        // Кнопка отмены принудительного удаления товара
+        document.getElementById('cancelForceDelete').addEventListener('click', function() {
+            document.getElementById('confirmationForceDeleteModal').style.display = 'none';
+        });
+
         // Функция для удаления товара
         function deleteProduct(rowOrId, id) {
             let row;
@@ -740,7 +988,7 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Ошибка при удалении');
+                    throw new Error('{{ __('messages.error_deleting') }}');
                 }
                 return response.json();
             })
@@ -748,7 +996,8 @@
                 if (data.success) {
                     setTimeout(() => {
                         if (row) row.remove();
-                        window.showNotification('success', '{{ __('messages.product_successfully_deleted') }}');
+                        window.showNotification('success', data.message || '{{ __('messages.product_successfully_deleted') }}');
+                        checkDeletedProducts(); // Проверяем наличие удаленных товаров после удаления
                     }, 300);
                 }
             })
@@ -756,6 +1005,185 @@
                 if (row) row.classList.remove('row-deleting');
                 window.showNotification('error', '{{ __('messages.failed_to_delete_product') }}');
             });
+        }
+
+        // Функция для показа удаленных товаров
+        function showTrashedProducts() {
+            document.getElementById('trashedModal').style.display = 'block';
+            loadTrashedProducts();
+        }
+
+        // Функция для загрузки удаленных товаров
+        function loadTrashedProducts() {
+            const container = document.getElementById('trashedProductsList');
+            container.innerHTML = '<div class="loading">{{ __('messages.loading') }}...</div>';
+
+            console.log('Загружаем удаленные товары...');
+            
+            // Используем прямой URL без префикса
+            const url = '/products/trashed';
+            console.log('URL:', window.location.origin + url);
+
+            // Получаем CSRF токен
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': token || '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include', // Важно! Передает cookies и сессию
+                mode: 'same-origin'
+            })
+                .then(response => {
+                    console.log('Ответ получен:', response.status, response.statusText);
+                    
+                    if (!response.ok) {
+                        if (response.status === 302) {
+                            throw new Error('Перенаправление на страницу входа - не аутентифицирован');
+                        }
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Данные получены:', data);
+                    if (data.success) {
+                        const footer = document.getElementById('trashedModalFooter');
+                        if (data.products.length === 0) {
+                            container.innerHTML = '<p class="no-data">{{ __('messages.no_deleted_products') }}</p>';
+                            footer.style.display = 'none';
+                        } else {
+                            container.innerHTML = data.products.map(product => `
+                                <div class="trashed-product-item">
+                                    <div class="product-info">
+                                        <strong>${product.name}</strong>
+                                        <small>${product.category ? product.category.name : '—'} / ${product.brand ? product.brand.name : '—'}</small>
+                                        <small>{{ __('messages.deleted_at') }}: ${new Date(product.deleted_at).toLocaleString()}</small>
+                                    </div>
+                                    <div class="product-actions">
+                                        <button onclick="restoreProduct(${product.id})" class="btn-restore">
+                                            {{ __('messages.restore') }}
+                                        </button>
+                                        <button onclick="showForceDeleteConfirmation(${product.id})" class="btn-force-delete">
+                                            {{ __('messages.permanently_delete') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('');
+                            footer.style.display = 'block';
+                        }
+                    } else {
+                        container.innerHTML = '<p class="error">{{ __('messages.error_loading_deleted_products') }}: ' + (data.message || '') + '</p>';
+                        document.getElementById('trashedModalFooter').style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при загрузке:', error);
+                    container.innerHTML = '<p class="error">{{ __('messages.error_loading_deleted_products') }}: ' + error.message + '</p>';
+                });
+        }
+
+        // Функция для восстановления товара
+        function restoreProduct(productId) {
+            fetch(`/products/${productId}/restore`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                mode: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.showNotification('success', '{{ __('messages.product_successfully_restored') }}');
+                    loadTrashedProducts(); // Перезагружаем список удаленных товаров
+                    loadPage(currentPage, searchQuery); // Обновляем основную таблицу товаров
+                    checkDeletedProducts(); // Проверяем наличие удаленных товаров после восстановления
+                } else {
+                    window.showNotification('error', data.message || '{{ __('messages.error_restoring_product') }}');
+                }
+            })
+            .catch(error => {
+                window.showNotification('error', '{{ __('messages.error_restoring_product') }}');
+            });
+        }
+
+        // Функция для принудительного удаления товара
+        function forceDeleteProduct(productId) {
+            fetch(`/products/${productId}/force`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                mode: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.showNotification('success', '{{ __('messages.product_permanently_deleted') }}');
+                    loadTrashedProducts(); // Перезагружаем список удаленных товаров
+                    checkDeletedProducts(); // Проверяем наличие удаленных товаров после принудительного удаления
+                } else {
+                    window.showNotification('error', data.message || '{{ __('messages.error_permanent_delete') }}');
+                }
+            })
+            .catch(error => {
+                window.showNotification('error', '{{ __('messages.error_permanent_delete') }}');
+            });
+        }
+
+        // Функция для показа модального окна подтверждения удаления всех товаров
+        function showDeleteAllConfirmation() {
+            document.getElementById('confirmationDeleteAllModal').style.display = 'block';
+        }
+
+        // Функция для показа модального окна подтверждения принудительного удаления товара
+        function showForceDeleteConfirmation(productId) {
+            document.getElementById('confirmationForceDeleteModal').dataset.productId = productId;
+            document.getElementById('confirmationForceDeleteModal').style.display = 'block';
+        }
+
+        // Функция для удаления всех товаров навсегда
+        function forceDeleteAllProducts() {
+            fetch('/products/force-delete-all', {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                mode: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.showNotification('success', '{{ __('messages.all_products_permanently_deleted') }}');
+                    loadTrashedProducts(); // Перезагружаем список удаленных товаров
+                    checkDeletedProducts(); // Проверяем наличие удаленных товаров после удаления всех
+                } else {
+                    window.showNotification('error', data.message || '{{ __('messages.error_deleting_all_products') }}');
+                }
+            })
+            .catch(error => {
+                window.showNotification('error', '{{ __('messages.error_deleting_all_products') }}');
+            });
+        }
+
+        // Функция для закрытия модального окна удаленных товаров
+        function closeTrashedModal() {
+            document.getElementById('trashedModal').style.display = 'none';
         }
 
         // Обработчик клика по кнопке редактирования
@@ -791,7 +1219,7 @@
                                 <img src="/storage/${product.photo}" alt="Текущее фото" style="max-width: 200px; margin-top: 10px;">
                             `;
                         } else {
-                            photoContainer.innerHTML = '<p>{{ __('messages.no_photo') }}</p>';
+                            photoContainer.innerHTML = '<p>Нет фото</p>';
                         }
 
                         // Подставляем цены
@@ -834,7 +1262,7 @@
                         // Обновляем фото
                         const photoCell = row.querySelector('td:first-child');
                         if (data.product.photo) {
-                            photoCell.innerHTML = `<img src="/storage/${data.product.photo}" alt="${data.product.name}" class="product-photo">`;
+                            photoCell.innerHTML = `<a href="/storage/${data.product.photo}" class="zoomable-image" data-img="/storage/${data.product.photo}"><img src="/storage/${data.product.photo}" alt="${data.product.name}" class="product-photo"></a>`;
                         } else {
                             photoCell.innerHTML = '<div class="no-photo">Нет фото</div>';
                         }
@@ -881,10 +1309,11 @@
             if (window.CurrencyManager) {
                 return window.CurrencyManager.formatAmount(price);
             } else {
+                const symbol = '{{ \App\Helpers\CurrencyHelper::getSymbol() }}';
                 if (price % 1 === 0) {
-                    return parseInt(price) + ' грн';
+                    return Math.floor(price) + ' ' + symbol;
                 } else {
-                    return Number(price).toFixed(2) + ' грн';
+                    return Number(price).toFixed(2) + ' ' + symbol;
                 }
             }
         }
@@ -992,7 +1421,7 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Ошибка загрузки данных');
+                    throw new Error('{{ __('messages.error_loading_data') }}');
                 }
                 return response.json();
             })
@@ -1013,30 +1442,62 @@
                 const row = document.createElement('tr');
                 row.id = `product-${product.id}`;
                 
-                const photoHtml = product.photo 
-                    ? `<a href="/storage/${product.photo}" class="zoomable-image" data-img="/storage/${product.photo}"><img src="/storage/${product.photo}" alt="${product.name}" class="product-photo"></a>`
-                    : '<div class="no-photo">Нет фото</div>';
+                // Правильное формирование URL для изображения (с проверкой существования файла)
+                let photoHtml;
+                if (product.photo) {
+                    const photoUrl = `/storage/${product.photo}`;
+                    // Добавляем обработчик ошибки загрузки изображения
+                    photoHtml = `<a href="${photoUrl}" class="zoomable-image" data-img="${photoUrl}"><img src="${photoUrl}" alt="${product.name}" class="product-photo" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'"></a>`;
+                } else {
+                    photoHtml = '<div class="no-photo">Нет фото</div>';
+                }
                 
-                row.innerHTML = `
-                    <td>${photoHtml}</td>
-                    <td>${product.name}</td>
-                    <td>${product.category?.name ?? '—'}</td>
-                    <td>${product.brand?.name ?? '—'}</td>
-                    <td>${formatPrice(product.purchase_price)}</td>
-                    <td>${formatPrice(product.retail_price)}</td>
-                    <td class="actions-cell">
-                        <button class="btn-edit" onclick="editProduct(${product.id})">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                            </svg>
-                        </button>
-                        <button class="btn-delete">
-                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </td>
+                // Создаем ячейки отдельно
+                const photoCell = document.createElement('td');
+                photoCell.innerHTML = photoHtml;
+                
+                const nameCell = document.createElement('td');
+                nameCell.textContent = product.name;
+                
+                const categoryCell = document.createElement('td');
+                categoryCell.textContent = product.category?.name ?? '—';
+                
+                const brandCell = document.createElement('td');
+                brandCell.textContent = product.brand?.name ?? '—';
+                
+                const purchasePriceCell = document.createElement('td');
+                purchasePriceCell.className = 'currency-amount';
+                purchasePriceCell.setAttribute('data-amount', product.purchase_price);
+                purchasePriceCell.textContent = formatPrice(product.purchase_price);
+                
+                const retailPriceCell = document.createElement('td');
+                retailPriceCell.className = 'currency-amount';
+                retailPriceCell.setAttribute('data-amount', product.retail_price);
+                retailPriceCell.textContent = formatPrice(product.retail_price);
+                
+                const actionsCell = document.createElement('td');
+                actionsCell.className = 'actions-cell';
+                actionsCell.innerHTML = `
+                    <button class="btn-edit" title="Редактировать">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                    </button>
+                    <button class="btn-delete" title="Удалить">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
                 `;
+                
+                // Добавляем ячейки в строку
+                row.appendChild(photoCell);
+                row.appendChild(nameCell);
+                row.appendChild(categoryCell);
+                row.appendChild(brandCell);
+                row.appendChild(purchasePriceCell);
+                row.appendChild(retailPriceCell);
+                row.appendChild(actionsCell);
                 tbody.appendChild(row);
             });
             // После добавления строк навешиваем обработчики
@@ -1137,8 +1598,40 @@
             });
         });
 
+        // Функция для проверки наличия удаленных товаров
+        function checkDeletedProducts() {
+            fetch('/products/trashed', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                mode: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                const deletedProductsBtn = document.getElementById('deletedProductsBtn');
+                if (data.success && data.products && data.products.length > 0) {
+                    deletedProductsBtn.style.display = 'inline-flex';
+                } else {
+                    deletedProductsBtn.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при проверке удаленных товаров:', error);
+                document.getElementById('deletedProductsBtn').style.display = 'none';
+            });
+        }
+
         // Инициализация первой загрузки
-        loadPage(1);
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPage(1);
+            initZoomableImages();
+            checkDeletedProducts(); // Проверяем наличие удаленных товаров
+        });
 
         function initZoomableImages() {
             const modal = document.getElementById('imageModal');
@@ -1163,9 +1656,7 @@
             };
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            initZoomableImages();
-        });
+
     </script>
 
 @endsection

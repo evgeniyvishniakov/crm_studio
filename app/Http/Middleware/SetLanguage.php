@@ -31,16 +31,16 @@ class SetLanguage
                     // Устанавливаем локаль приложения
                     App::setLocale($language->code);
                 } else {
-                    // По умолчанию русский
-                    App::setLocale('ru');
+                    // По умолчанию украинский
+                    App::setLocale('ua');
                 }
             } else {
-                // По умолчанию русский
-                App::setLocale('ru');
+                // По умолчанию украинский
+                App::setLocale('ua');
             }
         } else {
             // Для неавторизованных пользователей
-            App::setLocale('ru');
+            App::setLocale('ua');
         }
 
         return $next($request);

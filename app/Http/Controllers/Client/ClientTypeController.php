@@ -16,6 +16,12 @@ class ClientTypeController extends Controller
             $q->where('project_id', $currentProjectId)
               ->orWhere('is_global', true);
         })->get();
+        
+        // Добавляем переведенные названия для каждого типа клиента
+        foreach ($clientTypes as $clientType) {
+            $clientType->translated_name = $clientType->translated_name;
+        }
+        
         return view('client.client-types.list', compact('clientTypes'));
     }
 

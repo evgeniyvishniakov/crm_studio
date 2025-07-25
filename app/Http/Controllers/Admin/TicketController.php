@@ -60,22 +60,49 @@ class TicketController extends Controller
             'ip' => $request->ip()
         ]);
         
-        \Log::info('DEBUG: Попытка создать уведомление для клиента', [
-            'ticket_id' => $ticket->id,
-            'project_id' => $ticket->project_id,
-            'subject' => $ticket->subject,
-            'is_admin_param' => $request->input('is_admin'),
-        ]);
-        if ($request->input('is_admin')) {
-            // Получаем всех админов, кроме текущего
-            $adminUsers = User::where('role', 'admin')->where('id', '!=', $admin->id)->get();
-            foreach ($adminUsers as $adminUser) {
+        // Создаем уведомление для клиента о новом сообщении от админа
+        // Проверяем, не создано ли уже уведомление для этого клиента за последнюю минуту
+        $existingNotification = Notification::where('user_id', $ticket->user_id)
+            ->where('type', 'ticket')
+            ->where('title', 'Новое сообщение от администратора')
+            ->where('project_id', $ticket->project_id)
+            ->where('created_at', '>=', now()->subMinutes(1))
+            ->first();
+        
+        if (!$existingNotification) {
+            Notification::create([
+                'user_id' => $ticket->user_id,
+                'type' => 'ticket',
+                'title' => 'Новое сообщение от администратора',
+                'body' => $ticket->subject,
+                'url' => route('client.support-tickets.index') . '#ticket-' . $ticket->id,
+                'project_id' => $ticket->project_id,
+            ]);
+        }
+        
+        // Также уведомляем других пользователей с доступом к поддержке о новом сообщении
+        $otherUsersWithSupportAccess = \App\Models\Admin\User::where('project_id', $ticket->project_id)
+            ->where('id', '!=', $admin->id) // Исключаем текущего админа
+            ->whereHas('roleModel.permissions', function($query) {
+                $query->where('name', 'support');
+            })
+            ->get();
+        
+        foreach ($otherUsersWithSupportAccess as $user) {
+            $existingNotification = Notification::where('user_id', $user->id)
+                ->where('type', 'ticket')
+                ->where('title', 'Новое сообщение от администратора')
+                ->where('project_id', $ticket->project_id)
+                ->where('created_at', '>=', now()->subMinutes(1))
+                ->first();
+            
+            if (!$existingNotification) {
                 Notification::create([
-                    'user_id' => $adminUser->id,
+                    'user_id' => $user->id,
                     'type' => 'ticket',
                     'title' => 'Новое сообщение от администратора',
                     'body' => $ticket->subject,
-                    'url' => route('client.support-tickets.index') . '#ticket-' . $ticket->id,
+                    'url' => route('admin.tickets.index') . '#ticket-' . $ticket->id,
                     'project_id' => $ticket->project_id,
                 ]);
             }

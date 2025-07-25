@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Clients\Inventory;
 use App\Models\Clients\Product;
 use App\Models\Admin\User;
+use App\Models\Admin\Project;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -170,11 +171,17 @@ class InventoryController extends Controller
     {
         $inventory = Inventory::with(['user', 'items.product'])->findOrFail($id);
         $discrepancies = $inventory->items->where('difference', '!=', 0);
+        
+        // Получаем название проекта
+        $project = auth()->user()->project;
+        $projectName = $project ? $project->project_name : 'Проект';
+        
         $pdf = Pdf::loadView('client.inventories.pdf', [
             'inventory' => $inventory,
             'discrepancies' => $discrepancies,
+            'projectName' => $projectName,
         ]);
-        $filename = 'Инвентаризация_'.$inventory->id.'_'.($inventory->formatted_date ?? date('Y-m-d')).'.pdf';
+        $filename = $projectName.'_'.__('messages.inventory').'_'.($inventory->formatted_date ?? $inventory->date).'.pdf';
         return $pdf->download($filename);
     }
 }

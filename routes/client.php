@@ -100,13 +100,21 @@ Route::middleware('auth:client')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/create', [ProductController::class, 'create'])->name('create');
         Route::post('/', [ProductController::class, 'store'])->name('store');
+        
+        // Новые маршруты для работы с мягким удалением (ПЕРЕД маршрутами с параметрами!)
+        Route::get('/trashed', [ProductController::class, 'trashed'])->name('trashed');
+        Route::post('/{id}/restore', [ProductController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force', [ProductController::class, 'forceDelete'])->name('force-delete');
+        Route::delete('/force-delete-all', [ProductController::class, 'forceDeleteAll'])->name('force-delete-all');
+        
+        // Маршруты с параметрами (ПОСЛЕ конкретных маршрутов!)
         Route::get('/{product}', [ProductController::class, 'show'])->name('show');
         Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
         Route::put('/{product}', [ProductController::class, 'update'])->name('update');
         Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
         
         // Импорт/экспорт товаров
-    }); 
+    });
     
     // Категории товаров
     Route::prefix('product-categories')->name('product-categories.')->group(function () {

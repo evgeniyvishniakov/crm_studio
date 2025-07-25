@@ -85,7 +85,7 @@ chatForm.addEventListener('submit', async function(e) {
                 'X-Requested-With': 'XMLHttpRequest'
             },
             credentials: 'same-origin',
-            body: new URLSearchParams({ message: msg, is_admin: 1 })
+            body: new URLSearchParams({ message: msg })
         });
         const data = await res.json();
         if (data.success) {

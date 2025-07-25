@@ -63,11 +63,11 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
         // Обрабатываем гиперссылки и формулы в значениях
         $row = $this->processRowValues($row);
 
-        // Универсальный поиск ключа по алиасам (рус, англ, транслит)
+        // Универсальный поиск ключа по алиасам (поддержка русского, английского, украинского и транслита)
         $findKeyByAlias = function($row, $aliases) {
             foreach ($aliases as $alias) {
                 foreach ($row as $key => $value) {
-                    if (mb_strtolower($key) === mb_strtolower($alias)) {
+                    if (mb_strtolower(trim($key)) === mb_strtolower(trim($alias))) {
                         return $key;
                     }
                 }
@@ -75,12 +75,72 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
             return null;
         };
 
-        $nameKey = $findKeyByAlias($row, ['название', 'name', 'nazvanie']);
-        $categoryKey = $findKeyByAlias($row, ['категория', 'category', 'kategoriia', 'kategoria']);
-        $brandKey = $findKeyByAlias($row, ['бренд', 'brand', 'brend']);
-        $purchaseKey = $findKeyByAlias($row, ['оптовая цена', 'purchase_price', 'optovaia_cena', 'optovaya_cena']);
-        $retailKey = $findKeyByAlias($row, ['розничная цена', 'retail_price', 'roznicnaia_cena', 'roznichnaya_cena']);
-        $photoKey = $findKeyByAlias($row, ['фото', 'photo', 'foto']);
+        // Расширенная поддержка мультиязычности
+        $nameKey = $findKeyByAlias($row, [
+            // Русский
+            'название', 'названіе', 'названиє',
+            // Английский
+            'name', 'title', 'product_name',
+            // Украинский
+            'назва', 'назва товару', 'назва продукту',
+            // Транслит
+            'nazvanie', 'nazva', 'nazvaniye'
+        ]);
+
+        $categoryKey = $findKeyByAlias($row, [
+            // Русский
+            'категория', 'категорія', 'категорија',
+            // Английский
+            'category', 'product_category', 'cat',
+            // Украинский
+            'категорія', 'категорія товару',
+            // Транслит
+            'kategoriia', 'kategoria', 'kategoriya'
+        ]);
+
+        $brandKey = $findKeyByAlias($row, [
+            // Русский
+            'бренд', 'брэнд', 'марка',
+            // Английский
+            'brand', 'manufacturer', 'make',
+            // Украинский
+            'бренд', 'марка', 'виробник',
+            // Транслит
+            'brend', 'marka', 'brand'
+        ]);
+
+        $purchaseKey = $findKeyByAlias($row, [
+            // Русский
+            'оптовая цена', 'оптовая стоимость', 'опт', 'оптовая',
+            // Английский
+            'purchase_price', 'wholesale_price', 'cost_price', 'wholesale',
+            // Украинский
+            'оптова ціна', 'оптова вартість', 'опт',
+            // Транслит
+            'optovaia_cena', 'optovaya_cena', 'optova_tsina'
+        ]);
+
+        $retailKey = $findKeyByAlias($row, [
+            // Русский
+            'розничная цена', 'розничная стоимость', 'розница', 'розничная',
+            // Английский
+            'retail_price', 'selling_price', 'price', 'retail',
+            // Украинский
+            'рознична ціна', 'рознична вартість', 'розница',
+            // Транслит
+            'roznicnaia_cena', 'roznichnaya_cena', 'roznichna_tsina'
+        ]);
+
+        $photoKey = $findKeyByAlias($row, [
+            // Русский
+            'фото', 'изображение', 'картинка', 'фотография',
+            // Английский
+            'photo', 'image', 'picture', 'photo_url', 'image_url',
+            // Украинский
+            'фото', 'зображення', 'картинка',
+            // Транслит
+            'foto', 'izobrazhenie', 'kartinka'
+        ]);
 
         $productName = $nameKey ? $row[$nameKey] : null;
         $categoryName = $categoryKey ? $row[$categoryKey] : null;
@@ -256,7 +316,16 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
     private function processImageUrl($row)
     {
         \Log::info('Ключи строки для фото: ' . json_encode(array_keys($row), JSON_UNESCAPED_UNICODE));
-        $photoKeys = ['фото', 'photo', 'foto', 'изображение', 'image', 'url', 'ссылка', 'link'];
+        $photoKeys = [
+            // Русский
+            'фото', 'изображение', 'картинка', 'фотография', 'ссылка', 'url',
+            // Английский
+            'photo', 'image', 'picture', 'photo_url', 'image_url', 'url', 'link',
+            // Украинский
+            'фото', 'зображення', 'картинка', 'посилання',
+            // Транслит
+            'foto', 'izobrazhenie', 'kartinka', 'ssylka'
+        ];
         $imageUrl = null;
         $foundKey = null;
         foreach ($row as $key => $value) {
@@ -342,12 +411,32 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
     public function rules(): array
     {
         return [
+            // Название товара (мультиязычность)
             'название' => 'nullable|string|max:255',
             'name' => 'nullable|string|max:255',
+            'title' => 'nullable|string|max:255',
+            'product_name' => 'nullable|string|max:255',
+            'назва' => 'nullable|string|max:255',
+            'nazvanie' => 'nullable|string|max:255',
+            'nazva' => 'nullable|string|max:255',
+            
+            // Оптовая цена (мультиязычность)
             'оптовая_цена' => 'nullable|numeric|min:0',
             'purchase_price' => 'nullable|numeric|min:0',
+            'wholesale_price' => 'nullable|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0',
+            'оптова_ціна' => 'nullable|numeric|min:0',
+            'optovaia_cena' => 'nullable|numeric|min:0',
+            'optovaya_cena' => 'nullable|numeric|min:0',
+            
+            // Розничная цена (мультиязычность)
             'розничная_цена' => 'nullable|numeric|min:0',
             'retail_price' => 'nullable|numeric|min:0',
+            'selling_price' => 'nullable|numeric|min:0',
+            'price' => 'nullable|numeric|min:0',
+            'рознична_ціна' => 'nullable|numeric|min:0',
+            'roznicnaia_cena' => 'nullable|numeric|min:0',
+            'roznichnaya_cena' => 'nullable|numeric|min:0',
         ];
     }
 
@@ -357,12 +446,32 @@ class ProductsImport extends DefaultValueBinder implements ToModel, WithHeadingR
     public function customValidationMessages()
     {
         return [
+            // Название товара
             'название.string' => 'Название товара должно быть текстом',
             'name.string' => 'Название товара должно быть текстом',
+            'title.string' => 'Название товара должно быть текстом',
+            'product_name.string' => 'Название товара должно быть текстом',
+            'назва.string' => 'Название товара должно быть текстом',
+            'nazvanie.string' => 'Название товара должно быть текстом',
+            'nazva.string' => 'Название товара должно быть текстом',
+            
+            // Оптовая цена
             'оптовая_цена.numeric' => 'Оптовая цена должна быть числом',
             'purchase_price.numeric' => 'Оптовая цена должна быть числом',
+            'wholesale_price.numeric' => 'Оптовая цена должна быть числом',
+            'cost_price.numeric' => 'Оптовая цена должна быть числом',
+            'оптова_ціна.numeric' => 'Оптовая цена должна быть числом',
+            'optovaia_cena.numeric' => 'Оптовая цена должна быть числом',
+            'optovaya_cena.numeric' => 'Оптовая цена должна быть числом',
+            
+            // Розничная цена
             'розничная_цена.numeric' => 'Розничная цена должна быть числом',
             'retail_price.numeric' => 'Розничная цена должна быть числом',
+            'selling_price.numeric' => 'Розничная цена должна быть числом',
+            'price.numeric' => 'Розничная цена должна быть числом',
+            'рознична_ціна.numeric' => 'Розничная цена должна быть числом',
+            'roznicnaia_cena.numeric' => 'Розничная цена должна быть числом',
+            'roznichnaya_cena.numeric' => 'Розничная цена должна быть числом',
         ];
     }
 

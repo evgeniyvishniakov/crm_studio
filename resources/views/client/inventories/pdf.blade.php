@@ -3,7 +3,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Инвентаризация №{{ $inventory->id }}</title>
+    <title>{{ $projectName ?? 'Проект' }} - {{ __('messages.inventory') }} {{ $inventory->formatted_date ?? $inventory->date }}</title>
     <style>
         body { font-family: DejaVu Sans, sans-serif; font-size: 13px; color: #222; }
         h1 { font-size: 20px; margin-bottom: 10px; }
@@ -20,46 +20,46 @@
     </style>
 </head>
 <body>
-    <h1>Инвентаризация №{{ $inventory->id }}</h1>
+    <h1>{{ $projectName ?? 'Проект' }} - {{ __('messages.inventory') }} {{ $inventory->formatted_date ?? $inventory->date }}</h1>
     <div class="meta">
-        <span><b>Дата:</b> {{ $inventory->formatted_date ?? $inventory->date }}</span>
-        <span><b>Ответственный:</b> {{ $inventory->user->name ?? '—' }}</span>
+        <span><b>{{ __('messages.date') }}:</b> {{ $inventory->formatted_date ?? $inventory->date }}</span>
+        <span><b>{{ __('messages.responsible') }}:</b> {{ $inventory->user->name ?? '—' }}</span>
     </div>
     @if($inventory->notes)
-        <div style="margin-bottom: 10px;"><b>Примечания:</b> {{ $inventory->notes }}</div>
+        <div style="margin-bottom: 10px;"><b>{{ __('messages.notes') }}:</b> {{ $inventory->notes }}</div>
     @endif
-    <h3>Товары с расхождениями</h3>
+    <h3>{{ __('messages.products_with_discrepancies') }}</h3>
     <table>
         <thead>
             <tr>
-                <th>Товар</th>
-                <th>Склад</th>
-                <th>Кол</th>
-                <th>Разница</th>
-                <th>Статус</th>
+                <th>{{ __('messages.product') }}</th>
+                <th>{{ __('messages.warehouse_short') }}</th>
+                <th>{{ __('messages.quantity_short') }}</th>
+                <th>{{ __('messages.difference_short') }}</th>
+                <th>{{ __('messages.status') }}</th>
             </tr>
         </thead>
         <tbody>
         @forelse($discrepancies as $item)
             <tr>
                 <td>{{ $item->product->name }}</td>
-                <td>{{ $item->warehouse_qty }} шт</td>
-                <td>{{ $item->actual_qty }} шт</td>
+                <td>{{ $item->warehouse_qty }} {{ __('messages.units') }}</td>
+                <td>{{ $item->actual_qty }} {{ __('messages.units') }}</td>
                 <td class="{{ $item->difference > 0 ? 'text-success' : 'text-danger' }}">
-                    {{ $item->difference > 0 ? '+' : '' }}{{ $item->difference }} шт
+                    {{ $item->difference > 0 ? '+' : '' }}{{ $item->difference }} {{ __('messages.units') }}
                 </td>
                 <td>
                     @if($item->difference == 0)
-                        <span class="status-success">Совпадает</span>
+                        <span class="status-success">{{ __('messages.matches_status') }}</span>
                     @elseif($item->difference > 0)
-                        <span class="status-warning">Лишнее</span>
+                        <span class="status-warning">{{ __('messages.overage_status') }}</span>
                     @else
-                        <span class="status-danger">Не хватает</span>
+                        <span class="status-danger">{{ __('messages.shortage_status') }}</span>
                     @endif
                 </td>
             </tr>
         @empty
-            <tr><td colspan="5">Нет расхождений</td></tr>
+            <tr><td colspan="5">{{ __('messages.no_discrepancies') }}</td></tr>
         @endforelse
         </tbody>
     </table>

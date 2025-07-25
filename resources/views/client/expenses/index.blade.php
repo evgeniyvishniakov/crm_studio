@@ -133,7 +133,7 @@
             document.getElementById('expenseForm').reset();
             document.getElementById('expenseModal').style.display = 'block';
             
-            // Устанавливаем сегодняшнюю дату в поле даты
+            // Устанавливаем сегодняшнюю дату в поле даты только для добавления
             const dateInput = document.querySelector('#expenseForm [name="date"]');
             if (dateInput && typeof setTodayDate === 'function') {
                 setTodayDate(dateInput);
@@ -142,7 +142,7 @@
 
         function closeExpenseModal() {
             document.getElementById('expenseModal').style.display = 'none';
-            document.getElementById('expenseForm').reset();
+            // Не сбрасываем форму при закрытии, чтобы сохранить данные для редактирования
             currentExpenseId = null;
         }
 
@@ -156,35 +156,69 @@
         }
 
         // Функции для работы с расходами
-        async function editExpense(event, id) {
+        function editExpense(event, id) {
             event.preventDefault();
             currentExpenseId = id;
 
-            try {
-                const response = await fetch(`/expenses/${id}/edit`, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    const expense = data.expense;
-                    document.getElementById('modalTitle').textContent = '{{ __('messages.edit_expense') }}';
-                    document.getElementById('expenseId').value = expense.id;
-                    document.querySelector('#expenseForm [name="date"]').value = expense.date;
-                    document.querySelector('#expenseForm [name="category"]').value = expense.category || '';
-                    document.querySelector('#expenseForm [name="comment"]').value = expense.comment;
-                    document.querySelector('#expenseForm [name="amount"]').value = expense.amount;
-                    document.getElementById('expenseModal').style.display = 'block';
-                } else {
-                    window.showNotification('{{ __('messages.error_loading_data') }}', 'error');
-                }
-            } catch (error) {
+            // Находим строку таблицы с данным ID
+            const row = document.querySelector(`tr[data-expense-id="${id}"]`);
+            if (!row) {
                 window.showNotification('{{ __('messages.error_loading_data') }}', 'error');
+                return;
             }
+
+            // Получаем данные из ячеек таблицы
+            const cells = row.querySelectorAll('td');
+            const dateCell = cells[0];
+            const categoryCell = cells[1];
+            const commentCell = cells[2];
+            const amountCell = cells[3];
+
+            // Извлекаем данные
+            const dateText = dateCell.textContent.trim();
+            const category = categoryCell.textContent.trim();
+            const comment = commentCell.textContent.trim();
+            const amount = amountCell.getAttribute('data-amount');
+
+            // Конвертируем дату из формата DD.MM.YYYY в YYYY-MM-DD
+            let dateValue = '';
+            if (dateText && dateText !== '—') {
+                const dateParts = dateText.split('.');
+                if (dateParts.length === 3) {
+                    dateValue = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
+                }
+            }
+
+            // Открываем модальное окно
+            document.getElementById('modalTitle').textContent = '{{ __('messages.edit_expense') }}';
+            document.getElementById('expenseId').value = id;
+            document.getElementById('expenseModal').style.display = 'block';
+            
+            // Устанавливаем данные из таблицы
+            const dateInput = document.querySelector('#expenseForm [name="date"]');
+            const categoryInput = document.querySelector('#expenseForm [name="category"]');
+            const commentInput = document.querySelector('#expenseForm [name="comment"]');
+            const amountInput = document.querySelector('#expenseForm [name="amount"]');
+
+            dateInput.value = dateValue;
+            categoryInput.value = category === '{{ __('messages.not_specified') }}' ? '' : category;
+            commentInput.value = comment;
+            amountInput.value = amount;
+
+            // Принудительно обновляем поле даты
+            dateInput.setAttribute('value', dateValue);
+            
+            // Если используется Flatpickr, обновляем через его API
+            if (dateInput.hasAttribute('data-flatpickr-initialized')) {
+                const flatpickrInstance = dateInput._flatpickr;
+                if (flatpickrInstance) {
+                    flatpickrInstance.setDate(dateValue, false);
+                }
+            }
+            
+            // Принудительно обновляем визуальное отображение
+            dateInput.dispatchEvent(new Event('input', { bubbles: true }));
+            dateInput.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
         function confirmDeleteExpense(event, id) {
@@ -245,6 +279,7 @@
 
             if (data.success) {
                 window.showNotification('success', data.message || '{{ __('messages.expense_saved') }}');
+                document.getElementById('expenseForm').reset();
                 closeExpenseModal();
                 // Перезагружаем текущую страницу для отображения изменений
                 loadExpenses(currentPage);

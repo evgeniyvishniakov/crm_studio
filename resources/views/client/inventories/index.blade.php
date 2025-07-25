@@ -68,11 +68,11 @@
                                         </svg>
                                         {{ __('messages.delete') }}
                                     </button>
-                                    <button class="btn-pdf" onclick="downloadInventoryPdf(event, {{ $inventory->id }})">
-                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
-                                        </svg>
-                                        PDF
+                                                                <button class="btn-pdf" onclick="downloadInventoryPdf(event, {{ $inventory->id }})">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
+                                </svg>
+                                {{ __('messages.pdf') }}
                                     </button>
                                 </div>
                             </td>
@@ -107,18 +107,18 @@
                                                         @endif
                                                     </td>
                                                     <td class="large-col">{{ $item->product->name }}</td>
-                                                    <td class="small-col">{{ $item->warehouse_qty }} шт</td>
-                                                    <td class="small-col">{{ $item->actual_qty }} шт</td>
+                                                    <td class="small-col">{{ $item->warehouse_qty }} {{ __('messages.units') }}</td>
+                                                    <td class="small-col">{{ $item->actual_qty }} {{ __('messages.units') }}</td>
                                                     <td class="{{ $item->difference > 0 ? 'text-success' : ($item->difference < 0 ? 'text-danger' : '') }}">
-                                                        {{ $item->difference > 0 ? '+' : '' }}{{ $item->difference }} шт
+                                                        {{ $item->difference > 0 ? '+' : '' }}{{ $item->difference }} {{ __('messages.units') }}
                                                     </td>
                                                     <td>
                                                         @if($item->difference == 0)
-                                                            <span class="status-success">✅ Совпадает</span>
-                                                        @elseif($item->difference > 0)
-                                                            <span class="status-warning">⚠️ Лишнее</span>
-                                                        @else
-                                                            <span class="status-danger">❌ Не хватает</span>
+                                                                                            <span class="status-success">{{ __('messages.matches_status') }}</span>
+                            @elseif($item->difference > 0)
+                                <span class="status-warning">{{ __('messages.overage_status') }}</span>
+                            @else
+                                <span class="status-danger">{{ __('messages.shortage_status') }}</span>
                                                         @endif
                                                     </td>
                                                 </tr>
@@ -126,7 +126,7 @@
                                         @else
                                             <tr>
                                                 <td colspan="6" class="text-center text-success">
-                                                    ✅ Все товары совпадают, расхождений нет. Инвентаризация успешно проведена.
+                                                    {{ __('messages.all_products_match') }}
                                                 </td>
                                             </tr>
                                         @endif
@@ -135,7 +135,7 @@
                                 </div>
                                 <div class="view-all-items">
                                     <button class="btn-view-all" onclick="viewAllInventoryItems({{ $inventory->id }})">
-                                        Просмотреть весь список
+                                        {{ __('messages.view_all_list') }}
                                     </button>
                                 </div>
                             </td>
@@ -149,7 +149,7 @@
     <div id="inventoryModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Новая инвентаризация</h2>
+                <h2>{{ __('messages.new_inventory') }}</h2>
                 <span class="close" onclick="closeInventoryModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -162,9 +162,9 @@
                                    data-locale="{{ app()->getLocale() }}">
                         </div>
                         <div class="form-group">
-                            <label>Ответственный </label>
+                            <label>{{ __('messages.responsible') }} </label>
                             <select name="user_id" required class="form-control">
-                                <option value="">Выберите ответственного</option>
+                                <option value="">{{ __('messages.select_responsible') }}</option>
                                 @foreach($users as $user)
                                     <option value="{{ $user->id }}" {{ $user->id == $adminUserId ? 'selected' : '' }}>
                                         {{ $user->name }}
@@ -174,26 +174,26 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Примечания</label>
+                        <label>{{ __('messages.notes') }}</label>
                         <textarea name="notes" rows="2" class="form-control"></textarea>
                     </div>
 
                     <div class="items-container" id="itemsContainer">
-                        <h3>Товары</h3>
+                        <h3>{{ __('messages.products') }}</h3>
                         <div class="item-row template" style="display: none;">
                             <div class="form-row">
                                 <div class="form-group product-group large-col"> <!-- Добавлен класс product-group -->
-                                    <label>Товар</label>
+                                    <label>{{ __('messages.product') }}</label>
                                     <div class="product-search-container">
                                         <input type="text" class="product-search-input form-control large-col"
-                                               placeholder="Начните вводить название товара..."
+                                               placeholder="{{ __('messages.start_typing_product_name') }}"
                                                oninput="searchProducts(this)"
                                                onfocus="showProductDropdown(this)" autocomplete="off">
                                         <div class="product-dropdown" style="display: none;">
                                             <div class="product-dropdown-list"></div>
                                         </div>
                                         <select name="items[0][product_id]" class="form-control product-select large-col" style="display: none;">
-                                            <option value="">Выберите товар</option>
+                                            <option value="">{{ __('messages.select_product') }}</option>
                                             @foreach($products as $product)
                                                 <option value="{{ $product['id'] }}" data-stock="{{ $product['stock'] }}">
                                                     {{ $product['name'] }}
@@ -203,7 +203,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group small-col">
-                                    <label>Кол</label>
+                                    <label>{{ __('messages.quantity_short') }}</label>
                                     <input type="number" name="items[0][actual_qty]" required class="form-control small-col" min="0" value="0">
                                 </div>
                                 <div class="form-group small-col">
@@ -221,10 +221,10 @@
                             <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                             </svg>
-                            Добавить товар
+                            {{ __('messages.add_product') }}
                         </button>
-                        <button type="button" class="btn-cancel" onclick="closeInventoryModal()">Отмена</button>
-                        <button type="button" class="btn-submit" onclick="analyzeInventory()">Провести инвентаризацию</button>
+                        <button type="button" class="btn-cancel" onclick="closeInventoryModal()">{{ __('messages.cancel') }}</button>
+                        <button type="button" class="btn-submit" onclick="analyzeInventory()">{{ __('messages.conduct_inventory') }}</button>
                     </div>
                 </form>
             </div>
@@ -235,27 +235,27 @@
     <div id="analysisModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Анализ инвентаризации</h2>
+                <h2>{{ __('messages.inventory_analysis') }}</h2>
                 <span class="close" onclick="confirmCloseAnalysisModal()">&times;</span>
             </div>
             <div class="modal-body">
                 <div class="analysis-summary">
-                    <h3>Итоги инвентаризации</h3>
+                    <h3>{{ __('messages.inventory_results') }}</h3>
                     <div class="summary-stats">
                         <div class="stat-item">
-                            <span class="stat-label">Всего товаров:</span>
+                            <span class="stat-label">{{ __('messages.total_products') }}:</span>
                             <span class="stat-value" id="totalItems">0</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Совпадает:</span>
+                            <span class="stat-label">{{ __('messages.matched_products') }}:</span>
                             <span class="stat-value" id="matchedItems">0</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Не хватает:</span>
+                            <span class="stat-label">{{ __('messages.shortage_products') }}:</span>
                             <span class="stat-value" id="shortageItems">0</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Излишки:</span>
+                            <span class="stat-label">{{ __('messages.overage_products') }}:</span>
                             <span class="stat-value" id="overageItems">0</span>
                         </div>
                     </div>
@@ -276,8 +276,8 @@
                     </tbody>
                 </table>
                 <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="confirmCloseAnalysisModal()">Назад</button>
-                    <button type="button" class="btn-submit" onclick="saveInventory()">Сохранить инвентаризацию</button>
+                    <button type="button" class="btn-cancel" onclick="confirmCloseAnalysisModal()">{{ __('messages.back') }}</button>
+                    <button type="button" class="btn-submit" onclick="saveInventory()">{{ __('messages.save_inventory') }}</button>
                 </div>
             </div>
         </div>
@@ -287,7 +287,7 @@
     <div id="viewAllItemsModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Все товары инвентаризации</h2>
+                <h2>{{ __('messages.all_inventory_products') }}</h2>
                 <span class="close" onclick="closeViewAllItemsModal()">&times;</span>
             </div>
             <div class="modal-body" id="viewAllItemsModalBody">
@@ -300,7 +300,7 @@
     <div id="editInventoryModal" class="modal">
         <div class="modal-content" style="width: 80%; max-width: 900px;">
             <div class="modal-header">
-                <h2>Редактировать инвентаризацию</h2>
+                <h2>{{ __('messages.edit_inventory') }}</h2>
                 <span class="close" onclick="closeEditInventoryModal()">&times;</span>
             </div>
             <div class="modal-body" id="editInventoryModalBody">
@@ -312,11 +312,11 @@
     <!-- Модальное окно подтверждения удаления -->
     <div id="confirmationModal" class="confirmation-modal">
         <div class="confirmation-content">
-            <h3>Подтверждение удаления</h3>
-            <p>Вы уверены, что хотите удалить эту инвентаризацию?</p>
+            <h3>{{ __('messages.delete_confirmation') }}</h3>
+            <p>{{ __('messages.confirm_delete_inventory') }}</p>
             <div class="confirmation-buttons">
-                <button class="cancel-btn" id="cancelDelete">Отмена</button>
-                <button class="confirm-btn" id="confirmDeleteBtn">Удалить</button>
+                <button class="cancel-btn" id="cancelDelete">{{ __('messages.cancel') }}</button>
+                <button class="confirm-btn" id="confirmDeleteBtn">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
@@ -324,11 +324,11 @@
     <!-- Модальное окно подтверждения отмены инвентаризации -->
     <div id="cancelInventoryModal" class="confirmation-modal">
         <div class="confirmation-content">
-            <h3>Подтверждение отмены</h3>
-            <p>Вы уверены, что хотите отменить инвентаризацию? Все несохранённые данные будут потеряны.</p>
+            <h3>{{ __('messages.cancel_confirmation') }}</h3>
+            <p>{{ __('messages.confirm_cancel_inventory') }}</p>
             <div class="confirmation-buttons">
-                <button class="cancel-btn" id="cancelCancelInventory">Отмена</button>
-                <button class="confirm-btn" id="confirmCancelInventoryBtn">Да, отменить</button>
+                <button class="cancel-btn" id="cancelCancelInventory">{{ __('messages.cancel') }}</button>
+                <button class="confirm-btn" id="confirmCancelInventoryBtn">{{ __('messages.yes_cancel') }}</button>
             </div>
         </div>
     </div>
@@ -336,11 +336,11 @@
     <!-- Модальное окно подтверждения отмены редактирования инвентаризации -->
     <div id="cancelEditInventoryModal" class="confirmation-modal">
         <div class="confirmation-content">
-            <h3>Подтверждение отмены</h3>
-            <p>Вы уверены, что хотите отменить редактирование? Все несохранённые данные будут потеряны.</p>
+            <h3>{{ __('messages.cancel_confirmation') }}</h3>
+            <p>{{ __('messages.confirm_cancel_edit_inventory') }}</p>
             <div class="confirmation-buttons">
-                <button class="cancel-btn" id="cancelCancelEditInventory">Отмена</button>
-                <button class="confirm-btn" id="confirmCancelEditInventoryBtn">Да, отменить</button>
+                <button class="cancel-btn" id="cancelCancelEditInventory">{{ __('messages.cancel') }}</button>
+                <button class="confirm-btn" id="confirmCancelEditInventoryBtn">{{ __('messages.yes_cancel') }}</button>
             </div>
         </div>
     </div>
@@ -348,7 +348,7 @@
     <!-- Модальное окно для увеличенного фото -->
     <div id="zoomImageModal" class="modal" style="display:none; z-index: 9999; background: rgba(0,0,0,0.7);">
         <span class="close" id="closeZoomImageModal" style="position:absolute;top:10px;right:20px;font-size:2em;color:#fff;cursor:pointer;">&times;</span>
-        <img id="zoomedImage" src="" alt="Фото товара" style="display:block;max-width:90vw;max-height:90vh;margin:40px auto;box-shadow:0 0 20px #000;border-radius:8px;">
+        <img id="zoomedImage" src="" alt="{{ __('messages.product_photo') }}" style="display:block;max-width:90vw;max-height:90vh;margin:40px auto;box-shadow:0 0 20px #000;border-radius:8px;">
     </div>
 
     <style>
@@ -417,6 +417,9 @@
             // window.inventoryData = null; // Удалено
             if (force) {
                 document.getElementById('editInventoryModal').style.display = 'none';
+                // Возвращаем исходный заголовок
+                const modalHeader = document.querySelector('#editInventoryModal .modal-header h2');
+                modalHeader.textContent = '{{ __('messages.edit_inventory') }}';
                 return;
             }
             // Проверяем, есть ли введенные данные
@@ -466,7 +469,7 @@
         document.getElementById('confirmCancelInventoryBtn').addEventListener('click', function() {
             document.getElementById('cancelInventoryModal').style.display = 'none';
             resetInventoryModal();
-            window.showNotification('error', 'Инвентаризация отменена пользователем');
+            window.showNotification('error', '{{ __('messages.inventory_cancelled') }}');
         });
 
         // Логика для модального окна подтверждения отмены редактирования инвентаризации
@@ -477,7 +480,10 @@
             // window.inventoryData = null; // Очищаем данные инвентаризации
             document.getElementById('cancelEditInventoryModal').style.display = 'none';
             document.getElementById('editInventoryModal').style.display = 'none';
-            window.showNotification('error', 'Редактирование отменено пользователем');
+            // Возвращаем исходный заголовок
+            const modalHeader = document.querySelector('#editInventoryModal .modal-header h2');
+            modalHeader.textContent = '{{ __('messages.edit_inventory') }}';
+            window.showNotification('error', '{{ __('messages.edit_cancelled') }}');
         });
 
         // Функции для работы с товарами в инвентаризации
@@ -586,21 +592,21 @@
                         `;
 
                         data.items.forEach(item => {
-                            const status = item.difference == 0 ? '✅ Совпадает' :
-                                item.difference > 0 ? '⚠️ Лишнее' : '❌ Не хватает';
+                            const status = item.difference == 0 ? '{{ __('messages.matches_status') }}' :
+                                item.difference > 0 ? '{{ __('messages.overage_status') }}' : '{{ __('messages.shortage_status') }}';
 
                             html += `
                                 <tr>
                                     <td>
                                         ${item.product.photo ?
                                 `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">` :
-                                `<div class="no-photo">Нет фото</div>`}
+                                `<div class="no-photo">{{ __('messages.no_photo') }}</div>`}
                                     </td>
                                     <td class="large-col">${item.product.name}</td>
-                                    <td class="small-col">${item.warehouse_qty} шт</td>
-                                    <td class="small-col">${item.actual_qty} шт</td>
+                                    <td class="small-col">${item.warehouse_qty} {{ __('messages.units') }}</td>
+                                    <td class="small-col">${item.actual_qty} {{ __('messages.units') }}</td>
                                     <td class="${item.difference > 0 ? 'text-success' : (item.difference < 0 ? 'text-danger' : '')}">
-                                        ${item.difference > 0 ? '+' : ''}${item.difference} шт
+                                        ${item.difference > 0 ? '+' : ''}${item.difference} {{ __('messages.units') }}
                                     </td>
                                     <td>${status}</td>
                                 </tr>
@@ -617,11 +623,11 @@
                         modalBody.innerHTML = html;
                         document.getElementById('viewAllItemsModal').style.display = 'block';
                     } else {
-                        window.showNotification('error', data.message || 'Ошибка загрузки данных');
+                        window.showNotification('error', data.message || '{{ __('messages.error_loading_data') }}');
                     }
                 })
                 .catch(error => {
-                    window.showNotification('error', 'Ошибка загрузки данных');
+                    window.showNotification('error', '{{ __('messages.error_loading_data') }}');
                 });
         }
 
@@ -637,7 +643,7 @@
 
             // Проверка обязательных полей
             if (!formData.date || !formData.user_id) {
-                window.showNotification('error', 'Заполните все обязательные поля');
+                window.showNotification('error', '{{ __('messages.fill_all_required_fields') }}');
                 return;
             }
 
@@ -650,12 +656,12 @@
                 const productName = row.querySelector('.product-search-input').value;
 
                 if (!productId) {
-                    showError(row.querySelector('[name*="product_id"]'), 'Выберите товар');
+                    showError(row.querySelector('[name*="product_id"]'), '{{ __('messages.select_product') }}');
                     hasErrors = true;
                     return;
                 }
                 if (seenProducts.has(productId)) {
-                    showError(row.querySelector('[name*="product_id"]'), 'Этот товар уже добавлен');
+                    showError(row.querySelector('[name*="product_id"]'), '{{ __('messages.product_already_added') }}');
                     hasErrors = true;
                     return;
                 }
@@ -684,7 +690,7 @@
             if (hasErrors) return;
 
             if (formData.items.length === 0) {
-                window.showNotification('error', 'Добавьте хотя бы один товар');
+                window.showNotification('error', '{{ __('messages.add_at_least_one_product') }}');
                 return;
             }
 
@@ -708,8 +714,8 @@
             const overageItems = data.items.filter(item => item.difference > 0).length;
 
             data.items.forEach(item => {
-                const status = item.difference == 0 ? '✅ Совпадает' :
-                    item.difference > 0 ? '⚠️ Лишнее' : '❌ Не хватает';
+                const status = item.difference == 0 ? '{{ __('messages.matches_status') }}' :
+                    item.difference > 0 ? '{{ __('messages.overage_status') }}' : '{{ __('messages.shortage_status') }}';
                 let product = null;
                 if (window.allProducts) {
                     product = window.allProducts.find(p => p.id == item.product_id);
@@ -724,10 +730,10 @@
                 row.innerHTML = `
                     <td>${photoHtml}</td>
                     <td>${item.product_name}</td>
-                    <td class="small-col">${item.warehouse_qty} шт</td>
-                    <td class="small-col">${item.actual_qty} шт</td>
+                    <td class="small-col">${item.warehouse_qty} {{ __('messages.units') }}</td>
+                    <td class="small-col">${item.actual_qty} {{ __('messages.units') }}</td>
                     <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
-                        ${item.difference > 0 ? '+' : ''}${item.difference} шт
+                        ${item.difference > 0 ? '+' : ''}${item.difference} {{ __('messages.units') }}
                     </td>
                     <td>${status}</td>
                 `;
@@ -748,15 +754,15 @@
             
 
             if (!inventoryData) {
-                window.showNotification('error', 'Данные инвентаризации не найдены');
+                window.showNotification('error', '{{ __('messages.error_loading_data') }}');
                 return;
             }
             if (!inventoryData.items || inventoryData.items.length === 0) {
-                window.showNotification('error', 'Нет товаров для сохранения');
+                window.showNotification('error', '{{ __('messages.add_at_least_one_product') }}');
                 return;
             }
             if (!inventoryData.date || !inventoryData.user_id) {
-                window.showNotification('error', 'Заполните все обязательные поля');
+                window.showNotification('error', '{{ __('messages.fill_all_required_fields') }}');
                 return;
             }
 
@@ -780,18 +786,18 @@
             })
             .then(data => {
                 if (data.success) {
-                    window.showNotification('success', 'Инвентаризация успешно сохранена');
+                    window.showNotification('success', '{{ __('messages.inventory_successfully_saved') }}');
                     closeAnalysisModal();
                     addInventoryToDOM(data.inventory);
                     resetInventoryForm();
                     // Очищаем data-атрибут
                     document.getElementById('analysisModal').dataset.inventory = '';
                 } else {
-                    window.showNotification('error', data.message || 'Ошибка при сохранении');
+                    window.showNotification('error', data.message || '{{ __('messages.error_saving_inventory') }}');
                 }
             })
             .catch(error => {
-                window.showNotification('error', error.message || 'Ошибка при сохранении инвентаризации');
+                window.showNotification('error', error.message || '{{ __('messages.error_saving_inventory') }}');
             })
             .finally(() => {
                 saveBtn.innerHTML = originalText;
@@ -807,6 +813,15 @@
                     if (data.success) {
                         const inventory = data.inventory;
                         const modalBody = document.getElementById('editInventoryModalBody');
+                        
+                        // Обновляем заголовок модального окна с датой
+                        const modalHeader = document.querySelector('#editInventoryModal .modal-header h2');
+                        const formattedDate = new Date(inventory.date).toLocaleDateString('{{ app()->getLocale() }}', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                        });
+                        modalHeader.textContent = `{{ __('messages.edit_inventory') }} - ${formattedDate}`;
 
                         // Создаем форму редактирования
                         const formHtml = `
@@ -820,9 +835,9 @@
                                        data-locale="{{ app()->getLocale() }}">
                                     </div>
                                     <div class="form-group">
-                                        <label>Ответственный </label>
+                                        <label>{{ __('messages.responsible') }} </label>
                                         <select name="user_id" required class="form-control">
-                                            <option value="">Выберите ответственного</option>
+                                            <option value="">{{ __('messages.select_responsible') }}</option>
                                             @foreach($users as $user)
                         <option value="{{ $user->id }}" ${inventory.user_id == {{ $user->id }} ? 'selected' : ''}>
                                                     {{ $user->name }}
@@ -832,25 +847,25 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Примечания</label>
+                    <label>{{ __('messages.notes') }}</label>
                     <textarea name="notes" rows="2" class="form-control">${inventory.notes || ''}</textarea>
                                 </div>
                                 <div class="items-container" id="editItemsContainer">
-                                    <h3>Товары</h3>
+                                    <h3>{{ __('messages.products') }}</h3>
                                     <div class="item-row template" style="display: none;">
                                         <div class="form-row">
                                             <div class="form-group product-group large-col">
-                                                <label>Товар</label>
+                                                <label>{{ __('messages.product') }}</label>
                                                 <div class="product-search-container">
                                                     <input type="text" class="product-search-input form-control large-col"
-                                                           placeholder="Начните вводить название товара..."
+                                                           placeholder="{{ __('messages.start_typing_product_name') }}"
                                                            oninput="searchProducts(this)"
                                                            onfocus="showProductDropdown(this)" autocomplete="off">
                                                     <div class="product-dropdown" style="display: none;">
                                                         <div class="product-dropdown-list"></div>
                                                     </div>
                                                     <select name="items[0][product_id]" class="form-control product-select large-col" style="display: none;">
-                                                        <option value="">Выберите товар</option>
+                                                        <option value="">{{ __('messages.select_product') }}</option>
                                                         @foreach($products as $product)
                                                             <option value="{{ $product['id'] }}" data-stock="{{ $product['stock'] }}">
                                                                 {{ $product['name'] }}
@@ -860,11 +875,11 @@
                                                 </div>
                                             </div>
                                             <div class="form-group small-col">
-                                                <label>Склад</label>
+                                                <label>{{ __('messages.warehouse') }}</label>
                                                 <input type="number" name="items[0][warehouse_qty]" class="form-control small-col" value="0" readonly>
                                             </div>
                                             <div class="form-group small-col">
-                                                <label>Кол</label>
+                                                <label>{{ __('messages.quantity_short') }}</label>
                                                 <input type="number" name="items[0][actual_qty]" required class="form-control small-col" min="0" value="0">
                                             </div>
                                             <div class="form-group small-col">
@@ -880,7 +895,7 @@
                                         <div class="item-row">
                                             <div class="form-row">
                                                 <div class="form-group product-group large-col">
-                                                    <label>Товар</label>
+                                                    <label>{{ __('messages.product') }}</label>
                                                     <div class="product-search-container">
                                                         <input type="text" class="product-search-input form-control large-col" value="${item.product.name}" readonly>
                                                         <select name="items[${index}][product_id]" class="form-control product-select large-col" style="display: none;">
@@ -889,11 +904,11 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group small-col">
-                                                    <label>Склад</label>
+                                                    <label>{{ __('messages.warehouse') }}</label>
                                                     <input type="number" name="items[${index}][warehouse_qty]" class="form-control small-col" value="${item.warehouse_qty}" readonly>
                                                 </div>
                                                 <div class="form-group small-col">
-                                                    <label>Кол</label>
+                                                    <label>{{ __('messages.quantity_short') }}</label>
                                                     <input type="number" name="items[${index}][actual_qty]" required class="form-control small-col" min="0" value="${item.actual_qty}">
                                                 </div>
                                                 <div class="form-group small-col">
@@ -912,10 +927,10 @@
                                         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                                         </svg>
-                                        Добавить товар
+                                        {{ __('messages.add_product') }}
                                     </button>
-                                    <button type="button" class="btn-cancel" onclick="closeEditInventoryModal()">Отмена</button>
-                                    <button type="button" class="btn-submit" onclick="analyzeEditInventory(${inventory.id})">Провести инвентаризацию</button>
+                                    <button type="button" class="btn-cancel" onclick="closeEditInventoryModal()">{{ __('messages.cancel') }}</button>
+                                    <button type="button" class="btn-submit" onclick="analyzeEditInventory(${inventory.id})">{{ __('messages.conduct_inventory') }}</button>
                                 </div>
                             </form>
                         `;
@@ -929,11 +944,11 @@
                             initializeDatePicker(dateInput);
                         }
                     } else {
-                        window.showNotification('error', data.message || 'Ошибка загрузки данных инвентаризации');
+                        window.showNotification('error', data.message || '{{ __('messages.error_loading_data') }}');
                     }
                 })
                 .catch(error => {
-                    window.showNotification('error', 'Ошибка загрузки данных инвентаризации');
+                    window.showNotification('error', '{{ __('messages.error_loading_data') }}');
                 });
         }
 
@@ -959,12 +974,12 @@
                 const productName = row.querySelector('.product-search-input').value;
 
                 if (!productId) {
-                    showError(row.querySelector('[name*="product_id"]'), 'Выберите товар');
+                    showError(row.querySelector('[name*="product_id"]'), '{{ __('messages.select_product') }}');
                     hasErrors = true;
                     return;
                 }
                 if (seenProducts.has(productId)) {
-                    showError(row.querySelector('[name*="product_id"]'), 'Этот товар уже добавлен');
+                    showError(row.querySelector('[name*="product_id"]'), '{{ __('messages.product_already_added') }}');
                     hasErrors = true;
                     return;
                 }
@@ -981,11 +996,11 @@
 
             if (hasErrors) return;
             if (items.length === 0) {
-                window.showNotification('error', 'Добавьте хотя бы один товар');
+                window.showNotification('error', '{{ __('messages.add_at_least_one_product') }}');
                 return;
             }
             if (!date || !user_id) {
-                window.showNotification('error', 'Заполните все обязательные поля');
+                window.showNotification('error', '{{ __('messages.fill_all_required_fields') }}');
                 return;
             }
 
@@ -1012,15 +1027,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.showNotification('success', 'Инвентаризация успешно обновлена');
+                    window.showNotification('success', '{{ __('messages.inventory_successfully_updated') }}');
                     closeEditInventoryModal(true);
                     updateInventoryInDOM(data.inventory);
                 } else {
-                    window.showNotification('error', data.message || 'Ошибка обновления инвентаризации');
+                    window.showNotification('error', data.message || '{{ __('messages.error_updating_inventory') }}');
                 }
             })
             .catch(error => {
-                window.showNotification('error', 'Ошибка обновления инвентаризации');
+                window.showNotification('error', '{{ __('messages.error_updating_inventory') }}');
             });
         }
 
@@ -1057,17 +1072,17 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        window.showNotification('success', 'Инвентаризация успешно удалена');
+                        window.showNotification('success', '{{ __('messages.inventory_successfully_deleted') }}');
                         const summaryRow = document.getElementById(`inventory-row-${id}`);
                         const detailsRow = document.getElementById(`details-row-${id}`);
                         if (summaryRow) summaryRow.remove();
                         if (detailsRow) detailsRow.remove();
                     } else {
-                        window.showNotification('error', data.message || 'Ошибка при удалении инвентаризации');
+                        window.showNotification('error', data.message || '{{ __('messages.error_deleting_inventory') }}');
                     }
                 })
                 .catch(error => {
-                    window.showNotification('error', 'Ошибка при удалении инвентаризации');
+                    window.showNotification('error', '{{ __('messages.error_deleting_inventory') }}');
                 });
         }
 
@@ -1086,22 +1101,22 @@
             const itemsWithDiscrepancies = inventory.items.filter(item => item.difference !== 0);
 
             const itemsHTML = itemsWithDiscrepancies.map(item => {
-                const status = item.difference == 0 ? '✅ Совпадает' :
-                    item.difference > 0 ? '⚠️ Лишнее' : '❌ Не хватает';
+                const status = item.difference == 0 ? '{{ __('messages.matches_status') }}' :
+                    item.difference > 0 ? '{{ __('messages.overage_status') }}' : '{{ __('messages.shortage_status') }}';
 
                 return `
                     <tr>
                         <td>
                             ${item.product.photo
                     ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">`
-                    : `<div class="no-photo">Нет фото</div>`
+                    : `<div class="no-photo">{{ __('messages.no_photo') }}</div>`
                 }
                         </td>
                         <td>${item.product.name}</td>
-                        <td class="small-col">${item.warehouse_qty} шт</td>
-                        <td class="small-col">${item.actual_qty} шт</td>
+                        <td class="small-col">${item.warehouse_qty} {{ __('messages.units') }}</td>
+                        <td class="small-col">${item.actual_qty} {{ __('messages.units') }}</td>
                         <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
-                            ${item.difference > 0 ? '+' : ''}${item.difference} шт
+                            ${item.difference > 0 ? '+' : ''}${item.difference} {{ __('messages.units') }}
                         </td>
                         <td>${status}</td>
                     </tr>
@@ -1114,8 +1129,8 @@
                     <td>${formattedDate}</td>
                     <td>${inventory.user.name}</td>
                     <td>${inventory.discrepancies_count}
-                        ${inventory.shortages_count > 0 ? `(${inventory.shortages_count} нехватка)` : ''}
-                        ${inventory.overages_count > 0 ? `(${inventory.overages_count} излишек)` : ''}
+                        ${inventory.shortages_count > 0 ? `(${inventory.shortages_count} {{ __('messages.shortage') }})` : ''}
+                        ${inventory.overages_count > 0 ? `(${inventory.overages_count} {{ __('messages.overage') }})` : ''}
                     </td>
                     <td title="${inventory.notes}">${inventory.notes ? (inventory.notes.length > 30 ? inventory.notes.substring(0, 30) + '…' : inventory.notes) : '—'}</td>
                     <td>
@@ -1124,13 +1139,13 @@
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                 </svg>
-                                Ред.
+                                {{ __('messages.edit_short') }}
                             </button>
                             <button class="btn-delete" onclick="confirmDeleteInventory(event, ${inventory.id})">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                 </svg>
-                                Удалить
+                                {{ __('messages.delete') }}
                             </button>
                             <button class="btn-pdf" onclick="downloadInventoryPdf(event, ${inventory.id})">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -1161,7 +1176,7 @@
                         </table>
                         <div class="view-all-items">
                             <button class="btn-view-all" onclick="viewAllInventoryItems(${inventory.id})">
-                                Просмотреть весь список
+                                {{ __('messages.view_all_list') }}
                             </button>
                         </div>
                     </td>
@@ -1194,10 +1209,10 @@
                                 ? 'class="text-danger"'
                                 : ''}
                     >${inventory.discrepancies_count}
-                        ${inventory.shortages_count > 0 ? `(${inventory.shortages_count} нехватка)` : ''}
-                        ${inventory.overages_count > 0 ? `(${inventory.overages_count} излишек)` : ''}
+                        ${inventory.shortages_count > 0 ? `(${inventory.shortages_count} {{ __('messages.shortage') }})` : ''}
+                        ${inventory.overages_count > 0 ? `(${inventory.overages_count} {{ __('messages.overage') }})` : ''}
                     </span>`
-                    : '<span class="text-success">Совпадает</span>';
+                    : '<span class="text-success">{{ __('messages.matches') }}</span>';
             summaryRow.innerHTML = `
                 <td>${formattedDate}</td>
                 <td>${inventory.user.name}</td>
@@ -1234,21 +1249,21 @@
             detailsRow.style.display = 'none';
             const itemsWithDiscrepancies = inventory.items.filter(item => item.difference !== 0);
             const itemsHTML = itemsWithDiscrepancies.map(item => {
-                const status = item.difference == 0 ? '✅ Совпадает' :
-                    item.difference > 0 ? '⚠️ Лишнее' : '❌ Не хватает';
+                const status = item.difference == 0 ? '{{ __('messages.matches_status') }}' :
+                    item.difference > 0 ? '{{ __('messages.overage_status') }}' : '{{ __('messages.shortage_status') }}';
                 return `
                     <tr>
                         <td>
                             ${item.product.photo
                                 ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product.name}">`
-                                : `<div class="no-photo">Нет фото</div>`
+                                : `<div class="no-photo">{{ __('messages.no_photo') }}</div>`
                             }
                         </td>
                         <td>${item.product.name}</td>
-                        <td class="small-col">${item.warehouse_qty} шт</td>
-                        <td class="small-col">${item.actual_qty} шт</td>
+                        <td class="small-col">${item.warehouse_qty} {{ __('messages.units') }}</td>
+                        <td class="small-col">${item.actual_qty} {{ __('messages.units') }}</td>
                         <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
-                            ${item.difference > 0 ? '+' : ''}${item.difference} шт
+                            ${item.difference > 0 ? '+' : ''}${item.difference} {{ __('messages.units') }}
                         </td>
                         <td>${status}</td>
                     </tr>
@@ -1350,7 +1365,7 @@
             );
 
             if (filteredProducts.length === 0) {
-                dropdownList.innerHTML = '<div class="product-dropdown-item">Товары не найдены</div>';
+                dropdownList.innerHTML = '<div class="product-dropdown-item">{{ __('messages.products_not_found') }}</div>';
             } else {
                 dropdownList.innerHTML = filteredProducts.map(product => `
                     <div class="product-dropdown-item"
@@ -1455,7 +1470,7 @@
                     resetInventoryModal();
                     // Очищаем data-атрибут
                     document.getElementById('analysisModal').dataset.inventory = '';
-                    window.showNotification('info', 'Изменения не сохранены');
+                    window.showNotification('info', '{{ __('messages.changes_not_saved') }}');
                 };
             } else {
                 closeAnalysisModal();
