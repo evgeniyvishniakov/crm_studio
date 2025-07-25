@@ -1018,11 +1018,8 @@
             const container = document.getElementById('trashedProductsList');
             container.innerHTML = '<div class="loading">{{ __('messages.loading') }}...</div>';
 
-            console.log('Загружаем удаленные товары...');
-            
             // Используем прямой URL без префикса
             const url = '/products/trashed';
-            console.log('URL:', window.location.origin + url);
 
             // Получаем CSRF токен
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -1039,7 +1036,7 @@
                 mode: 'same-origin'
             })
                 .then(response => {
-                    console.log('Ответ получен:', response.status, response.statusText);
+        
                     
                     if (!response.ok) {
                         if (response.status === 302) {
@@ -1051,7 +1048,7 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Данные получены:', data);
+    
                     if (data.success) {
                         const footer = document.getElementById('trashedModalFooter');
                         if (data.products.length === 0) {

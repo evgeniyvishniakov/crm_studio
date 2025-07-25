@@ -1010,7 +1010,7 @@
                     });
                     
                     // Отладочная информация
-                    console.log('День:', currentEventDate, 'Записей:', dayEvents.length);
+    
                     
                     // Создаем индикатор для всех дней с записями
                     if (dayEvents.length > 0) {
@@ -1020,7 +1020,7 @@
                             let existingIndicator = dayEl.querySelector('.appointment-count-indicator');
                             
                             if (!existingIndicator) {
-                                console.log('Создаем индикатор для', dayEvents.length, 'записей');
+                
                                 
                                 // Создаем новый индикатор
                                 const indicator = document.createElement('div');
@@ -1045,7 +1045,7 @@
                                 `;
                                 dayEl.style.position = 'relative';
                                 dayEl.appendChild(indicator);
-                                console.log('Индикатор создан');
+                
                             }
                         }
                     }
