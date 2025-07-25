@@ -776,7 +776,6 @@
     .form-row {
         display: flex;
         gap: 15px;
-        align-items: flex-end;
     }
 
     .form-row .form-group:nth-child(1) { /* Товар */

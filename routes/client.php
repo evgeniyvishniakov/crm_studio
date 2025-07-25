@@ -322,6 +322,22 @@ Route::middleware('auth:client')->group(function () {
         Route::post('/update-language-currency', [SettingsController::class, 'updateLanguageCurrency'])->name('update-language-currency');
     });
     
+    // Онлайн-бронирование
+    Route::prefix('booking')->name('client.booking.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Client\BookingManagementController::class, 'index'])->name('index');
+        Route::post('/settings', [\App\Http\Controllers\Client\BookingManagementController::class, 'updateSettings'])->name('update-settings');
+        Route::get('/schedules', [\App\Http\Controllers\Client\BookingManagementController::class, 'schedules'])->name('schedules');
+        Route::get('/schedules/user', [\App\Http\Controllers\Client\BookingManagementController::class, 'getUserSchedule'])->name('get-user-schedule');
+        Route::post('/schedules/save', [\App\Http\Controllers\Client\BookingManagementController::class, 'saveUserSchedule'])->name('save-user-schedule');
+        
+        // Управление услугами мастеров
+        Route::post('/user-services', [\App\Http\Controllers\Client\UserServicesController::class, 'store'])->name('user-services.store');
+        Route::put('/user-services/{id}', [\App\Http\Controllers\Client\UserServicesController::class, 'update'])->name('user-services.update');
+        Route::delete('/user-services/{id}', [\App\Http\Controllers\Client\UserServicesController::class, 'destroy'])->name('user-services.destroy');
+        Route::get('/user-services/user/{userId}', [\App\Http\Controllers\Client\UserServicesController::class, 'getUserServices'])->name('user-services.get-user-services');
+    });
+
+
 
 }); 
 

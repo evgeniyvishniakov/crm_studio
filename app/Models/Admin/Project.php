@@ -6,6 +6,7 @@ namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Project extends Model
 {
@@ -26,11 +27,13 @@ class Project extends Model
         'website',
         'address',
         'social_links',
+        'booking_enabled',
     ];
 
     protected $casts = [
         'registered_at' => 'datetime',
         'social_links' => 'array',
+        'booking_enabled' => 'boolean',
     ];
 
     /**
@@ -63,5 +66,46 @@ class Project extends Model
     public function getLanguageCodeAttribute()
     {
         return $this->language ? $this->language->code : null;
+    }
+
+    /**
+     * Получить slug проекта для URL
+     */
+    public function getSlugAttribute()
+    {
+        return Str::slug($this->project_name);
+    }
+
+    /**
+     * Получить URL для публичной записи
+     */
+    public function getBookingUrlAttribute()
+    {
+        return url('/book/' . $this->slug);
+    }
+
+    /**
+     * Связь с настройками бронирования
+     */
+    public function bookingSettings()
+    {
+        return $this->hasOne(\App\Models\Clients\BookingSetting::class);
+    }
+
+    /**
+     * Получить или создать настройки бронирования
+     */
+    public function getOrCreateBookingSettings()
+    {
+        return $this->bookingSettings()->firstOrCreate([
+            'project_id' => $this->id
+        ], [
+            'booking_interval' => 30,
+            'working_hours_start' => '09:00:00',
+            'working_hours_end' => '18:00:00',
+            'advance_booking_days' => 30,
+            'allow_same_day_booking' => true,
+            'require_confirmation' => false
+        ]);
     }
 } 

@@ -820,7 +820,6 @@
         .export-filters-row {
             display: flex;
             gap: 20px;
-            align-items: flex-end;
             margin-bottom: 20px;
         }
         .export-filters-row .form-group {

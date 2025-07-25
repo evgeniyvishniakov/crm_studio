@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>CRM Studio</title>
+    <title>@yield('title', 'CRM Studio')</title>
     <meta name="description" content="CRM Studio - Система управления салоном красоты">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -490,7 +490,8 @@
                     request()->routeIs('admin.email-templates.*') || 
                     request()->routeIs('admin.security.*') || 
                     request()->routeIs('support-tickets.*') || 
-                    request()->routeIs('client.notifications.*') ? 'active' : '' 
+                    request()->routeIs('client.notifications.*') || 
+                    request()->routeIs('client.booking.*') ? 'active' : '' 
                 }}">
                     <a href="#settingsMenu" data-toggle="collapse" aria-expanded="{{ 
                         request()->routeIs('client.users.*') || 
@@ -501,7 +502,8 @@
                         request()->routeIs('admin.email-templates.*') || 
                         request()->routeIs('admin.security.*') || 
                         request()->routeIs('client.support-tickets.*') || 
-                        request()->routeIs('client.notifications.*') ? 'true' : 'false' 
+                        request()->routeIs('client.notifications.*') || 
+                        request()->routeIs('client.booking.*') ? 'true' : 'false' 
                     }}" class="dropdown-toggle">
                         <i class="menu-icon fa fa-cogs"></i>Настройки
                     </a>
@@ -514,7 +516,8 @@
                         request()->routeIs('admin.email-templates.*') || 
                         request()->routeIs('admin.security.*') || 
                         request()->routeIs('client.support-tickets.*') || 
-                        request()->routeIs('client.notifications.*') ? 'show' : '' 
+                        request()->routeIs('client.notifications.*') || 
+                        request()->routeIs('client.booking.*') ? 'show' : '' 
                     }}">
                         <li class="{{ request()->routeIs('client.users.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('client.users', $userPermissions); @endphp
@@ -574,6 +577,18 @@
                                 <span class="menu-label">Уведомления</span>
                             </a>
                         </li>
+                        <li class="{{ request()->routeIs('client.booking.*') ? 'active' : '' }}">
+                            @php $hasAccess = $isAdmin || in_array('booking', $userPermissions); @endphp
+                            <a href="{{ $hasAccess ? route('client.booking.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                                @if($hasAccess)
+                                    <i class="fa fa-calendar-check"></i>
+                                @else
+                                    <i class="fas fa-lock"></i>
+                                @endif
+                                <span class="menu-label">Веб-запись</span>
+                            </a>
+                        </li>
+
                     </ul>
                 </li>
             </ul>

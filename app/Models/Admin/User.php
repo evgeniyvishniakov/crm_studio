@@ -70,4 +70,28 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
         $role = $this->roleModel()->first();
         return $role ? $role->permissions() : collect();
     }
+
+    /**
+     * Связь с услугами мастера
+     */
+    public function userServices()
+    {
+        return $this->hasMany(\App\Models\Clients\UserService::class);
+    }
+
+    /**
+     * Получить активные услуги мастера для веб-записи
+     */
+    public function activeBookingServices()
+    {
+        return $this->userServices()->where('is_active_for_booking', true)->with('service');
+    }
+
+    /**
+     * Получить все услуги мастера
+     */
+    public function allServices()
+    {
+        return $this->userServices()->with('service');
+    }
 }
