@@ -1370,12 +1370,22 @@
     gap: 24px;
     flex-wrap: wrap;
 }
+
+/* Три колонки для форм */
+.form-row--3col {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
 .form-col {
     flex: 1 1 0;
     min-width: 250px;
 }
+
 @media (max-width: 900px) {
-    .form-row--2col {
+    .form-row--2col,
+    .form-row--3col {
         flex-direction: column;
         gap: 0;
     }

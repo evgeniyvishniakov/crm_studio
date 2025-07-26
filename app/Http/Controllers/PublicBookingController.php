@@ -118,11 +118,14 @@ class PublicBookingController extends Controller
         // Получаем длительность из UserService или базовой услуги
         $serviceDuration = $userService->duration ?: $service->duration ?: 60;
 
+        // Используем интервал мастера (по умолчанию 30 минут)
+        $masterInterval = $schedule->booking_interval ?: 30;
+        
         // Генерируем слоты времени
         $slots = $this->generateTimeSlots(
             $schedule->start_time,
             $schedule->end_time,
-            $bookingSettings->booking_interval,
+            $masterInterval,
             $date,
             $userId,
             $serviceDuration
@@ -183,6 +186,9 @@ class PublicBookingController extends Controller
      */
     public function store(Request $request)
     {
+        // Логируем входящие данные
+        \Log::info('PublicBooking store - входящие данные:', $request->all());
+        
         $validated = $request->validate([
             'project_id' => 'required|exists:projects,id',
             'service_id' => 'required|exists:services,id',
@@ -193,6 +199,8 @@ class PublicBookingController extends Controller
             'client_phone' => 'required|string|max:20',
             'client_email' => 'nullable|email|max:255',
         ]);
+        
+        \Log::info('PublicBooking store - валидированные данные:', $validated);
 
         $project = Project::findOrFail($validated['project_id']);
         $service = Service::findOrFail($validated['service_id']);
@@ -260,8 +268,6 @@ class PublicBookingController extends Controller
      */
     private function generateTimeSlots($startTime, $endTime, $interval, $date, $userId, $serviceDuration)
     {
-
-
         $slots = [];
         $currentTime = Carbon::parse($startTime);
         $endTime = Carbon::parse($endTime);
@@ -269,17 +275,44 @@ class PublicBookingController extends Controller
         // $serviceDuration - это количество минут (число)
         $serviceDurationMinutes = (int) $serviceDuration;
 
+        // Получаем все существующие записи на эту дату для этого мастера
+        $existingAppointments = Appointment::where('user_id', $userId)
+            ->where('date', $date)
+            ->get();
+
         while ($currentTime->lt($endTime)) {
             $slotEnd = $currentTime->copy()->addMinutes($serviceDurationMinutes);
             
             if ($slotEnd->lte($endTime)) {
-                // Проверяем, нет ли уже записи в это время
-                $existingAppointment = Appointment::where('user_id', $userId)
-                    ->where('date', $date)
-                    ->where('time', $currentTime->format('H:i'))
-                    ->first();
+                // Проверяем, не пересекается ли этот слот с существующими записями
+                $isAvailable = true;
+                
+                foreach ($existingAppointments as $appointment) {
+                    $appointmentStart = Carbon::parse($appointment->time);
+                    $appointmentEnd = $appointmentStart->copy()->addMinutes($appointment->duration ?? 60);
+                    
+                    // Проверяем пересечение интервалов
+                    // Новый слот: [currentTime, slotEnd]
+                    // Существующая запись: [appointmentStart, appointmentEnd]
+                    // Пересечение: max(currentTime, appointmentStart) < min(slotEnd, appointmentEnd)
+                    
+                    $overlapStart = max($currentTime, $appointmentStart);
+                    $overlapEnd = min($slotEnd, $appointmentEnd);
+                    
+                    if ($overlapStart < $overlapEnd) {
+                        $isAvailable = false;
+                        break;
+                    }
+                    
+                    // Дополнительная проверка: новый слот не должен начинаться раньше, чем закончится предыдущая запись + интервал
+                    $appointmentEndWithInterval = $appointmentEnd->copy()->addMinutes($interval);
+                    if ($currentTime < $appointmentEndWithInterval) {
+                        $isAvailable = false;
+                        break;
+                    }
+                }
 
-                if (!$existingAppointment) {
+                if ($isAvailable) {
                     $slots[] = [
                         'time' => $currentTime->format('H:i'),
                         'available' => true

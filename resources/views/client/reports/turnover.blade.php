@@ -870,7 +870,7 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
                         calendarRangeDisplay.textContent = `${format(selectedDates[0])} — ${format(selectedDates[1])}`;
                         calendarRangeDisplay.style.minWidth = '110px';
                         // Форматируем для запроса
-                        const formatISO = d => d.toISOString().slice(0, 10);
+                        const formatISO = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
                         const params = `start_date=${formatISO(selectedDates[0])}&end_date=${formatISO(selectedDates[1])}`;
                         window.selectedRange = {start: selectedDates[0], end: selectedDates[1]};
                         

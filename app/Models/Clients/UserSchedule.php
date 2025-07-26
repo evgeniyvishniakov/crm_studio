@@ -17,7 +17,8 @@ class UserSchedule extends Model
         'start_time',
         'end_time',
         'is_working',
-        'notes'
+        'notes',
+        'booking_interval'
     ];
 
     protected $casts = [

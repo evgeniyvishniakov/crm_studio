@@ -2721,7 +2721,7 @@
                 clearErrors('appointmentForm');
 
                 // Устанавливаем сегодняшнюю дату
-                const today = new Date().toISOString().split('T')[0];
+                const today = (function(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
                 form.querySelector('input[name="date"]').value = today;
 
                 // Автоматически выбираем админа текущего проекта

@@ -196,7 +196,7 @@ function initializeCalendarLocalization() {
         } else {
             // Устанавливаем сегодняшнюю дату
             const today = new Date();
-            const todayStr = today.toISOString().split('T')[0]; // формат YYYY-MM-DD
+            const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0'); // формат YYYY-MM-DD
             fp.setDate(todayStr);
             input.value = todayStr;
         }

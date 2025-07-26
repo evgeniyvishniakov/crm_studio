@@ -559,7 +559,8 @@
                   const dayElement = document.createElement('div');
                   dayElement.className = 'calendar-day';
                   dayElement.textContent = currentDate.getDate();
-                  dayElement.setAttribute('data-date', currentDate.toISOString().split('T')[0]);
+                                     const dayDateString = currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + String(currentDate.getDate()).padStart(2, '0');
+                   dayElement.setAttribute('data-date', dayDateString);
                   
                   // Проверяем, является ли день текущего месяца
                   if (currentDate.getMonth() === month) {
@@ -592,7 +593,8 @@
                      
                                              if (!isPast && isWorkingDay) {
                            // Добавляем обработчик клика только если мы на шаге 3 или если это просто для выбора даты
-                           dayElement.addEventListener('click', () => selectDate(currentDate));
+                           const dayDate = new Date(currentDate); // Создаем копию даты
+                           dayElement.addEventListener('click', () => selectDate(dayDate));
                        } else {
                           dayElement.classList.add('disabled');
                           if (!isWorkingDay) {
@@ -618,7 +620,8 @@
          }
          
                  function selectDate(date) {
-            console.log('selectDate called for date:', date.toISOString().split('T')[0]);
+            const dateString = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+            console.log('selectDate called for date:', dateString);
             console.log('Date object toString():', date.toString());
             console.log('Date object toUTCString():', date.toUTCString());
             console.log('Date object getDay():', date.getDay()); // Debug: Raw JS day of week
@@ -633,7 +636,7 @@
                 if (!schedule || !schedule.is_working) {
                     alert('Мастер не работает в этот день!');
                     // Убираем выделение с дня, если он не рабочий
-                    const clickedDayElement = document.querySelector(`.calendar-day[data-date="${date.toISOString().split('T')[0]}"]`);
+                    const clickedDayElement = document.querySelector(`.calendar-day[data-date="${dateString}"]`);
                     if (clickedDayElement) {
                         clickedDayElement.classList.remove('selected');
                     }
@@ -647,12 +650,12 @@
             });
             
             // Находим и выделяем выбранный день по data-date атрибуту
-            const clickedDayElement = document.querySelector(`.calendar-day[data-date="${date.toISOString().split('T')[0]}"]`);
+            const clickedDayElement = document.querySelector(`.calendar-day[data-date="${dateString}"]`);
             if (clickedDayElement) {
                 clickedDayElement.classList.add('selected');
             }
             
-            selectedDate = date.toISOString().split('T')[0];
+            selectedDate = dateString;
             
             // Показываем сообщение о выбранной дате на шагах 1 и 2
             if (currentStep === 1 || currentStep === 2) {
@@ -797,6 +800,10 @@
                 client_email: document.getElementById('client-email').value,
                 client_notes: document.getElementById('client-notes').value
             };
+            
+            console.log('Отправляемые данные:', formData);
+            console.log('selectedDate тип:', typeof selectedDate);
+            console.log('selectedDate значение:', selectedDate);
             
             fetch('{{ route("public.booking.store", $project->slug) }}', {
                 method: 'POST',
@@ -974,7 +981,7 @@
                   
                   // Проверяем только будущие дни
                   if (date >= today) {
-                      const dateStr = date.toISOString().split('T')[0];
+                                             const dateStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
                       const dayOfWeek = date.getDay();
                       const ourDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
                       const schedule = masterSchedule ? masterSchedule[ourDayOfWeek] : null;

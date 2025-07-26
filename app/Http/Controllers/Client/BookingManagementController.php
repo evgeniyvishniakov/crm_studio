@@ -61,7 +61,6 @@ class BookingManagementController extends Controller
         
         $validated = $request->validate([
             'booking_enabled' => 'boolean',
-            'booking_interval' => 'required|integer|min:15|max:120',
             'working_hours_start' => 'required|date_format:H:i',
             'working_hours_end' => 'required|date_format:H:i|after:working_hours_start',
             'advance_booking_days' => 'required|integer|min:1|max:365',
@@ -136,7 +135,8 @@ class BookingManagementController extends Controller
                 'is_working' => $schedule->is_working,
                 'start_time' => $schedule->start_time_formatted,
                 'end_time' => $schedule->end_time_formatted,
-                'notes' => $schedule->notes
+                'notes' => $schedule->notes,
+                'booking_interval' => $schedule->booking_interval
             ];
         }
 
@@ -174,6 +174,7 @@ class BookingManagementController extends Controller
                     'end_time' => $schedule['end_time'] ?? '18:00',
                     'is_working' => true,
                     'notes' => $schedule['notes'] ?? null,
+                    'booking_interval' => $schedule['booking_interval'] ?? 30,
                 ]);
             }
         }

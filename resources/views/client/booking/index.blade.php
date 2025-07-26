@@ -473,16 +473,21 @@ label {
                      </div>
                 </div>
 
-                <div class="form-row form-row--2col">
+                <div class="form-row form-row--3col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label for="booking_interval">Интервал записи</label>
-                            <select class="form-control" id="booking_interval" name="booking_interval">
-                                <option value="15" {{ $bookingSettings->booking_interval == 15 ? 'selected' : '' }}>15 минут</option>
-                                <option value="30" {{ $bookingSettings->booking_interval == 30 ? 'selected' : '' }}>30 минут</option>
-                                <option value="45" {{ $bookingSettings->booking_interval == 45 ? 'selected' : '' }}>45 минут</option>
-                                <option value="60" {{ $bookingSettings->booking_interval == 60 ? 'selected' : '' }}>1 час</option>
-                            </select>
+                            <label for="working_hours_start">Общие часы работы салона (начало)</label>
+                            <input type="time" class="form-control" id="working_hours_start" name="working_hours_start" 
+                                   value="{{ $bookingSettings->working_hours_start_formatted }}">
+                            <small class="form-text text-muted">Используется только для отображения общего расписания салона</small>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group mb-3">
+                            <label for="working_hours_end">Общие часы работы салона (конец)</label>
+                            <input type="time" class="form-control" id="working_hours_end" name="working_hours_end" 
+                                   value="{{ $bookingSettings->working_hours_end_formatted }}">
+                            <small class="form-text text-muted">Каждый мастер настраивает свое время работы индивидуально</small>
                         </div>
                     </div>
                     <div class="form-col">
@@ -490,23 +495,6 @@ label {
                             <label for="advance_booking_days">За сколько дней можно записаться</label>
                             <input type="number" class="form-control" id="advance_booking_days" name="advance_booking_days" 
                                    value="{{ $bookingSettings->advance_booking_days }}" min="1" max="365">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row form-row--2col">
-                    <div class="form-col">
-                        <div class="form-group mb-3">
-                            <label for="working_hours_start">Начало рабочего дня</label>
-                            <input type="time" class="form-control" id="working_hours_start" name="working_hours_start" 
-                                   value="{{ $bookingSettings->working_hours_start_formatted }}">
-                        </div>
-                    </div>
-                    <div class="form-col">
-                        <div class="form-group mb-3">
-                            <label for="working_hours_end">Конец рабочего дня</label>
-                            <input type="time" class="form-control" id="working_hours_end" name="working_hours_end" 
-                                   value="{{ $bookingSettings->working_hours_end_formatted }}">
                         </div>
                     </div>
                 </div>
@@ -764,16 +752,22 @@ label {
 
                 <div id="working-hours-fields">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="edit-start-time">Начало работы</label>
                                 <input type="time" class="form-control" id="edit-start-time">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="edit-end-time">Конец работы</label>
                                 <input type="time" class="form-control" id="edit-end-time">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="edit-booking-interval">Интервал (мин)</label>
+                                <input type="number" class="form-control" id="edit-booking-interval" min="15" max="120" step="15" value="30" placeholder="30">
                             </div>
                         </div>
                     </div>
@@ -1141,7 +1135,8 @@ function renderScheduleTable() {
             is_working: false,
             start_time: '09:00',
             end_time: '18:00',
-            notes: ''
+            notes: '',
+            booking_interval: null
         };
         
         const row = document.createElement('tr');
@@ -1151,6 +1146,10 @@ function renderScheduleTable() {
                 ${dayData.is_working ? 
                     `${dayData.start_time} - ${dayData.end_time}` : 
                     '<span style="color: #6b7280;">Выходной</span>'
+                }
+                ${dayData.is_working && dayData.booking_interval ? 
+                    `<br><small style="color: #3b82f6;">Интервал: ${dayData.booking_interval} мин</small>` : 
+                    ''
                 }
             </td>
             <td>
@@ -1183,7 +1182,8 @@ function editDay(dayOfWeek) {
         is_working: false,
         start_time: '09:00',
         end_time: '18:00',
-        notes: ''
+        notes: '',
+        booking_interval: null
     };
     
     document.getElementById('edit-day-of-week').value = dayOfWeek;
@@ -1192,6 +1192,7 @@ function editDay(dayOfWeek) {
     document.getElementById('edit-start-time').value = dayData.start_time;
     document.getElementById('edit-end-time').value = dayData.end_time;
     document.getElementById('edit-notes').value = dayData.notes;
+    document.getElementById('edit-booking-interval').value = dayData.booking_interval || '30';
     
     toggleWorkingHoursFields();
     
@@ -1222,6 +1223,7 @@ function closeModal() {
     document.getElementById('edit-start-time').value = '';
     document.getElementById('edit-end-time').value = '';
     document.getElementById('edit-notes').value = '';
+    document.getElementById('edit-booking-interval').value = '';
 }
 
 function saveDaySchedule() {
@@ -1231,6 +1233,7 @@ function saveDaySchedule() {
     const startTime = document.getElementById('edit-start-time').value;
     const endTime = document.getElementById('edit-end-time').value;
     const notes = document.getElementById('edit-notes').value;
+    const bookingInterval = document.getElementById('edit-booking-interval').value;
     
     // Валидация
     if (isWorking && (!startTime || !endTime)) {
@@ -1245,12 +1248,20 @@ function saveDaySchedule() {
         return;
     }
     
+    // Валидация интервала
+    if (!bookingInterval || bookingInterval < 15 || bookingInterval > 120) {
+        console.error('Неправильный интервал');
+        showNotification('error', 'Интервал должен быть от 15 до 120 минут');
+        return;
+    }
+    
     // Обновляем данные в локальном объекте
     scheduleData[dayOfWeek] = {
         is_working: isWorking,
         start_time: startTime,
         end_time: endTime,
-        notes: notes
+        notes: notes,
+        booking_interval: parseInt(bookingInterval)
     };
     
     // Закрываем модальное окно
