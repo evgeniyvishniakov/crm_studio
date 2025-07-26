@@ -25,6 +25,7 @@ class Project extends Model
         'status',
         'phone',
         'website',
+        'booking_url', // Ссылка для онлайн-записи
         'address',
         'social_links',
         'booking_enabled',
@@ -81,6 +82,12 @@ class Project extends Model
      */
     public function getBookingUrlAttribute()
     {
+        // Если есть сохраненная ссылка - используем её
+        if ($this->attributes['booking_url'] ?? null) {
+            return $this->attributes['booking_url'];
+        }
+        
+        // Иначе генерируем новую
         return url('/book/' . $this->slug);
     }
 

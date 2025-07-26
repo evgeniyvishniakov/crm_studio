@@ -229,18 +229,18 @@ label {
     animation: shake 0.5s;
 }
 
-/* Стили для таблицы услуг мастеров */
-#userServicesTable {
+/* Стили для таблиц */
+#userServicesTable, #scheduleTable {
     width: 100%;
     border-collapse: collapse;
 }
 
-#userServicesTable thead {
+#userServicesTable thead, #scheduleTable thead {
     background-color: #e0e4e9 !important;
     border-bottom: 1px solid #e5e7eb;
 }
 
-#userServicesTable th {
+#userServicesTable th, #scheduleTable th {
     padding: 16px;
     text-align: center;
     font-size: 14px;
@@ -250,7 +250,7 @@ label {
     letter-spacing: 0.5px;
 }
 
-#userServicesTable td {
+#userServicesTable td, #scheduleTable td {
     padding: 14px;
     font-size: 14px;
     color: #4b5563;
@@ -258,9 +258,35 @@ label {
     text-align: center;
 }
 
-#userServicesTable tr:last-child td {
+#userServicesTable tr:last-child td, #scheduleTable tr:last-child td {
     border-bottom: none;
 }
+
+/* Специальные стили для таблицы расписания */
+#scheduleTable td:first-child {
+    text-align: center;
+    font-weight: 600;
+}
+
+#scheduleTable td:nth-child(2) {
+    text-align: center;
+}
+
+#scheduleTable td:nth-child(3) {
+    text-align: center;
+}
+
+#scheduleTable td:nth-child(4) {
+    text-align: center;
+    max-width: 200px;
+}
+
+#scheduleTable td:nth-child(5) {
+    text-align: center;
+}
+
+/* Анимация для строк таблицы */
+
 
 /* Стили для бейджей статуса */
 .badge {
@@ -278,6 +304,121 @@ label {
 .badge-secondary {
     background-color: #6b7280;
     color: white;
+}
+
+/* Стили для карточек статистики */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 12px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Стили для списков мастеров и услуг */
+.master-item, .service-item {
+    transition: all 0.2s ease;
+}
+
+.master-item:hover, .service-item:hover {
+    background: #f3f4f6 !important;
+    border-color: #d1d5db !important;
+    transform: translateX(2px);
+}
+
+.badge-pill {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* Простые стили для мастеров и услуг */
+.master-item, .service-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.master-item:hover, .service-item:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.master-info, .service-info {
+    flex: 1;
+}
+
+.master-name, .service-name {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.master-details, .service-details {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.master-status, .service-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.role-badge {
+    background: #f3f4f6;
+    color: #374151;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.status-active, .status-available {
+    color: #10b981;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-inactive, .status-unavailable {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: 500;
 }
 </style>
 
@@ -390,38 +531,39 @@ label {
                     </div>
                 </div>
 
-                                 <div class="form-row form-row--2col" style="display: flex; gap: 20px; margin-top: 30px;">
+                <div class="form-row form-row--2col" style="display: flex; gap: 20px; margin-top: 30px;">
                      <div class="form-col" style="flex: 1;">
                          <div class="form-group mb-3">
                              <h6 style="margin-bottom: 15px; color: #333; font-weight: 600;">
                                  <i class="fas fa-users" style="margin-right: 8px; color: #007bff;"></i>
                                  Мастера ({{ $users->count() }})
                              </h6>
-                                                           <div class="list-group">
-                                  @foreach($users as $user)
-                                      @php
-                                          $userActiveServices = $activeUserServices->where('user_id', $user->id);
-                                          $servicesCount = $userActiveServices->count();
-                                      @endphp
-                                      <div class="list-group-item d-flex justify-content-between align-items-center" style="border: 1px solid #dee2e6; border-radius: 4px; margin-bottom: 8px; padding: 12px 15px; background: #fff;">
-                                          <div>
-                                              <span style="font-weight: 500; color: #333;">{{ $user->name }}</span>
-                                              <br>
-                                              <small class="text-muted">
-                                                  {{ $servicesCount }} {{ $servicesCount == 1 ? 'услуга' : ($servicesCount < 5 ? 'услуги' : 'услуг') }} для записи
-                                              </small>
-                                          </div>
-                                          <div>
-                                              <span class="badge badge-primary badge-pill">{{ $user->role }}</span>
-                                              @if($servicesCount > 0)
-                                                  <span class="badge badge-success badge-pill ml-1">Активен</span>
-                                              @else
-                                                  <span class="badge badge-secondary badge-pill ml-1">Неактивен</span>
-                                              @endif
-                                          </div>
-                                      </div>
-                                  @endforeach
-                              </div>
+                             <div class="masters-list">
+                                 @foreach($users as $user)
+                                     @php
+                                         $userActiveServices = $userServices->where('user_id', $user->id)->where('is_active_for_booking', true);
+                                     @endphp
+                                     <div class="master-item">
+                                         <div class="master-info">
+                                             <div class="master-name">{{ $user->name }}</div>
+                                             <div class="master-details">
+                                                 {{ $userActiveServices->count() }} {{ $userActiveServices->count() == 1 ? 'услуга' : ($userActiveServices->count() < 5 ? 'услуги' : 'услуг') }}
+                                                 @if($userActiveServices->count() > 0)
+                                                     • от {{ $userActiveServices->min('price') }} ₽
+                                                 @endif
+                                             </div>
+                                         </div>
+                                         <div class="master-status">
+                                             <span class="role-badge">{{ $user->role }}</span>
+                                             @if($userActiveServices->count() > 0)
+                                                 <span class="status-active">Активен</span>
+                                             @else
+                                                 <span class="status-inactive">Неактивен</span>
+                                             @endif
+                                         </div>
+                                     </div>
+                                 @endforeach
+                             </div>
                          </div>
                      </div>
                      <div class="form-col" style="flex: 1;">
@@ -430,31 +572,35 @@ label {
                                  <i class="fas fa-concierge-bell" style="margin-right: 8px; color: #28a745;"></i>
                                  Услуги ({{ $services->count() }})
                              </h6>
-                                                           <div class="list-group">
-                                  @foreach($services as $service)
-                                      @php
-                                          $serviceActiveMasters = $activeUserServices->where('service_id', $service->id);
-                                          $mastersCount = $serviceActiveMasters->count();
-                                      @endphp
-                                      <div class="list-group-item d-flex justify-content-between align-items-center" style="border: 1px solid #dee2e6; border-radius: 4px; margin-bottom: 8px; padding: 12px 15px; background: #fff;">
-                                          <div>
-                                              <span style="font-weight: 500; color: #333;">{{ $service->name }}</span>
-                                              <br>
-                                              <small class="text-muted">
-                                                  {{ $mastersCount }} {{ $mastersCount == 1 ? 'мастер' : ($mastersCount < 5 ? 'мастера' : 'мастеров') }} оказывает
-                                              </small>
-                                          </div>
-                                          <div>
-                                              <span class="badge badge-success badge-pill">{{ number_format($service->price) }} ₽</span>
-                                              @if($mastersCount > 0)
-                                                  <span class="badge badge-primary badge-pill ml-1">Доступна</span>
-                                              @else
-                                                  <span class="badge badge-secondary badge-pill ml-1">Недоступна</span>
-                                              @endif
-                                          </div>
-                                      </div>
-                                  @endforeach
-                              </div>
+                             <div class="services-list">
+                                 @foreach($services as $service)
+                                     @php
+                                         $serviceActiveMasters = $userServices->where('service_id', $service->id)->where('is_active_for_booking', true);
+                                         $mastersCount = $serviceActiveMasters->count();
+                                         $avgPrice = $serviceActiveMasters->count() > 0 ? $serviceActiveMasters->avg('price') : $service->price;
+                                         $masterNames = $serviceActiveMasters->pluck('user.name')->join(', ');
+                                     @endphp
+                                     <div class="service-item">
+                                         <div class="service-info">
+                                             <div class="service-name">{{ $service->name }}</div>
+                                             <div class="service-details">
+                                                 @if($mastersCount > 0)
+                                                     {{ $masterNames }} • {{ number_format($avgPrice) }} ₽
+                                                 @else
+                                                     Нет мастеров • {{ number_format($service->price) }} ₽
+                                                 @endif
+                                             </div>
+                                         </div>
+                                         <div class="service-status">
+                                             @if($mastersCount > 0)
+                                                 <span class="status-available">Доступна</span>
+                                             @else
+                                                 <span class="status-unavailable">Недоступна</span>
+                                             @endif
+                                         </div>
+                                     </div>
+                                 @endforeach
+                             </div>
                          </div>
                      </div>
                  </div>
@@ -471,71 +617,71 @@ label {
 
         <!-- Вкладка настроек расписания -->
         <div class="settings-pane" id="tab-schedule-settings" style="display: none;">
-            <h5>Настройки расписания мастеров</h5>
-            
-            <div class="form-row form-row--2col">
-                <div class="form-col">
-                    <div class="form-group mb-3">
-                        <label for="user-select">Выберите мастера</label>
-                        <select class="form-control" id="user-select">
+            <div class="clients-header">
+                <h1>Настройки расписания мастеров</h1>
+                <div id="notification"></div>
+                <div class="header-actions">
+                    <div class="form-group mb-3" style="margin-bottom: 0;">
+                        <label for="user-select" style="margin-bottom: 8px; font-weight: 600; color: #333;">Выберите мастера</label>
+                        <select class="form-control" id="user-select" style="min-width: 250px; border-radius: 8px; border: 1px solid #d1d5db; padding: 8px 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.2s ease;">
                             <option value="">Выберите мастера...</option>
                             @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                <option value="{{ $user->id }}" {{ $loop->first ? 'selected' : '' }}>{{ $user->name }}</option>
                             @endforeach
                         </select>
                     </div>
                 </div>
-                <div class="form-col"></div>
             </div>
 
             <!-- Расписание -->
             <div id="schedule-container" style="display: none;">
-                <div class="form-row">
-                    <div class="form-col">
-                        <h6>Расписание на неделю</h6>
-                        
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>День недели</th>
-                                        <th>Рабочие часы</th>
-                                        <th>Статус</th>
-                                        <th>Действия</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="schedule-tbody">
-                                    <!-- Расписание будет загружено через AJAX -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="mt-3">
-                            <button type="button" class="btn btn-primary" onclick="saveSchedule()">
-                                <i class="fas fa-save"></i> Сохранить расписание
-                            </button>
-                        </div>
-                    </div>
+                <div class="table-wrapper" style="margin-top: 20px;">
+                    <table class="table-striped sale-table" id="scheduleTable" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; border: 1px solid #e5e7eb;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;">День недели</th>
+                                <th style="text-align: center;">Рабочие часы</th>
+                                <th style="text-align: center;">Статус</th>
+                                <th style="text-align: center;">Примечания</th>
+                                <th style="text-align: center;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-tbody">
+                            <!-- Расписание будет загружено через AJAX -->
+                        </tbody>
+                    </table>
                 </div>
+
+
             </div>
 
-                         <!-- Сообщение о выборе мастера -->
-             <div id="select-user-message" class="text-center py-5">
-                 <i class="fas fa-user-clock fa-3x text-muted mb-3"></i>
-                 <h5>Выберите мастера</h5>
-                 <p class="text-muted">Выберите мастера из списка выше, чтобы настроить его расписание</p>
-             </div>
-         </div>
+            <!-- Сообщение о выборе мастера -->
+            <div id="select-user-message" class="text-center py-5" style="margin-top: 40px;">
+                <i class="fas fa-user-clock fa-3x text-muted mb-3"></i>
+                <h5>Выберите мастера</h5>
+                <p class="text-muted">Выберите мастера из списка выше, чтобы настроить его расписание</p>
+            </div>
+        </div>
 
          <!-- Вкладка услуг мастеров -->
          <div class="settings-pane" id="tab-user-services" style="display: none;">
-             <h5>Управление услугами мастеров</h5>
-             
-             <div class="form-row">
-                 <div class="form-group mb-3">
-                     <button type="button" class="btn btn-primary" onclick="addUserService()">
-                         <i class="fas fa-plus"></i> Добавить услугу мастеру
+             <div class="clients-header">
+                 <h1>Управление услугами мастеров</h1>
+                 <div id="notification"></div>
+                 <div class="header-actions">
+                     <button class="btn-add-client" onclick="addUserService()">
+                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                         </svg>
+                         Добавить услугу мастеру
                      </button>
+
+                     <div class="search-box">
+                         <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                         </svg>
+                         <input type="text" placeholder="Поиск по мастерам и услугам..." id="userServicesSearchInput" autocomplete="off">
+                     </div>
                  </div>
              </div>
 
@@ -553,12 +699,12 @@ label {
                          </tr>
                      </thead>
                      <tbody id="user-services-tbody">
-                         @foreach($activeUserServices as $userService)
+                         @foreach($userServices as $userService)
                              <tr data-user-service-id="{{ $userService->id }}">
                                  <td>{{ $userService->user->name }}</td>
                                  <td>{{ $userService->service->name }}</td>
-                                 <td>{{ $userService->active_price }} ₽</td>
-                                 <td>{{ $userService->active_duration }} мин</td>
+                                 <td>{{ $userService->price ? number_format($userService->price) . ' ₽' : 'Не указана' }}</td>
+                                 <td>{{ $userService->duration ? $userService->duration . ' мин' : 'Не указано' }}</td>
                                  <td>
                                      @if($userService->is_active_for_booking)
                                          <span class="badge badge-success">Активна</span>
@@ -584,7 +730,7 @@ label {
                  </table>
              </div>
 
-             @if($activeUserServices->count() == 0)
+             @if($userServices->count() == 0)
                  <div class="text-center py-5">
                      <i class="fas fa-user-cog fa-3x text-muted mb-3"></i>
                      <h5>Нет настроенных услуг</h5>
@@ -639,9 +785,9 @@ label {
                 </div>
             </form>
         </div>
-        <div style="text-align: right; margin-top: 20px;">
-            <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
-            <button type="button" class="btn btn-primary" onclick="saveDaySchedule()">Сохранить</button>
+        <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="closeModal()">Отмена</button>
+            <button type="button" class="btn-submit" onclick="saveDaySchedule()">Сохранить</button>
         </div>
     </div>
 </div>
@@ -703,9 +849,9 @@ label {
                 </div>
             </form>
         </div>
-        <div style="text-align: right; margin-top: 20px;">
-            <button type="button" class="btn btn-secondary" onclick="closeUserServiceModal()">Отмена</button>
-            <button type="button" class="btn btn-primary" onclick="saveUserService()">Сохранить</button>
+        <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="closeUserServiceModal()">Отмена</button>
+            <button type="button" class="btn-submit" onclick="saveUserService()">Сохранить</button>
         </div>
     </div>
 </div>
@@ -737,24 +883,51 @@ let currentDeleteUserServiceId = null;
 
 // Обработка вкладок
 document.addEventListener('DOMContentLoaded', function() {
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const settingsPanes = document.querySelectorAll('.settings-pane');
+    // Получаем сохраненную активную вкладку из localStorage
+    let activeTab = localStorage.getItem('bookingActiveTab');
+    // Если в localStorage что-то не то, или вкладка не существует — по умолчанию 'booking-settings'
+    if (!activeTab || !document.querySelector(`[data-tab="${activeTab}"]`)) {
+        activeTab = 'booking-settings';
+        localStorage.setItem('bookingActiveTab', activeTab);
+    }
+    // Показываем активную вкладку
+    showTab(activeTab);
     
-    tabButtons.forEach(button => {
+    // Добавляем обработчики для кнопок вкладок
+    document.querySelectorAll('.tab-button').forEach(button => {
         button.addEventListener('click', function() {
-            const targetTab = this.getAttribute('data-tab');
+            const tabName = this.getAttribute('data-tab');
+            showTab(tabName);
             
-            // Убираем активный класс со всех кнопок
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            // Добавляем активный класс к текущей кнопке
-            this.classList.add('active');
-            
-            // Скрываем все панели
-            settingsPanes.forEach(pane => pane.style.display = 'none');
-            // Показываем нужную панель
-            document.getElementById('tab-' + targetTab).style.display = 'block';
+            // Сохраняем активную вкладку в localStorage
+            localStorage.setItem('bookingActiveTab', tabName);
         });
     });
+    
+    // Функция для показа вкладки
+    function showTab(tabName) {
+        // Скрываем все вкладки
+        document.querySelectorAll('.settings-pane').forEach(pane => {
+            pane.style.display = 'none';
+        });
+        
+        // Убираем активный класс со всех кнопок
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
+        
+        // Показываем нужную вкладку
+        const targetPane = document.getElementById('tab-' + tabName);
+        if (targetPane) {
+            targetPane.style.display = 'block';
+        }
+        
+        // Добавляем активный класс к нужной кнопке
+        const targetButton = document.querySelector(`[data-tab="${tabName}"]`);
+        if (targetButton) {
+            targetButton.classList.add('active');
+        }
+    }
     
     // Обработка формы настроек записи
     const form = document.getElementById('booking-settings-form');
@@ -769,6 +942,16 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Сохранение...';
             
+            // Правильно обрабатываем boolean значения
+            const formDataObj = {};
+            for (let [key, value] of formData.entries()) {
+                if (key === 'booking_enabled' || key === 'allow_same_day_booking') {
+                    formDataObj[key] = value === 'on' || value === 'true' || value === true;
+                } else {
+                    formDataObj[key] = value;
+                }
+            }
+            
             fetch('{{ route("client.booking.update-settings") }}', {
                 method: 'POST',
                 headers: {
@@ -776,7 +959,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(Object.fromEntries(formData))
+                body: JSON.stringify(formDataObj)
             })
             .then(response => response.json())
             .then(data => {
@@ -790,7 +973,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                                          // Показываем/скрываем блок с URL
                      const urlBlock = document.getElementById('booking-url-block');
-                     if (formData.get('booking_enabled')) {
+                     if (formDataObj.booking_enabled) {
                          urlBlock.style.display = 'block';
                      } else {
                          urlBlock.style.display = 'none';
@@ -823,6 +1006,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 hideSchedule();
             }
         });
+        
+        // Автоматически загружаем расписание выбранного мастера при инициализации
+        if (userSelect.value) {
+            currentUserId = userSelect.value;
+            loadUserSchedule(userSelect.value);
+        }
     }
     
          // Добавляем обработчик для чекбокса
@@ -897,6 +1086,11 @@ document.addEventListener('DOMContentLoaded', function() {
             closeConfirmationModal();
         }
     });
+    
+    // Обработчик поиска в таблице услуг мастеров
+    document.getElementById('userServicesSearchInput').addEventListener('input', function() {
+        searchUserServices(this.value);
+    });
 });
 
 function loadUserSchedule(userId) {
@@ -956,7 +1150,7 @@ function renderScheduleTable() {
             <td>
                 ${dayData.is_working ? 
                     `${dayData.start_time} - ${dayData.end_time}` : 
-                    '<span class="text-muted">Выходной</span>'
+                    '<span style="color: #6b7280;">Выходной</span>'
                 }
             </td>
             <td>
@@ -966,8 +1160,17 @@ function renderScheduleTable() {
                 }
             </td>
             <td>
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editDay(${day.id})">
-                    <i class="fas fa-edit"></i> Изменить
+                ${dayData.notes ? 
+                    `<span style="color: #6b7280; font-size: 13px;">${dayData.notes}</span>` : 
+                    '<span style="color: #9ca3af; font-style: italic;">Нет примечаний</span>'
+                }
+            </td>
+            <td class="actions-cell">
+                <button type="button" class="btn-view" onclick="editDay(${day.id})" title="Редактировать" style="display: flex; align-items: center; gap: 6px;">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                    Редактировать
                 </button>
             </td>
         `;
@@ -1042,7 +1245,7 @@ function saveDaySchedule() {
         return;
     }
     
-    // Обновляем данные
+    // Обновляем данные в локальном объекте
     scheduleData[dayOfWeek] = {
         is_working: isWorking,
         start_time: startTime,
@@ -1056,8 +1259,32 @@ function saveDaySchedule() {
     // Обновляем таблицу
     renderScheduleTable();
     
-    console.log('Расписание обновлено');
-    showNotification('success', 'Расписание обновлено');
+    // Сразу сохраняем в базу данных
+    fetch('{{ route("client.booking.save-user-schedule") }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user_id: currentUserId,
+            schedule: scheduleData
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('success', 'Расписание успешно сохранено');
+        } else {
+            console.error('Ошибка сохранения:', data.message);
+            showNotification('error', 'Ошибка: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка при сохранении:', error);
+        showNotification('error', 'Произошла ошибка при сохранении');
+    });
 }
 
 function saveSchedule() {
@@ -1139,25 +1366,55 @@ window.showNotification = function(type, message) {
 
 // Функции для управления услугами мастеров
 function addUserService() {
+    // Очищаем форму
+    document.getElementById('user-service-form').reset();
     document.getElementById('user-service-id').value = '';
-    document.getElementById('modal-user-id').value = '';
-    document.getElementById('modal-service-id').value = '';
     document.getElementById('modal-is-active').checked = true;
-    document.getElementById('modal-price').value = '';
-    document.getElementById('modal-duration').value = '';
-    document.getElementById('modal-description').value = '';
     
+    // Обновляем заголовок модального окна
     document.getElementById('userServiceModalTitle').textContent = 'Добавить услугу мастеру';
     
-    // Простое отображение модального окна
+    // Открываем модальное окно
     const modal = document.getElementById('userServiceModal');
     modal.style.display = 'block';
 }
 
 function editUserService(userServiceId) {
-    // Здесь нужно загрузить данные связи и открыть модальное окно
-    // Пока что просто показываем уведомление
-    showNotification('info', 'Функция редактирования будет добавлена позже');
+    // Загружаем данные услуги мастера
+    fetch(`{{ route('client.booking.user-services.show', '') }}/${userServiceId}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.userServices.length > 0) {
+            const userService = data.userServices[0];
+            
+            // Заполняем форму данными для редактирования
+            document.getElementById('user-service-id').value = userService.id;
+            document.getElementById('modal-user-id').value = userService.user_id;
+            document.getElementById('modal-service-id').value = userService.service_id;
+            document.getElementById('modal-is-active').checked = userService.is_active_for_booking;
+            document.getElementById('modal-price').value = userService.price || '';
+            document.getElementById('modal-duration').value = userService.duration || '';
+            document.getElementById('modal-description').value = userService.description || '';
+            
+            // Обновляем заголовок модального окна
+            document.getElementById('userServiceModalTitle').textContent = 'Редактировать услугу мастеру';
+            
+            // Открываем модальное окно
+            const modal = document.getElementById('userServiceModal');
+            modal.style.display = 'block';
+        } else {
+            showNotification('error', 'Не удалось загрузить данные услуги');
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка при загрузке данных:', error);
+        showNotification('error', 'Произошла ошибка при загрузке данных');
+    });
 }
 
 function deleteUserService(userServiceId) {
@@ -1204,12 +1461,17 @@ function confirmDeleteUserService() {
         } else {
             showNotification('error', 'Ошибка: ' + data.message);
         }
+        
+        // Закрываем модальное окно подтверждения в любом случае
+        closeConfirmationModal();
     })
     .catch(error => {
         console.error('Ошибка при удалении:', error);
         showNotification('error', 'Произошла ошибка при удалении');
+        
+        // Закрываем модальное окно подтверждения даже при ошибке
+        closeConfirmationModal();
     });
-    currentDeleteUserServiceId = null; // Сбрасываем ID для следующего удаления
 }
 
 function saveUserService() {
@@ -1242,15 +1504,27 @@ function saveUserService() {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.message || 'Произошла ошибка при сохранении');
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             showNotification('success', data.message);
             closeUserServiceModal();
             
-            // Если это новая запись, добавляем её в таблицу
-            if (!userServiceId && data.userService) {
-                addUserServiceToTable(data.userService);
+            if (!userServiceId) {
+                // Если это новая запись, добавляем её в таблицу
+                if (data.userService) {
+                    addUserServiceToTable(data.userService);
+                }
+            } else {
+                // Если это редактирование, обновляем существующую строку
+                updateUserServiceInTable(data.userService);
             }
             
             // Обновляем статистику в первой вкладке
@@ -1260,12 +1534,12 @@ function saveUserService() {
             document.getElementById('user-service-form').reset();
             document.getElementById('modal-is-active').checked = true;
         } else {
-            showNotification('error', 'Ошибка: ' + data.message);
+            showNotification('error', data.message || 'Произошла ошибка при сохранении');
         }
     })
     .catch(error => {
         console.error('Ошибка при сохранении:', error);
-        showNotification('error', 'Произошла ошибка при сохранении');
+        showNotification('error', error.message || 'Произошла ошибка при сохранении');
     });
 }
 
@@ -1275,6 +1549,7 @@ function addUserServiceToTable(userService) {
     
     // Создаем новую строку
     const row = document.createElement('tr');
+    row.setAttribute('data-user-service-id', userService.id); // Добавляем атрибут для идентификации
     row.innerHTML = `
         <td>${userService.user_name}</td>
         <td>${userService.service_name}</td>
@@ -1310,11 +1585,158 @@ function addUserServiceToTable(userService) {
     }
 }
 
+// Функция для обновления услуги в таблице
+function updateUserServiceInTable(userService) {
+    const row = document.querySelector(`tr[data-user-service-id="${userService.id}"]`);
+    if (row) {
+        row.innerHTML = `
+            <td>${userService.user_name}</td>
+            <td>${userService.service_name}</td>
+            <td>${userService.active_price} ₽</td>
+            <td>${userService.active_duration} мин</td>
+            <td>
+                ${userService.is_active_for_booking ? 
+                    '<span class="badge badge-success">Активна</span>' : 
+                    '<span class="badge badge-secondary">Неактивна</span>'
+                }
+            </td>
+            <td class="actions-cell">
+                <button type="button" class="btn-view" onclick="editUserService(${userService.id})" title="Редактировать">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                </button>
+                <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="Удалить">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                </button>
+            </td>
+        `;
+    }
+}
+
 // Функция для обновления статистики в первой вкладке
 function updateStatistics() {
-    // Пока что просто показываем уведомление об успешном обновлении
-    // В будущем можно добавить AJAX запрос для обновления статистики без перезагрузки
-    console.log('Статистика обновлена');
+    // Получаем актуальные данные через AJAX
+    fetch('{{ route("client.booking.user-services.get-user-services", "all") }}', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateMastersList(data.userServices);
+            updateServicesList(data.userServices);
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка при обновлении статистики:', error);
+    });
+}
+
+// Функция для обновления списка мастеров
+function updateMastersList(userServices) {
+    const mastersList = document.querySelector('.masters-list');
+    if (!mastersList) return;
+    
+    // Получаем уникальных мастеров
+    const masters = {};
+    userServices.forEach(us => {
+        if (!masters[us.user_id]) {
+            masters[us.user_id] = {
+                name: us.user_name,
+                services: [],
+                role: us.user_role || 'master'
+            };
+        }
+        masters[us.user_id].services.push(us);
+    });
+    
+    // Обновляем HTML для каждого мастера
+    const masterItems = mastersList.querySelectorAll('.master-item');
+    masterItems.forEach((item, index) => {
+        const masterName = item.querySelector('.master-name').textContent;
+        const master = Object.values(masters).find(m => m.name === masterName);
+        
+        if (master) {
+            const activeServices = master.services.filter(s => s.is_active_for_booking);
+            const servicesCount = activeServices.length;
+            const minPrice = activeServices.length > 0 ? Math.min(...activeServices.map(s => s.price || 0)) : 0;
+            
+            const detailsElement = item.querySelector('.master-details');
+            const statusElement = item.querySelector('.master-status');
+            
+            detailsElement.textContent = `${servicesCount} ${servicesCount == 1 ? 'услуга' : (servicesCount < 5 ? 'услуги' : 'услуг')} • от ${minPrice.toLocaleString()} ₽`;
+            
+            if (servicesCount > 0) {
+                statusElement.innerHTML = `
+                    <span class="role-badge">${master.role}</span>
+                    <span class="status-active">Активен</span>
+                `;
+            } else {
+                statusElement.innerHTML = `
+                    <span class="role-badge">${master.role}</span>
+                    <span class="status-inactive">Неактивен</span>
+                `;
+            }
+        }
+    });
+}
+
+// Функция для обновления списка услуг
+function updateServicesList(userServices) {
+    const servicesList = document.querySelector('.services-list');
+    if (!servicesList) return;
+    
+    // Получаем уникальные услуги
+    const services = {};
+    userServices.forEach(us => {
+        if (!services[us.service_id]) {
+            services[us.service_id] = {
+                name: us.service_name,
+                masters: [],
+                price: us.price || 0
+            };
+        }
+        services[us.service_id].masters.push(us);
+    });
+    
+    // Обновляем HTML для каждой услуги
+    const serviceItems = servicesList.querySelectorAll('.service-item');
+    serviceItems.forEach((item, index) => {
+        const serviceName = item.querySelector('.service-name').textContent;
+        const service = Object.values(services).find(s => s.name === serviceName);
+        
+        if (service) {
+            const activeMasters = service.masters.filter(m => m.is_active_for_booking);
+            const mastersCount = activeMasters.length;
+            const avgPrice = activeMasters.length > 0 ? 
+                activeMasters.reduce((sum, m) => sum + (m.price || 0), 0) / activeMasters.length : 0;
+            const masterNames = activeMasters.map(m => m.user_name).join(', ');
+            
+            const detailsElement = item.querySelector('.service-details');
+            const statusElement = item.querySelector('.service-status');
+            
+            detailsElement.textContent = mastersCount > 0 ? 
+                `${masterNames} • ${avgPrice.toLocaleString()} ₽` : 
+                'Нет мастеров • 0 ₽';
+            
+            if (mastersCount > 0) {
+                statusElement.innerHTML = `<span class="status-available">Доступна</span>`;
+            } else {
+                statusElement.innerHTML = `<span class="status-unavailable">Недоступна</span>`;
+            }
+        } else {
+            const detailsElement = item.querySelector('.service-details');
+            const statusElement = item.querySelector('.service-status');
+            
+            detailsElement.textContent = 'Нет мастеров • 0 ₽';
+            statusElement.innerHTML = `<span class="status-unavailable">Недоступна</span>`;
+        }
+    });
 }
 
 function closeUserServiceModal() {
@@ -1326,6 +1748,55 @@ function closeConfirmationModal() {
     const modal = document.getElementById('confirmationModal');
     modal.style.display = 'none';
     currentDeleteUserServiceId = null; // Сбрасываем ID при закрытии модального окна
+}
+
+// Функция поиска в таблице услуг мастеров
+function searchUserServices(searchTerm) {
+    const tbody = document.getElementById('user-services-tbody');
+    const rows = tbody.querySelectorAll('tr');
+    
+    searchTerm = searchTerm.toLowerCase().trim();
+    
+    rows.forEach(row => {
+        const masterName = row.cells[0].textContent.toLowerCase();
+        const serviceName = row.cells[1].textContent.toLowerCase();
+        const price = row.cells[2].textContent.toLowerCase();
+        const duration = row.cells[3].textContent.toLowerCase();
+        
+        const matches = masterName.includes(searchTerm) || 
+                       serviceName.includes(searchTerm) || 
+                       price.includes(searchTerm) || 
+                       duration.includes(searchTerm);
+        
+        row.style.display = matches ? '' : 'none';
+    });
+    
+    // Показываем сообщение если ничего не найдено
+    const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+    const noResultsMessage = document.getElementById('no-search-results');
+    
+    if (visibleRows.length === 0 && searchTerm !== '') {
+        if (!noResultsMessage) {
+            const message = document.createElement('tr');
+            message.id = 'no-search-results';
+            message.innerHTML = `
+                <td colspan="6" style="text-align: center; padding: 40px; color: #6b7280;">
+                    <div style="margin-bottom: 10px;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" style="color: #d1d5db;">
+                            <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                    </div>
+                    <div style="font-size: 16px; font-weight: 500; margin-bottom: 5px;">Ничего не найдено</div>
+                    <div style="font-size: 14px;">Попробуйте изменить поисковый запрос</div>
+                </td>
+            `;
+            tbody.appendChild(message);
+        }
+    } else {
+        if (noResultsMessage) {
+            noResultsMessage.remove();
+        }
+    }
 }
 </script>
 @endpush 

@@ -30,10 +30,10 @@ class BookingManagementController extends Controller
         // Получаем мастеров проекта
         $users = User::where('project_id', $user->project_id)->get();
         
-        // Получаем только активные услуги мастеров для веб-записи
-        $activeUserServices = \App\Models\Clients\UserService::whereHas('user', function($query) use ($user) {
+        // Получаем все услуги мастеров для веб-записи
+        $userServices = \App\Models\Clients\UserService::whereHas('user', function($query) use ($user) {
             $query->where('project_id', $user->project_id);
-        })->where('is_active_for_booking', true)->with(['user', 'service'])->get();
+        })->with(['user', 'service'])->get();
         
         // Получаем расписание мастеров
         $userSchedules = UserSchedule::whereIn('user_id', $users->pluck('id'))
@@ -47,7 +47,7 @@ class BookingManagementController extends Controller
             'services',
             'users',
             'userSchedules',
-            'activeUserServices'
+            'userServices'
         ));
     }
 
@@ -70,14 +70,24 @@ class BookingManagementController extends Controller
             'booking_instructions' => 'nullable|string|max:1000',
         ]);
 
+        // Если включаем онлайн-запись и ссылки еще нет - генерируем её
+        $bookingUrl = null;
+        if ($validated['booking_enabled'] && !$project->booking_url) {
+            $bookingUrl = url('/book/' . $project->slug);
+        }
+
         // Обновляем проект
         $project->update([
-            'booking_enabled' => $validated['booking_enabled']
+            'booking_enabled' => $validated['booking_enabled'],
+            'booking_url' => $bookingUrl ?? $project->booking_url
         ]);
 
         // Обновляем или создаем настройки бронирования
         $bookingSettings = $project->getOrCreateBookingSettings();
         $bookingSettings->update($validated);
+
+        // Обновляем проект из базы, чтобы получить актуальные данные
+        $project->refresh();
 
         return response()->json([
             'success' => true,

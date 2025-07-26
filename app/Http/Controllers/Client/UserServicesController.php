@@ -52,19 +52,27 @@ class UserServicesController extends Controller
                          ->where('project_id', $project->id)
                          ->firstOrFail();
 
-        // Создаем или обновляем связь
-        $userService = UserService::updateOrCreate(
-            [
-                'user_id' => $request->user_id,
-                'service_id' => $request->service_id
-            ],
-            [
-                'is_active_for_booking' => $request->boolean('is_active_for_booking', true),
-                'price' => $request->price,
-                'duration' => $request->duration,
-                'description' => $request->description
-            ]
-        );
+        // Проверяем, существует ли уже такая связь
+        $existingUserService = UserService::where('user_id', $request->user_id)
+                                         ->where('service_id', $request->service_id)
+                                         ->first();
+
+        if ($existingUserService) {
+            return response()->json([
+                'success' => false,
+                'message' => 'У мастера "' . $user->name . '" уже есть услуга "' . $service->name . '"'
+            ], 422);
+        }
+
+        // Создаем новую связь
+        $userService = UserService::create([
+            'user_id' => $request->user_id,
+            'service_id' => $request->service_id,
+            'is_active_for_booking' => $request->boolean('is_active_for_booking', true),
+            'price' => $request->price,
+            'duration' => $request->duration,
+            'description' => $request->description
+        ]);
 
         // Загружаем связи для получения имен
         $userService->load(['user', 'service']);
@@ -148,6 +156,31 @@ class UserServicesController extends Controller
     public function getUserServices($userId)
     {
         $project = Auth::user()->project;
+        
+        if ($userId === 'all') {
+            // Получаем все услуги мастеров для проекта
+            $userServices = UserService::whereHas('user', function($query) use ($project) {
+                $query->where('project_id', $project->id);
+            })->with(['user', 'service'])->get();
+            
+            return response()->json([
+                'success' => true,
+                'userServices' => $userServices->map(function($us) {
+                    return [
+                        'id' => $us->id,
+                        'user_id' => $us->user_id,
+                        'service_id' => $us->service_id,
+                        'user_name' => $us->user->name,
+                        'service_name' => $us->service->name,
+                        'user_role' => $us->user->role,
+                        'price' => $us->price,
+                        'duration' => $us->duration,
+                        'is_active_for_booking' => $us->is_active_for_booking
+                    ];
+                })
+            ]);
+        }
+        
         $user = User::where('id', $userId)
                    ->where('project_id', $project->id)
                    ->firstOrFail();
@@ -157,6 +190,33 @@ class UserServicesController extends Controller
         return response()->json([
             'success' => true,
             'userServices' => $userServices
+        ]);
+    }
+
+    /**
+     * Получить конкретную услугу мастера по ID
+     */
+    public function show($id)
+    {
+        $project = Auth::user()->project;
+        $userService = UserService::whereHas('user', function($query) use ($project) {
+            $query->where('project_id', $project->id);
+        })->with(['user', 'service'])->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'userServices' => [[
+                'id' => $userService->id,
+                'user_id' => $userService->user_id,
+                'service_id' => $userService->service_id,
+                'user_name' => $userService->user->name,
+                'service_name' => $userService->service->name,
+                'user_role' => $userService->user->role,
+                'price' => $userService->price,
+                'duration' => $userService->duration,
+                'description' => $userService->description,
+                'is_active_for_booking' => $userService->is_active_for_booking
+            ]]
         ]);
     }
 

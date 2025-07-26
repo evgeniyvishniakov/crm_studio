@@ -262,13 +262,13 @@
 }
 
 .btn-edit {
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    
     color: white;
 }
 
 .btn-edit:hover {
     transform: translateY(-2px);
-    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 

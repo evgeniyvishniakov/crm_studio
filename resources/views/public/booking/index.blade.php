@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $project->project_name }} - Онлайн запись</title>
     
     <!-- Bootstrap CSS -->
@@ -12,70 +13,75 @@
     
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
         }
         
         .booking-container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin: 20px auto;
             max-width: 800px;
+            border: 1px solid #e9ecef;
         }
         
         .booking-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #495057;
             color: white;
-            padding: 30px;
-            text-align: center;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
         }
         
         .booking-header h1 {
             margin: 0;
-            font-size: 2.5rem;
-            font-weight: 300;
+            font-size: 1.8rem;
+            font-weight: 500;
         }
         
         .booking-header p {
-            margin: 10px 0 0 0;
+            margin: 5px 0 0 0;
             opacity: 0.9;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
         
         .booking-body {
-            padding: 40px;
+            padding: 30px;
         }
         
         .step-indicator {
             display: flex;
             justify-content: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
         }
         
         .step {
             display: flex;
             align-items: center;
-            margin: 0 15px;
+            margin: 0 10px;
         }
         
         .step-number {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: #e9ecef;
+            background: #dee2e6;
             color: #6c757d;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            margin-right: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 8px;
         }
         
         .step.active .step-number {
-            background: #667eea;
+            background: #007bff;
             color: white;
         }
         
@@ -93,600 +99,931 @@
         }
         
         .service-card, .master-card, .time-slot {
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            background: white;
         }
         
         .service-card:hover, .master-card:hover, .time-slot:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            border-color: #007bff;
+            box-shadow: 0 2px 5px rgba(0,123,255,0.2);
         }
         
         .service-card.selected, .master-card.selected, .time-slot.selected {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            border-color: #007bff;
+            background-color: #f8f9ff;
         }
         
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 25px;
-            padding: 12px 30px;
+        .service-card h5, .master-card h5 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .service-card p, .master-card p {
+            margin: 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .time-slot {
+            text-align: center;
             font-weight: 500;
         }
         
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            background-color: #0056b3;
+            border-color: #0056b3;
         }
         
-        .btn-outline-primary {
-            border-color: #667eea;
-            color: #667eea;
-            border-radius: 25px;
-            padding: 12px 30px;
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
         }
         
-        .btn-outline-primary:hover {
-            background: #667eea;
-            border-color: #667eea;
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
         }
         
-        .calendar {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-        }
-        
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-        }
-        
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .calendar-day:hover {
-            background: #667eea;
-            color: white;
-        }
-        
-        .calendar-day.selected {
-            background: #667eea;
-            color: white;
-        }
-        
-        .calendar-day.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .time-slots {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
+        .alert {
+            border-radius: 6px;
         }
         
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 20px;
+            color: #6c757d;
         }
         
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+        .success-message {
+            text-align: center;
+            padding: 30px;
+            color: #28a745;
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+                 .success-message i {
+             font-size: 3rem;
+             margin-bottom: 15px;
+         }
+         
+         /* Стили для деталей записи в CRM стиле */
+         .booking-details {
+             background: #f8f9fa;
+             border: 1px solid #e9ecef;
+             border-radius: 6px;
+             padding: 20px;
+             margin-top: 20px;
+         }
+         
+         .booking-details .alert {
+             background: white;
+             border: 1px solid #dee2e6;
+             border-radius: 6px;
+             padding: 15px;
+             margin: 0;
+         }
+         
+         .booking-details strong {
+             color: #495057;
+             font-weight: 600;
+         }
+         
+         .booking-details br {
+             margin-bottom: 8px;
+         }
+         
+         /* Стили календаря */
+         .calendar-container {
+             background: #f8f9fa;
+             border-radius: 8px;
+             padding: 20px;
+             border: 1px solid #e9ecef;
+         }
+         
+         .calendar-header {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             margin-bottom: 20px;
+         }
+         
+         .calendar-header h5 {
+             font-weight: 600;
+             color: #495057;
+         }
+         
+         .calendar-grid {
+             display: grid;
+             grid-template-columns: repeat(7, 1fr);
+             gap: 8px;
+         }
+         
+         .calendar-day {
+             aspect-ratio: 1;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             border-radius: 6px;
+             cursor: pointer;
+             transition: all 0.2s ease;
+             font-weight: 500;
+             font-size: 14px;
+             background: white;
+             border: 1px solid #e9ecef;
+         }
+         
+         .calendar-day:hover {
+             background: #e3f2fd;
+             border-color: #2196f3;
+             color: #1976d2;
+         }
+         
+         .calendar-day.selected {
+             background: #2196f3;
+             border-color: #2196f3;
+             color: white;
+         }
+         
+         .calendar-day.disabled {
+             opacity: 0.4;
+             cursor: not-allowed;
+             background: #f5f5f5;
+         }
+         
+         .calendar-day.other-month {
+             opacity: 0.3;
+             background: #f8f9fa;
+         }
+         
+         .calendar-day.today {
+             background: #fff3e0;
+             border-color: #ff9800;
+             color: #e65100;
+         }
+         
+         /* Стили временных слотов */
+         .time-slots-grid {
+             display: grid;
+             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+             gap: 10px;
+         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="booking-container">
-            <!-- Заголовок -->
-            <div class="booking-header">
-                <h1>{{ $project->project_name }}</h1>
-                <p>Онлайн запись на услуги</p>
+    <div class="booking-container">
+        <div class="booking-header">
+            <h1>{{ $project->project_name }}</h1>
+            <p>Онлайн запись на услуги</p>
+        </div>
+        
+        <div class="booking-body">
+            <!-- Индикатор шагов -->
+            <div class="step-indicator" id="step-indicator">
+                <!-- Активный шаг будет отрисован через JS -->
             </div>
             
-            <!-- Индикатор шагов -->
-            <div class="booking-body">
-                <div class="step-indicator">
-                    <div class="step active" id="step-1">
-                        <div class="step-number">1</div>
-                        <span>Услуга</span>
-                    </div>
-                    <div class="step" id="step-2">
-                        <div class="step-number">2</div>
-                        <span>Мастер</span>
-                    </div>
-                    <div class="step" id="step-3">
-                        <div class="step-number">3</div>
-                        <span>Дата и время</span>
-                    </div>
-                    <div class="step" id="step-4">
-                        <div class="step-number">4</div>
-                        <span>Подтверждение</span>
-                    </div>
+            <!-- Шаг 1: Выбор услуги -->
+            <div class="step-content active" id="step1">
+                <h4 class="mb-3">Выберите услугу</h4>
+                <div id="services-list">
+                    @php
+                    // Используем хелпер для форматирования времени
+                    use App\Helpers\TimeHelper;
+                @endphp
+                    @foreach($services as $service)
+                        @php
+                            // Получаем минимальную цену и максимальную длительность для этой услуги
+                            $serviceUserServices = $userServices->where('service_id', $service->id);
+                            $minPrice = $serviceUserServices->min('price') ?: $service->price;
+                            $maxDuration = $serviceUserServices->min('duration') ?: $service->duration ?: 60;
+                        @endphp
+                        <div class="service-card" data-service-id="{{ $service->id }}" data-duration="{{ $maxDuration }}">
+                            <h5>{{ $service->name }}</h5>
+                            <p>
+                                @if($minPrice)
+                                    Цена: от {{ number_format($minPrice, 0, ',', ' ') }} ₽
+                                @endif
+                                @if($maxDuration)
+                                    • Длительность: {{ \App\Helpers\TimeHelper::formatDuration($maxDuration) }}
+                                @endif
+                            </p>
+                        </div>
+                    @endforeach
                 </div>
-                
-                <!-- Шаг 1: Выбор услуги -->
-                <div class="step-content active" id="step-content-1">
-                    <h3 class="mb-4">Выберите услугу</h3>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-primary" onclick="nextStep()" disabled id="next-step-1">
+                        Далее <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Шаг 2: Выбор мастера -->
+            <div class="step-content" id="step2">
+                <h4 class="mb-3">Выберите мастера</h4>
+                <div id="masters-list">
+                    @foreach($users as $user)
+                        @php
+                            $userServicesForUser = $userServices->where('user_id', $user->id);
+                        @endphp
+                        <div class="master-card" data-user-id="{{ $user->id }}" style="display: none;">
+                            <h5>{{ $user->name }}</h5>
+                            <p>{{ $user->position ?? 'Мастер' }}</p>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                        <i class="fas fa-arrow-left"></i> Назад
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()" disabled id="next-step-2">
+                        Далее <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+                         <!-- Шаг 3: Выбор даты и времени -->
+             <div class="step-content" id="step3">
+                 <h4 class="mb-3">Выберите дату и время</h4>
+                 
+                 <!-- Календарь -->
+                 <div class="calendar-container mb-4">
+                     <div class="calendar-header">
+                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="previousMonth()">
+                             <i class="fas fa-chevron-left"></i>
+                         </button>
+                         <h5 id="current-month" class="mb-0">Июль 2025</h5>
+                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="nextMonth()">
+                             <i class="fas fa-chevron-right"></i>
+                         </button>
+                     </div>
+                     
+                     <div class="calendar-grid" id="calendar-grid">
+                         <!-- Календарь будет загружен через JavaScript -->
+                     </div>
+                 </div>
+                 
+                 <!-- Временные слоты -->
+                 <div id="time-slots-container" style="display: none;">
+                     <h5 class="mb-3">Доступное время</h5>
+                     <div id="time-slots" class="time-slots-grid">
+                         <!-- Временные слоты будут загружены через JavaScript -->
+                     </div>
+                 </div>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                        <i class="fas fa-arrow-left"></i> Назад
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="nextStep()" disabled id="next-step-3">
+                        Далее <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Шаг 4: Данные клиента -->
+            <div class="step-content" id="step4">
+                <h4 class="mb-3">Ваши данные</h4>
+                <form id="booking-form">
                     <div class="row">
-                        @foreach($services as $service)
-                        <div class="col-md-6 mb-3">
-                            <div class="service-card" data-service-id="{{ $service->id }}" data-service-name="{{ $service->name }}" data-service-price="{{ $service->price }}">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 class="mb-1">{{ $service->name }}</h5>
-                                        <p class="mb-0 text-muted">{{ $service->description }}</p>
-                                    </div>
-                                    <div class="text-end">
-                                        <div class="h5 mb-0">{{ number_format($service->price) }} ₽</div>
-                                        <small class="text-muted">{{ $service->duration }} мин</small>
-                                    </div>
-                                </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="client-name" class="form-label">Имя *</label>
+                                <input type="text" class="form-control" id="client-name" required>
                             </div>
                         </div>
-                        @endforeach
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="client-phone" class="form-label">Телефон *</label>
+                                <input type="tel" class="form-control" id="client-phone" required>
+                            </div>
+                        </div>
                     </div>
-                    <div class="text-end mt-4">
-                        <button class="btn btn-primary" onclick="nextStep()" id="next-step-1" disabled>
-                            Далее <i class="fas fa-arrow-right"></i>
-                        </button>
+                    <div class="mb-3">
+                        <label for="client-email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="client-email">
                     </div>
+                    <div class="mb-3">
+                        <label for="client-notes" class="form-label">Комментарий</label>
+                        <textarea class="form-control" id="client-notes" rows="3" placeholder="Дополнительная информация..."></textarea>
+                    </div>
+                </form>
+                <div class="mt-3">
+                    <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                        <i class="fas fa-arrow-left"></i> Назад
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="submitBooking()" id="submit-booking">
+                        Записаться <i class="fas fa-check"></i>
+                    </button>
                 </div>
-                
-                <!-- Шаг 2: Выбор мастера -->
-                <div class="step-content" id="step-content-2">
-                    <h3 class="mb-4">Выберите мастера</h3>
-                    <div class="row">
-                        @foreach($users as $user)
-                        <div class="col-md-6 mb-3">
-                            <div class="master-card" data-user-id="{{ $user->id }}" data-user-name="{{ $user->name }}">
-                                <div class="d-flex align-items-center">
-                                    <div class="me-3">
-                                        <i class="fas fa-user-circle fa-3x text-muted"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="mb-1">{{ $user->name }}</h5>
-                                        <p class="mb-0 text-muted">{{ $user->role }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                    <div class="d-flex justify-content-between mt-4">
-                        <button class="btn btn-outline-primary" onclick="prevStep()">
-                            <i class="fas fa-arrow-left"></i> Назад
-                        </button>
-                        <button class="btn btn-primary" onclick="nextStep()" id="next-step-2" disabled>
-                            Далее <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Шаг 3: Выбор даты и времени -->
-                <div class="step-content" id="step-content-3">
-                    <h3 class="mb-4">Выберите дату и время</h3>
-                    
-                    <div class="calendar">
-                        <div class="calendar-header">
-                            <button class="btn btn-sm btn-outline-primary" onclick="previousMonth()">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <h5 id="current-month">Июль 2025</h5>
-                            <button class="btn btn-sm btn-outline-primary" onclick="nextMonth()">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="calendar-grid" id="calendar-grid">
-                            <!-- Календарь будет загружен через JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <div id="time-slots-container" style="display: none;">
-                        <h5 class="mt-4 mb-3">Доступное время</h5>
-                        <div class="time-slots" id="time-slots">
-                            <!-- Временные слоты будут загружены через JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between mt-4">
-                        <button class="btn btn-outline-primary" onclick="prevStep()">
-                            <i class="fas fa-arrow-left"></i> Назад
-                        </button>
-                        <button class="btn btn-primary" onclick="nextStep()" id="next-step-3" disabled>
-                            Далее <i class="fas fa-arrow-right"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Шаг 4: Подтверждение -->
-                <div class="step-content" id="step-content-4">
-                    <h3 class="mb-4">Подтверждение записи</h3>
-                    
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Выбранная услуга:</h6>
-                                    <p id="confirm-service"></p>
-                                    
-                                    <h6>Мастер:</h6>
-                                    <p id="confirm-master"></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>Дата и время:</h6>
-                                    <p id="confirm-datetime"></p>
-                                    
-                                    <h6>Стоимость:</h6>
-                                    <p id="confirm-price"></p>
-                                </div>
-                            </div>
-                            
-                            <hr>
-                            
-                            <h6>Ваши контакты:</h6>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="client-name">Имя *</label>
-                                        <input type="text" class="form-control" id="client-name" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="client-phone">Телефон *</label>
-                                        <input type="tel" class="form-control" id="client-phone" required>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group mt-3">
-                                <label for="client-email">Email</label>
-                                <input type="email" class="form-control" id="client-email">
-                            </div>
-                            
-                            <div class="form-group mt-3">
-                                <label for="client-comment">Комментарий</label>
-                                <textarea class="form-control" id="client-comment" rows="3" placeholder="Дополнительная информация..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between mt-4">
-                        <button class="btn btn-outline-primary" onclick="prevStep()">
-                            <i class="fas fa-arrow-left"></i> Назад
-                        </button>
-                        <button class="btn btn-primary" onclick="confirmBooking()" id="confirm-booking">
-                            <i class="fas fa-check"></i> Подтвердить запись
-                        </button>
-                    </div>
+            </div>
+            
+            <!-- Сообщение об успехе -->
+            <div class="step-content" id="success">
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <h4>Запись успешно создана!</h4>
+                    <p>Мы свяжемся с вами для подтверждения записи.</p>
+                    <div id="booking-details" class="mt-3"></div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Bootstrap JS -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
-        let currentStep = 1;
-        let selectedService = null;
-        let selectedMaster = null;
-        let selectedDate = null;
-        let selectedTime = null;
-        let currentMonth = new Date();
+                 let currentStep = 1;
+         let selectedService = null;
+         let selectedMaster = null;
+         let selectedDate = null;
+         let selectedTime = null;
+         let currentMonth = new Date();
+         let masterSchedule = null; // Расписание выбранного мастера
         
-        // Инициализация
-        document.addEventListener('DOMContentLoaded', function() {
-            renderCalendar();
-        });
+                 // Инициализация
+         document.addEventListener('DOMContentLoaded', function() {
+             // Обработчики для выбора услуги
+             document.querySelectorAll('.service-card').forEach(card => {
+                 card.addEventListener('click', function() {
+                     document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+                     this.classList.add('selected');
+                     selectedService = this.dataset.serviceId;
+                     document.getElementById('next-step-1').disabled = false;
+                     
+                     // Показываем только мастеров, которые предоставляют эту услугу
+                     filterMastersByService(selectedService);
+                 });
+             });
+             
+             // Обработчики для выбора мастера (будут обновлены после фильтрации)
+             updateMasterEventListeners();
+             
+             // Инициализируем календарь
+             renderCalendar();
+             renderStepIndicator(); // Вызовем при инициализации
+         });
         
-        // Выбор услуги
-        document.querySelectorAll('.service-card').forEach(card => {
-            card.addEventListener('click', function() {
-                document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedService = {
-                    id: this.dataset.serviceId,
-                    name: this.dataset.serviceName,
-                    price: this.dataset.servicePrice
-                };
-                document.getElementById('next-step-1').disabled = false;
-            });
-        });
-        
-        // Выбор мастера
-        document.querySelectorAll('.master-card').forEach(card => {
-            card.addEventListener('click', function() {
-                document.querySelectorAll('.master-card').forEach(c => c.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedMaster = {
-                    id: this.dataset.userId,
-                    name: this.dataset.userName
-                };
-                document.getElementById('next-step-2').disabled = false;
-            });
-        });
-        
-        // Переход к следующему шагу
         function nextStep() {
             if (currentStep < 4) {
+                document.getElementById('step' + currentStep).classList.remove('active');
                 currentStep++;
+                document.getElementById('step' + currentStep).classList.add('active');
                 updateStepIndicator();
-                showStep(currentStep);
+                
+                // Если переходим на шаг 3 и у нас уже есть выбранная дата, загружаем временные слоты
+                if (currentStep === 3 && selectedDate && selectedService && selectedMaster) {
+                    loadTimeSlots();
+                }
+                
+                // Сбрасываем выбор времени при переходе на шаг 3
+                if (currentStep === 3) {
+                    selectedTime = null;
+                    document.getElementById('next-step-3').disabled = true;
+                }
             }
         }
         
-        // Переход к предыдущему шагу
         function prevStep() {
             if (currentStep > 1) {
+                document.getElementById('step' + currentStep).classList.remove('active');
                 currentStep--;
+                document.getElementById('step' + currentStep).classList.add('active');
                 updateStepIndicator();
-                showStep(currentStep);
+                
+                // Если уходим с шага 3, скрываем временные слоты
+                if (currentStep === 2) {
+                    const timeSlotsContainer = document.getElementById('time-slots-container');
+                    if (timeSlotsContainer) {
+                        timeSlotsContainer.style.display = 'none';
+                    }
+                }
             }
         }
         
-        // Обновление индикатора шагов
         function updateStepIndicator() {
-            document.querySelectorAll('.step').forEach((step, index) => {
-                step.classList.remove('active', 'completed');
-                if (index + 1 < currentStep) {
-                    step.classList.add('completed');
-                } else if (index + 1 === currentStep) {
-                    step.classList.add('active');
-                }
-            });
+            renderStepIndicator();
         }
         
-        // Показать шаг
-        function showStep(step) {
-            document.querySelectorAll('.step-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(`step-content-${step}`).classList.add('active');
+                 // Функции календаря
+         function renderCalendar() {
+             const grid = document.getElementById('calendar-grid');
+             const monthYear = document.getElementById('current-month');
+             
+             const year = currentMonth.getFullYear();
+             const month = currentMonth.getMonth();
+             
+             monthYear.textContent = new Date(year, month).toLocaleDateString('ru-RU', { 
+                 month: 'long', 
+                 year: 'numeric' 
+             });
+             
+             const firstDay = new Date(year, month, 1);
+             const lastDay = new Date(year, month + 1, 0);
+             const startDate = new Date(firstDay);
+             // Конвертируем американский формат (0=воскресенье) в европейский (0=понедельник)
+             let dayOfWeek = firstDay.getDay();
+             dayOfWeek = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // 0=воскресенье становится 6, 1=понедельник становится 0
+             startDate.setDate(startDate.getDate() - dayOfWeek);
+             
+             grid.innerHTML = '';
+             
+             // Дни недели
+             const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+             daysOfWeek.forEach(day => {
+                 const dayHeader = document.createElement('div');
+                 dayHeader.className = 'calendar-day';
+                 dayHeader.style.fontWeight = 'bold';
+                 dayHeader.style.backgroundColor = '#f8f9fa';
+                 dayHeader.textContent = day;
+                 grid.appendChild(dayHeader);
+             });
+             
+                           // Дни месяца
+              let currentDate = new Date(startDate);
+              let endDate = new Date(year, month + 1, 0); // Последний день текущего месяца
+              
+              // Добавляем дни до конца последней недели, но только если они нужны
+              const lastDayOfWeek = endDate.getDay();
+              const daysToAdd = lastDayOfWeek === 0 ? 0 : 7 - lastDayOfWeek;
+              endDate.setDate(endDate.getDate() + daysToAdd);
+              
+              while (currentDate <= endDate) {
+                  const dayElement = document.createElement('div');
+                  dayElement.className = 'calendar-day';
+                  dayElement.textContent = currentDate.getDate();
+                  dayElement.setAttribute('data-date', currentDate.toISOString().split('T')[0]);
+                  
+                  // Проверяем, является ли день текущего месяца
+                  if (currentDate.getMonth() === month) {
+                      const today = new Date();
+                      const isToday = currentDate.toDateString() === today.toDateString();
+                      const isPast = currentDate < today;
+                      
+                                                                     // Проверяем расписание мастера
+                        let isWorkingDay = true;
+                        if (masterSchedule) {
+                            const dayOfWeek = currentDate.getDay();
+                            // Конвертируем американский формат в наш формат
+                            const ourDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
+                            const schedule = masterSchedule[ourDayOfWeek];
+                            // Если нет расписания на этот день или мастер не работает
+                            if (!schedule || !schedule.is_working) {
+                                isWorkingDay = false;
+                            }
+                        } else {
+                            // Если нет расписания мастера вообще - все дни недоступны
+                            isWorkingDay = false;
+                        }
+                        
+                        // Отладочная информация
+                        console.log(`День ${currentDate.getDate()}: isWorkingDay = ${isWorkingDay}, masterSchedule = ${!!masterSchedule}`);
+                     
+                      if (isToday) {
+                          dayElement.classList.add('today');
+                      }
+                     
+                                             if (!isPast && isWorkingDay) {
+                           // Добавляем обработчик клика только если мы на шаге 3 или если это просто для выбора даты
+                           dayElement.addEventListener('click', () => selectDate(currentDate));
+                       } else {
+                          dayElement.classList.add('disabled');
+                          if (!isWorkingDay) {
+                              const dayOfWeek = currentDate.getDay();
+                              const ourDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
+                              const schedule = masterSchedule ? masterSchedule[ourDayOfWeek] : null;
+                              if (!schedule) {
+                                  dayElement.title = 'Мастер не работает в этот день';
+                              } else {
+                                  dayElement.title = 'Выходной день мастера';
+                              }
+                          }
+                      }
+                  } else {
+                      dayElement.classList.add('other-month');
+                  }
+                 
+                  grid.appendChild(dayElement);
+                  
+                  // Переходим к следующему дню
+                  currentDate.setDate(currentDate.getDate() + 1);
+              }
+         }
+         
+                 function selectDate(date) {
+            console.log('selectDate called for date:', date.toISOString().split('T')[0]);
+            console.log('Date object toString():', date.toString());
+            console.log('Date object toUTCString():', date.toUTCString());
+            console.log('Date object getDay():', date.getDay()); // Debug: Raw JS day of week
+            console.log('masterSchedule:', masterSchedule);
             
-            if (step === 4) {
-                updateConfirmation();
-            }
-        }
-        
-        // Рендер календаря
-        function renderCalendar() {
-            const grid = document.getElementById('calendar-grid');
-            const monthYear = document.getElementById('current-month');
-            
-            const year = currentMonth.getFullYear();
-            const month = currentMonth.getMonth();
-            
-            monthYear.textContent = new Date(year, month).toLocaleDateString('ru-RU', { 
-                month: 'long', 
-                year: 'numeric' 
-            });
-            
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const startDate = new Date(firstDay);
-            startDate.setDate(startDate.getDate() - firstDay.getDay());
-            
-            grid.innerHTML = '';
-            
-            // Дни недели
-            const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-            daysOfWeek.forEach(day => {
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'calendar-day';
-                dayHeader.style.fontWeight = 'bold';
-                dayHeader.textContent = day;
-                grid.appendChild(dayHeader);
-            });
-            
-            // Дни месяца
-            for (let i = 0; i < 42; i++) {
-                const date = new Date(startDate);
-                date.setDate(startDate.getDate() + i);
-                
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
-                dayElement.textContent = date.getDate();
-                
-                // Проверяем, является ли день текущего месяца
-                if (date.getMonth() === month) {
-                    const today = new Date();
-                    const isToday = date.toDateString() === today.toDateString();
-                    const isPast = date < today;
-                    
-                    if (isToday) {
-                        dayElement.classList.add('selected');
+            // --- ПРОВЕРКА: рабочий ли день у мастера ---
+            if (masterSchedule) {
+                const dayOfWeek = date.getDay();
+                const ourDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
+                const schedule = masterSchedule[ourDayOfWeek];
+                console.log('Day of week (JS):', dayOfWeek, 'Our format:', ourDayOfWeek, 'Schedule:', schedule);
+                if (!schedule || !schedule.is_working) {
+                    alert('Мастер не работает в этот день!');
+                    // Убираем выделение с дня, если он не рабочий
+                    const clickedDayElement = document.querySelector(`.calendar-day[data-date="${date.toISOString().split('T')[0]}"]`);
+                    if (clickedDayElement) {
+                        clickedDayElement.classList.remove('selected');
                     }
-                    
-                    if (!isPast) {
-                        dayElement.addEventListener('click', () => selectDate(date));
-                    } else {
-                        dayElement.classList.add('disabled');
-                    }
-                } else {
-                    dayElement.style.opacity = '0.3';
+                    return;
                 }
-                
-                grid.appendChild(dayElement);
             }
-        }
-        
-        // Выбор даты
-        function selectDate(date) {
+            
+            // Убираем выделение со всех дней
             document.querySelectorAll('.calendar-day').forEach(day => {
                 day.classList.remove('selected');
             });
-            event.target.classList.add('selected');
             
-            selectedDate = date;
-            loadTimeSlots(date);
+            // Находим и выделяем выбранный день по data-date атрибуту
+            const clickedDayElement = document.querySelector(`.calendar-day[data-date="${date.toISOString().split('T')[0]}"]`);
+            if (clickedDayElement) {
+                clickedDayElement.classList.add('selected');
+            }
+            
+            selectedDate = date.toISOString().split('T')[0];
+            
+            // Показываем сообщение о выбранной дате на шагах 1 и 2
+            if (currentStep === 1 || currentStep === 2) {
+                const dateStr = new Date(date).toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                alert(`Выбрана дата: ${dateStr}\n\nПерейдите к следующему шагу для выбора времени.`);
+                return; // Выходим из функции, не загружая временные слоты
+            }
+            
+            // Загружаем временные слоты только если мы на шаге 3
+            if (selectedService && selectedMaster && currentStep === 3) {
+                loadTimeSlots();
+            }
         }
-        
-        // Загрузка временных слотов
-        function loadTimeSlots(date) {
-            const container = document.getElementById('time-slots-container');
+         
+                   function previousMonth() {
+              currentMonth.setMonth(currentMonth.getMonth() - 1);
+              renderCalendar();
+              if (selectedService && selectedMaster && masterSchedule) {
+                  setTimeout(checkMonthAvailability, 100);
+              }
+          }
+          
+          function nextMonth() {
+              currentMonth.setMonth(currentMonth.getMonth() + 1);
+              renderCalendar();
+              if (selectedService && selectedMaster && masterSchedule) {
+                  setTimeout(checkMonthAvailability, 100);
+              }
+          }
+         
+                 function loadTimeSlots() {
+            console.log('loadTimeSlots called with:', {
+                selectedService,
+                selectedMaster,
+                selectedDate
+            });
+            
+            const timeSlotsContainer = document.getElementById('time-slots-container');
             const slotsDiv = document.getElementById('time-slots');
             
-            container.style.display = 'block';
-            slotsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Загрузка доступного времени...</p></div>';
+            // Проверяем, что элементы существуют
+            if (!timeSlotsContainer || !slotsDiv) {
+                console.error('Не найдены элементы time-slots-container или time-slots');
+                console.log('Текущий шаг:', currentStep);
+                console.log('Элемент time-slots-container:', timeSlotsContainer);
+                console.log('Элемент time-slots:', slotsDiv);
+                return;
+            }
+            
+            timeSlotsContainer.style.display = 'block';
+            slotsDiv.innerHTML = '<div class="loading">Загрузка доступного времени...</div>';
             
             fetch('{{ route("public.booking.slots", $project->slug) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
                 },
                 body: JSON.stringify({
-                    date: date.toISOString().split('T')[0],
-                    service_id: selectedService.id,
-                    user_id: selectedMaster.id
+                    project_id: {{ $project->id }},
+                    user_id: selectedMaster,
+                    service_id: selectedService,
+                    date: selectedDate
                 })
             })
-            .then(response => response.json())
-            .then(data => {
+                         .then(response => {
+                 console.log('Response status:', response.status);
+                 if (!response.ok) {
+                     throw new Error(`HTTP error! status: ${response.status}`);
+                 }
+                 return response.json();
+             })
+                         .then(data => {
+                console.log('Response data:', data);
                 if (data.success) {
-                    renderTimeSlots(data.slots);
+                    displayTimeSlots(data.slots);
                 } else {
-                    slotsDiv.innerHTML = '<p class="text-muted">Нет доступного времени на эту дату</p>';
+                    if (slotsDiv) {
+                        slotsDiv.innerHTML = '<div class="alert alert-warning">' + data.message + '</div>';
+                    }
                 }
             })
             .catch(error => {
-                slotsDiv.innerHTML = '<p class="text-danger">Ошибка загрузки времени</p>';
+                console.error('Error:', error);
+                if (slotsDiv) {
+                    slotsDiv.innerHTML = '<div class="alert alert-danger">Ошибка загрузки времени: ' + error.message + '</div>';
+                }
             });
         }
         
-        // Рендер временных слотов
-        function renderTimeSlots(slots) {
+                         function displayTimeSlots(slots) {
             const slotsDiv = document.getElementById('time-slots');
-            slotsDiv.innerHTML = '';
-            
+            if (!slotsDiv) {
+                console.error('Не найден элемент time-slots');
+                return;
+            }
             if (slots.length === 0) {
-                slotsDiv.innerHTML = '<p class="text-muted">Нет доступного времени на эту дату</p>';
+                slotsDiv.innerHTML = '<div class="alert alert-warning">Нет доступного времени на эту дату</div>';
+                return;
+            }
+             
+             let html = '';
+             slots.forEach(slot => {
+                 html += `<div class="time-slot" data-time="${slot.time}">${slot.time}</div>`;
+             });
+             slotsDiv.innerHTML = html;
+             
+             // Обработчики для выбора времени
+             document.querySelectorAll('.time-slot').forEach(slot => {
+                 slot.addEventListener('click', function() {
+                     document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                     this.classList.add('selected');
+                     selectedTime = this.dataset.time;
+                     document.getElementById('next-step-3').disabled = false;
+                 });
+             });
+         }
+        
+        function submitBooking() {
+            const form = document.getElementById('booking-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
                 return;
             }
             
-            slots.forEach(slot => {
-                const slotElement = document.createElement('div');
-                slotElement.className = 'time-slot';
-                slotElement.textContent = slot;
-                slotElement.addEventListener('click', () => {
-                    document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
-                    slotElement.classList.add('selected');
-                    selectedTime = slot;
-                    document.getElementById('next-step-3').disabled = false;
-                });
-                slotsDiv.appendChild(slotElement);
-            });
-        }
-        
-        // Навигация по месяцам
-        function previousMonth() {
-            currentMonth.setMonth(currentMonth.getMonth() - 1);
-            renderCalendar();
-        }
-        
-        function nextMonth() {
-            currentMonth.setMonth(currentMonth.getMonth() + 1);
-            renderCalendar();
-        }
-        
-        // Обновление подтверждения
-        function updateConfirmation() {
-            document.getElementById('confirm-service').textContent = selectedService.name;
-            document.getElementById('confirm-master').textContent = selectedMaster.name;
-            document.getElementById('confirm-datetime').textContent = `${selectedDate.toLocaleDateString('ru-RU')} в ${selectedTime}`;
-            document.getElementById('confirm-price').textContent = `${selectedService.price} ₽`;
-        }
-        
-        // Подтверждение записи
-        function confirmBooking() {
-            const name = document.getElementById('client-name').value;
-            const phone = document.getElementById('client-phone').value;
-            const email = document.getElementById('client-email').value;
-            const comment = document.getElementById('client-comment').value;
-            
-            if (!name || !phone) {
-                alert('Пожалуйста, заполните обязательные поля');
-                return;
-            }
-            
-            const submitBtn = document.getElementById('confirm-booking');
-            const originalText = submitBtn.innerHTML;
-            
+            const submitBtn = document.getElementById('submit-booking');
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+            
+            const formData = {
+                project_id: {{ $project->id }},
+                service_id: selectedService,
+                user_id: selectedMaster,
+                date: selectedDate,
+                time: selectedTime,
+                client_name: document.getElementById('client-name').value,
+                client_phone: document.getElementById('client-phone').value,
+                client_email: document.getElementById('client-email').value,
+                client_notes: document.getElementById('client-notes').value
+            };
             
             fetch('{{ route("public.booking.store", $project->slug) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
                 },
-                body: JSON.stringify({
-                    service_id: selectedService.id,
-                    user_id: selectedMaster.id,
-                    date: selectedDate.toISOString().split('T')[0],
-                    time: selectedTime,
-                    client_name: name,
-                    client_phone: phone,
-                    client_email: email,
-                    comment: comment
-                })
+                body: JSON.stringify(formData)
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Запись успешно создана! Мы свяжемся с вами для подтверждения.');
-                    window.location.reload();
-                } else {
-                    alert('Ошибка: ' + data.message);
-                }
-            })
-            .catch(error => {
-                alert('Произошла ошибка при создании записи');
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            });
+                         .then(response => {
+                 console.log('Submit response status:', response.status);
+                 if (!response.ok) {
+                     throw new Error(`HTTP error! status: ${response.status}`);
+                 }
+                 return response.json();
+             })
+             .then(data => {
+                 console.log('Submit response data:', data);
+                 if (data.success) {
+                     showSuccess(data.booking);
+                 } else {
+                     alert('Ошибка: ' + data.message);
+                     submitBtn.disabled = false;
+                     submitBtn.innerHTML = 'Записаться <i class="fas fa-check"></i>';
+                 }
+             })
+             .catch(error => {
+                 console.error('Submit error:', error);
+                 alert('Произошла ошибка при отправке заявки: ' + error.message);
+                 submitBtn.disabled = false;
+                 submitBtn.innerHTML = 'Записаться <i class="fas fa-check"></i>';
+             });
         }
+        
+        function filterMastersByService(serviceId) {
+            const masterCards = document.querySelectorAll('.master-card');
+            const userServicesData = @json($userServices->map(function($us) {
+                return ['user_id' => $us->user_id, 'service_id' => $us->service_id];
+            }));
+            
+            masterCards.forEach(card => {
+                const userId = parseInt(card.dataset.userId);
+                const hasService = userServicesData.some(us => 
+                    us.user_id === userId && us.service_id === parseInt(serviceId)
+                );
+                
+                if (hasService) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                    card.classList.remove('selected');
+                }
+            });
+            
+                         // Сбрасываем выбор мастера
+             selectedMaster = null;
+             masterSchedule = null; // Сбрасываем расписание
+             selectedTime = null; // Сбрасываем выбор времени
+             selectedDate = null; // Сбрасываем выбранную дату
+             document.getElementById('next-step-2').disabled = true;
+             document.getElementById('next-step-3').disabled = true;
+             updateMasterEventListeners();
+             
+             // Очищаем временные слоты
+             const timeSlotsContainer = document.getElementById('time-slots-container');
+             if (timeSlotsContainer) {
+                 timeSlotsContainer.style.display = 'none';
+             }
+             
+             // Убираем выделение с выбранной даты в календаре
+             document.querySelectorAll('.calendar-day').forEach(day => {
+                 day.classList.remove('selected');
+             });
+             
+             // Перерисовываем календарь без расписания
+             renderCalendar();
+        }
+        
+                 function updateMasterEventListeners() {
+             // Удаляем старые обработчики
+             document.querySelectorAll('.master-card').forEach(card => {
+                 card.replaceWith(card.cloneNode(true));
+             });
+             
+             // Добавляем новые обработчики
+             document.querySelectorAll('.master-card').forEach(card => {
+                 card.addEventListener('click', function() {
+                     document.querySelectorAll('.master-card').forEach(c => c.classList.remove('selected'));
+                     this.classList.add('selected');
+                     selectedMaster = this.dataset.userId;
+                     document.getElementById('next-step-2').disabled = false;
+                     
+                                           // Загружаем расписание мастера
+                      loadMasterSchedule(selectedMaster);
+                      
+                      // Очищаем временные слоты при смене мастера
+                      selectedTime = null;
+                      selectedDate = null; // Сбрасываем выбранную дату
+                      const timeSlotsContainer = document.getElementById('time-slots-container');
+                      if (timeSlotsContainer) {
+                          timeSlotsContainer.style.display = 'none';
+                      }
+                      document.getElementById('next-step-3').disabled = true;
+                      
+                      // Убираем выделение с выбранной даты в календаре
+                      document.querySelectorAll('.calendar-day').forEach(day => {
+                          day.classList.remove('selected');
+                      });
+                 });
+             });
+         }
+         
+                   function loadMasterSchedule(userId) {
+              fetch('{{ route("public.booking.schedule", $project->slug) }}', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                  },
+                  body: JSON.stringify({
+                      user_id: userId
+                  })
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      masterSchedule = data.schedule;
+                      // Перерисовываем календарь с учетом расписания
+                      renderCalendar();
+                      // Проверяем доступность времени для всех дней месяца
+                      if (selectedService && selectedMaster) {
+                          checkMonthAvailability();
+                      }
+                  }
+              })
+              .catch(error => {
+                  console.error('Error loading master schedule:', error);
+              });
+          }
+          
+          // Функция проверки доступности времени на конкретный день
+          function checkDayAvailability(date, userId, serviceId) {
+              return fetch('{{ route("public.booking.slots", $project->slug) }}', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                  },
+                  body: JSON.stringify({
+                      project_id: {{ $project->id }},
+                      user_id: userId,
+                      service_id: serviceId,
+                      date: date
+                  })
+              })
+              .then(response => response.json())
+              .then(data => {
+                  return data.success && data.slots && data.slots.length > 0;
+              })
+              .catch(error => {
+                  console.error('Error checking availability:', error);
+                  return false;
+              });
+          }
+          
+          // Функция проверки доступности времени для всех дней месяца
+          function checkMonthAvailability() {
+              const year = currentMonth.getFullYear();
+              const month = currentMonth.getMonth();
+              const daysInMonth = new Date(year, month + 1, 0).getDate();
+              
+              for (let day = 1; day <= daysInMonth; day++) {
+                  const date = new Date(year, month, day);
+                  const today = new Date();
+                  
+                  // Проверяем только будущие дни
+                  if (date >= today) {
+                      const dateStr = date.toISOString().split('T')[0];
+                      const dayOfWeek = date.getDay();
+                      const ourDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
+                      const schedule = masterSchedule ? masterSchedule[ourDayOfWeek] : null;
+                      
+                      // Если есть расписание и мастер работает
+                      if (schedule && schedule.is_working) {
+                          checkDayAvailability(dateStr, selectedMaster, selectedService).then(available => {
+                              const dayElement = document.querySelector(`[data-date="${dateStr}"]`);
+                              if (dayElement && !available) {
+                                  dayElement.classList.add('disabled');
+                                  dayElement.title = 'Нет свободного времени';
+                                  // Удаляем обработчик клика
+                                  const newDayElement = dayElement.cloneNode(true);
+                                  dayElement.parentNode.replaceChild(newDayElement, dayElement);
+                              }
+                          });
+                      }
+                  }
+              }
+          }
+        
+                 function showSuccess(booking) {
+             document.getElementById('step4').classList.remove('active');
+             document.getElementById('success').classList.add('active');
+             
+             const details = document.getElementById('booking-details');
+             details.className = 'booking-details';
+             details.innerHTML = `
+                 <div class="alert alert-info">
+                     <strong>Детали записи:</strong><br>
+                     Услуга: ${booking.service_name}<br>
+                     Мастер: ${booking.master_name}<br>
+                     Дата: ${booking.date}<br>
+                     Время: ${booking.time}
+                 </div>
+             `;
+         }
+
+    const stepTitles = [null, 'Услуга', 'Мастер', 'Дата и время', 'Данные'];
+
+    function renderStepIndicator() {
+        const indicator = document.getElementById('step-indicator');
+        indicator.innerHTML = `
+            <div class="step active">
+                <div class="step-number">${currentStep}</div>
+                <span>${stepTitles[currentStep]}</span>
+            </div>
+        `;
+    }
     </script>
 </body>
 </html> 

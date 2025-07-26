@@ -19,28 +19,39 @@ class PublicBookingController extends Controller
     public function show($slug)
     {
         // Находим проект по slug
-        $project = Project::where('project_name', 'like', '%' . str_replace('-', ' ', $slug) . '%')
-            ->orWhere('project_name', 'like', '%' . str_replace('-', ' ', $slug) . '%')
-            ->first();
+        $project = Project::where('booking_enabled', true)
+            ->get()
+            ->first(function($project) use ($slug) {
+                return $project->slug === $slug;
+            });
 
-        if (!$project || !$project->booking_enabled) {
+        if (!$project) {
             abort(404, 'Страница не найдена');
         }
 
         // Получаем настройки бронирования
         $bookingSettings = $project->getOrCreateBookingSettings();
         
-        // Получаем услуги проекта
-        $services = Service::where('project_id', $project->id)->get();
+        // Получаем активные услуги для веб-записи
+        $userServices = \App\Models\Clients\UserService::whereHas('user', function($query) use ($project) {
+            $query->where('project_id', $project->id);
+        })
+        ->where('is_active_for_booking', true)
+        ->with(['service', 'user'])
+        ->get();
         
-        // Получаем мастеров проекта
-        $users = User::where('project_id', $project->id)->get();
+        // Получаем уникальные услуги из активных UserService
+        $services = $userServices->pluck('service')->unique('id')->values();
+        
+        // Получаем мастеров, у которых есть активные услуги
+        $users = $userServices->pluck('user')->unique('id')->values();
 
         return view('public.booking.index', compact(
             'project',
             'bookingSettings',
             'services',
-            'users'
+            'users',
+            'userServices'
         ));
     }
 
@@ -53,6 +64,8 @@ class PublicBookingController extends Controller
         $userId = $request->input('user_id');
         $date = $request->input('date');
         $serviceId = $request->input('service_id');
+
+
 
         $project = Project::findOrFail($projectId);
         $bookingSettings = $project->getOrCreateBookingSettings();
@@ -68,17 +81,42 @@ class PublicBookingController extends Controller
         }
 
         // Получаем расписание мастера на этот день
-        $dayOfWeek = Carbon::parse($date)->dayOfWeek;
+        $carbonDayOfWeek = Carbon::parse($date)->dayOfWeek;
+        // Конвертируем Carbon день недели (0=воскресенье) в наш формат (1=понедельник)
+        $dayOfWeek = $carbonDayOfWeek === 0 ? 7 : $carbonDayOfWeek;
         $schedule = UserSchedule::where('user_id', $userId)
             ->where('day_of_week', $dayOfWeek)
             ->first();
 
-        if (!$schedule || !$schedule->is_working) {
+        if (!$schedule) {
             return response()->json([
                 'success' => false,
-                'message' => 'Мастер не работает в этот день'
+                'message' => 'Мастер не работает в этот день (нет расписания)'
             ]);
         }
+
+        if (!$schedule->is_working) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Мастер не работает в этот день (выходной)'
+            ]);
+        }
+
+        // Получаем UserService для проверки доступности
+        $userService = \App\Models\Clients\UserService::where('user_id', $userId)
+            ->where('service_id', $serviceId)
+            ->where('is_active_for_booking', true)
+            ->first();
+
+        if (!$userService) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Услуга недоступна для этого мастера'
+            ]);
+        }
+
+        // Получаем длительность из UserService или базовой услуги
+        $serviceDuration = $userService->duration ?: $service->duration ?: 60;
 
         // Генерируем слоты времени
         $slots = $this->generateTimeSlots(
@@ -87,12 +125,56 @@ class PublicBookingController extends Controller
             $bookingSettings->booking_interval,
             $date,
             $userId,
-            $service->duration ?? 60
+            $serviceDuration
         );
+
+
 
         return response()->json([
             'success' => true,
             'slots' => $slots
+        ]);
+    }
+
+    /**
+     * Получить расписание мастера
+     */
+    public function getMasterSchedule(Request $request, $slug)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|integer'
+        ]);
+
+        $project = Project::where('booking_enabled', true)
+            ->get()
+            ->first(function($project) use ($slug) {
+                return $project->slug === $slug;
+            });
+
+        if (!$project) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Проект не найден'
+            ]);
+        }
+
+        $userId = $validated['user_id'];
+        
+        // Получаем расписание мастера
+        $schedules = UserSchedule::where('user_id', $userId)->get();
+        
+        $scheduleData = [];
+        foreach ($schedules as $schedule) {
+            $scheduleData[$schedule->day_of_week] = [
+                'is_working' => $schedule->is_working,
+                'start_time' => $schedule->start_time,
+                'end_time' => $schedule->end_time
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'schedule' => $scheduleData
         ]);
     }
 
@@ -164,7 +246,12 @@ class PublicBookingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Запись успешно создана! Мы свяжемся с вами для подтверждения.',
-            'appointment_id' => $appointment->id
+            'booking' => [
+                'service_name' => $service->name,
+                'master_name' => $user->name,
+                'date' => $validated['date'],
+                'time' => $validated['time']
+            ]
         ]);
     }
 
@@ -173,13 +260,17 @@ class PublicBookingController extends Controller
      */
     private function generateTimeSlots($startTime, $endTime, $interval, $date, $userId, $serviceDuration)
     {
+
+
         $slots = [];
         $currentTime = Carbon::parse($startTime);
         $endTime = Carbon::parse($endTime);
-        $serviceDuration = Carbon::parse($serviceDuration)->format('H:i');
+        
+        // $serviceDuration - это количество минут (число)
+        $serviceDurationMinutes = (int) $serviceDuration;
 
         while ($currentTime->lt($endTime)) {
-            $slotEnd = $currentTime->copy()->addMinutes($serviceDuration);
+            $slotEnd = $currentTime->copy()->addMinutes($serviceDurationMinutes);
             
             if ($slotEnd->lte($endTime)) {
                 // Проверяем, нет ли уже записи в это время
