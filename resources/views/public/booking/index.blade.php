@@ -10,12 +10,153 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Maps API (закомментировано - нужен API ключ) -->
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script> -->
     
     <style>
         body {
             background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
+        }
+        
+        /* Шапка сайта */
+        .site-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .project-info h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        
+        .project-info p {
+            margin: 5px 0 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .header-toggle {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .header-toggle:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .header-details {
+            display: none;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .header-details.active {
+            display: block;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .detail-content h4 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .detail-content p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .map-container {
+            grid-column: 1 / -1;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .header-top {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .booking-container {
@@ -27,24 +168,8 @@
             border: 1px solid #e9ecef;
         }
         
-        .booking-header {
-            background: #495057;
-            color: white;
-            padding: 20px;
-            border-radius: 8px 8px 0 0;
-        }
+
         
-        .booking-header h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: 500;
-        }
-        
-        .booking-header p {
-            margin: 5px 0 0 0;
-            opacity: 0.9;
-            font-size: 1rem;
-        }
         
         .booking-body {
             padding: 30px;
@@ -280,11 +405,116 @@
     </style>
 </head>
 <body>
-    <div class="booking-container">
-        <div class="booking-header">
-            <h1>{{ $project->project_name }}</h1>
-            <p>Онлайн запись на услуги</p>
+    <!-- Шапка сайта -->
+    <header class="site-header">
+        <div class="header-container">
+            <div class="header-top">
+                <div class="logo-section">
+                    <div class="logo">
+                        @if($project->logo)
+                            <img src="{{ $project->logo }}" alt="{{ $project->project_name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                        @else
+                            {{ strtoupper(substr($project->project_name, 0, 2)) }}
+                        @endif
+                    </div>
+                    <div class="project-info">
+                        <h1>{{ $project->project_name }}</h1>
+                        <p>Онлайн запись на услуги</p>
+                    </div>
+                </div>
+                <button class="header-toggle" onclick="toggleHeaderDetails()">
+                    <i class="fas fa-info-circle"></i> Информация о салоне
+                </button>
+            </div>
+            
+            <div class="header-details" id="headerDetails">
+                <div class="details-grid">
+                    @if($project->address)
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Адрес</h4>
+                            <p>{{ $project->address }}</p>
+                        </div>
+                    </div>
+                    @endif
+                    
+                    @if($project->phone)
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Телефон</h4>
+                            <p><a href="tel:{{ $project->phone }}" style="color: white; text-decoration: none;">{{ $project->phone }}</a></p>
+                        </div>
+                    </div>
+                    @endif
+                    
+                    @if($project->email)
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Email</h4>
+                            <p><a href="mailto:{{ $project->email }}" style="color: white; text-decoration: none;">{{ $project->email }}</a></p>
+                        </div>
+                    </div>
+                    @endif
+                    
+                    @if($project->website)
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Сайт</h4>
+                            <p><a href="{{ $project->website }}" target="_blank" style="color: white; text-decoration: none;">{{ $project->website }}</a></p>
+                        </div>
+                    </div>
+                    @endif
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Время работы</h4>
+                            <p>
+                                @if($bookingSettings && $bookingSettings->working_hours_start && $bookingSettings->working_hours_end)
+                                    {{ \Carbon\Carbon::parse($bookingSettings->working_hours_start)->format('H:i') }} - {{ \Carbon\Carbon::parse($bookingSettings->working_hours_end)->format('H:i') }}
+                                @else
+                                    Пн-Пт: 09:00 - 18:00<br>Сб-Вс: 10:00 - 16:00
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-info"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>О нас</h4>
+                            <p>Профессиональные услуги красоты и ухода. Записывайтесь онлайн в удобное для вас время.</p>
+                        </div>
+                    </div>
+                    
+                    @if($project->address)
+                    <div class="map-container" id="map">
+                        <i class="fas fa-map" style="font-size: 24px; margin-right: 10px;"></i>
+                        <span>Загрузка карты...</span>
+                    </div>
+                    @endif
+                </div>
+            </div>
         </div>
+    </header>
+
+    <div class="booking-container">
         
         <div class="booking-body">
             <!-- Индикатор шагов -->
@@ -510,6 +740,50 @@
         
         function updateStepIndicator() {
             renderStepIndicator();
+        }
+        
+        // Функция переключения видимости деталей шапки
+        function toggleHeaderDetails() {
+            const details = document.getElementById('headerDetails');
+            const button = document.querySelector('.header-toggle');
+            
+            if (details.classList.contains('active')) {
+                details.classList.remove('active');
+                button.innerHTML = '<i class="fas fa-info-circle"></i> Информация о салоне';
+            } else {
+                details.classList.add('active');
+                button.innerHTML = '<i class="fas fa-times"></i> Скрыть информацию';
+                // Инициализируем карту при открытии деталей
+                initMap();
+            }
+        }
+        
+        // Инициализация карты (простая версия без API)
+        function initMap() {
+            const mapElement = document.getElementById('map');
+            if (!mapElement || mapElement.querySelector('a')) return; // Карта уже загружена
+            
+            const address = '{{ $project->address }}';
+            if (!address) return;
+            
+            // Очищаем содержимое
+            mapElement.innerHTML = '';
+            
+            // Создаем ссылку на Google Maps
+            const link = document.createElement('a');
+            link.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+            link.target = '_blank';
+            link.style.display = 'flex';
+            link.style.alignItems = 'center';
+            link.style.justifyContent = 'center';
+            link.style.width = '100%';
+            link.style.height = '100%';
+            link.style.color = 'white';
+            link.style.textDecoration = 'none';
+            link.style.fontSize = '14px';
+            link.innerHTML = '<i class="fas fa-map" style="font-size: 24px; margin-right: 10px;"></i><span>Открыть в Google Maps</span>';
+            
+            mapElement.appendChild(link);
         }
         
                  // Функции календаря
