@@ -60,8 +60,13 @@ class ProjectController extends Controller
             'map_latitude' => 'nullable|string|max:20',
             'map_longitude' => 'nullable|string|max:20',
             'map_zoom' => 'nullable|integer|min:1|max:20',
-            'about' => 'nullable|string',
+            'about' => 'nullable|string|max:1000',
             'social_links' => 'nullable|string',
+        ], [
+            'map_zoom.integer' => __('messages.map_zoom_invalid'),
+            'map_zoom.min' => __('messages.map_zoom_invalid'),
+            'map_zoom.max' => __('messages.map_zoom_invalid'),
+            'about.max' => __('messages.about_max_length'),
         ]);
 
         // Обработка загрузки логотипа
@@ -89,7 +94,7 @@ class ProjectController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.projects.index')->with('success', 'Проект успешно создан!');
+        return redirect()->route('admin.projects.index')->with('success', __('messages.project_successfully_created'));
     }
 
     /**
@@ -130,8 +135,13 @@ class ProjectController extends Controller
             'map_latitude' => 'nullable|string|max:20',
             'map_longitude' => 'nullable|string|max:20',
             'map_zoom' => 'nullable|integer|min:1|max:20',
-            'about' => 'nullable|string',
+            'about' => 'nullable|string|max:1000',
             'social_links' => 'nullable|string',
+        ], [
+            'map_zoom.integer' => __('messages.map_zoom_invalid'),
+            'map_zoom.min' => __('messages.map_zoom_invalid'),
+            'map_zoom.max' => __('messages.map_zoom_invalid'),
+            'about.max' => __('messages.about_max_length'),
         ]);
 
         // Обработка загрузки логотипа
@@ -150,7 +160,7 @@ class ProjectController extends Controller
 
         $project->update($validated);
 
-        return redirect()->route('admin.projects.index')->with('success', 'Проект успешно обновлён!');
+        return redirect()->route('admin.projects.index')->with('success', __('messages.project_successfully_updated'));
     }
 
     /**

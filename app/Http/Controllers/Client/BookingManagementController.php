@@ -66,6 +66,16 @@ class BookingManagementController extends Controller
             'advance_booking_days' => 'required|integer|min:1|max:365',
             'allow_same_day_booking' => 'boolean',
             'require_confirmation' => 'boolean',
+        ], [
+            'working_hours_start.required' => __('messages.working_hours_start_required'),
+            'working_hours_start.date_format' => __('messages.working_hours_start_invalid_format'),
+            'working_hours_end.required' => __('messages.working_hours_end_required'),
+            'working_hours_end.date_format' => __('messages.working_hours_end_invalid_format'),
+            'working_hours_end.after' => __('messages.working_hours_end_must_be_after_start'),
+            'advance_booking_days.required' => __('messages.advance_booking_days_required'),
+            'advance_booking_days.integer' => __('messages.advance_booking_days_must_be_integer'),
+            'advance_booking_days.min' => __('messages.advance_booking_days_min_value'),
+            'advance_booking_days.max' => __('messages.advance_booking_days_max_value'),
         ]);
 
         // Если включаем онлайн-запись и ссылки еще нет - генерируем её
@@ -89,7 +99,7 @@ class BookingManagementController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Настройки бронирования обновлены',
+            'message' => __('messages.changes_successfully_saved'),
             'booking_url' => $project->booking_url
         ]);
     }

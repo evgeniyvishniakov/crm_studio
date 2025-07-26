@@ -210,7 +210,7 @@ class PublicBookingController extends Controller
         if ($project->id !== $user->project_id || $service->project_id !== $project->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ошибка валидации данных'
+                'message' => __('messages.booking_validation_error')
             ], 422);
         }
 
@@ -223,7 +223,7 @@ class PublicBookingController extends Controller
         if ($existingAppointment) {
             return response()->json([
                 'success' => false,
-                'message' => 'Это время уже занято'
+                'message' => __('messages.time_already_booked')
             ], 422);
         }
 
@@ -248,12 +248,12 @@ class PublicBookingController extends Controller
             'duration' => $service->duration ?? 60,
             'status' => 'pending',
             'project_id' => $project->id,
-            'notes' => 'Запись через онлайн-бронирование'
+            'notes' => __('messages.booking_created_via_web')
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Запись успешно создана! Мы свяжемся с вами для подтверждения.',
+            'message' => __('messages.booking_successful') . ' ' . __('messages.we_will_contact_you'),
             'booking' => [
                 'service_name' => $service->name,
                 'master_name' => $user->name,
@@ -279,6 +279,16 @@ class PublicBookingController extends Controller
         $existingAppointments = Appointment::where('user_id', $userId)
             ->where('date', $date)
             ->get();
+            
+        \Log::info('Generating time slots', [
+            'date' => $date,
+            'userId' => $userId,
+            'startTime' => $startTime,
+            'endTime' => $endTime,
+            'interval' => $interval,
+            'serviceDuration' => $serviceDurationMinutes,
+            'existingAppointments' => $existingAppointments->count()
+        ]);
 
         while ($currentTime->lt($endTime)) {
             $slotEnd = $currentTime->copy()->addMinutes($serviceDurationMinutes);
@@ -304,12 +314,35 @@ class PublicBookingController extends Controller
                         break;
                     }
                     
-                    // Дополнительная проверка: новый слот не должен начинаться раньше, чем закончится предыдущая запись + интервал
-                    $appointmentEndWithInterval = $appointmentEnd->copy()->addMinutes($interval);
-                    if ($currentTime < $appointmentEndWithInterval) {
-                        $isAvailable = false;
-                        break;
+                    // Проверяем интервал мастера только для записей, которые заканчиваются ДО начала текущего слота
+                    // Если запись заканчивается до начала текущего слота, то проверяем интервал
+                    if ($appointmentEnd <= $currentTime) {
+                        $appointmentEndWithInterval = $appointmentEnd->copy()->addMinutes($interval);
+                        if ($currentTime < $appointmentEndWithInterval) {
+                            $isAvailable = false;
+                            break;
+                        }
                     }
+                    
+                                // Проверяем, не нарушит ли новая запись интервал мастера для записей, которые идут ПОСЛЕ
+            // Если новая запись заканчивается слишком близко к началу существующей записи
+            if ($appointmentStart >= $slotEnd) {
+                $timeBetween = $appointmentStart->diffInMinutes($slotEnd);
+                if ($timeBetween < $interval) {
+                    $isAvailable = false;
+                    break;
+                }
+            }
+            
+            // Проверяем, не будет ли новая запись слишком близко к существующей записи
+            // Если существующая запись начинается слишком близко к концу новой записи
+            if ($appointmentStart <= $slotEnd && $appointmentStart > $currentTime) {
+                $timeBetween = $appointmentStart->diffInMinutes($slotEnd);
+                if ($timeBetween < $interval) {
+                    $isAvailable = false;
+                    break;
+                }
+            }
                 }
 
                 if ($isAvailable) {
@@ -317,6 +350,9 @@ class PublicBookingController extends Controller
                         'time' => $currentTime->format('H:i'),
                         'available' => true
                     ];
+                    \Log::info('Slot available', ['time' => $currentTime->format('H:i')]);
+                } else {
+                    \Log::info('Slot unavailable', ['time' => $currentTime->format('H:i')]);
                 }
             }
 

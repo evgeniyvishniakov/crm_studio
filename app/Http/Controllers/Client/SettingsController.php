@@ -62,7 +62,13 @@ class SettingsController extends Controller
             'map_latitude' => 'nullable|string|max:20',
             'map_longitude' => 'nullable|string|max:20',
             'map_zoom' => 'nullable|integer|min:1|max:20',
-            'about' => 'nullable|string',
+            'about' => 'nullable|string|max:1000',
+        ], [
+            'map_url.url' => __('messages.map_url_invalid'),
+            'map_zoom.integer' => __('messages.map_zoom_invalid'),
+            'map_zoom.min' => __('messages.map_zoom_invalid'),
+            'map_zoom.max' => __('messages.map_zoom_invalid'),
+            'about.max' => __('messages.about_max_length'),
         ]);
 
         // Обновление полей
@@ -90,12 +96,12 @@ class SettingsController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Настройки успешно обновлены.',
+                'message' => __('messages.changes_successfully_saved'),
                 'currency' => $project->currency ? $project->currency->code : null
             ]);
         }
 
-        return redirect()->back()->with('success', 'Настройки успешно обновлены.');
+        return redirect()->back()->with('success', __('messages.changes_successfully_saved'));
     }
 
     /**

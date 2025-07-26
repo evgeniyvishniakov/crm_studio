@@ -623,21 +623,40 @@
                     </div>
                     @endif
                     
-                    <div class="detail-item">
-                        <div class="detail-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="detail-content">
-                            <h4>Время работы</h4>
-                            <p>
-                                @if($bookingSettings && $bookingSettings->working_hours_start && $bookingSettings->working_hours_end)
-                                    {{ \Carbon\Carbon::parse($bookingSettings->working_hours_start)->format('H:i') }} - {{ \Carbon\Carbon::parse($bookingSettings->working_hours_end)->format('H:i') }}
-                                @else
-                                    Пн-Пт: 09:00 - 18:00<br>Сб-Вс: 10:00 - 16:00
-                                @endif
-                            </p>
-                        </div>
-                    </div>
+                                   <div class="detail-item">
+                   <div class="detail-icon">
+                       <i class="fas fa-clock"></i>
+                   </div>
+                   <div class="detail-content">
+                       <h4>Время работы</h4>
+                       <p>
+                           @if($bookingSettings && $bookingSettings->working_hours_start && $bookingSettings->working_hours_end)
+                               {{ \Carbon\Carbon::parse($bookingSettings->working_hours_start)->format('H:i') }} - {{ \Carbon\Carbon::parse($bookingSettings->working_hours_end)->format('H:i') }}
+                           @else
+                               Пн-Пт: 09:00 - 18:00<br>Сб-Вс: 10:00 - 16:00
+                           @endif
+                       </p>
+                   </div>
+               </div>
+               
+               <div class="detail-item">
+                   <div class="detail-icon">
+                       <i class="fas fa-calendar-alt"></i>
+                   </div>
+                   <div class="detail-content">
+                       <h4>Правила записи</h4>
+                       <p>
+                           @if($bookingSettings)
+                               Запись на {{ $bookingSettings->advance_booking_days }} дней вперед
+                               @if(!$bookingSettings->allow_same_day_booking)
+                                   <br><small>Запись в тот же день недоступна</small>
+                               @endif
+                           @else
+                               Запись на 30 дней вперед
+                           @endif
+                       </p>
+                   </div>
+               </div>
                     
                     <div class="detail-item">
                         <div class="detail-icon">
@@ -838,13 +857,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-                 let currentStep = 1;
-         let selectedService = null;
-         let selectedMaster = null;
-         let selectedDate = null;
-         let selectedTime = null;
-         let currentMonth = new Date();
-         let masterSchedule = null; // Расписание выбранного мастера
+        // Настройки бронирования из сервера
+        const bookingSettings = {
+            advance_booking_days: {{ $bookingSettings->advance_booking_days ?? 30 }},
+            allow_same_day_booking: {{ $bookingSettings->allow_same_day_booking ? 'true' : 'false' }}
+        };
+        
+        let currentStep = 1;
+        let selectedService = null;
+        let selectedMaster = null;
+        let selectedDate = null;
+        let selectedTime = null;
+        let currentMonth = new Date();
+        let masterSchedule = null; // Расписание выбранного мастера
         
                  // Инициализация
          document.addEventListener('DOMContentLoaded', function() {
@@ -1013,6 +1038,15 @@
                       const isToday = currentDate.toDateString() === today.toDateString();
                       const isPast = currentDate < today;
                       
+                      // Проверяем ограничения по датам из настроек бронирования
+                      const maxBookingDate = new Date();
+                      maxBookingDate.setDate(today.getDate() + bookingSettings.advance_booking_days);
+                      const isTooFarInFuture = currentDate > maxBookingDate;
+                      
+                      // Проверяем, можно ли записаться в тот же день
+                      const isSameDay = currentDate.toDateString() === today.toDateString();
+                      const canBookSameDay = bookingSettings.allow_same_day_booking;
+                      
                                                                      // Проверяем расписание мастера
                         let isWorkingDay = true;
                         if (masterSchedule) {
@@ -1036,23 +1070,37 @@
                           dayElement.classList.add('today');
                       }
                      
-                                             if (!isPast && isWorkingDay) {
-                           // Добавляем обработчик клика только если мы на шаге 3 или если это просто для выбора даты
-                           const dayDate = new Date(currentDate); // Создаем копию даты
-                           dayElement.addEventListener('click', () => selectDate(dayDate));
-                       } else {
-                          dayElement.classList.add('disabled');
-                          if (!isWorkingDay) {
-                              const dayOfWeek = currentDate.getDay();
-                              const ourDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
-                              const schedule = masterSchedule ? masterSchedule[ourDayOfWeek] : null;
-                              if (!schedule) {
-                                  dayElement.title = 'Мастер не работает в этот день';
-                              } else {
-                                  dayElement.title = 'Выходной день мастера';
-                              }
-                          }
-                      }
+                                             // Проверяем все условия доступности дня
+                                             const isAvailable = !isPast && 
+                                                                !isTooFarInFuture && 
+                                                                isWorkingDay && 
+                                                                (isSameDay ? canBookSameDay : true);
+                                             
+                                             if (isAvailable) {
+                                                 // Добавляем обработчик клика только если мы на шаге 3 или если это просто для выбора даты
+                                                 const dayDate = new Date(currentDate); // Создаем копию даты
+                                                 dayElement.addEventListener('click', () => selectDate(dayDate));
+                                             } else {
+                                                 dayElement.classList.add('disabled');
+                                                 
+                                                 // Устанавливаем подсказку в зависимости от причины недоступности
+                                                 if (isPast) {
+                                                     dayElement.title = 'Прошедшая дата';
+                                                 } else if (isTooFarInFuture) {
+                                                     dayElement.title = `Запись доступна только на ${bookingSettings.advance_booking_days} дней вперед`;
+                                                 } else if (isSameDay && !canBookSameDay) {
+                                                     dayElement.title = 'Запись в тот же день недоступна';
+                                                 } else if (!isWorkingDay) {
+                                                     const dayOfWeek = currentDate.getDay();
+                                                     const ourDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
+                                                     const schedule = masterSchedule ? masterSchedule[ourDayOfWeek] : null;
+                                                     if (!schedule) {
+                                                         dayElement.title = 'Мастер не работает в этот день';
+                                                     } else {
+                                                         dayElement.title = 'Выходной день мастера';
+                                                     }
+                                                 }
+                                             }
                   } else {
                       dayElement.classList.add('other-month');
                   }
@@ -1071,6 +1119,31 @@
             console.log('Date object toUTCString():', date.toUTCString());
             console.log('Date object getDay():', date.getDay()); // Debug: Raw JS day of week
             console.log('masterSchedule:', masterSchedule);
+            
+            // --- ПРОВЕРКА: ограничения по датам из настроек бронирования ---
+            const today = new Date();
+            const isToday = date.toDateString() === today.toDateString();
+            const isPast = date < today;
+            
+            // Проверяем ограничения по датам
+            const maxBookingDate = new Date();
+            maxBookingDate.setDate(today.getDate() + bookingSettings.advance_booking_days);
+            const isTooFarInFuture = date > maxBookingDate;
+            
+            if (isPast) {
+                alert('Нельзя выбрать прошедшую дату!');
+                return;
+            }
+            
+            if (isTooFarInFuture) {
+                alert(`Запись доступна только на ${bookingSettings.advance_booking_days} дней вперед!`);
+                return;
+            }
+            
+            if (isToday && !bookingSettings.allow_same_day_booking) {
+                alert('Запись в тот же день недоступна!');
+                return;
+            }
             
             // --- ПРОВЕРКА: рабочий ли день у мастера ---
             if (masterSchedule) {

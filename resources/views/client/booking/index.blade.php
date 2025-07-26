@@ -1,6 +1,6 @@
 @extends('client.layouts.app')
 
-@section('title', 'Веб-запись')
+@section('title', __('messages.web_booking'))
 
 @section('content')
 <style>
@@ -424,18 +424,18 @@ label {
 
 <div class="dashboard-container">
     <div class="settings-header">
-        <h1>Веб-запись</h1>
+        <h1>{{ __('messages.web_booking') }}</h1>
     </div>
     
     <div class="dashboard-tabs" style="margin-bottom:28px;">
         <button class="tab-button active" data-tab="booking-settings">
-            <i class="fa fa-cog" style="margin-right:8px;"></i>Настройки записи
+            <i class="fa fa-cog" style="margin-right:8px;"></i>{{ __('messages.booking_settings') }}
         </button>
         <button class="tab-button" data-tab="schedule-settings">
-            <i class="fa fa-calendar-alt" style="margin-right:8px;"></i>Настройки расписания
+            <i class="fa fa-calendar-alt" style="margin-right:8px;"></i>{{ __('messages.schedule_settings') }}
         </button>
         <button class="tab-button" data-tab="user-services">
-            <i class="fa fa-user-cog" style="margin-right:8px;"></i>Услуги мастеров
+            <i class="fa fa-user-cog" style="margin-right:8px;"></i>{{ __('messages.master_services') }}
         </button>
     </div>
     
@@ -444,7 +444,7 @@ label {
         <div class="settings-pane" id="tab-booking-settings">
             <form id="booking-settings-form">
                 @csrf
-                <h5>Настройки веб-записи</h5>
+                <h5>{{ __('messages.booking_settings') }}</h5>
                 
                 <div class="form-row form-row--2col">
                     <div class="form-col">
@@ -453,19 +453,19 @@ label {
                                 <input type="checkbox" class="custom-control-input" id="booking_enabled" name="booking_enabled" 
                                        {{ $project->booking_enabled ? 'checked' : '' }}>
                                 <label class="custom-control-label" for="booking_enabled">
-                                    <strong>Включить веб-запись</strong>
+                                    <strong>{{ __('messages.enable_web_booking') }}</strong>
                                 </label>
                             </div>
                         </div>
                     </div>
                                          <div class="form-col">
                          <div class="alert alert-info" id="booking-url-block" style="{{ $project->booking_enabled ? 'display: block;' : 'display: none;' }}">
-                             <strong>Ссылка для клиентов:</strong><br>
+                             <strong>{{ __('messages.client_link') }}</strong><br>
                              <div class="input-group mt-2">
                                  <input type="text" class="form-control" value="{{ $project->booking_url }}" readonly id="booking-url">
                                  <div class="input-group-append">
                                      <button type="button" class="btn btn-outline-secondary" onclick="copyBookingUrl()">
-                                         <i class="fas fa-copy"></i> Копировать
+                                         <i class="fas fa-copy"></i> {{ __('messages.copy') }}
                                      </button>
                                  </div>
                              </div>
@@ -476,23 +476,23 @@ label {
                 <div class="form-row form-row--3col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label for="working_hours_start">Общие часы работы салона (начало)</label>
+                            <label for="working_hours_start">{{ __('messages.general_working_hours_start') }}</label>
                             <input type="time" class="form-control" id="working_hours_start" name="working_hours_start" 
                                    value="{{ $bookingSettings->working_hours_start_formatted }}">
-                            <small class="form-text text-muted">Используется только для отображения общего расписания салона</small>
+                            <small class="form-text text-muted">{{ __('messages.working_hours_start_hint') }}</small>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label for="working_hours_end">Общие часы работы салона (конец)</label>
+                            <label for="working_hours_end">{{ __('messages.general_working_hours_end') }}</label>
                             <input type="time" class="form-control" id="working_hours_end" name="working_hours_end" 
                                    value="{{ $bookingSettings->working_hours_end_formatted }}">
-                            <small class="form-text text-muted">Каждый мастер настраивает свое время работы индивидуально</small>
+                            <small class="form-text text-muted">{{ __('messages.working_hours_end_hint') }}</small>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label for="advance_booking_days">За сколько дней можно записаться</label>
+                            <label for="advance_booking_days">{{ __('messages.advance_booking_days_label') }}</label>
                             <input type="number" class="form-control" id="advance_booking_days" name="advance_booking_days" 
                                    value="{{ $bookingSettings->advance_booking_days }}" min="1" max="365">
                         </div>
@@ -505,7 +505,7 @@ label {
                             <input type="checkbox" class="custom-control-input" id="allow_same_day_booking" name="allow_same_day_booking" 
                                    {{ $bookingSettings->allow_same_day_booking ? 'checked' : '' }}>
                             <label class="custom-control-label" for="allow_same_day_booking">
-                                Разрешить запись в тот же день
+                                {{ __('messages.allow_same_day_booking') }}
                             </label>
                         </div>
                     </div>
@@ -513,10 +513,10 @@ label {
 
                 <div class="form-row">
                     <div class="form-group mb-4">
-                        <label for="about">О нас - описание салона</label>
+                        <label for="about">{{ __('messages.about_salon_description') }}</label>
                         <textarea class="form-control" id="about" name="about" rows="4" 
-                                  placeholder="Краткое описание о салоне/компании для клиентов...">{{ $project->about }}</textarea>
-                        <small class="form-text text-muted">Это описание будет отображаться на странице веб-записи</small>
+                                  placeholder="{{ __('messages.about_salon_placeholder') }}">{{ $project->about }}</textarea>
+                        <small class="form-text text-muted">{{ __('messages.about_salon_hint') }}</small>
                     </div>
                 </div>
 
@@ -525,7 +525,7 @@ label {
                          <div class="form-group mb-3">
                              <h6 style="margin-bottom: 15px; color: #333; font-weight: 600;">
                                  <i class="fas fa-users" style="margin-right: 8px; color: #007bff;"></i>
-                                 Мастера ({{ $users->count() }})
+                                 {{ __('messages.masters') }} ({{ $users->count() }})
                              </h6>
                              <div class="masters-list">
                                  @foreach($users as $user)
@@ -536,18 +536,18 @@ label {
                                          <div class="master-info">
                                              <div class="master-name">{{ $user->name }}</div>
                                              <div class="master-details">
-                                                 {{ $userActiveServices->count() }} {{ $userActiveServices->count() == 1 ? 'услуга' : ($userActiveServices->count() < 5 ? 'услуги' : 'услуг') }}
+                                                 {{ $userActiveServices->count() }} {{ $userActiveServices->count() == 1 ? __('messages.service') : ($userActiveServices->count() < 5 ? __('messages.services_2') : __('messages.services_5')) }}
                                                  @if($userActiveServices->count() > 0)
-                                                     • от {{ $userActiveServices->min('price') }} ₽
+                                                     • {{ __('messages.from') }} {{ $userActiveServices->min('price') }} ₽
                                                  @endif
                                              </div>
                                          </div>
                                          <div class="master-status">
                                              <span class="role-badge">{{ $user->role }}</span>
                                              @if($userActiveServices->count() > 0)
-                                                 <span class="status-active">Активен</span>
+                                                 <span class="status-active">{{ __('messages.active') }}</span>
                                              @else
-                                                 <span class="status-inactive">Неактивен</span>
+                                                 <span class="status-inactive">{{ __('messages.inactive') }}</span>
                                              @endif
                                          </div>
                                      </div>
@@ -559,7 +559,7 @@ label {
                          <div class="form-group mb-3">
                              <h6 style="margin-bottom: 15px; color: #333; font-weight: 600;">
                                  <i class="fas fa-concierge-bell" style="margin-right: 8px; color: #28a745;"></i>
-                                 Услуги ({{ $services->count() }})
+                                 {{ __('messages.services') }} ({{ $services->count() }})
                              </h6>
                              <div class="services-list">
                                  @foreach($services as $service)
@@ -576,15 +576,15 @@ label {
                                                  @if($mastersCount > 0)
                                                      {{ $masterNames }} • {{ number_format($avgPrice) }} ₽
                                                  @else
-                                                     Нет мастеров • {{ number_format($service->price) }} ₽
+                                                     {{ __('messages.no_masters') }} • {{ number_format($service->price) }} ₽
                                                  @endif
                                              </div>
                                          </div>
                                          <div class="service-status">
                                              @if($mastersCount > 0)
-                                                 <span class="status-available">Доступна</span>
+                                                 <span class="status-available">{{ __('messages.available') }}</span>
                                              @else
-                                                 <span class="status-unavailable">Недоступна</span>
+                                                 <span class="status-unavailable">{{ __('messages.unavailable') }}</span>
                                              @endif
                                          </div>
                                      </div>
@@ -599,7 +599,7 @@ label {
                 <div class="form-row">
                     <div class="form-group mb-4">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Сохранить настройки
+                            <i class="fas fa-save"></i> {{ __('messages.save_changes') }}
                         </button>
                     </div>
                 </div>
@@ -609,13 +609,13 @@ label {
         <!-- Вкладка настроек расписания -->
         <div class="settings-pane" id="tab-schedule-settings" style="display: none;">
             <div class="clients-header">
-                <h1>Настройки расписания мастеров</h1>
+                <h1>{{ __('messages.schedule_settings') }}</h1>
                 <div id="notification"></div>
                 <div class="header-actions">
                     <div class="form-group mb-3" style="margin-bottom: 0;">
-                        <label for="user-select" style="margin-bottom: 8px; font-weight: 600; color: #333;">Выберите мастера</label>
+                        <label for="user-select" style="margin-bottom: 8px; font-weight: 600; color: #333;">{{ __('messages.select_master') }}</label>
                         <select class="form-control" id="user-select" style="min-width: 250px; border-radius: 8px; border: 1px solid #d1d5db; padding: 8px 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.2s ease;">
-                            <option value="">Выберите мастера...</option>
+                            <option value="">{{ __('messages.select_master_placeholder') }}</option>
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}" {{ $loop->first ? 'selected' : '' }}>{{ $user->name }}</option>
                             @endforeach
@@ -630,11 +630,11 @@ label {
                     <table class="table-striped sale-table" id="scheduleTable" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; border: 1px solid #e5e7eb;">
                         <thead>
                             <tr>
-                                <th style="text-align: center;">День недели</th>
-                                <th style="text-align: center;">Рабочие часы</th>
-                                <th style="text-align: center;">Статус</th>
-                                <th style="text-align: center;">Примечания</th>
-                                <th style="text-align: center;">Действия</th>
+                                <th style="text-align: center;">{{ __('messages.day_of_week') }}</th>
+                                <th style="text-align: center;">{{ __('messages.working_hours') }}</th>
+                                <th style="text-align: center;">{{ __('messages.status') }}</th>
+                                <th style="text-align: center;">{{ __('messages.notes') }}</th>
+                                <th style="text-align: center;">{{ __('messages.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody id="schedule-tbody">
@@ -649,29 +649,29 @@ label {
             <!-- Сообщение о выборе мастера -->
             <div id="select-user-message" class="text-center py-5" style="margin-top: 40px;">
                 <i class="fas fa-user-clock fa-3x text-muted mb-3"></i>
-                <h5>Выберите мастера</h5>
-                <p class="text-muted">Выберите мастера из списка выше, чтобы настроить его расписание</p>
+                <h5>{{ __('messages.select_master_message') }}</h5>
+                <p class="text-muted">{{ __('messages.select_master_description') }}</p>
             </div>
         </div>
 
          <!-- Вкладка услуг мастеров -->
          <div class="settings-pane" id="tab-user-services" style="display: none;">
              <div class="clients-header">
-                 <h1>Управление услугами мастеров</h1>
+                 <h1>{{ __('messages.master_services_management') }}</h1>
                  <div id="notification"></div>
                  <div class="header-actions">
                      <button class="btn-add-client" onclick="addUserService()">
                          <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                          </svg>
-                         Добавить услугу мастеру
+                         {{ __('messages.add_service_to_master') }}
                      </button>
 
                      <div class="search-box">
                          <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
                              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                          </svg>
-                         <input type="text" placeholder="Поиск по мастерам и услугам..." id="userServicesSearchInput" autocomplete="off">
+                         <input type="text" placeholder="{{ __('messages.search_masters_services') }}" id="userServicesSearchInput" autocomplete="off">
                      </div>
                  </div>
              </div>
@@ -681,12 +681,12 @@ label {
                  <table class="table-striped sale-table" id="userServicesTable">
                      <thead>
                          <tr>
-                             <th>Мастер</th>
-                             <th>Услуга</th>
-                             <th>Цена</th>
-                             <th>Длительность</th>
-                             <th>Статус</th>
-                             <th>Действия</th>
+                             <th>{{ __('messages.master') }}</th>
+                             <th>{{ __('messages.service_name') }}</th>
+                             <th>{{ __('messages.price') }}</th>
+                             <th>{{ __('messages.duration') }}</th>
+                             <th>{{ __('messages.status') }}</th>
+                             <th>{{ __('messages.actions') }}</th>
                          </tr>
                      </thead>
                      <tbody id="user-services-tbody">
@@ -694,8 +694,8 @@ label {
                              <tr data-user-service-id="{{ $userService->id }}">
                                  <td>{{ $userService->user->name }}</td>
                                  <td>{{ $userService->service->name }}</td>
-                                 <td>{{ $userService->price ? number_format($userService->price) . ' ₽' : 'Не указана' }}</td>
-                                 <td>{{ $userService->duration ? $userService->duration . ' мин' : 'Не указано' }}</td>
+                                 <td>{{ $userService->price ? number_format($userService->price) . ' ₽' : __('messages.not_specified') }}</td>
+                                 <td>{{ $userService->duration ? $userService->duration . ' ' . __('messages.minutes') : __('messages.not_specified_duration') }}</td>
                                  <td>
                                      @if($userService->is_active_for_booking)
                                          <span class="badge badge-success">Активна</span>
@@ -704,7 +704,7 @@ label {
                                      @endif
                                  </td>
                                  <td class="actions-cell">
-                                     <button type="button" class="btn-view" onclick="editUserService({{ $userService->id }})" title="Редактировать">
+                                     <button type="button" class="btn-view" onclick="editUserService({{ $userService->id }})" title="{{ __('messages.edit') }}">
                                          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                                              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                                          </svg>
@@ -1124,13 +1124,13 @@ function renderScheduleTable() {
     tbody.innerHTML = '';
     
     const days = [
-        { id: 1, name: 'Понедельник' },
-        { id: 2, name: 'Вторник' },
-        { id: 3, name: 'Среда' },
-        { id: 4, name: 'Четверг' },
-        { id: 5, name: 'Пятница' },
-        { id: 6, name: 'Суббота' },
-        { id: 0, name: 'Воскресенье' }
+        { id: 1, name: '{{ __('messages.monday') }}' },
+        { id: 2, name: '{{ __('messages.tuesday') }}' },
+        { id: 3, name: '{{ __('messages.wednesday') }}' },
+        { id: 4, name: '{{ __('messages.thursday') }}' },
+        { id: 5, name: '{{ __('messages.friday') }}' },
+        { id: 6, name: '{{ __('messages.saturday') }}' },
+        { id: 0, name: '{{ __('messages.sunday') }}' }
     ];
     
     days.forEach(day => {
@@ -1148,31 +1148,31 @@ function renderScheduleTable() {
             <td>
                 ${dayData.is_working ? 
                     `${dayData.start_time} - ${dayData.end_time}` : 
-                    '<span style="color: #6b7280;">Выходной</span>'
+                    '<span style="color: #6b7280;">{{ __('messages.day_off') }}</span>'
                 }
                 ${dayData.is_working && dayData.booking_interval ? 
-                    `<br><small style="color: #3b82f6;">Интервал: ${dayData.booking_interval} мин</small>` : 
+                    `<br><small style="color: #3b82f6;">{{ __('messages.interval') }}: ${dayData.booking_interval} {{ __('messages.minutes') }}</small>` : 
                     ''
                 }
             </td>
             <td>
                 ${dayData.is_working ? 
-                    '<span class="badge badge-success">Рабочий</span>' : 
-                    '<span class="badge badge-secondary">Выходной</span>'
+                    '<span class="badge badge-success">{{ __('messages.working') }}</span>' : 
+                    '<span class="badge badge-secondary">{{ __('messages.day_off') }}</span>'
                 }
             </td>
             <td>
                 ${dayData.notes ? 
                     `<span style="color: #6b7280; font-size: 13px;">${dayData.notes}</span>` : 
-                    '<span style="color: #9ca3af; font-style: italic;">Нет примечаний</span>'
+                    '<span style="color: #9ca3af; font-style: italic;">{{ __('messages.no_notes') }}</span>'
                 }
             </td>
             <td class="actions-cell">
-                <button type="button" class="btn-view" onclick="editDay(${day.id})" title="Редактировать" style="display: flex; align-items: center; gap: 6px;">
+                <button type="button" class="btn-view" onclick="editDay(${day.id})" title="{{ __('messages.edit') }}" style="display: flex; align-items: center; gap: 6px;">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                     </svg>
-                    Редактировать
+                    {{ __('messages.edit') }}
                 </button>
             </td>
         `;
@@ -1416,7 +1416,7 @@ function editUserService(userServiceId) {
             document.getElementById('modal-description').value = userService.description || '';
             
             // Обновляем заголовок модального окна
-            document.getElementById('userServiceModalTitle').textContent = 'Редактировать услугу мастеру';
+                                document.getElementById('userServiceModalTitle').textContent = '{{ __('messages.edit_service_to_master') }}';
             
             // Открываем модальное окно
             const modal = document.getElementById('userServiceModal');
@@ -1576,12 +1576,12 @@ function addUserServiceToTable(userService) {
             }
         </td>
         <td class="actions-cell">
-            <button type="button" class="btn-view" onclick="editUserService(${userService.id})" title="Редактировать">
+            <button type="button" class="btn-view" onclick="editUserService(${userService.id})" title="{{ __('messages.edit') }}">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                 </svg>
             </button>
-            <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="Удалить">
+            <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="{{ __('messages.delete') }}">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                 </svg>
@@ -1615,12 +1615,12 @@ function updateUserServiceInTable(userService) {
                 }
             </td>
             <td class="actions-cell">
-                <button type="button" class="btn-view" onclick="editUserService(${userService.id})" title="Редактировать">
+                <button type="button" class="btn-view" onclick="editUserService(${userService.id})" title="{{ __('messages.edit') }}">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                     </svg>
                 </button>
-                <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="Удалить">
+                <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="{{ __('messages.delete') }}">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                     </svg>

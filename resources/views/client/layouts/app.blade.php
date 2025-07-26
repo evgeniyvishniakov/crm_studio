@@ -585,7 +585,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Веб-запись</span>
+                                <span class="menu-label">{{ __('messages.web_booking') }}</span>
                             </a>
                         </li>
 
