@@ -656,7 +656,7 @@
                                 <p class="dropdown-item text-muted">Нет новых уведомлений</p>
                             @endif
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-center" href="{{ route('client.notifications.index') }}">Показать все уведомления</a>
+                            <a class="dropdown-item text-center" href="{{ route('client.notifications.index') }}">{{ __('messages.show_all_notifications') }}</a>
                         </div>
                     </div>
                     @endif

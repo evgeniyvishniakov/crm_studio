@@ -1296,12 +1296,24 @@
              });
          }
         
+        // Флаг для предотвращения двойной отправки
+        let isSubmitting = false;
+        
         function submitBooking() {
+            // Проверяем, не отправляется ли уже форма
+            if (isSubmitting) {
+                console.log('Form is already being submitted, ignoring click');
+                return;
+            }
+            
             const form = document.getElementById('booking-form');
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
+            
+            // Устанавливаем флаг отправки
+            isSubmitting = true;
             
             const submitBtn = document.getElementById('submit-booking');
             submitBtn.disabled = true;
@@ -1346,6 +1358,7 @@
                      alert('Ошибка: ' + data.message);
                      submitBtn.disabled = false;
                      submitBtn.innerHTML = 'Записаться <i class="fas fa-check"></i>';
+                     isSubmitting = false; // Сбрасываем флаг при ошибке
                  }
              })
              .catch(error => {
@@ -1353,6 +1366,7 @@
                  alert('Произошла ошибка при отправке заявки: ' + error.message);
                  submitBtn.disabled = false;
                  submitBtn.innerHTML = 'Записаться <i class="fas fa-check"></i>';
+                 isSubmitting = false; // Сбрасываем флаг при ошибке
              });
         }
         
@@ -1521,22 +1535,25 @@
               }
           }
         
-                 function showSuccess(booking) {
-             document.getElementById('step4').classList.remove('active');
-             document.getElementById('success').classList.add('active');
-             
-             const details = document.getElementById('booking-details');
-             details.className = 'booking-details';
-             details.innerHTML = `
-                 <div class="alert alert-info">
-                     <strong>Детали записи:</strong><br>
-                     Услуга: ${booking.service_name}<br>
-                     Мастер: ${booking.master_name}<br>
-                     Дата: ${booking.date}<br>
-                     Время: ${booking.time}
-                 </div>
-             `;
-         }
+                         function showSuccess(booking) {
+            // Сбрасываем флаг отправки при успехе
+            isSubmitting = false;
+            
+            document.getElementById('step4').classList.remove('active');
+            document.getElementById('success').classList.add('active');
+            
+            const details = document.getElementById('booking-details');
+            details.className = 'booking-details';
+            details.innerHTML = `
+                <div class="alert alert-info">
+                    <strong>Детали записи:</strong><br>
+                    Услуга: ${booking.service_name}<br>
+                    Мастер: ${booking.master_name}<br>
+                    Дата: ${booking.date}<br>
+                    Время: ${booking.time}
+                </div>
+            `;
+        }
 
     const stepTitles = [null, 'Выберите услугу', 'Выберите мастера', 'Дата и время', 'Ваши данные'];
 

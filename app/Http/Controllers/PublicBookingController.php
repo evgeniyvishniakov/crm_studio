@@ -8,6 +8,7 @@ use App\Models\Clients\UserSchedule;
 use App\Models\Clients\Appointment;
 use App\Models\Clients\Client;
 use App\Models\Admin\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -250,6 +251,91 @@ class PublicBookingController extends Controller
             'project_id' => $project->id,
             'notes' => __('messages.booking_created_via_web')
         ]);
+        
+        \Log::info('Appointment created', [
+            'appointment_id' => $appointment->id,
+            'client_id' => $client->id,
+            'user_id' => $validated['user_id'],
+            'project_id' => $project->id
+        ]);
+
+        try {
+            \Log::info('Before notifications block', [
+                'project_id' => $project->id,
+                'appointment_id' => $appointment->id,
+                'user_id' => $user->id
+            ]);
+            // Создаем уведомление для мастера
+            $notificationBody = __('messages.new_web_booking_notification_body', [
+                'client_name' => $client->name,
+                'service_name' => $service->name,
+                'master_name' => $user->name,
+                'date' => $validated['date'],
+                'time' => $validated['time']
+            ]);
+
+            // Уведомления создаются в цикле ниже для всех пользователей
+
+            // Создаем уведомления для всех пользователей проекта (мастер + админы)
+            $allUsers = \App\Models\Admin\User::where('project_id', $project->id)
+                ->whereIn('role', ['admin', 'master'])
+                ->get();
+
+            \Log::info('Creating notifications for all users', [
+                'project_id' => $project->id,
+                'all_users_count' => $allUsers->count(),
+                'all_users' => $allUsers->pluck('id', 'name')->toArray()
+            ]);
+
+            foreach ($allUsers as $notifyUser) {
+                // Проверяем, не создали ли мы уже уведомление для этого пользователя
+                $existingNotification = \App\Models\Notification::where('user_id', $notifyUser->id)
+                    ->where('type', 'web_booking')
+                    ->where('title', __('messages.new_web_booking_notification_title'))
+                    ->where('body', $notificationBody) // Проверяем по содержимому уведомления
+                    ->where('project_id', $project->id)
+                    ->where('created_at', '>=', now()->subMinutes(1)) // Проверяем уведомления за последнюю минуту
+                    ->first();
+
+                if ($existingNotification) {
+                    \Log::info('Notification already exists for user', [
+                        'user_id' => $notifyUser->id,
+                        'existing_notification_id' => $existingNotification->id
+                    ]);
+                    continue;
+                }
+
+                \Log::info('Attempting to create notification for user', [
+                    'notify_user_id' => $notifyUser->id,
+                    'notify_user_name' => $notifyUser->name,
+                    'project_id' => $project->id,
+                    'notification_body' => $notificationBody
+                ]);
+                try {
+                    $notification = \App\Models\Notification::create([
+                        'user_id' => $notifyUser->id,
+                        'type' => 'web_booking',
+                        'title' => __('messages.new_web_booking_notification_title'),
+                        'body' => $notificationBody,
+                        'url' => route('appointments.index'),
+                        'is_read' => false,
+                        'project_id' => $project->id
+                    ]);
+                    \Log::info('Notification created', [
+                        'notification_id' => $notification->id,
+                        'user_id' => $notifyUser->id
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error('Failed to create notification for user', [
+                        'user_id' => $notifyUser->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error creating notifications: ' . $e->getMessage());
+            // Не прерываем выполнение, если уведомления не создались
+        }
 
         return response()->json([
             'success' => true,
