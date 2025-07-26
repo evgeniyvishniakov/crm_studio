@@ -10,14 +10,24 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Google Maps API (закомментировано - нужен API ключ) -->
     <!-- <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script> -->
     
     <style>
         body {
             background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', Arial, sans-serif;
             color: #333;
+        }
+        
+        /* Глобальные стили шрифтов */
+        body, .booking-container, .site-header, .site-footer, 
+        .booking-header, .booking-body, .step-indicator, 
+        .service-card, .master-card, .calendar, .time-slot,
+        .form-control, .btn, h1, h2, h3, h4, h5, h6, p, span, div {
+            font-family: 'Inter', Arial, sans-serif !important;
         }
         
         /* Шапка сайта */
@@ -159,6 +169,61 @@
             }
         }
         
+        /* Футер сайта */
+        .site-footer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0 70px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+        
+    
+        
+
+        
+        .footer-powered-by {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .footer-powered-by a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+        }
+        
+        .footer-powered-by a:hover {
+            opacity: 0.8;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .footer-divider {
+                display: none;
+            }
+        }
+        
         .booking-container {
             background: white;
             border-radius: 8px;
@@ -189,6 +254,8 @@
             display: flex;
             align-items: center;
             margin: 0 10px;
+            font-size: 20px;
+
         }
         
         .step-number {
@@ -205,15 +272,9 @@
             margin-right: 8px;
         }
         
-        .step.active .step-number {
-            background: #007bff;
-            color: white;
-        }
+       
         
-        .step.completed .step-number {
-            background: #28a745;
-            color: white;
-        }
+        
         
         .step-content {
             display: none;
@@ -419,7 +480,7 @@
                     </div>
                     <div class="project-info">
                         <h1>{{ $project->project_name }}</h1>
-                        <p>Онлайн запись на услуги</p>
+                        
                     </div>
                 </div>
                 <button class="header-toggle" onclick="toggleHeaderDetails()">
@@ -524,7 +585,7 @@
             
             <!-- Шаг 1: Выбор услуги -->
             <div class="step-content active" id="step1">
-                <h4 class="mb-3">Выберите услугу</h4>
+                
                 <div id="services-list">
                     @php
                     // Используем хелпер для форматирования времени
@@ -559,7 +620,7 @@
             
             <!-- Шаг 2: Выбор мастера -->
             <div class="step-content" id="step2">
-                <h4 class="mb-3">Выберите мастера</h4>
+            
                 <div id="masters-list">
                     @foreach($users as $user)
                         @php
@@ -583,7 +644,7 @@
             
                          <!-- Шаг 3: Выбор даты и времени -->
              <div class="step-content" id="step3">
-                 <h4 class="mb-3">Выберите дату и время</h4>
+                 
                  
                  <!-- Календарь -->
                  <div class="calendar-container mb-4">
@@ -621,7 +682,7 @@
             
             <!-- Шаг 4: Данные клиента -->
             <div class="step-content" id="step4">
-                <h4 class="mb-3">Ваши данные</h4>
+               
                 <form id="booking-form">
                     <div class="row">
                         <div class="col-md-6">
@@ -1294,17 +1355,31 @@
              `;
          }
 
-    const stepTitles = [null, 'Услуга', 'Мастер', 'Дата и время', 'Данные'];
+    const stepTitles = [null, 'Выберите услугу', 'Выберите мастера', 'Дата и время', 'Ваши данные'];
 
     function renderStepIndicator() {
         const indicator = document.getElementById('step-indicator');
         indicator.innerHTML = `
             <div class="step active">
-                <div class="step-number">${currentStep}</div>
+                
                 <span>${stepTitles[currentStep]}</span>
             </div>
         `;
-    }
+             }
     </script>
+    
+    <!-- Футер сайта -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-bottom">
+                <div class="footer-powered-by">
+                    <span>Сделано на</span>
+                    <a href="https://trimora.com" target="_blank" title="Trimora - Система управления салонами красоты">
+                     Trimora
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html> 
