@@ -167,6 +167,17 @@
             .details-grid {
                 grid-template-columns: 1fr;
             }
+            
+            /* Мобильные стили для кнопок */
+            .btn {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+            
+            .btn-sm {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
         }
         
         /* Футер сайта */
@@ -321,19 +332,86 @@
             font-weight: 500;
         }
         
+        /* Стили кнопок в CRM стиле */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            border: 2px solid transparent;
+        }
+        .mt-3{
+            display: flex;
+            justify-content: space-between;
+            
+
+        }
+        /* Primary кнопки - как в CRM */
         .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            border-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
-        
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-        
+    
+        /* Secondary кнопки - как в CRM */
         .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
+            background: linear-gradient(135deg, #6c757d, #9ca3af);
+        color: white;
+        padding: 10px 16px;
+        border: 2px solid #6c757d;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(108, 117, 125, 0.15);
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+            border-color: #545b62;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+        
+        .btn-outline-secondary {
+            background: transparent;
+            color: #6c757d;
+            border: 2px solid #6c757d;
+        }
+        
+        .btn-outline-secondary:hover {
+            background: #6c757d;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+        
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 0.875rem;
+        }
+        
+        /* Стили для кнопок с иконками */
+        .btn i {
+            font-size: 14px;
+        }
+        
+        .btn-sm i {
+            font-size: 12px;
+        }
+        
+        /* Анимация для кнопок при наведении */
+        .btn:hover i {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
         }
         
         .form-control:focus {
