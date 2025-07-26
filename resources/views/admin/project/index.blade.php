@@ -115,6 +115,34 @@
                         <label for="project-address" class="form-label">Адрес</label>
                         <input type="text" class="form-control" id="project-address" name="address">
                     </div>
+                    
+                    <!-- Координаты карты -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="project-map-latitude" class="form-label">Широта карты</label>
+                                <input type="text" class="form-control" id="project-map-latitude" name="map_latitude" placeholder="55.7558">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="project-map-longitude" class="form-label">Долгота карты</label>
+                                <input type="text" class="form-control" id="project-map-longitude" name="map_longitude" placeholder="37.6176">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="project-map-zoom" class="form-label">Масштаб карты</label>
+                                <input type="number" class="form-control" id="project-map-zoom" name="map_zoom" value="15" min="1" max="20">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="project-about" class="form-label">О нас</label>
+                        <textarea class="form-control" id="project-about" name="about" rows="4" placeholder="Краткое описание о салоне/компании..."></textarea>
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="project-social-links" class="form-label">Соцсети (через запятую)</label>
                         <input type="text" class="form-control" id="project-social-links" name="social_links" placeholder="vk.com/..., facebook.com/...">
@@ -281,6 +309,34 @@
                         <label for="edit-project-address-{{ $project->id }}" class="form-label">Адрес</label>
                         <input type="text" class="form-control" id="edit-project-address-{{ $project->id }}" name="address" value="{{ $project->address }}">
                     </div>
+                    
+                    <!-- Координаты карты -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="edit-project-map-latitude-{{ $project->id }}" class="form-label">Широта карты</label>
+                                <input type="text" class="form-control" id="edit-project-map-latitude-{{ $project->id }}" name="map_latitude" value="{{ $project->map_latitude }}" placeholder="55.7558">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="edit-project-map-longitude-{{ $project->id }}" class="form-label">Долгота карты</label>
+                                <input type="text" class="form-control" id="edit-project-map-longitude-{{ $project->id }}" name="map_longitude" value="{{ $project->map_longitude }}" placeholder="37.6176">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="edit-project-map-zoom-{{ $project->id }}" class="form-label">Масштаб карты</label>
+                                <input type="number" class="form-control" id="edit-project-map-zoom-{{ $project->id }}" name="map_zoom" value="{{ $project->map_zoom ?? 15 }}" min="1" max="20">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="edit-project-about-{{ $project->id }}" class="form-label">О нас</label>
+                        <textarea class="form-control" id="edit-project-about-{{ $project->id }}" name="about" rows="4" placeholder="Краткое описание о салоне/компании...">{{ $project->about }}</textarea>
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="edit-project-social-links-{{ $project->id }}" class="form-label">Соцсети (через запятую)</label>
                         <input type="text" class="form-control" id="edit-project-social-links-{{ $project->id }}" name="social_links" value="{{ is_array($project->social_links) ? implode(', ', $project->social_links) : '' }}" placeholder="vk.com/..., facebook.com/...">

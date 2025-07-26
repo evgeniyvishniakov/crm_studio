@@ -57,6 +57,10 @@ class ProjectController extends Controller
             'phone' => 'nullable|string|max:50',
             'website' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
+            'map_latitude' => 'nullable|string|max:20',
+            'map_longitude' => 'nullable|string|max:20',
+            'map_zoom' => 'nullable|integer|min:1|max:20',
+            'about' => 'nullable|string',
             'social_links' => 'nullable|string',
         ]);
 
@@ -123,6 +127,10 @@ class ProjectController extends Controller
             'phone' => 'nullable|string|max:50',
             'website' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
+            'map_latitude' => 'nullable|string|max:20',
+            'map_longitude' => 'nullable|string|max:20',
+            'map_zoom' => 'nullable|integer|min:1|max:20',
+            'about' => 'nullable|string',
             'social_links' => 'nullable|string',
         ]);
 

@@ -513,9 +513,10 @@ label {
 
                 <div class="form-row">
                     <div class="form-group mb-4">
-                        <label for="booking_instructions">Инструкции для клиентов</label>
-                        <textarea class="form-control" id="booking_instructions" name="booking_instructions" rows="4" 
-                                  placeholder="Дополнительные инструкции для клиентов...">{{ $bookingSettings->booking_instructions }}</textarea>
+                        <label for="about">О нас - описание салона</label>
+                        <textarea class="form-control" id="about" name="about" rows="4" 
+                                  placeholder="Краткое описание о салоне/компании для клиентов...">{{ $project->about }}</textarea>
+                        <small class="form-text text-muted">Это описание будет отображаться на странице веб-записи</small>
                     </div>
                 </div>
 
@@ -592,6 +593,8 @@ label {
                          </div>
                      </div>
                  </div>
+
+
 
                 <div class="form-row">
                     <div class="form-group mb-4">

@@ -58,6 +58,11 @@ class SettingsController extends Controller
             'logo' => 'nullable|image|max:2048',
             'language_id' => 'nullable|integer|exists:languages,id',
             'currency_id' => 'nullable|integer|in:' . implode(',', $availableCurrencyIds),
+            'map_url' => 'nullable|url|max:500',
+            'map_latitude' => 'nullable|string|max:20',
+            'map_longitude' => 'nullable|string|max:20',
+            'map_zoom' => 'nullable|integer|min:1|max:20',
+            'about' => 'nullable|string',
         ]);
 
         // Обновление полей
@@ -67,6 +72,16 @@ class SettingsController extends Controller
         if ($request->hasFile('logo')) {
             $logoPath = $request->file('logo')->store('public/project_logos');
             $project->logo = Storage::url($logoPath);
+        }
+
+        // Обработка ссылки на карту
+        if (!empty($validated['map_url'])) {
+            $coordinates = $this->extractCoordinatesFromMapUrl($validated['map_url']);
+            if ($coordinates) {
+                $validated['map_latitude'] = $coordinates['latitude'];
+                $validated['map_longitude'] = $coordinates['longitude'];
+                $validated['map_zoom'] = $coordinates['zoom'] ?? 15;
+            }
         }
 
         $project->save();
@@ -81,6 +96,60 @@ class SettingsController extends Controller
         }
 
         return redirect()->back()->with('success', 'Настройки успешно обновлены.');
+    }
+
+    /**
+     * Извлечь координаты из ссылки Google Maps
+     */
+    private function extractCoordinatesFromMapUrl($url)
+    {
+        // Поддержка различных форматов ссылок Google Maps
+        
+        // Формат: https://maps.app.goo.gl/UMeU52GP5ZWVxx4x5
+        if (preg_match('/maps\.app\.goo\.gl\/([a-zA-Z0-9]+)/', $url, $matches)) {
+            // Для коротких ссылок нужно будет сделать запрос для получения полной ссылки
+            // Пока что возвращаем null, так как нужен API ключ для расшифровки
+            return null;
+        }
+        
+        // Формат: https://www.google.com/maps?q=55.7558,37.6176
+        if (preg_match('/[?&]q=([^&]+)/', $url, $matches)) {
+            $coords = explode(',', $matches[1]);
+            if (count($coords) >= 2) {
+                return [
+                    'latitude' => trim($coords[0]),
+                    'longitude' => trim($coords[1]),
+                    'zoom' => 15
+                ];
+            }
+        }
+        
+        // Формат: https://www.google.com/maps/place/.../@55.7558,37.6176,15z
+        if (preg_match('/@([^,]+),([^,]+),(\d+)z/', $url, $matches)) {
+            return [
+                'latitude' => $matches[1],
+                'longitude' => $matches[2],
+                'zoom' => (int)$matches[3]
+            ];
+        }
+        
+        // Формат: https://www.google.com/maps?ll=55.7558,37.6176&z=15
+        if (preg_match('/[?&]ll=([^&]+)/', $url, $matches)) {
+            $coords = explode(',', $matches[1]);
+            if (count($coords) >= 2) {
+                $zoom = 15;
+                if (preg_match('/[?&]z=(\d+)/', $url, $zoomMatch)) {
+                    $zoom = (int)$zoomMatch[1];
+                }
+                return [
+                    'latitude' => trim($coords[0]),
+                    'longitude' => trim($coords[1]),
+                    'zoom' => $zoom
+                ];
+            }
+        }
+        
+        return null;
     }
 
     public function updateLanguageCurrency(Request $request)

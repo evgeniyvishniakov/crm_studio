@@ -168,6 +168,8 @@
                 grid-template-columns: 1fr;
             }
             
+
+            
             /* Мобильные стили для кнопок */
             .btn {
                 padding: 12px 20px;
@@ -303,6 +305,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             background: white;
+            box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
         }
         
         .service-card:hover, .master-card:hover, .time-slot:hover {
@@ -350,12 +353,23 @@
         .mt-3{
             display: flex;
             justify-content: space-between;
-            
-
+            align-items: center;
+            gap: 15px;
+        }
+        
+        /* Кнопка "Назад" всегда слева */
+        .btn-back {
+            order: 1;
+        }
+        
+        /* Кнопка "Далее" или "Записаться" всегда справа */
+        .btn-next, .btn-submit {
+            order: 2;
+            margin-left: auto;
         }
         /* Primary кнопки - как в CRM */
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        .btn-next {
+            background: linear-gradient(135deg, #0765ff, #6bacfb);
             border-color: #3b82f6;
             color: white;
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
@@ -413,7 +427,11 @@
             transform: scale(1.1);
             transition: transform 0.2s ease;
         }
-        
+        .form-control{
+            
+            box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+
+        }
         .form-control:focus {
             border-color: #007bff;
             box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
@@ -434,7 +452,19 @@
             padding: 30px;
             color: #28a745;
         }
+        .btn-primary{
+            background: linear-gradient(135deg, #28a745, #56bb93);
+            color: white;
+            border: 2px solid #28a745;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.15);
+        }
         
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #1e7e34, #28a745);
+            border-color: #1e7e34;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
                  .success-message i {
              font-size: 3rem;
              margin-bottom: 15px;
@@ -472,6 +502,7 @@
              border-radius: 8px;
              padding: 20px;
              border: 1px solid #e9ecef;
+             box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
          }
          
          .calendar-header {
@@ -592,30 +623,6 @@
                     </div>
                     @endif
                     
-                    @if($project->email)
-                    <div class="detail-item">
-                        <div class="detail-icon">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <div class="detail-content">
-                            <h4>Email</h4>
-                            <p><a href="mailto:{{ $project->email }}" style="color: white; text-decoration: none;">{{ $project->email }}</a></p>
-                        </div>
-                    </div>
-                    @endif
-                    
-                    @if($project->website)
-                    <div class="detail-item">
-                        <div class="detail-icon">
-                            <i class="fas fa-globe"></i>
-                        </div>
-                        <div class="detail-content">
-                            <h4>Сайт</h4>
-                            <p><a href="{{ $project->website }}" target="_blank" style="color: white; text-decoration: none;">{{ $project->website }}</a></p>
-                        </div>
-                    </div>
-                    @endif
-                    
                     <div class="detail-item">
                         <div class="detail-icon">
                             <i class="fas fa-clock"></i>
@@ -638,14 +645,36 @@
                         </div>
                         <div class="detail-content">
                             <h4>О нас</h4>
-                            <p>Профессиональные услуги красоты и ухода. Записывайтесь онлайн в удобное для вас время.</p>
+                            <p>
+                                @if($project->about)
+                                    {{ $project->about }}
+                                @else
+                                    Профессиональные услуги красоты и ухода. Записывайтесь онлайн в удобное для вас время.
+                                @endif
+                            </p>
                         </div>
                     </div>
                     
-                    @if($project->address)
-                    <div class="map-container" id="map">
-                        <i class="fas fa-map" style="font-size: 24px; margin-right: 10px;"></i>
-                        <span>Загрузка карты...</span>
+                    @if($project->map_latitude && $project->map_longitude)
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-map"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Карта</h4>
+                            <div class="map-preview" style="width: 100%; height: 200px; border-radius: 8px; overflow: hidden; margin-top: 10px;">
+                                <iframe 
+                                    width="100%" 
+                                    height="100%" 
+                                    frameborder="0" 
+                                    scrolling="no" 
+                                    marginheight="0" 
+                                    marginwidth="0"
+                                    src="https://maps.google.com/maps?q={{ $project->map_latitude }},{{ $project->map_longitude }}&z={{ $project->map_zoom ?? 15 }}&output=embed"
+                                    style="border: none;">
+                                </iframe>
+                            </div>
+                        </div>
                     </div>
                     @endif
                 </div>
@@ -690,7 +719,7 @@
                     @endforeach
                 </div>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-primary" onclick="nextStep()" disabled id="next-step-1">
+                    <button type="button" class="btn btn-next" onclick="nextStep()" disabled id="next-step-1">
                         Далее <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
@@ -711,10 +740,10 @@
                     @endforeach
                 </div>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                    <button type="button" class="btn btn-secondary btn-back" onclick="prevStep()">
                         <i class="fas fa-arrow-left"></i> Назад
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()" disabled id="next-step-2">
+                    <button type="button" class="btn btn-next" onclick="nextStep()" disabled id="next-step-2">
                         Далее <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
@@ -749,10 +778,10 @@
                      </div>
                  </div>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                    <button type="button" class="btn btn-secondary btn-back" onclick="prevStep()">
                         <i class="fas fa-arrow-left"></i> Назад
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="nextStep()" disabled id="next-step-3">
+                    <button type="button" class="btn btn-next" onclick="nextStep()" disabled id="next-step-3">
                         Далее <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
@@ -786,10 +815,10 @@
                     </div>
                 </form>
                 <div class="mt-3">
-                    <button type="button" class="btn btn-secondary" onclick="prevStep()">
+                    <button type="button" class="btn btn-secondary btn-back" onclick="prevStep()">
                         <i class="fas fa-arrow-left"></i> Назад
                     </button>
-                    <button type="button" class="btn btn-primary" onclick="submitBooking()" id="submit-booking">
+                    <button type="button" class="btn btn-primary btn-submit" onclick="submitBooking()" id="submit-booking">
                         Записаться <i class="fas fa-check"></i>
                     </button>
                 </div>
@@ -897,32 +926,35 @@
             }
         }
         
-        // Инициализация карты (простая версия без API)
+        // Инициализация карты (если координаты не настроены)
         function initMap() {
             const mapElement = document.getElementById('map');
-            if (!mapElement || mapElement.querySelector('a')) return; // Карта уже загружена
+            if (!mapElement || mapElement.querySelector('iframe')) return; // Карта уже загружена
             
             const address = '{{ $project->address }}';
             if (!address) return;
             
-            // Очищаем содержимое
-            mapElement.innerHTML = '';
-            
-            // Создаем ссылку на Google Maps
-            const link = document.createElement('a');
-            link.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-            link.target = '_blank';
-            link.style.display = 'flex';
-            link.style.alignItems = 'center';
-            link.style.justifyContent = 'center';
-            link.style.width = '100%';
-            link.style.height = '100%';
-            link.style.color = 'white';
-            link.style.textDecoration = 'none';
-            link.style.fontSize = '14px';
-            link.innerHTML = '<i class="fas fa-map" style="font-size: 24px; margin-right: 10px;"></i><span>Открыть в Google Maps</span>';
-            
-            mapElement.appendChild(link);
+            // Если координаты не настроены, показываем ссылку на Google Maps
+            if (!mapElement.querySelector('iframe')) {
+                // Очищаем содержимое
+                mapElement.innerHTML = '';
+                
+                // Создаем ссылку на Google Maps
+                const link = document.createElement('a');
+                link.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+                link.target = '_blank';
+                link.style.display = 'flex';
+                link.style.alignItems = 'center';
+                link.style.justifyContent = 'center';
+                link.style.width = '100%';
+                link.style.height = '100%';
+                link.style.color = 'white';
+                link.style.textDecoration = 'none';
+                link.style.fontSize = '14px';
+                link.innerHTML = '<i class="fas fa-map" style="font-size: 24px; margin-right: 10px;"></i><span>Открыть в Google Maps</span>';
+                
+                mapElement.appendChild(link);
+            }
         }
         
                  // Функции календаря

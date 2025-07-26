@@ -87,22 +87,82 @@
                     </div>
                     <div class="form-col"></div>
                 </div>
+
+                <!-- Описание и логотип в один ряд -->
+                <div class="form-row form-row--2col">
+                    <div class="form-col">
+                        <div class="form-group mb-4">
+                            <label>О нас - описание салона</label>
+                            <textarea name="about" class="form-control" rows="4" placeholder="Краткое описание о салоне/компании для клиентов...">{{ old('about', $project->about ?? '') }}</textarea>
+                            <small class="form-text text-muted">Это описание будет отображаться на странице веб-записи</small>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group mb-4">
+                            <label>{{ __('messages.company_logo') }}</label>
+                            <div class="logo-upload-row">
+                                <div class="logo-preview">
+                                    @if(!empty($project->logo))
+                                        <img src="{{ $project->logo }}" alt="logo">
+                                    @else
+                                        <div class="logo-placeholder">?</div>
+                                    @endif
+                                </div>
+                                <div class="logo-upload-controls">
+                                    <label for="logo-input" class="btn btn-outline-secondary" style="cursor:pointer;display:inline-block;">{{ __('messages.select_file') }}</label>
+                                    <input type="file" id="logo-input" name="logo" accept="image/*" style="display:none;" onchange="document.getElementById('logo-filename').textContent = this.files[0]?.name || ''">
+                                    <span id="logo-filename" style="margin-left:12px;font-size:0.95em;color:#888;"></span>
+                                    <small class="form-text text-muted">{{ __('messages.logo_upload_requirements') }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Поля для карты и описания -->
                 <div class="form-row">
                     <div class="form-group mb-4">
-                        <label>{{ __('messages.company_logo') }}</label>
-                        <div class="logo-upload-row">
-                            <div class="logo-preview">
-                                @if(!empty($project->logo))
-                                    <img src="{{ $project->logo }}" alt="logo">
-                                @else
-                                    <div class="logo-placeholder">?</div>
-                                @endif
-                            </div>
-                            <div class="logo-upload-controls">
-                                <label for="logo-input" class="btn btn-outline-secondary" style="cursor:pointer;display:inline-block;">{{ __('messages.select_file') }}</label>
-                                <input type="file" id="logo-input" name="logo" accept="image/*" style="display:none;" onchange="document.getElementById('logo-filename').textContent = this.files[0]?.name || ''">
-                                <span id="logo-filename" style="margin-left:12px;font-size:0.95em;color:#888;"></span>
-                                <small class="form-text text-muted">{{ __('messages.logo_upload_requirements') }}</small>
+                        <h6 style="margin-bottom: 15px; color: #333; font-weight: 600;">
+                            <i class="fas fa-map-marker-alt" style="margin-right: 8px; color: #dc3545;"></i>
+                            Настройки карты и информации
+                        </h6>
+                    </div>
+                </div>
+
+                <div class="form-row form-row--2col">
+                    <div class="form-col">
+                        <div class="form-group mb-3">
+                            <label>Ссылка на Google Maps</label>
+                            <input type="url" name="map_url" class="form-control" id="map_url" 
+                                   value="{{ old('map_url', '') }}" 
+                                   placeholder="https://maps.app.goo.gl/UMeU52GP5ZWVxx4x5">
+                            <small class="form-text text-muted">
+                                Вставьте ссылку на Google Maps. Координаты извлекутся автоматически.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group mb-3">
+                            <label>Масштаб карты</label>
+                            <input type="number" name="map_zoom" class="form-control" id="map_zoom" 
+                                   value="{{ old('map_zoom', $project->map_zoom ?? 15) }}" min="1" max="20">
+                            <small class="form-text text-muted">От 1 до 20 (по умолчанию 15)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Скрытые поля для координат -->
+                <input type="hidden" name="map_latitude" id="map_latitude" value="{{ old('map_latitude', $project->map_latitude ?? '') }}">
+                <input type="hidden" name="map_longitude" id="map_longitude" value="{{ old('map_longitude', $project->map_longitude ?? '') }}">
+
+                <!-- Предварительный просмотр карты -->
+                <div class="form-row">
+                    <div class="form-group mb-4">
+                        <label>Предварительный просмотр карты</label>
+                        <div id="map_preview" style="width: 100%; height: 300px; border: 1px solid #ddd; border-radius: 8px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-map fa-3x mb-3"></i>
+                                <p>Вставьте ссылку на Google Maps для предварительного просмотра</p>
                             </div>
                         </div>
                     </div>
@@ -543,6 +603,120 @@ document.addEventListener('DOMContentLoaded', function() {
     if (currencySelector) {
         // Убираем автоматическое сохранение при изменении селектора
         // Теперь валюта будет сохраняться только при нажатии кнопки "Сохранить"
+    }
+
+    // Обработка карты
+    const mapUrlInput = document.getElementById('map_url');
+    const mapPreview = document.getElementById('map_preview');
+    const mapLatitudeInput = document.getElementById('map_latitude');
+    const mapLongitudeInput = document.getElementById('map_longitude');
+    const mapZoomInput = document.getElementById('map_zoom');
+
+    if (mapUrlInput) {
+        mapUrlInput.addEventListener('input', function() {
+            const url = this.value.trim();
+            if (url) {
+                extractCoordinatesFromUrl(url);
+            } else {
+                showMapPlaceholder();
+            }
+        });
+
+        // Инициализация при загрузке страницы
+        if (mapLatitudeInput.value && mapLongitudeInput.value) {
+            showMapPreview(mapLatitudeInput.value, mapLongitudeInput.value, mapZoomInput.value);
+        }
+    }
+
+    function extractCoordinatesFromUrl(url) {
+        // Формат: https://maps.app.goo.gl/UMeU52GP5ZWVxx4x5
+        if (url.includes('maps.app.goo.gl/')) {
+            showMapPlaceholder('Короткие ссылки Google Maps пока не поддерживаются. Используйте полную ссылку.');
+            return;
+        }
+        
+        // Формат: https://www.google.com/maps?q=55.7558,37.6176
+        let match = url.match(/[?&]q=([^&]+)/);
+        if (match) {
+            const coords = match[1].split(',');
+            if (coords.length >= 2) {
+                const lat = parseFloat(coords[0]);
+                const lng = parseFloat(coords[1]);
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    updateCoordinates(lat, lng, 15);
+                    showMapPreview(lat, lng, 15);
+                    return;
+                }
+            }
+        }
+        
+        // Формат: https://www.google.com/maps/place/.../@55.7558,37.6176,15z
+        match = url.match(/@([^,]+),([^,]+),(\d+)z/);
+        if (match) {
+            const lat = parseFloat(match[1]);
+            const lng = parseFloat(match[2]);
+            const zoom = parseInt(match[3]);
+            if (!isNaN(lat) && !isNaN(lng)) {
+                updateCoordinates(lat, lng, zoom);
+                showMapPreview(lat, lng, zoom);
+                return;
+            }
+        }
+        
+        // Формат: https://www.google.com/maps?ll=55.7558,37.6176&z=15
+        match = url.match(/[?&]ll=([^&]+)/);
+        if (match) {
+            const coords = match[1].split(',');
+            if (coords.length >= 2) {
+                const lat = parseFloat(coords[0]);
+                const lng = parseFloat(coords[1]);
+                let zoom = 15;
+                
+                const zoomMatch = url.match(/[?&]z=(\d+)/);
+                if (zoomMatch) {
+                    zoom = parseInt(zoomMatch[1]);
+                }
+                
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    updateCoordinates(lat, lng, zoom);
+                    showMapPreview(lat, lng, zoom);
+                    return;
+                }
+            }
+        }
+        
+        showMapPlaceholder('Не удалось извлечь координаты из ссылки. Проверьте формат ссылки.');
+    }
+
+    function updateCoordinates(lat, lng, zoom) {
+        mapLatitudeInput.value = lat;
+        mapLongitudeInput.value = lng;
+        mapZoomInput.value = zoom;
+    }
+
+    function showMapPreview(lat, lng, zoom) {
+        const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
+        mapPreview.innerHTML = `
+            <iframe 
+                width="100%" 
+                height="100%" 
+                frameborder="0" 
+                scrolling="no" 
+                marginheight="0" 
+                marginwidth="0"
+                src="${embedUrl}"
+                style="border: none; border-radius: 8px;">
+            </iframe>
+        `;
+    }
+
+    function showMapPlaceholder(message = 'Вставьте ссылку на Google Maps для предварительного просмотра') {
+        mapPreview.innerHTML = `
+            <div class="text-center text-muted">
+                <i class="fas fa-map fa-3x mb-3"></i>
+                <p>${message}</p>
+            </div>
+        `;
     }
 });
 </script>

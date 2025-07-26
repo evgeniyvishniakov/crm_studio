@@ -27,6 +27,10 @@ class Project extends Model
         'website',
         'booking_url', // Ссылка для онлайн-записи
         'address',
+        'map_latitude',
+        'map_longitude',
+        'map_zoom',
+        'about',
         'social_links',
         'booking_enabled',
     ];

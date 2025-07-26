@@ -19,7 +19,11 @@ class BookingSetting extends Model
         'advance_booking_days',
         'allow_same_day_booking',
         'require_confirmation',
-        'booking_instructions'
+        'booking_instructions',
+        'map_latitude',
+        'map_longitude',
+        'map_zoom',
+        'about'
     ];
 
     protected $casts = [

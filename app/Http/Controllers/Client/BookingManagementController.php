@@ -66,7 +66,6 @@ class BookingManagementController extends Controller
             'advance_booking_days' => 'required|integer|min:1|max:365',
             'allow_same_day_booking' => 'boolean',
             'require_confirmation' => 'boolean',
-            'booking_instructions' => 'nullable|string|max:1000',
         ]);
 
         // Если включаем онлайн-запись и ссылки еще нет - генерируем её
@@ -78,7 +77,7 @@ class BookingManagementController extends Controller
         // Обновляем проект
         $project->update([
             'booking_enabled' => $validated['booking_enabled'],
-            'booking_url' => $bookingUrl ?? $project->booking_url
+            'booking_url' => $bookingUrl ?? $project->booking_url,
         ]);
 
         // Обновляем или создаем настройки бронирования
