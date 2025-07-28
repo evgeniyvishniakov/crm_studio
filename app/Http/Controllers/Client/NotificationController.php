@@ -25,11 +25,33 @@ class NotificationController extends Controller
                 ->where('user_id', $user->id);
         }
         
+        // Добавляем поиск как в товарах
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                  ->orWhere('type', 'like', "%$search%");
+            });
+        }
+        
         if ($request->filled('type')) {
             $query->where('type', $request->input('type'));
         }
         if ($request->filled('status')) {
             $query->where('is_read', $request->input('status') === 'read');
+        }
+        
+        if ($request->ajax()) {
+            $notifications = $query->orderByDesc('created_at')->paginate(20);
+            return response()->json([
+                'data' => $notifications->items(),
+                'meta' => [
+                    'current_page' => $notifications->currentPage(),
+                    'last_page' => $notifications->lastPage(),
+                    'per_page' => $notifications->perPage(),
+                    'total' => $notifications->total(),
+                ],
+            ]);
         }
         
         $notifications = $query->orderByDesc('created_at')->paginate(20);
