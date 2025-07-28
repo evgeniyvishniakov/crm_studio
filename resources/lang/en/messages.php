@@ -449,6 +449,8 @@ return [
     'delete_account_warning' => 'Warning! Account deletion is irreversible. All your data will be deleted.',
     'delete_account_button' => 'Delete Account',
     'saving' => 'Saving...',
+    'error_saving' => 'Error saving',
+    'validation_errors' => 'Validation errors',
     'email_confirmation_sent' => 'A confirmation email has been sent to your new email. Please check your email.',
     'send_error' => 'Error sending. Please try again.',
     

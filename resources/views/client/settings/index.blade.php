@@ -19,7 +19,7 @@
     <div class="settings-content">
         <!-- Профиль -->
         <div class="settings-pane" id="tab-profile">
-            <form method="POST" action="{{ route('client.settings.update') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('client.settings.update') }}" enctype="multipart/form-data" id="profileForm">
                 @csrf
                 <h5>{{ __('messages.profile') }}</h5>
                 <div class="form-row form-row--2col">
@@ -175,6 +175,73 @@
                 </div>
                 <button type="submit" class="btn btn-primary">{{ __('messages.save') }}</button>
             </form>
+            
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var profileForm = document.getElementById('profileForm');
+                if (profileForm) {
+                    profileForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        var formData = new FormData(profileForm);
+                        var submitBtn = profileForm.querySelector('button[type="submit"]');
+                        var originalBtnText = submitBtn.innerHTML;
+                        
+                        submitBtn.innerHTML = '<span class="loader"></span> {{ __('messages.saving') }}...';
+                        submitBtn.disabled = true;
+                        
+                        fetch(profileForm.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: formData
+                        })
+                        .then(function(response) {
+                            if (!response.ok) {
+                                return response.json().then(function(data) { throw data; });
+                            }
+                            return response.json();
+                        })
+                        .then(function(data) {
+                            if (data.success) {
+                                window.showNotification('success', data.message || '{{ __('messages.changes_successfully_saved') }}');
+                            } else {
+                                window.showNotification('error', data.message || '{{ __('messages.error_saving') }}');
+                            }
+                        })
+                        .catch(function(error) {
+                            console.error('Error:', error);
+                            if (error.errors) {
+                                // Показываем ошибки валидации
+                                Object.entries(error.errors).forEach(([field, messages]) => {
+                                    const input = document.querySelector(`[name="${field}"]`);
+                                    if (input) {
+                                        input.classList.add('is-invalid');
+                                        const errorDiv = input.parentNode.querySelector('.invalid-feedback') || 
+                                                       document.createElement('div');
+                                        errorDiv.className = 'invalid-feedback';
+                                        errorDiv.textContent = Array.isArray(messages) ? messages[0] : messages;
+                                        if (!input.parentNode.querySelector('.invalid-feedback')) {
+                                            input.parentNode.appendChild(errorDiv);
+                                        }
+                                    }
+                                });
+                                window.showNotification('error', '{{ __('messages.validation_errors') }}');
+                            } else {
+                                window.showNotification('error', error.message || '{{ __('messages.error_saving') }}');
+                            }
+                        })
+                        .finally(function() {
+                            submitBtn.innerHTML = originalBtnText;
+                            submitBtn.disabled = false;
+                        });
+                    });
+                }
+            });
+            </script>
         </div>
         <!-- Безопасность -->
         <div class="settings-pane" id="tab-security" style="display:none;">
@@ -742,4 +809,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<style>
+.loader {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+</style>
 @endsection 
