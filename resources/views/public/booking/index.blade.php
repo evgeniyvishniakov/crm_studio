@@ -6,6 +6,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $project->project_name }} - {{ __('messages.online_booking') }}</title>
     
+    @php
+        $isWidget = request()->has('widget');
+    @endphp
+    
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -601,6 +605,7 @@
 </head>
 <body>
     <!-- Шапка сайта -->
+    @if(!$isWidget)
     <header class="site-header">
         <div class="header-container">
             <div class="header-top">
@@ -708,6 +713,7 @@
             </div>
         </div>
     </header>
+    @endif
 
     <div class="booking-container">
         
@@ -1579,6 +1585,7 @@
     </script>
     
     <!-- Футер сайта -->
+    @if(!$isWidget)
     <footer class="site-footer">
         <div class="footer-container">
             <div class="footer-bottom">
@@ -1591,5 +1598,6 @@
             </div>
         </div>
     </footer>
+    @endif
 </body>
 </html> 

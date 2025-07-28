@@ -335,6 +335,14 @@ Route::middleware('auth:client')->group(function () {
     Route::get('/email-settings/instructions', [\App\Http\Controllers\Client\EmailSettingsController::class, 'getInstructions'])
         ->name('client.email-settings.instructions');
 
+    // Настройки виджета для сайта
+    Route::get('/widget-settings', [\App\Http\Controllers\Client\WidgetSettingsController::class, 'index'])
+        ->name('client.widget-settings.index');
+    Route::put('/widget-settings', [\App\Http\Controllers\Client\WidgetSettingsController::class, 'update'])
+        ->name('client.widget-settings.update');
+    Route::get('/widget-settings/generate-code', [\App\Http\Controllers\Client\WidgetSettingsController::class, 'generateCode'])
+        ->name('client.widget-settings.generate-code');
+
     Route::get('/api/dashboard/profit-chart', [\App\Http\Controllers\Client\DashboardController::class, 'profitChartData']);
     Route::get('/api/dashboard/sales-chart', [\App\Http\Controllers\Client\DashboardController::class, 'salesChartData']);
     Route::get('/api/dashboard/services-chart', [\App\Http\Controllers\Client\DashboardController::class, 'servicesChartData']);

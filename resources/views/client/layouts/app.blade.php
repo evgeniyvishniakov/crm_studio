@@ -491,19 +491,22 @@
                 <li class="menu-item-has-children {{ 
                     request()->routeIs('client.booking.*') || 
                     request()->routeIs('client.telegram-settings.*') ||
-                    request()->routeIs('client.email-settings.*') ? 'active' : '' 
+                    request()->routeIs('client.email-settings.*') ||
+                    request()->routeIs('client.widget-settings.*') ? 'active' : '' 
                 }}">
                     <a href="#integrationsMenu" data-toggle="collapse" aria-expanded="{{
                         request()->routeIs('client.booking.*') || 
                         request()->routeIs('client.telegram-settings.*') ||
-                        request()->routeIs('client.email-settings.*') ? 'true' : 'false' 
+                        request()->routeIs('client.email-settings.*') ||
+                        request()->routeIs('client.widget-settings.*') ? 'true' : 'false' 
                     }}" class="dropdown-toggle">
                         <i class="menu-icon fa fa-plug"></i>{{ __('messages.integrations') }}
                     </a>
                     <ul id="integrationsMenu" class="sub-menu children collapse {{ 
                         request()->routeIs('client.booking.*') || 
                         request()->routeIs('client.telegram-settings.*') ||
-                        request()->routeIs('client.email-settings.*') ? 'show' : '' 
+                        request()->routeIs('client.email-settings.*') ||
+                        request()->routeIs('client.widget-settings.*') ? 'show' : '' 
                     }}">
                         <li class="{{ request()->routeIs('client.booking.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('booking', $userPermissions); @endphp
@@ -536,6 +539,17 @@
                                     <i class="fas fa-lock"></i>
                                 @endif
                                 <span class="menu-label">{{ __('messages.email_integration') }}</span>
+                            </a>
+                        </li>
+                        <li class="{{ request()->routeIs('client.widget-settings.*') ? 'active' : '' }}">
+                            @php $hasAccess = $isAdmin || in_array('settings', $userPermissions); @endphp
+                            <a href="{{ $hasAccess ? route('client.widget-settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                                @if($hasAccess)
+                                    <i class="fa fa-code"></i>
+                                @else
+                                    <i class="fas fa-lock"></i>
+                                @endif
+                                <span class="menu-label">{{ __('messages.website_widget') }}</span>
                             </a>
                         </li>
                     </ul>

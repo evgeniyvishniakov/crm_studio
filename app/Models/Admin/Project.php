@@ -44,6 +44,16 @@ class Project extends Model
         'email_encryption',
         'email_from_name',
         'email_notifications_enabled',
+        'widget_enabled',
+        'widget_button_text',
+        'widget_button_color',
+        'widget_position',
+        'widget_size',
+        'widget_animation_enabled',
+        'widget_animation_type',
+        'widget_animation_duration',
+        'widget_border_radius',
+        'widget_text_color',
     ];
 
     protected $casts = [
@@ -52,6 +62,8 @@ class Project extends Model
         'booking_enabled' => 'boolean',
         'telegram_notifications_enabled' => 'boolean',
         'email_notifications_enabled' => 'boolean',
+        'widget_enabled' => 'boolean',
+        'widget_animation_enabled' => 'boolean',
     ];
 
     /**

@@ -437,6 +437,9 @@ label {
         <button class="tab-button" data-tab="user-services">
             <i class="fa fa-user-cog" style="margin-right:8px;"></i>{{ __('messages.master_services') }}
         </button>
+        <button class="tab-button" data-tab="widget-settings">
+            <i class="fa fa-code" style="margin-right:8px;"></i>{{ __('messages.widget_settings') }}
+        </button>
     </div>
     
     <div class="settings-content">

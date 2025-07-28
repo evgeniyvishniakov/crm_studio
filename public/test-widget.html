@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест виджета записи</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .content-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .content-section h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        
+        .demo-text {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .widget-demo {
+            text-align: center;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 10001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: #28a745;
+        }
+        
+        .notification.error {
+            background: #dc3545;
+        }
+        
+        .notification.info {
+            background: #17a2b8;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Тест виджета записи</h1>
+        
+        <div class="content-section">
+            <h2>📋 О проекте</h2>
+            <div class="demo-text">
+                Это демонстрационная страница для тестирования виджета записи. Здесь вы можете увидеть, как виджет будет выглядеть на реальном сайте клиента. При клике на кнопку виджета откроется реальная форма записи из вашей системы.
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>🎨 Демонстрация встраиваемого виджета</h2>
+            <div class="demo-text">
+                Ниже показан пример встраиваемого виджета, который можно разместить в контенте страницы:
+            </div>
+            
+            <div class="widget-demo">
+                <p>Это обычный текст на странице. А вот здесь можно вставить кнопку виджета:</p>
+                
+                <!-- Здесь будет встраиваемый виджет -->
+                <div id="inline-widget-demo"></div>
+                
+                <p>И продолжить текст после кнопки. Виджет интегрируется в контент естественным образом.</p>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>🔧 Тестирование функций</h2>
+            <div class="demo-text">
+                Используйте эти кнопки для тестирования различных функций виджета:
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="btn" onclick="testFixedWidget()">Тест фиксированного виджета</button>
+                <button class="btn btn-secondary" onclick="testInlineWidget()">Тест встраиваемого виджета</button>
+                <button class="btn" onclick="clearWidgets()">Очистить все виджеты</button>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>📝 Генерируемый код</h2>
+            <div class="demo-text">
+                Пример кода, который генерирует система для вставки на сайт. При клике на кнопку откроется реальная форма записи через iframe:
+            </div>
+            
+            <div class="code-block">
+&lt;!-- Виджет записи для сайта --&gt;
+&lt;script&gt;
+(function() {
+    var widget = document.createElement('div');
+    widget.id = 'booking-widget';
+    widget.innerHTML = `
+        &lt;button id='booking-widget-btn' 
+                style='
+                    position: fixed;
+                    z-index: 9999;
+                    background-color: #007bff;
+                    color: #ffffff;
+                    border: none;
+                    border-radius: 25px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    bottom: 20px; right: 20px;
+                    padding: 12px 24px; font-size: 16px;
+                    transition: transform 300ms ease;
+                '
+                onmouseover='this.style.transform="scale(1.1)"'
+                onmouseout='this.style.transform="scale(1)"'
+                onclick='openBookingForm()'&gt;
+            Записаться
+        &lt;/button&gt;
+    `;
+    
+    document.body.appendChild(widget);
+    
+    // Функция открытия реальной формы записи через iframe
+    window.openBookingForm = function() {
+        var modal = document.createElement('div');
+        modal.id = 'booking-form-modal';
+        modal.style.cssText = '
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ';
+        
+        modal.innerHTML = `
+            &lt;div style='
+                background: white;
+                border-radius: 12px;
+                width: 95%;
+                max-width: 1000px;
+                height: 95%;
+                max-height: 800px;
+                position: relative;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            '&gt;
+                &lt;button onclick='closeBookingForm()' style='
+                    position: absolute;
+                    top: 15px;
+                    right: 15px;
+                    background: #f44336;
+                    border: none;
+                    font-size: 18px;
+                    cursor: pointer;
+                    color: white;
+                    z-index: 10001;
+                    width: 30px;
+                    height: 30px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                '&gt;&times;&lt;/button&gt;
+                                            &lt;iframe src="http://127.0.0.1:8000/book/testovyi-proekt?widget=true"  
+                        style='width: 100%; height: 100%; border: none; border-radius: 12px;'&gt;
+                &lt;/iframe&gt;
+            &lt;/div&gt;
+        `;
+        
+        document.body.appendChild(modal);
+    };
+    
+    // Функция закрытия модального окна
+    window.closeBookingForm = function() {
+        var modal = document.getElementById('booking-form-modal');
+        if (modal) {
+            modal.remove();
+        }
+    };
+})();
+&lt;/script&gt;
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2>📱 Адаптивность</h2>
+            <div class="demo-text">
+                Виджет автоматически адаптируется под различные размеры экранов и устройства. Попробуйте изменить размер окна браузера, чтобы увидеть, как виджет подстраивается. Форма записи также адаптируется под размер модального окна.
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        
+        // Функция для показа уведомлений
+        function showNotification(type, message) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Тест фиксированного виджета
+        function testFixedWidget() {
+            clearWidgets();
+            
+            const widget = document.createElement('div');
+            widget.id = 'test-fixed-widget';
+            widget.innerHTML = `
+                <button style='
+                    position: fixed;
+                    z-index: 9999;
+                    background-color: #007bff;
+                    color: #ffffff;
+                    border: none;
+                    border-radius: 25px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    bottom: 20px; right: 20px;
+                    padding: 12px 24px; font-size: 16px;
+                    transition: transform 300ms ease;
+                '
+                onmouseover='this.style.transform="scale(1.1)"'
+                onmouseout='this.style.transform="scale(1)"'
+                onclick='openBookingForm()'>
+                    Записаться
+                </button>
+            `;
+            
+            document.body.appendChild(widget);
+            showNotification('success', 'Фиксированный виджет добавлен!');
+        }
+        
+        // Тест встраиваемого виджета
+        function testInlineWidget() {
+            clearWidgets();
+            
+            const demoContainer = document.getElementById('inline-widget-demo');
+            demoContainer.innerHTML = `
+                <button style='
+                    background-color: #28a745;
+                    color: #ffffff;
+                    border: none;
+                    border-radius: 20px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    position: relative;
+                    display: inline-block;
+                    margin: 10px auto;
+                    text-align: center;
+                    padding: 12px 24px;
+                    font-size: 16px;
+                    transition: transform 300ms ease;
+                '
+                onmouseover='this.style.transform="scale(1.1)"'
+                onmouseout='this.style.transform="scale(1)"'
+                onclick='openBookingForm()'>
+                    Записаться онлайн
+                </button>
+            `;
+            
+            showNotification('success', 'Встраиваемый виджет добавлен!');
+        }
+        
+        // Очистка всех виджетов
+        function clearWidgets() {
+            const fixedWidget = document.getElementById('test-fixed-widget');
+            if (fixedWidget) {
+                fixedWidget.remove();
+            }
+            
+            const demoContainer = document.getElementById('inline-widget-demo');
+            if (demoContainer) {
+                demoContainer.innerHTML = '';
+            }
+            
+            showNotification('info', 'Все виджеты очищены');
+        }
+        
+                 // Открытие формы записи с реальной формой через iframe
+         function openBookingForm() {
+             const modal = document.createElement('div');
+             modal.id = 'booking-form-modal';
+             modal.style.cssText = `
+                 position: fixed;
+                 top: 0;
+                 left: 0;
+                 width: 100%;
+                 height: 100%;
+                 background: rgba(0,0,0,0.5);
+                 z-index: 10000;
+                 display: flex;
+                 align-items: center;
+                 justify-content: center;
+             `;
+             
+             modal.innerHTML = `
+                 <div style="
+                     background: white;
+                     border-radius: 12px;
+                     width: 95%;
+                     max-width: 1000px;
+                     height: 95%;
+                     max-height: 800px;
+                     position: relative;
+                     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                 ">
+                     <button onclick="closeBookingForm()" style="
+                         position: absolute;
+                         top: 15px;
+                         right: 15px;
+                         background: #f44336;
+                         border: none;
+                         font-size: 18px;
+                         cursor: pointer;
+                         color: white;
+                         z-index: 10001;
+                         width: 30px;
+                         height: 30px;
+                         border-radius: 50%;
+                         display: flex;
+                         align-items: center;
+                         justify-content: center;
+                         font-weight: bold;
+                     ">&times;</button>
+                     <iframe src="http://127.0.0.1:8000/book/testovyi-proekt?widget=true" style="
+                         width: 100%;
+                         height: 100%;
+                         border: none;
+                         border-radius: 12px;
+                     "></iframe>
+                 </div>
+             `;
+             
+             document.body.appendChild(modal);
+         }
+         
+         // Функция закрытия модального окна (глобальная)
+         function closeBookingForm() {
+             const modal = document.getElementById('booking-form-modal');
+             if (modal) {
+                 modal.remove();
+             }
+         }
+        
+
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            showNotification('info', 'Страница загружена! Используйте кнопки для тестирования виджетов.');
+        });
+    </script>
+</body>
+</html> 

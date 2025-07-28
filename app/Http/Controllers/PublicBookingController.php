@@ -60,6 +60,8 @@ class PublicBookingController extends Controller
         ));
     }
 
+
+
     /**
      * Получить доступные слоты времени
      */
