@@ -46,9 +46,9 @@
                             @error('telegram_bot_token')
                                 <div class="invalid-feedback">{{ $error }}</div>
                             @enderror
-                            <small class="form-text text-muted">
-                                Получите токен у @BotFather в Telegram
-                            </small>
+                                                         <small class="form-text text-muted">
+                                 {{ __('messages.telegram_bot_token_hint') }}
+                             </small>
                         </div>
                     </div>
 
@@ -64,9 +64,9 @@
                             @error('telegram_chat_id')
                                 <div class="invalid-feedback">{{ $error }}</div>
                             @enderror
-                            <small class="form-text text-muted">
-                                ID чата, группы или канала для отправки уведомлений
-                            </small>
+                                                         <small class="form-text text-muted">
+                                 {{ __('messages.telegram_chat_id_hint') }}
+                             </small>
                         </div>
                     </div>
                 </div>
@@ -85,9 +85,9 @@
                                     {{ __('messages.telegram_notifications_enabled') }}
                                 </label>
                             </div>
-                            <small class="form-text text-muted">
-                                Включить отправку уведомлений в Telegram
-                            </small>
+                                                         <small class="form-text text-muted">
+                                 {{ __('messages.telegram_notifications_hint') }}
+                             </small>
                         </div>
                     </div>
                     <div class="form-col"></div>

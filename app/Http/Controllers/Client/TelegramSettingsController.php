@@ -90,7 +90,7 @@ class TelegramSettingsController extends Controller
         if (!$project->telegram_bot_token || !$project->telegram_chat_id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Токен бота и ID чата должны быть заполнены'
+                'message' => __('messages.telegram_fields_required')
             ]);
         }
 
@@ -104,7 +104,7 @@ class TelegramSettingsController extends Controller
         if (!$botInfo) {
             return response()->json([
                 'success' => false,
-                'message' => 'Не удалось подключиться к Telegram API. Проверьте токен бота.'
+                'message' => __('messages.telegram_test_error')
             ]);
         }
 
@@ -120,13 +120,13 @@ class TelegramSettingsController extends Controller
         if ($sent) {
             return response()->json([
                 'success' => true,
-                'message' => 'Тестовое сообщение успешно отправлено в Telegram!',
+                'message' => __('messages.telegram_test_success'),
                 'bot_info' => $botInfo
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Не удалось отправить тестовое сообщение. Проверьте ID чата.'
+                'message' => __('messages.telegram_test_error')
             ]);
         }
     }
@@ -138,15 +138,15 @@ class TelegramSettingsController extends Controller
     {
         return response()->json([
             'instructions' => [
-                'step1' => '1. Найдите @BotFather в Telegram и создайте нового бота командой /newbot',
-                'step2' => '2. Получите токен бота от BotFather',
-                'step3' => '3. Добавьте бота в нужный чат или канал',
-                'step4' => '4. Для получения ID чата:',
-                'step5' => '   - Для личного чата: отправьте боту сообщение и перейдите по ссылке https://api.telegram.org/bot<TOKEN>/getUpdates',
-                'step6' => '   - Для группы: добавьте бота в группу и сделайте его администратором',
-                'step7' => '   - Для канала: добавьте бота в канал как администратора',
-                'step8' => '5. Вставьте токен и ID чата в настройки',
-                'step9' => '6. Включите уведомления и протестируйте подключение'
+                'step1' => __('messages.telegram_instructions_step1'),
+                'step2' => __('messages.telegram_instructions_step2'),
+                'step3' => __('messages.telegram_instructions_step3'),
+                'step4' => __('messages.telegram_instructions_step4'),
+                'step5' => __('messages.telegram_instructions_step5'),
+                'step6' => __('messages.telegram_instructions_step6'),
+                'step7' => __('messages.telegram_instructions_step7'),
+                'step8' => __('messages.telegram_instructions_step8'),
+                'step9' => __('messages.telegram_instructions_step9')
             ]
         ]);
     }

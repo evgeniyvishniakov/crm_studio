@@ -267,11 +267,11 @@
                         @else
                             <i class="menu-icon fas fa-lock"></i>
                         @endif
-                        Панель управления
+                        {{ __('messages.dashboard') }}
                        
                     </a>
                 </li>
-                <li class="menu-title">Работа с клиентами</li><!-- /.menu-title -->
+                <li class="menu-title">{{ __('messages.client_work') }}</li><!-- /.menu-title -->
 
                 <li class="{{ request()->routeIs('clients.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('clients', $userPermissions); @endphp
@@ -281,7 +281,7 @@
                         @else
                             <i class="menu-icon fas fa-lock"></i>
                         @endif
-                        Клиенты
+                        {{ __('messages.clients') }}
                         
                     </a>
                 </li>
@@ -293,7 +293,7 @@
                         @else
                             <i class="menu-icon fas fa-lock"></i>
                         @endif
-                        Записи
+                        {{ __('messages.appointments') }}
                         
                     </a>
                 </li>
@@ -305,13 +305,13 @@
                         @else
                             <i class="menu-icon fas fa-lock"></i>
                         @endif
-                        Аналитика
+                        {{ __('messages.analytics') }}
                        
                     </a>
                 </li>
                 
 
-                <li class="menu-title">Товарооборот</li>
+                <li class="menu-title">{{ __('messages.turnover') }}</li>
 
                 <li class="{{ request()->routeIs('warehouses.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('warehouse', $userPermissions); @endphp
@@ -321,7 +321,7 @@
                         @else
                             <i class="menu-icon fas fa-lock"></i>
                         @endif
-                        Склад
+                        {{ __('messages.warehouse') }}
                         
                     </a>
                 </li>
@@ -333,7 +333,7 @@
                         @else
                             <i class="menu-icon fas fa-lock"></i>
                         @endif
-                        Закупки
+                        {{ __('messages.purchases') }}
                         
                     </a>
                 </li>
@@ -345,7 +345,7 @@
                         @else
                             <i class="menu-icon fas fa-lock"></i>
                         @endif
-                        Продажи
+                        {{ __('messages.sales') }}
                         
                     </a>
                 </li>
@@ -357,7 +357,7 @@
                         @else
                             <i class="menu-icon fas fa-lock"></i>
                         @endif
-                        Расходы
+                        {{ __('messages.expenses') }}
                         
                     </a>
                 </li>
@@ -369,7 +369,7 @@
                         @else
                             <i class="menu-icon fas fa-lock"></i>
                         @endif
-                        Инвентаризация
+                        {{ __('messages.inventory') }}
                         
                     </a>
                 </li>
@@ -381,12 +381,12 @@
                         @else
                             <i class="menu-icon fas fa-lock"></i>
                         @endif
-                        Аналитика
+                        {{ __('messages.analytics') }}
                         
                     </a>
                 </li>
 
-                <li class="menu-title">Сервисы</li>
+                <li class="menu-title">{{ __('messages.services') }}</li>
 
                 <li class="menu-item-has-children {{ 
                     request()->routeIs('services.*') || 
@@ -404,7 +404,7 @@
                         request()->routeIs('suppliers.*') || 
                         request()->routeIs('client-types.*') ? 'true' : 'false' 
                     }}" class="dropdown-toggle">
-                        <i class="menu-icon fa fa-layer-group"></i>Справочники
+                        <i class="menu-icon fa fa-layer-group"></i>{{ __('messages.directories') }}
                     </a>
                     <ul id="referenceMenu" class="sub-menu children collapse {{ 
                         request()->routeIs('services.*') || 
@@ -422,7 +422,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Услуги</span>
+                                <span class="menu-label">{{ __('messages.services_menu') }}</span>
                                 
                             </a>
                         </li>
@@ -434,7 +434,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Товары</span>
+                                <span class="menu-label">{{ __('messages.products') }}</span>
                                 
                             </a>
                         </li>
@@ -446,7 +446,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Категории товаров</span>
+                                <span class="menu-label">{{ __('messages.product_categories') }}</span>
                                 
                             </a>
                         </li>
@@ -458,7 +458,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Бренды товаров</span>
+                                <span class="menu-label">{{ __('messages.product_brands') }}</span>
                                 
                             </a>
                         </li>
@@ -470,7 +470,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Поставщики</span>
+                                <span class="menu-label">{{ __('messages.suppliers') }}</span>
                                 
                             </a>
                         </li>
@@ -482,7 +482,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Типы клиентов</span>
+                                <span class="menu-label">{{ __('messages.client_types') }}</span>
                                 
                             </a>
                         </li>
@@ -549,7 +549,7 @@
                         request()->routeIs('client.notifications.*') || 
                         request()->routeIs('client.notifications.*') ? 'true' : 'false' 
                     }}" class="dropdown-toggle">
-                        <i class="menu-icon fa fa-cogs"></i>Настройки
+                        <i class="menu-icon fa fa-cogs"></i>{{ __('messages.settings') }}
                     </a>
                     <ul id="settingsMenu" class="sub-menu children collapse {{ 
                         request()->routeIs('client.users.*') || 
@@ -570,7 +570,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Пользователи</span>
+                                <span class="menu-label">{{ __('messages.users') }}</span>
                                 
                             </a>
                         </li>
@@ -582,7 +582,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Роли и доступы</span>
+                                <span class="menu-label">{{ __('messages.roles_and_permissions') }}</span>
                                 
                             </a>
                         </li>
@@ -594,7 +594,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Общие настройки</span>
+                                <span class="menu-label">{{ __('messages.general_settings') }}</span>
                                 
                             </a>
                         </li>
@@ -606,7 +606,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Поддержка</span>
+                                <span class="menu-label">{{ __('messages.support') }}</span>
                             </a>
                         </li>
                         <li class="{{ request()->routeIs('client.notifications.*') ? 'active' : '' }}">
@@ -617,7 +617,7 @@
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Уведомления</span>
+                                <span class="menu-label">{{ __('messages.notifications') }}</span>
                             </a>
                         </li>
 
@@ -743,11 +743,11 @@
                         </span>
                     </a>
                     <div class="user-menu dropdown-menu">
-                        <a class="nav-link" href="{{ route('client.settings.index') }}#profile"><i class="fa fa-user"></i>Мой профиль</a>
+                        <a class="nav-link" href="{{ route('client.settings.index') }}#profile"><i class="fa fa-user"></i>{{ __('messages.my_profile') }}</a>
 
-                        <a class="nav-link" href="{{ route('client.settings.index') }}#security"><i class="fa fa-cog"></i>Смена пароля</a>
+                        <a class="nav-link" href="{{ route('client.settings.index') }}#security"><i class="fa fa-cog"></i>{{ __('messages.change_password') }}</a>
                         <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i class="fa fa-power-off"></i>Выход
+                            <i class="fa fa-power-off"></i>{{ __('messages.logout') }}
                         </a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                             @csrf

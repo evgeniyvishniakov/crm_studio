@@ -86,7 +86,7 @@
                                         <tr>
                                             <th>{{ __('messages.photo') }}</th>
                                             <th class="large-col">{{ __('messages.product') }}</th>
-                                            <th class="small-col">{{ __('messages.warehouse') }}</th>
+                                            <th class="small-col">{{ __('messages.warehouse_short') }}</th>
                                             <th class="small-col">{{ __('messages.quantity') }}</th>
                                             <th>{{ __('messages.difference') }}</th>
                                             <th>{{ __('messages.status') }}</th>
@@ -265,7 +265,7 @@
                     <tr>
                         <th>{{ __('messages.photo') }}</th>
                         <th class="large-col">{{ __('messages.product') }}</th>
-                        <th class="small-col">{{ __('messages.warehouse') }}</th>
+                        <th class="small-col">{{ __('messages.warehouse_short') }}</th>
                         <th class="small-col">{{ __('messages.quantity') }}</th>
                         <th>{{ __('messages.difference') }}</th>
                         <th>{{ __('messages.status') }}</th>
@@ -582,7 +582,7 @@
                                     <tr>
                                         <th>{{ __('messages.photo') }}</th>
                                         <th class="large-col">{{ __('messages.product') }}</th>
-                                        <th class="small-col">{{ __('messages.warehouse') }}</th>
+                                        <th class="small-col">{{ __('messages.warehouse_short') }}</th>
                                         <th class="small-col">{{ __('messages.quantity') }}</th>
                                         <th>{{ __('messages.difference') }}</th>
                                         <th>{{ __('messages.status') }}</th>
@@ -875,8 +875,8 @@
                                                 </div>
                                             </div>
                                             <div class="form-group small-col">
-                                                <label>{{ __('messages.warehouse') }}</label>
-                                                <input type="number" name="items[0][warehouse_qty]" class="form-control small-col" value="0" readonly>
+                                                                        <label>{{ __('messages.warehouse_short') }}</label>
+                        <input type="number" name="items[0][warehouse_qty]" class="form-control small-col" value="0" readonly>
                                             </div>
                                             <div class="form-group small-col">
                                                 <label>{{ __('messages.quantity_short') }}</label>
@@ -904,8 +904,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group small-col">
-                                                    <label>{{ __('messages.warehouse') }}</label>
-                                                    <input type="number" name="items[${index}][warehouse_qty]" class="form-control small-col" value="${item.warehouse_qty}" readonly>
+                                                                            <label>{{ __('messages.warehouse_short') }}</label>
+                        <input type="number" name="items[${index}][warehouse_qty]" class="form-control small-col" value="${item.warehouse_qty}" readonly>
                                                 </div>
                                                 <div class="form-group small-col">
                                                     <label>{{ __('messages.quantity_short') }}</label>
@@ -1164,7 +1164,7 @@
                                 <tr>
                                     <th>{{ __('messages.photo') }}</th>
                                     <th class="large-col">{{ __('messages.product') }}</th>
-                                    <th class="small-col">{{ __('messages.warehouse') }}</th>
+                                    <th class="small-col">{{ __('messages.warehouse_short') }}</th>
                                     <th class="small-col">{{ __('messages.quantity') }}</th>
                                     <th>{{ __('messages.difference') }}</th>
                                     <th>{{ __('messages.status') }}</th>
@@ -1277,7 +1277,7 @@
                             <tr>
                                 <th>{{ __('messages.photo') }}</th>
                                 <th class="large-col">{{ __('messages.product') }}</th>
-                                <th class="small-col">{{ __('messages.warehouse') }}</th>
+                                <th class="small-col">{{ __('messages.warehouse_short') }}</th>
                                 <th class="small-col">{{ __('messages.quantity') }}</th>
                                 <th>{{ __('messages.difference') }}</th>
                                 <th>{{ __('messages.status') }}</th>
