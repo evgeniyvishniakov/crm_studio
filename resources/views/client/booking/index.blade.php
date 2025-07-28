@@ -694,13 +694,13 @@ label {
                              <tr data-user-service-id="{{ $userService->id }}">
                                  <td>{{ $userService->user->name }}</td>
                                  <td>{{ $userService->service->name }}</td>
-                                 <td>{{ $userService->price ? number_format($userService->price) . ' ₽' : __('messages.not_specified') }}</td>
-                                 <td>{{ $userService->duration ? $userService->duration . ' ' . __('messages.minutes') : __('messages.not_specified_duration') }}</td>
+                                 <td>{!! $userService->price ? number_format($userService->price) . ' ₽' : number_format($userService->service->price) . ' ₽' . ' <small class="text-muted">(' . __('messages.base_price') . ')</small>' !!}</td>
+                                 <td>{!! $userService->duration ? \App\Helpers\TimeHelper::formatDuration($userService->duration) : ($userService->service->duration ? \App\Helpers\TimeHelper::formatDuration($userService->service->duration) . ' <small class="text-muted">(' . __('messages.base_duration') . ')</small>' : __('messages.not_specified_duration')) !!}</td>
                                  <td>
                                      @if($userService->is_active_for_booking)
-                                         <span class="badge badge-success">Активна</span>
+                                         <span class="badge badge-success">{{ __('messages.active') }}</span>
                                      @else
-                                         <span class="badge badge-secondary">Неактивна</span>
+                                         <span class="badge badge-secondary">{{ __('messages.inactive') }}</span>
                                      @endif
                                  </td>
                                  <td class="actions-cell">
@@ -709,7 +709,7 @@ label {
                                              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                                          </svg>
                                      </button>
-                                     <button type="button" class="btn-delete" onclick="deleteUserService({{ $userService->id }})" title="Удалить">
+                                     <button type="button" class="btn-delete" onclick="deleteUserService({{ $userService->id }})" title="{{ __('messages.delete') }}">
                                          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                                              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                                          </svg>
@@ -724,8 +724,8 @@ label {
              @if($userServices->count() == 0)
                  <div class="text-center py-5">
                      <i class="fas fa-user-cog fa-3x text-muted mb-3"></i>
-                     <h5>Нет настроенных услуг</h5>
-                     <p class="text-muted">Добавьте услуги мастерам, чтобы они были доступны для веб-записи</p>
+                     <h5>{{ __('messages.no_services_found') }}</h5>
+                     <p class="text-muted">{{ __('messages.add_services_to_masters_for_web_booking') }}</p>
                  </div>
              @endif
          </div>
@@ -736,7 +736,7 @@ label {
 <div id="editDayModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
     <div style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 5px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h5 style="margin: 0;">Настройка расписания</h5>
+            <h5 style="margin: 0;">{{ __('messages.schedule_settings') }}</h5>
             <span style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;" onclick="closeModal()">&times;</span>
         </div>
         <div>
@@ -748,7 +748,7 @@ label {
                     <div class="custom-control custom-switch">
                         <input type="checkbox" class="custom-control-input" id="edit-is-working">
                         <label class="custom-control-label" for="edit-is-working">
-                            <strong>Рабочий день</strong>
+                            <strong>{{ __('messages.working_day') }}</strong>
                         </label>
                     </div>
                 </div>
@@ -757,34 +757,34 @@ label {
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="edit-start-time">Начало работы</label>
+                                <label for="edit-start-time">{{ __('messages.work_start') }}</label>
                                 <input type="time" class="form-control" id="edit-start-time">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="edit-end-time">Конец работы</label>
+                                <label for="edit-end-time">{{ __('messages.work_end') }}</label>
                                 <input type="time" class="form-control" id="edit-end-time">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="edit-booking-interval">Интервал (мин)</label>
+                                <label for="edit-booking-interval">{{ __('messages.interval_minutes') }}</label>
                                 <input type="number" class="form-control" id="edit-booking-interval" min="15" max="120" step="15" value="30" placeholder="30">
                             </div>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="edit-notes">Примечания</label>
-                        <textarea class="form-control" id="edit-notes" rows="3" placeholder="Дополнительная информация..."></textarea>
+                        <label for="edit-notes">{{ __('messages.notes') }}</label>
+                        <textarea class="form-control" id="edit-notes" rows="3" placeholder="{{ __('messages.additional_info') }}"></textarea>
                     </div>
                 </div>
             </form>
         </div>
         <div class="form-actions">
-            <button type="button" class="btn-cancel" onclick="closeModal()">Отмена</button>
-            <button type="button" class="btn-submit" onclick="saveDaySchedule()">Сохранить</button>
+            <button type="button" class="btn-cancel" onclick="closeModal()">{{ __('messages.cancel') }}</button>
+            <button type="button" class="btn-submit" onclick="saveDaySchedule()">{{ __('messages.save') }}</button>
         </div>
     </div>
 </div>
@@ -793,7 +793,7 @@ label {
 <div id="userServiceModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
     <div style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 5px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h5 style="margin: 0;" id="userServiceModalTitle">Добавить услугу мастеру</h5>
+            <h5 style="margin: 0;" id="userServiceModalTitle">{{ __('messages.add_master_service') }}</h5>
             <span style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;" onclick="closeUserServiceModal()">&times;</span>
         </div>
         <div>
@@ -802,9 +802,9 @@ label {
                 <input type="hidden" id="user-service-id">
                 
                 <div class="form-group">
-                    <label for="modal-user-id">Мастер</label>
+                    <label for="modal-user-id">{{ __('messages.master_employee') }}</label>
                     <select class="form-control" id="modal-user-id" name="user_id" required>
-                        <option value="">Выберите мастера...</option>
+                        <option value="">{{ __('messages.select_master') }}</option>
                         @foreach($users as $user)
                             <option value="{{ $user->id }}">{{ $user->name }}</option>
                         @endforeach
@@ -812,9 +812,9 @@ label {
                 </div>
                 
                 <div class="form-group">
-                    <label for="modal-service-id">Услуга</label>
+                    <label for="modal-service-id">{{ __('messages.service') }}</label>
                     <select class="form-control" id="modal-service-id" name="service_id" required>
-                        <option value="">Выберите услугу...</option>
+                        <option value="">{{ __('messages.select_service') }}</option>
                         @foreach($services as $service)
                             <option value="{{ $service->id }}">{{ $service->name }}</option>
                         @endforeach
@@ -825,30 +825,30 @@ label {
                     <div class="custom-control custom-switch">
                         <input type="checkbox" class="custom-control-input" id="modal-is-active" name="is_active_for_booking" checked>
                         <label class="custom-control-label" for="modal-is-active">
-                            Активна для веб-записи
+                            {{ __('messages.active_for_web_booking') }}
                         </label>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="modal-price">Цена (необязательно)</label>
-                    <input type="number" class="form-control" id="modal-price" name="price" step="0.01" min="0" placeholder="Оставьте пустым для базовой цены услуги">
+                    <label for="modal-price">{{ __('messages.price_optional') }}</label>
+                    <input type="number" class="form-control" id="modal-price" name="price" step="0.01" min="0" placeholder="{{ __('messages.leave_empty_for_base_price') }}">
                 </div>
                 
                 <div class="form-group">
-                    <label for="modal-duration">Длительность в минутах (необязательно)</label>
-                    <input type="number" class="form-control" id="modal-duration" name="duration" min="1" placeholder="Оставьте пустым для базовой длительности">
+                    <label for="modal-duration">{{ __('messages.duration_minutes_optional') }}</label>
+                    <input type="number" class="form-control" id="modal-duration" name="duration" min="1" placeholder="{{ __('messages.leave_empty_for_base_duration') }}">
                 </div>
                 
                 <div class="form-group">
-                    <label for="modal-description">Описание (необязательно)</label>
-                    <textarea class="form-control" id="modal-description" name="description" rows="3" placeholder="Дополнительное описание услуги у этого мастера"></textarea>
+                    <label for="modal-description">{{ __('messages.description_optional') }}</label>
+                    <textarea class="form-control" id="modal-description" name="description" rows="3" placeholder="{{ __('messages.additional_service_description') }}"></textarea>
                 </div>
             </form>
         </div>
         <div class="form-actions">
-            <button type="button" class="btn-cancel" onclick="closeUserServiceModal()">Отмена</button>
-            <button type="button" class="btn-submit" onclick="saveUserService()">Сохранить</button>
+            <button type="button" class="btn-cancel" onclick="closeUserServiceModal()">{{ __('messages.cancel') }}</button>
+            <button type="button" class="btn-submit" onclick="saveUserService()">{{ __('messages.save') }}</button>
         </div>
     </div>
 </div>
@@ -856,11 +856,11 @@ label {
 <!-- Модальное окно подтверждения удаления -->
 <div id="confirmationModal" class="confirmation-modal">
     <div class="confirmation-content">
-        <h3>Подтверждение удаления</h3>
-        <p>Вы уверены, что хотите удалить эту связь?</p>
+        <h3>{{ __('messages.confirmation_delete') }}</h3>
+        <p>{{ __('messages.confirm_delete_connection') }}</p>
         <div class="confirmation-buttons">
-            <button class="cancel-btn" id="cancelDelete">Отмена</button>
-            <button class="confirm-btn" id="confirmDeleteBtn">Удалить</button>
+            <button class="cancel-btn" id="cancelDelete">{{ __('messages.cancel') }}</button>
+            <button class="confirm-btn" id="confirmDeleteBtn">{{ __('messages.delete_connection') }}</button>
         </div>
     </div>
 </div>
@@ -877,6 +877,36 @@ label {
 let currentUserId = null;
 let scheduleData = {};
 let currentDeleteUserServiceId = null;
+
+// Переводы для JavaScript
+const translations = {
+    'add_master_service': '{{ __('messages.add_master_service') }}',
+    'edit_service_to_master': '{{ __('messages.edit_service_to_master') }}',
+    'error_loading_service_data': '{{ __('messages.error_loading_service_data') }}',
+    'error_loading_data': '{{ __('messages.error_loading_data') }}',
+    'error_saving': '{{ __('messages.error_saving') }}',
+    'error_loading_schedule': '{{ __('messages.error_loading_schedule') }}',
+    'error_deleting': '{{ __('messages.error_deleting') }}',
+    'saving': '{{ __('messages.saving') }}'
+};
+
+// Функция для форматирования длительности (аналог PHP TimeHelper::formatDuration)
+function formatDuration(minutes) {
+    if (!minutes || minutes < 60) {
+        return '~' + minutes + ' мин';
+    } else {
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        
+        if (remainingMinutes == 0) {
+            return '~' + hours + ' час';
+        } else {
+            const hourText = hours + ' час';
+            const minuteText = remainingMinutes + ' мин';
+            return '~' + hourText + ' ' + minuteText;
+        }
+    }
+}
 
 // Обработка вкладок
 document.addEventListener('DOMContentLoaded', function() {
@@ -937,7 +967,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const originalText = submitBtn.innerHTML;
             
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Сохранение...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + translations.saving;
             
             // Правильно обрабатываем boolean значения
             const formDataObj = {};
@@ -980,7 +1010,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                showNotification('error', 'Произошла ошибка при сохранении');
+                showNotification('error', translations.error_saving);
             })
             .finally(() => {
                 submitBtn.disabled = false;
@@ -1105,7 +1135,7 @@ function loadUserSchedule(userId) {
         })
         .catch(error => {
             console.error('Ошибка при загрузке расписания:', error);
-            showNotification('error', 'Произошла ошибка при загрузке расписания');
+            showNotification('error', translations.error_loading_schedule);
         });
 }
 
@@ -1297,7 +1327,7 @@ function saveDaySchedule() {
     })
     .catch(error => {
         console.error('Ошибка при сохранении:', error);
-        showNotification('error', 'Произошла ошибка при сохранении');
+        showNotification('error', translations.error_saving);
     });
 }
 
@@ -1306,7 +1336,7 @@ function saveSchedule() {
     const originalText = submitBtn.innerHTML;
     
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Сохранение...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + translations.saving;
     
     fetch('{{ route("client.booking.save-user-schedule") }}', {
         method: 'POST',
@@ -1331,7 +1361,7 @@ function saveSchedule() {
     })
     .catch(error => {
         console.error('Ошибка при сохранении:', error);
-        showNotification('error', 'Произошла ошибка при сохранении');
+        showNotification('error', translations.error_saving);
     })
     .finally(() => {
         submitBtn.disabled = false;
@@ -1386,7 +1416,7 @@ function addUserService() {
     document.getElementById('modal-is-active').checked = true;
     
     // Обновляем заголовок модального окна
-    document.getElementById('userServiceModalTitle').textContent = 'Добавить услугу мастеру';
+    document.getElementById('userServiceModalTitle').textContent = translations.add_master_service;
     
     // Открываем модальное окно
     const modal = document.getElementById('userServiceModal');
@@ -1416,18 +1446,18 @@ function editUserService(userServiceId) {
             document.getElementById('modal-description').value = userService.description || '';
             
             // Обновляем заголовок модального окна
-                                document.getElementById('userServiceModalTitle').textContent = '{{ __('messages.edit_service_to_master') }}';
+            document.getElementById('userServiceModalTitle').textContent = translations.edit_service_to_master;
             
             // Открываем модальное окно
             const modal = document.getElementById('userServiceModal');
             modal.style.display = 'block';
         } else {
-            showNotification('error', 'Не удалось загрузить данные услуги');
+            showNotification('error', translations.error_loading_service_data);
         }
     })
     .catch(error => {
         console.error('Ошибка при загрузке данных:', error);
-        showNotification('error', 'Произошла ошибка при загрузке данных');
+        showNotification('error', translations.error_loading_data);
     });
 }
 
@@ -1481,8 +1511,7 @@ function confirmDeleteUserService() {
     })
     .catch(error => {
         console.error('Ошибка при удалении:', error);
-        showNotification('error', 'Произошла ошибка при удалении');
-        
+        showNotification('error', translations.error_deleting);
         // Закрываем модальное окно подтверждения даже при ошибке
         closeConfirmationModal();
     });
@@ -1548,12 +1577,12 @@ function saveUserService() {
             document.getElementById('user-service-form').reset();
             document.getElementById('modal-is-active').checked = true;
         } else {
-            showNotification('error', data.message || 'Произошла ошибка при сохранении');
+            showNotification('error', data.message || translations.error_saving);
         }
     })
     .catch(error => {
         console.error('Ошибка при сохранении:', error);
-        showNotification('error', error.message || 'Произошла ошибка при сохранении');
+        showNotification('error', error.message || translations.error_saving);
     });
 }
 
@@ -1564,30 +1593,59 @@ function addUserServiceToTable(userService) {
     // Создаем новую строку
     const row = document.createElement('tr');
     row.setAttribute('data-user-service-id', userService.id); // Добавляем атрибут для идентификации
-    row.innerHTML = `
-        <td>${userService.user_name}</td>
-        <td>${userService.service_name}</td>
-        <td>${userService.active_price} ₽</td>
-        <td>${userService.active_duration} мин</td>
-        <td>
-            ${userService.is_active_for_booking ? 
-                '<span class="badge badge-success">Активна</span>' : 
-                '<span class="badge badge-secondary">Неактивна</span>'
-            }
-        </td>
-        <td class="actions-cell">
-            <button type="button" class="btn-view" onclick="editUserService(${userService.id})" title="{{ __('messages.edit') }}">
-                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                </svg>
-            </button>
-            <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="{{ __('messages.delete') }}">
-                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                </svg>
-            </button>
-        </td>
+    
+    // Создаем ячейки
+    const nameCell = document.createElement('td');
+    nameCell.textContent = userService.user_name;
+    
+    const serviceCell = document.createElement('td');
+    serviceCell.textContent = userService.service_name;
+    
+    const priceCell = document.createElement('td');
+    if (userService.price) {
+        priceCell.textContent = userService.price + ' ₽';
+    } else {
+        priceCell.innerHTML = userService.service_price + ' ₽ <small class="text-muted">({{ __('messages.base_price') }})</small>';
+    }
+    
+    const durationCell = document.createElement('td');
+    if (userService.duration) {
+        durationCell.textContent = formatDuration(userService.duration);
+    } else if (userService.service_duration) {
+        durationCell.innerHTML = formatDuration(userService.service_duration) + ' <small class="text-muted">({{ __('messages.base_duration') }})</small>';
+    } else {
+        durationCell.textContent = '{{ __('messages.not_specified_duration') }}';
+    }
+    
+    const statusCell = document.createElement('td');
+    if (userService.is_active_for_booking) {
+        statusCell.innerHTML = '<span class="badge badge-success">{{ __('messages.active') }}</span>';
+    } else {
+        statusCell.innerHTML = '<span class="badge badge-secondary">{{ __('messages.inactive') }}</span>';
+    }
+    
+    const actionsCell = document.createElement('td');
+    actionsCell.className = 'actions-cell';
+    actionsCell.innerHTML = `
+        <button type="button" class="btn-view" onclick="editUserService(${userService.id})" title="{{ __('messages.edit') }}">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+        </button>
+        <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="{{ __('messages.delete') }}">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+        </button>
     `;
+    
+    // Добавляем ячейки в строку
+    row.appendChild(nameCell);
+    row.appendChild(serviceCell);
+    row.appendChild(priceCell);
+    row.appendChild(durationCell);
+    row.appendChild(statusCell);
+    row.appendChild(actionsCell);
     
     // Добавляем строку в таблицу
     tbody.appendChild(row);
@@ -1603,30 +1661,61 @@ function addUserServiceToTable(userService) {
 function updateUserServiceInTable(userService) {
     const row = document.querySelector(`tr[data-user-service-id="${userService.id}"]`);
     if (row) {
-        row.innerHTML = `
-            <td>${userService.user_name}</td>
-            <td>${userService.service_name}</td>
-            <td>${userService.active_price} ₽</td>
-            <td>${userService.active_duration} мин</td>
-            <td>
-                ${userService.is_active_for_booking ? 
-                    '<span class="badge badge-success">Активна</span>' : 
-                    '<span class="badge badge-secondary">Неактивна</span>'
-                }
-            </td>
-            <td class="actions-cell">
-                <button type="button" class="btn-view" onclick="editUserService(${userService.id})" title="{{ __('messages.edit') }}">
-                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                    </svg>
-                </button>
-                <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="{{ __('messages.delete') }}">
-                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                    </svg>
-                </button>
-            </td>
+        // Очищаем строку
+        row.innerHTML = '';
+        
+        // Создаем ячейки
+        const nameCell = document.createElement('td');
+        nameCell.textContent = userService.user_name;
+        
+        const serviceCell = document.createElement('td');
+        serviceCell.textContent = userService.service_name;
+        
+        const priceCell = document.createElement('td');
+        if (userService.price) {
+            priceCell.textContent = userService.price + ' ₽';
+        } else {
+            priceCell.innerHTML = userService.service_price + ' ₽ <small class="text-muted">({{ __('messages.base_price') }})</small>';
+        }
+        
+        const durationCell = document.createElement('td');
+        if (userService.duration) {
+            durationCell.textContent = formatDuration(userService.duration);
+        } else if (userService.service_duration) {
+            durationCell.innerHTML = formatDuration(userService.service_duration) + ' <small class="text-muted">({{ __('messages.base_duration') }})</small>';
+        } else {
+            durationCell.textContent = '{{ __('messages.not_specified_duration') }}';
+        }
+        
+        const statusCell = document.createElement('td');
+        if (userService.is_active_for_booking) {
+            statusCell.innerHTML = '<span class="badge badge-success">{{ __('messages.active') }}</span>';
+        } else {
+            statusCell.innerHTML = '<span class="badge badge-secondary">{{ __('messages.inactive') }}</span>';
+        }
+        
+        const actionsCell = document.createElement('td');
+        actionsCell.className = 'actions-cell';
+        actionsCell.innerHTML = `
+            <button type="button" class="btn-view" onclick="editUserService(${userService.id})" title="{{ __('messages.edit') }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
+            </button>
+            <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="{{ __('messages.delete') }}">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
+            </button>
         `;
+        
+        // Добавляем ячейки в строку
+        row.appendChild(nameCell);
+        row.appendChild(serviceCell);
+        row.appendChild(priceCell);
+        row.appendChild(durationCell);
+        row.appendChild(statusCell);
+        row.appendChild(actionsCell);
     }
 }
 

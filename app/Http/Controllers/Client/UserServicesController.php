@@ -84,8 +84,10 @@ class UserServicesController extends Controller
                 'id' => $userService->id,
                 'user_name' => $userService->user->name,
                 'service_name' => $userService->service->name,
-                'active_price' => $userService->active_price,
-                'active_duration' => $userService->active_duration,
+                'price' => $userService->price,
+                'duration' => $userService->duration,
+                'service_price' => $userService->service->price,
+                'service_duration' => $userService->service->duration,
                 'is_active_for_booking' => $userService->is_active_for_booking
             ]
         ]);
@@ -125,8 +127,10 @@ class UserServicesController extends Controller
                 'id' => $userService->id,
                 'user_name' => $userService->user->name,
                 'service_name' => $userService->service->name,
-                'active_price' => $userService->active_price,
-                'active_duration' => $userService->active_duration,
+                'price' => $userService->price,
+                'duration' => $userService->duration,
+                'service_price' => $userService->service->price,
+                'service_duration' => $userService->service->duration,
                 'is_active_for_booking' => $userService->is_active_for_booking
             ]
         ]);
