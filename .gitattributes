@@ -1,11 +1,51 @@
-* text=auto eol=lf
+# Автоматически определять текстовые файлы
+* text=auto
 
-*.blade.php diff=html
-*.css diff=css
-*.html diff=html
-*.md diff=markdown
-*.php diff=php
+# PHP файлы всегда с LF
+*.php text eol=lf
 
-/.github export-ignore
-CHANGELOG.md export-ignore
-.styleci.yml export-ignore
+# Blade шаблоны с LF
+*.blade.php text eol=lf
+
+# Markdown файлы с LF
+*.md text eol=lf
+
+# JavaScript файлы с LF
+*.js text eol=lf
+
+# CSS файлы с LF
+*.css text eol=lf
+
+# SCSS файлы с LF
+*.scss text eol=lf
+
+# JSON файлы с LF
+*.json text eol=lf
+
+# XML файлы с LF
+*.xml text eol=lf
+
+# HTML файлы с LF
+*.html text eol=lf
+
+# Конфигурационные файлы с LF
+*.yml text eol=lf
+*.yaml text eol=lf
+*.ini text eol=lf
+*.conf text eol=lf
+
+# Бинарные файлы не трогать
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.rar binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
