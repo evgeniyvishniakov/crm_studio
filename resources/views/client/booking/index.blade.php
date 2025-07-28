@@ -511,14 +511,7 @@ label {
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group mb-4">
-                        <label for="about">{{ __('messages.about_salon_description') }}</label>
-                        <textarea class="form-control" id="about" name="about" rows="4" 
-                                  placeholder="{{ __('messages.about_salon_placeholder') }}">{{ $project->about }}</textarea>
-                        <small class="form-text text-muted">{{ __('messages.about_salon_hint') }}</small>
-                    </div>
-                </div>
+
 
                 <div class="form-row form-row--2col" style="display: flex; gap: 20px; margin-top: 30px;">
                      <div class="form-col" style="flex: 1;">
@@ -537,7 +530,7 @@ label {
                                              <div class="master-name">{{ $user->name }}</div>
                                              <div class="master-details">
                                                  {{ $userActiveServices->count() }} {{ $userActiveServices->count() == 1 ? __('messages.service') : ($userActiveServices->count() < 5 ? __('messages.services_2') : __('messages.services_5')) }}
-                                                 @if($userActiveServices->count() > 0)
+                                                 @if($userActiveServices->count() > 0 && $userActiveServices->min('price') > 0)
                                                      • {{ __('messages.from') }} <span class="currency-amount" data-amount="{{ $userActiveServices->min('price') }}">{{ \App\Helpers\CurrencyHelper::format($userActiveServices->min('price')) }}</span>
                                                  @endif
                                              </div>
@@ -566,17 +559,35 @@ label {
                                      @php
                                          $serviceActiveMasters = $userServices->where('service_id', $service->id)->where('is_active_for_booking', true);
                                          $mastersCount = $serviceActiveMasters->count();
-                                         $avgPrice = $serviceActiveMasters->count() > 0 ? $serviceActiveMasters->avg('price') : $service->price;
+                                         
+                                         // Вычисляем среднюю цену с учетом активных цен мастеров
+                                         if ($serviceActiveMasters->count() > 0) {
+                                             $totalPrice = 0;
+                                             $validPrices = 0;
+                                             foreach ($serviceActiveMasters as $userService) {
+                                                 $activePrice = $userService->price ?: $userService->service->price;
+                                                 if ($activePrice > 0) {
+                                                     $totalPrice += $activePrice;
+                                                     $validPrices++;
+                                                 }
+                                             }
+                                             $avgPrice = $validPrices > 0 ? $totalPrice / $validPrices : $service->price;
+                                         } else {
+                                             $avgPrice = $service->price;
+                                         }
+                                         
                                          $masterNames = $serviceActiveMasters->pluck('user.name')->join(', ');
                                      @endphp
                                      <div class="service-item">
                                          <div class="service-info">
                                              <div class="service-name">{{ $service->name }}</div>
                                              <div class="service-details">
-                                                 @if($mastersCount > 0)
+                                                 @if($mastersCount > 0 && $avgPrice > 0)
                                                      {{ $masterNames }} • <span class="currency-amount" data-amount="{{ $avgPrice }}">{{ \App\Helpers\CurrencyHelper::format($avgPrice) }}</span>
+                                                 @elseif($mastersCount > 0)
+                                                     {{ $masterNames }}
                                                  @else
-                                                     {{ __('messages.no_masters') }} • <span class="currency-amount" data-amount="{{ $service->price }}">{{ \App\Helpers\CurrencyHelper::format($service->price) }}</span>
+                                                     {{ __('messages.no_masters') }}
                                                  @endif
                                              </div>
                                          </div>
@@ -1790,8 +1801,12 @@ function updateMastersList(userServices) {
             const detailsElement = item.querySelector('.master-details');
             const statusElement = item.querySelector('.master-status');
             
-            const formattedPrice = formatCurrency(minPrice);
-            detailsElement.innerHTML = `${servicesCount} ${servicesCount == 1 ? 'услуга' : (servicesCount < 5 ? 'услуги' : 'услуг')} • от <span class="currency-amount" data-amount="${minPrice}">${formattedPrice}</span>`;
+            if (servicesCount > 0 && minPrice > 0) {
+                const formattedPrice = formatCurrency(minPrice);
+                detailsElement.innerHTML = `${servicesCount} ${servicesCount == 1 ? 'услуга' : (servicesCount < 5 ? 'услуги' : 'услуг')} • от <span class="currency-amount" data-amount="${minPrice}">${formattedPrice}</span>`;
+            } else {
+                detailsElement.textContent = `${servicesCount} ${servicesCount == 1 ? 'услуга' : (servicesCount < 5 ? 'услуги' : 'услуг')}`;
+            }
             
             if (servicesCount > 0) {
                 statusElement.innerHTML = `
@@ -1835,17 +1850,33 @@ function updateServicesList(userServices) {
         if (service) {
             const activeMasters = service.masters.filter(m => m.is_active_for_booking);
             const mastersCount = activeMasters.length;
-            const avgPrice = activeMasters.length > 0 ? 
-                activeMasters.reduce((sum, m) => sum + (m.price || 0), 0) / activeMasters.length : 0;
+            // Вычисляем среднюю цену с учетом активных цен мастеров
+            let avgPrice = 0;
+            if (activeMasters.length > 0) {
+                let totalPrice = 0;
+                let validPrices = 0;
+                activeMasters.forEach(master => {
+                    const activePrice = master.price || master.service_price || 0;
+                    if (activePrice > 0) {
+                        totalPrice += activePrice;
+                        validPrices++;
+                    }
+                });
+                avgPrice = validPrices > 0 ? totalPrice / validPrices : 0;
+            }
             const masterNames = activeMasters.map(m => m.user_name).join(', ');
             
             const detailsElement = item.querySelector('.service-details');
             const statusElement = item.querySelector('.service-status');
             
-            const formattedPrice = formatCurrency(avgPrice);
-            detailsElement.innerHTML = mastersCount > 0 ? 
-                `${masterNames} • <span class="currency-amount" data-amount="${avgPrice}">${formattedPrice}</span>` : 
-                'Нет мастеров • <span class="currency-amount" data-amount="0">0 ₽</span>';
+            if (mastersCount > 0 && avgPrice > 0) {
+                const formattedPrice = formatCurrency(avgPrice);
+                detailsElement.innerHTML = `${masterNames} • <span class="currency-amount" data-amount="${avgPrice}">${formattedPrice}</span>`;
+            } else if (mastersCount > 0) {
+                detailsElement.textContent = masterNames;
+            } else {
+                detailsElement.textContent = 'Нет мастеров';
+            }
             
             if (mastersCount > 0) {
                 statusElement.innerHTML = `<span class="status-available">Доступна</span>`;

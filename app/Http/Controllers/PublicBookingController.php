@@ -30,6 +30,10 @@ class PublicBookingController extends Controller
             abort(404, 'Страница не найдена');
         }
 
+        // Устанавливаем язык для веб-записи
+        $bookingLanguageCode = $project->booking_language_code ?? $project->language_code ?? 'ua';
+        app()->setLocale($bookingLanguageCode);
+
         // Получаем настройки бронирования
         $bookingSettings = $project->getOrCreateBookingSettings();
         

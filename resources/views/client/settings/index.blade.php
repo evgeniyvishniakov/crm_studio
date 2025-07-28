@@ -92,9 +92,9 @@
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-4">
-                            <label>О нас - описание салона</label>
-                            <textarea name="about" class="form-control" rows="4" placeholder="Краткое описание о салоне/компании для клиентов...">{{ old('about', $project->about ?? '') }}</textarea>
-                            <small class="form-text text-muted">Это описание будет отображаться на странице веб-записи</small>
+                            <label>{{ __('messages.about_us') }}</label>
+                            <textarea name="about" class="form-control" rows="4" placeholder="{{ __('messages.about_us_placeholder') }}">{{ old('about', $project->about ?? '') }}</textarea>
+                            <small class="form-text text-muted">{{ __('messages.about_us_hint') }}</small>
                         </div>
                     </div>
                     <div class="form-col">
@@ -124,7 +124,7 @@
                     <div class="form-group mb-4">
                         <h6 style="margin-bottom: 15px; color: #333; font-weight: 600;">
                             <i class="fas fa-map-marker-alt" style="margin-right: 8px; color: #dc3545;"></i>
-                            Настройки карты и информации
+                            {{ __('messages.map_settings') }}
                         </h6>
                     </div>
                 </div>
@@ -132,21 +132,21 @@
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Ссылка на Google Maps</label>
+                            <label>{{ __('messages.map_url') }}</label>
                             <input type="url" name="map_url" class="form-control" id="map_url" 
                                    value="{{ old('map_url', '') }}" 
-                                   placeholder="https://maps.app.goo.gl/UMeU52GP5ZWVxx4x5">
+                                   placeholder="{{ __('messages.map_url_placeholder') }}">
                             <small class="form-text text-muted">
-                                Вставьте ссылку на Google Maps. Координаты извлекутся автоматически.
+                                {{ __('messages.map_url_help') }}
                             </small>
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <label>Масштаб карты</label>
+                            <label>{{ __('messages.map_zoom') }}</label>
                             <input type="number" name="map_zoom" class="form-control" id="map_zoom" 
                                    value="{{ old('map_zoom', $project->map_zoom ?? 15) }}" min="1" max="20">
-                            <small class="form-text text-muted">От 1 до 20 (по умолчанию 15)</small>
+                            <small class="form-text text-muted">{{ __('messages.map_zoom_placeholder') }}</small>
                         </div>
                     </div>
                 </div>
@@ -158,11 +158,11 @@
                 <!-- Предварительный просмотр карты -->
                 <div class="form-row">
                     <div class="form-group mb-4">
-                        <label>Предварительный просмотр карты</label>
+                        <label>{{ __('messages.map_preview') }}</label>
                         <div id="map_preview" style="width: 100%; height: 300px; border: 1px solid #ddd; border-radius: 8px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
                             <div class="text-center text-muted">
                                 <i class="fas fa-map fa-3x mb-3"></i>
-                                <p>Вставьте ссылку на Google Maps для предварительного просмотра</p>
+                                <p>{{ __('messages.map_preview_placeholder') }}</p>
                             </div>
                         </div>
                     </div>
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="settings-pane" id="tab-language" style="display:none;">
             <form id="language-currency-form">
                 <h5>{{ __('messages.language_and_currency') }}</h5>
-                <div class="form-row form-row--2col">
+                <div class="form-row form-row--3col">
                     <div class="form-col">
                         <div class="form-group mb-4">
                             <label>{{ __('messages.interface_language') }}</label>
@@ -302,6 +302,26 @@ document.addEventListener('DOMContentLoaded', function() {
                                     </option>
                                 @endforeach
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group mb-4">
+                            <label>{{ __('messages.web_booking_language') }}</label>
+                            <select class="form-control" name="booking_language_id">
+                                @php
+                                    // Определяем выбранный язык веб-записи
+                                    $selectedBookingLanguageId = $project->booking_language_id ?? $project->language_id ?? 1;
+                                @endphp
+                                @foreach($languages as $language)
+                                    @php
+                                        $isSelected = $selectedBookingLanguageId == $language->id;
+                                    @endphp
+                                    <option value="{{ $language->id }}" {{ $isSelected ? 'selected="selected"' : '' }}>
+                                        {{ $language->name }} ({{ $language->native_name }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small class="form-text text-muted">{{ __('messages.web_booking_language_hint') }}</small>
                         </div>
                     </div>
                     <div class="form-col">
@@ -343,6 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     const formData = new FormData(this);
                     const languageId = formData.get('language_id');
+                    const bookingLanguageId = formData.get('booking_language_id');
                     const currencyId = formData.get('currency_id');
                     
                     // Показываем индикатор загрузки
@@ -362,6 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             },
                             body: JSON.stringify({
                                 language_id: languageId,
+                                booking_language_id: bookingLanguageId,
                                 currency_id: currencyId
                             })
                         });

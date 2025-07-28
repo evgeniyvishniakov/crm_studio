@@ -21,6 +21,7 @@ class Project extends Model
         'email',
         'registered_at',
         'language_id',
+        'booking_language_id',
         'currency_id',
         'status',
         'phone',
@@ -58,6 +59,14 @@ class Project extends Model
     }
 
     /**
+     * Связь с языком веб-записи
+     */
+    public function bookingLanguage()
+    {
+        return $this->belongsTo(\App\Models\Language::class, 'booking_language_id');
+    }
+
+    /**
      * Получить код валюты (для обратной совместимости)
      */
     public function getCurrencyCodeAttribute()
@@ -71,6 +80,14 @@ class Project extends Model
     public function getLanguageCodeAttribute()
     {
         return $this->language ? $this->language->code : null;
+    }
+
+    /**
+     * Получить код языка веб-записи
+     */
+    public function getBookingLanguageCodeAttribute()
+    {
+        return $this->bookingLanguage ? $this->bookingLanguage->code : ($this->language ? $this->language->code : null);
     }
 
     /**

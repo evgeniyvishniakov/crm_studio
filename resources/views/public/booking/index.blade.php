@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $project->project_name }} - Онлайн запись</title>
+    <title>{{ $project->project_name }} - {{ __('messages.online_booking') }}</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -212,14 +212,27 @@
         .footer-powered-by a {
             color: white;
             text-decoration: none;
-            font-weight: 600;
-            transition: opacity 0.3s ease;
+            font-weight: 700;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .footer-powered-by a:hover {
-            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             color: white;
         }
+        
+
         
         @media (max-width: 768px) {
             .footer-content {
@@ -235,6 +248,18 @@
             .footer-divider {
                 display: none;
             }
+            
+            .footer-powered-by {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .footer-powered-by a {
+                font-size: 16px;
+                padding: 6px 12px;
+            }
+            
+
         }
         
         .booking-container {
@@ -593,7 +618,7 @@
                     </div>
                 </div>
                 <button class="header-toggle" onclick="toggleHeaderDetails()">
-                    <i class="fas fa-info-circle"></i> Информация о салоне
+                    <i class="fas fa-info-circle"></i> {{ __('messages.salon_information') }}
                 </button>
             </div>
             
@@ -605,7 +630,7 @@
                             <i class="fas fa-map-marker-alt"></i>
                         </div>
                         <div class="detail-content">
-                            <h4>Адрес</h4>
+                            <h4>{{ __('messages.address') }}</h4>
                             <p>{{ $project->address }}</p>
                         </div>
                     </div>
@@ -617,7 +642,7 @@
                             <i class="fas fa-phone"></i>
                         </div>
                         <div class="detail-content">
-                            <h4>Телефон</h4>
+                            <h4>{{ __('messages.phone') }}</h4>
                             <p><a href="tel:{{ $project->phone }}" style="color: white; text-decoration: none;">{{ $project->phone }}</a></p>
                         </div>
                     </div>
@@ -628,7 +653,7 @@
                        <i class="fas fa-clock"></i>
                    </div>
                    <div class="detail-content">
-                       <h4>Время работы</h4>
+                       <h4>{{ __('messages.working_hours') }}</h4>
                        <p>
                            @if($bookingSettings && $bookingSettings->working_hours_start && $bookingSettings->working_hours_end)
                                {{ \Carbon\Carbon::parse($bookingSettings->working_hours_start)->format('H:i') }} - {{ \Carbon\Carbon::parse($bookingSettings->working_hours_end)->format('H:i') }}
@@ -639,36 +664,19 @@
                    </div>
                </div>
                
-               <div class="detail-item">
-                   <div class="detail-icon">
-                       <i class="fas fa-calendar-alt"></i>
-                   </div>
-                   <div class="detail-content">
-                       <h4>Правила записи</h4>
-                       <p>
-                           @if($bookingSettings)
-                               Запись на {{ $bookingSettings->advance_booking_days }} дней вперед
-                               @if(!$bookingSettings->allow_same_day_booking)
-                                   <br><small>Запись в тот же день недоступна</small>
-                               @endif
-                           @else
-                               Запись на 30 дней вперед
-                           @endif
-                       </p>
-                   </div>
-               </div>
+
                     
                     <div class="detail-item">
                         <div class="detail-icon">
                             <i class="fas fa-info"></i>
                         </div>
                         <div class="detail-content">
-                            <h4>О нас</h4>
+                            <h4>{{ __('messages.about_us') }}</h4>
                             <p>
                                 @if($project->about)
                                     {{ $project->about }}
                                 @else
-                                    Профессиональные услуги красоты и ухода. Записывайтесь онлайн в удобное для вас время.
+                                    {{ __('messages.default_about_text') }}
                                 @endif
                             </p>
                         </div>
@@ -680,7 +688,7 @@
                             <i class="fas fa-map"></i>
                         </div>
                         <div class="detail-content">
-                            <h4>Карта</h4>
+                            <h4>{{ __('messages.map') }}</h4>
                             <div class="map-preview" style="width: 100%; height: 200px; border-radius: 8px; overflow: hidden; margin-top: 10px;">
                                 <iframe 
                                     width="100%" 
@@ -728,10 +736,10 @@
                             <h5>{{ $service->name }}</h5>
                             <p>
                                 @if($minPrice)
-                                    Цена: от {{ number_format($minPrice, 0, ',', ' ') }} ₽
+                                    {{ __('messages.price_from') }} {{ number_format($minPrice, 0, ',', ' ') }} ₽
                                 @endif
                                 @if($maxDuration)
-                                    • Длительность: {{ \App\Helpers\TimeHelper::formatDuration($maxDuration) }}
+                                    • {{ __('messages.duration') }}: {{ \App\Helpers\TimeHelper::formatDuration($maxDuration) }}
                                 @endif
                             </p>
                         </div>
@@ -739,7 +747,7 @@
                 </div>
                 <div class="mt-3">
                     <button type="button" class="btn btn-next" onclick="nextStep()" disabled id="next-step-1">
-                        Далее <i class="fas fa-arrow-right"></i>
+                        {{ __('messages.next') }} <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
@@ -760,10 +768,10 @@
                 </div>
                 <div class="mt-3">
                     <button type="button" class="btn btn-secondary btn-back" onclick="prevStep()">
-                        <i class="fas fa-arrow-left"></i> Назад
+                        <i class="fas fa-arrow-left"></i> {{ __('messages.back') }}
                     </button>
                     <button type="button" class="btn btn-next" onclick="nextStep()" disabled id="next-step-2">
-                        Далее <i class="fas fa-arrow-right"></i>
+                        {{ __('messages.next') }} <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
@@ -791,17 +799,17 @@
                  
                  <!-- Временные слоты -->
                  <div id="time-slots-container" style="display: none;">
-                     <h5 class="mb-3">Доступное время</h5>
+                     <h5 class="mb-3">{{ __('messages.available_time') }}</h5>
                      <div id="time-slots" class="time-slots-grid">
                          <!-- Временные слоты будут загружены через JavaScript -->
                      </div>
                  </div>
                 <div class="mt-3">
                     <button type="button" class="btn btn-secondary btn-back" onclick="prevStep()">
-                        <i class="fas fa-arrow-left"></i> Назад
+                        <i class="fas fa-arrow-left"></i> {{ __('messages.back') }}
                     </button>
                     <button type="button" class="btn btn-next" onclick="nextStep()" disabled id="next-step-3">
-                        Далее <i class="fas fa-arrow-right"></i>
+                        {{ __('messages.next') }} <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
@@ -813,24 +821,24 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="client-name" class="form-label">Имя *</label>
+                                <label for="client-name" class="form-label">{{ __('messages.client_name') }} *</label>
                                 <input type="text" class="form-control" id="client-name" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="client-phone" class="form-label">Телефон *</label>
+                                <label for="client-phone" class="form-label">{{ __('messages.client_phone') }} *</label>
                                 <input type="tel" class="form-control" id="client-phone" required>
                             </div>
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="client-email" class="form-label">Email</label>
+                        <label for="client-email" class="form-label">{{ __('messages.client_email') }}</label>
                         <input type="email" class="form-control" id="client-email">
                     </div>
                     <div class="mb-3">
-                        <label for="client-notes" class="form-label">Комментарий</label>
-                        <textarea class="form-control" id="client-notes" rows="3" placeholder="Дополнительная информация..."></textarea>
+                        <label for="client-notes" class="form-label">{{ __('messages.client_notes') }}</label>
+                        <textarea class="form-control" id="client-notes" rows="3" placeholder="{{ __('messages.client_notes') }}"></textarea>
                     </div>
                 </form>
                 <div class="mt-3">
@@ -838,7 +846,7 @@
                         <i class="fas fa-arrow-left"></i> Назад
                     </button>
                     <button type="button" class="btn btn-primary btn-submit" onclick="submitBooking()" id="submit-booking">
-                        Записаться <i class="fas fa-check"></i>
+                        {{ __('messages.book_appointment') }} <i class="fas fa-check"></i>
                     </button>
                 </div>
             </div>
@@ -847,8 +855,8 @@
             <div class="step-content" id="success">
                 <div class="success-message">
                     <i class="fas fa-check-circle"></i>
-                    <h4>Запись успешно создана!</h4>
-                    <p>Мы свяжемся с вами для подтверждения записи.</p>
+                                    <h4>{{ __('messages.booking_successful') }}</h4>
+                <p>{{ __('messages.we_will_contact_you') }}</p>
                     <div id="booking-details" class="mt-3"></div>
                 </div>
             </div>
@@ -942,10 +950,10 @@
             
             if (details.classList.contains('active')) {
                 details.classList.remove('active');
-                button.innerHTML = '<i class="fas fa-info-circle"></i> Информация о салоне';
+                button.innerHTML = '<i class="fas fa-info-circle"></i> {{ __('messages.salon_information') }}';
             } else {
                 details.classList.add('active');
-                button.innerHTML = '<i class="fas fa-times"></i> Скрыть информацию';
+                button.innerHTML = '<i class="fas fa-times"></i> {{ __('messages.hide_information') }}';
                 // Инициализируем карту при открытии деталей
                 initMap();
             }
@@ -976,7 +984,7 @@
                 link.style.color = 'white';
                 link.style.textDecoration = 'none';
                 link.style.fontSize = '14px';
-                link.innerHTML = '<i class="fas fa-map" style="font-size: 24px; margin-right: 10px;"></i><span>Открыть в Google Maps</span>';
+                link.innerHTML = '<i class="fas fa-map" style="font-size: 24px; margin-right: 10px;"></i><span>{{ __('messages.open_in_google_maps') }}</span>';
                 
                 mapElement.appendChild(link);
             }
@@ -1357,15 +1365,15 @@
                  } else {
                      alert('Ошибка: ' + data.message);
                      submitBtn.disabled = false;
-                     submitBtn.innerHTML = 'Записаться <i class="fas fa-check"></i>';
+                     submitBtn.innerHTML = '{{ __('messages.book_appointment') }} <i class="fas fa-check"></i>';
                      isSubmitting = false; // Сбрасываем флаг при ошибке
                  }
              })
              .catch(error => {
                  console.error('Submit error:', error);
-                 alert('Произошла ошибка при отправке заявки: ' + error.message);
+                 alert('{{ __('messages.booking_error') }}: ' + error.message);
                  submitBtn.disabled = false;
-                 submitBtn.innerHTML = 'Записаться <i class="fas fa-check"></i>';
+                 submitBtn.innerHTML = '{{ __('messages.book_appointment') }} <i class="fas fa-check"></i>';
                  isSubmitting = false; // Сбрасываем флаг при ошибке
              });
         }
@@ -1544,18 +1552,18 @@
             
             const details = document.getElementById('booking-details');
             details.className = 'booking-details';
-            details.innerHTML = `
-                <div class="alert alert-info">
-                    <strong>Детали записи:</strong><br>
-                    Услуга: ${booking.service_name}<br>
-                    Мастер: ${booking.master_name}<br>
-                    Дата: ${booking.date}<br>
-                    Время: ${booking.time}
-                </div>
-            `;
+                            details.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>{{ __('messages.appointment_details') }}:</strong><br>
+                        {{ __('messages.service') }}: ${booking.service_name}<br>
+                        {{ __('messages.master') }}: ${booking.master_name}<br>
+                        {{ __('messages.date') }}: ${booking.date}<br>
+                        {{ __('messages.time') }}: ${booking.time}
+                    </div>
+                `;
         }
 
-    const stepTitles = [null, 'Выберите услугу', 'Выберите мастера', 'Дата и время', 'Ваши данные'];
+            const stepTitles = [null, '{{ __('messages.select_service') }}', '{{ __('messages.select_master') }}', '{{ __('messages.select_date') }} и {{ __('messages.select_time') }}', '{{ __('messages.your_data') }}'];
 
     function renderStepIndicator() {
         const indicator = document.getElementById('step-indicator');
@@ -1573,9 +1581,9 @@
         <div class="footer-container">
             <div class="footer-bottom">
                 <div class="footer-powered-by">
-                    <span>Сделано на</span>
-                    <a href="https://trimora.com" target="_blank" title="Trimora - Система управления салонами красоты">
-                     Trimora
+                    <span>{{ __('messages.powered_by') }}</span>
+                    <a href="https://trimora.com" target="_blank" title="Trimora - {{ __('messages.beauty_salon_management_system') }}">
+                        Trimora
                     </a>
                 </div>
             </div>

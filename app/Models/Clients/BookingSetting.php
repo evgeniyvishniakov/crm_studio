@@ -22,8 +22,7 @@ class BookingSetting extends Model
         'booking_instructions',
         'map_latitude',
         'map_longitude',
-        'map_zoom',
-        'about'
+        'map_zoom'
     ];
 
     protected $casts = [

@@ -57,6 +57,7 @@ class SettingsController extends Controller
             'tiktok' => 'nullable|url|max:255',
             'logo' => 'nullable|image|max:2048',
             'language_id' => 'nullable|integer|exists:languages,id',
+            'booking_language_id' => 'nullable|integer|exists:languages,id',
             'currency_id' => 'nullable|integer|in:' . implode(',', $availableCurrencyIds),
             'map_url' => 'nullable|url|max:500',
             'map_latitude' => 'nullable|string|max:20',
@@ -169,6 +170,7 @@ class SettingsController extends Controller
 
             $validated = $request->validate([
                 'language_id' => 'nullable|integer|exists:languages,id',
+                'booking_language_id' => 'nullable|integer|exists:languages,id',
                 'currency_id' => 'nullable|integer|in:' . implode(',', $availableCurrencyIds),
             ]);
 
