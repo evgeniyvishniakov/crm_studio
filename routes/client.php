@@ -325,6 +325,16 @@ Route::middleware('auth:client')->group(function () {
     Route::get('/telegram-settings/instructions', [\App\Http\Controllers\Client\TelegramSettingsController::class, 'getInstructions'])
         ->name('client.telegram-settings.instructions');
 
+    // Настройки Email
+    Route::get('/email-settings', [\App\Http\Controllers\Client\EmailSettingsController::class, 'index'])
+        ->name('client.email-settings.index');
+    Route::put('/email-settings', [\App\Http\Controllers\Client\EmailSettingsController::class, 'update'])
+        ->name('client.email-settings.update');
+    Route::post('/email-settings/test', [\App\Http\Controllers\Client\EmailSettingsController::class, 'testConnection'])
+        ->name('client.email-settings.test');
+    Route::get('/email-settings/instructions', [\App\Http\Controllers\Client\EmailSettingsController::class, 'getInstructions'])
+        ->name('client.email-settings.instructions');
+
     Route::get('/api/dashboard/profit-chart', [\App\Http\Controllers\Client\DashboardController::class, 'profitChartData']);
     Route::get('/api/dashboard/sales-chart', [\App\Http\Controllers\Client\DashboardController::class, 'salesChartData']);
     Route::get('/api/dashboard/services-chart', [\App\Http\Controllers\Client\DashboardController::class, 'servicesChartData']);

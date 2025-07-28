@@ -37,6 +37,13 @@ class Project extends Model
         'telegram_bot_token',
         'telegram_chat_id',
         'telegram_notifications_enabled',
+        'email_host',
+        'email_port',
+        'email_username',
+        'email_password',
+        'email_encryption',
+        'email_from_name',
+        'email_notifications_enabled',
     ];
 
     protected $casts = [
@@ -44,6 +51,7 @@ class Project extends Model
         'social_links' => 'array',
         'booking_enabled' => 'boolean',
         'telegram_notifications_enabled' => 'boolean',
+        'email_notifications_enabled' => 'boolean',
     ];
 
     /**

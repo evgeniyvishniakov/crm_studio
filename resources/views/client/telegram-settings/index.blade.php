@@ -93,10 +93,18 @@
                     <div class="form-col"></div>
                 </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">{{ __('messages.save') }}</button>
-                    <button type="button" class="btn btn-info" onclick="testConnection()">{{ __('messages.test_connection') }}</button>
-                    <button type="button" class="btn btn-secondary" onclick="showInstructions()">{{ __('messages.telegram_instructions') }}</button>
+                <div class="form-actions d-flex justify-content-between align-items-center">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save"></i> {{ __('messages.save') }}
+                    </button>
+                    <div>
+                        <button type="button" class="btn btn-info" onclick="testConnection()">
+                            <i class="fa fa-exchange-alt"></i> {{ __('messages.test_connection') }}
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="showInstructions()">
+                            <i class="fa fa-question-circle"></i> {{ __('messages.instructions') }}
+                        </button>
+                    </div>
                 </div>
             </form>
 
@@ -112,7 +120,7 @@
         <div id="instructionsContent" style="text-align: left; margin: 20px 0;">
             <!-- Инструкции будут загружены через AJAX -->
         </div>
-        <div class="confirmation-buttons">
+        <div class="confirmation-buttons d-flex justify-content-end">
             <button onclick="closeInstructionsModal()" class="cancel-btn">{{ __('messages.close') }}</button>
         </div>
     </div>

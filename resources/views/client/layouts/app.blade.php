@@ -490,17 +490,20 @@
                 </li>
                 <li class="menu-item-has-children {{ 
                     request()->routeIs('client.booking.*') || 
-                    request()->routeIs('client.telegram-settings.*') ? 'active' : '' 
+                    request()->routeIs('client.telegram-settings.*') ||
+                    request()->routeIs('client.email-settings.*') ? 'active' : '' 
                 }}">
                     <a href="#integrationsMenu" data-toggle="collapse" aria-expanded="{{
                         request()->routeIs('client.booking.*') || 
-                        request()->routeIs('client.telegram-settings.*') ? 'true' : 'false' 
+                        request()->routeIs('client.telegram-settings.*') ||
+                        request()->routeIs('client.email-settings.*') ? 'true' : 'false' 
                     }}" class="dropdown-toggle">
                         <i class="menu-icon fa fa-plug"></i>{{ __('messages.integrations') }}
                     </a>
                     <ul id="integrationsMenu" class="sub-menu children collapse {{ 
                         request()->routeIs('client.booking.*') || 
-                        request()->routeIs('client.telegram-settings.*') ? 'show' : '' 
+                        request()->routeIs('client.telegram-settings.*') ||
+                        request()->routeIs('client.email-settings.*') ? 'show' : '' 
                     }}">
                         <li class="{{ request()->routeIs('client.booking.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('booking', $userPermissions); @endphp
@@ -522,6 +525,17 @@
                                     <i class="fas fa-lock"></i>
                                 @endif
                                 <span class="menu-label">{{ __('messages.telegram_integration') }}</span>
+                            </a>
+                        </li>
+                        <li class="{{ request()->routeIs('client.email-settings.*') ? 'active' : '' }}">
+                            @php $hasAccess = $isAdmin || in_array('settings', $userPermissions); @endphp
+                            <a href="{{ $hasAccess ? route('client.email-settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                                @if($hasAccess)
+                                    <i class="fa fa-envelope"></i>
+                                @else
+                                    <i class="fas fa-lock"></i>
+                                @endif
+                                <span class="menu-label">{{ __('messages.email_integration') }}</span>
                             </a>
                         </li>
                     </ul>
@@ -673,7 +687,7 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="notification">
                             @if($unreadNotifications->count())
-                                <p class="red">У вас {{ $unreadCount }} новых уведомлений</p>
+                                <p class="red">{{ __('messages.you_have_new_notifications', ['count' => $unreadCount]) }}</p>
                                 @foreach($unreadNotifications as $notification)
                                     <form method="POST" action="{{ route('client.notifications.read', $notification->id) }}" style="display:block; margin:0;">
                                         @csrf
@@ -685,7 +699,7 @@
                                     </form>
                                 @endforeach
                             @else
-                                <p class="dropdown-item text-muted">Нет новых уведомлений</p>
+                                <p class="dropdown-item text-muted">{{ __('messages.no_new_notifications') }}</p>
                             @endif
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item text-center" href="{{ route('client.notifications.index') }}">{{ __('messages.show_all_notifications') }}</a>
