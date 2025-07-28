@@ -315,6 +315,16 @@ Route::middleware('auth:client')->group(function () {
         ->name('client.notifications.destroy')
         ->middleware('rate.limit:notifications'); // Максимум 60 удалений в минуту
 
+    // Настройки Telegram
+    Route::get('/telegram-settings', [\App\Http\Controllers\Client\TelegramSettingsController::class, 'index'])
+        ->name('client.telegram-settings.index');
+    Route::put('/telegram-settings', [\App\Http\Controllers\Client\TelegramSettingsController::class, 'update'])
+        ->name('client.telegram-settings.update');
+    Route::post('/telegram-settings/test', [\App\Http\Controllers\Client\TelegramSettingsController::class, 'testConnection'])
+        ->name('client.telegram-settings.test');
+    Route::get('/telegram-settings/instructions', [\App\Http\Controllers\Client\TelegramSettingsController::class, 'getInstructions'])
+        ->name('client.telegram-settings.instructions');
+
     Route::get('/api/dashboard/profit-chart', [\App\Http\Controllers\Client\DashboardController::class, 'profitChartData']);
     Route::get('/api/dashboard/sales-chart', [\App\Http\Controllers\Client\DashboardController::class, 'salesChartData']);
     Route::get('/api/dashboard/services-chart', [\App\Http\Controllers\Client\DashboardController::class, 'servicesChartData']);

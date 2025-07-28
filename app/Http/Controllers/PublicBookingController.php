@@ -401,6 +401,31 @@ class PublicBookingController extends Controller
             // Не прерываем выполнение, если уведомления не создались
         }
 
+        // Отправляем уведомление в Telegram
+        try {
+            $appointmentData = [
+                'client_name' => $client->name,
+                'client_phone' => $client->phone,
+                'client_email' => $client->email,
+                'service_name' => $service->name,
+                'master_name' => $user->name,
+                'date' => $validated['date'],
+                'time' => $validated['time'],
+                'price' => $service->price,
+                'notes' => __('messages.booking_created_via_web')
+            ];
+
+            \App\Jobs\SendTelegramNotification::dispatch($appointmentData, $project->id);
+            
+            \Log::info('Telegram notification job dispatched', [
+                'project_id' => $project->id,
+                'appointment_id' => $appointment->id
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error dispatching Telegram notification: ' . $e->getMessage());
+            // Не прерываем выполнение, если Telegram уведомление не отправилось
+        }
+
         return response()->json([
             'success' => true,
             'message' => __('messages.booking_successful') . ' ' . __('messages.we_will_contact_you'),

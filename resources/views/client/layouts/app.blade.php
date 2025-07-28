@@ -500,7 +500,7 @@
                     request()->routeIs('client.notifications.*') || 
                     request()->routeIs('client.booking.*') ? 'active' : '' 
                 }}">
-                    <a href="#settingsMenu" data-toggle="collapse" aria-expanded="{{ 
+                                        <a href="#settingsMenu" data-toggle="collapse" aria-expanded="{{
                         request()->routeIs('client.users.*') || 
                         request()->routeIs('roles.*') || 
                         request()->routeIs('client.settings.*') || 
@@ -510,7 +510,8 @@
                         request()->routeIs('admin.security.*') || 
                         request()->routeIs('client.support-tickets.*') || 
                         request()->routeIs('client.notifications.*') || 
-                        request()->routeIs('client.booking.*') ? 'true' : 'false' 
+                        request()->routeIs('client.booking.*') ||
+                        request()->routeIs('client.telegram-settings.*') ? 'true' : 'false' 
                     }}" class="dropdown-toggle">
                         <i class="menu-icon fa fa-cogs"></i>Настройки
                     </a>
@@ -524,7 +525,8 @@
                         request()->routeIs('admin.security.*') || 
                         request()->routeIs('client.support-tickets.*') || 
                         request()->routeIs('client.notifications.*') || 
-                        request()->routeIs('client.booking.*') ? 'show' : '' 
+                        request()->routeIs('client.booking.*') ||
+                        request()->routeIs('client.telegram-settings.*') ? 'show' : '' 
                     }}">
                         <li class="{{ request()->routeIs('client.users.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('client.users', $userPermissions); @endphp
@@ -593,6 +595,17 @@
                                     <i class="fas fa-lock"></i>
                                 @endif
                                 <span class="menu-label">{{ __('messages.web_booking') }}</span>
+                            </a>
+                        </li>
+                        <li class="{{ request()->routeIs('client.telegram-settings.*') ? 'active' : '' }}">
+                            @php $hasAccess = $isAdmin || in_array('settings', $userPermissions); @endphp
+                            <a href="{{ $hasAccess ? route('client.telegram-settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                                @if($hasAccess)
+                                    <i class="fab fa-telegram"></i>
+                                @else
+                                    <i class="fas fa-lock"></i>
+                                @endif
+                                <span class="menu-label">Telegram уведомления</span>
                             </a>
                         </li>
 

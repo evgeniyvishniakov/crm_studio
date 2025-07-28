@@ -104,6 +104,31 @@ class AppointmentsController extends Controller
 
             $appointment = Appointment::create($appointmentData);
 
+            // Отправляем уведомление в Telegram
+            try {
+                $appointmentData = [
+                    'client_name' => $appointment->client->name,
+                    'client_phone' => $appointment->client->phone,
+                    'client_email' => $appointment->client->email,
+                    'service_name' => $appointment->service->name,
+                    'master_name' => $appointment->user ? $appointment->user->name : 'Не назначен',
+                    'date' => $appointment->date,
+                    'time' => $appointment->time,
+                    'price' => $appointment->price,
+                    'notes' => $appointment->notes ?? 'Запись создана через админку'
+                ];
+
+                \App\Jobs\SendTelegramNotification::dispatch($appointmentData, $currentProjectId);
+                
+                \Log::info('Telegram notification job dispatched for admin appointment', [
+                    'project_id' => $currentProjectId,
+                    'appointment_id' => $appointment->id
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Error dispatching Telegram notification for admin appointment: ' . $e->getMessage());
+                // Не прерываем выполнение, если Telegram уведомление не отправилось
+            }
+
             return response()->json([
                 'success' => true,
                 'appointment' => $appointment->load(['client', 'service', 'user'])

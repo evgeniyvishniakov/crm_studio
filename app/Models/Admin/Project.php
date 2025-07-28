@@ -34,12 +34,16 @@ class Project extends Model
         'about',
         'social_links',
         'booking_enabled',
+        'telegram_bot_token',
+        'telegram_chat_id',
+        'telegram_notifications_enabled',
     ];
 
     protected $casts = [
         'registered_at' => 'datetime',
         'social_links' => 'array',
         'booking_enabled' => 'boolean',
+        'telegram_notifications_enabled' => 'boolean',
     ];
 
     /**
