@@ -5,14 +5,41 @@
     <div class="natification-header" style="display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px;">
         <h1 class="mb-0">{{ __('messages.notifications') }}</h1>
         <div class="header-actions">
-            <div class="search-box">
-                <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            <button id="markAllReadBtn" class="btn-add-product" onclick="markAllAsRead()" style="display: none;">
+                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                 </svg>
-                <input type="text" id="searchInput" placeholder="{{ __('messages.search') }}..." onkeyup="handleSearch()">
+                {{ __('messages.mark_all_as_read') }}
+            </button>
+            
+            <!-- Фильтры -->
+            <div class="filters-row" style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                <div class="filter-group">
+                    <select id="typeFilter" onchange="applyFilters()" style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; min-width: 150px;">
+                        <option value="">{{ __('messages.all_types') }}</option>
+                        @foreach($types as $type)
+                            <option value="{{ $type }}">
+                                @if($type === 'web_booking')
+                                    {{ __('messages.web_booking') }}
+                                @else
+                                    {{ ucfirst($type) }}
+                                @endif
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <select id="statusFilter" onchange="applyFilters()" style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; min-width: 150px;">
+                        <option value="">{{ __('messages.all_statuses') }}</option>
+                        <option value="unread">{{ __('messages.unread') }}</option>
+                        <option value="read">{{ __('messages.read') }}</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
+
     <div class="table-wrapper">
         <table class="natification-table table-striped">
             <thead>
@@ -56,6 +83,11 @@
                                 <button type="submit" class="btn-add-client btn-sm">{{ __('messages.open') }}</button>
                             </form>
                         @endif
+                        <button class="btn-delete" title="{{ __('messages.delete') }}" data-notification-id="{{ $notification->id }}">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
                     </td>
                 </tr>
             @endforeach
@@ -64,6 +96,18 @@
         
         <!-- Пагинация будет добавлена через JavaScript -->
         <div id="notificationsPagination"></div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения -->
+<div id="confirmationModal" class="confirmation-modal">
+    <div class="confirmation-content">
+        <h3 id="confirmationTitle">{{ __('messages.confirmation') }}</h3>
+        <p id="confirmationMessage">{{ __('messages.confirm_mark_all_as_read') }}</p>
+        <div class="confirmation-buttons">
+            <button id="cancelAction" class="cancel-btn">{{ __('messages.cancel') }}</button>
+            <button id="confirmAction" class="confirm-btn">{{ __('messages.confirm') }}</button>
+        </div>
     </div>
 </div>
 @endsection 
@@ -83,30 +127,7 @@
     align-items: center;
 }
 
-.search-box {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.search-icon {
-    position: absolute;
-    left: 12px;
-    width: 16px;
-    height: 16px;
-    color: #6b7280;
-}
-
-#searchInput {
-    padding: 8px 12px 8px 36px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 14px;
-    width: 250px;
-    background: #fff;
-}
-
-#searchInput:focus {
+.filter-group select:focus {
     outline: none;
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
@@ -156,21 +177,82 @@
     color: #6b7280;
     font-size: 14px;
 }
+
+/* Стили для модального окна подтверждения */
+.confirmation-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.confirmation-modal .confirmation-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.confirmation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.confirm-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirm-btn:hover {
+    background-color: #c82333;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
 </style>
 
 @push('scripts')
 <script>
-        // AJAX-пагинация (точно как в товарах)
+        // AJAX-пагинация с фильтрами (без поиска)
         let currentPage = 1;
-        let searchQuery = '';
+        let typeFilter = '';
+        let statusFilter = '';
+        let currentAction = null;
+        let currentNotificationId = null;
 
-        function loadPage(page, search = '') {
+        function loadPage(page, type = '', status = '') {
             currentPage = page;
-            searchQuery = search;
+            typeFilter = type;
+            statusFilter = status;
             
             const params = new URLSearchParams();
             if (page > 1) params.append('page', page);
-            if (search) params.append('search', search);
+            if (type) params.append('type', type);
+            if (status) params.append('status', status);
             
             fetch(`{{ route('client.notifications.index') }}?${params.toString()}`, {
                 headers: {
@@ -186,6 +268,7 @@
             .then(data => {
                 updateTable(data.data);
                 renderPagination(data.meta);
+                updateTypeFilter(data.types);
             })
             .catch(error => {
                 console.error('Ошибка загрузки уведомлений:', error);
@@ -196,11 +279,14 @@
             const tbody = document.getElementById('notificationsTableBody');
             tbody.innerHTML = '';
 
+            let hasUnreadNotifications = false;
+
             notifications.forEach(notification => {
                 const row = document.createElement('tr');
                 row.id = `notification-${notification.id}`;
                 if (!notification.is_read) {
                     row.style.fontWeight = 'bold';
+                    hasUnreadNotifications = true;
                 }
                 
                 const statusBadge = notification.is_read 
@@ -231,11 +317,59 @@
                     <td>${notification.title}</td>
                     <td>${formatDate(notification.created_at)}</td>
                     <td>${statusBadge}</td>
-                    <td class="actions-cell">${actionButton}</td>
+                    <td class="actions-cell">
+                        ${actionButton}
+                        <button class="btn-delete" title="{{ __('messages.delete') }}" data-notification-id="${notification.id}">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </td>
                 `;
                 
                 tbody.appendChild(row);
             });
+
+            // Показываем или скрываем кнопку в зависимости от наличия непрочитанных уведомлений
+            updateMarkAllReadButton(hasUnreadNotifications);
+        }
+
+        function updateTypeFilter(types) {
+            const typeFilter = document.getElementById('typeFilter');
+            const currentValue = typeFilter.value;
+            
+            // Сохраняем текущий выбор
+            typeFilter.innerHTML = '<option value="">{{ __('messages.all_types') }}</option>';
+            
+            types.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                if (type === 'web_booking') {
+                    option.textContent = '{{ __('messages.web_booking') }}';
+                } else {
+                    option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                }
+                if (type === currentValue) {
+                    option.selected = true;
+                }
+                typeFilter.appendChild(option);
+            });
+        }
+
+        function updateMarkAllReadButton(hasUnreadNotifications) {
+            const markAllReadBtn = document.getElementById('markAllReadBtn');
+            if (hasUnreadNotifications) {
+                markAllReadBtn.style.display = 'flex';
+            } else {
+                markAllReadBtn.style.display = 'none';
+            }
+        }
+
+        function checkUnreadNotifications() {
+            // Проверяем непрочитанные уведомления в текущем списке
+            const unreadRows = document.querySelectorAll('tr[id^="notification-"]:not([style*="font-weight:normal"])');
+            const hasUnread = unreadRows.length > 0;
+            updateMarkAllReadButton(hasUnread);
         }
 
         function renderPagination(meta) {
@@ -287,18 +421,80 @@
                 btn.addEventListener('click', function() {
                     const page = parseInt(this.dataset.page);
                     if (!isNaN(page) && !this.disabled) {
-                        loadPage(page, searchQuery);
+                        loadPage(page, typeFilter, statusFilter);
                     }
                 });
             });
         }
 
-        function handleSearch() {
-            const searchInput = document.getElementById('searchInput');
-            const query = searchInput.value.trim();
+        function applyFilters() {
+            const typeFilterEl = document.getElementById('typeFilter');
+            const statusFilterEl = document.getElementById('statusFilter');
             
-            // Сбрасываем на первую страницу при поиске
-            loadPage(1, query);
+            // Сбрасываем на первую страницу при изменении фильтров
+            loadPage(1, typeFilterEl.value, statusFilterEl.value);
+        }
+
+        function markAllAsRead() {
+            // Показываем модальное окно подтверждения для отметки всех как прочитанных
+            currentAction = 'markAllAsRead';
+            document.getElementById('confirmationTitle').textContent = '{{ __('messages.confirmation') }}';
+            document.getElementById('confirmationMessage').textContent = '{{ __('messages.confirm_mark_all_as_read') }}';
+            document.getElementById('confirmationModal').style.display = 'block';
+        }
+
+        function deleteNotification(notificationId) {
+            // Показываем модальное окно подтверждения для удаления
+            currentAction = 'deleteNotification';
+            currentNotificationId = notificationId;
+            document.getElementById('confirmationTitle').textContent = '{{ __('messages.confirmation_delete') }}';
+            document.getElementById('confirmationMessage').textContent = '{{ __('messages.are_you_sure_you_want_to_delete_this_notification') }}';
+            document.getElementById('confirmationModal').style.display = 'block';
+        }
+
+        function performMarkAllAsRead() {
+            const formData = new FormData();
+            if (typeFilter) formData.append('type', typeFilter);
+            if (statusFilter) formData.append('status', statusFilter);
+
+            fetch('{{ route('client.notifications.mark-all-read') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Перезагружаем текущую страницу
+                    loadPage(currentPage, typeFilter, statusFilter);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при отметке всех как прочитанных:', error);
+            });
+        }
+
+        function performDeleteNotification() {
+            fetch(`{{ route('client.notifications.destroy', '') }}/${currentNotificationId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Перезагружаем текущую страницу
+                    loadPage(currentPage, typeFilter, statusFilter);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при удалении уведомления:', error);
+            });
         }
 
         // Функция форматирования даты
@@ -315,7 +511,44 @@
 
         // Инициализация первой загрузки
         document.addEventListener('DOMContentLoaded', function() {
+            // Проверяем непрочитанные уведомления при загрузке страницы
+            checkUnreadNotifications();
             loadPage(1);
+            
+            // Обработчики для модального окна подтверждения
+            document.getElementById('confirmAction').addEventListener('click', function() {
+                if (currentAction === 'markAllAsRead') {
+                    performMarkAllAsRead();
+                } else if (currentAction === 'deleteNotification') {
+                    performDeleteNotification();
+                }
+                document.getElementById('confirmationModal').style.display = 'none';
+                currentAction = null;
+                currentNotificationId = null;
+            });
+
+            document.getElementById('cancelAction').addEventListener('click', function() {
+                document.getElementById('confirmationModal').style.display = 'none';
+                currentAction = null;
+                currentNotificationId = null;
+            });
+
+            // Закрытие модального окна при клике вне его
+            window.onclick = function(event) {
+                if (event.target == document.getElementById('confirmationModal')) {
+                    document.getElementById('confirmationModal').style.display = 'none';
+                    currentAction = null;
+                    currentNotificationId = null;
+                }
+            }
+
+            // Обработчик для кнопок удаления
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.btn-delete')) {
+                    const notificationId = e.target.closest('.btn-delete').getAttribute('data-notification-id');
+                    deleteNotification(notificationId);
+                }
+            });
         });
 </script>
 @endpush 

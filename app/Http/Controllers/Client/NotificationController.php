@@ -25,14 +25,7 @@ class NotificationController extends Controller
                 ->where('user_id', $user->id);
         }
         
-        // Добавляем поиск как в товарах
-        if ($request->has('search') && $request->search !== '') {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'like', "%$search%")
-                  ->orWhere('type', 'like', "%$search%");
-            });
-        }
+
         
         if ($request->filled('type')) {
             $query->where('type', $request->input('type'));
@@ -51,6 +44,7 @@ class NotificationController extends Controller
                     'per_page' => $notifications->perPage(),
                     'total' => $notifications->total(),
                 ],
+                'types' => $typesQuery->select('type')->distinct()->pluck('type'),
             ]);
         }
         
@@ -79,5 +73,68 @@ class NotificationController extends Controller
         $notification->is_read = true;
         $notification->save();
         return $notification->url ? redirect($notification->url) : back();
+    }
+
+    public function markAllAsRead(Request $request)
+    {
+        $user = auth()->user();
+        
+        // Админы могут отмечать как прочитанные любые уведомления проекта, мастера - только свои
+        if ($user->role === 'admin') {
+            $query = Notification::where('project_id', $user->project_id)
+                ->where('is_read', false);
+        } else {
+            $query = Notification::where('project_id', $user->project_id)
+                ->where('user_id', $user->id)
+                ->where('is_read', false);
+        }
+        
+        // Применяем фильтры, если они переданы
+        if ($request->filled('type')) {
+            $query->where('type', $request->input('type'));
+        }
+        if ($request->filled('status')) {
+            $query->where('is_read', $request->input('status') === 'read');
+        }
+        
+        $updatedCount = $query->update(['is_read' => true]);
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.all_notifications_marked_as_read'),
+                'updated_count' => $updatedCount
+            ]);
+        }
+        
+        return back()->with('success', __('messages.all_notifications_marked_as_read'));
+    }
+
+    public function destroy($id)
+    {
+        $user = auth()->user();
+        
+        // Админы могут удалять любые уведомления проекта, мастера - только свои
+        if ($user->role === 'admin') {
+            $notification = Notification::where('id', $id)
+                ->where('project_id', $user->project_id)
+                ->firstOrFail();
+        } else {
+            $notification = Notification::where('id', $id)
+                ->where('project_id', $user->project_id)
+                ->where('user_id', $user->id)
+                ->firstOrFail();
+        }
+        
+        $notification->delete();
+        
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.notification_deleted_successfully')
+            ]);
+        }
+        
+        return back()->with('success', __('messages.notification_deleted_successfully'));
     }
 } 

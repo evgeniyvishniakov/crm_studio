@@ -308,6 +308,12 @@ Route::middleware('auth:client')->group(function () {
     Route::post('/notifications/{notification}/read', [\App\Http\Controllers\Client\NotificationController::class, 'markAsRead'])
         ->name('client.notifications.read')
         ->middleware('rate.limit:notifications'); // Максимум 60 отметок "прочитано" в минуту
+    Route::post('/notifications/mark-all-read', [\App\Http\Controllers\Client\NotificationController::class, 'markAllAsRead'])
+        ->name('client.notifications.mark-all-read')
+        ->middleware('rate.limit:notifications'); // Максимум 60 отметок "прочитано" в минуту
+    Route::delete('/notifications/{notification}', [\App\Http\Controllers\Client\NotificationController::class, 'destroy'])
+        ->name('client.notifications.destroy')
+        ->middleware('rate.limit:notifications'); // Максимум 60 удалений в минуту
 
     Route::get('/api/dashboard/profit-chart', [\App\Http\Controllers\Client\DashboardController::class, 'profitChartData']);
     Route::get('/api/dashboard/sales-chart', [\App\Http\Controllers\Client\DashboardController::class, 'salesChartData']);
