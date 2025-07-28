@@ -538,7 +538,7 @@ label {
                                              <div class="master-details">
                                                  {{ $userActiveServices->count() }} {{ $userActiveServices->count() == 1 ? __('messages.service') : ($userActiveServices->count() < 5 ? __('messages.services_2') : __('messages.services_5')) }}
                                                  @if($userActiveServices->count() > 0)
-                                                     • {{ __('messages.from') }} {{ $userActiveServices->min('price') }} ₽
+                                                     • {{ __('messages.from') }} <span class="currency-amount" data-amount="{{ $userActiveServices->min('price') }}">{{ \App\Helpers\CurrencyHelper::format($userActiveServices->min('price')) }}</span>
                                                  @endif
                                              </div>
                                          </div>
@@ -574,9 +574,9 @@ label {
                                              <div class="service-name">{{ $service->name }}</div>
                                              <div class="service-details">
                                                  @if($mastersCount > 0)
-                                                     {{ $masterNames }} • {{ number_format($avgPrice) }} ₽
+                                                     {{ $masterNames }} • <span class="currency-amount" data-amount="{{ $avgPrice }}">{{ \App\Helpers\CurrencyHelper::format($avgPrice) }}</span>
                                                  @else
-                                                     {{ __('messages.no_masters') }} • {{ number_format($service->price) }} ₽
+                                                     {{ __('messages.no_masters') }} • <span class="currency-amount" data-amount="{{ $service->price }}">{{ \App\Helpers\CurrencyHelper::format($service->price) }}</span>
                                                  @endif
                                              </div>
                                          </div>
@@ -694,7 +694,7 @@ label {
                              <tr data-user-service-id="{{ $userService->id }}">
                                  <td>{{ $userService->user->name }}</td>
                                  <td>{{ $userService->service->name }}</td>
-                                 <td>{!! $userService->price ? number_format($userService->price) . ' ₽' : number_format($userService->service->price) . ' ₽' . ' <small class="text-muted">(' . __('messages.base_price') . ')</small>' !!}</td>
+                                 <td class="currency-amount" data-amount="{{ $userService->price ?: $userService->service->price }}">{!! $userService->price ? \App\Helpers\CurrencyHelper::format($userService->price) : \App\Helpers\CurrencyHelper::format($userService->service->price) . ' <small class="text-muted">(' . __('messages.base_price') . ')</small>' !!}</td>
                                  <td>{!! $userService->duration ? \App\Helpers\TimeHelper::formatDuration($userService->duration) : ($userService->service->duration ? \App\Helpers\TimeHelper::formatDuration($userService->service->duration) . ' <small class="text-muted">(' . __('messages.base_duration') . ')</small>' : __('messages.not_specified_duration')) !!}</td>
                                  <td>
                                      @if($userService->is_active_for_booking)
@@ -905,6 +905,18 @@ function formatDuration(minutes) {
             const minuteText = remainingMinutes + ' мин';
             return '~' + hourText + ' ' + minuteText;
         }
+    }
+}
+
+// Функция для форматирования валюты
+function formatCurrency(amount) {
+    if (window.CurrencyManager) {
+        return window.CurrencyManager.formatAmount(amount);
+    } else {
+        // Fallback форматирование
+        const num = parseFloat(amount);
+        if (isNaN(num)) return amount;
+        return num.toLocaleString('ru-RU') + ' ₽';
     }
 }
 
@@ -1602,10 +1614,13 @@ function addUserServiceToTable(userService) {
     serviceCell.textContent = userService.service_name;
     
     const priceCell = document.createElement('td');
+    priceCell.className = 'currency-amount';
+    priceCell.setAttribute('data-amount', userService.price || userService.service_price);
     if (userService.price) {
-        priceCell.textContent = userService.price + ' ₽';
+        priceCell.textContent = window.CurrencyManager ? window.CurrencyManager.formatAmount(userService.price) : (userService.price + ' ₽');
     } else {
-        priceCell.innerHTML = userService.service_price + ' ₽ <small class="text-muted">({{ __('messages.base_price') }})</small>';
+        const formattedPrice = window.CurrencyManager ? window.CurrencyManager.formatAmount(userService.service_price) : (userService.service_price + ' ₽');
+        priceCell.innerHTML = formattedPrice + ' <small class="text-muted">({{ __('messages.base_price') }})</small>';
     }
     
     const durationCell = document.createElement('td');
@@ -1672,10 +1687,13 @@ function updateUserServiceInTable(userService) {
         serviceCell.textContent = userService.service_name;
         
         const priceCell = document.createElement('td');
+        priceCell.className = 'currency-amount';
+        priceCell.setAttribute('data-amount', userService.price || userService.service_price);
         if (userService.price) {
-            priceCell.textContent = userService.price + ' ₽';
+            priceCell.textContent = window.CurrencyManager ? window.CurrencyManager.formatAmount(userService.price) : (userService.price + ' ₽');
         } else {
-            priceCell.innerHTML = userService.service_price + ' ₽ <small class="text-muted">({{ __('messages.base_price') }})</small>';
+            const formattedPrice = window.CurrencyManager ? window.CurrencyManager.formatAmount(userService.service_price) : (userService.service_price + ' ₽');
+            priceCell.innerHTML = formattedPrice + ' <small class="text-muted">({{ __('messages.base_price') }})</small>';
         }
         
         const durationCell = document.createElement('td');
@@ -1772,7 +1790,8 @@ function updateMastersList(userServices) {
             const detailsElement = item.querySelector('.master-details');
             const statusElement = item.querySelector('.master-status');
             
-            detailsElement.textContent = `${servicesCount} ${servicesCount == 1 ? 'услуга' : (servicesCount < 5 ? 'услуги' : 'услуг')} • от ${minPrice.toLocaleString()} ₽`;
+            const formattedPrice = formatCurrency(minPrice);
+            detailsElement.innerHTML = `${servicesCount} ${servicesCount == 1 ? 'услуга' : (servicesCount < 5 ? 'услуги' : 'услуг')} • от <span class="currency-amount" data-amount="${minPrice}">${formattedPrice}</span>`;
             
             if (servicesCount > 0) {
                 statusElement.innerHTML = `
@@ -1823,9 +1842,10 @@ function updateServicesList(userServices) {
             const detailsElement = item.querySelector('.service-details');
             const statusElement = item.querySelector('.service-status');
             
-            detailsElement.textContent = mastersCount > 0 ? 
-                `${masterNames} • ${avgPrice.toLocaleString()} ₽` : 
-                'Нет мастеров • 0 ₽';
+            const formattedPrice = formatCurrency(avgPrice);
+            detailsElement.innerHTML = mastersCount > 0 ? 
+                `${masterNames} • <span class="currency-amount" data-amount="${avgPrice}">${formattedPrice}</span>` : 
+                'Нет мастеров • <span class="currency-amount" data-amount="0">0 ₽</span>';
             
             if (mastersCount > 0) {
                 statusElement.innerHTML = `<span class="status-available">Доступна</span>`;
