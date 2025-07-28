@@ -1,7 +1,7 @@
-#notification {
+.notification {
     position: fixed;
     top: 20px;
-    right: 20px;
+    right: -450px;
     min-width: 260px;
     max-width: 400px;
     background-color: #4CAF50;
@@ -11,32 +11,59 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     opacity: 0;
-    transition: opacity 0.3s;
+    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     display: flex;
     align-items: center;
     gap: 0.7em;
-    display: none;
+    margin-bottom: 10px;
 }
-#notification.show {
+
+.notification.show {
     opacity: 1;
-    display: block;
+    right: 20px;
+    transform: scale(1);
 }
-#notification.error {
+
+.notification.error {
     background: #fde8e8;
     color: #f05252;
-    display: block;
 }
-#notification.success {
+
+.notification.success {
     background: #e6f7ee;
     color: #10b759;
-    display: block;
 }
-#notification .notification-icon {
+
+.notification .notification-icon {
     width: 1.2em;
     height: 1.2em;
     vertical-align: middle;
     margin-right: 0.5em;
+    flex-shrink: 0;
 }
+
+.notification .notification-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 0;
+    margin-left: auto;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.notification .notification-close:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
 @keyframes shake {
     0% { transform: translateX(0); }
     20% { transform: translateX(-8px); }
@@ -45,6 +72,14 @@
     80% { transform: translateX(6px); }
     100% { transform: translateX(0); }
 }
-#notification.shake {
+
+.notification.shake {
     animation: shake 0.5s;
-} 
+}
+
+/* Позиционирование множественных уведомлений */
+.notification:nth-child(1) { top: 20px; }
+.notification:nth-child(2) { top: 90px; }
+.notification:nth-child(3) { top: 160px; }
+.notification:nth-child(4) { top: 230px; }
+.notification:nth-child(5) { top: 300px; } 

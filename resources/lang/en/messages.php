@@ -451,6 +451,10 @@ return [
     'saving' => 'Saving...',
     'error_saving' => 'Error saving',
     'validation_errors' => 'Validation errors',
+    'language_changed_to' => 'Language changed to',
+    'web_booking_language_changed_to' => 'Web booking language changed to',
+    'currency_changed_to' => 'Currency changed to',
+    'reload_page_to_apply' => 'Reload the page to apply changes',
     'email_confirmation_sent' => 'A confirmation email has been sent to your new email. Please check your email.',
     'send_error' => 'Error sending. Please try again.',
     
@@ -1377,7 +1381,7 @@ return [
     'error_adding_product' => 'Error adding product',
     
     // Currency
-    'currency' => 'UAH',
+    'currency' => 'Currency',
     
     // Common translations
     'all' => 'All',

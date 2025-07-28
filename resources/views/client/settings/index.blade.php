@@ -421,99 +421,88 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">{{ __('messages.save') }}</button>
                 
                 <script>
-                // Обработчик формы языка и валюты
-                document.getElementById('language-currency-form').addEventListener('submit', async function(e) {
-                    e.preventDefault(); // Предотвращаем обычную отправку формы
-                    
-                    const formData = new FormData(this);
-                    const languageId = formData.get('language_id');
-                    const bookingLanguageId = formData.get('booking_language_id');
-                    const currencyId = formData.get('currency_id');
-                    
-                    // Показываем индикатор загрузки
-                    const submitButton = this.querySelector('button[type="submit"]');
-                    const originalText = submitButton.textContent;
-                    submitButton.textContent = '{{ __('messages.saving') }}';
-                    submitButton.disabled = true;
-                    
-                    try {
-                        // Отправляем запрос на сервер
-                        const response = await fetch('/api/settings/update', {
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Функция для автоматического сохранения
+                    function autoSaveLanguageCurrency(fieldName, value) {
+                        const formData = new FormData();
+                        formData.append(fieldName, value);
+                        
+                        // Добавляем текущие значения других полей
+                        const languageSelect = document.querySelector('select[name="language_id"]');
+                        const bookingLanguageSelect = document.querySelector('select[name="booking_language_id"]');
+                        const currencySelect = document.querySelector('select[name="currency_id"]');
+                        
+                        if (languageSelect && fieldName !== 'language_id') {
+                            formData.append('language_id', languageSelect.value);
+                        }
+                        if (bookingLanguageSelect && fieldName !== 'booking_language_id') {
+                            formData.append('booking_language_id', bookingLanguageSelect.value);
+                        }
+                        if (currencySelect && fieldName !== 'currency_id') {
+                            formData.append('currency_id', currencySelect.value);
+                        }
+                        
+                        fetch('{{ route("client.settings.update-language-currency") }}', {
                             method: 'POST',
                             headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                                 'Accept': 'application/json',
-                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             },
-                            body: JSON.stringify({
-                                language_id: languageId,
-                                booking_language_id: bookingLanguageId,
-                                currency_id: currencyId
-                            })
+                            body: formData
+                        })
+                        .then(function(response) {
+                            if (!response.ok) {
+                                return response.json().then(function(data) { throw data; });
+                            }
+                            return response.json();
+                        })
+                        .then(function(data) {
+                            if (data.success) {
+                                let message = '';
+                                
+                                if (fieldName === 'language_id' && data.language) {
+                                    message = '{{ __('messages.language_changed_to') }}: ' + data.language.name + '. {{ __('messages.reload_page_to_apply') }}';
+                                } else if (fieldName === 'booking_language_id' && data.booking_language) {
+                                    message = '{{ __('messages.web_booking_language_changed_to') }}: ' + data.booking_language.name + '. {{ __('messages.reload_page_to_apply') }}';
+                                } else if (fieldName === 'currency_id' && data.currency) {
+                                    message = '{{ __('messages.currency_changed_to') }}: ' + data.currency.code + '. {{ __('messages.reload_page_to_apply') }}';
+                                }
+                                
+                                if (message) {
+                                    window.showNotification('success', message);
+                                }
+                            }
+                        })
+                        .catch(function(error) {
+                            console.error('Error:', error);
+                            window.showNotification('error', '{{ __('messages.error_saving') }}');
                         });
-                        
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            // Показываем уведомление об успешном сохранении
-                            // if (window.showNotification) {
-                            //     let message = 'Настройки успешно сохранены!';
-                            //     if (data.language && data.currency) {
-                            //         message = `Язык изменен на ${data.language.name}, валюта изменена на ${data.currency.code}`;
-                            //     } else if (data.language) {
-                            //         message = `Язык изменен на ${data.language.name}`;
-                            //     } else if (data.currency) {
-                            //         message = `Валюта изменена на ${data.currency.code}`;
-                            //     }
-                            //     window.showNotification('success', message);
-                            // }
-                            
-                            // Обновляем менеджеры
-                            if (window.LanguageManager) {
-                                window.LanguageManager.refresh();
-                            }
-                            if (window.CurrencyManager) {
-                                window.CurrencyManager.refresh();
-                            }
-                            
-                            // НЕ перезагружаем страницу - просто обновляем селекторы
-                            
-                        } else {
-                            throw new Error(data.message || 'Ошибка сохранения');
-                        }
-                        
-                    } catch (error) {
-                        
-                        // Используем существующую систему уведомлений
-                        if (window.showNotification) {
-                            window.showNotification('error', '{{ __('messages.error_saving_settings') }}: ' + error.message);
-                        }
-                    } finally {
-                        // Восстанавливаем кнопку
-                        submitButton.textContent = originalText;
-                        submitButton.disabled = false;
-                    }
-                });
-                
-                // Отключаем автоматическое обновление селекторов менеджерами
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Отключаем обновление селекторов в LanguageManager
-                    if (window.LanguageManager) {
-                        const originalUpdateLanguageSelectors = window.LanguageManager.updateLanguageSelectors;
-                        window.LanguageManager.updateLanguageSelectors = function() {
-                            return;
-                        };
                     }
                     
-                    // Отключаем обновление селекторов в CurrencyManager
-                    if (window.CurrencyManager) {
-                        const originalUpdateCurrencySelectors = window.CurrencyManager.updateCurrencySelectors;
-                        window.CurrencyManager.updateCurrencySelectors = function() {
-                            return;
-                        };
+                    // Обработчики для селектов
+                    const languageSelect = document.querySelector('select[name="language_id"]');
+                    const bookingLanguageSelect = document.querySelector('select[name="booking_language_id"]');
+                    const currencySelect = document.querySelector('select[name="currency_id"]');
+                    
+                    if (languageSelect) {
+                        languageSelect.addEventListener('change', function() {
+                            autoSaveLanguageCurrency('language_id', this.value);
+                        });
+                    }
+                    
+                    if (bookingLanguageSelect) {
+                        bookingLanguageSelect.addEventListener('change', function() {
+                            autoSaveLanguageCurrency('booking_language_id', this.value);
+                        });
+                    }
+                    
+                    if (currencySelect) {
+                        currencySelect.addEventListener('change', function() {
+                            autoSaveLanguageCurrency('currency_id', this.value);
+                        });
                     }
                 });
                 </script>

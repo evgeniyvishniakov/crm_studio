@@ -202,14 +202,29 @@ class SettingsController extends Controller
 
             // Перезагружаем проект с обновленными данными
             $project->refresh();
-            $project->load('currency');
+            $project->load(['currency', 'language']);
+            
+            // Определяем, что именно изменилось
+            $changedData = [];
+            if (isset($validated['language_id'])) {
+                $changedData['language'] = $project->language;
+            }
+            if (isset($validated['booking_language_id'])) {
+                // Получаем правильный язык веб-записи
+                $bookingLanguage = \App\Models\Language::find($validated['booking_language_id']);
+                $changedData['booking_language'] = $bookingLanguage;
+            }
+            if (isset($validated['currency_id'])) {
+                $changedData['currency'] = $project->currency;
+            }
             
             return response()->json([
                 'success' => true,
                 'currency_id' => $project->currency_id,
                 'currency_code' => $project->currency ? $project->currency->code : null,
                 'currency' => $project->currency,
-                'language' => $project->language
+                'language' => $project->language,
+                ...$changedData
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([

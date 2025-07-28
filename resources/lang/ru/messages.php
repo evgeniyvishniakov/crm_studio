@@ -451,6 +451,10 @@ return [
     'saving' => 'Сохранение...',
     'error_saving' => 'Ошибка при сохранении',
     'validation_errors' => 'Ошибки валидации',
+    'language_changed_to' => 'Язык изменен на',
+    'web_booking_language_changed_to' => 'Язык веб-записи изменен на',
+    'currency_changed_to' => 'Валюта изменена на',
+    'reload_page_to_apply' => 'Перезагрузите страницу для применения изменений',
     'email_confirmation_sent' => 'На новую почту отправлено письмо для подтверждения. Пожалуйста, проверьте ваш email.',
     'send_error' => 'Ошибка при отправке. Попробуйте ещё раз.',
     
@@ -1538,7 +1542,7 @@ return [
     'error_adding_product' => 'Ошибка добавления товара',
     
     // Валюта
-    'currency' => 'грн',
+    'currency' => 'Валюта',
     
     // Общие переводы
     'brand' => 'Бренд',
