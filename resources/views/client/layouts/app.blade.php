@@ -244,8 +244,15 @@
     $isAdmin = $user ? $user->role === 'admin' : false;
     $project = $user ? \App\Models\Admin\Project::find($user->project_id) : null;
     $hasNotificationAccess = $user && ($isAdmin || in_array('notifications', $userPermissions));
-    $unreadNotifications = $hasNotificationAccess ? \App\Models\Notification::where('project_id', $user->project_id)->where('is_read', false)->orderByDesc('created_at')->limit(5)->get() : collect();
-    $unreadCount = $hasNotificationAccess ? \App\Models\Notification::where('project_id', $user->project_id)->where('is_read', false)->count() : 0;
+    
+    // Админы видят все непрочитанные уведомления проекта, мастера - только свои
+    if ($isAdmin) {
+        $unreadNotifications = $hasNotificationAccess ? \App\Models\Notification::where('project_id', $user->project_id)->where('is_read', false)->orderByDesc('created_at')->limit(5)->get() : collect();
+        $unreadCount = $hasNotificationAccess ? \App\Models\Notification::where('project_id', $user->project_id)->where('is_read', false)->count() : 0;
+    } else {
+        $unreadNotifications = $hasNotificationAccess ? \App\Models\Notification::where('project_id', $user->project_id)->where('user_id', $user->id)->where('is_read', false)->orderByDesc('created_at')->limit(5)->get() : collect();
+        $unreadCount = $hasNotificationAccess ? \App\Models\Notification::where('project_id', $user->project_id)->where('user_id', $user->id)->where('is_read', false)->count() : 0;
+    }
 @endphp
 <!-- Left Panel -->
 <aside id="left-panel" class="left-panel">

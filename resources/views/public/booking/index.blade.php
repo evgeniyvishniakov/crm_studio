@@ -1362,6 +1362,8 @@
                  console.log('Submit response data:', data);
                  if (data.success) {
                      showSuccess(data.booking);
+                     // Сбрасываем флаг при успешной отправке
+                     isSubmitting = false;
                  } else {
                      alert('Ошибка: ' + data.message);
                      submitBtn.disabled = false;

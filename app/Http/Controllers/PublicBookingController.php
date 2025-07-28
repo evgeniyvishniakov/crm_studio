@@ -242,6 +242,37 @@ class PublicBookingController extends Controller
             ]
         );
 
+        // Проверяем, не существует ли уже такая запись (защита от дублирования)
+        $existingAppointment = Appointment::where('client_id', $client->id)
+            ->where('service_id', $validated['service_id'])
+            ->where('user_id', $validated['user_id'])
+            ->where('date', $validated['date'])
+            ->where('time', $validated['time'])
+            ->where('project_id', $project->id)
+            ->where('created_at', '>=', now()->subMinutes(5)) // Проверяем записи за последние 5 минут
+            ->first();
+
+        if ($existingAppointment) {
+            \Log::info('Duplicate appointment detected', [
+                'existing_appointment_id' => $existingAppointment->id,
+                'client_id' => $client->id,
+                'user_id' => $validated['user_id'],
+                'date' => $validated['date'],
+                'time' => $validated['time']
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.booking_successful') . ' ' . __('messages.we_will_contact_you'),
+                'booking' => [
+                    'service_name' => $service->name,
+                    'master_name' => $user->name,
+                    'date' => $validated['date'],
+                    'time' => $validated['time']
+                ]
+            ]);
+        }
+
         // Создаем запись
         $appointment = Appointment::create([
             'client_id' => $client->id,
@@ -269,6 +300,10 @@ class PublicBookingController extends Controller
                 'appointment_id' => $appointment->id,
                 'user_id' => $user->id
             ]);
+            
+            // Создаем уникальный ключ для этой записи
+            $bookingKey = md5($client->id . $validated['service_id'] . $validated['user_id'] . $validated['date'] . $validated['time'] . $project->id);
+            
             // Создаем уведомление для мастера
             $notificationBody = __('messages.new_web_booking_notification_body', [
                 'client_name' => $client->name,
@@ -276,42 +311,62 @@ class PublicBookingController extends Controller
                 'master_name' => $user->name,
                 'date' => $validated['date'],
                 'time' => $validated['time']
-            ]);
+            ]) . ' [ID:' . $bookingKey . ']';
 
             // Уведомления создаются в цикле ниже для всех пользователей
 
-            // Создаем уведомления для всех пользователей проекта (мастер + админы)
+            // Создаем уведомления только для мастера, который будет выполнять запись
             $allUsers = \App\Models\Admin\User::where('project_id', $project->id)
-                ->whereIn('role', ['admin', 'master'])
+                ->where('id', $validated['user_id']) // Только для мастера, который будет выполнять запись
                 ->get();
 
-            \Log::info('Creating notifications for all users', [
+            \Log::info('Creating notifications for master', [
                 'project_id' => $project->id,
-                'all_users_count' => $allUsers->count(),
-                'all_users' => $allUsers->pluck('id', 'name')->toArray()
+                'master_id' => $validated['user_id'],
+                'master_name' => $user->name
             ]);
 
             foreach ($allUsers as $notifyUser) {
-                // Проверяем, не создали ли мы уже уведомление для этого пользователя
+                // Проверяем, не создали ли мы уже уведомление для мастера в рамках текущего запроса
+                $cacheKey = 'notification_' . $notifyUser->id . '_' . $bookingKey;
+                if (\Cache::has($cacheKey)) {
+                    \Log::info('Notification already created for user in this request', [
+                        'user_id' => $notifyUser->id,
+                        'booking_key' => $bookingKey
+                    ]);
+                    continue;
+                }
+                
+                // Проверяем, не создали ли мы уже уведомление для мастера
+                // Улучшенная проверка: ищем уведомления для этой записи за последние 10 минут
                 $existingNotification = \App\Models\Notification::where('user_id', $notifyUser->id)
                     ->where('type', 'web_booking')
-                    ->where('title', __('messages.new_web_booking_notification_title'))
-                    ->where('body', $notificationBody) // Проверяем по содержимому уведомления
                     ->where('project_id', $project->id)
-                    ->where('created_at', '>=', now()->subMinutes(1)) // Проверяем уведомления за последнюю минуту
+                    ->where('created_at', '>=', now()->subMinutes(10)) // Увеличиваем интервал до 10 минут
+                    ->where(function($query) use ($client, $service, $user, $validated, $bookingKey) {
+                        // Проверяем по содержимому уведомления
+                        $query->where('body', 'LIKE', '%' . $client->name . '%')
+                              ->where('body', 'LIKE', '%' . $service->name . '%')
+                              ->where('body', 'LIKE', '%' . $user->name . '%')
+                              ->where('body', 'LIKE', '%' . $validated['date'] . '%')
+                              ->where('body', 'LIKE', '%' . $validated['time'] . '%')
+                              // Также проверяем по уникальному ключу записи
+                              ->orWhere('body', 'LIKE', '%' . $bookingKey . '%');
+                    })
                     ->first();
 
                 if ($existingNotification) {
                     \Log::info('Notification already exists for user', [
                         'user_id' => $notifyUser->id,
-                        'existing_notification_id' => $existingNotification->id
+                        'existing_notification_id' => $existingNotification->id,
+                        'appointment_id' => $appointment->id
                     ]);
                     continue;
                 }
 
-                \Log::info('Attempting to create notification for user', [
-                    'notify_user_id' => $notifyUser->id,
-                    'notify_user_name' => $notifyUser->name,
+                \Log::info('Attempting to create notification for master', [
+                    'master_id' => $notifyUser->id,
+                    'master_name' => $notifyUser->name,
                     'project_id' => $project->id,
                     'notification_body' => $notificationBody
                 ]);
@@ -325,13 +380,18 @@ class PublicBookingController extends Controller
                         'is_read' => false,
                         'project_id' => $project->id
                     ]);
-                    \Log::info('Notification created', [
+                    
+                    // Устанавливаем кэш на 10 минут, чтобы предотвратить создание дублирующихся уведомлений
+                    \Cache::put($cacheKey, true, now()->addMinutes(10));
+                    
+                    \Log::info('Notification created for master', [
                         'notification_id' => $notification->id,
-                        'user_id' => $notifyUser->id
+                        'master_id' => $notifyUser->id,
+                        'booking_key' => $bookingKey
                     ]);
                 } catch (\Exception $e) {
-                    \Log::error('Failed to create notification for user', [
-                        'user_id' => $notifyUser->id,
+                    \Log::error('Failed to create notification for master', [
+                        'master_id' => $notifyUser->id,
                         'error' => $e->getMessage()
                     ]);
                 }
