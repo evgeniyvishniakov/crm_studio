@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Простая демонстрация виджета</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .demo-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .demo-section h2 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .widget-demo {
+            text-align: center;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 10001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: #28a745;
+        }
+        
+        .notification.info {
+            background: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Простая демонстрация виджета записи</h1>
+        
+        <div class="demo-section">
+            <h2>📋 Что это такое?</h2>
+            <p>Это демонстрационная страница, показывающая как виджет записи будет работать на вашем сайте. Виджет - это кнопка, которая открывает форму записи прямо на вашем сайте.</p>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🚀 Как установить на ваш сайт</h2>
+            <p><strong>Просто скопируйте и вставьте этот код на ваш сайт:</strong></p>
+            
+            <div class="code-block">
+&lt;!-- Виджет записи для сайта --&gt;
+&lt;script src="http://127.0.0.1:8000/widget-loader.js" data-project="testovyi-proekt"&gt;&lt;/script&gt;
+            </div>
+            
+            <p>Вставьте этот код в секцию &lt;head&gt; или перед закрывающим &lt;/body&gt; на вашей странице.</p>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🎨 Демонстрация встраиваемого виджета</h2>
+            <p>Ниже показан пример встраиваемого виджета, который можно разместить в контенте страницы:</p>
+            
+            <div class="widget-demo">
+                <p>Это обычный текст на странице. А вот здесь можно вставить кнопку виджета:</p>
+                
+                <!-- Здесь будет встраиваемый виджет -->
+                <span id="booking-widget-inline"></span>
+                
+                <p>И продолжить текст после кнопки. Виджет интегрируется в контент естественным образом.</p>
+            </div>
+            
+            <p><strong>Код для встраиваемого виджета:</strong></p>
+            <div class="code-block">
+&lt;!-- Виджет записи для сайта (встраиваемый) --&gt;
+&lt;script src="http://127.0.0.1:8000/widget-loader.js" data-project="testovyi-proekt"&gt;&lt;/script&gt;
+&lt;span id="booking-widget-inline"&gt;&lt;/span&gt;
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🎯 Тестирование</h2>
+            <p>Используйте эти кнопки для тестирования виджета:</p>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="btn" onclick="loadWidget()">Загрузить виджет</button>
+                <button class="btn" onclick="initWidgetManually()">Инициализировать вручную</button>
+                <button class="btn" onclick="checkWidgetState()">Проверить состояние</button>
+                <button class="btn" onclick="clearWidget()">Очистить виджет</button>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📱 Как это работает</h2>
+            <ol>
+                <li><strong>Посетитель заходит на ваш сайт</strong> - видит кнопку "Записаться"</li>
+                <li><strong>Кликает на кнопку</strong> - открывается модальное окно с формой записи</li>
+                <li><strong>Заполняет форму</strong> - выбирает услугу, мастера, дату и время</li>
+                <li><strong>Отправляет заявку</strong> - данные попадают в вашу CRM систему</li>
+                <li><strong>Получает подтверждение</strong> - видит сообщение об успешной записи</li>
+            </ol>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🔒 Безопасность</h2>
+            <p>Виджет работает через iframe, что обеспечивает безопасность и изоляцию от основного сайта. Все данные передаются напрямую в вашу CRM систему.</p>
+        </div>
+    </div>
+
+    <script>
+        // Функция для показа уведомлений
+        function showNotification(type, message) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Загрузка виджета
+        function loadWidget() {
+            console.log('Загрузка виджета...');
+            clearWidget();
+            
+            // Загружаем виджет
+            const script = document.createElement('script');
+            script.src = 'http://127.0.0.1:8000/widget-loader.js';
+            script.setAttribute('data-project', 'testovyi-proekt');
+            
+            script.onload = function() {
+                console.log('Скрипт виджета загружен');
+                showNotification('success', 'Виджет загружен! Теперь вы можете протестировать его работу.');
+            };
+            
+            script.onerror = function() {
+                console.error('Ошибка загрузки скрипта виджета');
+                showNotification('error', 'Ошибка загрузки виджета');
+            };
+            
+            document.head.appendChild(script);
+        }
+        
+        // Очистка виджета
+        function clearWidget() {
+            const widgets = document.querySelectorAll('#booking-widget, #booking-modal');
+            widgets.forEach(widget => widget.remove());
+            
+            const scripts = document.querySelectorAll('script[src*="widget-loader.js"]');
+            scripts.forEach(script => script.remove());
+            
+            showNotification('info', 'Виджет очищен');
+        }
+
+        // Инициализация виджета вручную
+        function initWidgetManually() {
+            console.log('Инициализация виджета вручную...');
+            
+            if (typeof window.initBookingWidget === 'function') {
+                console.log('Функция initBookingWidget найдена, вызываем...');
+                window.initBookingWidget('testovyi-proekt');
+            } else {
+                console.error('Функция initBookingWidget не найдена');
+                showNotification('error', 'Функция виджета не найдена');
+            }
+        }
+        
+        // Функция для проверки состояния виджета
+        function checkWidgetState() {
+            console.log('Проверка состояния виджета...');
+            console.log('Элемент booking-widget:', document.getElementById('booking-widget'));
+            console.log('Элемент booking-widget-inline:', document.getElementById('booking-widget-inline'));
+            console.log('Функция initBookingWidget:', typeof window.initBookingWidget);
+            console.log('Функция openBookingModal:', typeof window.openBookingModal);
+        }
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            showNotification('info', 'Демонстрационная страница загружена! Нажмите "Загрузить виджет" для тестирования.');
+        });
+    </script>
+</body>
+</html>

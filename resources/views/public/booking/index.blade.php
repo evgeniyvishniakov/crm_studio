@@ -27,7 +27,7 @@
         }
         
         /* Глобальные стили шрифтов */
-        body, .booking-container, .site-header, .site-footer, 
+        body, .site-header, .site-footer, 
         .booking-header, .booking-body, .step-indicator, 
         .service-card, .master-card, .calendar, .time-slot,
         .form-control, .btn, h1, h2, h3, h4, h5, h6, p, span, div {
@@ -266,20 +266,20 @@
 
         }
         
-        .booking-container {
+
+        
+
+        
+        
+        .booking-body {
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin: 20px auto;
             max-width: 800px;
             border: 1px solid #e9ecef;
-        }
-        
-
-        
-        
-        .booking-body {
             padding: 30px;
+            position: relative;
         }
         
         .step-indicator {
@@ -715,9 +715,7 @@
     </header>
     @endif
 
-    <div class="booking-container">
-        
-        <div class="booking-body">
+    <div class="booking-body">
             <!-- Индикатор шагов -->
             <div class="step-indicator" id="step-indicator">
                 <!-- Активный шаг будет отрисован через JS -->

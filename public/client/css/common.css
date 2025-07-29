@@ -272,6 +272,11 @@
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
+.widget-section-header {
+    margin: 25px 0 15px 0 !important;
+    font-size: 16px !important;
+}
+
 .btn-delete {
     background: linear-gradient(135deg, #dc2626, #ef4444);
     color: white;

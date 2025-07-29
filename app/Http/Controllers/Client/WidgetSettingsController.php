@@ -87,8 +87,6 @@ class WidgetSettingsController extends Controller
     
     private function generateWidgetCode($project)
     {
-        $widgetUrl = route('public.booking.show', ['slug' => $project->slug]) . '?widget=true';
-        
         // Определяем, является ли позиция inline
         $isInline = in_array($project->widget_position, ['inline-left', 'inline-center', 'inline-right']);
         
@@ -97,202 +95,40 @@ class WidgetSettingsController extends Controller
         \Log::info('Is inline: ' . ($isInline ? 'true' : 'false'));
         
         if ($isInline) {
-            // Для inline позиций создаем span с кнопкой
+            // Для inline позиций создаем простой код для вставки
             return "
 <!-- Виджет записи для сайта (встраиваемый) -->
-<script>
-(function() {
-    // Создаем span элемент для встраивания
-    var widgetSpan = document.createElement('span');
-    widgetSpan.id = 'booking-widget-inline';
-    widgetSpan.innerHTML = `
-        <button id='booking-widget-btn' 
-                style='
-                    background-color: {$project->widget_button_color};
-                    color: {$project->widget_text_color};
-                    border: none;
-                    border-radius: {$project->widget_border_radius}px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    {$this->getPositionStyles($project->widget_position)}
-                    {$this->getSizeStyles($project->widget_size)}
-                    {$this->getAnimationStyles($project)}
-                '
-                {$this->getAnimationJavaScript($project)}
-                onclick='openBookingModal()'>
-            {$project->widget_button_text}
-        </button>
-    `;
-    
-    // Добавляем span в начало body для копирования
-    document.body.appendChild(widgetSpan);
-    
-    // Функция для копирования кода кнопки
-    window.copyWidgetButton = function() {
-        var buttonCode = widgetSpan.outerHTML;
-        var textArea = document.createElement('textarea');
-        textArea.value = buttonCode;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('Код кнопки скопирован! Вставьте его в нужное место на странице.');
-    };
-    
-    // Показываем инструкции
-    console.log('=== ВСТРАИВАЕМЫЙ ВИДЖЕТ ГОТОВ ===');
-    console.log('1. Используйте copyWidgetButton() для копирования HTML кода кнопки');
-    console.log('2. Вставьте скопированный код в нужное место на вашей странице');
-    console.log('3. Кнопка будет отображаться в выбранной позиции (слева/по центру/справа)');
-    console.log('4. При клике на кнопку откроется форма записи');
-    
-    // Показываем уведомление на странице
-    if (typeof window.showNotification === 'function') {
-        window.showNotification('success', 'Встраиваемый виджет готов! Используйте copyWidgetButton() для копирования кода.');
-    }
-    
-    // Функция открытия модального окна
-    window.openBookingModal = function() {
-        var modal = document.createElement('div');
-        modal.id = 'booking-modal';
-        modal.style.cssText = '
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        ';
-        
-        modal.innerHTML = `
-            <div style='
-                background: white;
-                border-radius: 12px;
-                width: 90%;
-                max-width: 800px;
-                height: 90%;
-                max-height: 600px;
-                position: relative;
-            '>
-                <button onclick='closeBookingModal()' style='
-                    position: absolute;
-                    top: 15px;
-                    right: 15px;
-                    background: none;
-                    border: none;
-                    font-size: 24px;
-                    cursor: pointer;
-                    color: #666;
-                '>&times;</button>
-                <iframe src=\"{$widgetUrl}\" 
-                        style='width: 100%; height: 100%; border: none; border-radius: 12px;'>
-                </iframe>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-    };
-    
-    // Функция закрытия модального окна
-    window.closeBookingModal = function() {
-        var modal = document.getElementById('booking-modal');
-        if (modal) {
-            modal.remove();
-        }
-    };
-})();
-</script>";
+<!-- Просто вставьте этот код в нужное место на вашей странице -->
+<script src=\"http://127.0.0.1:8000/widget-loader.js\" data-project=\"{$project->slug}\"></script>
+<span id=\"booking-widget-inline\"></span>
+
+<!-- Или используйте этот HTML код для кнопки: -->
+<button onclick=\"openBookingModal()\" style='
+    background-color: {$project->widget_button_color};
+    color: {$project->widget_text_color};
+    border: none;
+    border-radius: {$project->widget_border_radius}px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    {$this->getPositionStyles($project->widget_position)}
+    {$this->getSizeStyles($project->widget_size)}
+    {$this->getAnimationStyles($project)}
+    {$this->getAnimationJavaScript($project)}
+'>
+    {$project->widget_button_text}
+</button>";
         } else {
-            // Для фиксированных позиций создаем обычный виджет
+            // Для фиксированных позиций создаем простой код
             return "
 <!-- Виджет записи для сайта -->
+<!-- Просто вставьте этот код в &lt;head&gt; или перед закрывающим &lt;/body&gt; на вашей странице -->
+<script src=\"http://127.0.0.1:8000/widget-loader.js\" data-project=\"{$project->slug}\"></script>
+
+<!-- Или инициализируйте виджет вручную: -->
 <script>
-(function() {
-    var widget = document.createElement('div');
-    widget.id = 'booking-widget';
-    widget.innerHTML = `
-        <button id='booking-widget-btn' 
-                style='
-                    position: fixed;
-                    z-index: 9999;
-                    background-color: {$project->widget_button_color};
-                    color: {$project->widget_text_color};
-                    border: none;
-                    border-radius: {$project->widget_border_radius}px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    {$this->getPositionStyles($project->widget_position)}
-                    {$this->getSizeStyles($project->widget_size)}
-                    {$this->getAnimationStyles($project)}
-                '
-                {$this->getAnimationJavaScript($project)}
-                onclick='openBookingModal()'>
-            {$project->widget_button_text}
-        </button>
-    `;
-    
-    document.body.appendChild(widget);
-    
-    // Функция открытия модального окна
-    window.openBookingModal = function() {
-        var modal = document.createElement('div');
-        modal.id = 'booking-modal';
-        modal.style.cssText = '
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        ';
-        
-        modal.innerHTML = `
-            <div style='
-                background: white;
-                border-radius: 12px;
-                width: 90%;
-                max-width: 800px;
-                height: 90%;
-                max-height: 600px;
-                position: relative;
-            '>
-                <button onclick='closeBookingModal()' style='
-                    position: absolute;
-                    top: 15px;
-                    right: 15px;
-                    background: none;
-                    border: none;
-                    font-size: 24px;
-                    cursor: pointer;
-                    color: #666;
-                '>&times;</button>
-                <iframe src=\"{$widgetUrl}\" 
-                        style='width: 100%; height: 100%; border: none; border-radius: 12px;'>
-                </iframe>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-    };
-    
-    // Функция закрытия модального окна
-    window.closeBookingModal = function() {
-        var modal = document.getElementById('booking-modal');
-        if (modal) {
-            modal.remove();
-        }
-    };
-})();
+    // Инициализация виджета
+    window.initBookingWidget('{$project->slug}');
 </script>";
         }
     }

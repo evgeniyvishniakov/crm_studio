@@ -11,6 +11,7 @@ use App\Models\Admin\User;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\RateLimiter;
 
 class PublicBookingController extends Controller
 {
@@ -193,6 +194,16 @@ class PublicBookingController extends Controller
      */
     public function store(Request $request)
     {
+        // Rate limiting для защиты от спама
+        $key = 'booking-store:' . request()->ip();
+        if (RateLimiter::tooManyAttempts($key, 10)) { // 10 записей в минуту с одного IP
+            return response()->json([
+                'success' => false,
+                'message' => 'Слишком много попыток записи. Попробуйте позже.'
+            ], 429);
+        }
+        RateLimiter::hit($key);
+
         // Логируем входящие данные
         \Log::info('PublicBooking store - входящие данные:', $request->all());
         
@@ -202,8 +213,8 @@ class PublicBookingController extends Controller
             'user_id' => 'required|exists:admin_users,id',
             'date' => 'required|date|after_or_equal:today',
             'time' => 'required|date_format:H:i',
-            'client_name' => 'required|string|max:255',
-            'client_phone' => 'required|string|max:20',
+            'client_name' => 'required|string|max:255|regex:/^[а-яёa-z\s\-\.]+$/ui',
+            'client_phone' => 'required|string|max:20|regex:/^[\+\d\s\-\(\)]+$/',
             'client_email' => 'nullable|email|max:255',
         ]);
         
@@ -215,6 +226,13 @@ class PublicBookingController extends Controller
 
         // Проверяем, что все принадлежат одному проекту
         if ($project->id !== $user->project_id || $service->project_id !== $project->id) {
+            \Log::warning('PublicBooking store - попытка подмены данных', [
+                'project_id' => $validated['project_id'],
+                'user_project_id' => $user->project_id,
+                'service_project_id' => $service->project_id,
+                'ip' => request()->ip()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => __('messages.booking_validation_error')

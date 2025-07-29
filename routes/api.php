@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Client\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +16,11 @@ use App\Http\Controllers\Client\DashboardController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+// API для виджета записи
+Route::prefix('widget')->name('widget.')->group(function () {
+    Route::get('/config/{slug}', [\App\Http\Controllers\Api\WidgetController::class, 'getConfig'])->name('config');
 });
 
 
