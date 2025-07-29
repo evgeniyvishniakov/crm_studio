@@ -456,7 +456,7 @@
                                 <div class="instruction-text">
                                     <p>{{ __('messages.support_text') }}</p>
                                     <div class="support-links">
-                                        <a href="#" class="btn btn-outline-info btn-sm">
+                                        <a href="{{ route('client.support-tickets.index') }}" class="btn btn-outline-info btn-sm">
                                             <i class="fa fa-envelope"></i> {{ __('messages.contact_support') }}
                                         </a>
                                     </div>

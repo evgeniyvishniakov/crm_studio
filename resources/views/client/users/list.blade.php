@@ -38,6 +38,13 @@
                     <tr id="user-{{ $user->id }}">
                         <td>
                             <div class="client-info">
+                                <div class="client-avatar">
+                                    @if($user->avatar)
+                                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="user-avatar">
+                                    @else
+                                        <div class="user-avatar-placeholder">{{ substr($user->name, 0, 1) }}</div>
+                                    @endif
+                                </div>
                                 <div class="client-details">
                                     <div class="client-name">{{ $user->name }}</div>
                                 </div>
@@ -92,6 +99,11 @@
                     <input type="email" id="userEmail" name="email" autocomplete="off">
                 </div>
                 <div class="form-group">
+                    <label for="userAvatar">{{ __('messages.avatar') }}</label>
+                    <input type="file" id="userAvatar" name="avatar" accept="image/*" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                    <small class="form-text text-muted">{{ __('messages.avatar_hint') }}</small>
+                </div>
+                <div class="form-group">
                     <label for="userPassword">{{ __('messages.password') }} *</label>
                     <div style="display:flex;gap:8px;align-items:center;">
                         <input type="text" id="userPassword" name="password" required autocomplete="off" style="flex:1;">
@@ -140,6 +152,15 @@
                 <div class="form-group">
                     <label for="editUserEmail">{{ __('messages.email') }}</label>
                     <input type="email" id="editUserEmail" name="email" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="editUserAvatar">{{ __('messages.avatar') }}</label>
+                    <input type="file" id="editUserAvatar" name="avatar" accept="image/*" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                    <small class="form-text text-muted">{{ __('messages.avatar_hint') }}</small>
+                    <div id="currentAvatar" style="margin-top: 10px; display: none;">
+                        <img id="currentAvatarImg" src="" alt="Текущая аватарка" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                        <small>{{ __('messages.current_avatar') }}</small>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="editUserRole">{{ __('messages.role') }}</label>
@@ -264,9 +285,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     const tbody = document.getElementById('usersTableBody');
                     const tr = document.createElement('tr');
                     tr.id = 'user-' + user.id;
+                    
+                    const avatarHtml = user.avatar 
+                        ? `<img src="/storage/${user.avatar}" alt="${user.name}" class="user-avatar">`
+                        : `<div class="user-avatar-placeholder">${user.name.charAt(0)}</div>`;
+                    
                     tr.innerHTML = `
                         <td>
                             <div class="client-info">
+                                <div class="client-avatar">
+                                    ${avatarHtml}
+                                </div>
                                 <div class="client-details">
                                     <div class="client-name">${user.name}</div>
                                 </div>
@@ -331,6 +360,17 @@ function openEditUserModal(user) {
     document.getElementById('editUserEmail').value = user.email || '';
     document.getElementById('editUserRole').value = user.role;
     document.getElementById('editUserStatus').value = user.status;
+
+    // Отображение текущей аватарки
+    const currentAvatarDiv = document.getElementById('currentAvatar');
+    const currentAvatarImg = document.getElementById('currentAvatarImg');
+    
+    if (user.avatar) {
+        currentAvatarImg.src = `/storage/${user.avatar}`;
+        currentAvatarDiv.style.display = 'block';
+    } else {
+        currentAvatarDiv.style.display = 'none';
+    }
 
     // Блокируем поля для admin
     if (user.username === 'admin') {
@@ -418,87 +458,97 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const userId = document.getElementById('editUserId').value;
             const formData = new FormData(editUserForm);
-            fetch(`/users/${userId}`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                    'Accept': 'application/json',
-                    'X-HTTP-Method-Override': 'PUT'
-                },
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    // Обновить строку в таблице
-                    const user = data.user;
-                    const tr = document.getElementById('user-' + user.id);
-                    if (tr) {
-                        tr.innerHTML = `
-                            <td>
-                                <div class="client-info">
-                                    <div class="client-details">
-                                        <div class="client-name">${user.name}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>${user.email ? user.email : user.username}</td>
-                            <td>${window.roles && window.roles[user.role] ? window.roles[user.role] : user.role}</td>
-                            <td><span class="status-badge ${user.status === 'active' ? 'status-completed' : 'status-cancelled'}">${user.status === 'active' ? '{{ __('messages.active') }}' : '{{ __('messages.inactive') }}'}</span></td>
-                            <td>${user.registered_at ? formatDateTime(user.registered_at) : ''}</td>
-                            <td class="actions-cell" style="vertical-align: middle;">
-                                @if($user->username !== 'admin')
-                                <button class="btn-edit" title="{{ __('messages.edit') }}">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                    </svg>
-                                </button>
-                                <button class="btn-delete" title="{{ __('messages.delete') }}">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                                @endif
-                            </td>
-                        `;
-                        // Re-attach handlers after updating the row
-                        document.addEventListener('click', function(e) {
-                            if (e.target.closest('.btn-edit')) {
-                                const tr = e.target.closest('tr');
-                                if (tr) {
-                                    const userId = tr.id.split('-')[1];
-                                    fetch(`/users/${userId}/edit`, {
-                                        method: 'GET',
-                                        headers: {
-                                            'Accept': 'application/json'
-                                        }
-                                    })
-                                    .then(res => res.json())
-                                    .then(user => {
-                                        openEditUserModal(user);
-                                    })
-                                    .catch(() => showNotification('error', '{{ __('messages.error_loading_user_data') }}'));
-                                }
-                            }
-                            if (e.target.closest('.btn-delete')) {
-                                const tr = e.target.closest('tr');
-                                if (tr) {
-                                    const userId = tr.id.split('-')[1];
-                                    currentDeleteUserRow = tr;
-                                    currentDeleteUserId = userId;
-                                    document.getElementById('userConfirmationModal').style.display = 'block';
-                                }
-                            }
-                        });
+            
+            // Проверяем, есть ли файл аватарки
+            const avatarFile = document.getElementById('editUserAvatar').files[0];
+            
+            if (avatarFile) {
+                // Если есть файл, сначала загружаем аватарку
+                const avatarFormData = new FormData();
+                avatarFormData.append('avatar', avatarFile);
+                avatarFormData.append('_token', document.querySelector('input[name="_token"]').value);
+                
+                fetch(`/users/${userId}/avatar`, {
+                    method: 'POST',
+                    body: avatarFormData
+                })
+                .then(res => res.json())
+                .then(avatarData => {
+                    if (avatarData.success) {
+                        // После успешной загрузки аватарки обновляем остальные данные
+                        updateUserData(userId, formData);
+                    } else {
+                        showNotification('error', avatarData.message || '{{ __('messages.error_uploading_avatar') }}');
                     }
-                    closeEditUserModal();
-                    showNotification('success', '{{ __('messages.user_successfully_updated') }}');
-                } else {
-                    showNotification('error', data.message || '{{ __('messages.error_updating_user') }}');
-                }
-            })
-            .catch(() => showNotification('error', '{{ __('messages.error_updating_user') }}'));
+                })
+                .catch(() => showNotification('error', '{{ __('messages.error_uploading_avatar') }}'));
+            } else {
+                // Если нет файла, просто обновляем данные
+                updateUserData(userId, formData);
+            }
         });
+    }
+    
+    // Функция для обновления данных пользователя
+    function updateUserData(userId, formData) {
+        fetch(`/users/${userId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                'Accept': 'application/json',
+                'X-HTTP-Method-Override': 'PUT'
+            },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Обновить строку в таблице
+                const user = data.user;
+                const tr = document.getElementById('user-' + user.id);
+                if (tr) {
+                    const avatarHtml = user.avatar 
+                        ? `<img src="/storage/${user.avatar}" alt="${user.name}" class="user-avatar">`
+                        : `<div class="user-avatar-placeholder">${user.name.charAt(0)}</div>`;
+                    
+                    tr.innerHTML = `
+                        <td>
+                            <div class="client-info">
+                                <div class="client-avatar">
+                                    ${avatarHtml}
+                                </div>
+                                <div class="client-details">
+                                    <div class="client-name">${user.name}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${user.email ? user.email : user.username}</td>
+                        <td>${window.roles && window.roles[user.role] ? window.roles[user.role] : user.role}</td>
+                        <td><span class="status-badge ${user.status === 'active' ? 'status-completed' : 'status-cancelled'}">${user.status === 'active' ? '{{ __('messages.active') }}' : '{{ __('messages.inactive') }}'}</span></td>
+                        <td>${user.registered_at ? formatDateTime(user.registered_at) : ''}</td>
+                        <td class="actions-cell" style="vertical-align: middle;">
+                            @if($user->username !== 'admin')
+                            <button class="btn-edit" title="{{ __('messages.edit') }}">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                            </button>
+                            <button class="btn-delete" title="{{ __('messages.delete') }}">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                            @endif
+                        </td>
+                    `;
+                }
+                closeEditUserModal();
+                showNotification('success', '{{ __('messages.user_successfully_updated') }}');
+            } else {
+                showNotification('error', data.message || '{{ __('messages.error_updating_user') }}');
+            }
+        })
+        .catch(() => showNotification('error', '{{ __('messages.error_updating_user') }}'));
     }
 });
 
@@ -562,4 +612,49 @@ function formatDateTime(dateString) {
     return `${day}.${month}.${year} ${hours}:${minutes}`;
 }
 </script>
+
+<style>
+/* Стили для аватарки пользователей */
+.client-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.client-avatar {
+    flex-shrink: 0;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e0e0e0;
+}
+
+.user-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    border: 2px solid #e0e0e0;
+}
+
+.client-details {
+    flex: 1;
+}
+
+.client-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+}
+</style>
 @endsection 

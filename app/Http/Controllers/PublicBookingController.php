@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class PublicBookingController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('web');
+    }
+
     /**
      * Показать страницу бронирования
      */
@@ -194,93 +199,276 @@ class PublicBookingController extends Controller
      */
     public function store(Request $request)
     {
-        // Rate limiting для защиты от спама
-        $key = 'booking-store:' . request()->ip();
-        if (RateLimiter::tooManyAttempts($key, 10)) { // 10 записей в минуту с одного IP
-            return response()->json([
-                'success' => false,
-                'message' => 'Слишком много попыток записи. Попробуйте позже.'
-            ], 429);
-        }
-        RateLimiter::hit($key);
+        try {
+            // Rate limiting для защиты от спама
+            $key = 'booking-store:' . request()->ip();
+            if (RateLimiter::tooManyAttempts($key, 10)) { // 10 записей в минуту с одного IP
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Слишком много попыток записи. Попробуйте позже.'
+                ], 429);
+            }
+            RateLimiter::hit($key);
 
-        // Логируем входящие данные
-        \Log::info('PublicBooking store - входящие данные:', $request->all());
-        
-        $validated = $request->validate([
-            'project_id' => 'required|exists:projects,id',
-            'service_id' => 'required|exists:services,id',
-            'user_id' => 'required|exists:admin_users,id',
-            'date' => 'required|date|after_or_equal:today',
-            'time' => 'required|date_format:H:i',
-            'client_name' => 'required|string|max:255|regex:/^[а-яёa-z\s\-\.]+$/ui',
-            'client_phone' => 'required|string|max:20|regex:/^[\+\d\s\-\(\)]+$/',
-            'client_email' => 'nullable|email|max:255',
-        ]);
-        
-        \Log::info('PublicBooking store - валидированные данные:', $validated);
-
-        $project = Project::findOrFail($validated['project_id']);
-        $service = Service::findOrFail($validated['service_id']);
-        $user = User::findOrFail($validated['user_id']);
-
-        // Проверяем, что все принадлежат одному проекту
-        if ($project->id !== $user->project_id || $service->project_id !== $project->id) {
-            \Log::warning('PublicBooking store - попытка подмены данных', [
-                'project_id' => $validated['project_id'],
-                'user_project_id' => $user->project_id,
-                'service_project_id' => $service->project_id,
-                'ip' => request()->ip()
+            // Логируем входящие данные
+            \Log::info('PublicBooking store - входящие данные:', $request->all());
+            
+            $validated = $request->validate([
+                'project_id' => 'required|exists:projects,id',
+                'service_id' => 'required|exists:services,id',
+                'user_id' => 'required|exists:admin_users,id',
+                'date' => 'required|date|after_or_equal:today',
+                'time' => 'required|date_format:H:i',
+                'client_name' => 'required|string|max:255|regex:/^[а-яёa-zA-Z\s\-\.\']+$/u',
+                'client_phone' => 'required|string|max:20|regex:/^[\+\d\s\-\(\)]+$/',
+                'client_email' => 'nullable|email|max:255',
             ]);
             
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.booking_validation_error')
-            ], 422);
-        }
+            \Log::info('PublicBooking store - валидированные данные:', $validated);
 
-        // Проверяем доступность времени
-        $existingAppointment = Appointment::where('user_id', $validated['user_id'])
-            ->where('date', $validated['date'])
-            ->where('time', $validated['time'])
-            ->first();
+            $project = Project::findOrFail($validated['project_id']);
+            $service = Service::findOrFail($validated['service_id']);
+            $user = User::findOrFail($validated['user_id']);
 
-        if ($existingAppointment) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.time_already_booked')
-            ], 422);
-        }
+            // Проверяем, что все принадлежат одному проекту
+            if ($project->id !== $user->project_id || $service->project_id !== $project->id) {
+                \Log::warning('PublicBooking store - попытка подмены данных', [
+                    'project_id' => $validated['project_id'],
+                    'user_project_id' => $user->project_id,
+                    'service_project_id' => $service->project_id,
+                    'ip' => request()->ip()
+                ]);
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => __('messages.booking_validation_error')
+                ], 422);
+            }
 
-        // Создаем или находим клиента
-        $client = Client::firstOrCreate(
-            ['phone' => $validated['client_phone'], 'project_id' => $project->id],
-            [
-                'name' => $validated['client_name'],
-                'email' => $validated['client_email'],
-                'project_id' => $project->id
-            ]
-        );
+            // Проверяем доступность времени
+            $existingAppointment = Appointment::where('user_id', $validated['user_id'])
+                ->where('date', $validated['date'])
+                ->where('time', $validated['time'])
+                ->first();
 
-        // Проверяем, не существует ли уже такая запись (защита от дублирования)
-        $existingAppointment = Appointment::where('client_id', $client->id)
-            ->where('service_id', $validated['service_id'])
-            ->where('user_id', $validated['user_id'])
-            ->where('date', $validated['date'])
-            ->where('time', $validated['time'])
-            ->where('project_id', $project->id)
-            ->where('created_at', '>=', now()->subMinutes(5)) // Проверяем записи за последние 5 минут
-            ->first();
+            if ($existingAppointment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('messages.time_already_booked')
+                ], 422);
+            }
 
-        if ($existingAppointment) {
-            \Log::info('Duplicate appointment detected', [
-                'existing_appointment_id' => $existingAppointment->id,
+            // Создаем или находим клиента
+            $client = Client::firstOrCreate(
+                ['phone' => $validated['client_phone'], 'project_id' => $project->id],
+                [
+                    'name' => $validated['client_name'],
+                    'email' => $validated['client_email'],
+                    'project_id' => $project->id
+                ]
+            );
+
+            // Проверяем, не существует ли уже такая запись (защита от дублирования)
+            $existingAppointment = Appointment::where('client_id', $client->id)
+                ->where('service_id', $validated['service_id'])
+                ->where('user_id', $validated['user_id'])
+                ->where('date', $validated['date'])
+                ->where('time', $validated['time'])
+                ->where('project_id', $project->id)
+                ->where('created_at', '>=', now()->subMinutes(5)) // Проверяем записи за последние 5 минут
+                ->first();
+
+            if ($existingAppointment) {
+                \Log::info('Duplicate appointment detected', [
+                    'existing_appointment_id' => $existingAppointment->id,
+                    'client_id' => $client->id,
+                    'user_id' => $validated['user_id'],
+                    'date' => $validated['date'],
+                    'time' => $validated['time']
+                ]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => __('messages.booking_successful') . ' ' . __('messages.we_will_contact_you'),
+                    'booking' => [
+                        'service_name' => $service->name,
+                        'master_name' => $user->name,
+                        'date' => $validated['date'],
+                        'time' => $validated['time']
+                    ]
+                ]);
+            }
+
+            // Создаем запись
+            $appointment = Appointment::create([
                 'client_id' => $client->id,
+                'service_id' => $validated['service_id'],
                 'user_id' => $validated['user_id'],
                 'date' => $validated['date'],
-                'time' => $validated['time']
+                'time' => $validated['time'],
+                'price' => $service->price,
+                'duration' => $service->duration ?? 60,
+                'status' => 'pending',
+                'project_id' => $project->id,
+                'notes' => __('messages.booking_created_via_web')
             ]);
             
+            \Log::info('Appointment created', [
+                'appointment_id' => $appointment->id,
+                'client_id' => $client->id,
+                'user_id' => $validated['user_id'],
+                'project_id' => $project->id
+            ]);
+
+            try {
+                \Log::info('Before notifications block', [
+                    'project_id' => $project->id,
+                    'appointment_id' => $appointment->id,
+                    'user_id' => $user->id
+                ]);
+                
+                // Создаем уникальный ключ для этой записи
+                $bookingKey = md5($client->id . $validated['service_id'] . $validated['user_id'] . $validated['date'] . $validated['time'] . $project->id);
+                
+                // Создаем уведомление для мастера
+                $notificationBody = __('messages.new_web_booking_notification_body', [
+                    'client_name' => $client->name,
+                    'service_name' => $service->name,
+                    'master_name' => $user->name,
+                    'date' => $validated['date'],
+                    'time' => $validated['time']
+                ]) . ' [ID:' . $bookingKey . ']';
+
+                // Уведомления создаются в цикле ниже для всех пользователей
+
+                // Создаем уведомления только для мастера, который будет выполнять запись
+                $allUsers = \App\Models\Admin\User::where('project_id', $project->id)
+                    ->where('id', $validated['user_id']) // Только для мастера, который будет выполнять запись
+                    ->get();
+
+                \Log::info('Creating notifications for master', [
+                    'project_id' => $project->id,
+                    'master_id' => $validated['user_id'],
+                    'master_name' => $user->name
+                ]);
+
+                foreach ($allUsers as $notifyUser) {
+                    // Проверяем, не создали ли мы уже уведомление для мастера в рамках текущего запроса
+                    $cacheKey = 'notification_' . $notifyUser->id . '_' . $bookingKey;
+                    if (\Cache::has($cacheKey)) {
+                        \Log::info('Notification already created for user in this request', [
+                            'user_id' => $notifyUser->id,
+                            'booking_key' => $bookingKey
+                        ]);
+                        continue;
+                    }
+                    
+                    // Проверяем, не создали ли мы уже уведомление для мастера
+                    // Улучшенная проверка: ищем уведомления для этой записи за последние 10 минут
+                    $existingNotification = \App\Models\Notification::where('user_id', $notifyUser->id)
+                        ->where('type', 'web_booking')
+                        ->where('project_id', $project->id)
+                        ->where('created_at', '>=', now()->subMinutes(10)) // Увеличиваем интервал до 10 минут
+                        ->where(function($query) use ($client, $service, $user, $validated, $bookingKey) {
+                            // Проверяем по содержимому уведомления
+                            $query->where('body', 'LIKE', '%' . $client->name . '%')
+                                  ->where('body', 'LIKE', '%' . $service->name . '%')
+                                  ->where('body', 'LIKE', '%' . $user->name . '%')
+                                  ->where('body', 'LIKE', '%' . $validated['date'] . '%')
+                                  ->where('body', 'LIKE', '%' . $validated['time'] . '%')
+                                  // Также проверяем по уникальному ключу записи
+                                  ->orWhere('body', 'LIKE', '%' . $bookingKey . '%');
+                        })
+                        ->first();
+
+                    if ($existingNotification) {
+                        \Log::info('Notification already exists for user', [
+                            'user_id' => $notifyUser->id,
+                            'existing_notification_id' => $existingNotification->id,
+                            'appointment_id' => $appointment->id
+                        ]);
+                        continue;
+                    }
+
+                    \Log::info('Attempting to create notification for master', [
+                        'master_id' => $notifyUser->id,
+                        'master_name' => $notifyUser->name,
+                        'project_id' => $project->id,
+                        'notification_body' => $notificationBody
+                    ]);
+                    try {
+                        $notification = \App\Models\Notification::create([
+                            'user_id' => $notifyUser->id,
+                            'type' => 'web_booking',
+                            'title' => __('messages.new_web_booking_notification_title'),
+                            'body' => $notificationBody,
+                            'url' => route('appointments.index'),
+                            'is_read' => false,
+                            'project_id' => $project->id
+                        ]);
+                        
+                        // Устанавливаем кэш на 10 минут, чтобы предотвратить создание дублирующихся уведомлений
+                        \Cache::put($cacheKey, true, now()->addMinutes(10));
+                        
+                        \Log::info('Notification created for master', [
+                            'notification_id' => $notification->id,
+                            'master_id' => $notifyUser->id,
+                            'booking_key' => $bookingKey
+                        ]);
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to create notification for master', [
+                            'master_id' => $notifyUser->id,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error creating notifications: ' . $e->getMessage());
+                // Не прерываем выполнение, если уведомления не создались
+            }
+
+            // Отправляем уведомление в Telegram
+            try {
+                $appointmentData = [
+                    'client_name' => $client->name,
+                    'client_phone' => $client->phone,
+                    'client_email' => $client->email,
+                    'service_name' => $service->name,
+                    'master_name' => $user->name,
+                    'date' => $validated['date'],
+                    'time' => $validated['time'],
+                    'price' => $service->price,
+                    'notes' => __('messages.booking_created_via_web')
+                ];
+
+                \App\Jobs\SendTelegramNotification::dispatch($appointmentData, $project->id);
+                
+                \Log::info('Telegram notification job dispatched', [
+                    'project_id' => $project->id,
+                    'appointment_id' => $appointment->id
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Error dispatching Telegram notification: ' . $e->getMessage());
+                // Не прерываем выполнение, если Telegram уведомление не отправилось
+            }
+
+            // Отправляем Email подтверждение клиенту
+            try {
+                if ($project->email_notifications_enabled && $client->email) {
+                    $emailService = new \App\Services\EmailNotificationService();
+                    $emailService->sendConfirmation($appointment);
+                    
+                    \Log::info('Email confirmation sent to client', [
+                        'project_id' => $project->id,
+                        'appointment_id' => $appointment->id,
+                        'client_email' => $client->email
+                    ]);
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error sending email confirmation: ' . $e->getMessage());
+                // Не прерываем выполнение, если Email не отправился
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => __('messages.booking_successful') . ' ' . __('messages.we_will_contact_you'),
@@ -291,171 +479,45 @@ class PublicBookingController extends Controller
                     'time' => $validated['time']
                 ]
             ]);
-        }
-
-        // Создаем запись
-        $appointment = Appointment::create([
-            'client_id' => $client->id,
-            'service_id' => $validated['service_id'],
-            'user_id' => $validated['user_id'],
-            'date' => $validated['date'],
-            'time' => $validated['time'],
-            'price' => $service->price,
-            'duration' => $service->duration ?? 60,
-            'status' => 'pending',
-            'project_id' => $project->id,
-            'notes' => __('messages.booking_created_via_web')
-        ]);
-        
-        \Log::info('Appointment created', [
-            'appointment_id' => $appointment->id,
-            'client_id' => $client->id,
-            'user_id' => $validated['user_id'],
-            'project_id' => $project->id
-        ]);
-
-        try {
-            \Log::info('Before notifications block', [
-                'project_id' => $project->id,
-                'appointment_id' => $appointment->id,
-                'user_id' => $user->id
-            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = $e->errors();
+            $errorMessages = [];
             
-            // Создаем уникальный ключ для этой записи
-            $bookingKey = md5($client->id . $validated['service_id'] . $validated['user_id'] . $validated['date'] . $validated['time'] . $project->id);
-            
-            // Создаем уведомление для мастера
-            $notificationBody = __('messages.new_web_booking_notification_body', [
-                'client_name' => $client->name,
-                'service_name' => $service->name,
-                'master_name' => $user->name,
-                'date' => $validated['date'],
-                'time' => $validated['time']
-            ]) . ' [ID:' . $bookingKey . ']';
-
-            // Уведомления создаются в цикле ниже для всех пользователей
-
-            // Создаем уведомления только для мастера, который будет выполнять запись
-            $allUsers = \App\Models\Admin\User::where('project_id', $project->id)
-                ->where('id', $validated['user_id']) // Только для мастера, который будет выполнять запись
-                ->get();
-
-            \Log::info('Creating notifications for master', [
-                'project_id' => $project->id,
-                'master_id' => $validated['user_id'],
-                'master_name' => $user->name
-            ]);
-
-            foreach ($allUsers as $notifyUser) {
-                // Проверяем, не создали ли мы уже уведомление для мастера в рамках текущего запроса
-                $cacheKey = 'notification_' . $notifyUser->id . '_' . $bookingKey;
-                if (\Cache::has($cacheKey)) {
-                    \Log::info('Notification already created for user in this request', [
-                        'user_id' => $notifyUser->id,
-                        'booking_key' => $bookingKey
-                    ]);
-                    continue;
-                }
-                
-                // Проверяем, не создали ли мы уже уведомление для мастера
-                // Улучшенная проверка: ищем уведомления для этой записи за последние 10 минут
-                $existingNotification = \App\Models\Notification::where('user_id', $notifyUser->id)
-                    ->where('type', 'web_booking')
-                    ->where('project_id', $project->id)
-                    ->where('created_at', '>=', now()->subMinutes(10)) // Увеличиваем интервал до 10 минут
-                    ->where(function($query) use ($client, $service, $user, $validated, $bookingKey) {
-                        // Проверяем по содержимому уведомления
-                        $query->where('body', 'LIKE', '%' . $client->name . '%')
-                              ->where('body', 'LIKE', '%' . $service->name . '%')
-                              ->where('body', 'LIKE', '%' . $user->name . '%')
-                              ->where('body', 'LIKE', '%' . $validated['date'] . '%')
-                              ->where('body', 'LIKE', '%' . $validated['time'] . '%')
-                              // Также проверяем по уникальному ключу записи
-                              ->orWhere('body', 'LIKE', '%' . $bookingKey . '%');
-                    })
-                    ->first();
-
-                if ($existingNotification) {
-                    \Log::info('Notification already exists for user', [
-                        'user_id' => $notifyUser->id,
-                        'existing_notification_id' => $existingNotification->id,
-                        'appointment_id' => $appointment->id
-                    ]);
-                    continue;
-                }
-
-                \Log::info('Attempting to create notification for master', [
-                    'master_id' => $notifyUser->id,
-                    'master_name' => $notifyUser->name,
-                    'project_id' => $project->id,
-                    'notification_body' => $notificationBody
-                ]);
-                try {
-                    $notification = \App\Models\Notification::create([
-                        'user_id' => $notifyUser->id,
-                        'type' => 'web_booking',
-                        'title' => __('messages.new_web_booking_notification_title'),
-                        'body' => $notificationBody,
-                        'url' => route('appointments.index'),
-                        'is_read' => false,
-                        'project_id' => $project->id
-                    ]);
-                    
-                    // Устанавливаем кэш на 10 минут, чтобы предотвратить создание дублирующихся уведомлений
-                    \Cache::put($cacheKey, true, now()->addMinutes(10));
-                    
-                    \Log::info('Notification created for master', [
-                        'notification_id' => $notification->id,
-                        'master_id' => $notifyUser->id,
-                        'booking_key' => $bookingKey
-                    ]);
-                } catch (\Exception $e) {
-                    \Log::error('Failed to create notification for master', [
-                        'master_id' => $notifyUser->id,
-                        'error' => $e->getMessage()
-                    ]);
+            // Преобразуем ошибки в понятные сообщения
+            foreach ($errors as $field => $messages) {
+                switch ($field) {
+                    case 'client_name':
+                        $errorMessages[] = 'Имя содержит недопустимые символы. Используйте только буквы, пробелы, дефисы, точки и апострофы.';
+                        break;
+                    case 'client_phone':
+                        $errorMessages[] = 'Номер телефона содержит недопустимые символы.';
+                        break;
+                    case 'client_email':
+                        $errorMessages[] = 'Email адрес указан некорректно.';
+                        break;
+                    case 'date':
+                        $errorMessages[] = 'Дата должна быть сегодня или позже.';
+                        break;
+                    case 'time':
+                        $errorMessages[] = 'Время указано некорректно.';
+                        break;
+                    default:
+                        $errorMessages[] = implode(', ', $messages);
                 }
             }
-        } catch (\Exception $e) {
-            \Log::error('Error creating notifications: ' . $e->getMessage());
-            // Не прерываем выполнение, если уведомления не создались
-        }
-
-        // Отправляем уведомление в Telegram
-        try {
-            $appointmentData = [
-                'client_name' => $client->name,
-                'client_phone' => $client->phone,
-                'client_email' => $client->email,
-                'service_name' => $service->name,
-                'master_name' => $user->name,
-                'date' => $validated['date'],
-                'time' => $validated['time'],
-                'price' => $service->price,
-                'notes' => __('messages.booking_created_via_web')
-            ];
-
-            \App\Jobs\SendTelegramNotification::dispatch($appointmentData, $project->id);
             
-            \Log::info('Telegram notification job dispatched', [
-                'project_id' => $project->id,
-                'appointment_id' => $appointment->id
-            ]);
+            return response()->json([
+                'success' => false,
+                'message' => implode(' ', $errorMessages),
+                'errors' => $errors
+            ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error dispatching Telegram notification: ' . $e->getMessage());
-            // Не прерываем выполнение, если Telegram уведомление не отправилось
+            \Log::error('Error in store method: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => __('messages.booking_error')
+            ], 500);
         }
-
-        return response()->json([
-            'success' => true,
-            'message' => __('messages.booking_successful') . ' ' . __('messages.we_will_contact_you'),
-            'booking' => [
-                'service_name' => $service->name,
-                'master_name' => $user->name,
-                'date' => $validated['date'],
-                'time' => $validated['time']
-            ]
-        ]);
     }
 
     /**

@@ -136,9 +136,9 @@
 
 <!-- Модальное окно с инструкциями -->
 <div id="emailInstructionsModal" class="confirmation-modal">
-    <div class="confirmation-content" style="max-width: 600px;">
+    <div class="confirmation-content" style="max-width: 700px; max-height: 80vh;">
         <h3>{{ __('messages.email_instructions') }}</h3>
-        <div id="emailInstructionsContent" style="text-align: left; margin: 20px 0;">
+        <div id="emailInstructionsContent" style="text-align: left; margin: 20px 0; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
             <!-- Инструкции будут загружены через AJAX -->
         </div>
         <div class="confirmation-buttons d-flex justify-content-end">
@@ -162,13 +162,56 @@
 
 .confirmation-modal .confirmation-content {
     background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
+    margin: 5% auto;
+    padding: 30px;
     border: 1px solid #888;
-    width: 80%;
+    width: 90%;
     max-width: 400px;
-    border-radius: 8px;
+    border-radius: 12px;
     text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Стили для инструкций */
+.email-instructions-list {
+    text-align: left;
+}
+
+.instruction-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.instruction-item strong {
+    color: #007bff;
+    font-weight: 600;
+}
+
+.instruction-item br {
+    margin-bottom: 8px;
+}
+
+/* Стили для прокрутки */
+#emailInstructionsContent::-webkit-scrollbar {
+    width: 8px;
+}
+
+#emailInstructionsContent::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+#emailInstructionsContent::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+#emailInstructionsContent::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
 }
 
 .confirmation-buttons {
@@ -363,11 +406,11 @@ function showEmailInstructions() {
     fetch('{{ route("client.email-settings.instructions") }}')
         .then(response => response.json())
         .then(data => {
-            let html = '<ol class="list-group list-group-flush">';
-            Object.values(data.instructions).forEach(instruction => {
-                html += `<li class="list-group-item">${instruction}</li>`;
+            let html = '<div class="email-instructions-list">';
+            Object.values(data.instructions).forEach((instruction, index) => {
+                html += `<div class="instruction-item" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">${instruction}</div>`;
             });
-            html += '</ol>';
+            html += '</div>';
             content.innerHTML = html;
         })
         .catch(error => {
@@ -386,6 +429,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (modal) {
         modal.addEventListener('click', function(event) {
             if (event.target === modal) {
+                closeEmailInstructionsModal();
+            }
+        });
+        
+        // Добавляем обработчик для закрытия по Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.style.display === 'block') {
                 closeEmailInstructionsModal();
             }
         });

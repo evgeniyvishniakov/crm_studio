@@ -29,6 +29,30 @@ Route::get('/services', function () {
     return view('landing.pages.services');
 })->name('beautyflow.services');
 
+Route::get('/pricing', function () {
+    return view('landing.pages.pricing');
+})->name('beautyflow.pricing');
+
+Route::get('/features', function () {
+    return view('landing.pages.features');
+})->name('beautyflow.features');
+
+Route::get('/integrations', function () {
+    return view('landing.pages.integrations');
+})->name('beautyflow.integrations');
+
+Route::get('/demo', function () {
+    return view('landing.pages.demo');
+})->name('beautyflow.demo');
+
+Route::get('/privacy', function () {
+    return view('landing.pages.privacy');
+})->name('beautyflow.privacy');
+
+Route::get('/terms', function () {
+    return view('landing.pages.terms');
+})->name('beautyflow.terms');
+
 Route::post('/register', [RegisterController::class, 'store'])->name('beautyflow.register');
 
 Route::get('/studio', function () {

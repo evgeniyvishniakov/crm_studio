@@ -359,6 +359,55 @@
             font-size: 0.9rem;
         }
         
+        /* Стили для аватарки мастера */
+        .master-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .master-avatar {
+            flex-shrink: 0;
+        }
+        
+        .master-avatar-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .master-avatar-placeholder {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .master-details {
+            flex: 1;
+        }
+        
+        .master-details h5 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .master-details p {
+            margin: 0;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
         .time-slot {
             text-align: center;
             font-weight: 500;
@@ -765,8 +814,19 @@
                             $userServicesForUser = $userServices->where('user_id', $user->id);
                         @endphp
                         <div class="master-card" data-user-id="{{ $user->id }}" style="display: none;">
-                            <h5>{{ $user->name }}</h5>
-                            <p>{{ $user->position ?? 'Мастер' }}</p>
+                            <div class="master-info">
+                                <div class="master-avatar">
+                                    @if($user->avatar)
+                                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="master-avatar-img">
+                                    @else
+                                        <div class="master-avatar-placeholder">{{ substr($user->name, 0, 1) }}</div>
+                                    @endif
+                                </div>
+                                <div class="master-details">
+                                    <h5>{{ $user->name }}</h5>
+                                    <p>{{ $user->position ?? 'Мастер' }}</p>
+                                </div>
+                            </div>
                         </div>
                     @endforeach
                 </div>
@@ -827,6 +887,7 @@
                             <div class="mb-3">
                                 <label for="client-name" class="form-label">{{ __('messages.client_name') }} *</label>
                                 <input type="text" class="form-control" id="client-name" required>
+                                <small class="form-text text-muted">Используйте только буквы, пробелы, дефисы, точки и апострофы</small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -1355,33 +1416,52 @@
                 },
                 body: JSON.stringify(formData)
             })
-                         .then(response => {
-                 console.log('Submit response status:', response.status);
-                 if (!response.ok) {
-                     throw new Error(`HTTP error! status: ${response.status}`);
-                 }
-                 return response.json();
-             })
-             .then(data => {
-                 console.log('Submit response data:', data);
-                 if (data.success) {
-                     showSuccess(data.booking);
-                     // Сбрасываем флаг при успешной отправке
-                     isSubmitting = false;
-                 } else {
-                     alert('Ошибка: ' + data.message);
-                     submitBtn.disabled = false;
-                     submitBtn.innerHTML = '{{ __('messages.book_appointment') }} <i class="fas fa-check"></i>';
-                     isSubmitting = false; // Сбрасываем флаг при ошибке
-                 }
-             })
-             .catch(error => {
-                 console.error('Submit error:', error);
-                 alert('{{ __('messages.booking_error') }}: ' + error.message);
-                 submitBtn.disabled = false;
-                 submitBtn.innerHTML = '{{ __('messages.book_appointment') }} <i class="fas fa-check"></i>';
-                 isSubmitting = false; // Сбрасываем флаг при ошибке
-             });
+            .then(response => {
+                console.log('Submit response status:', response.status);
+                console.log('Submit response headers:', response.headers);
+                
+                // Проверяем тип контента
+                const contentType = response.headers.get('content-type');
+                console.log('Content-Type:', contentType);
+                
+                if (!response.ok) {
+                    // Если ответ не OK, пробуем получить текст для диагностики
+                    return response.text().then(text => {
+                        console.error('Error response text:', text);
+                        throw new Error(`HTTP error! status: ${response.status}, response: ${text.substring(0, 200)}`);
+                    });
+                }
+                
+                // Проверяем, что ответ действительно JSON
+                if (!contentType || !contentType.includes('application/json')) {
+                    return response.text().then(text => {
+                        console.error('Non-JSON response:', text);
+                        throw new Error('Server returned non-JSON response: ' + text.substring(0, 200));
+                    });
+                }
+                
+                return response.json();
+            })
+            .then(data => {
+                console.log('Submit response data:', data);
+                if (data.success) {
+                    showSuccess(data.booking);
+                    // Сбрасываем флаг при успешной отправке
+                    isSubmitting = false;
+                } else {
+                    alert('Ошибка: ' + data.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '{{ __('messages.book_appointment') }} <i class="fas fa-check"></i>';
+                    isSubmitting = false; // Сбрасываем флаг при ошибке
+                }
+            })
+            .catch(error => {
+                console.error('Submit error:', error);
+                alert('{{ __('messages.booking_error') }}: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '{{ __('messages.book_appointment') }} <i class="fas fa-check"></i>';
+                isSubmitting = false; // Сбрасываем флаг при ошибке
+            });
         }
         
         function filterMastersByService(serviceId) {
@@ -1558,15 +1638,16 @@
             
             const details = document.getElementById('booking-details');
             details.className = 'booking-details';
-                            details.innerHTML = `
-                    <div class="alert alert-info">
-                        <strong>{{ __('messages.appointment_details') }}:</strong><br>
-                        {{ __('messages.service') }}: ${booking.service_name}<br>
-                        {{ __('messages.master') }}: ${booking.master_name}<br>
-                        {{ __('messages.date') }}: ${booking.date}<br>
-                        {{ __('messages.time') }}: ${booking.time}
-                    </div>
-                `;
+            
+            details.innerHTML = `
+                <div class="alert alert-info">
+                    <strong>{{ __('messages.appointment_details') }}:</strong><br>
+                    {{ __('messages.service') }}: ${booking.service_name}<br>
+                    {{ __('messages.master') }}: ${booking.master_name}<br>
+                    {{ __('messages.date') }}: ${booking.date}<br>
+                    {{ __('messages.time') }}: ${booking.time}
+                </div>
+            `;
         }
 
             const stepTitles = [null, '{{ __('messages.select_service') }}', '{{ __('messages.select_master') }}', '{{ __('messages.select_date') }} и {{ __('messages.select_time') }}', '{{ __('messages.your_data') }}'];

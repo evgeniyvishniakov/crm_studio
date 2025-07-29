@@ -10,9 +10,21 @@
         </button>
         
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav me-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('beautyflow.index') }}">Главная</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Продукт
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ route('beautyflow.features') }}">Возможности</a></li>
+                        <li><a class="dropdown-item" href="{{ route('beautyflow.demo') }}">Демо</a></li>
+                        <li><a class="dropdown-item" href="{{ route('beautyflow.integrations') }}">Интеграции</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ route('beautyflow.pricing') }}">Тарифы</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('beautyflow.services') }}">Услуги</a>
@@ -23,8 +35,13 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('beautyflow.contact') }}">Контакты</a>
                 </li>
+            </ul>
+            <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="btn btn-primary" href="{{ route('dashboard') }}">Войти в систему</a>
+                    <a class="btn btn-outline-primary me-2" href="{{ route('dashboard') }}">Войти</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Попробовать бесплатно</a>
                 </li>
             </ul>
         </div>

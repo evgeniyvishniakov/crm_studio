@@ -47,12 +47,13 @@ class ClientUserController extends Controller
                     }
                 },
             ],
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [
             'username.regex' => 'Логин может содержать только латинские буквы и цифры.',
             'username.min' => 'Логин должен быть не менее 6 символов.',
         ]);
         try {
-            $userModel = User::create([
+            $userData = [
                 'name' => $validated['name'],
                 'username' => $validated['username'],
                 'email' => $validated['email'] ?? null,
@@ -61,7 +62,18 @@ class ClientUserController extends Controller
                 'project_id' => $projectId,
                 'registered_at' => now(),
                 'status' => 'active',
-            ]);
+            ];
+
+            // Обработка загрузки аватарки
+            if ($request->hasFile('avatar')) {
+                $file = $request->file('avatar');
+                $fileName = 'avatar_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('avatars', $fileName, 'public');
+                $userData['avatar'] = $path;
+            }
+
+            $userModel = User::create($userData);
+            
             // Логирование создания пользователя
             SystemLog::create([
                 'level' => 'info',
@@ -78,6 +90,7 @@ class ClientUserController extends Controller
                     'email' => $userModel->email,
                     'role' => $userModel->role,
                     'project_id' => $userModel->project_id,
+                    'avatar' => $userModel->avatar,
                 ]),
             ]);
             return response()->json([
@@ -218,6 +231,65 @@ class ClientUserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка при обновлении пользователя: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function uploadAvatar(Request $request, $id)
+    {
+        $projectId = auth('client')->user()->project_id;
+        $user = auth('client')->user();
+        $userModel = User::where('project_id', $projectId)->findOrFail($id);
+        
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        try {
+            if ($request->hasFile('avatar')) {
+                $file = $request->file('avatar');
+                $fileName = 'avatar_' . $userModel->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('avatars', $fileName, 'public');
+                
+                // Удаляем старую аватарку если есть
+                if ($userModel->avatar && \Storage::disk('public')->exists($userModel->avatar)) {
+                    \Storage::disk('public')->delete($userModel->avatar);
+                }
+                
+                $userModel->update(['avatar' => $path]);
+                
+                // Логирование загрузки аватарки
+                SystemLog::create([
+                    'level' => 'info',
+                    'module' => 'users',
+                    'user_email' => $user->email ?? null,
+                    'user_id' => $user->id ?? null,
+                    'ip' => $request->ip(),
+                    'action' => 'upload_avatar',
+                    'message' => 'Загружена аватарка для пользователя: ' . $userModel->name,
+                    'context' => json_encode([
+                        'user_id' => $userModel->id,
+                        'name' => $userModel->name,
+                        'avatar_path' => $path,
+                    ]),
+                ]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Аватарка успешно загружена',
+                    'avatar_url' => \Storage::disk('public')->url($path)
+                ]);
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Файл не найден'
+            ], 400);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при загрузке аватарки: ' . $e->getMessage()
             ], 500);
         }
     }
