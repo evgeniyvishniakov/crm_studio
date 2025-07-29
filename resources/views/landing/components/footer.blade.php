@@ -14,7 +14,6 @@
                 <h5>Продукт</h5>
                 <ul class="list-unstyled">
                     <li><a href="{{ route('beautyflow.features') }}" class="text-muted text-decoration-none">Возможности</a></li>
-                    <li><a href="{{ route('beautyflow.demo') }}" class="text-muted text-decoration-none">Демо</a></li>
                     <li><a href="{{ route('beautyflow.integrations') }}" class="text-muted text-decoration-none">Интеграции</a></li>
                     <li><a href="{{ route('beautyflow.pricing') }}" class="text-muted text-decoration-none">Тарифы</a></li>
                 </ul>

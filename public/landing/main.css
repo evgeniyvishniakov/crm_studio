@@ -16,6 +16,13 @@
     --gradient-primary: linear-gradient(135deg, #00c292 0%, #ab8ce4 100%);
     --gradient-secondary: linear-gradient(135deg, #03a9f3 0%, #66bb6a 100%);
     --gradient-accent: linear-gradient(135deg, #fb9678 0%, #5c6bc0 100%);
+    --gradient-primary-reverse: linear-gradient(135deg, #ab8ce4 0%, #00c292 100%);
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    --border-radius-sm: 8px;
+    --border-radius-md: 16px;
+    --border-radius-lg: 24px;
 }
 
 /* Глобальные стили */
@@ -33,7 +40,13 @@ body {
 
 /* Плавные переходы для всех элементов */
 * {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Убираем переходы для некоторых элементов */
+.no-transition,
+.no-transition * {
+    transition: none !important;
 }
 
 /* Современные градиенты */
@@ -125,7 +138,14 @@ body {
 /* Анимации появления */
 .animate-fade-in-up {
     animation: fadeInUp 0.8s ease-out;
+    animation-fill-mode: both;
 }
+
+/* Задержка для элементов в ряду */
+.animate-fade-in-up:nth-child(1) { animation-delay: 0.1s; }
+.animate-fade-in-up:nth-child(2) { animation-delay: 0.2s; }
+.animate-fade-in-up:nth-child(3) { animation-delay: 0.3s; }
+.animate-fade-in-up:nth-child(4) { animation-delay: 0.4s; }
 
 .animate-fade-in-left {
     animation: fadeInLeft 0.8s ease-out;
@@ -143,13 +163,40 @@ body {
     animation: glow 2s ease-in-out infinite alternate;
 }
 
+/* Дополнительные анимации */
+.animate-slide-in {
+    animation: slideIn 0.8s ease-out;
+}
+
+.animate-bounce-in {
+    animation: bounceIn 0.8s ease-out;
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 /* Современные карточки */
 .card {
     background: var(--white);
     border: none;
-    border-radius: 20px;
+    border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
@@ -163,7 +210,7 @@ body {
     height: 4px;
     background: var(--gradient-primary);
     transform: scaleX(0);
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-normal) ease;
 }
 
 .card:hover::before {
@@ -175,8 +222,21 @@ body {
     box-shadow: var(--shadow-hover);
 }
 
+.card:focus-within {
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: var(--shadow-hover);
+}
+
 .card-body {
     padding: 2.5rem;
+    position: relative;
+    z-index: 1; /* Опускаем карточку ниже текста */
+}
+
+/* Фокус для доступности */
+.card:focus-within {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
 }
 
 /* Статистические карточки */
@@ -401,10 +461,11 @@ body {
 .hero-section {
     background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
     position: relative;
-    overflow: hidden;
+    overflow: visible; /* Изменяем на visible */
     min-height: 100vh;
     display: flex;
     align-items: center;
+    z-index: 1; /* Добавляем z-index */
 }
 
 .hero-section::before {
@@ -688,6 +749,52 @@ footer a:hover {
     .demo-tabs {
         padding: 2rem;
     }
+    
+    .navbar-nav .nav-link {
+        padding: 0.75rem 1rem !important;
+        margin: 0.25rem 0;
+    }
+    
+    .btn-lg {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .display-5 {
+        font-size: 2rem;
+    }
+    
+    .display-6 {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        min-height: 70vh;
+        padding: 2rem 0;
+    }
+    
+    .stat-card {
+        padding: 1.5rem;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+    }
 }
 
 /* Дополнительные эффекты */
@@ -732,12 +839,12 @@ footer a:hover {
 /* Специальные стили для CRM Studio */
 .feature-icon {
     transition: all 0.3s ease;
-    color: var(--primary-color);
+    color: white !important; /* Принудительно белый цвет для иконок в цветных кругах */
 }
 
 .card:hover .feature-icon {
     transform: scale(1.2) rotate(10deg);
-    color: var(--secondary-color);
+    color: white !important; /* Оставляем белый цвет при ховере */
 }
 
 /* Цветовые карточки как в CRM */
@@ -834,13 +941,560 @@ footer a:hover {
 }
 
 /* Скролл эффекты */
-.scroll-reveal {
-    opacity: 0;
-    transform: translateY(50px);
-    transition: all 0.8s ease;
+/* Убрали конфликтующие стили scroll-reveal */
+
+/* iPhone 15 Pro Max Mockup Styles */
+.phone-mockup {
+    position: relative;
+    transform: perspective(1200px) rotateY(25deg) rotateX(10deg) rotateZ(5deg);
+    transition: transform 0.5s ease;
 }
 
-.scroll-reveal.revealed {
-    opacity: 1;
-    transform: translateY(0);
+.phone-mockup:hover {
+    transform: perspective(1200px) rotateY(20deg) rotateX(8deg) rotateZ(3deg) scale(1.05);
+}
+
+.iphone-15-pro-max {
+    position: relative;
+    width: 320px;
+    height: 650px;
+    transform-style: preserve-3d;
+}
+
+/* 3D Edges */
+.iphone-edge {
+    position: absolute;
+    background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.iphone-edge-left {
+    width: 8px;
+    height: 650px;
+    left: -4px;
+    top: 0;
+    transform: rotateY(-90deg) translateZ(4px);
+    border-radius: 4px 0 0 4px;
+}
+
+.iphone-edge-right {
+    width: 8px;
+    height: 650px;
+    right: -4px;
+    top: 0;
+    transform: rotateY(90deg) translateZ(4px);
+    border-radius: 0 4px 4px 0;
+}
+
+.iphone-edge-top {
+    width: 320px;
+    height: 8px;
+    top: -4px;
+    left: 0;
+    transform: rotateX(90deg) translateZ(4px);
+    border-radius: 4px 4px 0 0;
+}
+
+.iphone-edge-bottom {
+    width: 320px;
+    height: 8px;
+    bottom: -4px;
+    left: 0;
+    transform: rotateX(-90deg) translateZ(4px);
+    border-radius: 0 0 4px 4px;
+}
+
+/* Main Frame */
+.iphone-frame-15 {
+    position: relative;
+    width: 320px;
+    height: 650px;
+    background: linear-gradient(145deg, #1a1a1a, #2c2c2c);
+    border-radius: 45px;
+    border: 6px solid #1a1a1a;
+    box-shadow: 
+        0 25px 50px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    overflow: hidden;
+    transform-style: preserve-3d;
+}
+
+/* Dynamic Island */
+.dynamic-island {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 35px;
+    background: #000;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    z-index: 10;
+}
+
+.dynamic-island-camera {
+    width: 8px;
+    height: 8px;
+    background: #333;
+    border-radius: 50%;
+}
+
+.dynamic-island-sensor {
+    width: 6px;
+    height: 6px;
+    background: #555;
+    border-radius: 50%;
+}
+
+/* iPhone Screen */
+.iphone-screen-15 {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border-radius: 39px;
+    overflow: hidden;
+    padding: 60px 20px 80px 20px;
+}
+
+/* Status Bar */
+.status-bar-15 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0 20px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+}
+
+.status-left .time {
+    font-weight: 700;
+}
+
+.status-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-right i {
+    font-size: 12px;
+}
+
+/* Home Indicator */
+.home-indicator-15 {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: #000;
+    border-radius: 3px;
+}
+
+/* Action Button */
+.action-button {
+    position: absolute;
+    right: -3px;
+    top: 120px;
+    width: 6px;
+    height: 40px;
+    background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+    border-radius: 3px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* Volume Buttons */
+.volume-buttons {
+    position: absolute;
+    left: -3px;
+    top: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.volume-up,
+.volume-down {
+    width: 6px;
+    height: 25px;
+    background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+    border-radius: 3px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* Power Button */
+.power-button {
+    position: absolute;
+    right: -3px;
+    top: 200px;
+    width: 6px;
+    height: 60px;
+    background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+    border-radius: 3px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.booking-form .form-control,
+.booking-form .form-select {
+    border: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+    font-size: 0.875rem;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.booking-form .form-control:focus,
+.booking-form .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 194, 146, 0.25);
+}
+
+.booking-form .btn {
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+/* Demo Booking Form Styles */
+.booking-demo {
+    font-size: 0.8rem;
+}
+
+.step-indicator-demo {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.step-indicator-demo .step {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.step-indicator-demo .step.active {
+    background: #007bff;
+    color: white;
+}
+
+.step-content-demo {
+    display: none;
+}
+
+.step-content-demo.active {
+    display: block;
+}
+
+.service-card-demo {
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.service-card-demo.selected {
+    border-color: #007bff;
+    background-color: #f8f9ff;
+}
+
+.service-card-demo h6 {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.master-card-demo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.master-card-demo.selected {
+    border-color: #007bff;
+    background-color: #f8f9ff;
+}
+
+.master-avatar-demo {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.calendar-header-demo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.calendar-grid-demo {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 1rem;
+}
+
+.calendar-day-demo {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    background: #f8f9fa;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    cursor: pointer;
+}
+
+.calendar-day-demo.selected {
+    background: #007bff;
+    color: white;
+}
+
+.calendar-day-demo.disabled {
+    background: #e9ecef;
+    color: #adb5bd;
+    cursor: not-allowed;
+}
+
+.time-slots-demo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.time-slot-demo {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.time-slot-demo.selected {
+    border-color: #007bff;
+    background: #007bff;
+    color: white;
+}
+
+/* Demo Buttons */
+.demo-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    gap: 0.5rem;
+}
+
+.btn-next-demo {
+    background: linear-gradient(135deg, #0765ff, #6bacfb);
+    border-color: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    padding: 6px 12px;
+    font-size: 0.7rem;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.btn-secondary-demo {
+    background: linear-gradient(135deg, #6c757d, #9ca3af);
+    color: white;
+    padding: 6px 12px;
+    border: 2px solid #6c757d;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.7rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(108, 117, 125, 0.15);
+}
+
+.btn-next-demo i,
+.btn-secondary-demo i {
+    font-size: 0.6rem;
+}
+
+/* Floating notification badges */
+.phone-mockup .position-absolute {
+    animation: float 3s ease-in-out infinite;
+}
+
+.phone-mockup .position-absolute:nth-child(2) {
+    animation-delay: 1.5s;
+}
+
+/* Instagram highlight box */
+.instagram-highlight {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    border-radius: 12px;
+    padding: 2px;
+}
+
+.instagram-highlight .bg-light {
+    background: white !important;
+    border-radius: 10px;
+}
+
+/* Градиентный текст */
+.gradient-text {
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background 0.3s ease;
+}
+
+/* Дополнительные эффекты */
+.btn.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+.btn.animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .floating-elements {
+        display: none;
+    }
+    
+    .typing-effect {
+        white-space: normal;
+        border-right: none;
+        animation: none;
+    }
+    
+    .magnetic {
+        transform: none !important;
+    }
+    
+    .card-3d {
+        transform: none !important;
+    }
+    
+    .phone-mockup {
+        transform: none !important;
+        margin-bottom: 2rem;
+    }
+    
+    .iphone-15-pro-max {
+        width: 280px;
+        height: 570px;
+        margin: 0 auto;
+    }
+    
+    .iphone-frame-15 {
+        width: 280px;
+        height: 570px;
+    }
+    
+    .iphone-screen-15 {
+        padding: 50px 15px 70px 15px;
+    }
+    
+    .dynamic-island {
+        width: 100px;
+        height: 30px;
+    }
+}
+
+/* Дополнительные анимации */
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg); 
+    }
+    50% { 
+        transform: translateY(-20px) rotate(1deg); 
+    }
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: var(--primary-color); }
+}
+
+/* Магнитные карточки */
+.magnetic {
+    transition: transform 0.1s ease;
+    transform-style: preserve-3d;
+}
+
+/* 3D карточки */
+.card-3d {
+    transition: transform 0.1s ease;
+    transform-style: preserve-3d;
+}
+
+/* Убрали все стили для эффекта печатающегося текста */
+
+/* Плавающие элементы */
+.floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.floating-element {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    opacity: 0.1;
+    animation: float 6s ease-in-out infinite;
+}
+
+.floating-element:nth-child(2) {
+    width: 30px;
+    height: 30px;
+    animation-delay: 2s;
+}
+
+.floating-element:nth-child(3) {
+    width: 15px;
+    height: 15px;
+    animation-delay: 4s;
 } 

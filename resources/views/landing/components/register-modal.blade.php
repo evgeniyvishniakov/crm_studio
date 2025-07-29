@@ -104,10 +104,15 @@ $(function() {
     var $form = $(this);
     var $btn = $('#registerBtn');
     var $spinner = $('#regSpinner');
-    $btn.attr('disabled', true);
-    $spinner.removeClass('d-none');
+    var $modalBody = $('.modal-body');
+    
+    // Очищаем предыдущие ошибки
     $('.is-invalid').removeClass('is-invalid');
     $('.invalid-feedback').remove();
+    $('.alert-danger').remove();
+    
+    $btn.attr('disabled', true);
+    $spinner.removeClass('d-none');
 
     $.ajax({
       url: $form.attr('action'),
@@ -119,7 +124,7 @@ $(function() {
         // Скрываем все элементы формы и футера
         $form.find('.modal-body > *:not(#register-success-message)').hide();
         $form.closest('.modal-content').find('.modal-footer').hide();
-        $('.modal-body').prepend(
+        $modalBody.prepend(
           '<div class="alert alert-success text-center" id="register-success-message" style="min-height:200px;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:2;position:relative;">' +
             '<i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>' +
             '<h5 class="mb-2">Регистрация успешно отправлена!</h5>' +
@@ -137,7 +142,13 @@ $(function() {
             $input.after('<div class="invalid-feedback">' + messages[0] + '</div>');
           });
         } else {
-          alert('Произошла ошибка. Попробуйте позже.');
+          // Показываем общую ошибку
+          $modalBody.prepend(
+            '<div class="alert alert-danger">' +
+              '<i class="fas fa-exclamation-triangle me-2"></i>' +
+              'Произошла ошибка при регистрации. Попробуйте позже или обратитесь в поддержку.' +
+            '</div>'
+          );
         }
       },
       complete: function() {
@@ -151,13 +162,15 @@ $(function() {
     // Показываем форму и футер обратно
     $('#registerForm').show();
     $('.modal-footer').show();
-    // Удаляем сообщение об успехе
+    // Удаляем сообщения
     $('#register-success-message').remove();
+    $('.alert-danger').remove();
     // Сбрасываем форму
     $('#registerForm')[0].reset();
     $('#registerBtn').attr('disabled', false);
     $('#regSpinner').addClass('d-none');
     $('.is-invalid').removeClass('is-invalid');
+    $('.invalid-feedback').remove();
     // Удаляем backdrop и сбрасываем классы, если вдруг остались
     $('.modal-backdrop').remove();
     $('body').removeClass('modal-open');

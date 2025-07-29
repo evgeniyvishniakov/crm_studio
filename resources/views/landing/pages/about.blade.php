@@ -33,7 +33,7 @@
                 </ul>
             </div>
             <div class="col-lg-6">
-                <img src="{{ asset('images/about-us.jpg') }}" alt="О нас" class="img-fluid rounded shadow">
+                <img src="{{ asset('images/about-us.jpg') }}" alt="О нас" class="img-fluid rounded shadow" loading="lazy">
             </div>
         </div>
     </div>

@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, observerOptions);
         
         // Наблюдаем за всеми карточками и секциями
-        document.querySelectorAll('.card, .stat-card, .section-title, .feature-item').forEach(el => {
+        document.querySelectorAll('.card, .stat-card, .feature-item').forEach(el => {
             observer.observe(el);
         });
     }
@@ -33,17 +33,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Эффекты при скролле
     function initScrollEffects() {
         let ticking = false;
+        let lastScrollY = window.pageYOffset;
         
         function updateOnScroll() {
             const scrolled = window.pageYOffset;
             const navbar = document.querySelector('.navbar');
             
-            if (scrolled > 100) {
+            // Добавляем класс только при изменении состояния
+            if (scrolled > 100 && !navbar.classList.contains('scrolled')) {
                 navbar.classList.add('scrolled');
-            } else {
+            } else if (scrolled <= 100 && navbar.classList.contains('scrolled')) {
                 navbar.classList.remove('scrolled');
             }
             
+            lastScrollY = scrolled;
             ticking = false;
         }
         
@@ -54,7 +57,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        window.addEventListener('scroll', requestTick);
+        // Используем throttle для оптимизации
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+            scrollTimeout = setTimeout(requestTick, 16); // ~60fps
+        });
     }
     
     // Интерактивные элементы
@@ -80,6 +90,24 @@ document.addEventListener('DOMContentLoaded', function() {
             card.addEventListener('mouseleave', function() {
                 this.style.transform = 'translateY(0) scale(1)';
                 this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
+            });
+        });
+        
+        // Магнитный эффект для карточек
+        document.querySelectorAll('.magnetic').forEach(card => {
+            card.addEventListener('mousemove', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                const rotateX = (y / rect.height) * -10;
+                const rotateY = (x / rect.width) * 10;
+                
+                this.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px)`;
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
             });
         });
         
@@ -145,7 +173,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     current = target;
                     clearInterval(timer);
                 }
-                counter.textContent = Math.floor(current).toLocaleString();
+                
+                // Форматирование в зависимости от типа данных
+                let formattedValue;
+                if (counter.textContent.includes('₽')) {
+                    // Для валюты
+                    formattedValue = '₽' + Math.floor(current).toLocaleString();
+                } else if (counter.textContent.includes('M')) {
+                    // Для миллионов
+                    formattedValue = (current / 1000000).toFixed(1) + 'M';
+                } else if (counter.textContent.includes('+')) {
+                    // Для чисел с плюсом
+                    formattedValue = Math.floor(current).toLocaleString() + '+';
+                } else if (counter.textContent.includes('.')) {
+                    // Для десятичных чисел
+                    formattedValue = current.toFixed(1);
+                } else {
+                    // Для обычных чисел
+                    formattedValue = Math.floor(current).toLocaleString();
+                }
+                
+                counter.textContent = formattedValue;
             }, 16);
         };
         
@@ -193,7 +241,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 heroContent.style.transform = 'translateY(0)';
             }, 300);
         }
+        
+        // Анимация плавающих элементов
+        initFloatingElements();
     });
+    
+    // Анимация плавающих элементов
+    function initFloatingElements() {
+        const floatingElements = document.querySelectorAll('.floating-element');
+        floatingElements.forEach((element, index) => {
+            element.style.animationDelay = `${index * 2}s`;
+            element.style.animationDuration = `${6 + index}s`;
+        });
+    }
+    
+    // Убрали эффект печатающегося текста
 });
 
 // Дополнительные CSS для эффектов
@@ -221,6 +283,56 @@ const additionalStyles = `
     .hero-section {
         opacity: 0;
         transition: opacity 1s ease;
+    }
+    
+    /* Анимации появления */
+    .section-title {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s ease;
+    }
+    
+    .section-title.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .feature-item {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s ease;
+    }
+    
+    .feature-item.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    /* Эффект печатающегося текста */
+    .typing-effect {
+        overflow: hidden;
+        white-space: nowrap;
+        border-right: 2px solid var(--primary-color);
+        animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+    }
+    
+    @keyframes typing {
+        from { width: 0; }
+        to { width: 100%; }
+    }
+    
+    @keyframes blink-caret {
+        from, to { border-color: transparent; }
+        50% { border-color: var(--primary-color); }
+    }
+    
+    /* Адаптивность для мобильных */
+    @media (max-width: 768px) {
+        .typing-effect {
+            white-space: normal;
+            border-right: none;
+            animation: none;
+        }
     }
 `;
 
