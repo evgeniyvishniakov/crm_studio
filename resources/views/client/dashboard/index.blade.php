@@ -5,7 +5,7 @@
         <h1 class="dashboard-title">{{ __('messages.dashboard') }}</h1>
 
         <div class="stats-grid">
-            <!-- Левая колонка: прибыль -->
+            <!-- Карточка 1: Прибыль -->
             <div class="stat-card profit-card">
                 <div class="stat-icon">
                     <i class="fas fa-coins"></i>
@@ -21,103 +21,106 @@
                     @endif
                 </div>
             </div>
-            <!-- Правая колонка: переключаемые карточки -->
-            <div class="stat-cards-container">
-                <!-- Финансы -->
-                <div class="stat-cards-group finances-group active">
-                    <div class="stat-card sales-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 class="stat-title">{{ __('messages.product_sales') }}</h3>
-                            <p class="stat-value currency-amount" data-amount="{{ $productsRevenue }}">{{ \App\Helpers\CurrencyHelper::format($productsRevenue) }}</p>
-                            @if($showDynamics)
-                                <p class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    8.7% {{ __('messages.from_last_month') }}
-                                </p>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="stat-card services-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-spa"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 class="stat-title">{{ __('messages.service_sales') }}</h3>
-                            <p class="stat-value currency-amount" data-amount="{{ $servicesRevenue }}">{{ \App\Helpers\CurrencyHelper::format($servicesRevenue) }}</p>
-                            @if($showDynamics)
-                                <p class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    12.5% {{ __('messages.from_last_month') }}
-                                </p>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="stat-card expenses-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-credit-card"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 class="stat-title">{{ __('messages.expenses') }}</h3>
-                            <p class="stat-value currency-amount" data-amount="{{ $totalExpenses }}">{{ \App\Helpers\CurrencyHelper::format($totalExpenses) }}</p>
-                            @if($showDynamics)
-                                <p class="stat-change negative">
-                                    <i class="fas fa-arrow-down"></i>
-                                    5.2% {{ __('messages.from_last_month') }}
-                                </p>
-                            @endif
-                        </div>
-                    </div>
+            
+            <!-- Карточка 2: Продажи товаров -->
+            <div class="stat-card sales-card finances-group active">
+                <div class="stat-icon">
+                    <i class="fas fa-shopping-cart"></i>
                 </div>
-                <!-- Активность -->
-                <div class="stat-cards-group activity-group">
-                    <div class="stat-card procedures-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-spa"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 class="stat-title">{{ __('messages.services') }}</h3>
-                            <p class="stat-value">{{ $servicesCount }}</p>
-                            @if($showDynamics)
-                                <p class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    18.2% {{ __('messages.from_last_month') }}
-                                </p>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="stat-card clients-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 class="stat-title">{{ __('messages.clients') }}</h3>
-                            <p class="stat-value">{{ $clientsCount }}</p>
-                            @if($showDynamics)
-                                <p class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    12% {{ __('messages.from_last_month') }}
-                                </p>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="stat-card appointments-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 class="stat-title">{{ __('messages.appointments') }}</h3>
-                            <p class="stat-value">{{ $appointmentsCount }}</p>
-                            @if($showDynamics)
-                                <p class="stat-change positive">
-                                    <i class="fas fa-arrow-up"></i>
-                                    5.2% {{ __('messages.from_last_week') }}
-                                </p>
-                            @endif
-                        </div>
-                    </div>
+                <div class="stat-content">
+                    <h3 class="stat-title">{{ __('messages.product_sales') }}</h3>
+                    <p class="stat-value currency-amount" data-amount="{{ $productsRevenue }}">{{ \App\Helpers\CurrencyHelper::format($productsRevenue) }}</p>
+                    @if($showDynamics)
+                        <p class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            8.7% {{ __('messages.from_last_month') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Карточка 3: Продажи услуг -->
+            <div class="stat-card services-card finances-group active">
+                <div class="stat-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-title">{{ __('messages.service_sales') }}</h3>
+                    <p class="stat-value currency-amount" data-amount="{{ $servicesRevenue }}">{{ \App\Helpers\CurrencyHelper::format($servicesRevenue) }}</p>
+                    @if($showDynamics)
+                        <p class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            12.5% {{ __('messages.from_last_month') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Карточка 4: Расходы -->
+            <div class="stat-card expenses-card finances-group active">
+                <div class="stat-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-title">{{ __('messages.expenses') }}</h3>
+                    <p class="stat-value currency-amount" data-amount="{{ $totalExpenses }}">{{ \App\Helpers\CurrencyHelper::format($totalExpenses) }}</p>
+                    @if($showDynamics)
+                        <p class="stat-change negative">
+                            <i class="fas fa-arrow-down"></i>
+                            5.2% {{ __('messages.from_last_month') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Карточка 5: Услуги (активность) -->
+            <div class="stat-card procedures-card activity-group" style="display: none;">
+                <div class="stat-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-title">{{ __('messages.services') }}</h3>
+                    <p class="stat-value">{{ $servicesCount }}</p>
+                    @if($showDynamics)
+                        <p class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            18.2% {{ __('messages.from_last_month') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Карточка 6: Клиенты (активность) -->
+            <div class="stat-card clients-card activity-group" style="display: none;">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-title">{{ __('messages.clients') }}</h3>
+                    <p class="stat-value">{{ $clientsCount }}</p>
+                    @if($showDynamics)
+                        <p class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            12% {{ __('messages.from_last_month') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Карточка 7: Записи (активность) -->
+            <div class="stat-card appointments-card activity-group" style="display: none;">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-title">{{ __('messages.appointments') }}</h3>
+                    <p class="stat-value">{{ $appointmentsCount }}</p>
+                    @if($showDynamics)
+                        <p class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            5.2% {{ __('messages.from_last_week') }}
+                        </p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -756,15 +759,33 @@
             };
             return colors[type] || '#10b981';
         }
-        // ВОССТАНАВЛИВАЮ переключение вкладок Финансы/Активность
+        // Переключение вкладок Финансы/Активность
         document.querySelectorAll('.dashboard-tabs .tab-button').forEach(btn => {
             btn.addEventListener('click', function () {
                 document.querySelectorAll('.dashboard-tabs .tab-button').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 const tab = this.getAttribute('data-tab');
-                document.querySelectorAll('.stat-cards-group').forEach(group => group.classList.remove('active'));
-                const target = document.querySelector(`.stat-cards-group.${tab}-group`);
-                if(target) target.classList.add('active');
+                
+                // Скрываем все карточки активности
+                document.querySelectorAll('.stat-card.activity-group').forEach(card => {
+                    card.style.display = 'none';
+                });
+                
+                // Скрываем все карточки финансов
+                document.querySelectorAll('.stat-card.finances-group').forEach(card => {
+                    card.style.display = 'none';
+                });
+                
+                // Показываем карточки выбранной группы
+                if (tab === 'finances') {
+                    document.querySelectorAll('.stat-card.finances-group').forEach(card => {
+                        card.style.display = 'flex';
+                    });
+                } else if (tab === 'activity') {
+                    document.querySelectorAll('.stat-card.activity-group').forEach(card => {
+                        card.style.display = 'flex';
+                    });
+                }
             });
         });
 

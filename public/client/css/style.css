@@ -2696,7 +2696,7 @@ footer.site-footer {
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.3rem;
+    gap: 1.5rem;
     margin-bottom: 2rem;
 }
 
@@ -2886,30 +2886,30 @@ footer.site-footer {
 
 @media (max-width: 1200px) {
     .stats-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.3rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
     }
     
     .stat-card {
-        padding: 0.5rem;
+        padding: 0.8rem;
     }
     
     .stat-icon {
-        width: 32px;
-        height: 32px;
-        font-size: 0.8rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
     }
     
     .stat-value {
-        font-size: 0.9rem;
+        font-size: 1.1rem;
     }
     
     .stat-title {
-        font-size: 0.55rem;
+        font-size: 0.7rem;
     }
     
     .stat-change {
-        font-size: 0.55rem;
+        font-size: 0.7rem;
     }
 }
 
@@ -2936,31 +2936,89 @@ footer.site-footer {
 
 @media (max-width: 768px) {
     .dashboard-container {
-        padding: 1rem;
+        padding: 0.5rem;
+        margin: 10px auto;
+        min-height: auto;
     }
     
     .dashboard-title {
-        font-size: 2rem;
-        margin: 30px 0 40px 0!important;
+        font-size: 1.5rem;
+        margin: 15px 0 20px 0!important;
     }
     
     .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin-bottom: 1rem;
     }
     
     .stat-card {
-        padding: 1rem;
+        padding: 0.75rem;
+        height: auto;
+        min-height: 100px;
     }
     
     .stat-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.25rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
     }
     
     .stat-value {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
+    }
+    
+    .stat-title {
+        font-size: 0.6rem;
+    }
+    
+    .stat-change {
+        font-size: 0.5rem;
+    }
+    
+    .dashboard-tabs {
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .tab-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .dashboard-main-content {
+        padding: 0 0.5rem !important;
+    }
+    
+    .chart-container {
+        padding: 0.5rem !important;
+    }
+    
+    .chart-toolbar {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .period-filters {
+        min-width: auto !important;
+        justify-content: center !important;
+        flex-wrap: wrap;
+    }
+    
+    .dashboard-widgets-grid-2x2 {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+        margin: 1rem 0 0 0 !important;
+    }
+    
+    .widget-card {
+        min-height: auto;
+        padding: 0.75rem;
+    }
+    
+    .widget-title {
+        font-size: 1rem;
     }
     
     .charts-grid {
@@ -2969,16 +3027,75 @@ footer.site-footer {
 }
 
 @media (max-width: 480px) {
+    .dashboard-container {
+        padding: 0.25rem;
+        margin: 5px auto;
+    }
+    
+    .dashboard-title {
+        font-size: 1.25rem;
+        margin: 10px 0 15px 0!important;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
     .stat-card {
-        flex-direction: column;
-        text-align: center;
-        gap: 0.75rem;
+        flex-direction: row;
+        text-align: left;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        min-height: 80px;
     }
     
     .stat-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .stat-value {
+        font-size: 1rem;
+    }
+    
+    .stat-title {
+        font-size: 0.55rem;
+    }
+    
+    .stat-change {
+        font-size: 0.45rem;
+    }
+    
+    .dashboard-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .tab-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+        justify-content: center;
+    }
+    
+    .period-filters {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .period-filters .tab-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .widget-card {
+        padding: 0.5rem;
+    }
+    
+    .widget-title {
+        font-size: 0.9rem;
     }
 }
 
