@@ -1347,6 +1347,231 @@ footer a:hover {
     font-size: 0.6rem;
 }
 
+/* Screen Switching Animation */
+.screen-content {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: all 0.8s ease;
+    position: absolute;
+    top: 0; /* Start from top */
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    pointer-events: none;
+    z-index: 1;
+    padding-top: 60px; /* Space for status bar */
+}
+
+.screen-content.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+    z-index: 2;
+}
+
+/* Instagram Profile Styles */
+.instagram-screen {
+    background: #fff;
+    padding: 0;
+    overflow-y: auto;
+}
+
+.instagram-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-username {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #262626;
+    margin: 0 0 5px 0;
+}
+
+.profile-bio {
+    font-size: 0.8rem;
+    color: #262626;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 15px;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.stat-number {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #262626;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    color: #8e8e8e;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 8px;
+    padding: 15px;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.profile-actions .btn {
+    flex: 1;
+    font-size: 0.7rem;
+    padding: 6px 8px;
+}
+
+.stories-highlights {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    border-bottom: 1px solid #dbdbdb;
+    overflow-x: auto;
+}
+
+.highlight-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-width: 60px;
+}
+
+.highlight-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #e1306c;
+    padding: 2px;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.highlight-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.highlight-item small {
+    font-size: 0.7rem;
+    color: #262626;
+    text-align: center;
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    padding: 2px;
+}
+
+.post-thumbnail {
+    aspect-ratio: 1;
+    overflow: hidden;
+}
+
+.post-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.post-thumbnail:hover img {
+    transform: scale(1.05);
+}
+
+.booking-link-highlight {
+    padding: 15px;
+    border-top: 1px solid #dbdbdb;
+}
+
+.link-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+}
+
+.link-card i {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.link-card span {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.link-card small {
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+/* Screen Switch Indicator */
+.screen-switch-indicator {
+    position: absolute;
+    top: 70px;
+    right: 10px;
+    display: flex;
+    gap: 4px;
+    z-index: 10;
+    align-items: center;
+}
+
+.indicator-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.indicator-dot.active {
+    background: #007bff;
+    transform: scale(1.2);
+}
+
 /* Floating notification badges */
 .phone-mockup .position-absolute {
     animation: float 3s ease-in-out infinite;

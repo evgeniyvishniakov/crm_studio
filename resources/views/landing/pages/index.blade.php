@@ -69,21 +69,8 @@
                                             <p class="stat-value counter" data-target="45200" aria-live="polite">₽45,200</p>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Плавающие элементы -->
-    <div class="floating-elements">
-        <div class="floating-element" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
-        <div class="floating-element" style="top: 60%; right: 15%; animation-delay: 2s;"></div>
-        <div class="floating-element" style="top: 80%; left: 20%; animation-delay: 4s;"></div>
-    </div>
+                                    
+
 </section>
 
 <!-- Features Section -->
@@ -252,17 +239,16 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Form Header -->
-                                    <div class="text-center mb-3">
-                                        <div class="stat-icon bg-flat-color-1 mx-auto mb-2" style="width: 50px; height: 50px; font-size: 1.5rem;">
-                                            <i class="fas fa-calendar-plus feature-icon"></i>
-                                        </div>
-                                        <h5 class="mb-1 fw-bold">Записаться онлайн</h5>
-                                        <small class="text-muted">CRM Studio</small>
-                                    </div>
-                                    
                                     <!-- Real Booking Form Demo -->
-                                    <div class="booking-demo">
+                                    <div class="booking-demo screen-content active" id="booking-screen">
+                                        <!-- Form Header -->
+                                        <div class="text-center mb-3">
+                                            <div class="stat-icon bg-flat-color-1 mx-auto mb-2" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                                                <i class="fas fa-calendar-plus feature-icon"></i>
+                                            </div>
+                                            <h5 class="mb-1 fw-bold">Записаться онлайн</h5>
+                                            <small class="text-muted">CRM Studio</small>
+                                        </div>
                                         <!-- Step Indicator -->
                                         <div class="step-indicator-demo mb-3">
                                             <div class="step active">1</div>
@@ -377,8 +363,109 @@
                                         </div>
                                     </div>
                                     
+                                    <!-- Instagram Profile Screen -->
+                                    <div class="instagram-screen screen-content" id="instagram-screen">
+                                        <!-- Instagram Profile Header -->
+                                        <div class="instagram-profile-header">
+                                            <div class="profile-avatar">
+                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjY2NzM7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmY5OTY2O3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+" alt="Profile">
+                                            </div>
+                                            <div class="profile-info">
+                                                <h6 class="profile-username">beauty_salon_elite</h6>
+                                                <p class="profile-bio">✨ Салон красоты в центре города ✨<br>Запись онлайн: <span class="text-primary">@crmstudio</span></p>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Profile Stats -->
+                                        <div class="profile-stats">
+                                            <div class="stat-item">
+                                                <span class="stat-number">247</span>
+                                                <span class="stat-label">постов</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-number">12.5K</span>
+                                                <span class="stat-label">подписчиков</span>
+                                            </div>
+                                            <div class="stat-item">
+                                                <span class="stat-number">1.2K</span>
+                                                <span class="stat-label">подписок</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Profile Actions -->
+                                        <div class="profile-actions">
+                                            <button class="btn btn-primary btn-sm">Подписаться</button>
+                                            <button class="btn btn-outline-secondary btn-sm">Сообщение</button>
+                                            <button class="btn btn-outline-secondary btn-sm">
+                                                <i class="fas fa-ellipsis-h"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Stories Highlights -->
+                                        <div class="stories-highlights">
+                                            <div class="highlight-item">
+                                                <div class="highlight-avatar">
+                                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMzAiIGZpbGw9InVybCgjZ3JhZGllbnQyKSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzY2N2VlYTtzdG9wLW9wYWNpdHk6MSIvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3NjRiYTI7c3RvcC1vcGFjaXR5OjEiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=" alt="Highlight">
+                                                </div>
+                                                <small>Запись</small>
+                                            </div>
+                                            <div class="highlight-item">
+                                                <div class="highlight-avatar">
+                                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMzAiIGZpbGw9InVybCgjZ3JhZGllbnQzKSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDMiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzI4YTc0NTtzdG9wLW9wYWNpdHk6MSIvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM1NmJiOTM7c3RvcC1vcGFjaXR5OjEiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=" alt="Highlight">
+                                                </div>
+                                                <small>Услуги</small>
+                                            </div>
+                                            <div class="highlight-item">
+                                                <div class="highlight-avatar">
+                                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMzAiIGZpbGw9InVybCgjZ3JhZGllbnQ0KSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDQyIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjY2NzM7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmY5OTY2O3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+" alt="Highlight">
+                                                </div>
+                                                <small>Мастера</small>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Posts Grid -->
+                                        <div class="posts-grid">
+                                            <div class="post-thumbnail">
+                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50NSkiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQ1IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmY7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjhmOWZhO3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMjAiIGZpbGw9IiM2NjdlZWEiLz4KPC9zdmc+" alt="Post">
+                                            </div>
+                                            <div class="post-thumbnail">
+                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50Nik7Ii8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50NiIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmO3N0b3Atb3BhY2l0eToxIi8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2Y4ZjlmYTtzdG9wLW9wYWNpdHk6MSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjIwIiBmaWxsPSIjNzY0YmEyIi8+Cjwvc3ZnPg==" alt="Post">
+                                            </div>
+                                            <div class="post-thumbnail">
+                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50NykiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQ3IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmY7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjhmOWZhO3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMjAiIGZpbGw9IiMyOGE3NDUiLz4KPC9zdmc+" alt="Post">
+                                            </div>
+                                            <div class="post-thumbnail">
+                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50OCkiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQ4IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmY7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjhmOWZhO3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMjAiIGZpbGw9IiNmZjY2NzMiLz4KPC9zdmc+" alt="Post">
+                                            </div>
+                                            <div class="post-thumbnail">
+                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50OSkiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQ5IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmY7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjhmOWZhO3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMjAiIGZpbGw9IiNmZjY2NzMiLz4KPC9zdmc+" alt="Post">
+                                            </div>
+                                            <div class="post-thumbnail">
+                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MTApIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50MTAiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I2ZmZjtzdG9wLW9wYWNpdHk6MSIvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmOGY5ZmE7c3RvcC1vcGFjaXR5OjEiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIyMCIgZmlsbD0iIzY2N2VlYSIvPgo8L3N2Zz4=" alt="Post">
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Booking Link Highlight -->
+                                        <div class="booking-link-highlight">
+                                            <div class="link-card">
+                                                <i class="fas fa-calendar-plus"></i>
+                                                <span>Записаться онлайн</span>
+                                                <small>@crmstudio</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                     <!-- Home Indicator -->
                                     <div class="home-indicator-15"></div>
+                                    
+                                    <!-- Screen Switch Indicator -->
+                                    <div class="screen-switch-indicator">
+                                        <div class="indicator-dot active"></div>
+                                        <div class="indicator-dot"></div>
+                                        <button class="btn btn-sm btn-outline-primary test-switch-btn" style="font-size: 0.6rem; padding: 2px 6px;">
+                                            Тест
+                                        </button>
+                                    </div>
                                 </div>
                                 
                                 <!-- Action Button -->

@@ -8,6 +8,11 @@ document.addEventListener('DOMContentLoaded', function() {
     initNavbarEffects();
     initCounterAnimations();
     
+    // Инициализация переключения экранов с небольшой задержкой
+    setTimeout(() => {
+        initScreenSwitching();
+    }, 1000);
+    
     // Анимации появления элементов
     function initAnimations() {
         const observerOptions = {
@@ -256,6 +261,70 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Убрали эффект печатающегося текста
+    
+    // Функция переключения экранов в телефоне
+    function initScreenSwitching() {
+        const bookingScreen = document.getElementById('booking-screen');
+        const instagramScreen = document.getElementById('instagram-screen');
+        const indicatorDots = document.querySelectorAll('.indicator-dot');
+        
+        console.log('Booking screen:', bookingScreen);
+        console.log('Instagram screen:', instagramScreen);
+        console.log('Indicator dots:', indicatorDots);
+        
+        if (!bookingScreen || !instagramScreen) {
+            console.log('Screens not found!');
+            return;
+        }
+        
+        // Добавляем тестовое переключение через 3 секунды
+        setTimeout(() => {
+            console.log('Test switch to Instagram...');
+            bookingScreen.classList.remove('active');
+            instagramScreen.classList.add('active');
+            if (indicatorDots.length >= 2) {
+                indicatorDots[0].classList.remove('active');
+                indicatorDots[1].classList.add('active');
+            }
+        }, 3000);
+        
+        let currentScreen = 'booking';
+        
+        function switchScreen() {
+            console.log('Switching screen from:', currentScreen);
+            if (currentScreen === 'booking') {
+                bookingScreen.classList.remove('active');
+                instagramScreen.classList.add('active');
+                if (indicatorDots.length >= 2) {
+                    indicatorDots[0].classList.remove('active');
+                    indicatorDots[1].classList.add('active');
+                }
+                currentScreen = 'instagram';
+            } else {
+                instagramScreen.classList.remove('active');
+                bookingScreen.classList.add('active');
+                if (indicatorDots.length >= 2) {
+                    indicatorDots[1].classList.remove('active');
+                    indicatorDots[0].classList.add('active');
+                }
+                currentScreen = 'booking';
+            }
+            console.log('Switched to:', currentScreen);
+        }
+        
+        // Переключаем экраны каждые 4 секунды (увеличили время)
+        setInterval(switchScreen, 4000);
+        console.log('Screen switching initialized');
+        
+        // Добавляем кнопку для ручного тестирования
+        const testButton = document.querySelector('.test-switch-btn');
+        if (testButton) {
+            testButton.addEventListener('click', () => {
+                console.log('Manual test button clicked');
+                switchScreen();
+            });
+        }
+    }
 });
 
 // Дополнительные CSS для эффектов
