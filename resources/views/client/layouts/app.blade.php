@@ -416,7 +416,7 @@
                     }}">
                         <li class="{{ request()->routeIs('services.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('services', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('services.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('services.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.services_menu') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-briefcase"></i>
                                 @else
@@ -428,7 +428,7 @@
                         </li>
                         <li class="{{ request()->routeIs('products.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('products', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('products.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('products.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.products') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-cube"></i>
                                 @else
@@ -440,7 +440,7 @@
                         </li>
                         <li class="{{ request()->routeIs('product-categories.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('product-categories', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('product-categories.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('product-categories.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.product_categories') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-folder-open"></i>
                                 @else
@@ -452,7 +452,7 @@
                         </li>
                         <li class="{{ request()->routeIs('product-brands.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('product-brands', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('product-brands.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('product-brands.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.product_brands') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-certificate"></i>
                                 @else
@@ -464,7 +464,7 @@
                         </li>
                         <li class="{{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('suppliers', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('suppliers.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('suppliers.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.suppliers') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-truck"></i>
                                 @else
@@ -476,7 +476,7 @@
                         </li>
                         <li class="{{ request()->routeIs('client-types.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('client-types', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client-types.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('client-types.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.client_types') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-id-badge"></i>
                                 @else
@@ -510,7 +510,7 @@
                     }}">
                         <li class="{{ request()->routeIs('client.booking.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('booking', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.booking.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('client.booking.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.web_booking_integration') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-calendar-check"></i>
                                 @else
@@ -521,7 +521,7 @@
                         </li>
                         <li class="{{ request()->routeIs('client.telegram-settings.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('settings', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.telegram-settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('client.telegram-settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.telegram_integration') }}">
                                 @if($hasAccess)
                                     <i class="fab fa-telegram"></i>
                                 @else
@@ -532,7 +532,7 @@
                         </li>
                         <li class="{{ request()->routeIs('client.email-settings.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('settings', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.email-settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('client.email-settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.email_integration') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-envelope"></i>
                                 @else
@@ -543,7 +543,7 @@
                         </li>
                         <li class="{{ request()->routeIs('client.widget-settings.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('settings', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.widget-settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('client.widget-settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.website_widget') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-code"></i>
                                 @else
@@ -576,7 +576,7 @@
                         request()->routeIs('client.support-tickets.*') || 
                         request()->routeIs('client.notifications.*') || 
                         request()->routeIs('client.notifications.*') ? 'true' : 'false' 
-                    }}" class="dropdown-toggle" data-title="{{ __('messages.settings') }}">
+                    }}" class="dropdown-toggle" title="{{ __('messages.settings') }}">
                         <i class="menu-icon fa fa-cogs"></i>{{ __('messages.settings') }}
                     </a>
                     <ul id="settingsMenu" class="sub-menu children collapse {{ 
@@ -592,7 +592,7 @@
                     }}">
                         <li class="{{ request()->routeIs('client.users.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('client.users', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.users.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('client.users.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.users') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-users"></i>
                                 @else
@@ -604,7 +604,7 @@
                         </li>
                         <li class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('roles', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('roles.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('roles.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.roles_and_permissions') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-lock"></i>
                                 @else
@@ -616,7 +616,7 @@
                         </li>
                         <li class="{{ request()->routeIs('client.settings.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('settings', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('client.settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.general_settings') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-cog"></i>
                                 @else
@@ -628,7 +628,7 @@
                         </li>
                         <li class="{{ request()->routeIs('client.support-tickets.*') || request()->routeIs('support-tickets.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('support-tickets', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.support-tickets.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }} {{ request()->routeIs('client.support-tickets.*') || request()->routeIs('support-tickets.*') ? 'active' : '' }}">
+                            <a href="{{ $hasAccess ? route('client.support-tickets.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }} {{ request()->routeIs('client.support-tickets.*') || request()->routeIs('support-tickets.*') ? 'active' : '' }}" title="{{ __('messages.support') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-life-ring"></i>
                                 @else
@@ -639,7 +639,7 @@
                         </li>
                         <li class="{{ request()->routeIs('client.notifications.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('notifications', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.notifications.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                            <a href="{{ $hasAccess ? route('client.notifications.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.notifications') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-bell"></i>
                                 @else

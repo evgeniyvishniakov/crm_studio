@@ -741,8 +741,8 @@ aside.left-panel {
     display: none; }
 
 .open aside.left-panel {
-  max-width: 83px;
-  width: 83px; }
+  max-width: 100px;
+  width: 100px; }
   .open aside.left-panel .navbar .navbar-header {
     padding: 0; }
   .open aside.left-panel .navbar .navbar-brand {
@@ -788,18 +788,74 @@ aside.left-panel {
         padding-left: 0; }
       .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu {
   display: none;
-  left: 83px;
-  top: 0; }
+  position: static !important;
+  left: auto !important;
+  top: auto !important;
+  background: transparent;
+  margin: 5px 0;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  width: 100%;
+}
+
+.open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu.show,
+.open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu.collapse.show {
+  display: block !important;
+}
+
+.open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .dropdown-toggle:before {
+  transition: transform 0.3s ease;
+}
+
+.open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .dropdown-toggle[aria-expanded="true"]:before {
+  transform: rotate(135deg);
+}
         .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a {
-          display: block;
-          font-size: 14px;
-          max-width: inherit;
-          padding: 2px 15px 2px 25px;
-          width: 100%; }
-          .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a .menu-icon {
-            text-align: center; }
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0;
+          max-width: 60px;
+          padding: 12px 0;
+          width: 100%;
+          text-align: center;
+          margin: 0;
+          margin-left: 10px;
+          border-radius: 0;
+          transition: background 0.2s;
+          background: transparent;
+        }
+        
+        .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a:hover {
+          background: rgba(255,255,255,0.05);
+        }
+          .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a .menu-icon,
+          .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a i {
+            text-align: center;
+            font-size: 16px;
+            margin: 0;
+            float: none;
+            width: auto;
+            color: #8a8a8a;
+            display: block;
+            line-height: 1;
+          }
+          
+          .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a:hover .menu-icon,
+          .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a:hover i {
+            color: #03a9f3;
+          }
         .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu i {
-          left: 10px; }
+          display: none; }
+          
+        .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu .menu-label {
+          display: none; }
+          
+        .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li {
+          padding: 0;
+          margin: 4px 0;
+        }
       .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children.show {
         overflow: visible; }
               .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children.show .sub-menu {
@@ -2214,8 +2270,8 @@ footer.site-footer {
     overflow-x: scroll; }
 
   aside.left-panel {
-    max-width: 83px;
-    width: 83px; }
+    max-width: 100px;
+    width: 100px; }
     aside.left-panel .navbar .navbar-header {
       padding: 0; }
     aside.left-panel .navbar .navbar-brand {
