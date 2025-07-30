@@ -830,22 +830,32 @@ aside.left-panel {
         .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a:hover {
           background: rgba(255,255,255,0.05);
         }
-          .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a .menu-icon,
-          .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a i {
-            text-align: center;
-            font-size: 16px;
-            margin: 0;
-            float: none;
-            width: auto;
-            color: #8a8a8a;
-            display: block;
-            line-height: 1;
-          }
+                  .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a .menu-icon,
+        .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a i {
+          text-align: center;
+          font-size: 16px;
+          margin: 0;
+          float: none;
+          width: auto;
+          color: #8a8a8a;
+          display: block;
+          line-height: 1;
+        }
+        
+        .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children.active .menu-icon,
+        .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children.active i {
+          color: #03a9f3;
+        }
           
-          .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a:hover .menu-icon,
-          .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a:hover i {
-            color: #03a9f3;
-          }
+                  .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a:hover .menu-icon,
+        .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a:hover i {
+          color: #03a9f3;
+        }
+        
+        .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li.active a .menu-icon,
+        .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li.active a i {
+          color: #03a9f3;
+        }
         .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu i {
           display: none; }
           
