@@ -256,6 +256,12 @@
 @endphp
 <!-- Left Panel -->
 <aside id="left-panel" class="left-panel">
+    <!-- Mobile close button -->
+    <div class="mobile-close-btn" style="display: none; position: absolute; top: 15px; right: 15px; z-index: 10000;">
+        <button type="button" class="btn-close" style="background: none; border: none; color: #fff; font-size: 20px; cursor: pointer;">
+            <i class="fa fa-times"></i>
+        </button>
+    </div>
     <nav class="navbar navbar-expand-sm navbar-default">
         <div id="main-menu" class="main-menu collapse navbar-collapse">
             <ul class="nav navbar-nav">
