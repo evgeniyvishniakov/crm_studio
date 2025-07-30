@@ -1477,3 +1477,83 @@ input[type="date"]:focus {
         cursor: pointer !important;
     }
 }
+
+/* ===== КНОПКА ЗАКРЫТИЯ МОБИЛЬНОГО МЕНЮ ===== */
+/* Принудительно скрываем на всех устройствах по умолчанию */
+.mobile-close-btn {
+  display: none !important;
+}
+
+/* Принудительно скрываем на десктопе */
+@media (min-width: 769px) {
+  .mobile-close-btn {
+    display: none !important;
+  }
+}
+
+.mobile-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10000;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.mobile-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.mobile-close-btn .btn-close {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.mobile-close-btn .btn-close:hover {
+  color: #ff6b6b;
+  transform: rotate(90deg);
+}
+
+@media (max-width: 768px) {
+  /* Кнопка закрытия показывается на мобильных */
+  .mobile-close-btn {
+    display: flex !important;
+  }
+  
+  /* Кнопка закрытия показывается когда меню открыто */
+  #left-panel.show .mobile-close-btn {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 575px) {
+  /* Кнопка закрытия для очень маленьких экранов */
+  .mobile-close-btn {
+    width: 35px;
+    height: 35px;
+    top: 10px;
+    right: 10px;
+  }
+  
+  .mobile-close-btn .btn-close {
+    font-size: 16px;
+  }
+}

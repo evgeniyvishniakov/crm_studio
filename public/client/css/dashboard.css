@@ -839,6 +839,13 @@ body {
         height: auto;
         min-height: 100px;
         padding: 0.75rem;
+        transform: none !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    }
+    
+    .stat-card:hover {
+        transform: none !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
     }
     
     .stat-icon {

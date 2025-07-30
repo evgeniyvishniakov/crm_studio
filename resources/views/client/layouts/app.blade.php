@@ -22,8 +22,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css">
     <link rel="stylesheet" href="{{ asset('client/css/cs-skin-elastic.css') }}">
-    <link rel="stylesheet" href="{{ asset('client/css/style.css') }}?v=1.1">
-    <link rel="stylesheet" href="{{ asset('client/css/common.css') }}">
+    <link rel="stylesheet" href="{{ asset('client/css/style.css') }}?v=1.2">
+    <link rel="stylesheet" href="{{ asset('client/css/common.css') }}?v=1.3">
     <link rel="stylesheet" href="/client/css/notifications.css">
     <!-- Page-specific styles -->
     @if(request()->routeIs('dashboard'))
@@ -257,8 +257,8 @@
 <!-- Left Panel -->
 <aside id="left-panel" class="left-panel">
     <!-- Mobile close button -->
-    <div class="mobile-close-btn" style="display: none; position: absolute; top: 15px; right: 15px; z-index: 10000;">
-        <button type="button" class="btn-close" style="background: none; border: none; color: #fff; font-size: 20px; cursor: pointer;">
+    <div class="mobile-close-btn">
+        <button type="button" class="btn-close" title="Закрыть меню">
             <i class="fa fa-times"></i>
         </button>
     </div>
