@@ -2682,7 +2682,7 @@ footer.site-footer {
 .dashboard-container {
     padding: 10px;
     background: #f8f9fa;
-    min-height: 100vh;
+    
 }
 
 .dashboard-title {
@@ -3114,7 +3114,7 @@ footer.site-footer {
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-    border: 1px solid #e5e7eb;
+  
     margin: 32px auto;
     width: 95%;
     max-width: 1600px;

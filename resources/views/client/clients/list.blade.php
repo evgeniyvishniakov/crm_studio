@@ -2098,6 +2098,8 @@
                 paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;</button>`;
                 paginationHtml += '</div>';
             }
+            
+            // Пагинация для десктопа (в таблице)
             let pagContainer = document.getElementById('clientsPagination');
             if (!pagContainer) {
                 pagContainer = document.createElement('div');
@@ -2105,8 +2107,17 @@
                 document.querySelector('.table-wrapper').appendChild(pagContainer);
             }
             pagContainer.innerHTML = paginationHtml;
+            
+            // Пагинация для мобильных устройств (в карточках)
+            let mobilePagContainer = document.getElementById('mobileClientsPagination');
+            if (!mobilePagContainer) {
+                mobilePagContainer = document.createElement('div');
+                mobilePagContainer.id = 'mobileClientsPagination';
+                document.querySelector('.clients-cards').appendChild(mobilePagContainer);
+            }
+            mobilePagContainer.innerHTML = paginationHtml;
 
-            // Навешиваем обработчики
+            // Навешиваем обработчики для всех кнопок пагинации
             document.querySelectorAll('.page-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const page = parseInt(this.dataset.page);
