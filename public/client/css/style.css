@@ -576,6 +576,9 @@ aside.left-panel {
 
 .open aside.left-panel:hover {
   overflow-x: inherit; }
+  
+.open aside.left-panel:hover .navbar .navbar-nav li.menu-item-has-children .sub-menu {
+  display: none; }
 
 .small-device .right-panel {
   margin-left: 83px; }
@@ -784,9 +787,9 @@ aside.left-panel {
       .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children ul {
         padding-left: 0; }
       .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu {
-        display: block;
-        left: 83px;
-        top: 0; }
+  display: none;
+  left: 83px;
+  top: 0; }
         .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li a {
           display: block;
           font-size: 14px;
@@ -799,8 +802,9 @@ aside.left-panel {
           left: 10px; }
       .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children.show {
         overflow: visible; }
-        .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children.show .sub-menu {
-          position: absolute !important; }
+              .open aside.left-panel .navbar .navbar-nav li.menu-item-has-children.show .sub-menu {
+        position: absolute !important;
+        display: none !important; }
       aside.left-panel .navbar .navbar-nav li span.count {
       display: none;
       margin-right: 5px;
@@ -814,10 +818,12 @@ aside.left-panel {
     opacity: 0;
     padding: 0; }
   .open aside.left-panel .menutoggle {
-    background-color: #dc3545;
-    color: #fff !important;
-    right: -20px;
-    text-align: center; }
+  background-color: #dc3545;
+  color: #fff !important;
+  right: -20px;
+  text-align: center; }
+
+
 
 /* Right panel */
 .right-panel {

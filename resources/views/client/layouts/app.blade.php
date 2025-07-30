@@ -261,7 +261,7 @@
             <ul class="nav navbar-nav">
                 <li class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('dashboard', $userPermissions); @endphp
-                    <a href="{{ $hasAccess ? route('dashboard') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                    <a href="{{ $hasAccess ? route('dashboard') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.dashboard') }}">
                         @if($hasAccess)
                             <i class="menu-icon fas fa-laptop"></i>
                         @else
@@ -275,7 +275,7 @@
 
                 <li class="{{ request()->routeIs('clients.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('clients', $userPermissions); @endphp
-                    <a href="{{ $hasAccess ? route('clients.list') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                    <a href="{{ $hasAccess ? route('clients.list') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.clients') }}">
                         @if($hasAccess)
                             <i class="menu-icon fas fa-users"></i>
                         @else
@@ -287,7 +287,7 @@
                 </li>
                 <li class="{{ request()->routeIs('appointments.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('appointments', $userPermissions); @endphp
-                    <a href="{{ $hasAccess ? route('appointments.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                    <a href="{{ $hasAccess ? route('appointments.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.appointments') }}">
                         @if($hasAccess)
                             <i class="menu-icon fas fa-calendar"></i>
                         @else
@@ -299,7 +299,7 @@
                 </li>
                 <li class="{{ request()->routeIs('reports.clients.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('analytics', $userPermissions); @endphp
-                    <a href="{{ $hasAccess ? route('reports.clients.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                    <a href="{{ $hasAccess ? route('reports.clients.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.analytics') }}">
                         @if($hasAccess)
                             <i class="menu-icon fas fa-bar-chart"></i>
                         @else
@@ -315,7 +315,7 @@
 
                 <li class="{{ request()->routeIs('warehouses.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('warehouse', $userPermissions); @endphp
-                    <a href="{{ $hasAccess ? route('warehouses.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                    <a href="{{ $hasAccess ? route('warehouses.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.warehouse') }}">
                         @if($hasAccess)
                             <i class="menu-icon fa fa-boxes-stacked"></i>
                         @else
@@ -327,7 +327,7 @@
                 </li>
                 <li class="{{ request()->routeIs('purchases.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('purchases', $userPermissions); @endphp
-                    <a href="{{ $hasAccess ? route('purchases.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                    <a href="{{ $hasAccess ? route('purchases.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.purchases') }}">
                         @if($hasAccess)
                             <i class="menu-icon fa fa-cart-plus"></i>
                         @else
@@ -339,7 +339,7 @@
                 </li>
                 <li class="{{ request()->routeIs('sales.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('sales', $userPermissions); @endphp
-                    <a href="{{ $hasAccess ? route('sales.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                    <a href="{{ $hasAccess ? route('sales.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.sales') }}">
                         @if($hasAccess)
                             <i class="menu-icon fa fa-shopping-basket"></i>
                         @else
@@ -351,7 +351,7 @@
                 </li>
                 <li class="{{ request()->routeIs('expenses.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('expenses', $userPermissions); @endphp
-                    <a href="{{ $hasAccess ? route('expenses.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                    <a href="{{ $hasAccess ? route('expenses.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.expenses') }}">
                         @if($hasAccess)
                             <i class="menu-icon fa fa-credit-card"></i>
                         @else
@@ -363,7 +363,7 @@
                 </li>
                 <li class="{{ request()->routeIs('inventories.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('inventory', $userPermissions); @endphp
-                    <a href="{{ $hasAccess ? route('inventories.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                    <a href="{{ $hasAccess ? route('inventories.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.inventory') }}">
                         @if($hasAccess)
                             <i class="menu-icon fa fa-archive"></i>
                         @else
@@ -375,7 +375,7 @@
                 </li>
                 <li class="{{ request()->routeIs('reports.turnover') || request()->routeIs('reports.turnover.*') ? 'active' : '' }}">
                     @php $hasAccess = $isAdmin || in_array('analytics', $userPermissions); @endphp
-                    <a href="{{ $hasAccess ? route('reports.turnover') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}">
+                    <a href="{{ $hasAccess ? route('reports.turnover') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.analytics') }}">
                         @if($hasAccess)
                             <i class="menu-icon fa fa-bar-chart"></i>
                         @else
@@ -403,7 +403,7 @@
                         request()->routeIs('product-brands.*') || 
                         request()->routeIs('suppliers.*') || 
                         request()->routeIs('client-types.*') ? 'true' : 'false' 
-                    }}" class="dropdown-toggle">
+                    }}" class="dropdown-toggle" title="{{ __('messages.directories') }}">
                         <i class="menu-icon fa fa-layer-group"></i>{{ __('messages.directories') }}
                     </a>
                     <ul id="referenceMenu" class="sub-menu children collapse {{ 
@@ -499,7 +499,7 @@
                         request()->routeIs('client.telegram-settings.*') ||
                         request()->routeIs('client.email-settings.*') ||
                         request()->routeIs('client.widget-settings.*') ? 'true' : 'false' 
-                    }}" class="dropdown-toggle">
+                    }}" class="dropdown-toggle" title="{{ __('messages.integrations') }}">
                         <i class="menu-icon fa fa-plug"></i>{{ __('messages.integrations') }}
                     </a>
                     <ul id="integrationsMenu" class="sub-menu children collapse {{ 
@@ -576,7 +576,7 @@
                         request()->routeIs('client.support-tickets.*') || 
                         request()->routeIs('client.notifications.*') || 
                         request()->routeIs('client.notifications.*') ? 'true' : 'false' 
-                    }}" class="dropdown-toggle">
+                    }}" class="dropdown-toggle" data-title="{{ __('messages.settings') }}">
                         <i class="menu-icon fa fa-cogs"></i>{{ __('messages.settings') }}
                     </a>
                     <ul id="settingsMenu" class="sub-menu children collapse {{ 
