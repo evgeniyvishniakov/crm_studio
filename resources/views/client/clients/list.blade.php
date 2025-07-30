@@ -39,6 +39,11 @@
                 </tbody>
             </table>
         </div>
+        
+        <!-- Контейнер для карточек клиентов (мобильная версия) -->
+        <div class="clients-cards" id="clientsCardsContainer">
+            <!-- Карточки будут добавляться динамически через JavaScript -->
+        </div>
     </div>
 
     <!-- Модальное окно для добавления клиента -->
@@ -1067,7 +1072,14 @@
 
         document.getElementById('confirmDelete').addEventListener('click', function() {
             if (currentDeleteRow && currentDeleteId) {
-                deleteClient(currentDeleteRow, currentDeleteId);
+                // Проверяем, является ли currentDeleteRow карточкой или строкой
+                if (currentDeleteRow.classList.contains('client-card')) {
+                    // Это карточка - используем функцию для карточек
+                    deleteClientCard(currentDeleteRow, currentDeleteId);
+                } else {
+                    // Это строка таблицы - используем обычную функцию
+                    deleteClient(currentDeleteRow, currentDeleteId);
+                }
             }
             document.getElementById('confirmationModal').style.display = 'none';
         });
@@ -1113,6 +1125,14 @@
             const modal = document.getElementById('viewClientModal');
             if (event.target === modal) {
                 closeViewModal();
+            }
+            
+            // Закрытие модального окна подтверждения при клике вне его
+            const confirmationModal = document.getElementById('confirmationModal');
+            if (event.target === confirmationModal) {
+                confirmationModal.style.display = 'none';
+                currentDeleteRow = null;
+                currentDeleteId = null;
             }
         });
 
@@ -1887,7 +1907,9 @@
 
         function renderClients(clients) {
             const tbody = document.getElementById('clientsTableBody');
+            const cardsContainer = document.getElementById('clientsCardsContainer');
             tbody.innerHTML = '';
+            cardsContainer.innerHTML = '';
             
             // Если нет клиентов, не делаем ничего
             if (!clients || clients.length === 0) {
@@ -1971,6 +1993,72 @@
                     </td>
                 `;
                 tbody.appendChild(row);
+                
+                // Создаем карточку для мобильной версии
+                const card = document.createElement('div');
+                card.className = 'client-card';
+                card.id = `client-card-${client.id}`;
+                
+                let instagramText = '';
+                if (client.instagram) {
+                    instagramText = client.instagram;
+                }
+                
+                let phoneText = '';
+                if (client.phone) {
+                    phoneText = client.phone;
+                }
+                
+                let emailText = '';
+                if (client.email) {
+                    emailText = client.email;
+                }
+                
+                card.innerHTML = `
+                    <div class="client-info">
+                        <div class="client-info-item">
+                            <span class="client-info-label">Имя:</span>
+                            <span class="client-name">${client.name}</span>
+                        </div>
+                        ${phoneText ? `<div class="client-info-item">
+                            <span class="client-info-label">Телефон:</span>
+                            <span class="client-info-value">${phoneText}</span>
+                        </div>` : ''}
+                        ${instagramText ? `<div class="client-info-item">
+                            <span class="client-info-label">Instagram:</span>
+                            <span class="client-info-value">${instagramText}</span>
+                        </div>` : ''}
+                        ${emailText ? `<div class="client-info-item">
+                            <span class="client-info-label">Email:</span>
+                            <span class="client-info-value">${emailText}</span>
+                        </div>` : ''}
+                        <div class="client-info-item">
+                            <span class="client-info-label">Тип:</span>
+                            <span class="client-type-badge">
+                                ${clientType && clientType.name ? getTranslatedClientTypeName(clientType.name) : '{{ __('messages.new_client') }}'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="client-actions">
+                        <button class="btn-view" onclick="viewClient(${client.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <button class="btn-edit" onclick="editClient(${client.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                        </button>
+                        <button class="btn-delete" onclick="deleteClient(${client.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
             });
         }
 
@@ -2064,5 +2152,74 @@
 
         // Инициализация первой загрузки
         loadClients(1);
+        
+        // Обработчик клавиши Escape для закрытия модальных окон
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const confirmationModal = document.getElementById('confirmationModal');
+                if (confirmationModal.style.display === 'block') {
+                    confirmationModal.style.display = 'none';
+                    currentDeleteRow = null;
+                    currentDeleteId = null;
+                }
+            }
+        });
+        
+        // Функции-обертки для карточек
+        function viewClient(clientId) {
+            openViewModal(clientId);
+        }
+        
+        function editClient(clientId) {
+            openEditModal(clientId);
+        }
+        
+        function deleteClient(clientId) {
+            const card = document.getElementById(`client-card-${clientId}`);
+            if (card) {
+                // Сохраняем ссылку на удаляемую карточку
+                currentDeleteRow = card;
+                currentDeleteId = clientId;
+
+                // Показываем модальное окно подтверждения
+                document.getElementById('confirmationModal').style.display = 'block';
+            }
+        }
+        
+        // Функция для удаления карточки клиента
+        function deleteClientCard(card, clientId) {
+            // Добавляем класс для анимации
+            card.classList.add('row-deleting');
+
+            // Отправляем запрос на удаление
+            fetch(`/clients/${clientId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка при удалении');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Удаляем карточку после завершения анимации
+                        setTimeout(() => {
+                            card.remove();
+                            showNotification('success', '{{ __('messages.client_deleted_successfully') }}');
+                        }, 300);
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    card.classList.remove('row-deleting');
+                    showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                });
+        }
     </script>
 @endsection

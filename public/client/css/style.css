@@ -2583,7 +2583,7 @@ footer.site-footer {
       position: static;
       display: flex; }
     .right-panel header.header .top-right {
-      padding: 0 30px; }
+      padding: 0; }
 
   .small-device .right-panel {
     margin-left: 0;

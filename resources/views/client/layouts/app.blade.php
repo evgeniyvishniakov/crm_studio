@@ -22,8 +22,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css">
     <link rel="stylesheet" href="{{ asset('client/css/cs-skin-elastic.css') }}">
-    <link rel="stylesheet" href="{{ asset('client/css/style.css') }}?v=1.2">
-    <link rel="stylesheet" href="{{ asset('client/css/common.css') }}?v=1.3">
+    <link rel="stylesheet" href="{{ asset('client/css/style.css') }}?v=1.3">
+    <link rel="stylesheet" href="{{ asset('client/css/common.css') }}?v=3.1">
     <link rel="stylesheet" href="/client/css/notifications.css">
     <!-- Page-specific styles -->
     @if(request()->routeIs('dashboard'))
