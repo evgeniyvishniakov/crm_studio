@@ -46,6 +46,7 @@
             </div>
         </div>
 
+        <!-- Десктопная таблица -->
         <div class="table-wrapper">
             <table class="table-striped products-table">
                 <thead>
@@ -60,54 +61,29 @@
                 </tr>
                 </thead>
                 <tbody id="productsTableBody">
-                @foreach($products as $product)
-                    <tr id="product-{{ $product->id }}">
-                        <td>
-                            @if($product->photo)
-                                <a href="{{ Storage::url($product->photo) }}" class="zoomable-image" data-img="{{ Storage::url($product->photo) }}">
-                                    <img src="{{ Storage::url($product->photo) }}" alt="{{ $product->name }}" class="product-photo">
-                                </a>
-                            @else
-                                <div class="no-photo">{{ __('messages.no_photo') }}</div>
-                            @endif
-                        </td>
-                        <td>{{ $product->name }}</td>
-                        <td>{{ $product->category->name ?? '—' }}</td>
-                        <td>{{ $product->brand->name ?? '—' }}</td>
-                        <td class="currency-amount" data-amount="{{ $product->purchase_price }}">
-                            @if(fmod($product->purchase_price, 1) == 0)
-                                {!! \App\Helpers\CurrencyHelper::getSymbol() !!}{{ (int)$product->purchase_price }}
-                            @else
-                                {!! \App\Helpers\CurrencyHelper::getSymbol() !!}{{ number_format($product->purchase_price, 2) }}
-                            @endif
-                        </td>
-                        <td class="currency-amount" data-amount="{{ $product->retail_price }}">
-                            @if(fmod($product->retail_price, 1) == 0)
-                                {!! \App\Helpers\CurrencyHelper::getSymbol() !!}{{ (int)$product->retail_price }}
-                            @else
-                                {!! \App\Helpers\CurrencyHelper::getSymbol() !!}{{ number_format($product->retail_price, 2) }}
-                            @endif
-                        </td>
-                        <td class="actions-cell">
-                            <button class="btn-edit" title="{{ __('messages.edit') }}">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                </svg>
-                            </button>
-                            <button class="btn-delete" title="{{ __('messages.delete') }}">
-                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
+                    <!-- Данные будут загружены через AJAX -->
+                    <tr id="loading-row">
+                        <td colspan="7" class="loading-indicator">
+                            <div style="text-align: center; padding: 40px;">
+                                <div style="width: 32px; height: 32px; border: 3px solid #f3f4f6; border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+                                <p style="color: #6c7280; margin: 0;">Загрузка товаров...</p>
+                            </div>
                         </td>
                     </tr>
-                @endforeach
                 </tbody>
             </table>
             
             <!-- Пагинация будет добавлена через JavaScript -->
             <div id="productsPagination"></div>
         </div>
+
+        <!-- Мобильные карточки товаров -->
+        <div class="products-cards" id="productsCards" style="display: none;">
+            <!-- Карточки будут добавлены через JavaScript -->
+        </div>
+
+        <!-- Пагинация для мобильных карточек -->
+        <div id="mobileProductsPagination" style="display: none;"></div>
     </div>
 
     <!-- Модальное окно для добавления товара -->
@@ -1401,10 +1377,29 @@
         // AJAX-пагинация
         let currentPage = 1;
         let searchQuery = '';
+        let isFirstLoad = true;
 
         function loadPage(page, search = '') {
+            console.log('Load page called with page:', page, 'search:', search);
             currentPage = page;
             searchQuery = search;
+            
+            // Показываем индикатор загрузки при смене страниц (только если это не первая загрузка)
+            if (!isFirstLoad) {
+                const tbody = document.getElementById('productsTableBody');
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr id="loading-row">
+                            <td colspan="7" class="loading-indicator">
+                                <div style="text-align: center; padding: 40px;">
+                                    <div style="width: 32px; height: 32px; border: 3px solid #f3f4f6; border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+                                    <p style="color: #6c7280; margin: 0;">Загрузка товаров...</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
             
             const params = new URLSearchParams();
             if (page > 1) params.append('page', page);
@@ -1421,20 +1416,41 @@
                 }
                 return response.json();
             })
-            .then(data => {
-                updateTable(data.data);
-                renderPagination(data.meta);
-            })
-            .catch(error => {
-                window.showNotification('error', '{{ __('messages.error_loading_data') }}');
-            });
+                         .then(data => {
+                 console.log('Data received:', data);
+                 updateTable(data.data);
+                 renderPagination(data.meta);
+                 
+                 // После первой загрузки устанавливаем флаг в false
+                 if (isFirstLoad) {
+                     isFirstLoad = false;
+                 }
+             })
+             .catch(error => {
+                 console.error('Error loading data:', error);
+                 window.showNotification('error', '{{ __('messages.error_loading_data') }}');
+             });
         }
 
         function updateTable(products) {
             const tbody = document.getElementById('productsTableBody');
+            const productsCards = document.getElementById('productsCards');
+            
+            console.log('Update table called with products:', products);
+            console.log('Table body:', tbody);
+            console.log('Products cards:', productsCards);
+            
             tbody.innerHTML = '';
+            productsCards.innerHTML = '';
+            
+            // Убираем индикатор загрузки
+            const loadingRow = document.getElementById('loading-row');
+            if (loadingRow) {
+                loadingRow.remove();
+            }
 
             products.forEach(product => {
+                // Создаем строку для десктопной таблицы
                 const row = document.createElement('tr');
                 row.id = `product-${product.id}`;
                 
@@ -1495,7 +1511,71 @@
                 row.appendChild(retailPriceCell);
                 row.appendChild(actionsCell);
                 tbody.appendChild(row);
+
+                // Создаем карточку для мобильной версии
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.id = `product-card-${product.id}`;
+                
+                // Формируем фото для карточки
+                let cardPhotoHtml;
+                if (product.photo) {
+                    const photoUrl = `/storage/${product.photo}`;
+                    cardPhotoHtml = `<img src="${photoUrl}" alt="${product.name}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">`;
+                } else {
+                    cardPhotoHtml = '<div class="no-photo">Нет фото</div>';
+                }
+
+                card.innerHTML = `
+                    <div class="product-card-header">
+                        <div class="product-photo-container">
+                            ${cardPhotoHtml}
+                        </div>
+                        <div class="product-main-info">
+                            <h3 class="product-name">${product.name}</h3>
+                            ${product.category?.name ? `<span class="product-category-badge">${product.category.name}</span>` : ''}
+                            ${product.brand?.name ? `<span class="product-brand-badge">${product.brand.name}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-info-item">
+                            <span class="product-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                                Закупочная цена
+                            </span>
+                            <span class="product-info-value">${formatPrice(product.purchase_price)}</span>
+                        </div>
+                        <div class="product-info-item">
+                            <span class="product-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                                Розничная цена
+                            </span>
+                            <span class="product-info-value">${formatPrice(product.retail_price)}</span>
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="btn-edit" title="Редактировать" onclick="editProduct(${product.id})">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            Изменить
+                        </button>
+                        <button class="btn-delete" title="Удалить" onclick="deleteProduct(${product.id})">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Удалить
+                        </button>
+                    </div>
+                `;
+                
+                productsCards.appendChild(card);
             });
+            
             // После добавления строк навешиваем обработчики
             initZoomableImages();
         }
@@ -1543,6 +1623,12 @@
                 document.querySelector('.table-wrapper').appendChild(pagContainer);
             }
             pagContainer.innerHTML = paginationHtml;
+
+            // Обновляем мобильную пагинацию
+            let mobilePagContainer = document.getElementById('mobileProductsPagination');
+            if (mobilePagContainer) {
+                mobilePagContainer.innerHTML = paginationHtml;
+            }
 
             // Навешиваем обработчики
             document.querySelectorAll('.page-btn').forEach(btn => {
@@ -1622,11 +1708,60 @@
             });
         }
 
+        // Функция для переключения между десктопной и мобильной версией
+        function toggleMobileView() {
+            const tableWrapper = document.querySelector('.table-wrapper');
+            const productsCards = document.getElementById('productsCards');
+            const productsPagination = document.getElementById('productsPagination');
+            const mobileProductsPagination = document.getElementById('mobileProductsPagination');
+            
+            console.log('Toggle mobile view - window width:', window.innerWidth);
+            console.log('Table wrapper:', tableWrapper);
+            console.log('Products cards:', productsCards);
+            
+            if (window.innerWidth <= 768) {
+                // Мобильная версия
+                if (tableWrapper) {
+                    tableWrapper.style.display = 'none';
+                    console.log('Table wrapper hidden');
+                }
+                if (productsCards) {
+                    productsCards.style.display = 'block';
+                    console.log('Products cards shown');
+                }
+                if (productsPagination) productsPagination.style.display = 'none';
+                if (mobileProductsPagination) mobileProductsPagination.style.display = 'block';
+            } else {
+                // Десктопная версия
+                if (tableWrapper) {
+                    tableWrapper.style.display = 'block';
+                    console.log('Table wrapper shown');
+                }
+                if (productsCards) {
+                    productsCards.style.display = 'none';
+                    console.log('Products cards hidden');
+                }
+                if (productsPagination) productsPagination.style.display = 'block';
+                if (mobileProductsPagination) mobileProductsPagination.style.display = 'none';
+            }
+        }
+
         // Инициализация первой загрузки
+        let isInitialized = false;
+        
         document.addEventListener('DOMContentLoaded', function() {
-            loadPage(1);
-            initZoomableImages();
-            checkDeletedProducts(); // Проверяем наличие удаленных товаров
+            if (!isInitialized) {
+                isInitialized = true;
+                loadPage(1);
+                initZoomableImages();
+                checkDeletedProducts(); // Проверяем наличие удаленных товаров
+                toggleMobileView(); // Переключаем на правильную версию
+            }
+        });
+
+        // Обработчик изменения размера окна
+        window.addEventListener('resize', function() {
+            toggleMobileView();
         });
 
         function initZoomableImages() {

@@ -36,10 +36,10 @@ class ProductController extends Controller
             ]);
         }
 
-        $products = $query->paginate(11);
+        // При первой загрузке страницы не загружаем товары - они будут загружены через AJAX
         $categories = ProductCategory::orderBy('name')->get();
         $brands = ProductBrand::orderBy('name')->get();
-        return view('client.products.list', compact('products', 'categories', 'brands'));
+        return view('client.products.list', compact('categories', 'brands'));
     }
 
     public function create()
