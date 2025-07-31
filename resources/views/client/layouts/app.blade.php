@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="{{ asset('client/css/style.css') }}?v=1.3">
     <link rel="stylesheet" href="{{ asset('client/css/common.css') }}?v=3.1">
     <link rel="stylesheet" href="/client/css/notifications.css">
+    <link rel="stylesheet" href="{{ asset('client/css/responsive.css') }}">
     <!-- Page-specific styles -->
     @if(request()->routeIs('dashboard'))
         <link rel="stylesheet" href="{{ asset('client/css/dashboard.css') }}">

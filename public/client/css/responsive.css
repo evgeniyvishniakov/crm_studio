@@ -1,0 +1,1339 @@
+/* ===== ОБЩИЕ МОБИЛЬНЫЕ СТИЛИ ДЛЯ ВСЕГО ПРОЕКТА ===== */
+
+/* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ СТРАНИЦЫ КЛИЕНТОВ ===== */
+/* Скрываем карточки на десктопе по умолчанию */
+.clients-cards {
+    display: none;
+}
+
+/* Показываем таблицу на десктопе */
+.table-wrapper {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    /* Заголовок страницы клиентов */
+    .clients-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+        margin-bottom: 20px;
+    }
+    
+    .clients-header h1 {
+        font-size: 20px;
+        text-align: center;
+        color: #1f2937;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    /* Действия в заголовке */
+    .header-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    /* Кнопка добавления клиента */
+    .btn-add-client {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 16px;
+        font-size: 14px;
+        background: linear-gradient(135deg, #10b981, #34d399);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-add-client:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* Поисковая строка */
+    .search-box {
+        width: 100%;
+        position: relative;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 12px 16px 12px 44px;
+        font-size: 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        background: #f9fafb;
+        transition: all 0.2s ease;
+    }
+    
+    .search-box input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: #9ca3af;
+    }
+    
+    /* Скрываем таблицу на мобильных */
+    .table-wrapper {
+        display: none;
+    }
+    
+    /* Показываем карточки клиентов */
+    .clients-cards {
+        display: block;
+        padding: 0 15px;
+    }
+    
+    /* Пагинация для мобильных карточек клиентов */
+    #mobileClientsPagination {
+        margin-top: 20px;
+        padding: 0 15px;
+    }
+    
+    #mobileClientsPagination .pagination {
+        justify-content: center;
+        margin: 0;
+        gap: 4px;
+    }
+    
+    /* Стили карточек клиентов */
+    .client-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .client-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    }
+    
+    .client-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    
+    .client-card-header {
+        display: none;
+    }
+    
+    .client-name {
+        color: #1f2937;
+        font-weight: 600;
+        text-align: right;
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+    
+    .client-type-badge {
+        font-size: 13px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        background: #f3f4f6;
+        color: #6b7280;
+        font-weight: 500;
+    }
+    
+    .client-info {
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .client-info-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        font-size: 14px;
+    }
+    
+    .client-info-label {
+        color: #6b7280;
+        font-weight: 500;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .client-info-label svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .client-info-value {
+        color: #1f2937;
+        font-weight: 600;
+        text-align: right;
+        font-size: 14px;
+        max-width: 60%;
+        word-wrap: break-word;
+    }
+    
+    .client-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        padding-top: 12px;
+        border-top: 1px solid #f3f4f6;
+    }
+    
+    .client-actions .btn-view,
+    .client-actions .btn-edit,
+    .client-actions .btn-delete {
+        padding: 10px 14px;
+        font-size: 12px;
+        border-radius: 8px;
+        min-width: auto;
+        flex: 1;
+        justify-content: center;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .client-actions .btn-view {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+        border: none;
+    }
+    
+    .client-actions .btn-edit {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        color: white;
+        border: none;
+    }
+    
+    .client-actions .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+        border: none;
+    }
+    
+    .client-actions .btn-view:hover,
+    .client-actions .btn-edit:hover,
+    .client-actions .btn-delete:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+}
+
+/* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ СТРАНИЦЫ ЗАПИСЕЙ ===== */
+/* Скрываем карточки на десктопе по умолчанию */
+.appointments-cards {
+    display: none;
+}
+
+/* Показываем таблицу на десктопе */
+.appointments-list.table-wrapper {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    /* Основной контейнер */
+    .content {
+        padding-bottom: 20px;
+        min-height: calc(100vh - 200px);
+    }
+    
+    /* Заголовок страницы записей */
+    .appointments-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+        margin-bottom: 20px;
+    }
+    
+    .appointments-header h1 {
+        font-size: 20px;
+        text-align: center;
+        color: #1f2937;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    /* Действия в заголовке */
+    .header-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    /* Переключатель видов */
+    .view-switcher {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+    
+    .btn-view-switch {
+        flex: 1;
+        padding: 10px 16px;
+        font-size: 13px;
+        border-radius: 8px;
+        background: #f3f4f6;
+        border: 1px solid #d1d5db;
+        color: #6b7280;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-view-switch.active {
+        background: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+    }
+    
+    /* Кнопка добавления записи */
+    .btn-add-appointment {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 16px;
+        font-size: 14px;
+        background: linear-gradient(135deg, #10b981, #34d399);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-add-appointment:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* Поисковая строка */
+    .search-box {
+        width: 100%;
+        position: relative;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 12px 16px 12px 44px;
+        font-size: 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        background: #f9fafb;
+        transition: all 0.2s ease;
+    }
+    
+    .search-box input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: #9ca3af;
+    }
+    
+    /* Скрываем таблицу на мобильных */
+    .appointments-list.table-wrapper {
+        display: none;
+    }
+    
+    /* Показываем карточки записей */
+    .appointments-cards {
+        display: block;
+        padding: 0 15px;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Пагинация для мобильных карточек записей */
+    #mobileAppointmentsPagination {
+        margin-top: 20px;
+        padding: 0 15px;
+    }
+    
+    #mobileAppointmentsPagination .pagination {
+        justify-content: center;
+        margin: 0;
+        gap: 4px;
+    }
+    
+    /* Стили карточек записей */
+    .appointment-card {
+        background: #fff !important;
+        border-radius: 16px !important;
+        padding: 20px !important;
+        margin-bottom: 16px !important;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
+        border: 1px solid #e5e7eb !important;
+        transition: all 0.2s ease !important;
+        overflow: hidden !important;
+        position: relative !important;
+        z-index: 1 !important;
+        /* Принудительно убираем проблемные стили */
+        left: auto !important;
+        right: auto !important;
+        color: inherit !important;
+        font-size: inherit !important;
+        text-overflow: unset !important;
+        white-space: normal !important;
+        cursor: default !important;
+    }
+    
+    .appointment-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    }
+    
+    .appointment-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    
+    .appointment-card-header {
+        display: none;
+    }
+    
+    /* Основная информация о записи */
+    .appointment-main-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .appointment-date-time {
+        flex: 1;
+    }
+    
+    .appointment-date {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+    
+    .appointment-time {
+        font-size: 14px;
+        color: #6b7280;
+        font-weight: 500;
+    }
+    
+    .appointment-status {
+        margin-left: 12px;
+    }
+    
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-pending {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        color: white;
+    }
+    
+    .status-completed {
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: white;
+    }
+    
+    .status-cancelled {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+    }
+    
+    .status-rescheduled {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+    }
+    
+    /* Детальная информация */
+    .appointment-info {
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .appointment-info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+    }
+    
+    .appointment-info-label {
+        color: #6b7280;
+        font-weight: 500;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .appointment-info-label svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .appointment-info-value {
+        color: #1f2937;
+        font-weight: 600;
+        font-size: 14px;
+        text-align: right;
+        max-width: 60%;
+        word-wrap: break-word;
+    }
+    
+    /* Специальные стили для клиента */
+    .appointment-client {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 12px;
+        margin: 8px 0;
+    }
+    
+    .appointment-client-name {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+    
+    .appointment-client-instagram {
+        font-size: 12px;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .instagram-link {
+        color: #e4405f;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .instagram-link:hover {
+        text-decoration: underline;
+    }
+    
+    /* Стоимость */
+    .appointment-cost {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+        margin: 12px 0;
+    }
+    
+    .appointment-cost-label {
+        font-size: 12px;
+        color: #92400e;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+    
+    .appointment-cost-value {
+        font-size: 18px;
+        font-weight: 700;
+        color: #92400e;
+    }
+    
+    /* Действия */
+    .appointment-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        padding-top: 12px;
+        border-top: 1px solid #f3f4f6;
+    }
+    
+    .appointment-actions .btn-view,
+    .appointment-actions .btn-edit,
+    .appointment-actions .btn-delete {
+        padding: 10px 14px;
+        font-size: 12px;
+        border-radius: 8px;
+        min-width: auto;
+        flex: 1;
+        justify-content: center;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .appointment-actions .btn-view {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+        border: none;
+    }
+    
+    .appointment-actions .btn-edit {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        color: white;
+        border: none;
+    }
+    
+    .appointment-actions .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+        border: none;
+    }
+    
+    .appointment-actions .btn-view:hover,
+    .appointment-actions .btn-edit:hover,
+    .appointment-actions .btn-delete:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .procedure-card,
+    .sales-card{
+        padding: 12px 8px!important; 
+    }
+
+}
+
+/* ===== ОБЩИЕ МОБИЛЬНЫЕ СТИЛИ ===== */
+@media (max-width: 768px) {
+    /* Модальное окно */
+    .modal-content {
+        width: 95%;
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 20px;
+        overflow: hidden;
+        box-sizing: border-box;
+        border-radius: 16px;
+    }
+    
+    .modal-header h2 {
+        font-size: 18px;
+        color: #1f2937;
+        font-weight: 600;
+    }
+    
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .form-group label {
+        font-size: 14px;
+        margin-bottom: 6px;
+        color: #374151;
+        font-weight: 500;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 12px 16px;
+        font-size: 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #f9fafb;
+        transition: all 0.2s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .form-group select {
+        max-width: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 14px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .form-group select option {
+        font-size: 14px;
+        padding: 8px 12px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+    }
+    
+    /* Специальные стили для полей даты и времени в модальном окне */
+    .form-group input[type="date"],
+    .form-group input[type="time"] {
+        padding: 12px 16px;
+        font-size: 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #f9fafb;
+        transition: all 0.2s ease;
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 44px;
+    }
+    
+    .form-group input[type="date"]:focus,
+    .form-group input[type="time"]:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Исправляем стили для form-row на мобильных */
+    .form-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .form-row .form-group:nth-child(1) {
+        flex: 1;
+        min-width: 0;
+        width: 100%;
+    }
+    
+    .form-row .form-group:nth-child(2),
+    .form-row .form-group:nth-child(3),
+    .form-row .form-group:nth-child(4) {
+        flex: 1;
+        min-width: 0;
+        width: 100%;
+    }
+    
+    .form-row .form-group:nth-child(5) {
+        flex: 0 0 auto;
+        width: auto;
+    }
+    
+    .form-actions {
+        flex-direction: row;
+        gap: 12px;
+        justify-content: space-between;
+        margin-top: 24px;
+    }
+    
+    /* Стили для кнопок в модальном окне просмотра записи */
+    .details-footer {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+        justify-content: space-between;
+        margin-top: 24px;
+        align-items: center;
+    }
+    
+    .btn-cancel, .btn-submit {
+        width: 48%;
+        padding: 12px 16px;
+        font-size: 14px;
+        display: inline-block;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-cancel {
+        background: #f3f4f6;
+        color: #6b7280;
+        border: 1px solid #d1d5db;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: white;
+        border: none;
+    }
+    
+    .btn-cancel:hover {
+        background: #e5e7eb;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    .appointment-details {
+        padding: 0;
+    }
+    
+    .modal-body {
+        padding: 0; 
+    }
+    
+    .appointment-details-modal {
+        padding: 0; 
+    }
+    
+    .card {
+        padding: 0;
+    }
+    
+    /* Адаптация существующей пагинации для мобильных устройств */
+    .pagination {
+        gap: 4px;
+        margin: 16px 0;
+        padding: 0 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .pagination .page-btn,
+    .pagination .page-ellipsis {
+        min-width: 32px;
+        height: 32px;
+        line-height: 32px;
+        padding: 0 8px;
+        font-size: 14px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        border: 1px solid #d1d5db;
+        color: #6b7280;
+        transition: all 0.2s ease;
+    }
+    
+    .pagination .page-btn:hover:not(:disabled):not(.active) {
+        transform: translateY(-1px) scale(1.02);
+        background: #e5e7eb;
+    }
+    
+    .pagination .page-btn.active {
+        background: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+    }
+    
+    .pagination .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Для очень маленьких экранов */
+    .clients-header h1,
+    .appointments-header h1 {
+        font-size: 18px;
+    }
+    
+    .btn-add-client,
+    .btn-add-appointment {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+    
+    .search-box input {
+        padding: 10px 14px 10px 40px;
+        font-size: 13px;
+    }
+    
+    .search-icon {
+        width: 18px;
+        height: 18px;
+        left: 10px;
+    }
+    
+    .details-header {
+        margin-top: 15px;
+        flex-direction: row!important;
+    }
+    .details-footer{
+        flex-direction: row!important;
+    }
+    
+    .client-card,
+    .appointment-card {
+        padding: 16px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+    }
+    
+    /* Принудительно исправляем стили для карточек записей */
+    .appointment-card {
+        background: #fff !important;
+        border-radius: 12px !important;
+        padding: 16px !important;
+        margin-bottom: 12px !important;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
+        border: 1px solid #e5e7eb !important;
+        transition: all 0.2s ease !important;
+        overflow: hidden !important;
+        position: relative !important;
+        z-index: 1 !important;
+        /* Принудительно убираем проблемные стили */
+        left: auto !important;
+        right: auto !important;
+        color: inherit !important;
+        font-size: inherit !important;
+        text-overflow: unset !important;
+        white-space: normal !important;
+        cursor: default !important;
+    }
+    
+    .appointment-date {
+        font-size: 15px;
+    }
+    
+    .appointment-time {
+        font-size: 13px;
+    }
+    
+    .appointment-info-item {
+        font-size: 13px;
+        padding: 6px 0;
+    }
+    
+    .appointment-info-label {
+        font-size: 12px;
+    }
+    
+    .appointment-info-value {
+        font-size: 13px;
+    }
+    
+    .appointment-actions .btn-view,
+    .appointment-actions .btn-edit,
+    .appointment-actions .btn-delete {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+    
+    .appointment-cost-value {
+        font-size: 16px;
+    }
+    
+    .client-name,
+    .appointment-date {
+        font-size: 15px;
+    }
+    
+    .appointment-time {
+        font-size: 13px;
+    }
+    
+    .client-info-item,
+    .appointment-info-item {
+        font-size: 13px;
+        padding: 6px 0;
+    }
+    
+    .client-info-label,
+    .appointment-info-label {
+        font-size: 12px;
+    }
+    
+    .client-info-value,
+    .appointment-info-value {
+        font-size: 13px;
+    }
+    
+    .client-actions .btn-view,
+    .client-actions .btn-edit,
+    .client-actions .btn-delete,
+    .appointment-actions .btn-view,
+    .appointment-actions .btn-edit,
+    .appointment-actions .btn-delete {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+    
+    .appointment-cost-value {
+        font-size: 16px;
+    }
+    
+    .modal-content {
+        width: 98%;
+        margin: 10px auto;
+        padding: 16px;
+        border-radius: 12px;
+    }
+    
+    .modal-header h2 {
+        font-size: 16px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    /* Специальные стили для полей даты и времени на маленьких экранах */
+    .form-group input[type="date"],
+    .form-group input[type="time"] {
+        padding: 10px 12px;
+        font-size: 13px;
+        min-height: 40px;
+    }
+    
+    /* Исправляем стили для form-row на очень маленьких экранах */
+    .form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .form-row .form-group:nth-child(1) {
+        flex: 1;
+        min-width: 0;
+        width: 100%;
+    }
+    
+    .form-row .form-group:nth-child(2),
+    .form-row .form-group:nth-child(3),
+    .form-row .form-group:nth-child(4) {
+        flex: 1;
+        min-width: 0;
+        width: 100%;
+    }
+    
+    .form-row .form-group:nth-child(5) {
+        flex: 0 0 auto;
+        width: auto;
+    }
+    
+    .btn-cancel, .btn-submit {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    /* Стили для кнопок в модальном окне просмотра записи на маленьких экранах */
+    .details-footer {
+        flex-direction: row;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    /* Дополнительная адаптация пагинации для очень маленьких экранов */
+    .pagination {
+        gap: 3px;
+        margin: 12px 0;
+        padding: 0 10px;
+    }
+    
+    .pagination .page-btn,
+    .pagination .page-ellipsis {
+        min-width: 28px;
+        height: 28px;
+        line-height: 28px;
+        padding: 0 6px;
+        font-size: 12px;
+    }
+    
+    /* Пагинация для мобильных карточек на маленьких экранах */
+    #mobileClientsPagination,
+    #mobileAppointmentsPagination {
+        margin-top: 15px;
+        padding: 0 10px;
+    }
+}
+
+/* Анимации для карточек */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.client-card,
+.appointment-card {
+    animation: slideInUp 0.3s ease-out;
+}
+
+/* Стили для пустого состояния */
+.clients-empty,
+.appointments-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+}
+
+/* Стили для загрузки */
+.clients-loading,
+.appointments-loading {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #f3f4f6;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.clients-empty svg,
+.appointments-empty svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.clients-empty h3,
+.appointments-empty h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #374151;
+}
+
+.clients-empty p,
+.appointments-empty p {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ ДАШБОРДА ===== */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 0.5rem;
+        margin: 10px auto;
+    }
+    
+    .dashboard-title {
+        font-size: 1.5rem;
+        margin: 15px 0 20px 0;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .stat-card {
+        flex-direction: row;
+        text-align: left;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        min-height: 90px;
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card:hover {
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .stat-value {
+        font-size: 1.1rem;
+    }
+    
+    .stat-title {
+        font-size: 0.6rem;
+    }
+    
+    .stat-change {
+        font-size: 0.5rem;
+    }
+    
+    .dashboard-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .tab-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+        justify-content: center;
+    }
+    
+    .period-filters {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .period-filters .tab-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .widget-card {
+        padding: 0.75rem;
+    }
+    
+    .widget-title {
+        font-size: 1rem;
+    }
+    
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Стили для футера */
+    .site-footer {
+        position: relative;
+        z-index: 0;
+        margin-top: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-container {
+        padding: 0.25rem;
+        margin: 5px auto;
+    }
+    
+    .dashboard-title {
+        font-size: 1.25rem;
+        margin: 10px 0 15px 0;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .stat-card {
+        flex-direction: row;
+        text-align: left;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        min-height: 80px;
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card:hover {
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .stat-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .stat-value {
+        font-size: 1rem;
+    }
+    
+    .stat-title {
+        font-size: 0.55rem;
+    }
+    
+    .stat-change {
+        font-size: 0.45rem;
+    }
+    
+    .dashboard-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+    
+    .tab-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+        justify-content: center;
+    }
+    
+    .period-filters {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .period-filters .tab-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .widget-card {
+        padding: 0.5rem;
+    }
+    
+    .widget-title {
+        font-size: 0.9rem;
+    }
+}
+
+/* ===== ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ КАРТОЧЕК ЗАПИСЕЙ ===== */
+/* Эти стили принудительно переопределяют любые конфликтующие стили */
+.appointment-card {
+    background: #fff !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    margin-bottom: 16px !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
+    border: 1px solid #e5e7eb !important;
+    transition: all 0.2s ease !important;
+    overflow: hidden !important;
+    position: relative !important;
+    z-index: 1 !important;
+    /* Принудительно убираем проблемные стили */
+    left: auto !important;
+    right: auto !important;
+    color: inherit !important;
+    font-size: inherit !important;
+    text-overflow: unset !important;
+    white-space: normal !important;
+    cursor: default !important;
+} 

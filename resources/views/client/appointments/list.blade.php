@@ -852,6 +852,11 @@
     </div>
 
     <div id="appointmentsList" style="{{ $viewType === 'calendar' ? 'display:none;' : '' }}">
+        <!-- Контейнер для мобильных карточек -->
+        <div class="appointments-cards" id="appointmentsCards">
+            <!-- Карточки будут создаваться через JavaScript -->
+        </div>
+        
         <div class="appointments-list table-wrapper">
             <table class="table-striped appointments-table" id="appointmentsTable">
                 <thead>
@@ -927,6 +932,9 @@
             </table>
             <div class="pagination" id="appointmentsPagination" style="justify-content: center; margin-top: 20px;"></div>
         </div>
+        
+        <!-- Пагинация для мобильных карточек -->
+        <div class="pagination" id="mobileAppointmentsPagination" style="justify-content: center; margin-top: 20px;"></div>
     </div>
     <div id="calendarView" style="{{ $viewType === 'list' ? 'display:none;' : '' }}">
         <div class="calendar-wrapper">
@@ -1741,7 +1749,7 @@
         <div class="details-footer">
             <span>{{ __('messages.total') }}: <b class="currency-amount" data-amount="${totalAmount}">${formatPrice(totalAmount)}</b></span>
             <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">{{ __('messages.close') }}</button>
-            <button type="button" class="btn-submit" id="saveAppointmentChanges">{{ __('messages.save_changes') }}</button>
+            <button type="button" class="btn-submit" id="saveAppointmentChanges">Сохранить</button>
         </div>
     </div>`;
     setupProductHandlers();
@@ -2655,6 +2663,12 @@
                     if (row) {
                         row.remove();
                     }
+                    
+                    // Удаляем карточку из мобильной версии если она существует
+                    const card = document.querySelector(`.appointment-card[data-appointment-id="${id}"]`);
+                    if (card) {
+                        card.remove();
+                    }
 
                     // Закрываем модальные окна
                     toggleModal('confirmationModal', false);
@@ -3249,6 +3263,14 @@
 
                         tbody.insertBefore(newRow, tbody.firstChild);
                     }
+                    
+                    // Добавляем карточку в мобильную версию
+                    const cardsContainer = document.getElementById('appointmentsCards');
+                    if (cardsContainer) {
+                        const newCard = createAppointmentCard(data.appointment);
+                        cardsContainer.insertAdjacentHTML('afterbegin', newCard);
+                        addAppointmentCardEventListeners();
+                    }
                 } else if (data.errors) {
                     displayErrors(data.errors, 'appointmentForm');
                 } else {
@@ -3327,6 +3349,14 @@
                             </td>
                         `;
                     }
+                    
+                    // Обновляем карточку в мобильной версии
+                    const card = document.querySelector(`.appointment-card[data-appointment-id="${data.appointment.id}"]`);
+                    if (card) {
+                        const updatedCard = createAppointmentCard(data.appointment);
+                        card.outerHTML = updatedCard;
+                        addAppointmentCardEventListeners();
+                    }
                 } else if (data.errors) {
                     displayErrors(data.errors, 'editAppointmentForm');
                 } else {
@@ -3400,11 +3430,192 @@
             }
         }
 
-        // Пагинация для списка записей
+        // Функции для мобильных карточек записей
+        function renderAppointmentsCards(appointments) {
+            const cardsContainer = document.getElementById('appointmentsCards');
+            if (!cardsContainer) return;
+            
+            if (!appointments || appointments.length === 0) {
+                cardsContainer.innerHTML = `
+                    <div class="appointments-empty">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                        </svg>
+                        <h3>{{ __('messages.no_appointments') }}</h3>
+                        <p>{{ __('messages.no_appointments_description') }}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const cardsHtml = appointments.map(appointment => createAppointmentCard(appointment)).join('');
+            cardsContainer.innerHTML = cardsHtml;
+            
+            // Добавляем обработчики событий для кнопок в карточках
+            addAppointmentCardEventListeners();
+        }
         
+        function createAppointmentCard(appointment) {
+            const date = new Date(appointment.date);
+            const time = appointment.time.split(':').slice(0, 2).join(':');
+            const statusNames = {
+                'pending': '{{ __('messages.status_pending') }}',
+                'completed': '{{ __('messages.status_completed') }}',
+                'cancelled': '{{ __('messages.status_cancelled') }}',
+                'rescheduled': '{{ __('messages.status_rescheduled') }}'
+            };
+            
+            let instagramHtml = '';
+            if (appointment.client.instagram) {
+                instagramHtml = `
+                    <div class="appointment-client-instagram">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <a href="https://instagram.com/${escapeHtml(appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(appointment.client.instagram)}</a>
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="appointment-card" data-appointment-id="${appointment.id}">
+                    <div class="appointment-main-info">
+                        <div class="appointment-date-time">
+                            <div class="appointment-date">${date.toLocaleDateString('ru-RU')}</div>
+                            <div class="appointment-time">${time}</div>
+                        </div>
+                        <div class="appointment-status">
+                            <span class="status-badge status-${appointment.status}">${statusNames[appointment.status] || statusNames.pending}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="appointment-info">
+                        <div class="appointment-info-item">
+                            <div class="appointment-info-label">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                </svg>
+                                {{ __('messages.client') }}
+                            </div>
+                            <div class="appointment-info-value">${escapeHtml(appointment.client.name)}</div>
+                        </div>
+                        
+                        <div class="appointment-info-item">
+                            <div class="appointment-info-label">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                {{ __('messages.service') }}
+                            </div>
+                            <div class="appointment-info-value">${escapeHtml(appointment.service.name)}</div>
+                        </div>
+                        
+                        <div class="appointment-info-item">
+                            <div class="appointment-info-label">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                    <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.54.37-2.01 1l-1.7 2.26V9c0-.55-.45-1-1-1s-1 .45-1 1v6c0 .55.45 1 1 1h1v7h4z"/>
+                                </svg>
+                                {{ __('messages.master') }}
+                            </div>
+                            <div class="appointment-info-value">${appointment.user ? escapeHtml(appointment.user.name) : '{{ __('messages.not_assigned') }}'}</div>
+                        </div>
+                        
+                        ${instagramHtml}
+                        
+                        <div class="appointment-cost">
+                            <div class="appointment-cost-label">{{ __('messages.cost') }}</div>
+                            <div class="appointment-cost-value">${formatPrice(appointment.price)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="appointment-actions">
+                        <button class="btn-view" data-appointment-id="${appointment.id}" title="{{ __('messages.view') }}">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <button class="btn-edit" data-appointment-id="${appointment.id}" title="{{ __('messages.edit') }}">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                            </svg>
+                        </button>
+                        <button class="btn-delete" data-appointment-id="${appointment.id}" title="{{ __('messages.delete') }}">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function addAppointmentCardEventListeners() {
+            // Обработчики для кнопок просмотра
+            document.querySelectorAll('.appointment-card .btn-view').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const appointmentId = this.getAttribute('data-appointment-id');
+                    viewAppointment(appointmentId);
+                });
+            });
+            
+            // Обработчики для кнопок редактирования
+            document.querySelectorAll('.appointment-card .btn-edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const appointmentId = this.getAttribute('data-appointment-id');
+                    editAppointment(appointmentId);
+                });
+            });
+            
+            // Обработчики для кнопок удаления
+            document.querySelectorAll('.appointment-card .btn-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const appointmentId = this.getAttribute('data-appointment-id');
+                    deleteAppointment(appointmentId);
+                });
+            });
+        }
+        
+        function renderMobileAppointmentsPagination(meta) {
+            let paginationHtml = '';
+            if (meta.last_page > 1) {
+                paginationHtml += '<div class="pagination">';
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}>&lt;<\/button>`;
+                let pages = [];
+                if (meta.last_page <= 7) {
+                    for (let i = 1; i <= meta.last_page; i++) pages.push(i);
+                } else {
+                    pages.push(1);
+                    if (meta.current_page > 4) pages.push('...');
+                    let start = Math.max(2, meta.current_page - 2);
+                    let end = Math.min(meta.last_page - 1, meta.current_page + 2);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    if (meta.current_page < meta.last_page - 3) pages.push('...');
+                    pages.push(meta.last_page);
+                }
+                pages.forEach(p => {
+                    if (p === '...') {
+                        paginationHtml += `<span class="page-ellipsis">...<\/span>`;
+                    } else {
+                        paginationHtml += `<button class="page-btn${p === meta.current_page ? ' active' : ''}" data-page="${p}">${p}<\/button>`;
+                    }
+                });
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;<\/button>`;
+                paginationHtml += '<\/div>';
+            }
+            let pagContainer = document.getElementById('mobileAppointmentsPagination');
+            if (pagContainer) pagContainer.innerHTML = paginationHtml;
+            document.querySelectorAll('#mobileAppointmentsPagination .page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    if (!isNaN(page) && !this.disabled) {
+                        loadAppointments(page);
+                    }
+                });
+            });
+        }
 
-      
-
+        // Пагинация для списка записей
         function renderAppointmentsPagination(meta) {
             let paginationHtml = '';
             if (meta.last_page > 1) {
@@ -3448,8 +3659,15 @@
             fetch(`/appointments/ajax?page=${page}`)
                 .then(res => res.json())
                 .then(response => {
+                    console.log('=== DEBUG: loadAppointments ===');
+                    console.log('Ответ от сервера:', response);
+                    console.log('Данные записей:', response.data);
+                    console.log('Количество записей:', response.data ? response.data.length : 0);
+                    
                     renderAppointmentsTable(response.data); // обновляет строки таблицы
                     renderAppointmentsPagination(response.meta); // обновляет пагинацию!
+                    renderAppointmentsCards(response.data); // обновляет мобильные карточки
+                    renderMobileAppointmentsPagination(response.meta); // обновляет мобильную пагинацию
                 });
         }
 
