@@ -855,7 +855,8 @@
     /* Для очень маленьких экранов */
     .clients-header h1,
     .appointments-header h1 {
-        font-size: 18px;
+        font-size: 20px;
+        margin: 15px 0;
     }
     
     .btn-add-client,
