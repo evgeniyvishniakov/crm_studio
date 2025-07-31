@@ -2056,6 +2056,38 @@ input[type="date"]:focus {
     .pagination .page-btn:hover:not(:disabled):not(.active) {
         transform: translateY(-1px) scale(1.02) !important;
     }
+    
+    /* Мобильные стили для окна подтверждения */
+    .confirmation-modal .confirmation-content {
+        width: 95% !important;
+        max-width: 400px !important;
+        margin: 20px auto !important;
+        padding: 20px !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+    
+    .confirmation-modal .confirmation-buttons {
+        flex-direction: row;
+        gap: 10px;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    
+    .confirmation-modal .confirm-btn,
+    .confirmation-modal .cancel-btn {
+        width: 48%;
+        padding: 12px;
+        font-size: 14px;
+        display: inline-block;
+    }
+    
+    /* Стили для анимации удаления карточек товаров */
+    .product-card.row-deleting {
+        opacity: 0.5;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
+    }
 }
 
 @media (max-width: 480px) {
