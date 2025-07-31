@@ -2183,11 +2183,18 @@ input[type="date"]:focus {
     }
     
     /* Стили для анимации удаления карточек ролей */
-    .role-card.row-deleting {
-        opacity: 0.5;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-    }
+.role-card.row-deleting {
+    opacity: 0.5;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+}
+
+/* Стили для анимации удаления карточек уведомлений */
+.notification-card.row-deleting {
+    opacity: 0.5;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+}
     
     /* Стили для анимации удаления карточек тикетов */
     .ticket-card.row-deleting {
