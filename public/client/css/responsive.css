@@ -2438,265 +2438,451 @@
     }
 }
 
-/* ===== СТИЛИ ДЛЯ СТРАНИЦЫ TELEGRAM УВЕДОМЛЕНИЙ ===== */
-.telegram-settings-header h1 {
-    font-size: 24px;
-    margin: 15px 0;
-    text-align: center;
+/* ===== СТИЛИ ДЛЯ СТРАНИЦЫ EMAIL УВЕДОМЛЕНИЙ (МОБИЛЬНАЯ ВЕРСИЯ) ===== */
+@media (max-width: 768px) {
+    .email-settings-header h1 {
+        font-size: 24px;
+        margin: 15px 0;
+        text-align: center;
+    }
+
+    .email-settings-content {
+        padding: 15px;
+    }
+
+    .email-settings-pane {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .email-settings-pane h5 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #1f2937;
+    }
+
+    .email-form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .email-form-col {
+        width: 100%;
+    }
+
+    .email-form-group {
+        margin-bottom: 20px;
+    }
+
+    .email-form-group label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .email-form-group input[type="text"],
+    .email-form-group input[type="email"],
+    .email-form-group input[type="password"],
+    .email-form-group input[type="number"],
+    .email-form-group select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background-color: #f9fafb;
+        overflow: visible;
+        text-overflow: clip;
+        white-space: normal;
+        height: auto;
+        min-height: 44px;
+    }
+
+    .email-form-group select option {
+        font-size: 16px;
+        padding: 12px 15px;
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: none;
+        width: auto;
+    }
+
+    .email-form-group input[type="text"]:focus,
+    .email-form-group input[type="email"]:focus,
+    .email-form-group input[type="password"]:focus,
+    .email-form-group input[type="number"]:focus,
+    .email-form-group select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        outline: none;
+        background-color: white;
+    }
+
+    .email-form-group .form-text {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 5px;
+    }
+
+    .email-switch-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .email-switch-label {
+        font-weight: 600;
+        color: #374151;
+        margin: 0;
+    }
+
+    .email-form-actions {
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .email-form-actions .btn {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .email-form-actions .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .email-form-actions .btn-primary:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        transform: translateY(-1px);
+    }
+
+    .email-form-actions .btn-info {
+        background: linear-gradient(135deg, #17a2b8, #20c997);
+        color: white;
+        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+    }
+
+    .email-form-actions .btn-info:hover {
+        background: linear-gradient(135deg, #138496, #17a2b8);
+        transform: translateY(-1px);
+    }
+
+    .email-form-actions .btn-secondary {
+        background: linear-gradient(135deg, #6c757d, #868e96);
+        color: white;
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    }
+
+    .email-form-actions .btn-secondary:hover {
+        background: linear-gradient(135deg, #5a6268, #6c757d);
+        transform: translateY(-1px);
+    }
+
+    .email-test-result {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    .email-test-result.alert-success {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        border: 1px solid #10b981;
+        color: #065f46;
+    }
+
+    .email-test-result.alert-danger {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        border: 1px solid #ef4444;
+        color: #991b1b;
+    }
+
+    .email-test-result.alert-info {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        border: 1px solid #3b82f6;
+        color: #1e40af;
+    }
+
+    /* Кастомный переключатель для мобильных устройств */
+    .email-custom-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+    .email-custom-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .email-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+    .email-slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    .email-custom-switch input:checked + .email-slider {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+
+    .email-custom-switch input:checked + .email-slider:before {
+        transform: translateX(26px);
+    }
+
+    /* Модальное окно инструкций для мобильных */
+    .email-instructions-modal {
+        max-width: 95%;
+        width: 95%;
+        margin: 5% auto;
+        padding: 20px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .email-instructions-modal h3 {
+        font-size: 20px;
+        margin-bottom: 15px;
+        text-align: center;
+        color: #1f2937;
+    }
+
+    .email-instructions-content {
+        text-align: left;
+        margin: 20px 0;
+    }
+
+    .email-instructions-content ol {
+        padding-left: 20px;
+    }
+
+    .email-instructions-content li {
+        margin-bottom: 10px;
+        line-height: 1.5;
+        color: #374151;
+    }
+
+    .email-instructions-buttons {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .email-instructions-buttons .btn {
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        background: linear-gradient(135deg, #6c757d, #868e96);
+        color: white;
+        transition: all 0.3s ease;
+    }
+
+    .email-instructions-buttons .btn:hover {
+        background: linear-gradient(135deg, #5a6268, #6c757d);
+        transform: translateY(-1px);
+    }
 }
 
-.telegram-settings-content {
-    padding: 15px;
-}
+/* ===== СТИЛИ ДЛЯ СТРАНИЦЫ TELEGRAM УВЕДОМЛЕНИЙ (МОБИЛЬНАЯ ВЕРСИЯ) ===== */
+@media (max-width: 768px) {
+    .telegram-settings-header h1 {
+        font-size: 24px;
+        margin: 15px 0;
+        text-align: center;
+    }
 
-.telegram-settings-pane {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
+    .telegram-settings-content {
+        padding: 15px;
+    }
 
-.telegram-settings-pane h5 {
-    font-size: 18px;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #1f2937;
-}
+    .telegram-settings-pane {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
 
-.telegram-form-row {
-    flex-direction: column;
-    gap: 15px;
-}
+    .telegram-settings-pane h5 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #1f2937;
+    }
 
-.telegram-form-col {
-    width: 100%;
-}
+    .telegram-form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
 
-.telegram-form-group {
-    margin-bottom: 20px;
-}
+    .telegram-form-col {
+        width: 100%;
+    }
 
-.telegram-form-group label {
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 8px;
-    display: block;
-}
+    .telegram-form-group {
+        margin-bottom: 20px;
+    }
 
-.telegram-form-group input[type="text"] {
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
+    .telegram-form-group label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+        display: block;
+    }
 
-.telegram-form-group input[type="text"]:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    outline: none;
-}
+    .telegram-form-group input[type="text"] {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
 
-.telegram-form-group .form-text {
-    font-size: 13px;
-    color: #6b7280;
-    margin-top: 5px;
-}
+    .telegram-form-group input[type="text"]:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        outline: none;
+    }
 
-.telegram-switch-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px;
-    background: #f9fafb;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
-}
+    .telegram-form-group .form-text {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 5px;
+    }
 
-.telegram-switch-label {
-    font-weight: 600;
-    color: #374151;
-    margin: 0;
-}
+    .telegram-switch-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
 
-.telegram-form-actions {
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 30px;
-}
+    .telegram-switch-label {
+        font-weight: 600;
+        color: #374151;
+        margin: 0;
+    }
 
-.telegram-form-actions .btn {
-    width: 100%;
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
 
-.telegram-form-actions .btn-primary {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    color: white;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
 
-.telegram-form-actions .btn-primary:hover {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    transform: translateY(-1px);
-}
+    .telegram-test-result {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        font-weight: 500;
+    }
 
-.telegram-form-actions .btn-info {
-    background: linear-gradient(135deg, #17a2b8, #20c997);
-    color: white;
-    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
-}
+    .telegram-test-result.alert-success {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        border: 1px solid #10b981;
+        color: #065f46;
+    }
 
-.telegram-form-actions .btn-info:hover {
-    background: linear-gradient(135deg, #138496, #17a2b8);
-    transform: translateY(-1px);
-}
+    .telegram-test-result.alert-danger {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        border: 1px solid #ef4444;
+        color: #991b1b;
+    }
 
-.telegram-form-actions .btn-secondary {
-    background: linear-gradient(135deg, #6c757d, #868e96);
-    color: white;
-    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-}
+    .telegram-test-result.alert-info {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        border: 1px solid #3b82f6;
+        color: #1e40af;
+    }
 
-.telegram-form-actions .btn-secondary:hover {
-    background: linear-gradient(135deg, #5a6268, #6c757d);
-    transform: translateY(-1px);
-}
+    /* Кастомный переключатель для мобильных устройств */
+    .telegram-custom-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
 
-.telegram-test-result {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 8px;
-    font-weight: 500;
-}
+    .telegram-custom-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
 
-.telegram-test-result.alert-success {
-    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-    border: 1px solid #10b981;
-    color: #065f46;
-}
+    .telegram-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
 
-.telegram-test-result.alert-danger {
-    background: linear-gradient(135deg, #fee2e2, #fecaca);
-    border: 1px solid #ef4444;
-    color: #991b1b;
-}
+    .telegram-slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
 
-.telegram-test-result.alert-info {
-    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-    border: 1px solid #3b82f6;
-    color: #1e40af;
-}
+    .telegram-custom-switch input:checked + .telegram-slider {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
 
-/* Кастомный переключатель для мобильных устройств */
-.telegram-custom-switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
-}
+    .telegram-custom-switch input:checked + .telegram-slider:before {
+        transform: translateX(26px);
+    }
 
-.telegram-custom-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
 
-.telegram-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
-}
-
-.telegram-slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-}
-
-.telegram-custom-switch input:checked + .telegram-slider {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-}
-
-.telegram-custom-switch input:checked + .telegram-slider:before {
-    transform: translateX(26px);
-}
-
-/* Модальное окно инструкций для мобильных */
-.telegram-instructions-modal {
-    max-width: 95%;
-    width: 95%;
-    margin: 5% auto;
-    padding: 20px;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-.telegram-instructions-modal h3 {
-    font-size: 20px;
-    margin-bottom: 15px;
-    text-align: center;
-    color: #1f2937;
-}
-
-.telegram-instructions-content {
-    text-align: left;
-    margin: 20px 0;
-}
-
-.telegram-instructions-content ol {
-    padding-left: 20px;
-}
-
-.telegram-instructions-content li {
-    margin-bottom: 10px;
-    line-height: 1.5;
-    color: #374151;
-}
-
-.telegram-instructions-buttons {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.telegram-instructions-buttons .btn {
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    background: linear-gradient(135deg, #6c757d, #868e96);
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.telegram-instructions-buttons .btn:hover {
-    background: linear-gradient(135deg, #5a6268, #6c757d);
-    transform: translateY(-1px);
 }
 
 /* ===== МЕДИА-ЗАПРОС ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ (max-width: 480px) ===== */
@@ -2718,6 +2904,12 @@
     .settings-pane h5{
         margin: 0px 0 20px;
         text-align: center;
+    }
+    .form-actions .btn {
+        margin: 0 auto!important;
+    }
+    .form-actions .btn-secondary {
+        margin-top: 15px!important;
     }
     .brands-header-actions .btn-add-service{
         padding: 9px 5px !important;
@@ -3373,4 +3565,997 @@
     text-overflow: unset !important;
     white-space: normal !important;
     cursor: default !important;
+}
+
+/* ===== СТИЛИ ДЛЯ БЛОКИРОВКИ МОБИЛЬНОЙ ВЕРСИИ ВИДЖЕТА ===== */
+@media (max-width: 768px) {
+    .mobile-block {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: 9999;
+        text-align: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .mobile-block-content {
+        max-width: 400px;
+        margin: 50px auto 0;
+        padding: 30px 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .mobile-block-icon {
+        font-size: 80px;
+        color: #667eea;
+        margin-bottom: 20px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .mobile-block h3 {
+        color: #333;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .mobile-block p {
+        color: #666;
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 25px;
+    }
+
+    .mobile-block-features {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+    }
+
+    .feature-item i {
+        font-size: 20px;
+        color: #667eea;
+        width: 24px;
+        text-align: center;
+    }
+
+    .feature-item span {
+        color: #333;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .desktop-content {
+        display: none !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-block-content {
+        margin: 20px auto 0;
+        padding: 25px 15px;
+        max-width: 350px;
+    }
+
+    .mobile-block-icon {
+        font-size: 60px;
+    }
+
+    .mobile-block h3 {
+        font-size: 20px;
+    }
+
+    .mobile-block p {
+        font-size: 14px;
+    }
+
+    .feature-item {
+        padding: 10px 12px;
+    }
+
+    .feature-item span {
+        font-size: 13px;
+    }
+}
+
+/* ===== СТИЛИ ДЛЯ МОБИЛЬНЫХ КАРТОЧЕК ПОЛЬЗОВАТЕЛЕЙ ===== */
+@media (max-width: 768px) {
+    /* Скрываем карточки на десктопе по умолчанию */
+    .users-cards {
+        display: none;
+    }
+
+    /* Показываем таблицу на десктопе */
+    .table-wrapper {
+        display: block;
+    }
+
+    /* Заголовок страницы пользователей */
+    .clients-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+        margin-bottom: 20px;
+    }
+    
+    .clients-header h1 {
+        font-size: 20px;
+        text-align: center;
+        color: #1f2937;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    /* Действия в заголовке */
+    .header-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    /* Кнопка добавления пользователя */
+    .btn-add-client {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 16px;
+        font-size: 14px;
+        background: linear-gradient(135deg, #10b981, #34d399);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-add-client:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* Поисковая строка */
+    .search-box {
+        width: 100%;
+        position: relative;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 12px 16px 12px 44px;
+        font-size: 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        background: #f9fafb;
+        transition: all 0.2s ease;
+    }
+    
+    .search-box input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: #6b7280;
+    }
+    
+    /* Скрываем десктопную таблицу */
+    .table-wrapper {
+        display: none;
+    }
+    
+    /* Показываем мобильные карточки */
+    .users-cards {
+        display: block;
+        margin-top: 20px;
+    }
+    
+    /* Стили для карточек пользователей */
+    .user-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .user-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: -1;
+    }
+    
+    .user-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .user-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .user-main-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+    }
+    
+    .user-avatar {
+        flex-shrink: 0;
+    }
+    
+    .user-avatar-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #e5e7eb;
+    }
+    
+    .user-avatar-placeholder {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 18px;
+        border: 3px solid #e5e7eb;
+    }
+    
+    .user-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0;
+    }
+    
+    .user-status {
+        flex-shrink: 0;
+    }
+    
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-badge.status-completed {
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: white;
+    }
+    
+    .status-badge.status-cancelled {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+    }
+    
+    .user-info {
+        margin-bottom: 15px;
+    }
+    
+    .user-info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        padding: 8px 0;
+    }
+    
+    .user-info-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .user-info-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 500;
+        min-width: 120px;
+        flex-shrink: 0;
+    }
+    
+    .user-info-label svg {
+        width: 16px;
+        height: 16px;
+        color: #9ca3af;
+    }
+    
+    .user-info-value {
+        color: #1f2937;
+        font-size: 14px;
+        font-weight: 500;
+        word-break: break-word;
+    }
+    
+    .user-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 15px;
+    }
+    
+    .user-actions .btn-edit,
+    .user-actions .btn-delete {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .user-actions .btn-edit {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+    }
+    
+    .user-actions .btn-edit:hover {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .user-actions .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+    }
+    
+    .user-actions .btn-delete:hover {
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    .user-actions svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    /* Анимация удаления */
+    .user-card.row-deleting {
+        opacity: 0;
+        transform: translateX(-100%);
+        transition: all 0.3s ease;
+    }
+    
+    /* Мобильная пагинация */
+    #mobileUsersPagination {
+        margin-top: 20px;
+    }
+    
+    #mobileUsersPagination .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .pagination .page-btn {
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        background: white;
+        color: #374151;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 40px;
+        text-align: center;
+    }
+    
+    .pagination .page-btn:hover:not(:disabled):not(.active) {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+    }
+    
+    .pagination .page-btn.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .pagination .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+/* ===== СТИЛИ ДЛЯ МОБИЛЬНЫХ КАРТОЧЕК РОЛЕЙ ===== */
+@media (max-width: 768px) {
+    /* Скрываем карточки на десктопе по умолчанию */
+    .roles-cards {
+        display: none;
+    }
+
+    /* Показываем таблицу на десктопе */
+    .table-wrapper {
+        display: block;
+    }
+
+    /* Заголовок страницы ролей */
+    .clients-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+        margin-bottom: 20px;
+    }
+    
+    .clients-header h1 {
+        font-size: 20px;
+        text-align: center;
+        color: #1f2937;
+        font-weight: 600;
+        margin: 0;
+    }
+    
+    /* Действия в заголовке */
+    .header-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    /* Кнопка добавления роли */
+    .btn-add-client {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 16px;
+        font-size: 14px;
+        background: linear-gradient(135deg, #10b981, #34d399);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-add-client:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* Скрываем десктопную таблицу */
+    .table-wrapper {
+        display: none;
+    }
+    
+    /* Показываем мобильные карточки */
+    .roles-cards {
+        display: block;
+        margin-top: 20px;
+    }
+    
+    /* Стили для карточек ролей */
+    .role-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .role-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: -1;
+    }
+    
+    .role-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .role-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .role-main-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+    }
+    
+    .role-icon {
+        flex-shrink: 0;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #e5e7eb;
+    }
+    
+    .role-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .role-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0;
+    }
+    
+    .role-type {
+        flex-shrink: 0;
+    }
+    
+    .role-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .role-badge.admin {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+    }
+    
+    .role-badge.system {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        color: white;
+    }
+    
+    .role-badge.custom {
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: white;
+    }
+    
+    .role-info {
+        margin-bottom: 15px;
+    }
+    
+    .role-info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 8px;
+        padding: 8px 0;
+    }
+    
+    .role-info-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .role-info-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 500;
+        min-width: 120px;
+        flex-shrink: 0;
+    }
+    
+    .role-info-label svg {
+        width: 16px;
+        height: 16px;
+        color: #9ca3af;
+    }
+    
+    .role-info-value {
+        color: #1f2937;
+        font-size: 14px;
+        font-weight: 500;
+        flex: 1;
+    }
+    
+    .permissions-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    
+    .permission-tag {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    .no-permissions {
+        color: #9ca3af;
+        font-style: italic;
+        font-size: 14px;
+    }
+    
+    .role-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 15px;
+    }
+    
+    .role-actions .btn-edit,
+    .role-actions .btn-delete {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .role-actions .btn-edit {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+    }
+    
+    .role-actions .btn-edit:hover {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .role-actions .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+    }
+    
+    .role-actions .btn-delete:hover {
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    .role-actions svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    /* Анимация удаления */
+    .role-card.row-deleting {
+        opacity: 0;
+        transform: translateX(-100%);
+        transition: all 0.3s ease;
+    }
+    
+    /* Сообщение об отсутствии ролей */
+    .no-roles-message {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6b7280;
+    }
+    
+    .no-roles-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .no-roles-icon svg {
+        width: 40px;
+        height: 40px;
+        color: #9ca3af;
+    }
+    
+    .no-roles-text {
+        font-size: 16px;
+        font-weight: 500;
+    }
+    
+    /* Мобильная пагинация */
+    #mobileRolesPagination {
+        margin-top: 20px;
+    }
+    
+    #mobileRolesPagination .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .pagination .page-btn {
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        background: white;
+        color: #374151;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 40px;
+        text-align: center;
+    }
+    
+    .pagination .page-btn:hover:not(:disabled):not(.active) {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+    }
+    
+    .pagination .page-btn.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: #667eea;
+    }
+    
+    .pagination .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 } 
+
+/* ===== СТИЛИ ДЛЯ МОБИЛЬНЫХ КАРТОЧЕК ТИКЕТОВ ===== */
+@media (max-width: 768px) {
+    .tickets-cards { display: none; }
+    .table-wrapper { display: block; } /* Default desktop */
+    .clients-header { flex-direction: column; gap: 15px; }
+    .clients-header h1 { font-size: 24px; margin-bottom: 0; }
+    .header-actions { flex-direction: column; gap: 10px; }
+    .btn-add-client { width: 100%; }
+    .table-wrapper { display: none; } /* Hide desktop table on mobile */
+    .tickets-cards { display: block; }
+    .ticket-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+        position: relative;
+        overflow: hidden;
+    }
+    .ticket-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+    }
+    .ticket-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        gap: 12px;
+    }
+    .ticket-main-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+    }
+    .ticket-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .ticket-icon svg {
+        width: 20px;
+        height: 20px;
+        color: white;
+    }
+    .ticket-subject {
+        font-weight: 600;
+        font-size: 16px;
+        color: #1f2937;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+    .ticket-status {
+        flex-shrink: 0;
+    }
+    .ticket-info {
+        margin-bottom: 12px;
+    }
+    .ticket-info-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+    .ticket-info-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        color: #6b7280;
+        font-weight: 500;
+        min-width: 120px;
+    }
+    .ticket-info-label svg {
+        width: 16px;
+        height: 16px;
+        color: #6b7280;
+    }
+    .ticket-info-value {
+        font-size: 14px;
+        color: #374151;
+        font-weight: 500;
+    }
+    .ticket-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+    }
+    .ticket-actions .btn-chat {
+        flex: 1;
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .ticket-actions .btn-chat:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    .ticket-actions svg {
+        width: 16px;
+        height: 16px;
+    }
+    .ticket-card-closed {
+        opacity: 0.6;
+        background: #f9fafb;
+    }
+    .ticket-card-closed .ticket-actions {
+        display: none;
+    }
+    .no-tickets-message {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6b7280;
+    }
+    .no-tickets-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        background: #f3f4f6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .no-tickets-icon svg {
+        width: 32px;
+        height: 32px;
+        color: #9ca3af;
+    }
+    .no-tickets-text {
+        font-size: 16px;
+        font-weight: 500;
+    }
+    #mobileTicketsPagination {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+    }
+    #mobileTicketsPagination .pagination {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    .pagination .page-btn {
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        background: white;
+        color: #374151;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .pagination .page-btn:hover {
+        background: #f3f4f6;
+    }
+    .pagination .page-btn.active {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: white;
+        border-color: #2563eb;
+    }
+}

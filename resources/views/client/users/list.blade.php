@@ -21,6 +21,7 @@
             </div>
         </div>
 
+        <!-- Десктопная таблица -->
         <div class="table-wrapper">
             <table class="table-striped clients-table">
                 <thead>
@@ -72,6 +73,80 @@
                 @endforeach
                 </tbody>
             </table>
+        </div>
+
+        <!-- Мобильные карточки пользователей -->
+        <div class="users-cards" id="usersCards" style="display: none;">
+            @foreach($users as $user)
+                <div class="user-card" id="user-card-{{ $user->id }}">
+                    <div class="user-card-header">
+                        <div class="user-main-info">
+                            <div class="user-avatar">
+                                @if($user->avatar)
+                                    <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="user-avatar-img">
+                                @else
+                                    <div class="user-avatar-placeholder">{{ substr($user->name, 0, 1) }}</div>
+                                @endif
+                            </div>
+                            <div class="user-name">{{ $user->name }}</div>
+                        </div>
+                        <div class="user-status">
+                            <span class="status-badge {{ $user->status === 'active' ? 'status-completed' : 'status-cancelled' }}">{{ $user->status === 'active' ? __('messages.active') : __('messages.inactive') }}</span>
+                        </div>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-info-item">
+                            <div class="user-info-label">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                </svg>
+                                {{ __('messages.email_login') }}:
+                            </div>
+                            <div class="user-info-value">{{ $user->email ?: $user->username }}</div>
+                        </div>
+                        <div class="user-info-item">
+                            <div class="user-info-label">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                </svg>
+                                {{ __('messages.role') }}:
+                            </div>
+                            <div class="user-info-value">{{ $roles[$user->role] ?? $user->role }}</div>
+                        </div>
+                        <div class="user-info-item">
+                            <div class="user-info-label">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm5 5a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                                </svg>
+                                {{ __('messages.registration_date') }}:
+                            </div>
+                            <div class="user-info-value">{{ $user->registered_at ? \Carbon\Carbon::parse($user->registered_at)->format('d.m.Y H:i') : '' }}</div>
+                        </div>
+                    </div>
+                    @if($user->role !== 'admin')
+                    <div class="user-actions">
+                        <button class="btn-edit" title="{{ __('messages.edit') }}" onclick="openEditUserModalFromCard({{ $user->id }})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            {{ __('messages.edit') }}
+                        </button>
+                        <button class="btn-delete" title="{{ __('messages.delete') }}" onclick="showDeleteConfirmation({{ $user->id }})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            {{ __('messages.delete') }}
+                        </button>
+                    </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Мобильная пагинация -->
+        <div id="mobileUsersPagination" class="mobile-pagination" style="display: none;">
+            <!-- Пагинация будет добавлена через JavaScript -->
         </div>
     </div>
 
@@ -202,6 +277,158 @@
 
 <script>
     window.roles = @json($roles);
+    
+    // Функции для мобильной версии
+    function toggleMobileView() {
+        const tableWrapper = document.querySelector('.table-wrapper');
+        const usersCards = document.getElementById('usersCards');
+        const mobilePagination = document.getElementById('mobileUsersPagination');
+        
+        if (window.innerWidth <= 768) {
+            // Мобильная версия
+            if (tableWrapper) tableWrapper.style.display = 'none';
+            if (usersCards) usersCards.style.display = 'block';
+            if (mobilePagination) mobilePagination.style.display = 'block';
+        } else {
+            // Десктопная версия
+            if (tableWrapper) tableWrapper.style.display = 'block';
+            if (usersCards) usersCards.style.display = 'none';
+            if (mobilePagination) mobilePagination.style.display = 'none';
+        }
+    }
+    
+    // Функция для открытия модального окна редактирования из карточки
+    function openEditUserModalFromCard(userId) {
+        fetch(`/users/${userId}/edit`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(user => {
+            openEditUserModal(user);
+        })
+        .catch(() => showNotification('error', '{{ __('messages.error_loading_user_data') }}'));
+    }
+    
+    // Функция для показа подтверждения удаления
+    function showDeleteConfirmation(userId) {
+        currentDeleteUserId = userId;
+        document.getElementById('userConfirmationModal').style.display = 'block';
+    }
+    
+    // Функция для удаления пользователя
+    function deleteUser(userId) {
+        const userCard = document.getElementById(`user-card-${userId}`);
+        const userRow = document.getElementById(`user-${userId}`);
+        
+        if (userCard) userCard.classList.add('row-deleting');
+        if (userRow) userRow.classList.add('row-deleting');
+        
+        fetch(`/users/${userId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('{{ __('messages.error_deleting') }}');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                setTimeout(() => {
+                    if (userCard) userCard.remove();
+                    if (userRow) userRow.remove();
+                    showNotification('success', '{{ __('messages.user_successfully_deleted') }}');
+                }, 300);
+            } else {
+                if (userCard) userCard.classList.remove('row-deleting');
+                if (userRow) userRow.classList.remove('row-deleting');
+                showNotification('error', data.message || '{{ __('messages.failed_to_delete_user') }}');
+            }
+        })
+        .catch(error => {
+            if (userCard) userCard.classList.remove('row-deleting');
+            if (userRow) userRow.classList.remove('row-deleting');
+            showNotification('error', '{{ __('messages.failed_to_delete_user') }}');
+        });
+    }
+    
+    // Функция для обновления карточки пользователя
+    function updateUserCard(user) {
+        const userCard = document.getElementById(`user-card-${user.id}`);
+        if (userCard) {
+            const avatarHtml = user.avatar 
+                ? `<img src="/storage/${user.avatar}" alt="${user.name}" class="user-avatar-img">`
+                : `<div class="user-avatar-placeholder">${user.name.charAt(0)}</div>`;
+            
+            userCard.innerHTML = `
+                <div class="user-card-header">
+                    <div class="user-main-info">
+                        <div class="user-avatar">
+                            ${avatarHtml}
+                        </div>
+                        <div class="user-name">${user.name}</div>
+                    </div>
+                    <div class="user-status">
+                        <span class="status-badge ${user.status === 'active' ? 'status-completed' : 'status-cancelled'}">${user.status === 'active' ? '{{ __('messages.active') }}' : '{{ __('messages.inactive') }}'}</span>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="user-info-item">
+                        <div class="user-info-label">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                            </svg>
+                            {{ __('messages.email_login') }}:
+                        </div>
+                        <div class="user-info-value">${user.email ? user.email : user.username}</div>
+                    </div>
+                    <div class="user-info-item">
+                        <div class="user-info-label">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                            {{ __('messages.role') }}:
+                        </div>
+                        <div class="user-info-value">${window.roles && window.roles[user.role] ? window.roles[user.role] : user.role}</div>
+                    </div>
+                    <div class="user-info-item">
+                        <div class="user-info-label">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm5 5a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                            </svg>
+                            {{ __('messages.registration_date') }}:
+                        </div>
+                        <div class="user-info-value">${user.registered_at ? formatDateTime(user.registered_at) : ''}</div>
+                    </div>
+                </div>
+                ${user.role !== 'admin' ? `
+                <div class="user-actions">
+                    <button class="btn-edit" title="{{ __('messages.edit') }}" onclick="openEditUserModalFromCard(${user.id})">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                        {{ __('messages.edit') }}
+                    </button>
+                    <button class="btn-delete" title="{{ __('messages.delete') }}" onclick="showDeleteConfirmation(${user.id})">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('messages.delete') }}
+                    </button>
+                </div>
+                ` : ''}
+            `;
+        }
+    }
 function openUserModal() {
     document.getElementById('addUserModal').style.display = 'block';
 }
@@ -280,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 if (data.success) {
-                    // Добавить пользователя в таблицу
+                    // Добавить пользователя в таблицу и создать карточку
                     const user = data.user;
                     const tbody = document.getElementById('usersTableBody');
                     const tr = document.createElement('tr');
@@ -321,6 +548,77 @@ document.addEventListener('DOMContentLoaded', function() {
                         </td>
                     `;
                     tbody.appendChild(tr);
+
+                    // Создать мобильную карточку
+                    const usersCards = document.getElementById('usersCards');
+                    const userCard = document.createElement('div');
+                    userCard.id = 'user-card-' + user.id;
+                    userCard.className = 'user-card';
+                    
+                    const cardAvatarHtml = user.avatar 
+                        ? `<img src="/storage/${user.avatar}" alt="${user.name}" class="user-avatar-img">`
+                        : `<div class="user-avatar-placeholder">${user.name.charAt(0)}</div>`;
+                    
+                    userCard.innerHTML = `
+                        <div class="user-card-header">
+                            <div class="user-main-info">
+                                <div class="user-avatar">
+                                    ${cardAvatarHtml}
+                                </div>
+                                <div class="user-name">${user.name}</div>
+                            </div>
+                            <div class="user-status">
+                                <span class="status-badge ${user.status === 'active' ? 'status-completed' : 'status-cancelled'}">${user.status === 'active' ? '{{ __('messages.active') }}' : '{{ __('messages.inactive') }}'}</span>
+                            </div>
+                        </div>
+                        <div class="user-info">
+                            <div class="user-info-item">
+                                <div class="user-info-label">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                    </svg>
+                                    {{ __('messages.email_login') }}:
+                                </div>
+                                <div class="user-info-value">${user.email ? user.email : user.username}</div>
+                            </div>
+                            <div class="user-info-item">
+                                <div class="user-info-label">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ __('messages.role') }}:
+                                </div>
+                                <div class="user-info-value">${window.roles && window.roles[user.role] ? window.roles[user.role] : user.role}</div>
+                            </div>
+                            <div class="user-info-item">
+                                <div class="user-info-label">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm5 5a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ __('messages.registration_date') }}:
+                                </div>
+                                <div class="user-info-value">${user.registered_at ? formatDateTime(user.registered_at) : ''}</div>
+                            </div>
+                        </div>
+                        ${user.role !== 'admin' ? `
+                        <div class="user-actions">
+                            <button class="btn-edit" title="{{ __('messages.edit') }}" onclick="openEditUserModalFromCard(${user.id})">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                                {{ __('messages.edit') }}
+                            </button>
+                            <button class="btn-delete" title="{{ __('messages.delete') }}" onclick="showDeleteConfirmation(${user.id})">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                {{ __('messages.delete') }}
+                            </button>
+                        </div>
+                        ` : ''}
+                    `;
+                    usersCards.appendChild(userCard);
 
                     // Сортировка: admin всегда первый
                     const rows = Array.from(tbody.querySelectorAll('tr'));
@@ -451,6 +749,12 @@ document.addEventListener('click', function(e) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация мобильной версии
+    toggleMobileView();
+    
+    // Обработчик изменения размера окна
+    window.addEventListener('resize', toggleMobileView);
+    
     // Обработка сохранения редактирования пользователя
     const editUserForm = document.getElementById('editUserForm');
     if (editUserForm) {
@@ -503,7 +807,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                // Обновить строку в таблице
+                // Обновить строку в таблице и карточку
                 const user = data.user;
                 const tr = document.getElementById('user-' + user.id);
                 if (tr) {
@@ -542,6 +846,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         </td>
                     `;
                 }
+                
+                // Обновить мобильную карточку
+                updateUserCard(user);
                 closeEditUserModal();
                 showNotification('success', '{{ __('messages.user_successfully_updated') }}');
             } else {
@@ -562,8 +869,8 @@ document.getElementById('cancelUserDelete').addEventListener('click', function()
 });
 
 document.getElementById('confirmUserDelete').addEventListener('click', function() {
-    if (currentDeleteUserRow && currentDeleteUserId) {
-        deleteUser(currentDeleteUserRow, currentDeleteUserId);
+    if (currentDeleteUserId) {
+        deleteUser(currentDeleteUserId);
     }
     document.getElementById('userConfirmationModal').style.display = 'none';
 });

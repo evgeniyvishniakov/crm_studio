@@ -15,6 +15,7 @@
             </button>
         </div>
     </div>
+    <!-- Десктопная таблица -->
     <div class="table-wrapper">
         <table class=" table-striped clients-table">
             <thead>
@@ -65,6 +66,98 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    <!-- Мобильные карточки ролей -->
+    <div class="roles-cards" id="rolesCards" style="display: none;">
+        @forelse($roles as $role)
+            @php
+                // Получаем список permissions для роли
+                $rolePerms = isset($role->permissions) ? $role->permissions : (\DB::table('role_permission')->where('role_id', $role->id)->pluck('permission_id')->toArray());
+                $permNames = [];
+                if (!empty($rolePerms)) {
+                    $allPerms = isset($permissions) ? $permissions : \DB::table('permissions')->get();
+                    foreach ($allPerms as $perm) {
+                        if (is_object($perm) && in_array($perm->id, $rolePerms)) {
+                            $permKey = str_replace(['-', '.'], '_', $perm->name);
+                            $permNames[] = __('messages.permission_' . $permKey);
+                        }
+                    }
+                }
+            @endphp
+            <div class="role-card" id="role-card-{{ $role->id }}">
+                <div class="role-card-header">
+                    <div class="role-main-info">
+                        <div class="role-icon">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="role-name" data-role-name="{{ $role->name }}">{{ __('messages.role_' . $role->name) }}</div>
+                    </div>
+                    <div class="role-type">
+                        @if($role->name === 'admin')
+                            <span class="role-badge admin">{{ __('messages.system_role') }}</span>
+                        @elseif($role->is_system)
+                            <span class="role-badge system">{{ __('messages.system_role') }}</span>
+                        @else
+                            <span class="role-badge custom">{{ __('messages.custom_role') }}</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="role-info">
+                    <div class="role-info-item">
+                        <div class="role-info-label">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm5 5a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                            </svg>
+                            {{ __('messages.table_permissions') }}:
+                        </div>
+                        <div class="role-info-value">
+                            @if($permNames)
+                                <div class="permissions-tags">
+                                    @foreach($permNames as $permName)
+                                        <span class="permission-tag">{{ $permName }}</span>
+                                    @endforeach
+                                </div>
+                            @else
+                                <span class="no-permissions">{{ __('messages.no_permissions') }}</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @if($role->name !== 'admin' && !$role->is_system)
+                <div class="role-actions">
+                    <button class="btn-edit" title="{{ __('messages.edit') }}" onclick="openEditRoleModalFromCard({{ $role->id }})">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                        {{ __('messages.edit') }}
+                    </button>
+                    <button class="btn-delete" title="{{ __('messages.delete') }}" onclick="showDeleteConfirmation({{ $role->id }})">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('messages.delete') }}
+                    </button>
+                </div>
+                @endif
+            </div>
+        @empty
+            <div class="no-roles-message">
+                <div class="no-roles-icon">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="no-roles-text">{{ __('messages.no_data_yet_add_first_role') }}</div>
+            </div>
+        @endforelse
+    </div>
+
+    <!-- Мобильная пагинация -->
+    <div id="mobileRolesPagination" class="mobile-pagination" style="display: none;">
+        <!-- Пагинация будет добавлена через JavaScript -->
     </div>
     <!-- Модальное окно подтверждения удаления -->
     <div id="roleConfirmationModal" class="confirmation-modal" style="display:none;">
@@ -139,6 +232,147 @@ window.roleLabels = {
     'seller': '{{ __('messages.role_seller') }}',
     'storekeeper': '{{ __('messages.role_storekeeper') }}'
 };
+
+// Функция для исправления названий ролей в мобильных карточках
+function fixRoleNames() {
+    const roleNameElements = document.querySelectorAll('.role-name[data-role-name]');
+    roleNameElements.forEach(element => {
+        const roleName = element.getAttribute('data-role-name');
+        const translatedName = getRoleLabel(roleName);
+        if (translatedName && translatedName !== roleName) {
+            element.textContent = translatedName;
+        }
+    });
+}
+
+// Функции для мобильной версии
+function toggleMobileView() {
+    const tableWrapper = document.querySelector('.table-wrapper');
+    const rolesCards = document.getElementById('rolesCards');
+    const mobilePagination = document.getElementById('mobileRolesPagination');
+    
+    if (window.innerWidth <= 768) {
+        // Мобильная версия
+        if (tableWrapper) tableWrapper.style.display = 'none';
+        if (rolesCards) rolesCards.style.display = 'block';
+        if (mobilePagination) mobilePagination.style.display = 'block';
+    } else {
+        // Десктопная версия
+        if (tableWrapper) tableWrapper.style.display = 'block';
+        if (rolesCards) rolesCards.style.display = 'none';
+        if (mobilePagination) mobilePagination.style.display = 'none';
+    }
+}
+
+// Функция для открытия модального окна редактирования из карточки
+function openEditRoleModalFromCard(roleId) {
+    openEditRoleModal(roleId);
+}
+
+// Функция для показа подтверждения удаления
+function showDeleteConfirmation(roleId) {
+    currentDeleteRoleId = roleId;
+    document.getElementById('roleConfirmationModal').style.display = 'block';
+}
+
+// Функция для удаления роли
+function deleteRole(roleId) {
+    const roleCard = document.getElementById(`role-card-${roleId}`);
+    const roleRow = document.getElementById(`role-${roleId}`);
+    
+    if (roleCard) roleCard.classList.add('row-deleting');
+    if (roleRow) roleRow.classList.add('row-deleting');
+    
+    fetch(`/roles/${roleId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            setTimeout(() => {
+                if (roleCard) roleCard.remove();
+                if (roleRow) roleRow.remove();
+                window.showNotification('success', '{{ __('messages.role_successfully_deleted') }}');
+            }, 300);
+        } else {
+            if (roleCard) roleCard.classList.remove('row-deleting');
+            if (roleRow) roleRow.classList.remove('row-deleting');
+            window.showNotification('error', data.message || '{{ __('messages.error_deleting_role') }}');
+        }
+    })
+    .catch(error => {
+        if (roleCard) roleCard.classList.remove('row-deleting');
+        if (roleRow) roleRow.classList.remove('row-deleting');
+        window.showNotification('error', '{{ __('messages.error_deleting_role') }}');
+    });
+}
+
+// Функция для обновления карточки роли
+function updateRoleCard(role) {
+    const roleCard = document.getElementById(`role-card-${role.id}`);
+    if (roleCard) {
+        const perms = role.permissions || [];
+        const permNames = perms.map(p => getPermissionLabel(p));
+        
+        const roleType = role.name === 'admin' ? 'admin' : (role.is_system ? 'system' : 'custom');
+        const roleTypeText = role.name === 'admin' || role.is_system ? '{{ __('messages.system_role') }}' : '{{ __('messages.custom_role') }}';
+        
+        roleCard.innerHTML = `
+            <div class="role-card-header">
+                <div class="role-main-info">
+                    <div class="role-icon">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="role-name">${getRoleLabel(role.name)}</div>
+                </div>
+                <div class="role-type">
+                    <span class="role-badge ${roleType}">${roleTypeText}</span>
+                </div>
+            </div>
+            <div class="role-info">
+                <div class="role-info-item">
+                    <div class="role-info-label">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm5 5a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('messages.table_permissions') }}:
+                    </div>
+                    <div class="role-info-value">
+                        ${permNames.length ? `
+                            <div class="permissions-tags">
+                                ${permNames.map(permName => `<span class="permission-tag">${permName}</span>`).join('')}
+                            </div>
+                        ` : `
+                            <span class="no-permissions">{{ __('messages.no_permissions') }}</span>
+                        `}
+                    </div>
+                </div>
+            </div>
+            ${role.name !== 'admin' && !role.is_system ? `
+            <div class="role-actions">
+                <button class="btn-edit" title="{{ __('messages.edit') }}" onclick="openEditRoleModalFromCard(${role.id})">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                    {{ __('messages.edit') }}
+                </button>
+                <button class="btn-delete" title="{{ __('messages.delete') }}" onclick="showDeleteConfirmation(${role.id})">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('messages.delete') }}
+                </button>
+            </div>
+            ` : ''}
+        `;
+    }
+}
 
 // Создаем объект с переводами разрешений
 window.permissionsLabels = {
@@ -295,6 +529,73 @@ function addRoleRow(role, perms, label) {
         </td>
     `;
     tbody.insertBefore(tr, tbody.firstChild);
+
+    // Создать мобильную карточку
+    const rolesCards = document.getElementById('rolesCards');
+    const noRolesMessage = rolesCards.querySelector('.no-roles-message');
+    if (noRolesMessage) {
+        noRolesMessage.remove();
+    }
+    
+    const roleCard = document.createElement('div');
+    roleCard.id = 'role-card-' + role.id;
+    roleCard.className = 'role-card';
+    
+    const permNames = perms.map(p => getPermissionLabel(p));
+    const roleType = role.name === 'admin' ? 'admin' : (role.is_system ? 'system' : 'custom');
+    const roleTypeText = role.name === 'admin' || role.is_system ? '{{ __('messages.system_role') }}' : '{{ __('messages.custom_role') }}';
+    
+    roleCard.innerHTML = `
+        <div class="role-card-header">
+            <div class="role-main-info">
+                <div class="role-icon">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="role-name">${getRoleLabel(role.name)}</div>
+            </div>
+            <div class="role-type">
+                <span class="role-badge ${roleType}">${roleTypeText}</span>
+            </div>
+        </div>
+        <div class="role-info">
+            <div class="role-info-item">
+                <div class="role-info-label">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm5 5a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('messages.table_permissions') }}:
+                </div>
+                <div class="role-info-value">
+                    ${permNames.length ? `
+                        <div class="permissions-tags">
+                            ${permNames.map(permName => `<span class="permission-tag">${permName}</span>`).join('')}
+                        </div>
+                    ` : `
+                        <span class="no-permissions">{{ __('messages.no_permissions') }}</span>
+                    `}
+                </div>
+            </div>
+        </div>
+        ${role.name !== 'admin' && !role.is_system ? `
+        <div class="role-actions">
+            <button class="btn-edit" title="{{ __('messages.edit') }}" onclick="openEditRoleModalFromCard(${role.id})">
+                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+                {{ __('messages.edit') }}
+            </button>
+            <button class="btn-delete" title="{{ __('messages.delete') }}" onclick="showDeleteConfirmation(${role.id})">
+                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+                {{ __('messages.delete') }}
+            </button>
+        </div>
+        ` : ''}
+    `;
+    rolesCards.insertBefore(roleCard, rolesCards.firstChild);
 }
 
 function updateRoleRow(role) {
@@ -307,6 +608,9 @@ function updateRoleRow(role) {
     tr.setAttribute('data-perms', perms.join(','));
     tr.children[0].textContent = getRoleLabel(role.name);
     tr.children[1].textContent = perms.length ? perms.map(p => getPermissionLabel(p)).join(', ') : '—';
+    
+    // Обновить мобильную карточку
+    updateRoleCard(role);
 }
 
 function getRoleLabel(name) {
@@ -351,26 +655,11 @@ document.getElementById('cancelDeleteRole').onclick = function() {
     currentDeleteRoleId = null;
 };
 document.getElementById('confirmDeleteRole').onclick = function() {
-    if (!currentDeleteRoleRow || !currentDeleteRoleId) return;
-    fetch(`/roles/${String(currentDeleteRoleId)}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-            'Accept': 'application/json'
-        }
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            currentDeleteRoleRow.remove();
-            window.showNotification('success', '{{ __('messages.role_successfully_deleted') }}');
-        } else {
-            window.showNotification('error', data.message || '{{ __('messages.error_deleting_role') }}');
-        }
-        document.getElementById('roleConfirmationModal').style.display = 'none';
-        currentDeleteRoleRow = null;
-        currentDeleteRoleId = null;
-    });
+    if (!currentDeleteRoleId) return;
+    deleteRole(currentDeleteRoleId);
+    document.getElementById('roleConfirmationModal').style.display = 'none';
+    currentDeleteRoleRow = null;
+    currentDeleteRoleId = null;
 };
 
 function onRoleSelectChange() {
@@ -388,6 +677,15 @@ function toggleGroup(group) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Исправляем названия ролей в мобильных карточках
+    fixRoleNames();
+    
+    // Инициализация мобильной версии
+    toggleMobileView();
+    
+    // Обработчик изменения размера окна
+    window.addEventListener('resize', toggleMobileView);
+    
     // Назначаем обработчик на кнопку только после загрузки DOM
     document.getElementById('btnAddRole').onclick = openRoleModal;
     // Загружаем роли только после загрузки DOM

@@ -4,13 +4,13 @@
 
 @section('content')
 <div class="dashboard-container">
-    <div class="settings-header">
+    <div class="settings-header email-settings-header">
         <h1>{{ __('messages.email_settings') }}</h1>
         <div id="notification"></div>
     </div>
 
-    <div class="settings-content">
-        <div class="settings-pane">
+    <div class="settings-content email-settings-content">
+        <div class="settings-pane email-settings-pane">
             @if(session('success'))
                 <div class="alert alert-success">
                     {{ session('success') }}
@@ -33,9 +33,9 @@
                 
                 <h5>{{ __('messages.email_settings') }}</h5>
                 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
+                <div class="row email-form-row">
+                    <div class="col-md-6 email-form-col">
+                        <div class="form-group email-form-group">
                             <label for="email_host">{{ __('messages.email_host') }}</label>
                             <input type="text" class="form-control" id="email_host" name="email_host" 
                                    value="{{ old('email_host', $project->email_host) }}" 
@@ -44,8 +44,8 @@
                             <small class="form-text text-muted">{{ __('messages.email_host_hint') }}</small>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
+                    <div class="col-md-6 email-form-col">
+                        <div class="form-group email-form-group">
                             <label for="email_port">{{ __('messages.email_port') }}</label>
                             <input type="number" class="form-control" id="email_port" name="email_port" 
                                    value="{{ old('email_port', $project->email_port) }}" 
@@ -56,9 +56,9 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
+                <div class="row email-form-row">
+                    <div class="col-md-6 email-form-col">
+                        <div class="form-group email-form-group">
                             <label for="email_username">{{ __('messages.email_username') }}</label>
                             <input type="email" class="form-control" id="email_username" name="email_username" 
                                    value="{{ old('email_username', $project->email_username) }}" 
@@ -67,8 +67,8 @@
                             <small class="form-text text-muted">{{ __('messages.email_username_hint') }}</small>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
+                    <div class="col-md-6 email-form-col">
+                        <div class="form-group email-form-group">
                             <label for="email_password">{{ __('messages.email_password') }}</label>
                             <input type="password" class="form-control" id="email_password" name="email_password" 
                                    value="{{ old('email_password', $project->email_password) }}" 
@@ -79,9 +79,9 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
+                <div class="row email-form-row">
+                    <div class="col-md-6 email-form-col">
+                        <div class="form-group email-form-group">
                             <label for="email_encryption">{{ __('messages.email_encryption') }}</label>
                             <select class="form-control" id="email_encryption" name="email_encryption" required>
                                 <option value="tls" {{ old('email_encryption', $project->email_encryption) == 'tls' ? 'selected' : '' }}>TLS</option>
@@ -91,8 +91,8 @@
                             <small class="form-text text-muted">{{ __('messages.email_encryption_hint') }}</small>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
+                    <div class="col-md-6 email-form-col">
+                        <div class="form-group email-form-group">
                             <label for="email_from_name">{{ __('messages.email_from_name') }}</label>
                             <input type="text" class="form-control" id="email_from_name" name="email_from_name" 
                                    value="{{ old('email_from_name', $project->email_from_name) }}" 
@@ -103,20 +103,33 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" 
-                               id="email_notifications_enabled" 
-                               name="email_notifications_enabled" 
-                               {{ old('email_notifications_enabled', $project->email_notifications_enabled) ? 'checked' : '' }}>
-                        <label class="custom-control-label" for="email_notifications_enabled">
+                <div class="form-group email-form-group">
+                    <div class="email-switch-container">
+                        <label class="email-switch-label" for="email_notifications_enabled">
                             {{ __('messages.email_notifications_enabled') }}
+                        </label>
+                        <!-- Десктопный переключатель Bootstrap -->
+                        <div class="custom-control custom-switch d-none d-md-block">
+                            <input type="checkbox" 
+                                   class="custom-control-input" 
+                                   id="email_notifications_enabled_desktop" 
+                                   name="email_notifications_enabled" 
+                                   {{ old('email_notifications_enabled', $project->email_notifications_enabled) ? 'checked' : '' }}>
+                            <label class="custom-control-label" for="email_notifications_enabled_desktop"></label>
+                        </div>
+                        <!-- Мобильный кастомный переключатель -->
+                        <label class="email-custom-switch d-md-none">
+                            <input type="checkbox" 
+                                   id="email_notifications_enabled_mobile" 
+                                   name="email_notifications_enabled" 
+                                   {{ old('email_notifications_enabled', $project->email_notifications_enabled) ? 'checked' : '' }}>
+                            <span class="email-slider"></span>
                         </label>
                     </div>
                     <small class="form-text text-muted">{{ __('messages.email_notifications_hint') }}</small>
                 </div>
 
-                <div class="form-actions d-flex justify-content-between align-items-center">
+                <div class="form-actions d-flex justify-content-between align-items-center email-form-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="fa fa-save"></i> {{ __('messages.save') }}
                     </button>
@@ -136,12 +149,12 @@
 
 <!-- Модальное окно с инструкциями -->
 <div id="emailInstructionsModal" class="confirmation-modal">
-    <div class="confirmation-content" style="max-width: 700px; max-height: 80vh;">
+    <div class="confirmation-content email-instructions-modal" style="max-width: 700px; max-height: 80vh;">
         <h3>{{ __('messages.email_instructions') }}</h3>
-        <div id="emailInstructionsContent" style="text-align: left; margin: 20px 0; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+        <div id="emailInstructionsContent" class="email-instructions-content" style="text-align: left; margin: 20px 0; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
             <!-- Инструкции будут загружены через AJAX -->
         </div>
-        <div class="confirmation-buttons d-flex justify-content-end">
+        <div class="confirmation-buttons email-instructions-buttons d-flex justify-content-end">
             <button onclick="closeEmailInstructionsModal()" class="cancel-btn">{{ __('messages.close') }}</button>
         </div>
     </div>
@@ -423,8 +436,24 @@ function closeEmailInstructionsModal() {
     document.getElementById('emailInstructionsModal').style.display = 'none';
 }
 
-// Добавляем обработчик для закрытия модального окна при клике вне его
+// Синхронизация переключателей для десктопа и мобильных
 document.addEventListener('DOMContentLoaded', function() {
+    const desktopSwitch = document.getElementById('email_notifications_enabled_desktop');
+    const mobileSwitch = document.getElementById('email_notifications_enabled_mobile');
+    
+    if (desktopSwitch && mobileSwitch) {
+        // Синхронизация с десктопа на мобильный
+        desktopSwitch.addEventListener('change', function() {
+            mobileSwitch.checked = this.checked;
+        });
+        
+        // Синхронизация с мобильного на десктоп
+        mobileSwitch.addEventListener('change', function() {
+            desktopSwitch.checked = this.checked;
+        });
+    }
+    
+    // Обработчик для закрытия модального окна при клике вне его
     const modal = document.getElementById('emailInstructionsModal');
     if (modal) {
         modal.addEventListener('click', function(event) {

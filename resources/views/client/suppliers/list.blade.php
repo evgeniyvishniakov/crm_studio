@@ -5,12 +5,6 @@
     <div class="services-container">
         <div class="services-header">
             <h1>{{ __('messages.suppliers') }}</h1>
-            <div id="notification" class="notification alert alert-success" role="alert">
-                <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                </svg>
-                <span class="notification-message">{{ __('messages.supplier_successfully_added') }}!</span>
-            </div>
             <div class="suppliers-header-actions">
                 <button class="btn-add-service" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -90,7 +84,74 @@
 
         <!-- Мобильные карточки поставщиков -->
         <div class="suppliers-cards" id="suppliersCards" style="display: none;">
-            <!-- Карточки будут добавлены через JavaScript -->
+            @foreach($suppliers as $supplier)
+                <div class="supplier-card" id="supplier-card-{{ $supplier->id }}">
+                    <div class="supplier-card-header">
+                        <div class="supplier-main-info">
+                            <h3 class="supplier-name">{{ $supplier->name }}</h3>
+                            <span class="status-badge {{ $supplier->status ? 'active' : 'inactive' }}">
+                                {{ $supplier->status ? __('messages.supplier_active') : __('messages.supplier_inactive') }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="supplier-info">
+                        <div class="supplier-info-item">
+                            <span class="supplier-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                </svg>
+                                Контакт
+                            </span>
+                            <span class="supplier-info-value">{{ $supplier->contact_person ?? '—' }}</span>
+                        </div>
+                        <div class="supplier-info-item">
+                            <span class="supplier-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                                </svg>
+                                Телефон
+                            </span>
+                            <span class="supplier-info-value">
+                                @if($supplier->phone)
+                                    <a href="tel:{{ $supplier->phone }}">{{ $supplier->phone }}</a>
+                                @else
+                                    —
+                                @endif
+                            </span>
+                        </div>
+                        <div class="supplier-info-item">
+                            <span class="supplier-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                </svg>
+                                Email
+                            </span>
+                            <span class="supplier-info-value">
+                                @if($supplier->email)
+                                    <a href="mailto:{{ $supplier->email }}">{{ $supplier->email }}</a>
+                                @else
+                                    —
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+                    <div class="supplier-actions">
+                        <button class="btn-edit" onclick="openEditModalFromCard({{ $supplier->id }})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            {{ __('messages.edit_short') }}
+                        </button>
+                        <button class="btn-delete" onclick="showDeleteConfirmation({{ $supplier->id }})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            {{ __('messages.delete') }}
+                        </button>
+                    </div>
+                </div>
+            @endforeach
         </div>
 
         <!-- Пагинация для мобильных карточек -->
@@ -258,26 +319,7 @@
             }
         }
 
-        // Функция для показа уведомлений
-        function showNotification(type, message) {
-            const notification = document.getElementById('notification');
-            notification.className = `notification ${type} show`;
-
-            const icon = type === 'success' ?
-                '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>' :
-                '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>';
-
-            notification.innerHTML = `
-                <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-                    ${icon}
-                </svg>
-                <span class="notification-message">${message}</span>
-            `;
-
-            setTimeout(() => {
-                notification.className = `notification ${type}`;
-            }, 3000);
-        }
+        // Используем глобальную функцию уведомлений
 
         // Функция для очистки ошибок
         function clearErrors(formId = 'addServiceForm') {
@@ -454,7 +496,7 @@
                         }
 
                         // Показываем уведомление
-                        showNotification('success', `{{ __('messages.supplier') }} "${data.supplier.name}" {{ __('messages.supplier_successfully_added') }}`);
+                        window.showNotification('success', `{{ __('messages.supplier') }} "${data.supplier.name}" {{ __('messages.supplier_successfully_added') }}`);
 
                         // Закрываем модальное окно и очищаем форму
                         closeModal();
@@ -466,9 +508,9 @@
                 .catch(error => {
                     if (error.errors) {
                         showErrors(error.errors);
-                        showNotification('error', '{{ __('messages.please_fix_form_errors') }}');
+                        window.showNotification('error', '{{ __('messages.please_fix_form_errors') }}');
                     } else {
-                        showNotification('error', error.message || '{{ __('messages.error_adding_supplier') }}');
+                        window.showNotification('error', error.message || '{{ __('messages.error_adding_supplier') }}');
                     }
                 })
                 .finally(() => {
@@ -558,14 +600,14 @@
                         setTimeout(() => {
                             if (row) row.remove();
                             if (card) card.remove();
-                            showNotification('success', '{{ __('messages.supplier_successfully_deleted') }}');
+                            window.showNotification('success', '{{ __('messages.supplier_successfully_deleted') }}');
                         }, 300);
                     }
                 })
                 .catch(error => {
                     if (row) row.classList.remove('row-deleting');
                     if (card) card.classList.remove('row-deleting');
-                    showNotification('error', '{{ __('messages.error_deleting_supplier') }}');
+                    window.showNotification('error', '{{ __('messages.error_deleting_supplier') }}');
                 });
         }
 
@@ -588,7 +630,7 @@
                     document.getElementById('editServiceModal').style.display = 'block';
                 })
                 .catch(error => {
-                    showNotification('error', '{{ __('messages.error_loading_supplier_data') }}');
+                    window.showNotification('error', '{{ __('messages.error_loading_supplier_data') }}');
                 });
         }
 
@@ -637,16 +679,16 @@
                 .then(data => {
                     if (data.success) {
                         updateSupplierRow(data.supplier);
-                        showNotification('success', '{{ __('messages.supplier_successfully_updated') }}');
+                        window.showNotification('success', '{{ __('messages.supplier_successfully_updated') }}');
                         closeEditModal();
                     }
                 })
                 .catch(error => {
                     if (error.errors) {
                         showErrors(error.errors, 'editServiceForm');
-                        showNotification('error', '{{ __('messages.please_fix_form_errors') }}');
+                        window.showNotification('error', '{{ __('messages.please_fix_form_errors') }}');
                     } else {
-                        showNotification('error', '{{ __('messages.error_updating_supplier') }}');
+                        window.showNotification('error', '{{ __('messages.error_updating_supplier') }}');
                     }
                 })
                 .finally(() => {
@@ -686,6 +728,10 @@
                     statusBadge.textContent = supplier.status ? '{{ __('messages.supplier_active') }}' : '{{ __('messages.supplier_inactive') }}';
                 }
             }
+
+            // Также обновляем мобильную карточку
+            updateSupplierCard(supplier);
+        }
             
             // Обновляем карточку поставщика в мобильной версии
             const card = document.getElementById(`supplier-card-${supplier.id}`);
@@ -759,7 +805,7 @@
                 renderPagination(data.meta);
             })
             .catch(error => {
-                showNotification('error', '{{ __('messages.loading_data_error') }}');
+                window.showNotification('error', '{{ __('messages.loading_data_error') }}');
             });
         }
 
@@ -951,6 +997,56 @@
             loadPage(1, query);
         }
 
+        // Функция для открытия модального окна редактирования из карточки
+        function openEditModalFromCard(supplierId) {
+            openEditModal(supplierId);
+        }
+
+        // Функция для обновления карточки поставщика
+        function updateSupplierCard(supplier) {
+            const card = document.getElementById(`supplier-card-${supplier.id}`);
+            if (!card) return;
+
+            // Обновляем название
+            const nameElement = card.querySelector('.supplier-name');
+            if (nameElement) {
+                nameElement.textContent = supplier.name;
+            }
+
+            // Обновляем статус
+            const statusBadge = card.querySelector('.status-badge');
+            if (statusBadge) {
+                statusBadge.className = `status-badge ${supplier.status ? 'active' : 'inactive'}`;
+                statusBadge.textContent = supplier.status ? '{{ __('messages.supplier_active') }}' : '{{ __('messages.supplier_inactive') }}';
+            }
+
+            // Обновляем контактное лицо
+            const contactElement = card.querySelector('.supplier-info-item:nth-child(1) .supplier-info-value');
+            if (contactElement) {
+                contactElement.textContent = supplier.contact_person ?? '—';
+            }
+
+            // Обновляем телефон
+            const phoneElement = card.querySelector('.supplier-info-item:nth-child(2) .supplier-info-value');
+            if (phoneElement) {
+                if (supplier.phone) {
+                    phoneElement.innerHTML = `<a href="tel:${supplier.phone}">${supplier.phone}</a>`;
+                } else {
+                    phoneElement.textContent = '—';
+                }
+            }
+
+            // Обновляем email
+            const emailElement = card.querySelector('.supplier-info-item:nth-child(3) .supplier-info-value');
+            if (emailElement) {
+                if (supplier.email) {
+                    emailElement.innerHTML = `<a href="mailto:${supplier.email}">${supplier.email}</a>`;
+                } else {
+                    emailElement.textContent = '—';
+                }
+            }
+        }
+
         // Функция для переключения между десктопной и мобильной версией
         function toggleMobileView() {
             const tableWrapper = document.querySelector('.table-wrapper');
@@ -979,7 +1075,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             if (!isInitialized) {
                 isInitialized = true;
-                loadPage(1);
                 toggleMobileView(); // Переключаем на правильную версию
             }
         });

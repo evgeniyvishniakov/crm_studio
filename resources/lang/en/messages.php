@@ -98,6 +98,13 @@ return [
     'client_work' => 'Client Work',
     'client_analytics' => 'Client Analytics',
     'appointments_analytics' => 'Appointments Analytics',
+    
+    // Messages for widget mobile version blocking
+    'desktop_only' => 'Desktop Only',
+    'widget_settings_desktop_only' => 'Widget settings are only available on desktop for convenient code work and preview.',
+    'better_on_desktop' => 'Better on desktop',
+    'code_generation' => 'Code generation',
+    'advanced_customization' => 'Advanced customization',
     'employees_analytics' => 'Employees Analytics',
     'financial_analytics' => 'Financial Analytics',
     'period_explanations' => 'Period explanations',
@@ -1252,6 +1259,12 @@ return [
     'role_intern' => 'Intern',
     'role_seller' => 'Salesperson',
     'role_storekeeper' => 'Storekeeper',
+    
+    // Role types
+    'system_role' => 'System Role',
+    'custom_role' => 'Custom Role',
+    'no_permissions' => 'No permissions',
+    'open_chat' => 'Open Chat',
     
     // Permissions
     'permission_dashboard' => 'Dashboard',

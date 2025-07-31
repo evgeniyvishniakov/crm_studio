@@ -98,6 +98,13 @@ return [
     'client_work' => 'Работа с клиентами',
     'client_analytics' => 'Аналитика по клиентам',
     'appointments_analytics' => 'Аналитика по записям',
+    
+    // Сообщения для блокировки мобильной версии виджета
+    'desktop_only' => 'Только для десктопа',
+    'widget_settings_desktop_only' => 'Настройки виджета доступны только на компьютере для удобства работы с кодом и предварительным просмотром.',
+    'better_on_desktop' => 'Лучше работает на десктопе',
+    'code_generation' => 'Генерация кода',
+    'advanced_customization' => 'Расширенная настройка',
     'employees_analytics' => 'Аналитика по сотрудникам',
     'financial_analytics' => 'Финансовая аналитика',
     'period_explanations' => 'Пояснения к периодам',
@@ -1425,6 +1432,12 @@ return [
     'role_intern' => 'Стажёр',
     'role_seller' => 'Продавец',
     'role_storekeeper' => 'Кладовщик',
+    
+    // Типы ролей
+    'system_role' => 'Системная роль',
+    'custom_role' => 'Пользовательская роль',
+    'no_permissions' => 'Нет разрешений',
+    'open_chat' => 'Открыть чат',
     
     // Разрешения (Permissions)
     'permission_dashboard' => 'Панель управления',

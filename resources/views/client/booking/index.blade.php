@@ -177,57 +177,7 @@ label {
     font-weight: 500;
 }
 
-/* Стили для уведомлений (как на других страницах) */
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 15px 20px;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 1rem;
-    z-index: 1050;
-    display: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    min-width: 250px;
-    text-align: center;
-}
-
-.notification.show {
-    display: block;
-}
-
-.notification.success {
-    background: linear-gradient(135deg, #28a745, #34d399);
-}
-
-.notification.error {
-    background: linear-gradient(135deg, #dc3545, #ef4444);
-}
-
-.notification .notification-icon {
-    width: 24px;
-    height: 24px;
-    vertical-align: middle;
-    margin-right: 8px;
-}
-
-.notification .notification-message {
-    vertical-align: middle;
-}
-
-@keyframes shake {
-    0% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-6px); }
-    80% { transform: translateX(6px); }
-    100% { transform: translateX(0); }
-}
-
-.notification.shake {
-    animation: shake 0.5s;
-}
+/* Стили для уведомлений используют глобальные из notifications.css */
 
 /* Стили для таблиц */
 #userServicesTable, #scheduleTable {
@@ -938,9 +888,7 @@ label {
     </div>
 </div>
 
-<!-- Уведомление -->
-<div id="notification" class="position-fixed" style="top: 20px; right: 20px; z-index: 9999; display: none;">
-</div>
+<!-- Уведомления создаются динамически глобальной функцией -->
 
 @endsection
 

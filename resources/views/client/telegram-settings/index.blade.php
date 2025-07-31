@@ -78,9 +78,20 @@
                                 <label class="telegram-switch-label" for="telegram_notifications_enabled">
                                     {{ __('messages.telegram_notifications_enabled') }}
                                 </label>
-                                <label class="telegram-custom-switch">
+                                <!-- Десктопный переключатель Bootstrap -->
+                                <div class="custom-control custom-switch d-none d-md-block">
                                     <input type="checkbox" 
-                                           id="telegram_notifications_enabled" 
+                                           class="custom-control-input" 
+                                           id="telegram_notifications_enabled_desktop" 
+                                           name="telegram_notifications_enabled" 
+                                           value="1"
+                                           {{ old('telegram_notifications_enabled', $project->telegram_notifications_enabled) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="telegram_notifications_enabled_desktop"></label>
+                                </div>
+                                <!-- Мобильный кастомный переключатель -->
+                                <label class="telegram-custom-switch d-md-none">
+                                    <input type="checkbox" 
+                                           id="telegram_notifications_enabled_mobile" 
                                            name="telegram_notifications_enabled" 
                                            value="1"
                                            {{ old('telegram_notifications_enabled', $project->telegram_notifications_enabled) ? 'checked' : '' }}>
@@ -94,16 +105,18 @@
                     </div>
                 </div>
 
-                <div class="form-actions d-flex justify-content-between align-items-center telegram-form-actions">
+                <div class="form-actions d-flex justify-content-between align-items-center">
                     <button type="submit" class="btn btn-primary">
                         <i class="fa fa-save"></i> {{ __('messages.save') }}
                     </button>
-                    <button type="button" class="btn btn-info" onclick="testConnection()">
-                        <i class="fa fa-exchange-alt"></i> {{ __('messages.test_connection') }}
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="showInstructions()">
-                        <i class="fa fa-question-circle"></i> {{ __('messages.instructions') }}
-                    </button>
+                    <div>
+                        <button type="button" class="btn btn-info" onclick="testConnection()">
+                            <i class="fa fa-exchange-alt"></i> {{ __('messages.test_connection') }}
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="showInstructions()">
+                            <i class="fa fa-question-circle"></i> {{ __('messages.instructions') }}
+                        </button>
+                    </div>
                 </div>
             </form>
 
@@ -114,19 +127,174 @@
 
 <!-- Модальное окно с инструкциями -->
 <div id="instructionsModal" class="confirmation-modal">
-    <div class="confirmation-content telegram-instructions-modal">
+    <div class="confirmation-content" style="max-width: 700px; max-height: 80vh;">
         <h3>{{ __('messages.telegram_instructions') }}</h3>
-        <div id="instructionsContent" class="telegram-instructions-content">
+        <div id="instructionsContent" style="text-align: left; margin: 20px 0; max-height: 60vh; overflow-y: auto; padding-right: 10px;">
             <!-- Инструкции будут загружены через AJAX -->
         </div>
-        <div class="confirmation-buttons telegram-instructions-buttons">
-            <button onclick="closeInstructionsModal()" class="btn">{{ __('messages.close') }}</button>
+        <div class="confirmation-buttons d-flex justify-content-end">
+            <button onclick="closeInstructionsModal()" class="cancel-btn">{{ __('messages.close') }}</button>
         </div>
     </div>
 </div>
 @endsection
 
 
+
+<style>
+/* Стили для модального окна подтверждения */
+.confirmation-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.confirmation-modal .confirmation-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 30px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Стили для инструкций */
+.telegram-instructions-list {
+    text-align: left;
+}
+
+.instruction-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.instruction-item strong {
+    color: #007bff;
+    font-weight: 600;
+}
+
+.instruction-item br {
+    margin-bottom: 8px;
+}
+
+/* Стили для прокрутки */
+#instructionsContent::-webkit-scrollbar {
+    width: 8px;
+}
+
+#instructionsContent::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+#instructionsContent::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+#instructionsContent::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.confirmation-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.confirm-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirm-btn:hover {
+    background-color: #c82333;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+/* Стили для новой структуры страницы */
+.settings-header h1 {
+    color: #333;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.form-actions {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+    border: 1px solid #e9ecef;
+}
+
+.form-actions .btn {
+    margin: 0 5px;
+}
+
+/* Стили для кнопок в стиле системы (только для этой страницы) */
+.form-actions .btn-info {
+    background: linear-gradient(135deg, #17a2b8, #20c997) !important;
+    border-color: #17a2b8 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1.5rem !important;
+}
+
+.form-actions .btn-info:active, .form-actions .btn-info:focus, .form-actions .btn-info:hover {
+    background: linear-gradient(135deg, #138496, #17a2b8) !important;
+    border-color: #138496 !important;
+    color: #fff !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1.5rem !important;
+}
+
+.form-actions .btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #868e96) !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1.5rem !important;
+}
+
+.form-actions .btn-secondary:active, .form-actions .btn-secondary:focus, .form-actions .btn-secondary:hover {
+    background: linear-gradient(135deg, #5a6268, #6c757d) !important;
+    border-color: #5a6268 !important;
+    color: #fff !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1.5rem !important;
+}
+</style>
 
 @push('scripts')
 <script>
@@ -246,11 +414,11 @@ function showInstructions() {
     fetch('{{ route("client.telegram-settings.instructions") }}')
         .then(response => response.json())
         .then(data => {
-            let html = '<ol class="list-group list-group-flush">';
-            Object.values(data.instructions).forEach(instruction => {
-                html += `<li class="list-group-item">${instruction}</li>`;
+            let html = '<div class="telegram-instructions-list">';
+            Object.values(data.instructions).forEach((instruction, index) => {
+                html += `<div class="instruction-item" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">${instruction}</div>`;
             });
-            html += '</ol>';
+            html += '</div>';
             content.innerHTML = html;
         })
         .catch(error => {
@@ -264,12 +432,35 @@ function closeInstructionsModal() {
     modal.style.display = 'none';
 }
 
-// Добавляем обработчик для закрытия модального окна при клике вне его
+// Синхронизация переключателей для десктопа и мобильных
 document.addEventListener('DOMContentLoaded', function() {
+    const desktopSwitch = document.getElementById('telegram_notifications_enabled_desktop');
+    const mobileSwitch = document.getElementById('telegram_notifications_enabled_mobile');
+    
+    if (desktopSwitch && mobileSwitch) {
+        // Синхронизация с десктопа на мобильный
+        desktopSwitch.addEventListener('change', function() {
+            mobileSwitch.checked = this.checked;
+        });
+        
+        // Синхронизация с мобильного на десктоп
+        mobileSwitch.addEventListener('change', function() {
+            desktopSwitch.checked = this.checked;
+        });
+    }
+    
+    // Обработчик для закрытия модального окна при клике вне его
     const modal = document.getElementById('instructionsModal');
     if (modal) {
         modal.addEventListener('click', function(event) {
             if (event.target === modal) {
+                closeInstructionsModal();
+            }
+        });
+        
+        // Добавляем обработчик для закрытия по Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.style.display === 'block') {
                 closeInstructionsModal();
             }
         });

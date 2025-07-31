@@ -2175,6 +2175,27 @@ input[type="date"]:focus {
         transition: all 0.3s ease;
     }
     
+    /* Стили для анимации удаления карточек пользователей */
+    .user-card.row-deleting {
+        opacity: 0.5;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
+    }
+    
+    /* Стили для анимации удаления карточек ролей */
+    .role-card.row-deleting {
+        opacity: 0.5;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
+    }
+    
+    /* Стили для анимации удаления карточек тикетов */
+    .ticket-card.row-deleting {
+        opacity: 0.5;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
+    }
+    
 
 }
 

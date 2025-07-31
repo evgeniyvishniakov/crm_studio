@@ -4,7 +4,6 @@
 <div class="dashboard-container">
     <div class="clients-header">
         <h1>{{ __('messages.support') }}</h1>
-        <div id="notification"></div>
         <div class="header-actions">
             <button class="btn-add-client" onclick="openTicketModal()">
                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -14,6 +13,7 @@
             </button>
         </div>
     </div>
+    <!-- Десктопная таблица -->
     <div class="table-wrapper">
         <table class="clients-table">
             <thead>
@@ -40,6 +40,68 @@
             </tbody>
         </table>
         <div class="mt-3">{{ $tickets->links() }}</div>
+    </div>
+
+    <!-- Мобильные карточки тикетов -->
+    <div class="tickets-cards" id="ticketsCards" style="display: none;">
+        @forelse($tickets as $ticket)
+            <div class="ticket-card{{ in_array($ticket->status, ['closed','pending']) ? ' ticket-card-closed' : '' }}" 
+                 data-ticket-id="{{ $ticket->id }}" 
+                 data-ticket-subject="{{ $ticket->subject }}" 
+                 data-ticket-status="{{ $ticket->status }}"
+                 style="cursor:{{ in_array($ticket->status, ['pending','closed']) ? 'not-allowed' : 'pointer' }};">
+                <div class="ticket-card-header">
+                    <div class="ticket-main-info">
+                        <div class="ticket-icon">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-2 0c0 .993-.241 1.929-.668 2.754l-1.524-1.525a3.997 3.997 0 00.078-2.183l1.562-1.562C15.802 8.249 16 9.1 16 10zm-5.165 3.913l1.58 1.58A5.98 5.98 0 0110 16a5.976 5.976 0 01-2.516-.552l1.562-1.562a4.006 4.006 0 001.789.027zm-4.677-2.796a4.002 4.002 0 01-.041-2.08l-.08.08-1.53-1.533A5.98 5.98 0 004 10c0 .954.223 1.856.619 2.657l1.54-1.54zm1.088-6.45A5.974 5.974 0 0110 4c.954 0 1.856.223 2.657.619l-1.54 1.54a4.002 4.002 0 00-2.346.033L7.246 4.668zM12 10a2 2 0 11-4 0 2 2 0 014 0z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ticket-subject">{{ $ticket->subject }}</div>
+                    </div>
+                    <div class="ticket-status">
+                        <span class="status-badge {{ $ticket->status === 'open' ? 'status-completed' : ($ticket->status === 'pending' ? 'status-pending' : 'status-cancelled') }}">
+                            {{ $ticket->status === 'open' ? __('messages.open') : ($ticket->status === 'pending' ? __('messages.pending') : __('messages.closed')) }}
+                        </span>
+                    </div>
+                </div>
+                <div class="ticket-info">
+                    <div class="ticket-info-item">
+                        <div class="ticket-info-label">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm5 5a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                            </svg>
+                            {{ __('messages.created_date') }}:
+                        </div>
+                        <div class="ticket-info-value">{{ $ticket->created_at->format('d.m.Y H:i') }}</div>
+                    </div>
+                </div>
+                @if(!in_array($ticket->status, ['pending','closed']))
+                <div class="ticket-actions">
+                    <button class="btn-chat" title="{{ __('messages.open_chat') }}" onclick="openTicketChatModalFromCard({{ $ticket->id }}, '{{ $ticket->subject }}')">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('messages.open_chat') }}
+                    </button>
+                </div>
+                @endif
+            </div>
+        @empty
+            <div class="no-tickets-message">
+                <div class="no-tickets-icon">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-2 0c0 .993-.241 1.929-.668 2.754l-1.524-1.525a3.997 3.997 0 00.078-2.183l1.562-1.562C15.802 8.249 16 9.1 16 10zm-5.165 3.913l1.58 1.58A5.98 5.98 0 0110 16a5.976 5.976 0 01-2.516-.552l1.562-1.562a4.006 4.006 0 001.789.027zm-4.677-2.796a4.002 4.002 0 01-.041-2.08l-.08.08-1.53-1.533A5.98 5.98 0 004 10c0 .954.223 1.856.619 2.657l1.54-1.54zm1.088-6.45A5.974 5.974 0 0110 4c.954 0 1.856.223 2.657.619l-1.54 1.54a4.002 4.002 0 00-2.346.033L7.246 4.668zM12 10a2 2 0 11-4 0 2 2 0 014 0z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="no-tickets-text">{{ __('messages.no_tickets_yet') }}</div>
+            </div>
+        @endforelse
+    </div>
+
+    <!-- Мобильная пагинация -->
+    <div id="mobileTicketsPagination" class="mobile-pagination" style="display: none;">
+        <!-- Пагинация будет добавлена через JavaScript -->
     </div>
 </div>
 
@@ -90,6 +152,29 @@
 
 @push('scripts')
 <script>
+// Функции для мобильной версии
+function toggleMobileView() {
+    const tableWrapper = document.querySelector('.table-wrapper');
+    const ticketsCards = document.getElementById('ticketsCards');
+    const mobilePagination = document.getElementById('mobileTicketsPagination');
+    
+    if (window.innerWidth <= 768) {
+        // Мобильная версия
+        if (tableWrapper) tableWrapper.style.display = 'none';
+        if (ticketsCards) ticketsCards.style.display = 'block';
+        if (mobilePagination) mobilePagination.style.display = 'block';
+    } else {
+        // Десктопная версия
+        if (tableWrapper) tableWrapper.style.display = 'block';
+        if (ticketsCards) ticketsCards.style.display = 'none';
+        if (mobilePagination) mobilePagination.style.display = 'none';
+    }
+}
+
+// Функция для открытия модального окна чата из карточки
+function openTicketChatModalFromCard(ticketId, subject) {
+    openTicketChatModal(ticketId, subject);
+}
 function openTicketModal() {
     document.getElementById('createTicketModal').style.display = 'block';
 }
@@ -98,36 +183,17 @@ function closeTicketModal() {
     document.getElementById('createTicketForm').reset();
 }
 
-// Универсальное уведомление (как в записях)
-window.showNotification = function(type, message) {
-    let notification = document.getElementById('notification');
-    if (!notification) {
-        notification = document.createElement('div');
-        notification.id = 'notification';
-        document.body.appendChild(notification);
-    }
-    notification.className = `notification ${type} show shake`;
-    const icon = type === 'success'
-        ? '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>'
-        : '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>';
-    notification.innerHTML = `
-        <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-            ${icon}
-        </svg>
-        <span class="notification-message">${message}</span>
-    `;
-    notification.addEventListener('animationend', function handler() {
-        notification.classList.remove('shake');
-        notification.removeEventListener('animationend', handler);
-    });
-    setTimeout(() => {
-        notification.className = `notification ${type}`;
-    }, 3000);
-};
+// Используем глобальную функцию уведомлений
 
 // AJAX отправка формы создания тикета
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Инициализация мобильной версии
+    toggleMobileView();
+    
+    // Обработчик изменения размера окна
+    window.addEventListener('resize', toggleMobileView);
+    
     const form = document.getElementById('createTicketForm');
     if (form) {
         form.addEventListener('submit', function(e) {
@@ -153,11 +219,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     const data = await response.json().catch(() => ({}));
                     window.showNotification('success', '{{ __('messages.ticket_successfully_created') }}');
                     closeTicketModal();
-                    // Добавляем тикет в таблицу без перезагрузки
+                    // Добавляем тикет в таблицу и создаем карточку без перезагрузки
                     const tbody = document.querySelector('table tbody');
+                    const ticketsCards = document.getElementById('ticketsCards');
                     const ticket = data.ticket;
                     const createdAt = new Date(ticket.created_at);
                     const dateStr = createdAt.toLocaleDateString('ru-RU') + ' ' + createdAt.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
+                    
+                    // Добавляем в десктопную таблицу
                     const newRow = document.createElement('tr');
                     newRow.className = 'ticket-row';
                     newRow.setAttribute('data-ticket-id', ticket.id);
@@ -169,17 +238,73 @@ document.addEventListener('DOMContentLoaded', function() {
                         <td>${dateStr}</td>
                     `;
                     tbody.prepend(newRow);
+                    
+                    // Создаем мобильную карточку
+                    const noTicketsMessage = ticketsCards.querySelector('.no-tickets-message');
+                    if (noTicketsMessage) {
+                        noTicketsMessage.remove();
+                    }
+                    
+                    const newCard = document.createElement('div');
+                    newCard.className = 'ticket-card';
+                    newCard.setAttribute('data-ticket-id', ticket.id);
+                    newCard.setAttribute('data-ticket-subject', ticket.subject);
+                    newCard.setAttribute('data-ticket-status', 'open');
+                    newCard.style.opacity = 0;
+                    newCard.innerHTML = `
+                        <div class="ticket-card-header">
+                            <div class="ticket-main-info">
+                                <div class="ticket-icon">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-2 0c0 .993-.241 1.929-.668 2.754l-1.524-1.525a3.997 3.997 0 00.078-2.183l1.562-1.562C15.802 8.249 16 9.1 16 10zm-5.165 3.913l1.58 1.58A5.98 5.98 0 0110 16a5.976 5.976 0 01-2.516-.552l1.562-1.562a4.006 4.006 0 001.789.027zm-4.677-2.796a4.002 4.002 0 01-.041-2.08l-.08.08-1.53-1.533A5.98 5.98 0 004 10c0 .954.223 1.856.619 2.657l1.54-1.54zm1.088-6.45A5.974 5.974 0 0110 4c.954 0 1.856.223 2.657.619l-1.54 1.54a4.002 4.002 0 00-2.346.033L7.246 4.668zM12 10a2 2 0 11-4 0 2 2 0 014 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ticket-subject">${ticket.subject}</div>
+                            </div>
+                            <div class="ticket-status">
+                                <span class="status-badge status-completed">{{ __('messages.open') }}</span>
+                            </div>
+                        </div>
+                        <div class="ticket-info">
+                            <div class="ticket-info-item">
+                                <div class="ticket-info-label">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm5 5a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ __('messages.created_date') }}:
+                                </div>
+                                <div class="ticket-info-value">${dateStr}</div>
+                            </div>
+                        </div>
+                        <div class="ticket-actions">
+                            <button class="btn-chat" title="{{ __('messages.open_chat') }}" onclick="openTicketChatModalFromCard(${ticket.id}, '${ticket.subject}')">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+                                </svg>
+                                {{ __('messages.open_chat') }}
+                            </button>
+                        </div>
+                    `;
+                    ticketsCards.prepend(newCard);
+                    
                     // Удаляем строку 'Тикетов пока нет', если есть
                     const emptyRow = tbody.querySelector('tr td[colspan]');
                     if (emptyRow && emptyRow.textContent.includes('{{ __('messages.no_tickets_yet') }}')) {
                         emptyRow.parentElement.remove();
                     }
+                    
                     // Навешиваем обработчик клика на новую строку
                     newRow.addEventListener('click', function(e) {
                         if (e.target.closest('button, a, .no-chat-open')) return;
                         openTicketChatModal(this.dataset.ticketId, this.dataset.ticketSubject);
                     });
-                    setTimeout(() => { newRow.style.transition = 'opacity 0.5s'; newRow.style.opacity = 1; }, 10);
+                    
+                    setTimeout(() => { 
+                        newRow.style.transition = 'opacity 0.5s'; 
+                        newRow.style.opacity = 1; 
+                        newCard.style.transition = 'opacity 0.5s'; 
+                        newCard.style.opacity = 1; 
+                    }, 10);
                 } else {
                     let msg = '{{ __('messages.error_creating_ticket') }}';
                     try {
@@ -216,7 +341,7 @@ function openTicketChatModal(ticketId, subject) {
     // Проверяем статус тикета
     const row = document.querySelector(`.ticket-row[data-ticket-id='${ticketId}']`);
     if (row && ['pending','closed'].includes(row.dataset.ticketStatus)) {
-        window.showNotification && window.showNotification('error', '{{ __('messages.chat_unavailable_for_status') }}');
+        window.showNotification('error', '{{ __('messages.chat_unavailable_for_status') }}');
         return;
     }
 }
@@ -290,7 +415,7 @@ document.getElementById('modalChatForm').addEventListener('submit', async functi
     // Блокируем отправку, если тикет не открыт
     const row = document.querySelector(`.ticket-row[data-ticket-id='${currentChatTicketId}']`);
     if (row && ['pending','closed'].includes(row.dataset.ticketStatus)) {
-        window.showNotification && window.showNotification('error', '{{ __('messages.cannot_send_messages_for_status') }}');
+        window.showNotification('error', '{{ __('messages.cannot_send_messages_for_status') }}');
         return;
     }
     try {
@@ -320,50 +445,6 @@ document.getElementById('modalChatForm').addEventListener('submit', async functi
 });
 </script>
 <style>
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 15px 20px;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 1rem;
-    z-index: 1050;
-    display: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    min-width: 250px;
-    text-align: center;
-    transition: opacity 0.3s, transform 0.3s;
-}
-.notification.success {
-    background: linear-gradient(135deg, #28a745, #34d399);
-}
-.notification.error {
-    background: linear-gradient(135deg, #dc3545, #ef4444);
-}
-.notification.show {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
-}
-.notification .notification-icon {
-    width: 24px;
-    height: 24px;
-    vertical-align: middle;
-    margin-right: 8px;
-}
-.notification .notification-message {
-    vertical-align: middle;
-}
-@keyframes shake {
-    10%, 90% { transform: translate3d(-2px, 0, 0); }
-    20%, 80% { transform: translate3d(4px, 0, 0); }
-    30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
-    40%, 60% { transform: translate3d(8px, 0, 0); }
-}
-.notification.shake {
-    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
-}
 .chat-link { color: #2563eb; text-decoration: underline; cursor: pointer; }
 .chat-link:hover { color: #1d4ed8; }
 .chat-messages { min-height: 200px; background: #f9fafb; }
