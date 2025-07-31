@@ -1275,6 +1275,55 @@
                         row.querySelector('td:nth-child(5)').textContent = formatPrice(data.product.purchase_price);
                         row.querySelector('td:nth-child(6)').textContent = formatPrice(data.product.retail_price);
                     }
+                    
+                    // Обновляем карточку товара в мобильной версии
+                    const card = document.getElementById(`product-card-${productId}`);
+                    if (card) {
+                        // Обновляем фото
+                        const photoContainer = card.querySelector('.product-photo-container');
+                        if (photoContainer) {
+                            if (data.product.photo) {
+                                photoContainer.innerHTML = `<img src="/storage/${data.product.photo}" alt="${data.product.name}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">`;
+                            } else {
+                                photoContainer.innerHTML = '<div class="no-photo">Нет фото</div>';
+                            }
+                        }
+                        
+                        // Обновляем название
+                        const nameElement = card.querySelector('.product-name');
+                        if (nameElement) {
+                            nameElement.textContent = data.product.name;
+                        }
+                        
+                        // Обновляем категорию
+                        const categoryBadge = card.querySelector('.product-category-badge');
+                        if (categoryBadge) {
+                            if (data.product.category?.name) {
+                                categoryBadge.textContent = data.product.category.name;
+                                categoryBadge.style.display = 'inline-block';
+                            } else {
+                                categoryBadge.style.display = 'none';
+                            }
+                        }
+                        
+                        // Обновляем бренд
+                        const brandBadge = card.querySelector('.product-brand-badge');
+                        if (brandBadge) {
+                            if (data.product.brand?.name) {
+                                brandBadge.textContent = data.product.brand.name;
+                                brandBadge.style.display = 'inline-block';
+                            } else {
+                                brandBadge.style.display = 'none';
+                            }
+                        }
+                        
+                        // Обновляем цены
+                        const priceElements = card.querySelectorAll('.product-info-value');
+                        if (priceElements.length >= 2) {
+                            priceElements[0].textContent = formatPrice(data.product.purchase_price);
+                            priceElements[1].textContent = formatPrice(data.product.retail_price);
+                        }
+                    }
                 } else {
                     window.showNotification('error', data.message || '{{ __('messages.error_updating_product') }}');
                 }
