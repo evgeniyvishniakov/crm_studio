@@ -1753,4 +1753,9 @@ return [
     'position_and_style' => 'Position and Style',
     
     // Widget instructions
+    
+    // Messages for deleted records
+    'deleted_user' => 'Deleted User',
+    'deleted_service' => 'Deleted Service',
+    'not_specified_price' => 'Price not specified',
 ]; 

@@ -437,9 +437,6 @@ label {
         <button class="tab-button" data-tab="user-services">
             <i class="fa fa-user-cog" style="margin-right:8px;"></i>{{ __('messages.master_services') }}
         </button>
-        <button class="tab-button" data-tab="widget-settings">
-            <i class="fa fa-code" style="margin-right:8px;"></i>{{ __('messages.widget_settings') }}
-        </button>
     </div>
     
     <div class="settings-content">
@@ -530,7 +527,7 @@ label {
                                      @endphp
                                      <div class="master-item">
                                          <div class="master-info">
-                                             <div class="master-name">{{ $user->name }}</div>
+                                             <div class="master-name">{{ $user->name ?? __('messages.deleted_user') }}</div>
                                              <div class="master-details">
                                                  {{ $userActiveServices->count() }} {{ $userActiveServices->count() == 1 ? __('messages.service') : ($userActiveServices->count() < 5 ? __('messages.services_2') : __('messages.services_5')) }}
                                                  @if($userActiveServices->count() > 0 && $userActiveServices->min('price') > 0)
@@ -583,7 +580,7 @@ label {
                                      @endphp
                                      <div class="service-item">
                                          <div class="service-info">
-                                             <div class="service-name">{{ $service->name }}</div>
+                                             <div class="service-name">{{ $service->name ?? __('messages.deleted_service') }}</div>
                                              <div class="service-details">
                                                  @if($mastersCount > 0 && $avgPrice > 0)
                                                      {{ $masterNames }} • <span class="currency-amount" data-amount="{{ $avgPrice }}">{{ \App\Helpers\CurrencyHelper::format($avgPrice) }}</span>
@@ -624,14 +621,13 @@ label {
         <div class="settings-pane" id="tab-schedule-settings" style="display: none;">
             <div class="clients-header">
                 <h1>{{ __('messages.schedule_settings') }}</h1>
-                <div id="notification"></div>
                 <div class="header-actions">
                     <div class="form-group mb-3" style="margin-bottom: 0;">
                         <label for="user-select" style="margin-bottom: 8px; font-weight: 600; color: #333;">{{ __('messages.select_master') }}</label>
                         <select class="form-control" id="user-select" style="min-width: 250px; border-radius: 8px; border: 1px solid #d1d5db; padding: 8px 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.2s ease;">
                             <option value="">{{ __('messages.select_master_placeholder') }}</option>
                             @foreach($users as $user)
-                                <option value="{{ $user->id }}" {{ $loop->first ? 'selected' : '' }}>{{ $user->name }}</option>
+                                                                 <option value="{{ $user->id }}" {{ $loop->first ? 'selected' : '' }}>{{ $user->name ?? __('messages.deleted_user') }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -640,6 +636,7 @@ label {
 
             <!-- Расписание -->
             <div id="schedule-container" style="display: none;">
+                <!-- Десктопная таблица -->
                 <div class="table-wrapper" style="margin-top: 20px;">
                     <table class="table-striped sale-table" id="scheduleTable" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; border: 1px solid #e5e7eb;">
                         <thead>
@@ -657,7 +654,10 @@ label {
                     </table>
                 </div>
 
-
+                <!-- Мобильные карточки расписания -->
+                <div class="schedule-cards" id="scheduleCards" style="display: none;">
+                    <!-- Карточки будут добавлены через JavaScript -->
+                </div>
             </div>
 
             <!-- Сообщение о выборе мастера -->
@@ -672,7 +672,6 @@ label {
          <div class="settings-pane" id="tab-user-services" style="display: none;">
              <div class="clients-header">
                  <h1>{{ __('messages.master_services_management') }}</h1>
-                 <div id="notification"></div>
                  <div class="header-actions">
                      <button class="btn-add-client" onclick="addUserService()">
                          <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -706,10 +705,10 @@ label {
                      <tbody id="user-services-tbody">
                          @foreach($userServices as $userService)
                              <tr data-user-service-id="{{ $userService->id }}">
-                                 <td>{{ $userService->user->name }}</td>
-                                 <td>{{ $userService->service->name }}</td>
-                                 <td class="currency-amount" data-amount="{{ $userService->price ?: $userService->service->price }}">{!! $userService->price ? \App\Helpers\CurrencyHelper::format($userService->price) : \App\Helpers\CurrencyHelper::format($userService->service->price) . ' <small class="text-muted">(' . __('messages.base_price') . ')</small>' !!}</td>
-                                 <td>{!! $userService->duration ? \App\Helpers\TimeHelper::formatDuration($userService->duration) : ($userService->service->duration ? \App\Helpers\TimeHelper::formatDuration($userService->service->duration) . ' <small class="text-muted">(' . __('messages.base_duration') . ')</small>' : __('messages.not_specified_duration')) !!}</td>
+                                 <td>{{ $userService->user ? $userService->user->name : __('messages.deleted_user') }}</td>
+                                 <td>{{ $userService->service ? $userService->service->name : __('messages.deleted_service') }}</td>
+                                 <td class="currency-amount" data-amount="{{ $userService->price ?: ($userService->service ? $userService->service->price : 0) }}">{!! $userService->price ? \App\Helpers\CurrencyHelper::format($userService->price) : ($userService->service ? \App\Helpers\CurrencyHelper::format($userService->service->price) . ' <small class="text-muted">(' . __('messages.base_price') . ')</small>' : __('messages.not_specified_price')) !!}</td>
+                                 <td>{!! $userService->duration ? \App\Helpers\TimeHelper::formatDuration($userService->duration) : ($userService->service && $userService->service->duration ? \App\Helpers\TimeHelper::formatDuration($userService->service->duration) . ' <small class="text-muted">(' . __('messages.base_duration') . ')</small>' : __('messages.not_specified_duration')) !!}</td>
                                  <td>
                                      @if($userService->is_active_for_booking)
                                          <span class="badge badge-success">{{ __('messages.active') }}</span>
@@ -733,6 +732,66 @@ label {
                          @endforeach
                      </tbody>
                  </table>
+             </div>
+
+             <!-- Мобильные карточки услуг мастеров -->
+             <div class="user-services-cards" id="userServicesCards">
+                 @foreach($userServices as $userService)
+                     <div class="user-service-card" data-user-service-id="{{ $userService->id }}">
+                         <div class="user-service-card-header">
+                             <div class="user-service-main-info">
+                                 <div class="user-service-master">{{ $userService->user ? $userService->user->name : __('messages.deleted_user') }}</div>
+                                 <div class="user-service-name">{{ $userService->service ? $userService->service->name : __('messages.deleted_service') }}</div>
+                             </div>
+                             <div class="user-service-status">
+                                 @if($userService->is_active_for_booking)
+                                     <span class="status-badge active">{{ __('messages.active') }}</span>
+                                 @else
+                                     <span class="status-badge inactive">{{ __('messages.inactive') }}</span>
+                                 @endif
+                             </div>
+                         </div>
+                         <div class="user-service-info">
+                             <div class="user-service-info-item">
+                                 <div class="user-service-info-label">
+                                     <svg viewBox="0 0 24 24" fill="currentColor">
+                                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                     </svg>
+                                     {{ __('messages.price') }}
+                                 </div>
+                                 <div class="user-service-info-value currency-amount" data-amount="{{ $userService->price ?: ($userService->service ? $userService->service->price : 0) }}">
+                                     {!! $userService->price ? \App\Helpers\CurrencyHelper::format($userService->price) : ($userService->service ? \App\Helpers\CurrencyHelper::format($userService->service->price) . ' <small class="text-muted">(' . __('messages.base_price') . ')</small>' : __('messages.not_specified_price')) !!}
+                                 </div>
+                             </div>
+                             <div class="user-service-info-item">
+                                 <div class="user-service-info-label">
+                                     <svg viewBox="0 0 24 24" fill="currentColor">
+                                         <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                                         <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                                     </svg>
+                                     {{ __('messages.duration') }}
+                                 </div>
+                                 <div class="user-service-info-value">
+                                     {!! $userService->duration ? \App\Helpers\TimeHelper::formatDuration($userService->duration) : ($userService->service && $userService->service->duration ? \App\Helpers\TimeHelper::formatDuration($userService->service->duration) . ' <small class="text-muted">(' . __('messages.base_duration') . ')</small>' : __('messages.not_specified_duration')) !!}
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="user-service-actions">
+                             <button type="button" class="btn-edit" onclick="editUserService({{ $userService->id }})">
+                                 <svg viewBox="0 0 24 24" fill="currentColor">
+                                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                 </svg>
+                                 {{ __('messages.edit') }}
+                             </button>
+                             <button type="button" class="btn-delete" onclick="deleteUserService({{ $userService->id }})">
+                                 <svg viewBox="0 0 24 24" fill="currentColor">
+                                     <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                 </svg>
+                                 {{ __('messages.delete') }}
+                             </button>
+                         </div>
+                     </div>
+                 @endforeach
              </div>
 
              @if($userServices->count() == 0)
@@ -820,7 +879,7 @@ label {
                     <select class="form-control" id="modal-user-id" name="user_id" required>
                         <option value="">{{ __('messages.select_master') }}</option>
                         @foreach($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                                         <option value="{{ $user->id }}">{{ $user->name ?? __('messages.deleted_user') }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -830,7 +889,7 @@ label {
                     <select class="form-control" id="modal-service-id" name="service_id" required>
                         <option value="">{{ __('messages.select_service') }}</option>
                         @foreach($services as $service)
-                            <option value="{{ $service->id }}">{{ $service->name }}</option>
+                                                         <option value="{{ $service->id }}">{{ $service->name ?? __('messages.deleted_service') }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -1017,7 +1076,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showNotification('success', data.message);
+                    window.showNotification('success', data.message);
                     
                     // Обновляем URL если он изменился
                     if (data.booking_url) {
@@ -1032,11 +1091,11 @@ document.addEventListener('DOMContentLoaded', function() {
                          urlBlock.style.display = 'none';
                      }
                 } else {
-                    showNotification('error', 'Ошибка: ' + data.message);
+                    window.showNotification('error', 'Ошибка: ' + data.message);
                 }
             })
             .catch(error => {
-                showNotification('error', translations.error_saving);
+                window.showNotification('error', translations.error_saving);
             })
             .finally(() => {
                 submitBtn.disabled = false;
@@ -1124,6 +1183,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Добавляем обработчик изменения размера окна для расписания
+    window.addEventListener('resize', function() {
+        if (document.getElementById('schedule-container').style.display !== 'none') {
+            toggleScheduleView();
+        }
+    });
+    
     // Обработчики для модального окна подтверждения
     document.getElementById('cancelDelete').addEventListener('click', function() {
         closeConfirmationModal();
@@ -1147,6 +1213,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function loadUserSchedule(userId) {
+    // Очищаем предыдущие данные
+    scheduleData = {};
+    
     fetch(`{{ route('client.booking.get-user-schedule') }}?user_id=${userId}`)
         .then(response => response.json())
         .then(data => {
@@ -1156,18 +1225,19 @@ function loadUserSchedule(userId) {
                 renderScheduleTable();
             } else {
                 console.error('Ошибка загрузки расписания:', data.message);
-                showNotification('error', 'Ошибка загрузки расписания: ' + data.message);
+                window.showNotification('error', 'Ошибка загрузки расписания: ' + data.message);
             }
         })
         .catch(error => {
             console.error('Ошибка при загрузке расписания:', error);
-            showNotification('error', translations.error_loading_schedule);
+            window.showNotification('error', translations.error_loading_schedule);
         });
 }
 
 function showSchedule() {
     document.getElementById('schedule-container').style.display = 'block';
     document.getElementById('select-user-message').style.display = 'none';
+    toggleScheduleView(); // Переключаем на правильную версию
 }
 
 function hideSchedule() {
@@ -1175,9 +1245,34 @@ function hideSchedule() {
     document.getElementById('select-user-message').style.display = 'block';
 }
 
+// Функция для переключения между десктопной и мобильной версией расписания
+function toggleScheduleView() {
+    const tableWrapper = document.querySelector('#schedule-container .table-wrapper');
+    const scheduleCards = document.getElementById('scheduleCards');
+    
+    if (window.innerWidth <= 768) {
+        // Мобильная версия
+        if (tableWrapper) tableWrapper.style.display = 'none';
+        if (scheduleCards) scheduleCards.style.display = 'block';
+    } else {
+        // Десктопная версия
+        if (tableWrapper) tableWrapper.style.display = 'block';
+        if (scheduleCards) scheduleCards.style.display = 'none';
+    }
+}
+
 function renderScheduleTable() {
     const tbody = document.getElementById('schedule-tbody');
-    tbody.innerHTML = '';
+    const scheduleCards = document.getElementById('scheduleCards');
+    
+    // Очищаем содержимое
+    if (tbody) tbody.innerHTML = '';
+    if (scheduleCards) scheduleCards.innerHTML = '';
+    
+    // Проверяем, что данные есть
+    if (!scheduleData) {
+        return;
+    }
     
     const days = [
         { id: 1, name: '{{ __('messages.monday') }}' },
@@ -1198,6 +1293,9 @@ function renderScheduleTable() {
             booking_interval: null
         };
         
+
+        
+        // Создаем строку для десктопной таблицы
         const row = document.createElement('tr');
         row.innerHTML = `
             <td><strong>${day.name}</strong></td>
@@ -1233,7 +1331,78 @@ function renderScheduleTable() {
             </td>
         `;
         tbody.appendChild(row);
+        
+        // Создаем карточку для мобильной версии
+        const card = document.createElement('div');
+        card.className = 'schedule-card';
+        card.id = `schedule-card-${day.id}`;
+        card.innerHTML = `
+            <div class="schedule-card-header">
+                <div class="schedule-main-info">
+                    <h3 class="schedule-day-name">${day.name}</h3>
+                    <div class="schedule-status">
+                        ${dayData.is_working ? 
+                            '<span class="status-badge working">{{ __('messages.working') }}</span>' : 
+                            '<span class="status-badge day-off">{{ __('messages.day_off') }}</span>'
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="schedule-info">
+                <div class="schedule-info-item">
+                    <div class="schedule-info-label">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        {{ __('messages.working_hours') }}
+                    </div>
+                    <div class="schedule-info-value">
+                        ${dayData.is_working ? 
+                            `${dayData.start_time} - ${dayData.end_time}` : 
+                            '{{ __('messages.day_off') }}'
+                        }
+                    </div>
+                </div>
+                ${dayData.is_working && dayData.booking_interval ? `
+                <div class="schedule-info-item">
+                    <div class="schedule-info-label">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        {{ __('messages.interval') }}
+                    </div>
+                    <div class="schedule-info-value">
+                        ${dayData.booking_interval} {{ __('messages.minutes') }}
+                    </div>
+                </div>
+                ` : ''}
+                ${dayData.notes ? `
+                <div class="schedule-info-item">
+                    <div class="schedule-info-label">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                        </svg>
+                        {{ __('messages.notes') }}
+                    </div>
+                    <div class="schedule-info-value">
+                        ${dayData.notes}
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+            <div class="schedule-actions">
+                <button type="button" class="btn-edit" onclick="editDay(${day.id})" title="{{ __('messages.edit') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                    {{ __('messages.edit') }}
+                </button>
+            </div>
+        `;
+        scheduleCards.appendChild(card);
     });
+    
+
 }
 
 function editDay(dayOfWeek) {
@@ -1297,20 +1466,20 @@ function saveDaySchedule() {
     // Валидация
     if (isWorking && (!startTime || !endTime)) {
         console.error('Не указано время работы');
-        showNotification('error', 'Укажите время начала и окончания работы');
+        window.showNotification('error', 'Укажите время начала и окончания работы');
         return;
     }
     
     if (isWorking && startTime >= endTime) {
         console.error('Неправильное время работы');
-        showNotification('error', 'Время окончания должно быть позже времени начала');
+        window.showNotification('error', 'Время окончания должно быть позже времени начала');
         return;
     }
     
     // Валидация интервала
     if (!bookingInterval || bookingInterval < 15 || bookingInterval > 120) {
         console.error('Неправильный интервал');
-        showNotification('error', 'Интервал должен быть от 15 до 120 минут');
+        window.showNotification('error', 'Интервал должен быть от 15 до 120 минут');
         return;
     }
     
@@ -1326,7 +1495,7 @@ function saveDaySchedule() {
     // Закрываем модальное окно
     closeModal();
     
-    // Обновляем таблицу
+    // Обновляем таблицу и карточки
     renderScheduleTable();
     
     // Сразу сохраняем в базу данных
@@ -1345,15 +1514,15 @@ function saveDaySchedule() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showNotification('success', 'Расписание успешно сохранено');
+            window.showNotification('success', 'Расписание успешно сохранено');
         } else {
             console.error('Ошибка сохранения:', data.message);
-            showNotification('error', 'Ошибка: ' + data.message);
+            window.showNotification('error', 'Ошибка: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Ошибка при сохранении:', error);
-        showNotification('error', translations.error_saving);
+        window.showNotification('error', translations.error_saving);
     });
 }
 
@@ -1379,15 +1548,15 @@ function saveSchedule() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showNotification('success', data.message);
+            window.showNotification('success', data.message);
         } else {
             console.error('Ошибка сохранения:', data.message);
-            showNotification('error', 'Ошибка: ' + data.message);
+            window.showNotification('error', 'Ошибка: ' + data.message);
         }
     })
     .catch(error => {
         console.error('Ошибка при сохранении:', error);
-        showNotification('error', translations.error_saving);
+        window.showNotification('error', translations.error_saving);
     })
     .finally(() => {
         submitBtn.disabled = false;
@@ -1400,39 +1569,43 @@ function copyBookingUrl() {
     urlInput.select();
     document.execCommand('copy');
     
-    showNotification('success', 'Ссылка скопирована в буфер обмена');
+    window.showNotification('success', 'Ссылка скопирована в буфер обмена');
 }
 
-function showNotification(type, message) {
-    window.showNotification(type, message);
-}
+// Используем глобальную функцию уведомлений напрямую
 
-// Универсальная функция для показа уведомлений (как на других страницах)
-window.showNotification = function(type, message) {
-    let notification = document.getElementById('notification');
-    if (!notification) {
-        notification = document.createElement('div');
-        notification.id = 'notification';
-        document.body.appendChild(notification);
+// Функция для очистки ошибок
+function clearErrors(formId = 'addServiceForm') {
+    const form = document.getElementById(formId);
+    if (form) {
+        form.querySelectorAll('.error-message').forEach(el => el.remove());
+        form.querySelectorAll('.has-error').forEach(el => {
+            el.classList.remove('has-error');
+        });
     }
-    notification.className = `notification ${type} show shake`;
-    const icon = type === 'success'
-        ? '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>'
-        : '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>';
-    notification.innerHTML = `
-        <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-            ${icon}
-        </svg>
-        <span class="notification-message">${message}</span>
-    `;
-    notification.addEventListener('animationend', function handler() {
-        notification.classList.remove('shake');
-        notification.removeEventListener('animationend', handler);
+}
+
+// Функция для отображения ошибок
+function showErrors(errors, formId = 'addServiceForm') {
+    clearErrors(formId);
+
+    Object.entries(errors).forEach(([field, messages]) => {
+        const input = document.querySelector(`#${formId} [name="${field}"]`);
+        if (input) {
+            const inputGroup = input.closest('.form-group');
+            inputGroup.classList.add('has-error');
+
+            const errorElement = document.createElement('div');
+            errorElement.className = 'error-message';
+            errorElement.textContent = Array.isArray(messages) ? messages[0] : messages;
+            errorElement.style.color = '#f44336';
+            errorElement.style.marginTop = '5px';
+            errorElement.style.fontSize = '0.85rem';
+
+            inputGroup.appendChild(errorElement);
+        }
     });
-    setTimeout(() => {
-        notification.className = `notification ${type}`;
-    }, 3000);
-};
+}
 
 // Функции для управления услугами мастеров
 function addUserService() {
@@ -1462,6 +1635,8 @@ function editUserService(userServiceId) {
         if (data.success && data.userServices.length > 0) {
             const userService = data.userServices[0];
             
+            console.log('editUserService - Загруженные данные:', userService);
+            
             // Заполняем форму данными для редактирования
             document.getElementById('user-service-id').value = userService.id;
             document.getElementById('modal-user-id').value = userService.user_id;
@@ -1471,6 +1646,12 @@ function editUserService(userServiceId) {
             document.getElementById('modal-duration').value = userService.duration || '';
             document.getElementById('modal-description').value = userService.description || '';
             
+            console.log('editUserService - Заполненные поля формы:', {
+                price: document.getElementById('modal-price').value,
+                duration: document.getElementById('modal-duration').value,
+                description: document.getElementById('modal-description').value
+            });
+            
             // Обновляем заголовок модального окна
             document.getElementById('userServiceModalTitle').textContent = translations.edit_service_to_master;
             
@@ -1478,12 +1659,12 @@ function editUserService(userServiceId) {
             const modal = document.getElementById('userServiceModal');
             modal.style.display = 'block';
         } else {
-            showNotification('error', translations.error_loading_service_data);
+            window.showNotification('error', translations.error_loading_service_data);
         }
     })
     .catch(error => {
         console.error('Ошибка при загрузке данных:', error);
-        showNotification('error', translations.error_loading_data);
+        window.showNotification('error', translations.error_loading_data);
     });
 }
 
@@ -1509,7 +1690,7 @@ function confirmDeleteUserService() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showNotification('success', data.message);
+            window.showNotification('success', data.message);
             
             // Удаляем строку из таблицы
             const row = document.querySelector(`tr[data-user-service-id="${userServiceId}"]`);
@@ -1517,9 +1698,19 @@ function confirmDeleteUserService() {
                 row.remove();
             }
             
-            // Если таблица пустая, показываем сообщение
+            // Удаляем мобильную карточку
+            const card = document.querySelector(`.user-service-card[data-user-service-id="${userServiceId}"]`);
+            if (card) {
+                card.remove();
+            }
+            
+            // Если таблица и карточки пустые, показываем сообщение
             const tbody = document.getElementById('user-services-tbody');
-            if (tbody.children.length === 0) {
+            const userServicesCards = document.getElementById('userServicesCards');
+            const hasTableRows = tbody && tbody.children.length > 0;
+            const hasCards = userServicesCards && userServicesCards.children.length > 0;
+            
+            if (!hasTableRows && !hasCards) {
                 const noServicesMessage = document.querySelector('#tab-user-services .text-center');
                 if (noServicesMessage) {
                     noServicesMessage.style.display = 'block';
@@ -1529,7 +1720,7 @@ function confirmDeleteUserService() {
             // Обновляем статистику в первой вкладке
             updateStatistics();
         } else {
-            showNotification('error', 'Ошибка: ' + data.message);
+            window.showNotification('error', 'Ошибка: ' + data.message);
         }
         
         // Закрываем модальное окно подтверждения в любом случае
@@ -1537,7 +1728,7 @@ function confirmDeleteUserService() {
     })
     .catch(error => {
         console.error('Ошибка при удалении:', error);
-        showNotification('error', translations.error_deleting);
+        window.showNotification('error', translations.error_deleting);
         // Закрываем модальное окно подтверждения даже при ошибке
         closeConfirmationModal();
     });
@@ -1558,11 +1749,30 @@ function saveUserService() {
         description: formData.get('description') || null
     };
     
+    console.log('saveUserService - Отправляемые данные:', {
+        userServiceId: userServiceId,
+        data: data,
+        isEdit: !!userServiceId
+    });
+    
+    // Дополнительная отладка - проверяем значения полей формы
+    console.log('saveUserService - Значения полей формы:', {
+        price: document.getElementById('modal-price').value,
+        duration: document.getElementById('modal-duration').value,
+        description: document.getElementById('modal-description').value,
+        isActive: document.getElementById('modal-is-active').checked
+    });
+    
     const url = userServiceId ? 
         `{{ route('client.booking.user-services.update', '') }}/${userServiceId}` : 
         '{{ route("client.booking.user-services.store") }}';
     
     const method = userServiceId ? 'PUT' : 'POST';
+    
+    console.log('saveUserService - URL и метод:', {
+        url: url,
+        method: method
+    });
     
     fetch(url, {
         method: method,
@@ -1583,16 +1793,21 @@ function saveUserService() {
     })
     .then(data => {
         if (data.success) {
-            showNotification('success', data.message);
+            window.showNotification('success', data.message);
             closeUserServiceModal();
+            
+            console.log('Данные с сервера:', data);
+            console.log('userServiceId:', userServiceId);
             
             if (!userServiceId) {
                 // Если это новая запись, добавляем её в таблицу
                 if (data.userService) {
+                    console.log('Добавляем новую услугу:', data.userService);
                     addUserServiceToTable(data.userService);
                 }
             } else {
                 // Если это редактирование, обновляем существующую строку
+                console.log('Обновляем существующую услугу:', data.userService);
                 updateUserServiceInTable(data.userService);
             }
             
@@ -1603,22 +1818,23 @@ function saveUserService() {
             document.getElementById('user-service-form').reset();
             document.getElementById('modal-is-active').checked = true;
         } else {
-            showNotification('error', data.message || translations.error_saving);
+            window.showNotification('error', data.message || translations.error_saving);
         }
     })
     .catch(error => {
         console.error('Ошибка при сохранении:', error);
-        showNotification('error', error.message || translations.error_saving);
+        window.showNotification('error', error.message || translations.error_saving);
     });
 }
 
 // Функция для добавления новой услуги в таблицу
 function addUserServiceToTable(userService) {
     const tbody = document.getElementById('user-services-tbody');
+    const userServicesCards = document.getElementById('userServicesCards');
     
-    // Создаем новую строку
+    // Создаем новую строку для таблицы
     const row = document.createElement('tr');
-    row.setAttribute('data-user-service-id', userService.id); // Добавляем атрибут для идентификации
+    row.setAttribute('data-user-service-id', userService.id);
     
     // Создаем ячейки
     const nameCell = document.createElement('td');
@@ -1679,6 +1895,78 @@ function addUserServiceToTable(userService) {
     // Добавляем строку в таблицу
     tbody.appendChild(row);
     
+    // Создаем мобильную карточку
+    if (userServicesCards) {
+        const card = document.createElement('div');
+        card.className = 'user-service-card';
+        card.setAttribute('data-user-service-id', userService.id);
+        
+        const priceValue = userService.price ? 
+            (window.CurrencyManager ? window.CurrencyManager.formatAmount(userService.price) : (userService.price + ' ₽')) :
+            (window.CurrencyManager ? window.CurrencyManager.formatAmount(userService.service_price) : (userService.service_price + ' ₽')) + ' <small class="text-muted">({{ __('messages.base_price') }})</small>';
+        
+        const durationValue = userService.duration ? 
+            formatDuration(userService.duration) :
+            (userService.service_duration ? formatDuration(userService.service_duration) + ' <small class="text-muted">({{ __('messages.base_duration') }})</small>' : '{{ __('messages.not_specified_duration') }}');
+        
+        const statusBadge = userService.is_active_for_booking ? 
+            '<span class="status-badge active">{{ __('messages.active') }}</span>' :
+            '<span class="status-badge inactive">{{ __('messages.inactive') }}</span>';
+        
+        card.innerHTML = `
+            <div class="user-service-card-header">
+                <div class="user-service-main-info">
+                    <div class="user-service-master">${userService.user_name}</div>
+                    <div class="user-service-name">${userService.service_name}</div>
+                </div>
+                <div class="user-service-status">
+                    ${statusBadge}
+                </div>
+            </div>
+            <div class="user-service-info">
+                <div class="user-service-info-item">
+                    <div class="user-service-info-label">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        {{ __('messages.price') }}
+                    </div>
+                    <div class="user-service-info-value currency-amount" data-amount="${userService.price || userService.service_price}">
+                        ${priceValue}
+                    </div>
+                </div>
+                <div class="user-service-info-item">
+                    <div class="user-service-info-label">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                            <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        </svg>
+                        {{ __('messages.duration') }}
+                    </div>
+                    <div class="user-service-info-value">
+                        ${durationValue}
+                    </div>
+                </div>
+            </div>
+            <div class="user-service-actions">
+                <button type="button" class="btn-edit" onclick="editUserService(${userService.id})">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                    {{ __('messages.edit') }}
+                </button>
+                <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                    {{ __('messages.delete') }}
+                </button>
+            </div>
+        `;
+        
+        userServicesCards.appendChild(card);
+    }
+    
     // Скрываем сообщение "Нет настроенных услуг" если оно есть
     const noServicesMessage = document.querySelector('#tab-user-services .text-center');
     if (noServicesMessage) {
@@ -1688,7 +1976,18 @@ function addUserServiceToTable(userService) {
 
 // Функция для обновления услуги в таблице
 function updateUserServiceInTable(userService) {
+    console.log('updateUserServiceInTable вызвана с данными:', userService);
+    
     const row = document.querySelector(`tr[data-user-service-id="${userService.id}"]`);
+    const card = document.querySelector(`.user-service-card[data-user-service-id="${userService.id}"]`);
+    
+    console.log('Найденные элементы:', {
+        row: !!row,
+        card: !!card,
+        rowSelector: `tr[data-user-service-id="${userService.id}"]`,
+        cardSelector: `.user-service-card[data-user-service-id="${userService.id}"]`
+    });
+    
     if (row) {
         // Очищаем строку
         row.innerHTML = '';
@@ -1749,6 +2048,62 @@ function updateUserServiceInTable(userService) {
         row.appendChild(statusCell);
         row.appendChild(actionsCell);
     }
+    
+    // Обновляем мобильную карточку
+    if (card) {
+        console.log('Обновляем мобильную карточку для услуги:', userService.id);
+        
+        const priceValue = userService.price ? 
+            (window.CurrencyManager ? window.CurrencyManager.formatAmount(userService.price) : (userService.price + ' ₽')) :
+            (window.CurrencyManager ? window.CurrencyManager.formatAmount(userService.service_price) : (userService.service_price + ' ₽')) + ' <small class="text-muted">({{ __('messages.base_price') }})</small>';
+        
+        const durationValue = userService.duration ? 
+            formatDuration(userService.duration) :
+            (userService.service_duration ? formatDuration(userService.service_duration) + ' <small class="text-muted">({{ __('messages.base_duration') }})</small>' : '{{ __('messages.not_specified_duration') }}');
+        
+        const statusBadge = userService.is_active_for_booking ? 
+            '<span class="status-badge active">{{ __('messages.active') }}</span>' :
+            '<span class="status-badge inactive">{{ __('messages.inactive') }}</span>';
+        
+        // Обновляем содержимое карточки
+        const masterElement = card.querySelector('.user-service-master');
+        const serviceElement = card.querySelector('.user-service-name');
+        const statusElement = card.querySelector('.user-service-status');
+        const priceElement = card.querySelector('.user-service-info-value.currency-amount');
+        const durationElement = card.querySelector('.user-service-info-item:last-child .user-service-info-value');
+        
+        console.log('Найденные элементы:', {
+            masterElement: !!masterElement,
+            serviceElement: !!serviceElement,
+            statusElement: !!statusElement,
+            priceElement: !!priceElement,
+            durationElement: !!durationElement
+        });
+        
+        if (masterElement) {
+            masterElement.textContent = userService.user_name;
+            console.log('Обновлен мастер:', userService.user_name);
+        }
+        if (serviceElement) {
+            serviceElement.textContent = userService.service_name;
+            console.log('Обновлена услуга:', userService.service_name);
+        }
+        if (statusElement) {
+            statusElement.innerHTML = statusBadge;
+            console.log('Обновлен статус:', statusBadge);
+        }
+        if (priceElement) {
+            priceElement.setAttribute('data-amount', userService.price || userService.service_price);
+            priceElement.innerHTML = priceValue;
+            console.log('Обновлена цена:', priceValue);
+        }
+        if (durationElement) {
+            durationElement.innerHTML = durationValue;
+            console.log('Обновлена длительность:', durationValue);
+        }
+    } else {
+        console.log('Мобильная карточка не найдена для услуги:', userService.id);
+    }
 }
 
 // Функция для обновления статистики в первой вкладке
@@ -1760,15 +2115,23 @@ function updateStatistics() {
             'Accept': 'application/json',
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             updateMastersList(data.userServices);
             updateServicesList(data.userServices);
+        } else {
+            console.error('Ошибка при получении данных:', data.message || 'Неизвестная ошибка');
         }
     })
     .catch(error => {
         console.error('Ошибка при обновлении статистики:', error);
+        // Не показываем уведомление пользователю, так как это фоновое обновление
     });
 }
 
@@ -1955,5 +2318,40 @@ function searchUserServices(searchTerm) {
         }
     }
 }
+
+// Функция для переключения между десктопной и мобильной версией услуг мастеров
+function toggleUserServicesView() {
+    const tableWrapper = document.querySelector('#tab-user-services .table-wrapper');
+    const userServicesCards = document.getElementById('userServicesCards');
+    
+    console.log('toggleUserServicesView вызвана. Ширина окна:', window.innerWidth);
+    console.log('Найденные элементы:', {
+        tableWrapper: !!tableWrapper,
+        userServicesCards: !!userServicesCards
+    });
+    
+    if (window.innerWidth <= 768) {
+        // Мобильная версия
+        if (tableWrapper) tableWrapper.style.display = 'none';
+        if (userServicesCards) userServicesCards.style.display = 'grid';
+        console.log('Переключено на мобильную версию');
+    } else {
+        // Десктопная версия
+        if (tableWrapper) tableWrapper.style.display = 'block';
+        if (userServicesCards) userServicesCards.style.display = 'none';
+        console.log('Переключено на десктопную версию');
+    }
+}
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Переключаем вид услуг мастеров
+    toggleUserServicesView();
+    
+    // Добавляем обработчик изменения размера окна
+    window.addEventListener('resize', function() {
+        toggleUserServicesView();
+    });
+});
 </script>
 @endpush 

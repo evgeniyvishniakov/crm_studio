@@ -1506,6 +1506,150 @@
         gap: 4px;
     }
 
+    /* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ РАСПИСАНИЯ ===== */
+    .schedule-cards {
+        display: none;
+    }
+    
+    .schedule-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .schedule-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .schedule-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    
+    .schedule-card-header {
+        margin-bottom: 12px;
+    }
+    
+    .schedule-main-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .schedule-day-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0;
+    }
+    
+    .schedule-status {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-badge.working {
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: white;
+    }
+    
+    .status-badge.day-off {
+        background: linear-gradient(135deg, #6b7280, #9ca3af);
+        color: white;
+    }
+    
+    .schedule-info {
+        margin-bottom: 16px;
+    }
+    
+    .schedule-info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .schedule-info-item:last-child {
+        border-bottom: none;
+    }
+    
+    .schedule-info-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .schedule-info-label svg {
+        width: 16px;
+        height: 16px;
+        color: #3b82f6;
+    }
+    
+    .schedule-info-value {
+        color: #1f2937;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: right;
+    }
+    
+    .schedule-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+    
+    .schedule-actions .btn-edit {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .schedule-actions .btn-edit:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .schedule-actions .btn-edit svg {
+        width: 16px;
+        height: 16px;
+    }
+
     /* Пагинация для мобильных карточек товаров */
     #mobileProductsPagination {
         margin-top: 20px;
@@ -2269,6 +2413,290 @@
         gap: 8px !important;
         align-items: center !important;
     }
+    
+    /* Модальное окно услуг мастеров на мобильных устройствах */
+    #userServiceModal .modal-content {
+        max-width: 90%;
+        width: 90%;
+        margin: 5% auto;
+        padding: 20px;
+    }
+    
+    #userServiceModal .form-group select,
+    #userServiceModal .form-group input,
+    #userServiceModal .form-group textarea {
+        font-size: 16px;
+        padding: 12px 15px;
+        min-height: 45px;
+    }
+    
+    #userServiceModal .form-group select option,
+    #userServiceModal .form-group select optgroup {
+        font-size: 16px;
+        padding: 12px 15px;
+        min-height: 30px;
+    }
+}
+
+/* ===== СТИЛИ ДЛЯ СТРАНИЦЫ TELEGRAM УВЕДОМЛЕНИЙ ===== */
+.telegram-settings-header h1 {
+    font-size: 24px;
+    margin: 15px 0;
+    text-align: center;
+}
+
+.telegram-settings-content {
+    padding: 15px;
+}
+
+.telegram-settings-pane {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.telegram-settings-pane h5 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #1f2937;
+}
+
+.telegram-form-row {
+    flex-direction: column;
+    gap: 15px;
+}
+
+.telegram-form-col {
+    width: 100%;
+}
+
+.telegram-form-group {
+    margin-bottom: 20px;
+}
+
+.telegram-form-group label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.telegram-form-group input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.telegram-form-group input[type="text"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+.telegram-form-group .form-text {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 5px;
+}
+
+.telegram-switch-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.telegram-switch-label {
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.telegram-form-actions {
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.telegram-form-actions .btn {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.telegram-form-actions .btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.telegram-form-actions .btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+}
+
+.telegram-form-actions .btn-info {
+    background: linear-gradient(135deg, #17a2b8, #20c997);
+    color: white;
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+}
+
+.telegram-form-actions .btn-info:hover {
+    background: linear-gradient(135deg, #138496, #17a2b8);
+    transform: translateY(-1px);
+}
+
+.telegram-form-actions .btn-secondary {
+    background: linear-gradient(135deg, #6c757d, #868e96);
+    color: white;
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.telegram-form-actions .btn-secondary:hover {
+    background: linear-gradient(135deg, #5a6268, #6c757d);
+    transform: translateY(-1px);
+}
+
+.telegram-test-result {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.telegram-test-result.alert-success {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    border: 1px solid #10b981;
+    color: #065f46;
+}
+
+.telegram-test-result.alert-danger {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    border: 1px solid #ef4444;
+    color: #991b1b;
+}
+
+.telegram-test-result.alert-info {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    border: 1px solid #3b82f6;
+    color: #1e40af;
+}
+
+/* Кастомный переключатель для мобильных устройств */
+.telegram-custom-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.telegram-custom-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.telegram-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.telegram-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.telegram-custom-switch input:checked + .telegram-slider {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.telegram-custom-switch input:checked + .telegram-slider:before {
+    transform: translateX(26px);
+}
+
+/* Модальное окно инструкций для мобильных */
+.telegram-instructions-modal {
+    max-width: 95%;
+    width: 95%;
+    margin: 5% auto;
+    padding: 20px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.telegram-instructions-modal h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #1f2937;
+}
+
+.telegram-instructions-content {
+    text-align: left;
+    margin: 20px 0;
+}
+
+.telegram-instructions-content ol {
+    padding-left: 20px;
+}
+
+.telegram-instructions-content li {
+    margin-bottom: 10px;
+    line-height: 1.5;
+    color: #374151;
+}
+
+.telegram-instructions-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.telegram-instructions-buttons .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #6c757d, #868e96);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.telegram-instructions-buttons .btn:hover {
+    background: linear-gradient(135deg, #5a6268, #6c757d);
+    transform: translateY(-1px);
 }
 
 /* ===== МЕДИА-ЗАПРОС ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ ЭКРАНОВ (max-width: 480px) ===== */
@@ -2280,6 +2708,16 @@
     .products-header h1 {
         font-size: 20px;
         margin: 15px 0;
+    }
+    .navbar .main-menu{
+        padding-bottom: 0;
+    }
+    .settings-content{
+        padding: 15px;
+    }
+    .settings-pane h5{
+        margin: 0px 0 20px;
+        text-align: center;
     }
     .brands-header-actions .btn-add-service{
         padding: 9px 5px !important;
@@ -2313,6 +2751,29 @@
         width: 18px;
         height: 18px;
         left: 10px;
+    }
+    
+    /* Модальное окно услуг мастеров на маленьких экранах */
+    #userServiceModal .modal-content {
+        max-width: 95%;
+        width: 95%;
+        margin: 2% auto;
+        padding: 15px;
+    }
+    
+    #userServiceModal .form-group select,
+    #userServiceModal .form-group input,
+    #userServiceModal .form-group textarea {
+        font-size: 14px;
+        padding: 10px 12px;
+        min-height: 42px;
+    }
+    
+    #userServiceModal .form-group select option,
+    #userServiceModal .form-group select optgroup {
+        font-size: 14px;
+        padding: 10px 12px;
+        min-height: 24px;
     }
     
     .details-header {
@@ -2611,6 +3072,232 @@
 .client-card,
 .appointment-card {
     animation: slideInUp 0.3s ease-out;
+}
+
+/* Стили для карточек услуг мастеров */
+.user-services-cards {
+    display: none;
+    gap: 15px;
+    margin-top: 20px;
+    grid-template-columns: 1fr;
+}
+
+.user-service-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.user-service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #8b5cf6, #a855f7);
+    border-radius: 12px 12px 0 0;
+}
+
+.user-service-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.user-service-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.user-service-main-info {
+    flex: 1;
+}
+
+.user-service-master {
+    font-weight: 600;
+    font-size: 16px;
+    color: #1f2937;
+    margin-bottom: 4px;
+}
+
+.user-service-name {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.user-service-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-badge.active {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.status-badge.inactive {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+}
+
+.user-service-info {
+    margin-bottom: 16px;
+}
+
+.user-service-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.user-service-info-item:last-child {
+    border-bottom: none;
+}
+
+.user-service-info-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.user-service-info-label svg {
+    width: 16px;
+    height: 16px;
+    color: #9ca3af;
+}
+
+.user-service-info-value {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.user-service-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.user-service-actions .btn-edit {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.user-service-actions .btn-edit:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.user-service-actions .btn-delete {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.user-service-actions .btn-delete:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+.user-service-actions svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Стили для модального окна услуг мастеров */
+#userServiceModal .modal-content {
+    max-width: 500px;
+    width: 90%;
+    margin: 5% auto;
+    padding: 20px;
+}
+
+#userServiceModal .form-group select,
+#userServiceModal .form-group input,
+#userServiceModal .form-group textarea {
+    max-width: 100%;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: auto;
+    min-height: 38px;
+    max-width: 100%;
+    width: 100%;
+}
+
+#userServiceModal .form-group select option,
+#userServiceModal .form-group select optgroup {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    height: auto;
+    min-height: 20px;
+    max-width: 100%;
+    width: 100%;
+    word-wrap: break-word;
+    white-space: normal;
+    line-height: 1.2;
+    padding: 8px 12px;
+}
+
+#userServiceModal #modal-user-id,
+#userServiceModal #modal-service-id {
+    max-width: 100%;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#userServiceModal #modal-user-id:focus,
+#userServiceModal #modal-service-id:focus {
+    overflow: visible;
+    white-space: normal;
+    height: auto;
+    min-height: 38px;
+    max-width: 100%;
+    width: 100%;
 }
 
 /* Стили для пустого состояния */

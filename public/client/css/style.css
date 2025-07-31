@@ -612,14 +612,18 @@ aside.left-panel {
     width: 100%; }
   .navbar .navbar-nav {
     float: none;
-    position: relative; }
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap; }
     .navbar .navbar-nav > li {
       padding-left: 30px;
       padding-right: 30px; }
       .navbar .navbar-nav > li.active {
         background: #fafafa; }
     .navbar .navbar-nav li {
-      width: 100%; }
+      width: 100%;
+      flex-shrink: 0; }
       .navbar .navbar-nav li.active .menu-icon, .navbar .navbar-nav li:hover .toggle_nav_button:before,
       .navbar .navbar-nav li .toggle_nav_button.nav-open:before {
         color: #03a9f3; }
@@ -677,9 +681,14 @@ aside.left-panel {
           -webkit-box-shadow: none;
                   box-shadow: none;
           overflow-y: hidden;
-          padding: 0 0 0 35px; }
+          padding: 0 0 0 35px;
+          position: static;
+          width: 100%;
+          float: none; }
           .navbar .navbar-nav li.menu-item-has-children .sub-menu li {
-            position: relative; }
+            position: relative;
+            width: 100%;
+            float: none; }
           .navbar .navbar-nav li.menu-item-has-children .sub-menu i {
             color: #c8c9ce;
             float: left;
@@ -706,7 +715,9 @@ aside.left-panel {
         .navbar .navbar-nav li.menu-item-has-children.show .sub-menu {
           max-height: 1000px;
           opacity: 1;
-          position: static !important; }
+          position: static;
+          width: 100%;
+          float: none; }
 
 .navbar .navbar-nav > .active > a,
 .navbar .navbar-nav > .active > a:focus,
@@ -2637,12 +2648,16 @@ footer.site-footer {
       height: auto !important;
       overflow: visible !important;
       max-height: none !important;
-      min-height: auto !important; }
+      min-height: auto !important;
+      width: 100% !important;
+      float: none !important; }
     
     #left-panel .navbar .navbar-nav li.menu-item-has-children .sub-menu li {
       height: auto !important;
       min-height: auto !important;
-      overflow: visible !important; }
+      overflow: visible !important;
+      width: 100% !important;
+      float: none !important; }
 
   .orders {
     overflow: hidden; }

@@ -4,13 +4,13 @@
 
 @section('content')
 <div class="dashboard-container">
-    <div class="settings-header">
+    <div class="settings-header telegram-settings-header">
         <h1>{{ __('messages.telegram_settings') }}</h1>
         <div id="notification"></div>
     </div>
 
-    <div class="settings-content">
-        <div class="settings-pane">
+    <div class="settings-content telegram-settings-content">
+        <div class="settings-pane telegram-settings-pane">
             @if(session('success'))
                 <div class="alert alert-success">
                     {{ session('success') }}
@@ -33,9 +33,9 @@
 
                 <h5>{{ __('messages.telegram_settings') }}</h5>
                 
-                <div class="form-row form-row--2col">
-                    <div class="form-col">
-                        <div class="form-group mb-3">
+                <div class="form-row form-row--2col telegram-form-row">
+                    <div class="form-col telegram-form-col">
+                        <div class="form-group mb-3 telegram-form-group">
                             <label for="telegram_bot_token">{{ __('messages.telegram_bot_token') }}</label>
                             <input type="text" 
                                    class="form-control @error('telegram_bot_token') is-invalid @enderror" 
@@ -46,14 +46,14 @@
                             @error('telegram_bot_token')
                                 <div class="invalid-feedback">{{ $error }}</div>
                             @enderror
-                                                         <small class="form-text text-muted">
-                                 {{ __('messages.telegram_bot_token_hint') }}
-                             </small>
+                            <small class="form-text text-muted">
+                                {{ __('messages.telegram_bot_token_hint') }}
+                            </small>
                         </div>
                     </div>
 
-                    <div class="form-col">
-                        <div class="form-group mb-3">
+                    <div class="form-col telegram-form-col">
+                        <div class="form-group mb-3 telegram-form-group">
                             <label for="telegram_chat_id">{{ __('messages.telegram_chat_id') }}</label>
                             <input type="text" 
                                    class="form-control @error('telegram_chat_id') is-invalid @enderror" 
@@ -64,163 +64,69 @@
                             @error('telegram_chat_id')
                                 <div class="invalid-feedback">{{ $error }}</div>
                             @enderror
-                                                         <small class="form-text text-muted">
-                                 {{ __('messages.telegram_chat_id_hint') }}
-                             </small>
+                            <small class="form-text text-muted">
+                                {{ __('messages.telegram_chat_id_hint') }}
+                            </small>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-row form-row--2col">
-                    <div class="form-col">
-                        <div class="form-group mb-3">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" 
-                                       class="custom-control-input" 
-                                       id="telegram_notifications_enabled" 
-                                       name="telegram_notifications_enabled" 
-                                       value="1"
-                                       {{ old('telegram_notifications_enabled', $project->telegram_notifications_enabled) ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="telegram_notifications_enabled">
+                <div class="form-row form-row--2col telegram-form-row">
+                    <div class="form-col telegram-form-col">
+                        <div class="form-group mb-3 telegram-form-group">
+                            <div class="telegram-switch-container">
+                                <label class="telegram-switch-label" for="telegram_notifications_enabled">
                                     {{ __('messages.telegram_notifications_enabled') }}
                                 </label>
+                                <label class="telegram-custom-switch">
+                                    <input type="checkbox" 
+                                           id="telegram_notifications_enabled" 
+                                           name="telegram_notifications_enabled" 
+                                           value="1"
+                                           {{ old('telegram_notifications_enabled', $project->telegram_notifications_enabled) ? 'checked' : '' }}>
+                                    <span class="telegram-slider"></span>
+                                </label>
                             </div>
-                                                         <small class="form-text text-muted">
-                                 {{ __('messages.telegram_notifications_hint') }}
-                             </small>
+                            <small class="form-text text-muted">
+                                {{ __('messages.telegram_notifications_hint') }}
+                            </small>
                         </div>
                     </div>
-                    <div class="form-col"></div>
                 </div>
 
-                <div class="form-actions d-flex justify-content-between align-items-center">
+                <div class="form-actions d-flex justify-content-between align-items-center telegram-form-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="fa fa-save"></i> {{ __('messages.save') }}
                     </button>
-                    <div>
-                        <button type="button" class="btn btn-info" onclick="testConnection()">
-                            <i class="fa fa-exchange-alt"></i> {{ __('messages.test_connection') }}
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="showInstructions()">
-                            <i class="fa fa-question-circle"></i> {{ __('messages.instructions') }}
-                        </button>
-                    </div>
+                    <button type="button" class="btn btn-info" onclick="testConnection()">
+                        <i class="fa fa-exchange-alt"></i> {{ __('messages.test_connection') }}
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="showInstructions()">
+                        <i class="fa fa-question-circle"></i> {{ __('messages.instructions') }}
+                    </button>
                 </div>
             </form>
 
-            <div id="testResult" class="mt-3" style="display: none;"></div>
+            <div id="testResult" class="mt-3 telegram-test-result" style="display: none;"></div>
         </div>
     </div>
 </div>
 
 <!-- Модальное окно с инструкциями -->
 <div id="instructionsModal" class="confirmation-modal">
-    <div class="confirmation-content" style="max-width: 600px;">
+    <div class="confirmation-content telegram-instructions-modal">
         <h3>{{ __('messages.telegram_instructions') }}</h3>
-        <div id="instructionsContent" style="text-align: left; margin: 20px 0;">
+        <div id="instructionsContent" class="telegram-instructions-content">
             <!-- Инструкции будут загружены через AJAX -->
         </div>
-        <div class="confirmation-buttons d-flex justify-content-end">
-            <button onclick="closeInstructionsModal()" class="cancel-btn">{{ __('messages.close') }}</button>
+        <div class="confirmation-buttons telegram-instructions-buttons">
+            <button onclick="closeInstructionsModal()" class="btn">{{ __('messages.close') }}</button>
         </div>
     </div>
 </div>
 @endsection
 
-<style>
-/* Стили для модального окна подтверждения */
-.confirmation-modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
 
-.confirmation-modal .confirmation-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 400px;
-    border-radius: 8px;
-    text-align: center;
-}
-
-.confirmation-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.confirm-btn {
-    background-color: #dc3545;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.confirm-btn:hover {
-    background-color: #c82333;
-}
-
-.cancel-btn {
-    background-color: #6c757d;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.cancel-btn:hover {
-    background-color: #5a6268;
-}
-
-/* Стили для уведомлений уже подключены в notifications.css */
-
-/* Стили для кнопок в стиле системы (только для этой страницы) */
-.form-actions .btn-info {
-    background: linear-gradient(135deg, #17a2b8, #20c997) !important;
-    border-color: #17a2b8 !important;
-    color: #fff !important;
-    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3) !important;
-    border-radius: 12px !important;
-    padding: 0.75rem 1.5rem !important;
-}
-
-.form-actions .btn-info:active, .form-actions .btn-info:focus, .form-actions .btn-info:hover {
-    background: linear-gradient(135deg, #138496, #17a2b8) !important;
-    border-color: #138496 !important;
-    color: #fff !important;
-    border-radius: 12px !important;
-    padding: 0.75rem 1.5rem !important;
-}
-
-.form-actions .btn-secondary {
-    background: linear-gradient(135deg, #6c757d, #868e96) !important;
-    border-color: #6c757d !important;
-    color: #fff !important;
-    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3) !important;
-    border-radius: 12px !important;
-    padding: 0.75rem 1.5rem !important;
-}
-
-.form-actions .btn-secondary:active, .form-actions .btn-secondary:focus, .form-actions .btn-secondary:hover {
-    background: linear-gradient(135deg, #5a6268, #6c757d) !important;
-    border-color: #5a6268 !important;
-    color: #fff !important;
-    border-radius: 12px !important;
-    padding: 0.75rem 1.5rem !important;
-}
-</style>
 
 @push('scripts')
 <script>

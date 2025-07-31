@@ -30,10 +30,28 @@ class BookingManagementController extends Controller
         // Получаем мастеров проекта
         $users = User::where('project_id', $user->project_id)->get();
         
-        // Получаем все услуги мастеров для веб-записи
+        // Получаем все услуги мастеров для веб-записи (только с валидными связями)
         $userServices = \App\Models\Clients\UserService::whereHas('user', function($query) use ($user) {
             $query->where('project_id', $user->project_id);
+        })->whereHas('service', function($query) use ($user) {
+            $query->where('project_id', $user->project_id);
         })->with(['user', 'service'])->get();
+        
+        \Log::info('BookingManagementController::index - Загруженные userServices:', [
+            'count' => $userServices->count(),
+            'data' => $userServices->map(function($us) {
+                return [
+                    'id' => $us->id,
+                    'user_id' => $us->user_id,
+                    'service_id' => $us->service_id,
+                    'price' => $us->price,
+                    'duration' => $us->duration,
+                    'is_active_for_booking' => $us->is_active_for_booking,
+                    'user_name' => $us->user ? $us->user->name : 'null',
+                    'service_name' => $us->service ? $us->service->name : 'null'
+                ];
+            })->toArray()
+        ]);
         
         // Получаем расписание мастеров
         $userSchedules = UserSchedule::whereIn('user_id', $users->pluck('id'))

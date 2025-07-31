@@ -82,12 +82,12 @@ class UserServicesController extends Controller
             'message' => 'Услуга мастеру успешно добавлена',
             'userService' => [
                 'id' => $userService->id,
-                'user_name' => $userService->user->name,
-                'service_name' => $userService->service->name,
+                'user_name' => $userService->user ? $userService->user->name : 'Удаленный пользователь',
+                'service_name' => $userService->service ? $userService->service->name : 'Удаленная услуга',
                 'price' => $userService->price,
                 'duration' => $userService->duration,
-                'service_price' => $userService->service->price,
-                'service_duration' => $userService->service->duration,
+                'service_price' => $userService->service ? $userService->service->price : 0,
+                'service_duration' => $userService->service ? $userService->service->duration : null,
                 'is_active_for_booking' => $userService->is_active_for_booking
             ]
         ]);
@@ -98,7 +98,14 @@ class UserServicesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        \Log::info('UserServicesController::update - Входящие данные:', [
+            'id' => $id,
+            'request_data' => $request->all()
+        ]);
+
         $request->validate([
+            'user_id' => 'required|exists:admin_users,id',
+            'service_id' => 'required|exists:services,id',
             'is_active_for_booking' => 'boolean',
             'price' => 'nullable|numeric|min:0',
             'duration' => 'nullable|integer|min:1',
@@ -106,31 +113,67 @@ class UserServicesController extends Controller
         ]);
 
         $project = Auth::user()->project;
+        
+        // Проверяем, что новый пользователь и услуга принадлежат текущему проекту
+        $user = User::where('id', $request->user_id)
+                   ->where('project_id', $project->id)
+                   ->firstOrFail();
+        
+        $service = Service::where('id', $request->service_id)
+                         ->where('project_id', $project->id)
+                         ->firstOrFail();
         $userService = UserService::whereHas('user', function($query) use ($project) {
             $query->where('project_id', $project->id);
         })->findOrFail($id);
 
-        $userService->update([
+        \Log::info('UserServicesController::update - Найдена запись до обновления:', [
+            'userService' => $userService->toArray()
+        ]);
+        
+        // Проверяем, существует ли уже такая связь (кроме текущей записи)
+        $existingUserService = UserService::where('user_id', $request->user_id)
+                                         ->where('service_id', $request->service_id)
+                                         ->where('id', '!=', $id)
+                                         ->first();
+
+        if ($existingUserService) {
+            return response()->json([
+                'success' => false,
+                'message' => 'У мастера "' . $user->name . '" уже есть услуга "' . $service->name . '"'
+            ], 422);
+        }
+
+        $updateData = [
+            'user_id' => $request->user_id,
+            'service_id' => $request->service_id,
             'is_active_for_booking' => $request->boolean('is_active_for_booking', true),
             'price' => $request->price,
             'duration' => $request->duration,
             'description' => $request->description
-        ]);
+        ];
+
+        \Log::info('UserServicesController::update - Данные для обновления:', $updateData);
+
+        $userService->update($updateData);
 
         // Загружаем связи для получения имен
         $userService->load(['user', 'service']);
+
+        \Log::info('UserServicesController::update - Запись после обновления:', [
+            'userService' => $userService->toArray()
+        ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Услуга мастеру успешно обновлена',
             'userService' => [
                 'id' => $userService->id,
-                'user_name' => $userService->user->name,
-                'service_name' => $userService->service->name,
+                'user_name' => $userService->user ? $userService->user->name : 'Удаленный пользователь',
+                'service_name' => $userService->service ? $userService->service->name : 'Удаленная услуга',
                 'price' => $userService->price,
                 'duration' => $userService->duration,
-                'service_price' => $userService->service->price,
-                'service_duration' => $userService->service->duration,
+                'service_price' => $userService->service ? $userService->service->price : 0,
+                'service_duration' => $userService->service ? $userService->service->duration : null,
                 'is_active_for_booking' => $userService->is_active_for_booking
             ]
         ]);
@@ -174,9 +217,9 @@ class UserServicesController extends Controller
                         'id' => $us->id,
                         'user_id' => $us->user_id,
                         'service_id' => $us->service_id,
-                        'user_name' => $us->user->name,
-                        'service_name' => $us->service->name,
-                        'user_role' => $us->user->role,
+                        'user_name' => $us->user ? $us->user->name : 'Удаленный пользователь',
+                        'service_name' => $us->service ? $us->service->name : 'Удаленная услуга',
+                        'user_role' => $us->user ? ($us->user->role ?? 'user') : 'user',
                         'price' => $us->price,
                         'duration' => $us->duration,
                         'is_active_for_booking' => $us->is_active_for_booking
@@ -207,20 +250,29 @@ class UserServicesController extends Controller
             $query->where('project_id', $project->id);
         })->with(['user', 'service'])->findOrFail($id);
 
+        \Log::info('UserServicesController::show - Данные записи:', [
+            'id' => $id,
+            'userService' => $userService->toArray()
+        ]);
+
+        $responseData = [
+            'id' => $userService->id,
+            'user_id' => $userService->user_id,
+            'service_id' => $userService->service_id,
+            'user_name' => $userService->user ? $userService->user->name : 'Удаленный пользователь',
+            'service_name' => $userService->service ? $userService->service->name : 'Удаленная услуга',
+            'user_role' => $userService->user ? ($userService->user->role ?? 'user') : 'user',
+            'price' => $userService->price,
+            'duration' => $userService->duration,
+            'description' => $userService->description,
+            'is_active_for_booking' => $userService->is_active_for_booking
+        ];
+
+        \Log::info('UserServicesController::show - Отправляемые данные:', $responseData);
+
         return response()->json([
             'success' => true,
-            'userServices' => [[
-                'id' => $userService->id,
-                'user_id' => $userService->user_id,
-                'service_id' => $userService->service_id,
-                'user_name' => $userService->user->name,
-                'service_name' => $userService->service->name,
-                'user_role' => $userService->user->role,
-                'price' => $userService->price,
-                'duration' => $userService->duration,
-                'description' => $userService->description,
-                'is_active_for_booking' => $userService->is_active_for_booking
-            ]]
+            'userServices' => [$responseData]
         ]);
     }
 
