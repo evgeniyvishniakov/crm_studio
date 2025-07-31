@@ -40,9 +40,11 @@ class ProductCategoryController extends Controller
     {
         $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:product_categories,name,NULL,id,project_id,' . $currentProjectId,
             'description' => 'nullable|string',
             'status' => 'boolean'
+        ], [
+            'name.unique' => 'Категория с таким названием уже существует в вашем проекте.'
         ]);
         try {
             $data = $validated;
@@ -81,10 +83,13 @@ class ProductCategoryController extends Controller
 
     public function update(Request $request, ProductCategory $productCategory)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:product_categories,name,' . $productCategory->id . ',id,project_id,' . $currentProjectId,
             'description' => 'nullable|string',
             'status' => 'boolean'
+        ], [
+            'name.unique' => 'Категория с таким названием уже существует в вашем проекте.'
         ]);
         try {
             $productCategory->update($validated);

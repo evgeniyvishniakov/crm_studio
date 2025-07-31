@@ -40,11 +40,13 @@ class ProductBrandController extends Controller
     {
         $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:product_brands,name,NULL,id,project_id,' . $currentProjectId,
             'country' => 'nullable|string|max:100',
             'website' => 'nullable|url|max:255',
             'description' => 'nullable|string',
             'status' => 'boolean'
+        ], [
+            'name.unique' => 'Бренд с таким названием уже существует в вашем проекте.'
         ]);
         try {
             $data = $validated;
@@ -83,12 +85,15 @@ class ProductBrandController extends Controller
 
     public function update(Request $request, ProductBrand $productBrand)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:product_brands,name,' . $productBrand->id . ',id,project_id,' . $currentProjectId,
             'country' => 'nullable|string|max:100',
             'website' => 'nullable|url|max:255',
             'description' => 'nullable|string',
             'status' => 'boolean'
+        ], [
+            'name.unique' => 'Бренд с таким названием уже существует в вашем проекте.'
         ]);
         try {
             $productBrand->update($validated);

@@ -82,12 +82,14 @@ class ProductController extends Controller
         $currentProjectId = auth()->user()->project_id;
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|max:255|unique:products,name,NULL,id,project_id,' . $currentProjectId,
                 'category_id' => 'required|exists:product_categories,id',
                 'brand_id' => 'required|exists:product_brands,id',
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'purchase_price' => 'required|numeric|min:0',
                 'retail_price' => 'required|numeric|min:0',
+            ], [
+                'name.unique' => 'Товар с таким названием уже существует в вашем проекте.'
             ]);
 
             if ($request->hasFile('photo')) {
@@ -129,14 +131,17 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        $currentProjectId = auth()->user()->project_id;
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|max:255|unique:products,name,' . $product->id . ',id,project_id,' . $currentProjectId,
                 'category_id' => 'required|exists:product_categories,id',
                 'brand_id' => 'required|exists:product_brands,id',
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'purchase_price' => 'required|numeric|min:0',
                 'retail_price' => 'required|numeric|min:0',
+            ], [
+                'name.unique' => 'Товар с таким названием уже существует в вашем проекте.'
             ]);
 
             if ($request->hasFile('photo')) {

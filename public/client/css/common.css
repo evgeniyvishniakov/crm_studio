@@ -73,6 +73,40 @@
     width: 100%;
 }
 
+/* Стили для услуг - кнопка и поиск в один ряд */
+.services-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.services-header-actions .search-box {
+    flex: 1;
+}
+
+/* Стили для размещения кнопки и поиска категорий в один ряд */
+.categories-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.categories-header-actions .search-box {
+    flex: 1;
+}
+
+.brands-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.brands-header-actions .search-box {
+    flex: 1;
+    margin-left: 15px;
+}
+
 @media (min-width: 768px) {
     .header-actions {
         width: auto;
@@ -2084,6 +2118,20 @@ input[type="date"]:focus {
     
     /* Стили для анимации удаления карточек товаров */
     .product-card.row-deleting {
+        opacity: 0.5;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
+    }
+    
+    /* Стили для анимации удаления карточек услуг */
+    .service-card.row-deleting {
+        opacity: 0.5;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
+    }
+    
+    /* Стили для анимации удаления карточек категорий */
+    .category-card.row-deleting {
         opacity: 0.5;
         transform: scale(0.8);
         transition: all 0.3s ease;
