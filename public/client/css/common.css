@@ -107,6 +107,30 @@
     margin-left: 15px;
 }
 
+.suppliers-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.suppliers-header-actions .search-box {
+    flex: 1;
+    margin-left: 15px;
+}
+
+.client-types-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.client-types-header-actions .search-box {
+    flex: 1;
+    margin-left: 15px;
+}
+
 @media (min-width: 768px) {
     .header-actions {
         width: auto;
@@ -2132,6 +2156,20 @@ input[type="date"]:focus {
     
     /* Стили для анимации удаления карточек категорий */
     .category-card.row-deleting {
+        opacity: 0.5;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
+    }
+    
+    /* Стили для анимации удаления карточек поставщиков */
+    .supplier-card.row-deleting {
+        opacity: 0.5;
+        transform: scale(0.8);
+        transition: all 0.3s ease;
+    }
+    
+    /* Стили для анимации удаления карточек типов клиентов */
+    .client-type-card.row-deleting {
         opacity: 0.5;
         transform: scale(0.8);
         transition: all 0.3s ease;

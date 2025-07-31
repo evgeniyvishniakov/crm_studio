@@ -6,7 +6,7 @@
         <div class="services-header">
             <h1>{{ __('messages.client_types') }}</h1>
             {{-- Удаляю старый notification-контейнер и стили уведомлений, теперь используется универсальный notification --}}
-            <div class="header-actions">
+            <div class="client-types-header-actions">
                 <button class="btn-add-service" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -18,11 +18,12 @@
                     <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                     </svg>
-                    <input type="text" placeholder="{{ __('messages.search') }}...">
+                    <input type="text" id="searchInput" placeholder="{{ __('messages.search') }}..." onkeyup="handleSearch()">
                 </div>
             </div>
         </div>
 
+        <!-- Десктопная таблица -->
         <div class="table-wrapper">
             <table class=" table-striped services-table">
                 <thead>
@@ -74,6 +75,67 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Мобильные карточки типов клиентов -->
+        <div class="client-types-cards" id="clientTypesCards" style="display: none;">
+            @foreach($clientTypes as $clientType)
+                <div class="client-type-card" id="client-type-card-{{ $clientType->id }}">
+                    <div class="client-type-card-header">
+                        <div class="client-type-main-info">
+                            <h3 class="client-type-name">{{ $clientType->translated_name }}</h3>
+                            <span class="status-badge {{ $clientType->status ? 'active' : 'inactive' }}">
+                                {{ $clientType->status ? __('messages.active') : __('messages.inactive') }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="client-type-info">
+                        <div class="client-type-info-item">
+                            <span class="client-type-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                                Описание
+                            </span>
+                            <span class="client-type-info-value">{{ $clientType->description ?? '—' }}</span>
+                        </div>
+                        <div class="client-type-info-item">
+                            <span class="client-type-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd" />
+                                </svg>
+                                Скидка
+                            </span>
+                            <span class="client-type-info-value">
+                                @if($clientType->discount !== null)
+                                    {{ $clientType->discount == (int)$clientType->discount ? (int)$clientType->discount : number_format($clientType->discount, 2, '.', '') }}%
+                                @else
+                                    —
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+                    @if(!$clientType->is_global)
+                        <div class="client-type-actions">
+                            <button class="btn-edit" title="Редактировать" onclick="openEditModal({{ $clientType->id }})">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                                Изменить
+                            </button>
+                            <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation({{ $clientType->id }})">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                Удалить
+                            </button>
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Пагинация для мобильных карточек -->
+        <div id="mobileClientTypesPagination" style="display: none;"></div>
     </div>
 
     <!-- Модальное окно для добавления типа клиента -->
@@ -330,6 +392,67 @@
                         // Добавляем новую строку в начало таблицы
                         servicesTableBody.insertBefore(newRow, servicesTableBody.firstChild);
 
+                        // Создаем новую карточку для мобильной версии
+                        const clientTypesCards = document.getElementById('clientTypesCards');
+                        const newCard = document.createElement('div');
+                        newCard.className = 'client-type-card';
+                        newCard.id = `client-type-card-${data.clientType.id}`;
+                        
+                        const discountText = data.clientType.discount !== null ? 
+                            (Number(parseFloat(data.clientType.discount)) % 1 === 0 ? 
+                                Number(parseFloat(data.clientType.discount)) : 
+                                parseFloat(data.clientType.discount).toFixed(2)) + '%' : '—';
+                        
+                        newCard.innerHTML = `
+                            <div class="client-type-card-header">
+                                <div class="client-type-main-info">
+                                    <h3 class="client-type-name">${getTranslatedClientTypeName(data.clientType.name)}</h3>
+                                    <span class="status-badge ${data.clientType.status ? 'active' : 'inactive'}">
+                                        ${data.clientType.status ? '{{ __('messages.active') }}' : '{{ __('messages.inactive') }}'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="client-type-info">
+                                <div class="client-type-info-item">
+                                    <span class="client-type-info-label">
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        </svg>
+                                        Описание
+                                    </span>
+                                    <span class="client-type-info-value">${data.clientType.description ?? '—'}</span>
+                                </div>
+                                <div class="client-type-info-item">
+                                    <span class="client-type-info-label">
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd" />
+                                        </svg>
+                                        Скидка
+                                    </span>
+                                    <span class="client-type-info-value">${discountText}</span>
+                                </div>
+                            </div>
+                            <div class="client-type-actions">
+                                <button class="btn-edit" title="Редактировать" onclick="openEditModal(${data.clientType.id})">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                    Изменить
+                                </button>
+                                <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${data.clientType.id})">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    Удалить
+                                </button>
+                            </div>
+                        `;
+
+                        // Добавляем новую карточку в начало мобильного списка
+                        if (clientTypesCards) {
+                            clientTypesCards.insertBefore(newCard, clientTypesCards.firstChild);
+                        }
+
                         // Показываем уведомление
                         showNotification('success', `{{ __('messages.client_type_successfully_added') }} "${getTranslatedClientTypeName(data.clientType.name)}"`);
 
@@ -358,13 +481,26 @@
         let currentDeleteRow = null;
         let currentDeleteId = null;
 
+        // Функция для показа модального окна подтверждения удаления
+        function showDeleteConfirmation(clientTypeId) {
+            currentDeleteRow = null;
+            currentDeleteId = clientTypeId;
+            document.getElementById('confirmationModal').style.display = 'block';
+        }
+
         // Обработчик клика по кнопке удаления
         document.addEventListener('click', function(e) {
             if (e.target.closest('.btn-delete')) {
-                const row = e.target.closest('tr');
-                const clientTypeId = row.id.split('-')[2]; // client-type-1 => 1
+                const element = e.target.closest('tr') || e.target.closest('.client-type-card');
+                let clientTypeId;
+                
+                if (element.classList.contains('client-type-card')) {
+                    clientTypeId = element.id.split('-')[3]; // client-type-card-{id}
+                } else {
+                    clientTypeId = element.id.split('-')[2]; // client-type-{id}
+                }
 
-                currentDeleteRow = row;
+                currentDeleteRow = element;
                 currentDeleteId = clientTypeId;
 
                 document.getElementById('confirmationModal').style.display = 'block';
@@ -386,8 +522,22 @@
         });
 
         // Функция для удаления типа клиента
-        function deleteClientType(row, clientTypeId) {
-            row.classList.add('row-deleting');
+        function deleteClientType(rowOrId, clientTypeId) {
+            let row;
+            let card;
+            
+            if (typeof rowOrId === 'object' && rowOrId !== null && 'classList' in rowOrId) {
+                // Вызов с двумя аргументами: (row, clientTypeId)
+                row = rowOrId;
+            } else {
+                // Вызов с одним аргументом: (clientTypeId)
+                clientTypeId = rowOrId;
+                row = document.getElementById('client-type-' + clientTypeId);
+                card = document.getElementById('client-type-card-' + clientTypeId);
+            }
+            
+            if (row) row.classList.add('row-deleting');
+            if (card) card.classList.add('row-deleting');
 
             fetch(`/client-types/${clientTypeId}`, {
                 method: 'DELETE',
@@ -406,13 +556,15 @@
                 .then(data => {
                     if (data.success) {
                         setTimeout(() => {
-                            row.remove();
+                            if (row) row.remove();
+                            if (card) card.remove();
                             showNotification('success', '{{ __('messages.client_type_successfully_deleted') }}');
                         }, 300);
                     }
                 })
                 .catch(error => {
-                    row.classList.remove('row-deleting');
+                    if (row) row.classList.remove('row-deleting');
+                    if (card) card.classList.remove('row-deleting');
                     if (error.status === 403 && error.message) {
                         showNotification('error', error.message);
                     } else {
@@ -442,8 +594,14 @@
         // Обработчик клика по кнопке редактирования
         document.addEventListener('click', function(e) {
             if (e.target.closest('.btn-edit')) {
-                const row = e.target.closest('tr');
-                const clientTypeId = row.id.split('-')[2];
+                const element = e.target.closest('tr') || e.target.closest('.client-type-card');
+                let clientTypeId;
+                
+                if (element.classList.contains('client-type-card')) {
+                    clientTypeId = element.id.split('-')[3]; // client-type-card-{id}
+                } else {
+                    clientTypeId = element.id.split('-')[2]; // client-type-{id}
+                }
                 openEditModal(clientTypeId);
             }
         });
@@ -516,7 +674,287 @@
                     statusBadge.textContent = clientType.status ? '{{ __('messages.active') }}' : '{{ __('messages.inactive') }}';
                 }
             }
+            
+            // Обновляем карточку типа клиента в мобильной версии
+            const card = document.getElementById(`client-type-card-${clientType.id}`);
+            if (card) {
+                // Обновляем название
+                const nameElement = card.querySelector('.client-type-name');
+                if (nameElement) {
+                    nameElement.textContent = getTranslatedClientTypeName(clientType.name);
+                }
+                
+                // Обновляем статус
+                const statusBadge = card.querySelector('.status-badge');
+                if (statusBadge) {
+                    statusBadge.className = `status-badge ${clientType.status ? 'active' : 'inactive'}`;
+                    statusBadge.textContent = clientType.status ? '{{ __('messages.active') }}' : '{{ __('messages.inactive') }}';
+                }
+                
+                // Обновляем описание
+                const descriptionElement = card.querySelector('.client-type-info-item:nth-child(1) .client-type-info-value');
+                if (descriptionElement) {
+                    descriptionElement.textContent = clientType.description ?? '—';
+                }
+                
+                // Обновляем скидку
+                const discountElement = card.querySelector('.client-type-info-item:nth-child(2) .client-type-info-value');
+                if (discountElement) {
+                    discountElement.textContent = clientType.discount !== null ? (Number(parseFloat(clientType.discount)) % 1 === 0 ? Number(parseFloat(clientType.discount)) : parseFloat(clientType.discount).toFixed(2)) + '%' : '—';
+                }
+            }
         }
+
+        // Функция для загрузки типов клиентов
+        function loadClientTypes() {
+            fetch('/client-types?ajax=1')
+                .then(response => response.json())
+                .then(data => {
+                    updateTable(data.data);
+                    renderPagination(data.meta);
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки типов клиентов:', error);
+                });
+        }
+
+        // Функция для обновления таблицы и карточек
+        function updateTable(clientTypes) {
+            const tbody = document.getElementById('servicesTableBody');
+            const clientTypesCards = document.getElementById('clientTypesCards');
+            
+            tbody.innerHTML = '';
+            clientTypesCards.innerHTML = '';
+
+            clientTypes.forEach(clientType => {
+                // Создаем строку для десктопной таблицы
+                const row = document.createElement('tr');
+                row.id = `client-type-${clientType.id}`;
+                
+                const discountText = clientType.discount !== null ? 
+                    (Number(parseFloat(clientType.discount)) % 1 === 0 ? 
+                        Number(parseFloat(clientType.discount)) : 
+                        parseFloat(clientType.discount).toFixed(2)) + '%' : '—';
+                
+                row.innerHTML = `
+                    <td>${getTranslatedClientTypeName(clientType.name)}</td>
+                    <td>${clientType.description ?? '—'}</td>
+                    <td>${discountText}</td>
+                    <td>
+                        <span class="status-badge ${clientType.status ? 'active' : 'inactive'}">
+                            ${clientType.status ? '{{ __('messages.active') }}' : '{{ __('messages.inactive') }}'}
+                        </span>
+                    </td>
+                    <td class="actions-cell">
+                        ${!clientType.is_global ? `
+                            <button class="btn-edit">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                                {{ __('messages.edit_short') }}
+                            </button>
+                            <button class="btn-delete">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                {{ __('messages.delete') }}
+                            </button>
+                        ` : `
+                            <span class="text-muted">{{ __('messages.system') }}</span>
+                        `}
+                    </td>
+                `;
+                tbody.appendChild(row);
+
+                // Создаем карточку для мобильной версии
+                const card = document.createElement('div');
+                card.className = 'client-type-card';
+                card.id = `client-type-card-${clientType.id}`;
+                
+                card.innerHTML = `
+                    <div class="client-type-card-header">
+                        <div class="client-type-main-info">
+                            <h3 class="client-type-name">${getTranslatedClientTypeName(clientType.name)}</h3>
+                            <span class="status-badge ${clientType.status ? 'active' : 'inactive'}">
+                                ${clientType.status ? '{{ __('messages.active') }}' : '{{ __('messages.inactive') }}'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="client-type-info">
+                        <div class="client-type-info-item">
+                            <span class="client-type-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                                Описание
+                            </span>
+                            <span class="client-type-info-value">${clientType.description ?? '—'}</span>
+                        </div>
+                        <div class="client-type-info-item">
+                            <span class="client-type-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd" />
+                                </svg>
+                                Скидка
+                            </span>
+                            <span class="client-type-info-value">${discountText}</span>
+                        </div>
+                    </div>
+                    ${!clientType.is_global ? `
+                        <div class="client-type-actions">
+                            <button class="btn-edit" title="Редактировать" onclick="openEditModal(${clientType.id})">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                                Изменить
+                            </button>
+                            <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${clientType.id})">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                Удалить
+                            </button>
+                        </div>
+                    ` : ''}
+                `;
+                
+                clientTypesCards.appendChild(card);
+            });
+        }
+
+        // Функция для рендеринга пагинации
+        function renderPagination(meta) {
+            let paginationHtml = '';
+            if (meta.last_page > 1) {
+                paginationHtml += '<div class="pagination">';
+                // Кнопка "<"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}>&lt;</button>`;
+
+                let pages = [];
+                if (meta.last_page <= 7) {
+                    // Показываем все страницы
+                    for (let i = 1; i <= meta.last_page; i++) pages.push(i);
+                } else {
+                    // Всегда показываем первую
+                    pages.push(1);
+                    // Если текущая страница > 4, показываем троеточие
+                    if (meta.current_page > 4) pages.push('...');
+                    // Показываем 2 страницы до и после текущей
+                    let start = Math.max(2, meta.current_page - 2);
+                    let end = Math.min(meta.last_page - 1, meta.current_page + 2);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    // Если текущая страница < last_page - 3, показываем троеточие
+                    if (meta.current_page < meta.last_page - 3) pages.push('...');
+                    // Всегда показываем последнюю
+                    pages.push(meta.last_page);
+                }
+                pages.forEach(p => {
+                    if (p === '...') {
+                        paginationHtml += `<span class="page-ellipsis">...</span>`;
+                    } else {
+                        paginationHtml += `<button class="page-btn${p === meta.current_page ? ' active' : ''}" data-page="${p}">${p}</button>`;
+                    }
+                });
+                // Кнопка ">"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;</button>`;
+                paginationHtml += '</div>';
+            }
+            
+            // Обновляем мобильную пагинацию
+            let mobilePagContainer = document.getElementById('mobileClientTypesPagination');
+            if (mobilePagContainer) {
+                mobilePagContainer.innerHTML = paginationHtml;
+            }
+
+            // Навешиваем обработчики
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    if (!isNaN(page) && !this.disabled) {
+                        loadPage(page, searchQuery);
+                    }
+                });
+            });
+        }
+
+        // Функция для переключения между десктопной и мобильной версией
+        function toggleMobileView() {
+            const tableWrapper = document.querySelector('.table-wrapper');
+            const clientTypesCards = document.getElementById('clientTypesCards');
+            const mobileClientTypesPagination = document.getElementById('mobileClientTypesPagination');
+            
+            console.log('toggleMobileView called, window width:', window.innerWidth);
+            console.log('tableWrapper:', tableWrapper);
+            console.log('clientTypesCards:', clientTypesCards);
+            
+            if (window.innerWidth <= 768) {
+                // Мобильная версия
+                if (tableWrapper) {
+                    tableWrapper.style.display = 'none';
+                    console.log('Table hidden');
+                }
+                if (clientTypesCards) {
+                    clientTypesCards.style.display = 'block';
+                    console.log('Cards shown');
+                }
+                if (mobileClientTypesPagination) mobileClientTypesPagination.style.display = 'block';
+            } else {
+                // Десктопная версия
+                if (tableWrapper) {
+                    tableWrapper.style.display = 'block';
+                    console.log('Table shown');
+                }
+                if (clientTypesCards) {
+                    clientTypesCards.style.display = 'none';
+                    console.log('Cards hidden');
+                }
+                if (mobileClientTypesPagination) mobileClientTypesPagination.style.display = 'none';
+            }
+        }
+
+        // Функция для поиска
+        function handleSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim();
+            searchQuery = query;
+            loadPage(1, query);
+        }
+
+        // Функция для загрузки страницы
+        function loadPage(page, search = '') {
+            const params = new URLSearchParams();
+            if (page > 1) params.append('page', page);
+            if (search) params.append('search', search);
+            
+            fetch(`/client-types?${params.toString()}&ajax=1`)
+                .then(response => response.json())
+                .then(data => {
+                    updateTable(data.data);
+                    renderPagination(data.meta);
+                })
+                .catch(error => {
+                    console.error('Ошибка загрузки данных:', error);
+                });
+        }
+
+        // Инициализация
+        let searchQuery = '';
+        let isInitialized = false;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!isInitialized) {
+                isInitialized = true;
+                console.log('DOM loaded, checking elements...');
+                console.log('clientTypesCards:', document.getElementById('clientTypesCards'));
+                console.log('Cards count:', document.querySelectorAll('.client-type-card').length);
+                toggleMobileView(); // Переключаем на правильную версию
+            }
+        });
+
+        // Обработчик изменения размера окна
+        window.addEventListener('resize', function() {
+            toggleMobileView();
+        });
     </script>
 
     <style>

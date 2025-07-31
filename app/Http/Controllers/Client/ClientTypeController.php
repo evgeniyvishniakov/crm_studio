@@ -9,13 +9,39 @@ use Illuminate\Support\Facades\Validator;
 
 class ClientTypeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
-        $clientTypes = ClientType::where(function($q) use ($currentProjectId) {
+        $query = ClientType::where(function($q) use ($currentProjectId) {
             $q->where('project_id', $currentProjectId)
               ->orWhere('is_global', true);
-        })->get();
+        });
+
+        if ($request->has('search') && $request->search !== '') {
+            $search = $request->search;
+            $query->where('name', 'like', "%$search%");
+        }
+
+        if ($request->ajax()) {
+            $clientTypes = $query->get();
+            
+            // Добавляем переведенные названия для каждого типа клиента
+            foreach ($clientTypes as $clientType) {
+                $clientType->translated_name = $clientType->translated_name;
+            }
+            
+            return response()->json([
+                'data' => $clientTypes,
+                'meta' => [
+                    'current_page' => 1,
+                    'last_page' => 1,
+                    'per_page' => count($clientTypes),
+                    'total' => count($clientTypes),
+                ],
+            ]);
+        }
+
+        $clientTypes = $query->get();
         
         // Добавляем переведенные названия для каждого типа клиента
         foreach ($clientTypes as $clientType) {
@@ -29,10 +55,12 @@ class ClientTypeController extends Controller
     {
         $currentProjectId = auth()->user()->project_id;
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:client_types,name,NULL,id,project_id,' . $currentProjectId,
             'description' => 'nullable|string',
             'discount' => 'nullable|numeric|min:0|max:100',
             'status' => 'boolean'
+        ], [
+            'name.unique' => 'Тип клиента с таким названием уже существует в вашем проекте.'
         ]);
 
         if ($validator->fails()) {
@@ -73,11 +101,14 @@ class ClientTypeController extends Controller
 
     public function update(Request $request, $id)
     {
+        $currentProjectId = auth()->user()->project_id;
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:client_types,name,' . $id . ',id,project_id,' . $currentProjectId,
             'description' => 'nullable|string',
             'discount' => 'nullable|numeric|min:0|max:100',
             'status' => 'boolean'
+        ], [
+            'name.unique' => 'Тип клиента с таким названием уже существует в вашем проекте.'
         ]);
 
         if ($validator->fails()) {

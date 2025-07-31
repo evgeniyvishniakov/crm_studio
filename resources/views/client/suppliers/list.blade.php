@@ -11,7 +11,7 @@
                 </svg>
                 <span class="notification-message">{{ __('messages.supplier_successfully_added') }}!</span>
             </div>
-            <div class="header-actions">
+            <div class="suppliers-header-actions">
                 <button class="btn-add-service" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -28,6 +28,7 @@
             </div>
         </div>
 
+        <!-- Десктопная таблица -->
         <div class="table-wrapper">
             <table class="table-striped services-table">
                 <thead>
@@ -86,6 +87,14 @@
             <!-- Пагинация будет добавлена через JavaScript -->
             <div id="suppliersPagination"></div>
         </div>
+
+        <!-- Мобильные карточки поставщиков -->
+        <div class="suppliers-cards" id="suppliersCards" style="display: none;">
+            <!-- Карточки будут добавлены через JavaScript -->
+        </div>
+
+        <!-- Пагинация для мобильных карточек -->
+        <div id="mobileSuppliersPagination" style="display: none;"></div>
     </div>
 
     <!-- Модальное окно для добавления поставщика -->
@@ -370,6 +379,80 @@
                         // Добавляем новую строку в начало таблицы
                         servicesTableBody.insertBefore(newRow, servicesTableBody.firstChild);
 
+                        // Создаем новую карточку для мобильной версии
+                        const suppliersCards = document.getElementById('suppliersCards');
+                        const newCard = document.createElement('div');
+                        newCard.className = 'supplier-card';
+                        newCard.id = `supplier-card-${data.supplier.id}`;
+                        
+                        const phoneValue = data.supplier.phone 
+                            ? `<a href="tel:${data.supplier.phone}">${data.supplier.phone}</a>`
+                            : '—';
+                        
+                        const emailValue = data.supplier.email 
+                            ? `<a href="mailto:${data.supplier.email}">${data.supplier.email}</a>`
+                            : '—';
+                        
+                        newCard.innerHTML = `
+                            <div class="supplier-card-header">
+                                <div class="supplier-main-info">
+                                    <h3 class="supplier-name">${data.supplier.name}</h3>
+                                    <span class="status-badge ${data.supplier.status ? 'active' : 'inactive'}">
+                                        ${data.supplier.status ? '{{ __('messages.supplier_active') }}' : '{{ __('messages.supplier_inactive') }}'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="supplier-info">
+                                <div class="supplier-info-item">
+                                    <span class="supplier-info-label">
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                        </svg>
+                                        Контакт
+                                    </span>
+                                    <span class="supplier-info-value">${data.supplier.contact_person ?? '—'}</span>
+                                </div>
+                                <div class="supplier-info-item">
+                                    <span class="supplier-info-label">
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                                        </svg>
+                                        Телефон
+                                    </span>
+                                    <span class="supplier-info-value">${phoneValue}</span>
+                                </div>
+                                <div class="supplier-info-item">
+                                    <span class="supplier-info-label">
+                                        <svg viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                        </svg>
+                                        Email
+                                    </span>
+                                    <span class="supplier-info-value">${emailValue}</span>
+                                </div>
+                            </div>
+                            <div class="supplier-actions">
+                                <button class="btn-edit" title="Редактировать" onclick="openEditModal(${data.supplier.id})">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                    Изменить
+                                </button>
+                                <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${data.supplier.id})">
+                                    <svg viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    Удалить
+                                </button>
+                            </div>
+                        `;
+
+                        // Добавляем новую карточку в начало мобильного списка
+                        if (suppliersCards) {
+                            suppliersCards.insertBefore(newCard, suppliersCards.firstChild);
+                        }
+
                         // Показываем уведомление
                         showNotification('success', `{{ __('messages.supplier') }} "${data.supplier.name}" {{ __('messages.supplier_successfully_added') }}`);
 
@@ -398,13 +481,26 @@
         let currentDeleteRow = null;
         let currentDeleteId = null;
 
+        // Функция для показа модального окна подтверждения удаления
+        function showDeleteConfirmation(supplierId) {
+            currentDeleteRow = null;
+            currentDeleteId = supplierId;
+            document.getElementById('confirmationModal').style.display = 'block';
+        }
+
         // Обработчик клика по кнопке удаления
         document.addEventListener('click', function(e) {
             if (e.target.closest('.btn-delete')) {
-                const row = e.target.closest('tr');
-                const supplierId = row.id.split('-')[1];
+                const element = e.target.closest('tr') || e.target.closest('.supplier-card');
+                let supplierId;
+                
+                if (element.classList.contains('supplier-card')) {
+                    supplierId = element.id.split('-')[2]; // supplier-card-{id}
+                } else {
+                    supplierId = element.id.split('-')[1]; // supplier-{id}
+                }
 
-                currentDeleteRow = row;
+                currentDeleteRow = element;
                 currentDeleteId = supplierId;
 
                 document.getElementById('confirmationModal').style.display = 'block';
@@ -426,8 +522,22 @@
         });
 
         // Функция для удаления поставщика
-        function deleteSupplier(row, supplierId) {
-            row.classList.add('row-deleting');
+        function deleteSupplier(rowOrId, supplierId) {
+            let row;
+            let card;
+            
+            if (typeof rowOrId === 'object' && rowOrId !== null && 'classList' in rowOrId) {
+                // Вызов с двумя аргументами: (row, supplierId)
+                row = rowOrId;
+            } else {
+                // Вызов с одним аргументом: (supplierId)
+                supplierId = rowOrId;
+                row = document.getElementById('supplier-' + supplierId);
+                card = document.getElementById('supplier-card-' + supplierId);
+            }
+            
+            if (row) row.classList.add('row-deleting');
+            if (card) card.classList.add('row-deleting');
 
             fetch(`/suppliers/${supplierId}`, {
                 method: 'DELETE',
@@ -446,13 +556,15 @@
                 .then(data => {
                     if (data.success) {
                         setTimeout(() => {
-                            row.remove();
+                            if (row) row.remove();
+                            if (card) card.remove();
                             showNotification('success', '{{ __('messages.supplier_successfully_deleted') }}');
                         }, 300);
                     }
                 })
                 .catch(error => {
-                    row.classList.remove('row-deleting');
+                    if (row) row.classList.remove('row-deleting');
+                    if (card) card.classList.remove('row-deleting');
                     showNotification('error', '{{ __('messages.error_deleting_supplier') }}');
                 });
         }
@@ -483,8 +595,14 @@
         // Обработчик клика по кнопке редактирования
         document.addEventListener('click', function(e) {
             if (e.target.closest('.btn-edit')) {
-                const row = e.target.closest('tr');
-                const supplierId = row.id.split('-')[1];
+                const element = e.target.closest('tr') || e.target.closest('.supplier-card');
+                let supplierId;
+                
+                if (element.classList.contains('supplier-card')) {
+                    supplierId = element.id.split('-')[2]; // supplier-card-{id}
+                } else {
+                    supplierId = element.id.split('-')[1]; // supplier-{id}
+                }
                 openEditModal(supplierId);
             }
         });
@@ -568,6 +686,49 @@
                     statusBadge.textContent = supplier.status ? '{{ __('messages.supplier_active') }}' : '{{ __('messages.supplier_inactive') }}';
                 }
             }
+            
+            // Обновляем карточку поставщика в мобильной версии
+            const card = document.getElementById(`supplier-card-${supplier.id}`);
+            if (card) {
+                // Обновляем название
+                const nameElement = card.querySelector('.supplier-name');
+                if (nameElement) {
+                    nameElement.textContent = supplier.name;
+                }
+                
+                // Обновляем статус
+                const statusBadge = card.querySelector('.status-badge');
+                if (statusBadge) {
+                    statusBadge.className = `status-badge ${supplier.status ? 'active' : 'inactive'}`;
+                    statusBadge.textContent = supplier.status ? '{{ __('messages.supplier_active') }}' : '{{ __('messages.supplier_inactive') }}';
+                }
+                
+                // Обновляем контактное лицо
+                const contactElement = card.querySelector('.supplier-info-item:nth-child(1) .supplier-info-value');
+                if (contactElement) {
+                    contactElement.textContent = supplier.contact_person ?? '—';
+                }
+                
+                // Обновляем телефон
+                const phoneElement = card.querySelector('.supplier-info-item:nth-child(2) .supplier-info-value');
+                if (phoneElement) {
+                    if (supplier.phone) {
+                        phoneElement.innerHTML = `<a href="tel:${supplier.phone}">${supplier.phone}</a>`;
+                    } else {
+                        phoneElement.textContent = '—';
+                    }
+                }
+                
+                // Обновляем email
+                const emailElement = card.querySelector('.supplier-info-item:nth-child(3) .supplier-info-value');
+                if (emailElement) {
+                    if (supplier.email) {
+                        emailElement.innerHTML = `<a href="mailto:${supplier.email}">${supplier.email}</a>`;
+                    } else {
+                        emailElement.textContent = '—';
+                    }
+                }
+            }
         }
 
         // AJAX-пагинация
@@ -604,9 +765,13 @@
 
         function updateTable(suppliers) {
             const tbody = document.getElementById('servicesTableBody');
+            const suppliersCards = document.getElementById('suppliersCards');
+            
             tbody.innerHTML = '';
+            suppliersCards.innerHTML = '';
 
             suppliers.forEach(supplier => {
+                // Создаем строку для десктопной таблицы
                 const row = document.createElement('tr');
                 row.id = `supplier-${supplier.id}`;
                 
@@ -644,6 +809,76 @@
                     </td>
                 `;
                 tbody.appendChild(row);
+
+                // Создаем карточку для мобильной версии
+                const card = document.createElement('div');
+                card.className = 'supplier-card';
+                card.id = `supplier-card-${supplier.id}`;
+                
+                const phoneValue = supplier.phone 
+                    ? `<a href="tel:${supplier.phone}">${supplier.phone}</a>`
+                    : '—';
+                
+                const emailValue = supplier.email 
+                    ? `<a href="mailto:${supplier.email}">${supplier.email}</a>`
+                    : '—';
+                
+                card.innerHTML = `
+                    <div class="supplier-card-header">
+                        <div class="supplier-main-info">
+                            <h3 class="supplier-name">${supplier.name}</h3>
+                            <span class="status-badge ${supplier.status ? 'active' : 'inactive'}">
+                                ${supplier.status ? '{{ __('messages.supplier_active') }}' : '{{ __('messages.supplier_inactive') }}'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="supplier-info">
+                        <div class="supplier-info-item">
+                            <span class="supplier-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                </svg>
+                                Контакт
+                            </span>
+                            <span class="supplier-info-value">${supplier.contact_person ?? '—'}</span>
+                        </div>
+                        <div class="supplier-info-item">
+                            <span class="supplier-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                                </svg>
+                                Телефон
+                            </span>
+                            <span class="supplier-info-value">${phoneValue}</span>
+                        </div>
+                        <div class="supplier-info-item">
+                            <span class="supplier-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                </svg>
+                                Email
+                            </span>
+                            <span class="supplier-info-value">${emailValue}</span>
+                        </div>
+                    </div>
+                    <div class="supplier-actions">
+                        <button class="btn-edit" title="Редактировать" onclick="openEditModal(${supplier.id})">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            Изменить
+                        </button>
+                        <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${supplier.id})">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Удалить
+                        </button>
+                    </div>
+                `;
+                
+                suppliersCards.appendChild(card);
             });
         }
 
@@ -691,6 +926,12 @@
             }
             pagContainer.innerHTML = paginationHtml;
 
+            // Обновляем мобильную пагинацию
+            let mobilePagContainer = document.getElementById('mobileSuppliersPagination');
+            if (mobilePagContainer) {
+                mobilePagContainer.innerHTML = paginationHtml;
+            }
+
             // Навешиваем обработчики
             document.querySelectorAll('.page-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -710,8 +951,43 @@
             loadPage(1, query);
         }
 
+        // Функция для переключения между десктопной и мобильной версией
+        function toggleMobileView() {
+            const tableWrapper = document.querySelector('.table-wrapper');
+            const suppliersCards = document.getElementById('suppliersCards');
+            const suppliersPagination = document.getElementById('suppliersPagination');
+            const mobileSuppliersPagination = document.getElementById('mobileSuppliersPagination');
+            
+            if (window.innerWidth <= 768) {
+                // Мобильная версия
+                if (tableWrapper) tableWrapper.style.display = 'none';
+                if (suppliersCards) suppliersCards.style.display = 'block';
+                if (suppliersPagination) suppliersPagination.style.display = 'none';
+                if (mobileSuppliersPagination) mobileSuppliersPagination.style.display = 'block';
+            } else {
+                // Десктопная версия
+                if (tableWrapper) tableWrapper.style.display = 'block';
+                if (suppliersCards) suppliersCards.style.display = 'none';
+                if (suppliersPagination) suppliersPagination.style.display = 'block';
+                if (mobileSuppliersPagination) mobileSuppliersPagination.style.display = 'none';
+            }
+        }
+
         // Инициализация первой загрузки
-        loadPage(1);
+        let isInitialized = false;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!isInitialized) {
+                isInitialized = true;
+                loadPage(1);
+                toggleMobileView(); // Переключаем на правильную версию
+            }
+        });
+
+        // Обработчик изменения размера окна
+        window.addEventListener('resize', function() {
+            toggleMobileView();
+        });
     </script>
 
     <style>

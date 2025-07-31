@@ -40,7 +40,7 @@ class SupplierController extends Controller
     {
         $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:suppliers,name,NULL,id,project_id,' . $currentProjectId,
             'contact_person' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -49,6 +49,8 @@ class SupplierController extends Controller
             'inn' => 'nullable|string|max:20',
             'note' => 'nullable|string',
             'status' => 'boolean'
+        ], [
+            'name.unique' => 'Поставщик с таким названием уже существует в вашем проекте.'
         ]);
         try {
             $data = $validated;
@@ -89,7 +91,7 @@ class SupplierController extends Controller
     {
         $currentProjectId = auth()->user()->project_id;
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:suppliers,name,' . $supplier->id . ',id,project_id,' . $currentProjectId,
             'contact_person' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -98,6 +100,8 @@ class SupplierController extends Controller
             'inn' => 'nullable|string|max:20',
             'note' => 'nullable|string',
             'status' => 'boolean'
+        ], [
+            'name.unique' => 'Поставщик с таким названием уже существует в вашем проекте.'
         ]);
         if ($supplier->project_id !== $currentProjectId) {
             return response()->json(['success' => false, 'message' => 'Нет доступа к поставщику'], 403);
