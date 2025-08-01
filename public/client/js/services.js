@@ -38,34 +38,96 @@ function closeEditServiceModal() {
 }
 
 // Функция для создания мобильных карточек услуг
-function createMobileCards() {
+function createMobileCards(services = null) {
     const servicesCards = document.getElementById('servicesCards');
-    const tableBody = document.getElementById('servicesTableBody');
     
-    if (!servicesCards || !tableBody) return;
+    if (!servicesCards) return;
     
     // Очищаем контейнер карточек
     servicesCards.innerHTML = '';
     
-    // Получаем все строки таблицы
-    const rows = tableBody.querySelectorAll('tr');
-    
-    rows.forEach(row => {
-        const serviceId = row.id.split('-')[1];
-        const cells = row.querySelectorAll('td');
+    // Если services не переданы, пытаемся получить из таблицы
+    if (!services) {
+        const tableBody = document.getElementById('servicesTableBody');
+        if (!tableBody) return;
         
-        if (cells.length >= 4) {
-            const name = cells[0].textContent;
-            const price = cells[1].textContent;
-            const duration = cells[2].textContent;
+        const rows = tableBody.querySelectorAll('tr');
+        if (rows.length === 0) return; // Если таблица пустая, не создаем карточки
+        
+        rows.forEach(row => {
+            const serviceId = row.id.split('-')[1];
+            const cells = row.querySelectorAll('td');
+            
+            if (cells.length >= 4) {
+                const name = cells[0].textContent;
+                const price = cells[1].textContent;
+                const duration = cells[2].textContent;
+                
+                const card = document.createElement('div');
+                card.className = 'service-card';
+                card.id = `service-card-${serviceId}`;
+                
+                card.innerHTML = `
+                    <div class="service-card-header">
+                        <h3 class="service-name">${name}</h3>
+                    </div>
+                    <div class="service-card-info">
+                        <div class="service-info-item">
+                            <span class="info-label">Цена:</span>
+                            <span class="info-value">${price}</span>
+                        </div>
+                        <div class="service-info-item">
+                            <span class="info-label">Длительность:</span>
+                            <span class="info-value">${duration}</span>
+                        </div>
+                    </div>
+                    <div class="service-card-actions">
+                        <button class="btn-edit" onclick="openEditModal(${serviceId})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            Ред.
+                        </button>
+                        <button class="btn-delete">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Удалить
+                        </button>
+                    </div>
+                `;
+                
+                servicesCards.appendChild(card);
+            }
+        });
+    } else {
+        // Создаем карточки на основе переданных данных
+        services.forEach(service => {
+            // Форматируем цену
+            const price = service.price ? 
+                (service.price == parseInt(service.price) ? 
+                    parseInt(service.price) : 
+                    parseFloat(service.price).toFixed(2)) + ' грн' : '—';
+            
+            // Форматируем длительность
+            const duration = service.duration || 0;
+            const hours = Math.floor(duration / 60);
+            const minutes = duration % 60;
+            let durationText = '';
+            if (duration > 0) {
+                if (hours > 0) durationText += hours + ' ч ';
+                if (minutes > 0) durationText += minutes + ' мин';
+            } else {
+                durationText = '—';
+            }
             
             const card = document.createElement('div');
             card.className = 'service-card';
-            card.id = `service-card-${serviceId}`;
+            card.id = `service-card-${service.id}`;
             
             card.innerHTML = `
                 <div class="service-card-header">
-                    <h3 class="service-name">${name}</h3>
+                    <h3 class="service-name">${service.name}</h3>
                 </div>
                 <div class="service-card-info">
                     <div class="service-info-item">
@@ -74,28 +136,28 @@ function createMobileCards() {
                     </div>
                     <div class="service-info-item">
                         <span class="info-label">Длительность:</span>
-                        <span class="info-value">${duration}</span>
+                        <span class="info-value">${durationText}</span>
                     </div>
                 </div>
                 <div class="service-card-actions">
-                                                        <button class="btn-edit" onclick="openEditModal(${serviceId})">
-                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                        </svg>
-                                        Ред.
-                                    </button>
+                    <button class="btn-edit" onclick="openEditModal(${service.id})">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                        </svg>
+                        Ред.
+                    </button>
                     <button class="btn-delete">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
                         Удалить
-                    </button>
+                        </button>
                 </div>
             `;
             
             servicesCards.appendChild(card);
-        }
-    });
+        });
+    }
 }
 
 // Функция для переключения между десктопной и мобильной версией
@@ -110,7 +172,7 @@ function toggleMobileView() {
         if (tableWrapper) tableWrapper.style.display = 'none';
         if (servicesCards) {
             servicesCards.style.display = 'block';
-            createMobileCards(); // Создаем карточки при переключении на мобильную
+            // Карточки будут созданы в renderServices при загрузке данных
         }
         if (servicesPagination) servicesPagination.style.display = 'none';
         if (mobileServicesPagination) mobileServicesPagination.style.display = 'block';
@@ -125,23 +187,14 @@ function toggleMobileView() {
 
 // Функция для показа модального окна подтверждения удаления
 function showDeleteConfirmation(serviceId) {
-    confirmDelete(serviceId, 'confirmationModal');
+    window.currentDeleteId = serviceId;
+    openModal('confirmationModal');
 }
 
 // Функция для удаления услуги
-function deleteService(rowOrId, serviceId) {
-    let row;
-    let card;
-    
-    if (typeof rowOrId === 'object' && rowOrId !== null && 'classList' in rowOrId) {
-        // Вызов с двумя аргументами: (row, serviceId)
-        row = rowOrId;
-    } else {
-        // Вызов с одним аргументом: (serviceId)
-        serviceId = rowOrId;
-        row = document.getElementById('service-' + serviceId);
-        card = document.getElementById('service-card-' + serviceId);
-    }
+function deleteService(serviceId) {
+    const row = document.getElementById('service-' + serviceId);
+    const card = document.getElementById('service-card-' + serviceId);
     
     if (row) row.classList.add('row-deleting');
     if (card) card.classList.add('row-deleting');
@@ -231,6 +284,156 @@ function clearDurationFieldOnFocus() {
     });
 }
 
+// Функция для рендеринга услуг в таблице
+function renderServices(services) {
+    const tableBody = document.getElementById('servicesTableBody');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    
+    services.forEach(service => {
+        const row = document.createElement('tr');
+        row.id = `service-${service.id}`;
+        
+        // Форматируем цену
+        const price = service.price ? 
+            (service.price == parseInt(service.price) ? 
+                parseInt(service.price) : 
+                parseFloat(service.price).toFixed(2)) + ' грн' : '—';
+        
+        // Форматируем длительность
+        const duration = service.duration || 0;
+        const hours = Math.floor(duration / 60);
+        const minutes = duration % 60;
+        let durationText = '';
+        if (duration > 0) {
+            if (hours > 0) durationText += hours + ' ч ';
+            if (minutes > 0) durationText += minutes + ' мин';
+        } else {
+            durationText = '—';
+        }
+        
+        row.innerHTML = `
+            <td>${service.name}</td>
+            <td class="currency-amount" data-amount="${service.price || ''}">${price}</td>
+            <td>${durationText}</td>
+            <td class="actions-cell">
+                <button class="btn-edit" onclick="openEditModal(${service.id})">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                    Ред.
+                </button>
+                <button class="btn-delete">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    Удалить
+                </button>
+            </td>
+        `;
+        
+        tableBody.appendChild(row);
+    });
+    
+    // Обновляем мобильные карточки если нужно
+    if (window.innerWidth <= 768) {
+        createMobileCards(services);
+    }
+}
+
+// Функция для рендеринга пагинации
+function renderPagination(meta) {
+    let paginationHtml = '';
+    if (meta.last_page > 1) {
+        paginationHtml += '<div class="pagination">';
+        // Кнопка "<"
+        paginationHtml += `<button class="page-btn" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}>&lt;</button>`;
+
+        let pages = [];
+        if (meta.last_page <= 7) {
+            // Показываем все страницы
+            for (let i = 1; i <= meta.last_page; i++) pages.push(i);
+        } else {
+            // Всегда показываем первую
+            pages.push(1);
+            // Если текущая страница > 4, показываем троеточие
+            if (meta.current_page > 4) pages.push('...');
+            // Показываем 2 страницы до и после текущей
+            let start = Math.max(2, meta.current_page - 2);
+            let end = Math.min(meta.last_page - 1, meta.current_page + 2);
+            for (let i = start; i <= end; i++) pages.push(i);
+            // Если текущая страница < last_page - 3, показываем троеточие
+            if (meta.current_page < meta.last_page - 3) pages.push('...');
+            // Всегда показываем последнюю
+            pages.push(meta.last_page);
+        }
+        pages.forEach(p => {
+            if (p === '...') {
+                paginationHtml += `<span class="page-ellipsis">...</span>`;
+            } else {
+                paginationHtml += `<button class="page-btn${p === meta.current_page ? ' active' : ''}" data-page="${p}">${p}</button>`;
+            }
+        });
+        // Кнопка ">"
+        paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;</button>`;
+        paginationHtml += '</div>';
+    }
+    
+    // Пагинация для десктопа (в таблице)
+    let pagContainer = document.getElementById('servicesPagination');
+    if (!pagContainer) {
+        pagContainer = document.createElement('div');
+        pagContainer.id = 'servicesPagination';
+        document.querySelector('.table-wrapper').appendChild(pagContainer);
+    }
+    pagContainer.innerHTML = paginationHtml;
+    
+    // Пагинация для мобильных устройств (в карточках)
+    let mobilePagContainer = document.getElementById('mobileServicesPagination');
+    if (!mobilePagContainer) {
+        mobilePagContainer = document.createElement('div');
+        mobilePagContainer.id = 'mobileServicesPagination';
+        document.querySelector('.services-cards').appendChild(mobilePagContainer);
+    }
+    mobilePagContainer.innerHTML = paginationHtml;
+
+    // Навешиваем обработчики для всех кнопок пагинации
+    document.querySelectorAll('.page-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const page = parseInt(this.dataset.page);
+            if (!isNaN(page) && !this.disabled) {
+                loadServices(page);
+            }
+        });
+    });
+}
+
+// Функция для загрузки услуг с пагинацией
+function loadServices(page = 1, search = '') {
+    const searchValue = search !== undefined ? search : document.querySelector('#searchInput').value.trim();
+    fetch(`/services?search=${encodeURIComponent(searchValue)}&page=${page}`, {
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        renderServices(data.data);
+        renderPagination(data.meta);
+    })
+    .catch(error => {
+        console.error('Ошибка при загрузке услуг:', error);
+        window.showNotification('error', 'Ошибка при загрузке услуг');
+    });
+}
+
+// Функция для поиска услуг
+function handleSearch() {
+    loadServices(1, document.querySelector('#searchInput').value.trim());
+}
+
 // Выполняем переключение сразу при загрузке скрипта
 toggleMobileView();
 
@@ -306,98 +509,94 @@ document.addEventListener('DOMContentLoaded', function() {
             submitForm('addServiceForm', '/services', 'POST', 
                 function(data) {
                     // Успешное добавление
-                    window.showNotification('success', `Услуга "${data.service.name}" успешно добавлена`);
+                    window.showNotification('success', 'Услуга успешно добавлена');
                     closeModal('addServiceModal');
                     form.reset();
                     
                     // Добавляем новую строку в таблицу без перезагрузки
                     if (data.service) {
-                        const tbody = document.getElementById('servicesTableBody');
-                        if (tbody) {
-                            const newRow = document.createElement('tr');
-                            newRow.id = `service-${data.service.id}`;
+                        const tableBody = document.getElementById('servicesTableBody');
+                        const newRow = document.createElement('tr');
+                        newRow.id = `service-${data.service.id}`;
+                        
+                        // Форматируем цену
+                        const price = data.service.price ? 
+                            (data.service.price == parseInt(data.service.price) ? 
+                                parseInt(data.service.price) : 
+                                parseFloat(data.service.price).toFixed(2)) + ' грн' : '—';
+                        
+                        // Форматируем длительность
+                        const duration = data.service.duration || 0;
+                        const hours = Math.floor(duration / 60);
+                        const minutes = duration % 60;
+                        let durationText = '';
+                        if (duration > 0) {
+                            if (hours > 0) durationText += hours + ' ч ';
+                            if (minutes > 0) durationText += minutes + ' мин';
+                        } else {
+                            durationText = '—';
+                        }
+                        
+                        newRow.innerHTML = `
+                            <td>${data.service.name}</td>
+                            <td class="currency-amount" data-amount="${data.service.price || ''}">${price}</td>
+                            <td>${durationText}</td>
+                            <td class="actions-cell">
+                                <button class="btn-edit" onclick="openEditModal(${data.service.id})">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                    Ред.
+                                </button>
+                                <button class="btn-delete">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    Удалить
+                                </button>
+                            </td>
+                        `;
+                        
+                        tableBody.insertBefore(newRow, tableBody.firstChild);
+                        
+                        // Также добавляем мобильную карточку если нужно
+                        if (window.innerWidth <= 768) {
+                            const servicesCards = document.getElementById('servicesCards');
+                            const card = document.createElement('div');
+                            card.className = 'service-card';
+                            card.id = `service-card-${data.service.id}`;
                             
-                            // Форматируем цену
-                            const price = data.service.price ? 
-                                (data.service.price == parseInt(data.service.price) ? 
-                                    parseInt(data.service.price) : 
-                                    parseFloat(data.service.price).toFixed(2)) + ' грн' : '—';
+                            card.innerHTML = `
+                                <div class="service-card-header">
+                                    <h3 class="service-name">${data.service.name}</h3>
+                                </div>
+                                <div class="service-card-info">
+                                    <div class="service-info-item">
+                                        <span class="info-label">Цена:</span>
+                                        <span class="info-value">${price}</span>
+                                    </div>
+                                    <div class="service-info-item">
+                                        <span class="info-label">Длительность:</span>
+                                        <span class="info-value">${durationText}</span>
+                                    </div>
+                                </div>
+                                <div class="service-card-actions">
+                                    <button class="btn-edit" onclick="openEditModal(${data.service.id})">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                        </svg>
+                                        Ред.
+                                    </button>
+                                    <button class="btn-delete">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    Удалить
+                                </button>
+                            </div>
+                        `;
                             
-                            // Форматируем длительность
-                            const duration = data.service.duration || 0;
-                            const hours = Math.floor(duration / 60);
-                            const minutes = duration % 60;
-                            let durationText = '';
-                            if (duration > 0) {
-                                if (hours > 0) durationText += hours + ' ч ';
-                                if (minutes > 0) durationText += minutes + ' мин';
-                            } else {
-                                durationText = '—';
-                            }
-                            
-                                                                    newRow.innerHTML = `
-                                            <td>${data.service.name}</td>
-                                            <td class="currency-amount" data-amount="${data.service.price || ''}">${price}</td>
-                                            <td>${durationText}</td>
-                                            <td class="actions-cell">
-                                                <button class="btn-edit" onclick="openEditModal(${data.service.id})">
-                                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                                    </svg>
-                                                    Ред.
-                                                </button>
-                                                <button class="btn-delete">
-                                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                    </svg>
-                                                    Удалить
-                                                </button>
-                                            </td>
-                                        `;
-                            
-                            tbody.insertBefore(newRow, tbody.firstChild);
-                            
-                            // Также добавляем карточку в мобильную версию
-                            if (window.innerWidth <= 768) {
-                                const servicesCards = document.getElementById('servicesCards');
-                                if (servicesCards) {
-                                    const card = document.createElement('div');
-                                    card.className = 'service-card';
-                                    card.id = `service-card-${data.service.id}`;
-                                    
-                                    card.innerHTML = `
-                                        <div class="service-card-header">
-                                            <h3 class="service-name">${data.service.name}</h3>
-                                        </div>
-                                        <div class="service-card-info">
-                                            <div class="service-info-item">
-                                                <span class="info-label">Цена:</span>
-                                                <span class="info-value">${price}</span>
-                                            </div>
-                                            <div class="service-info-item">
-                                                <span class="info-label">Длительность:</span>
-                                                <span class="info-value">${durationText}</span>
-                                            </div>
-                                        </div>
-                                        <div class="service-card-actions">
-                                            <button class="btn-edit" onclick="openEditModal(${data.service.id})">
-                                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                                </svg>
-                                                Ред.
-                                            </button>
-                                            <button class="btn-delete">
-                                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                </svg>
-                                                Удалить
-                                            </button>
-                                        </div>
-                                    `;
-                                    
-                                    servicesCards.insertBefore(card, servicesCards.firstChild);
-                                }
-                            }
+                            servicesCards.insertBefore(card, servicesCards.firstChild);
                         }
                     }
                 },
@@ -471,6 +670,17 @@ document.addEventListener('DOMContentLoaded', function() {
             );
         });
     }
+
+    // Поиск с пагинацией
+    const searchInput = document.querySelector('#searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            loadServices(1, this.value.trim());
+        });
+    }
+
+    // Инициализация первой загрузки
+    loadServices(1);
 
     // Инициализация очистки полей
     clearDurationFieldOnFocus();
