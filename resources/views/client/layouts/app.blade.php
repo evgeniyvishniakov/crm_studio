@@ -237,7 +237,7 @@
     </style>
 </head>
 
-<body>
+<body data-page="{{ request()->route()->getName() }}">
     <div id="notification"></div>
 @php
     $user = auth()->user();
@@ -393,7 +393,7 @@
                     </a>
                 </li>
 
-                <li class="menu-title">{{ __('messages.services') }}</li>
+                <li class="menu-title">{{ __('messages.services_title') }}</li>
 
                 <li class="menu-item-has-children {{ 
                     request()->routeIs('services.*') || 
@@ -548,7 +548,7 @@
                                 <span class="menu-label">{{ __('messages.email_integration') }}</span>
                             </a>
                         </li>
-                        <li class="{{ request()->routeIs('client.widget-settings.*') ? 'active' : '' }}">
+                        <li class="widget-menu-item {{ request()->routeIs('client.widget-settings.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('settings', $userPermissions); @endphp
                             <a href="{{ $hasAccess ? route('client.widget-settings.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.website_widget') }}">
                                 @if($hasAccess)

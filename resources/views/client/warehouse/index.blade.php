@@ -415,20 +415,20 @@
                         // Update the mobile card
                         const card = document.getElementById(`warehouse-card-${id}`);
                         if (card) {
-                            // Update stock quantity
-                            const stockElement = card.querySelector('.warehouse-stock');
-                            if (stockElement) {
-                                stockElement.textContent = data.warehouse.quantity + ' {{ __('messages.units') }}';
+                            // Update quantity (first warehouse-info-item)
+                            const quantityCardElement = card.querySelector('.warehouse-info-item:nth-child(1) .warehouse-info-value');
+                            if (quantityCardElement) {
+                                quantityCardElement.textContent = data.warehouse.quantity + ' {{ __('messages.units') }}';
                             }
 
-                            // Update purchase price
-                            const purchasePriceCardElement = card.querySelector('.warehouse-info-item:first-child .warehouse-info-value');
+                            // Update purchase price (second warehouse-info-item)
+                            const purchasePriceCardElement = card.querySelector('.warehouse-info-item:nth-child(2) .warehouse-info-value');
                             if (purchasePriceCardElement) {
                                 purchasePriceCardElement.textContent = formatPrice(data.warehouse.purchase_price);
                             }
 
-                            // Update retail price
-                            const retailPriceCardElement = card.querySelector('.warehouse-info-item:last-child .warehouse-info-value');
+                            // Update retail price (third warehouse-info-item)
+                            const retailPriceCardElement = card.querySelector('.warehouse-info-item:nth-child(3) .warehouse-info-value');
                             if (retailPriceCardElement) {
                                 retailPriceCardElement.textContent = formatPrice(data.warehouse.retail_price);
                             }
@@ -716,10 +716,18 @@
                         </div>
                         <div class="warehouse-main-info">
                             <div class="warehouse-product-name">${item.product ? item.product.name : 'Товар не найден'}</div>
-                            <div class="warehouse-stock">${item.quantity} {{ __('messages.units') }}</div>
                         </div>
                     </div>
                     <div class="warehouse-info">
+                        <div class="warehouse-info-item">
+                            <div class="warehouse-info-label">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                </svg>
+                                {{ __('messages.quantity') }}
+                            </div>
+                            <div class="warehouse-info-value">${item.quantity} {{ __('messages.units') }}</div>
+                        </div>
                         <div class="warehouse-info-item">
                             <div class="warehouse-info-label">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">

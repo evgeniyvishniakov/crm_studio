@@ -1,5 +1,76 @@
 /* ===== ОБЩИЕ МОБИЛЬНЫЕ СТИЛИ ДЛЯ ВСЕГО ПРОЕКТА ===== */
 
+/* Скрываем инвентаризацию и виджет на мобильных устройствах */
+@media (max-width: 768px) {
+    /* Скрываем пункт меню "Инвентаризация" */
+    .main-menu li:has(a[href*="inventories"]) {
+        display: none !important;
+    }
+    
+    /* Скрываем пункт меню "Виджет для сайта" */
+    .widget-menu-item {
+        display: none !important;
+    }
+    
+    /* Альтернативный способ скрытия для браузеров, не поддерживающих :has() */
+    .main-menu li:nth-child(6) {
+        display: none !important;
+    }
+    
+    /* Скрываем страницу инвентаризации на мобильных устройствах */
+    body[data-page="inventories"] .content {
+        display: none !important;
+    }
+    
+    /* Показываем сообщение о недоступности инвентаризации на мобильных */
+    body[data-page="inventories"] .content::before {
+        content: "Инвентаризация недоступна на мобильных устройствах. Используйте десктопную версию.";
+        display: block !important;
+        text-align: center;
+        padding: 50px 20px;
+        font-size: 16px;
+        color: #6b7280;
+        background: #f9fafb;
+        border-radius: 8px;
+        margin: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Скрываем пункт меню "Инвентаризация" на маленьких экранах */
+    .main-menu li:has(a[href*="inventories"]) {
+        display: none !important;
+    }
+    
+    /* Скрываем пункт меню "Виджет для сайта" на маленьких экранах */
+    .widget-menu-item {
+        display: none !important;
+    }
+    
+    /* Альтернативный способ скрытия для браузеров, не поддерживающих :has() */
+    .main-menu li:nth-child(6) {
+        display: none !important;
+    }
+    
+    /* Скрываем страницу инвентаризации на мобильных устройствах */
+    body[data-page="inventories"] .content {
+        display: none !important;
+    }
+    
+    /* Показываем сообщение о недоступности инвентаризации на мобильных */
+    body[data-page="inventories"] .content::before {
+        content: "Инвентаризация недоступна на мобильных устройствах. Используйте десктопную версию.";
+        display: block !important;
+        text-align: center;
+        padding: 50px 20px;
+        font-size: 16px;
+        color: #6b7280;
+        background: #f9fafb;
+        border-radius: 8px;
+        margin: 20px;
+    }
+}
+
 /* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ СТРАНИЦЫ КЛИЕНТОВ ===== */
 /* Скрываем карточки на десктопе по умолчанию */
 .clients-cards {
@@ -625,6 +696,84 @@
     }
 
     .modal-content .form-group select[name="supplier_id"] option {
+        font-size: 14px;
+        padding: 8px 12px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        white-space: normal;
+        line-height: 1.4;
+        min-height: 36px;
+    }
+
+    /* Специальные стили для поля сотрудника */
+    .modal-content .form-group select[name="employee_id"] {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        font-size: 14px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        min-height: 44px;
+        padding: 12px 16px;
+        line-height: 1.4;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .modal-content .form-group select[name="employee_id"] option {
+        font-size: 14px;
+        padding: 8px 12px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        white-space: normal;
+        line-height: 1.4;
+        min-height: 36px;
+    }
+
+    /* Специальные стили для модального окна продаж */
+    #saleModal .modal-content .form-group select[name="employee_id"] {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        font-size: 14px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        min-height: 44px;
+        padding: 12px 16px;
+        line-height: 1.4;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    #saleModal .modal-content .form-group select[name="employee_id"] option {
+        font-size: 14px;
+        padding: 8px 12px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        white-space: normal;
+        line-height: 1.4;
+        min-height: 36px;
+    }
+
+    /* Специальные стили для модального окна редактирования продажи */
+    #editSaleModal .modal-content .form-group select[name="employee_id"] {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        font-size: 14px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        min-height: 44px;
+        padding: 12px 16px;
+        line-height: 1.4;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    #editSaleModal .modal-content .form-group select[name="employee_id"] option {
         font-size: 14px;
         padding: 8px 12px;
         word-wrap: break-word;
@@ -3278,6 +3427,9 @@
         box-sizing: border-box;
         overflow-x: hidden;
     }
+    .sales-header h1{
+        margin: 20px auto;
+    }
     
     .content {
         width: 100%;
@@ -3304,6 +3456,14 @@
     }
 
     .warehouse-container {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+        padding: 0 10px;
+    }
+    
+    .sales-container {
         width: 100%;
         max-width: 100%;
         box-sizing: border-box;
@@ -3347,6 +3507,84 @@
     }
 
     .modal-content .form-group select[name="supplier_id"] option {
+        font-size: 13px;
+        padding: 6px 10px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        white-space: normal;
+        line-height: 1.4;
+        min-height: 32px;
+    }
+
+    /* Специальные стили для поля сотрудника на маленьких экранах */
+    .modal-content .form-group select[name="employee_id"] {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        font-size: 13px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        min-height: 40px;
+        padding: 10px 12px;
+        line-height: 1.4;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .modal-content .form-group select[name="employee_id"] option {
+        font-size: 13px;
+        padding: 6px 10px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        white-space: normal;
+        line-height: 1.4;
+        min-height: 32px;
+    }
+
+    /* Специальные стили для модального окна продаж на маленьких экранах */
+    #saleModal .modal-content .form-group select[name="employee_id"] {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        font-size: 13px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        min-height: 40px;
+        padding: 10px 12px;
+        line-height: 1.4;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    #saleModal .modal-content .form-group select[name="employee_id"] option {
+        font-size: 13px;
+        padding: 6px 10px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        white-space: normal;
+        line-height: 1.4;
+        min-height: 32px;
+    }
+
+    /* Специальные стили для модального окна редактирования продажи на маленьких экранах */
+    #editSaleModal .modal-content .form-group select[name="employee_id"] {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        font-size: 13px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        min-height: 40px;
+        padding: 10px 12px;
+        line-height: 1.4;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    #editSaleModal .modal-content .form-group select[name="employee_id"] option {
         font-size: 13px;
         padding: 6px 10px;
         word-wrap: break-word;
@@ -3435,6 +3673,176 @@
         word-wrap: break-word;
         overflow-wrap: break-word;
         margin-bottom: 8px;
+    }
+    
+    .sale-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .sale-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .sale-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+    
+    .sale-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        gap: 12px;
+    }
+    
+    .sale-photo-container {
+        flex-shrink: 0;
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #e5e7eb;
+    }
+    
+    .sale-photo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .sale-photo-container .no-photo {
+        color: #9ca3af;
+        font-size: 12px;
+        text-align: center;
+        padding: 8px;
+    }
+    
+    .sale-main-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .sale-product-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0 0 4px 0;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+    
+    .sale-info {
+        margin-bottom: 12px;
+        display: block!important;
+    }
+    
+    .sale-info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .sale-info-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 500;
+        min-width: 80px;
+        flex-shrink: 0;
+    }
+    
+    .sale-info-label svg {
+        width: 16px;
+        height: 16px;
+        color: #9ca3af;
+    }
+    
+    .sale-info-value {
+        color: #1f2937;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: right;
+        word-break: break-word;
+    }
+    
+    .sale-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: space-around;
+    }
+    
+    .sale-actions .btn-edit,
+    .sale-actions .btn-delete {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .sale-actions .btn-edit {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+    }
+    
+    .sale-actions .btn-edit:hover {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .sale-actions .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+    }
+    
+    .sale-actions .btn-delete:hover {
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    .sale-actions svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .sale-card.row-deleting {
+        opacity: 0;
+        transform: translateX(-100%);
+        transition: all 0.3s ease;
     }
     
     /* ===== СТИЛИ ДЛЯ СТРАНИЦЫ КЛИЕНТОВ ===== */
@@ -5640,6 +6048,206 @@
     #mobilePurchasesPagination .pagination {
         margin-top: 20px;
         justify-content: center;
+    }
+
+    /* ===== СТИЛИ ДЛЯ СТРАНИЦЫ ПРОДАЖ ===== */
+    .sales-container {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+        padding: 0 15px;
+    }
+    
+    .sales-cards { 
+        display: none; 
+    }
+    
+    .table-wrapper { 
+        display: block; 
+    }
+
+    /* ===== СТИЛИ ДЛЯ КАРТОЧЕК ПРОДАЖ ===== */
+    .sale-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .sale-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(135deg, #f59e0b, #fbbf24); /* Оранжевый градиент */
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .sale-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+    
+    .sale-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        gap: 12px;
+    }
+    
+    .sale-photo-container {
+        flex-shrink: 0;
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #e5e7eb;
+    }
+    
+    .sale-photo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .sale-photo-container .no-photo {
+        color: #9ca3af;
+        font-size: 12px;
+        text-align: center;
+        padding: 8px;
+    }
+    
+    .sale-main-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .sale-product-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0 0 4px 0;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+    
+    .sale-info {
+        margin-bottom: 12px;
+    }
+    
+    .sale-info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    .sale-info-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 500;
+        min-width: 80px;
+        flex-shrink: 0;
+    }
+    
+    .sale-info-label svg {
+        width: 16px;
+        height: 16px;
+        color: #9ca3af;
+    }
+    
+    .sale-info-value {
+        color: #1f2937;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: right;
+        word-break: break-word;
+    }
+    
+    .sale-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: space-around;
+    }
+    
+    .sale-actions .btn-edit,
+    .sale-actions .btn-delete {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .sale-actions .btn-edit {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+    }
+    
+    .sale-actions .btn-edit:hover {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .sale-actions .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+    }
+    
+    .sale-actions .btn-delete:hover {
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    .sale-actions svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    /* Анимация удаления */
+    .sale-card.row-deleting {
+        opacity: 0;
+        transform: translateX(-100%);
+        transition: all 0.3s ease;
+    }
+    
+    /* Мобильная пагинация */
+    #mobileSalesPagination {
+        margin-top: 20px;
+    }
+    
+    #mobileSalesPagination .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
     }
 
     /* Специальные стили для модального окна расходов */

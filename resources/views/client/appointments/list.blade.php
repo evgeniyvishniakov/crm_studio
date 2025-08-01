@@ -1412,9 +1412,9 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>{{ __('messages.master') }}/{{ __('messages.employee') }}</label>
-                            <select name="user_id" class="form-control">
-                                <option value="">{{ __('messages.not_assigned') }}</option>
+                            <label>{{ __('messages.master') }}/{{ __('messages.employee') }} *</label>
+                            <select name="user_id" class="form-control" required>
+                                <option value="">{{ __('messages.select_employee') }}</option>
                                 @foreach($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                                 @endforeach
@@ -1646,6 +1646,7 @@
         <div class="details-row">
             <div><span class="details-label">{{ __('messages.master') }}:</span> ${appointment.user ? escapeHtml(appointment.user.name) : '{{ __('messages.not_assigned') }}'}</div>
         </div>
+        <input type="hidden" name="user_id" value="${appointment.user_id || ''}">
         <div class="card procedure-card">
             <div class="card-title">{{ __('messages.service') }}</div>
             <div class="procedure-info">
@@ -2520,9 +2521,9 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label>{{ __('messages.master_employee') }}</label>
-                            <select name="user_id" class="form-control">
-                                <option value="">{{ __('messages.not_assigned') }}</option>
+                            <label>{{ __('messages.master_employee') }} *</label>
+                            <select name="user_id" class="form-control" required>
+                                <option value="">{{ __('messages.select_employee') }}</option>
                                 ${allUsers.map(user => `
                                     <option value="${user.id}" ${appointment.user_id == user.id ? 'selected' : ''}>
                                         ${escapeHtml(user.name)}
@@ -2845,6 +2846,7 @@
 
             const date = modal.querySelector('input[name="date"]')?.value || '';
             const time = modal.querySelector('input[name="time"]')?.value || '';
+            const userId = modal.querySelector('input[name="user_id"]')?.value || '';
 
             const requestData = {
                 client_id: clientId,
@@ -2852,6 +2854,7 @@
                 price: price,
                 date: date,
                 time: time,
+                user_id: userId,
                 sales: temporaryProducts.map(p => ({
                     product_id: p.product_id,
                     quantity: parseInt(p.quantity),
@@ -3157,6 +3160,14 @@
 
         async function submitAppointmentForm(form) {
             clearErrors('appointmentForm');
+            
+            // Клиентская валидация
+            const userId = form.querySelector('[name="user_id"]').value;
+            if (!userId) {
+                window.showNotification('error', '{{ __('messages.please_select_employee') }}');
+                return;
+            }
+            
             const formData = new FormData(form);
 
             try {
@@ -3247,6 +3258,14 @@
 
         async function submitEditAppointmentForm(form, appointmentId) {
             clearErrors('editAppointmentForm');
+            
+            // Клиентская валидация
+            const userId = form.querySelector('[name="user_id"]').value;
+            if (!userId) {
+                window.showNotification('error', '{{ __('messages.please_select_employee') }}');
+                return;
+            }
+            
             const formData = new FormData(form);
 
             try {

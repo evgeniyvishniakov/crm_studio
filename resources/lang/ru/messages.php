@@ -93,6 +93,7 @@ return [
     'error_deleting_appointment' => 'Ошибка при удалении записи',
     'cannot_determine_client' => 'Не удалось определить клиента',
     'service_required' => 'Необходимо указать услугу',
+    'please_select_employee' => 'Пожалуйста, выберите сотрудника',
     'changes_successfully_saved' => 'Изменения успешно сохранены',
     'error_saving' => 'Ошибка при сохранении',
     'appointment_successfully_created' => 'Запись успешно создана',
@@ -227,7 +228,7 @@ return [
     'warning' => 'Предупреждение',
     'info' => 'Информация',
     'masters' => 'Мастера',
-    'services' => 'Услуги',
+    'services' => 'Сервис',
     'service' => 'услуга',
     'services_2' => 'услуги',
     'services_5' => 'услуг',
@@ -414,6 +415,7 @@ return [
     'expenses' => 'Расходы',
     'inventory' => 'Инвентаризация',
     'services' => 'Сервисы',
+    'services_title' => 'Сервисы',
     'directories' => 'Справочники',
     'services_menu' => 'Услуги',
     'products' => 'Товары',
@@ -1943,4 +1945,7 @@ return [
     'deleted_user' => 'Удаленный пользователь',
     'deleted_service' => 'Удаленная услуга',
     'not_specified_price' => 'Цена не указана',
+    
+    // Сообщения для мобильной версии
+    'inventory_mobile_unavailable' => 'Инвентаризация недоступна на мобильных устройствах. Используйте десктопную версию.',
 ]; 

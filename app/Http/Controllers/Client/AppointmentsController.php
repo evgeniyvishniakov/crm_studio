@@ -85,7 +85,7 @@ class AppointmentsController extends Controller
                 'price' => 'nullable|numeric|min:0',
                 'notes' => 'nullable|string',
                 'status' => 'nullable|string|in:pending,completed,cancelled,rescheduled',
-                'user_id' => 'nullable|exists:admin_users,id',
+                'user_id' => 'required|exists:admin_users,id',
                 'duration_hours' => 'nullable|integer|min:0',
                 'duration_minutes' => 'nullable|integer|min:0|max:59',
             ]);
@@ -209,6 +209,7 @@ class AppointmentsController extends Controller
                         $sale = Sale::create([
                             'appointment_id' => $appointment->id,
                             'client_id' => $appointment->client_id,
+                            'employee_id' => $appointment->user_id, // Добавляем мастера из записи
                             'date' => $appointment->date,
                             'total_amount' => 0,
                             'project_id' => auth()->user()->project_id
@@ -424,6 +425,7 @@ class AppointmentsController extends Controller
                     ['appointment_id' => $appointmentId],
                     [
                         'client_id' => $appointment->client_id,
+                        'employee_id' => $appointment->user_id, // Добавляем мастера из записи
                         'date' => $appointment->date,
                         'total_amount' => 0,
                         'project_id' => $currentProjectId

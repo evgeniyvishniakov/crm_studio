@@ -56,6 +56,12 @@
             </table>
         </div>
         <div id="salesPagination"></div>
+        
+        <!-- Мобильные карточки продаж -->
+        <div class="sales-cards" id="salesCards">
+            <!-- Карточки будут загружаться через AJAX -->
+        </div>
+        <div id="mobileSalesPagination" style="display: none;"></div>
     </div>
 
     <!-- Модальное окно добавления продажи -->
@@ -570,7 +576,7 @@
                                             </div>
                                             <div class="form-group quantity-field">
                                                 <label>{{ __('messages.quantity') }} *</label>
-                                                <input type="number" name="items[${index}][quantity]" value="${item.quantity}"  class="form-control" min="1">
+                                                <input type="number" name="items[${index}][quantity]" value="${item.quantity}"  class="form-control" min="1" max="${item.product ? item.product.available_quantity || 999 : 999}">
                                             </div>
                                             <div class="form-group remove-field">
                                                 <button type="button" class="btn-remove-item" onclick="removeEditItemRow(this)">
@@ -620,6 +626,13 @@
                                         if (product) {
                                             if (wholesaleInput) wholesaleInput.value = product.wholesale_price;
                                             if (retailInput) retailInput.value = product.retail_price;
+                                            if (quantityInput) {
+                                                quantityInput.max = product.available_quantity || 999;
+                                                // Проверяем, если текущее количество больше доступного
+                                                if (parseInt(quantityInput.value) > parseInt(quantityInput.max)) {
+                                                    quantityInput.value = quantityInput.max;
+                                                }
+                                            }
                                         }
                                     }
                                 });
@@ -628,7 +641,16 @@
                             if (typeof data !== 'undefined' && data.sale && data.sale.items && data.sale.items[index]) {
                                 if (wholesaleInput) wholesaleInput.value = data.sale.items[index].wholesale_price;
                                 if (retailInput) retailInput.value = data.sale.items[index].retail_price;
-                                if (quantityInput) quantityInput.value = data.sale.items[index].quantity;
+                                if (quantityInput) {
+                                    quantityInput.value = data.sale.items[index].quantity;
+                                    // Устанавливаем максимальное значение для количества
+                                    const item = data.sale.items[index];
+                                    if (item.product && item.product.available_quantity) {
+                                        quantityInput.max = item.product.available_quantity;
+                                    } else {
+                                        quantityInput.max = 999; // Значение по умолчанию
+                                    }
+                                }
                             }
                         });
                         
@@ -896,11 +918,13 @@
                 const productSelect = row.querySelector('select[name*="[product_id]"]');
                 const hiddenInput = row.querySelector('.product-id-hidden');
                 const productId = hiddenInput ? hiddenInput.value : '';
+                const wholesaleInput = row.querySelector('input[name*="[wholesale_price]"]');
                 const retailInput = row.querySelector('input[name*="[retail_price]"]');
                 const quantityInput = row.querySelector('input[name*="[quantity]"]');
 
                 // Проверяем, что все поля заполнены
                 if (!productId ||
+                    !wholesaleInput || !wholesaleInput.value ||
                     !retailInput || !retailInput.value ||
                     !quantityInput || !quantityInput.value) {
                     window.showNotification('{{ __('messages.fill_all_fields_for_product', ['number' => ' + (index + 1) + ']) }}', 'error');
@@ -911,13 +935,29 @@
                 // Создаём объект товара
                 const item = {
                     product_id: productId,
+                    wholesale_price: parseFloat(wholesaleInput.value),
                     retail_price: parseFloat(retailInput.value),
                     quantity: parseInt(quantityInput.value)
                 };
 
                 // Проверяем валидность цен
-                if (isNaN(item.retail_price)) {
-                    window.showNotification('{{ __('messages.invalid_retail_price_for_product', ['number' => ' + (index + 1) + ']) }}', 'error');
+                if (isNaN(item.wholesale_price) || isNaN(item.retail_price)) {
+                    window.showNotification('{{ __('messages.invalid_price_for_product', ['number' => ' + (index + 1) + ']) }}', 'error');
+                    hasError = true;
+                    return;
+                }
+
+                // Проверяем валидность количества
+                if (isNaN(item.quantity) || item.quantity < 1) {
+                    window.showNotification('{{ __('messages.invalid_quantity_for_product', ['number' => ' + (index + 1) + ']) }}', 'error');
+                    hasError = true;
+                    return;
+                }
+
+                // Проверяем, не превышает ли количество доступное количество товара
+                const maxQuantity = parseInt(quantityInput.max);
+                if (item.quantity > maxQuantity) {
+                    window.showNotification(`{{ __('messages.max_quantity') }}: ${maxQuantity}`, 'error');
                     hasError = true;
                     return;
                 }
@@ -965,6 +1005,40 @@
                         window.showNotification('success', '{{ __('messages.sale_updated') }}');
                         closeEditSaleModal();
                         updateSaleInTable(data.sale);
+                        
+                        // Обновляем мобильные карточки
+                        const isMobile = window.innerWidth <= 768;
+                        if (isMobile) {
+                            // Обновляем конкретные карточки
+                            data.sale.items.forEach(item => {
+                                const card = document.getElementById(`sale-card-${item.id}`);
+                                if (card) {
+                                    // Обновляем количество (пятый sale-info-item)
+                                    const quantityCardElement = card.querySelector('.sale-info-item:nth-child(5) .sale-info-value');
+                                    if (quantityCardElement) {
+                                        quantityCardElement.textContent = item.quantity;
+                                    }
+                                    
+                                    // Обновляем розничную цену (четвертый sale-info-item)
+                                    const retailPriceCardElement = card.querySelector('.sale-info-item:nth-child(4) .sale-info-value');
+                                    if (retailPriceCardElement) {
+                                        retailPriceCardElement.textContent = formatPriceJS(item.retail_price);
+                                    }
+                                    
+                                    // Обновляем оптовую цену (третий sale-info-item)
+                                    const wholesalePriceCardElement = card.querySelector('.sale-info-item:nth-child(3) .sale-info-value');
+                                    if (wholesalePriceCardElement) {
+                                        wholesalePriceCardElement.textContent = formatPriceJS(item.wholesale_price);
+                                    }
+                                    
+                                    // Обновляем сумму (шестой sale-info-item)
+                                    const sumCardElement = card.querySelector('.sale-info-item:nth-child(6) .sale-info-value');
+                                    if (sumCardElement) {
+                                        sumCardElement.textContent = formatPriceJS(item.retail_price * item.quantity);
+                                    }
+                                }
+                            });
+                        }
                     } else {
                         window.showNotification(data.message || '{{ __('messages.error_updating_sale') }}', 'error');
                         if (data.errors) {
@@ -973,7 +1047,13 @@
                     }
                 })
                 .catch(error => {
-                    window.showNotification(error.message || '{{ __('messages.error_updating_sale') }}', 'error');
+                    if (error.errors) {
+                        // Если есть ошибки валидации, показываем их
+                        displayErrors(error.errors, 'editSaleForm');
+                        window.showNotification('{{ __('messages.validation_errors') }}', 'error');
+                    } else {
+                        window.showNotification(error.message || '{{ __('messages.error_updating_sale') }}', 'error');
+                    }
                 });
         }
 
@@ -1040,8 +1120,19 @@
                 row.remove();
             });
 
-            // Затем добавляем обновленные строки
+            // Удаляем все карточки, связанные с этой продажей
+            sale.items.forEach(item => {
+                const card = document.getElementById(`sale-card-${item.id}`);
+                if (card) {
+                    card.remove();
+                }
+            });
+
+            // Затем добавляем обновленные строки и карточки
             addSaleToTable(sale);
+            
+            // Перезагружаем данные для обновления мобильных карточек
+            loadSales(currentPage);
         }
 
         // Вспомогательные функции
@@ -1324,6 +1415,12 @@
 
         // Функции для подтверждения удаления
         function deleteItem(saleId, itemId) {
+            // Добавляем класс для анимации удаления
+            const card = document.getElementById(`sale-card-${itemId}`);
+            if (card) {
+                card.classList.add('row-deleting');
+            }
+            
             fetch(`/sales/${saleId}/items/${itemId}`, {
                 method: 'DELETE',
                 headers: {
@@ -1347,11 +1444,18 @@
                         loadSales(currentPage);
                     } else {
                         window.showNotification(data.message || 'Ошибка при удалении товара', 'error');
+                        // Убираем класс анимации если произошла ошибка
+                        if (card) {
+                            card.classList.remove('row-deleting');
+                        }
                     }
                 })
                 .catch(error => {
-                    
                     window.showNotification(error.message || 'Ошибка при удалении товара', 'error');
+                    // Убираем класс анимации если произошла ошибка
+                    if (card) {
+                        card.classList.remove('row-deleting');
+                    }
                 });
         }
 
@@ -1370,7 +1474,10 @@
 
         function renderSales(sales) {
             const tbody = document.getElementById('salesTableBody');
+            const cardsContainer = document.getElementById('salesCards');
+            
             tbody.innerHTML = '';
+            cardsContainer.innerHTML = '';
             
             // Если нет продаж, не делаем ничего
             if (!sales || sales.length === 0) {
@@ -1379,6 +1486,7 @@
             
             sales.forEach(sale => {
                 sale.items.forEach(item => {
+                    // Рендерим строки таблицы для десктопа
                     const row = document.createElement('tr');
                     row.setAttribute('data-sale-id', sale.id);
                     row.setAttribute('data-item-id', item.id);
@@ -1423,6 +1531,100 @@
                         </td>
                     `;
                     tbody.appendChild(row);
+                    
+                    // Рендерим карточки для мобильных устройств
+                    const card = document.createElement('div');
+                    card.className = 'sale-card';
+                    card.id = `sale-card-${item.id}`;
+                    
+                    const photoCardHtml = item.product && item.product.photo ? 
+                        `<img src="/storage/${item.product.photo}" alt="Фото" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` : 
+                        '<div class="no-photo">Нет фото</div>';
+                    
+                    card.innerHTML = `
+                        <div class="sale-card-header">
+                            <div class="sale-photo-container">
+                                ${photoCardHtml}
+                            </div>
+                            <div class="sale-main-info">
+                                <div class="sale-product-name">${item.product ? item.product.name : 'Товар не найден'}</div>
+                            </div>
+                        </div>
+                        <div class="sale-info">
+                            <div class="sale-info-item">
+                                <div class="sale-info-label">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ __('messages.date') }}
+                                </div>
+                                <div class="sale-info-value">${sale.date ? new Date(sale.date).toLocaleDateString('ru-RU') : '—'}</div>
+                            </div>
+                            <div class="sale-info-item">
+                                <div class="sale-info-label">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                                    </svg>
+                                    {{ __('messages.client') }}
+                                </div>
+                                <div class="sale-info-value">${sale.client.name}${sale.client.instagram ? ` (@${sale.client.instagram})` : ''}</div>
+                            </div>
+                            <div class="sale-info-item">
+                                <div class="sale-info-label">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ __('messages.wholesale_price') }}
+                                </div>
+                                <div class="sale-info-value">${item.wholesale_price !== null ? formatPriceJS(item.wholesale_price) : '—'}</div>
+                            </div>
+                            <div class="sale-info-item">
+                                <div class="sale-info-label">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ __('messages.retail_price') }}
+                                </div>
+                                <div class="sale-info-value">${item.retail_price !== null ? formatPriceJS(item.retail_price) : '—'}</div>
+                            </div>
+                            <div class="sale-info-item">
+                                <div class="sale-info-label">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                    </svg>
+                                    {{ __('messages.quantity') }}
+                                </div>
+                                <div class="sale-info-value">${item.quantity}</div>
+                            </div>
+                            <div class="sale-info-item">
+                                <div class="sale-info-label">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ __('messages.sum') }}
+                                </div>
+                                <div class="sale-info-value">${formatPriceJS(item.retail_price * item.quantity)}</div>
+                            </div>
+                        </div>
+                        <div class="sale-actions">
+                            <button class="btn-edit" onclick="editSale(event, ${sale.id})" title="{{ __('messages.edit') }}">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                </svg>
+                                {{ __('messages.edit') }}
+                            </button>
+                            <button class="btn-delete" onclick="confirmDeleteItem(event, ${sale.id}, ${item.id})" title="{{ __('messages.delete') }}">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ __('messages.delete') }}
+                            </button>
+                        </div>
+                    `;
+                    cardsContainer.appendChild(card);
                 });
             });
         }
@@ -1463,6 +1665,8 @@
                 paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;</button>`;
                 paginationHtml += '</div>';
             }
+            
+            // Рендерим пагинацию для десктопа
             let pagContainer = document.getElementById('salesPagination');
             if (!pagContainer) {
                 pagContainer = document.createElement('div');
@@ -1471,8 +1675,27 @@
             }
             pagContainer.innerHTML = paginationHtml;
 
-            // Навешиваем обработчики
-            document.querySelectorAll('.page-btn').forEach(btn => {
+            // Рендерим пагинацию для мобильных устройств
+            let mobilePagContainer = document.getElementById('mobileSalesPagination');
+            if (!mobilePagContainer) {
+                mobilePagContainer = document.createElement('div');
+                mobilePagContainer.id = 'mobileSalesPagination';
+                document.querySelector('.sales-container').appendChild(mobilePagContainer);
+            }
+            mobilePagContainer.innerHTML = paginationHtml;
+
+            // Навешиваем обработчики для десктопной пагинации
+            document.querySelectorAll('#salesPagination .page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    if (!isNaN(page) && !this.disabled) {
+                        loadSales(page);
+                    }
+                });
+            });
+
+            // Навешиваем обработчики для мобильной пагинации
+            document.querySelectorAll('#mobileSalesPagination .page-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const page = parseInt(this.dataset.page);
                     if (!isNaN(page) && !this.disabled) {
@@ -1512,8 +1735,41 @@
             loadSales(1, this.value.trim());
         });
 
+        // Функция для переключения между мобильным и десктопным видом
+        function toggleMobileView() {
+            const isMobile = window.innerWidth <= 768;
+            const tableWrapper = document.getElementById('salesList');
+            const cardsContainer = document.getElementById('salesCards');
+            const desktopPagination = document.getElementById('salesPagination');
+            const mobilePagination = document.getElementById('mobileSalesPagination');
+            
+            if (isMobile) {
+                // Показываем карточки, скрываем таблицу
+                if (tableWrapper) tableWrapper.style.display = 'none';
+                if (cardsContainer) cardsContainer.style.display = 'block';
+                if (desktopPagination) desktopPagination.style.display = 'none';
+                if (mobilePagination) mobilePagination.style.display = 'block';
+            } else {
+                // Показываем таблицу, скрываем карточки
+                if (tableWrapper) tableWrapper.style.display = 'block';
+                if (cardsContainer) cardsContainer.style.display = 'none';
+                if (desktopPagination) desktopPagination.style.display = 'block';
+                if (mobilePagination) mobilePagination.style.display = 'none';
+            }
+        }
+
         // Инициализация первой загрузки
         loadSales(1);
+        
+        // Инициализация переключения вида при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleMobileView();
+        });
+        
+        // Переключение вида при изменении размера окна
+        window.addEventListener('resize', function() {
+            toggleMobileView();
+        });
 
         // 1. Добавить/обновить универсальную функцию showNotification (как в Закупках)
         window.showNotification = function(type, message) {

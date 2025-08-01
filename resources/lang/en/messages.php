@@ -93,6 +93,7 @@ return [
     'error_deleting_appointment' => 'Error deleting appointment',
     'cannot_determine_client' => 'Cannot determine client',
     'service_required' => 'Service is required',
+    'please_select_employee' => 'Please select an employee',
     'changes_successfully_saved' => 'Changes successfully saved',
     'error_saving' => 'Error saving',
     'appointment_successfully_created' => 'Appointment successfully created',
@@ -318,6 +319,7 @@ return [
     'expenses' => 'Expenses',
     'inventory' => 'Inventory',
     'services' => 'Services',
+    'services_title' => 'Services',
     'directories' => 'Directories',
     'services_menu' => 'Services',
     'products' => 'Products',
@@ -1772,4 +1774,7 @@ return [
     'deleted_user' => 'Deleted User',
     'deleted_service' => 'Deleted Service',
     'not_specified_price' => 'Price not specified',
+    
+    // Mobile version messages
+    'inventory_mobile_unavailable' => 'Inventory is not available on mobile devices. Please use the desktop version.',
 ]; 
