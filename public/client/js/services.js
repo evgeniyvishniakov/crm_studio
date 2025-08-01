@@ -219,6 +219,12 @@ function deleteService(serviceId) {
                 if (row) row.remove();
                 if (card) card.remove();
                 window.showNotification('success', 'Услуга успешно удалена');
+                
+                // Сдвигающая пагинация - обновляем текущую страницу
+                const pag = document.querySelector('.pagination .page-btn.active');
+                let currentPage = pag ? parseInt(pag.textContent) : 1;
+                const searchValue = document.querySelector('#searchInput') ? document.querySelector('#searchInput').value.trim() : '';
+                loadServices(currentPage, searchValue);
             }, 300);
         }
     })
@@ -340,6 +346,9 @@ function renderServices(services) {
     if (window.innerWidth <= 768) {
         createMobileCards(services);
     }
+    
+    // Переключаем вид в зависимости от размера экрана
+    toggleMobileView();
 }
 
 // Функция для рендеринга пагинации
