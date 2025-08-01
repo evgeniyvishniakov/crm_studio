@@ -1288,11 +1288,6 @@
         box-shadow: 0 4px 20px rgba(0,0,0,0.12);
     }
     
-    .service-card-header {
-        margin-bottom: 16px;
-        padding-bottom: 12px;
-        border-bottom: 1px solid #f3f4f6;
-    }
     
     .service-main-info {
         display: flex;
@@ -1301,7 +1296,7 @@
     }
     
     .service-name {
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 600;
         color: #1f2937;
         margin: 0;
@@ -2911,9 +2906,9 @@
     /* Стили для полей длительности в модальных окнах услуг */
     #addServiceModal .form-group input[type="number"],
     #editServiceModal .form-group input[type="number"] {
-        width: 60px !important;
-        min-width: 60px !important;
-        max-width: 60px !important;
+        width: 100px !important;
+        min-width: 100px !important;
+        max-width: 100px !important;
         padding: 8px 4px !important;
         text-align: center !important;
         font-size: 14px !important;
@@ -6786,3 +6781,86 @@
         padding: 10px 6px;
     }
 }
+
+/* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ МОДАЛЬНЫХ ОКОН УСЛУГ ===== */
+@media (max-width: 768px) {
+    /* Строка с двумя полями (цена и длительность) */
+    .form-row {
+        flex-direction: row; /* Оставляем на одной линии */
+        gap: 12px;
+        align-items: flex-end; /* Выравниваем по нижнему краю */
+    }
+    
+    .form-row .form-group {
+        width: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-row .form-group:first-child {
+        flex: 2; /* Поле цены остается больше */
+    }
+    
+    .form-row .form-group:last-child {
+        flex: 1; /* Поле длительности остается меньше */
+    }
+    
+    .form-row .form-group:last-child .duration-fields {
+        margin-top: auto; /* Прижимаем к низу */
+    }
+    
+    .duration-fields {
+        gap: 6px;
+    }
+    
+    .duration-field {
+        width: 60px;
+        min-width: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-row {
+        flex-direction: row; /* Всегда на одной линии */
+        gap: 8px;
+        align-items: flex-end; /* Выравниваем по нижнему краю */
+    }
+    
+    .form-row .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-row .form-group:first-child {
+        flex: 2;
+    }
+    
+    .form-row .form-group:last-child {
+        flex: 1;
+    }
+    
+    .form-row .form-group:last-child .duration-fields {
+        margin-top: auto; /* Прижимаем к низу */
+    }
+    
+    .duration-fields {
+        flex-direction: row;
+        gap: 4px;
+        justify-content: flex-start;
+    }
+    
+    .duration-field {
+        width: 50px;
+        min-width: 45px;
+    }
+    
+    .duration-label {
+        font-size: 11px;
+    }
+    .service-card-header h3 {
+        font-size: 20px;
+        text-align: center;
+    }
+}
+
+/* Размер заголовка карточки услуги в мобильной */

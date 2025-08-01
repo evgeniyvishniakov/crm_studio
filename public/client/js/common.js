@@ -154,16 +154,12 @@ function executeDelete(url, successMessage, errorMessage, callback = null) {
     })
     .then(data => {
         if (data.success) {
-            if (window.showNotification) {
-                window.showNotification('success', successMessage);
-            }
+            window.showNotification('success', successMessage);
             if (callback) callback();
         }
     })
     .catch(error => {
-        if (window.showNotification) {
-            window.showNotification('error', errorMessage);
-        }
+        window.showNotification('error', errorMessage);
     })
     .finally(() => {
         closeModal('confirmationModal');
@@ -201,7 +197,12 @@ function submitForm(formId, url, method = 'POST', successCallback = null, errorC
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => Promise.reject(err));
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             if (successCallback) successCallback(data);
@@ -214,6 +215,9 @@ function submitForm(formId, url, method = 'POST', successCallback = null, errorC
     })
     .catch(error => {
         console.error('Ошибка:', error);
+        if (error.errors) {
+            showErrors(error.errors, formId);
+        }
         if (errorCallback) errorCallback(error);
     })
     .finally(() => {
@@ -333,19 +337,7 @@ function escapeHtml(unsafe) {
 
 // ===== ОБЩИЕ ФУНКЦИИ ДЛЯ РАБОТЫ С УВЕДОМЛЕНИЯМИ =====
 
-/**
- * Показ уведомления (если функция доступна)
- * @param {string} type - Тип уведомления (success, error, warning, info)
- * @param {string} message - Сообщение
- */
-function showNotification(type, message) {
-    if (window.showNotification) {
-        window.showNotification(type, message);
-    } else {
-        // Fallback - простой alert
-        alert(message);
-    }
-}
+
 
 // ===== ИНИЦИАЛИЗАЦИЯ ОБЩИХ ФУНКЦИЙ =====
 

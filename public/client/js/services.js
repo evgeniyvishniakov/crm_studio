@@ -1,0 +1,485 @@
+// ===== ФУНКЦИИ ДЛЯ СТРАНИЦЫ УСЛУГ =====
+
+// Функция форматирования валюты
+function formatCurrency(value) {
+    if (window.CurrencyManager) {
+        return window.CurrencyManager.formatAmount(value);
+    } else {
+        value = parseFloat(value);
+        if (isNaN(value)) return '0';
+        return (value % 1 === 0 ? value.toFixed(0) : value.toFixed(2)) + ' грн';
+    }
+}
+
+// Функция для форматирования длительности
+function formatDuration(duration) {
+    if (!duration || duration <= 0) return '—';
+    const hours = Math.floor(duration / 60);
+    const minutes = duration % 60;
+    let result = '';
+    if (hours > 0) result += hours + ' ч ';
+    if (minutes > 0) result += minutes + ' мин';
+    return result.trim();
+}
+
+// Функции для работы с модальным окном
+function openServiceModal() {
+    openModal('addServiceModal');
+}
+
+function closeServiceModal() {
+    closeModal('addServiceModal');
+    clearErrors();
+}
+
+function closeEditServiceModal() {
+    closeModal('editServiceModal');
+    clearErrors('editServiceForm');
+}
+
+// Функция для создания мобильных карточек услуг
+function createMobileCards() {
+    const servicesCards = document.getElementById('servicesCards');
+    const tableBody = document.getElementById('servicesTableBody');
+    
+    if (!servicesCards || !tableBody) return;
+    
+    // Очищаем контейнер карточек
+    servicesCards.innerHTML = '';
+    
+    // Получаем все строки таблицы
+    const rows = tableBody.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+        const serviceId = row.id.split('-')[1];
+        const cells = row.querySelectorAll('td');
+        
+        if (cells.length >= 4) {
+            const name = cells[0].textContent;
+            const price = cells[1].textContent;
+            const duration = cells[2].textContent;
+            
+            const card = document.createElement('div');
+            card.className = 'service-card';
+            card.id = `service-card-${serviceId}`;
+            
+            card.innerHTML = `
+                <div class="service-card-header">
+                    <h3 class="service-name">${name}</h3>
+                </div>
+                <div class="service-card-info">
+                    <div class="service-info-item">
+                        <span class="info-label">Цена:</span>
+                        <span class="info-value">${price}</span>
+                    </div>
+                    <div class="service-info-item">
+                        <span class="info-label">Длительность:</span>
+                        <span class="info-value">${duration}</span>
+                    </div>
+                </div>
+                <div class="service-card-actions">
+                                                        <button class="btn-edit" onclick="openEditModal(${serviceId})">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                        </svg>
+                                        Ред.
+                                    </button>
+                    <button class="btn-delete">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        Удалить
+                    </button>
+                </div>
+            `;
+            
+            servicesCards.appendChild(card);
+        }
+    });
+}
+
+// Функция для переключения между десктопной и мобильной версией
+function toggleMobileView() {
+    const tableWrapper = document.querySelector('.table-wrapper');
+    const servicesCards = document.getElementById('servicesCards');
+    const servicesPagination = document.getElementById('servicesPagination');
+    const mobileServicesPagination = document.getElementById('mobileServicesPagination');
+    
+    if (window.innerWidth <= 768) {
+        // Мобильная версия
+        if (tableWrapper) tableWrapper.style.display = 'none';
+        if (servicesCards) {
+            servicesCards.style.display = 'block';
+            createMobileCards(); // Создаем карточки при переключении на мобильную
+        }
+        if (servicesPagination) servicesPagination.style.display = 'none';
+        if (mobileServicesPagination) mobileServicesPagination.style.display = 'block';
+    } else {
+        // Десктопная версия
+        if (tableWrapper) tableWrapper.style.display = 'block';
+        if (servicesCards) servicesCards.style.display = 'none';
+        if (servicesPagination) servicesPagination.style.display = 'block';
+        if (mobileServicesPagination) mobileServicesPagination.style.display = 'none';
+    }
+}
+
+// Функция для показа модального окна подтверждения удаления
+function showDeleteConfirmation(serviceId) {
+    confirmDelete(serviceId, 'confirmationModal');
+}
+
+// Функция для удаления услуги
+function deleteService(rowOrId, serviceId) {
+    let row;
+    let card;
+    
+    if (typeof rowOrId === 'object' && rowOrId !== null && 'classList' in rowOrId) {
+        // Вызов с двумя аргументами: (row, serviceId)
+        row = rowOrId;
+    } else {
+        // Вызов с одним аргументом: (serviceId)
+        serviceId = rowOrId;
+        row = document.getElementById('service-' + serviceId);
+        card = document.getElementById('service-card-' + serviceId);
+    }
+    
+    if (row) row.classList.add('row-deleting');
+    if (card) card.classList.add('row-deleting');
+
+    fetch(`/services/${serviceId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Ошибка при удалении');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            setTimeout(() => {
+                if (row) row.remove();
+                if (card) card.remove();
+                window.showNotification('success', 'Услуга успешно удалена');
+            }, 300);
+        }
+    })
+    .catch(error => {
+        if (row) row.classList.remove('row-deleting');
+        if (card) card.classList.remove('row-deleting');
+        window.showNotification('error', 'Не удалось удалить услугу');
+    });
+}
+
+// Функции для работы с модальным окном редактирования
+function openEditModal(serviceId) {
+    fetch(`/services/${serviceId}/edit`)
+        .then(response => response.json())
+        .then(service => {
+            const form = document.getElementById('editServiceForm');
+            form.querySelector('#editServiceId').value = service.id;
+            form.querySelector('#editServiceName').value = service.name;
+            // Форматируем цену для отображения в поле
+            let displayPrice = '';
+            if (service.price) {
+                const price = parseFloat(service.price);
+                if (price % 1 === 0) {
+                    // Если цена целая, показываем без копеек
+                    displayPrice = price.toString();
+                } else {
+                    // Если есть копейки, показываем с двумя знаками после запятой
+                    displayPrice = price.toFixed(2);
+                }
+            }
+            form.querySelector('#editServicePrice').value = displayPrice;
+
+            // Вычисляем и устанавливаем длительность
+            const duration = service.duration || 0;
+            const hours = Math.floor(duration / 60);
+            const minutes = duration % 60;
+            form.querySelector('[name="duration_hours"]').value = hours;
+            form.querySelector('[name="duration_minutes"]').value = minutes;
+
+            openModal('editServiceModal');
+        })
+        .catch(error => {
+            window.showNotification('error', 'Ошибка при загрузке данных услуги');
+        });
+}
+
+// Функция для очистки полей длительности при фокусе
+function clearDurationFieldOnFocus() {
+    const durationInputs = document.querySelectorAll('input[name="duration_hours"], input[name="duration_minutes"]');
+    
+    durationInputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            if (this.value === '0') {
+                this.value = '';
+            }
+        });
+        
+        input.addEventListener('blur', function() {
+            if (this.value === '' || this.value === null) {
+                this.value = '0';
+            }
+        });
+    });
+}
+
+// Выполняем переключение сразу при загрузке скрипта
+toggleMobileView();
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Настройка обработчиков для кнопок удаления и редактирования
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.btn-delete')) {
+            const row = e.target.closest('tr');
+            const card = e.target.closest('.service-card');
+            
+            let serviceId = null;
+            
+            if (row && row.id) {
+                // Десктопная версия - получаем ID из строки таблицы
+                serviceId = row.id.split('-')[1];
+            } else if (card && card.id) {
+                // Мобильная версия - получаем ID из карточки
+                serviceId = card.id.split('-')[2]; // service-card-{id}
+            }
+            
+            if (serviceId) {
+                showDeleteConfirmation(serviceId);
+            }
+        }
+        
+        // Обработчик для кнопок редактирования
+        if (e.target.closest('.btn-edit')) {
+            const row = e.target.closest('tr');
+            const card = e.target.closest('.service-card');
+            
+            let serviceId = null;
+            
+            if (row && row.id) {
+                // Десктопная версия - получаем ID из строки таблицы
+                serviceId = row.id.split('-')[1];
+            } else if (card && card.id) {
+                // Мобильная версия - получаем ID из карточки
+                serviceId = card.id.split('-')[2]; // service-card-{id}
+            }
+            
+            if (serviceId) {
+                openEditModal(serviceId);
+            }
+        }
+    });
+
+    // Обработчики для модального окна подтверждения
+    const cancelDeleteBtn = document.getElementById('cancelDelete');
+    const confirmDeleteBtn = document.getElementById('confirmDelete');
+    
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', function() {
+            closeModal('confirmationModal');
+        });
+    }
+    
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (window.currentDeleteId) {
+                deleteService(window.currentDeleteId);
+            }
+            closeModal('confirmationModal');
+        });
+    }
+
+    // Обработчик формы добавления услуги
+    const addServiceForm = document.getElementById('addServiceForm');
+    if (addServiceForm) {
+        addServiceForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this; // Сохраняем ссылку на форму
+            submitForm('addServiceForm', '/services', 'POST', 
+                function(data) {
+                    // Успешное добавление
+                    window.showNotification('success', `Услуга "${data.service.name}" успешно добавлена`);
+                    closeModal('addServiceModal');
+                    form.reset();
+                    
+                    // Добавляем новую строку в таблицу без перезагрузки
+                    if (data.service) {
+                        const tbody = document.getElementById('servicesTableBody');
+                        if (tbody) {
+                            const newRow = document.createElement('tr');
+                            newRow.id = `service-${data.service.id}`;
+                            
+                            // Форматируем цену
+                            const price = data.service.price ? 
+                                (data.service.price == parseInt(data.service.price) ? 
+                                    parseInt(data.service.price) : 
+                                    parseFloat(data.service.price).toFixed(2)) + ' грн' : '—';
+                            
+                            // Форматируем длительность
+                            const duration = data.service.duration || 0;
+                            const hours = Math.floor(duration / 60);
+                            const minutes = duration % 60;
+                            let durationText = '';
+                            if (duration > 0) {
+                                if (hours > 0) durationText += hours + ' ч ';
+                                if (minutes > 0) durationText += minutes + ' мин';
+                            } else {
+                                durationText = '—';
+                            }
+                            
+                                                                    newRow.innerHTML = `
+                                            <td>${data.service.name}</td>
+                                            <td class="currency-amount" data-amount="${data.service.price || ''}">${price}</td>
+                                            <td>${durationText}</td>
+                                            <td class="actions-cell">
+                                                <button class="btn-edit" onclick="openEditModal(${data.service.id})">
+                                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                    </svg>
+                                                    Ред.
+                                                </button>
+                                                <button class="btn-delete">
+                                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Удалить
+                                                </button>
+                                            </td>
+                                        `;
+                            
+                            tbody.insertBefore(newRow, tbody.firstChild);
+                            
+                            // Также добавляем карточку в мобильную версию
+                            if (window.innerWidth <= 768) {
+                                const servicesCards = document.getElementById('servicesCards');
+                                if (servicesCards) {
+                                    const card = document.createElement('div');
+                                    card.className = 'service-card';
+                                    card.id = `service-card-${data.service.id}`;
+                                    
+                                    card.innerHTML = `
+                                        <div class="service-card-header">
+                                            <h3 class="service-name">${data.service.name}</h3>
+                                        </div>
+                                        <div class="service-card-info">
+                                            <div class="service-info-item">
+                                                <span class="info-label">Цена:</span>
+                                                <span class="info-value">${price}</span>
+                                            </div>
+                                            <div class="service-info-item">
+                                                <span class="info-label">Длительность:</span>
+                                                <span class="info-value">${durationText}</span>
+                                            </div>
+                                        </div>
+                                        <div class="service-card-actions">
+                                            <button class="btn-edit" onclick="openEditModal(${data.service.id})">
+                                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                                </svg>
+                                                Ред.
+                                            </button>
+                                            <button class="btn-delete">
+                                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                                </svg>
+                                                Удалить
+                                            </button>
+                                        </div>
+                                    `;
+                                    
+                                    servicesCards.insertBefore(card, servicesCards.firstChild);
+                                }
+                            }
+                        }
+                    }
+                },
+                function(error) {
+                    window.showNotification('error', 'Ошибка при добавлении услуги');
+                }
+            );
+        });
+    }
+
+    // Обработчик формы редактирования услуги
+    const editServiceForm = document.getElementById('editServiceForm');
+    if (editServiceForm) {
+        editServiceForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this; // Сохраняем ссылку на форму
+            const serviceId = form.querySelector('#editServiceId').value;
+            submitForm('editServiceForm', `/services/${serviceId}`, 'POST', 
+                function(data) {
+                    // Успешное редактирование
+                    window.showNotification('success', 'Услуга успешно обновлена');
+                    closeModal('editServiceModal');
+                    
+                    // Обновляем данные в таблице без перезагрузки
+                    if (data.service) {
+                        const row = document.getElementById(`service-${data.service.id}`);
+                        if (row) {
+                            // Обновляем название услуги
+                            row.cells[0].textContent = data.service.name;
+                            
+                            // Обновляем цену
+                            const price = data.service.price ? 
+                                (data.service.price == parseInt(data.service.price) ? 
+                                    parseInt(data.service.price) : 
+                                    parseFloat(data.service.price).toFixed(2)) + ' грн' : '—';
+                            row.cells[1].textContent = price;
+                            row.cells[1].setAttribute('data-amount', data.service.price || '');
+                            
+                            // Обновляем длительность
+                            const duration = data.service.duration || 0;
+                            const hours = Math.floor(duration / 60);
+                            const minutes = duration % 60;
+                            let durationText = '';
+                            if (duration > 0) {
+                                if (hours > 0) durationText += hours + ' ч ';
+                                if (minutes > 0) durationText += minutes + ' мин';
+                            } else {
+                                durationText = '—';
+                            }
+                            row.cells[2].textContent = durationText;
+                        }
+                        
+                        // Также обновляем мобильную карточку
+                        if (window.innerWidth <= 768) {
+                            const card = document.getElementById(`service-card-${data.service.id}`);
+                            if (card) {
+                                const nameElement = card.querySelector('.service-name');
+                                const priceElement = card.querySelector('.service-info-item:first-child .info-value');
+                                const durationElement = card.querySelector('.service-info-item:last-child .info-value');
+                                
+                                if (nameElement) nameElement.textContent = data.service.name;
+                                if (priceElement) priceElement.textContent = price;
+                                if (durationElement) durationElement.textContent = durationText;
+                            }
+                        }
+                    }
+                },
+                function(error) {
+                    window.showNotification('error', 'Ошибка при обновлении услуги');
+                }
+            );
+        });
+    }
+
+    // Инициализация очистки полей
+    clearDurationFieldOnFocus();
+    
+    // Переключаем на правильную версию
+    toggleMobileView();
+});
+
+// Обработчик изменения размера окна
+window.addEventListener('resize', function() {
+    toggleMobileView();
+}); 
