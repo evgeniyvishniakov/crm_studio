@@ -616,7 +616,7 @@ aside.left-panel {
     flex-direction: column;
     flex-wrap: nowrap; }
     .navbar .navbar-nav > li {
-      padding-left: 30px;
+      
       padding-right: 30px; }
       .navbar .navbar-nav > li.active {
         background: #fafafa; }
@@ -2369,11 +2369,7 @@ footer.site-footer {
       aside.left-panel .navbar .navbar-nav li.active a:after {
         content: '';
         display: none; }
-    aside.left-panel .navbar .navbar-nav .menu-title {
-      font-size: 0;
-      line-height: 0;
-      opacity: 0;
-      padding: 0; }
+    
     aside.left-panel .menutoggle {
       display: none; }
     aside.left-panel.open-menu {
