@@ -350,6 +350,14 @@ Route::middleware('auth:client')->group(function () {
     Route::get('/api/dashboard/expenses-chart', [\App\Http\Controllers\Client\DashboardController::class, 'expensesChartData']);
     Route::get('/api/dashboard/activity-chart', [\App\Http\Controllers\Client\DashboardController::class, 'activityChartData']);
 
+    // Подписки
+    Route::prefix('subscriptions')->name('client.subscriptions.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Client\SubscriptionsController::class, 'index'])->name('index');
+        Route::get('/renew', [\App\Http\Controllers\Client\SubscriptionsController::class, 'renew'])->name('renew');
+        Route::post('/change-plan', [\App\Http\Controllers\Client\SubscriptionsController::class, 'changePlan'])->name('change-plan');
+        Route::get('/cancel', [\App\Http\Controllers\Client\SubscriptionsController::class, 'cancel'])->name('cancel');
+    });
+
     // Настройки
     Route::prefix('settings')->name('client.settings.')->group(function () {
         Route::get('/', [SettingsController::class, 'index'])->name('index');

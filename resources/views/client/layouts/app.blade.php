@@ -570,7 +570,8 @@
                     request()->routeIs('admin.email-templates.*') || 
                     request()->routeIs('admin.security.*') || 
                     request()->routeIs('support-tickets.*') || 
-                    request()->routeIs('client.notifications.*') ? 'active' : '' 
+                    request()->routeIs('client.notifications.*') || 
+                    request()->routeIs('client.subscriptions.*') ? 'active' : '' 
                 }}">
                                         <a href="#settingsMenu" data-toggle="collapse" aria-expanded="{{
                         request()->routeIs('client.users.*') || 
@@ -582,7 +583,7 @@
                         request()->routeIs('admin.security.*') || 
                         request()->routeIs('client.support-tickets.*') || 
                         request()->routeIs('client.notifications.*') || 
-                        request()->routeIs('client.notifications.*') ? 'true' : 'false' 
+                        request()->routeIs('client.subscriptions.*') ? 'true' : 'false' 
                     }}" class="dropdown-toggle" title="{{ __('messages.settings') }}">
                         <i class="menu-icon fa fa-cogs"></i>{{ __('messages.settings') }}
                     </a>
@@ -595,7 +596,8 @@
                         request()->routeIs('admin.email-templates.*') || 
                         request()->routeIs('admin.security.*') || 
                         request()->routeIs('client.support-tickets.*') || 
-                        request()->routeIs('client.notifications.*') ? 'show' : '' 
+                        request()->routeIs('client.notifications.*') || 
+                        request()->routeIs('client.subscriptions.*') ? 'show' : '' 
                     }}">
                         <li class="{{ request()->routeIs('client.users.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('client.users', $userPermissions); @endphp
@@ -653,6 +655,17 @@
                                     <i class="fas fa-lock"></i>
                                 @endif
                                 <span class="menu-label">{{ __('messages.notifications') }}</span>
+                            </a>
+                        </li>
+                        <li class="{{ request()->routeIs('client.subscriptions.*') ? 'active' : '' }}">
+                            @php $hasAccess = $isAdmin || in_array('subscriptions', $userPermissions); @endphp
+                            <a href="{{ $hasAccess ? route('client.subscriptions.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.subscriptions') }}">
+                                @if($hasAccess)
+                                    <i class="fa fa-credit-card"></i>
+                                @else
+                                    <i class="fas fa-lock"></i>
+                                @endif
+                                <span class="menu-label">{{ __('messages.subscriptions') }}</span>
                             </a>
                         </li>
 
@@ -781,6 +794,7 @@
                         <a class="nav-link" href="{{ route('client.settings.index') }}#profile"><i class="fa fa-user"></i>{{ __('messages.my_profile') }}</a>
 
                         <a class="nav-link" href="{{ route('client.settings.index') }}#security"><i class="fa fa-cog"></i>{{ __('messages.change_password') }}</a>
+                        <a class="nav-link" href="{{ route('client.subscriptions.index') }}"><i class="fa fa-credit-card"></i>{{ __('messages.subscriptions') }}</a>
                         <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="fa fa-power-off"></i>{{ __('messages.logout') }}
                         </a>

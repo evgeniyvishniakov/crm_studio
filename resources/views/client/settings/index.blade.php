@@ -13,8 +13,6 @@
         <button class="tab-button" data-tab="security"><i class="fa fa-shield-alt" style="margin-right:8px;"></i>{{ __('messages.security') }}</button>
         <button class="tab-button" data-tab="notifications"><i class="fa fa-bell" style="margin-right:8px;"></i>{{ __('messages.notifications') }}</button>
         <button class="tab-button" data-tab="language"><i class="fa fa-globe" style="margin-right:8px;"></i>{{ __('messages.language_and_currency') }}</button>
-        <button class="tab-button" data-tab="subscription"><i class="fa fa-credit-card" style="margin-right:8px;"></i>{{ __('messages.subscription') }}</button>
-        <button class="tab-button" data-tab="delete"><i class="fa fa-trash" style="margin-right:8px;"></i>{{ __('messages.delete') }}</button>
     </div>
     <div class="settings-content">
         <!-- Профиль -->
@@ -507,21 +505,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 </script>
             </form>
-        </div>
-        <!-- Подписки -->
-        <div class="settings-pane" id="tab-subscription" style="display:none;">
-            <h5>{{ __('messages.subscription') }}</h5>
-            <div class="alert alert-info">
-                {{ __('messages.subscription_info') }}
-            </div>
-        </div>
-        <!-- Удаление аккаунта -->
-        <div class="settings-pane" id="tab-delete" style="display:none;">
-            <h5>{{ __('messages.delete_account') }}</h5>
-            <div class="alert alert-danger mb-4" style="font-size:1rem;">
-                <b>{{ __('messages.warning') }}!</b> {{ __('messages.delete_account_warning') }}
-            </div>
-            <button class="btn btn-danger">{{ __('messages.delete_account_button') }}</button>
         </div>
     </div>
 </div>
