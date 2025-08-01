@@ -522,92 +522,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     closeModal('addServiceModal');
                     form.reset();
                     
-                    // Добавляем новую строку в таблицу без перезагрузки
-                    if (data.service) {
-                        const tableBody = document.getElementById('servicesTableBody');
-                        const newRow = document.createElement('tr');
-                        newRow.id = `service-${data.service.id}`;
-                        
-                        // Форматируем цену
-                        const price = data.service.price ? 
-                            (data.service.price == parseInt(data.service.price) ? 
-                                parseInt(data.service.price) : 
-                                parseFloat(data.service.price).toFixed(2)) + ' грн' : '—';
-                        
-                        // Форматируем длительность
-                        const duration = data.service.duration || 0;
-                        const hours = Math.floor(duration / 60);
-                        const minutes = duration % 60;
-                        let durationText = '';
-                        if (duration > 0) {
-                            if (hours > 0) durationText += hours + ' ч ';
-                            if (minutes > 0) durationText += minutes + ' мин';
-                        } else {
-                            durationText = '—';
-                        }
-                        
-                        newRow.innerHTML = `
-                            <td>${data.service.name}</td>
-                            <td class="currency-amount" data-amount="${data.service.price || ''}">${price}</td>
-                            <td>${durationText}</td>
-                            <td class="actions-cell">
-                                <button class="btn-edit" onclick="openEditModal(${data.service.id})">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                    </svg>
-                                    Ред.
-                                </button>
-                                <button class="btn-delete">
-                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                    Удалить
-                                </button>
-                            </td>
-                        `;
-                        
-                        tableBody.insertBefore(newRow, tableBody.firstChild);
-                        
-                        // Также добавляем мобильную карточку если нужно
-                        if (window.innerWidth <= 768) {
-                            const servicesCards = document.getElementById('servicesCards');
-                            const card = document.createElement('div');
-                            card.className = 'service-card';
-                            card.id = `service-card-${data.service.id}`;
-                            
-                            card.innerHTML = `
-                                <div class="service-card-header">
-                                    <h3 class="service-name">${data.service.name}</h3>
-                                </div>
-                                <div class="service-card-info">
-                                    <div class="service-info-item">
-                                        <span class="info-label">Цена:</span>
-                                        <span class="info-value">${price}</span>
-                                    </div>
-                                    <div class="service-info-item">
-                                        <span class="info-label">Длительность:</span>
-                                        <span class="info-value">${durationText}</span>
-                                    </div>
-                                </div>
-                                <div class="service-card-actions">
-                                    <button class="btn-edit" onclick="openEditModal(${data.service.id})">
-                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                        </svg>
-                                        Ред.
-                                    </button>
-                                    <button class="btn-delete">
-                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                    Удалить
-                                </button>
-                            </div>
-                        `;
-                            
-                            servicesCards.insertBefore(card, servicesCards.firstChild);
-                        }
-                    }
+                    // Перезагружаем данные с правильной пагинацией
+                    // Новая услуга будет на первой странице (самая новая)
+                    loadServices(1);
                 },
                 function(error) {
                     window.showNotification('error', 'Ошибка при добавлении услуги');
