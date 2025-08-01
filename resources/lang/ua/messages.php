@@ -43,6 +43,7 @@ return [
     'select_supplier' => 'Виберіть постачальника',
     'notes_label' => 'Примітки',
     'products_label' => 'Товари',
+    'items' => 'товарів',
     'photo_label' => 'Фото',
     'no_photo' => 'Немає фото',
     'please_start_typing_product' => 'Будь ласка, почніть вводити назву товару і виберіть його зі списку',

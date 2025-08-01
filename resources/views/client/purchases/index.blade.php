@@ -2,7 +2,8 @@
 
 @section('content')
     <div class="dashboard-container">
-        <div class="purchases-header">
+        <div class="purchases-container">
+            <div class="purchases-header">
             <h1>{{ __('messages.purchases') }}</h1>
             <div id="notification" class="notification">
                 <!-- Уведомления будут появляться здесь -->
@@ -23,21 +24,31 @@
             </div>
         </div>
 
-        <table class="table purchases-table">
-            <thead>
-                <tr>
-                    <th>{{ __('messages.date') }}</th>
-                    <th>{{ __('messages.supplier') }}</th>
-                    <th>{{ __('messages.wholesale_amount') }}</th>
-                    <th>{{ __('messages.notes') }}</th>
-                    <th>{{ __('messages.actions') }}</th>
-                </tr>
-            </thead>
-            <tbody id="purchasesListBody">
-                <!-- Данные будут загружаться через AJAX -->
-            </tbody>
-        </table>
+        <!-- Десктопная таблица -->
+        <div id="purchasesList" class="table-wrapper">
+            <table class="table purchases-table">
+                <thead>
+                    <tr>
+                        <th>{{ __('messages.date') }}</th>
+                        <th>{{ __('messages.supplier') }}</th>
+                        <th>{{ __('messages.wholesale_amount') }}</th>
+                        <th>{{ __('messages.notes') }}</th>
+                        <th>{{ __('messages.actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody id="purchasesListBody">
+                    <!-- Данные будут загружаться через AJAX -->
+                </tbody>
+            </table>
+        </div>
         <div id="purchasesPagination"></div>
+
+        <!-- Мобильные карточки -->
+        <div id="purchasesCards" class="purchases-cards" style="display: none;">
+            <!-- Карточки будут загружаться через AJAX -->
+        </div>
+        <div id="mobilePurchasesPagination" style="display: none;"></div>
+        </div>
     </div>
 
     <!-- Модальное окно добавления закупки -->
@@ -905,6 +916,16 @@
             }
         }
 
+        // Вспомогательные функции
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         // --- AJAX пагинация ---
         let currentPage = 1;
 
@@ -995,6 +1016,77 @@
             });
         }
 
+        function updateMobileCards(purchases) {
+            console.log('updateMobileCards called with:', purchases);
+            const cardsContainer = document.getElementById('purchasesCards');
+            console.log('cardsContainer:', cardsContainer);
+            cardsContainer.innerHTML = '';
+
+            if (!purchases || purchases.length === 0) {
+                console.log('No purchases to display');
+                return;
+            }
+
+            purchases.forEach(purchase => {
+                const card = document.createElement('div');
+                card.className = 'purchase-card';
+                card.id = `purchase-card-${purchase.id}`;
+                
+                card.innerHTML = `
+                    <div class="purchase-card-header">
+                        <div class="purchase-main-info">
+                            <div class="purchase-supplier">${escapeHtml(purchase.supplier ? purchase.supplier.name : '{{ __('messages.not_specified') }}')}</div>
+                            <div class="purchase-total">${formatCurrency(purchase.total_amount)}</div>
+                        </div>
+                    </div>
+                    <div class="purchase-info">
+                        <div class="purchase-info-item">
+                            <span class="purchase-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                                </svg>
+                                {{ __('messages.date') }}
+                            </span>
+                            <span class="purchase-info-value">${purchase.date ? new Date(purchase.date).toLocaleDateString('ru-RU') : '—'}</span>
+                        </div>
+                        <div class="purchase-info-item">
+                            <span class="purchase-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                </svg>
+                                {{ __('messages.notes') }}
+                            </span>
+                            <span class="purchase-info-value">${escapeHtml(purchase.notes || '—')}</span>
+                        </div>
+                        <div class="purchase-info-item">
+                            <span class="purchase-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clip-rule="evenodd" />
+                                </svg>
+                                {{ __('messages.products') }}
+                            </span>
+                            <span class="purchase-info-value">${purchase.items ? purchase.items.length : 0} {{ __('messages.items') }}</span>
+                        </div>
+                    </div>
+                    <div class="purchase-actions">
+                        <button class="btn-edit" onclick="editPurchase(event, ${purchase.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                            </svg>
+                            {{ __('messages.edit_short') }}
+                        </button>
+                        <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ __('messages.delete') }}
+                        </button>
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
+            });
+        }
+
         function renderPagination(meta) {
             let paginationHtml = '';
             if (meta.last_page > 1) {
@@ -1050,10 +1142,66 @@
             });
         }
 
+        function renderMobilePagination(meta) {
+            let paginationHtml = '';
+            if (meta.last_page > 1) {
+                paginationHtml += '<div class="pagination">';
+                // Кнопка "<"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}>&lt;</button>`;
+
+                let pages = [];
+                if (meta.last_page <= 7) {
+                    // Показываем все страницы
+                    for (let i = 1; i <= meta.last_page; i++) pages.push(i);
+                } else {
+                    // Всегда показываем первую
+                    pages.push(1);
+                    // Если текущая страница > 4, показываем троеточие
+                    if (meta.current_page > 4) pages.push('...');
+                    // Показываем 2 страницы до и после текущей
+                    let start = Math.max(2, meta.current_page - 2);
+                    let end = Math.min(meta.last_page - 1, meta.current_page + 2);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    // Если текущая страница < last_page - 3, показываем троеточие
+                    if (meta.current_page < meta.last_page - 3) pages.push('...');
+                    // Всегда показываем последнюю
+                    pages.push(meta.last_page);
+                }
+                pages.forEach(p => {
+                    if (p === '...') {
+                        paginationHtml += `<span class="page-ellipsis">...</span>`;
+                    } else {
+                        paginationHtml += `<button class="page-btn${p === meta.current_page ? ' active' : ''}" data-page="${p}">${p}</button>`;
+                    }
+                });
+                // Кнопка ">"
+                paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;</button>`;
+                paginationHtml += '</div>';
+            }
+            let pagContainer = document.getElementById('mobilePurchasesPagination');
+            if (!pagContainer) {
+                pagContainer = document.createElement('div');
+                pagContainer.id = 'mobilePurchasesPagination';
+                document.querySelector('.dashboard-container').appendChild(pagContainer);
+            }
+            pagContainer.innerHTML = paginationHtml;
+
+            // Навешиваем обработчики
+            document.querySelectorAll('#mobilePurchasesPagination .page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    if (!isNaN(page) && !this.disabled) {
+                        loadPurchases(page);
+                    }
+                });
+            });
+        }
+
         function loadPurchases(page = 1, search = '') {
             currentPage = page;
             const searchValue = search !== undefined ? search : document.getElementById('searchInput').value.trim();
-            fetch(`/purchases?search=${encodeURIComponent(searchValue)}&page=${page}`, {
+            const url = `/purchases?search=${encodeURIComponent(searchValue)}&page=${page}`;
+            fetch(url, {
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
@@ -1061,13 +1209,19 @@
             })
             .then(response => response.json())
             .then(data => {
+                console.log('loadPurchases received data:', data);
                 // Обновляем allProducts для поиска в модальных окнах
                 if (data.products) {
                     allProducts = data.products;
                 }
                 
                 renderPurchases(data.data);
+                updateMobileCards(data.data);
                 renderPagination(data.meta);
+                renderMobilePagination(data.meta);
+                
+                // Переключаем на правильную версию после загрузки данных
+                toggleMobileView();
             })
             .catch(error => {
                 window.showNotification('error', '{{ __('messages.error_loading_data') }}');
@@ -1078,9 +1232,6 @@
         document.getElementById('searchInput').addEventListener('input', function() {
             loadPurchases(1, this.value.trim());
         });
-
-        // Инициализация первой загрузки
-        loadPurchases(1);
 
         // Глобальная переменная для хранения всех продуктов
         let allProducts = @json($products);
@@ -1193,6 +1344,53 @@
                 }
             }
         });
+
+        // Функция для переключения между десктопной и мобильной версией
+        function toggleMobileView() {
+            const tableWrapper = document.getElementById('purchasesList');
+            const purchasesCards = document.getElementById('purchasesCards');
+            const purchasesPagination = document.getElementById('purchasesPagination');
+            const mobilePurchasesPagination = document.getElementById('mobilePurchasesPagination');
+            
+            console.log('toggleMobileView called, window width:', window.innerWidth);
+            console.log('tableWrapper:', tableWrapper);
+            console.log('purchasesCards:', purchasesCards);
+            console.log('purchasesPagination:', purchasesPagination);
+            console.log('mobilePurchasesPagination:', mobilePurchasesPagination);
+            
+            if (window.innerWidth <= 768) {
+                // Мобильная версия
+                console.log('Switching to mobile view');
+                if (tableWrapper) tableWrapper.style.setProperty('display', 'none', 'important');
+                if (purchasesCards) purchasesCards.style.setProperty('display', 'block', 'important');
+                if (purchasesPagination) purchasesPagination.style.setProperty('display', 'none', 'important');
+                if (mobilePurchasesPagination) mobilePurchasesPagination.style.setProperty('display', 'block', 'important');
+            } else {
+                // Десктопная версия
+                console.log('Switching to desktop view');
+                if (tableWrapper) tableWrapper.style.setProperty('display', 'block', 'important');
+                if (purchasesCards) purchasesCards.style.setProperty('display', 'none', 'important');
+                if (purchasesPagination) purchasesPagination.style.setProperty('display', 'block', 'important');
+                if (mobilePurchasesPagination) mobilePurchasesPagination.style.setProperty('display', 'none', 'important');
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPurchases(1);
+            // Вызываем toggleMobileView после небольшой задержки, чтобы данные успели загрузиться
+            setTimeout(() => {
+                toggleMobileView();
+            }, 100);
+        });
+
+        // Вызываем toggleMobileView при изменении размера окна
+        window.addEventListener('resize', function() {
+            toggleMobileView();
+        });
+
+        // Обработчик изменения размера окна
+        window.addEventListener('resize', toggleMobileView);
     </script>
     <style>
         .purchase-summary-row {
@@ -1226,6 +1424,37 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        /* Дополнительные стили для принудительного переключения на мобильные карточки */
+        @media (max-width: 768px) {
+            #purchasesList {
+                display: none !important;
+            }
+            #purchasesCards {
+                display: block !important;
+            }
+            #purchasesPagination {
+                display: none !important;
+            }
+            #mobilePurchasesPagination {
+                display: block !important;
+            }
+        }
+
+        @media (min-width: 769px) {
+            #purchasesList {
+                display: block !important;
+            }
+            #purchasesCards {
+                display: none !important;
+            }
+            #purchasesPagination {
+                display: block !important;
+            }
+            #mobilePurchasesPagination {
+                display: none !important;
+            }
         }
 
     </style>

@@ -12,9 +12,16 @@ class ExpensesController extends Controller
     public function index(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
+        
+        // Отладочная информация
+        \Log::info('Loading expenses for project:', [
+            'project_id' => $currentProjectId,
+            'user_id' => auth()->id()
+        ]);
+        
         $query = Expense::where('project_id', $currentProjectId)->orderBy('date', 'desc');
 
-        if ($request->has('search') && $request->search !== '') {
+        if ($request->has('search') && $request->search !== '' && trim($request->search) !== '') {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('comment', 'like', "%$search%");
@@ -22,6 +29,15 @@ class ExpensesController extends Controller
         }
 
         if ($request->ajax()) {
+            // Отладочная информация - проверим SQL запрос
+            \Log::info('SQL Query Debug:', [
+                'project_id' => $currentProjectId,
+                'raw_sql' => $query->toSql(),
+                'bindings' => $query->getBindings(),
+                'user_id' => auth()->id(),
+                'user_project_id' => auth()->user()->project_id
+            ]);
+            
             $expenses = $query->paginate(11);
             $categories = config('expenses.categories', [
                 'Аренда и коммуналка',
@@ -31,6 +47,14 @@ class ExpensesController extends Controller
                 'Налоги',
                 'Прочее'
             ]);
+            // Отладочная информация
+            \Log::info('AJAX expenses response:', [
+                'project_id' => $currentProjectId,
+                'total_expenses' => $expenses->total(),
+                'current_page' => $expenses->currentPage(),
+                'items_count' => count($expenses->items())
+            ]);
+            
             return response()->json([
                 'data' => $expenses->items(),
                 'meta' => [
@@ -62,12 +86,26 @@ class ExpensesController extends Controller
         try {
             $validated = $request->validate([
                 'date' => 'required|date',
-                'comment' => 'required|string',
+                'comment' => 'nullable|string',
                 'amount' => 'required|numeric|min:0',
                 'category' => 'required|string|in:' . implode(',', config('expenses.categories'))
             ]);
 
-            $expense = Expense::create($validated + ['project_id' => $currentProjectId]);
+            // Преобразуем пустую строку в null для поля comment
+            $data = $validated;
+            if (isset($data['comment']) && empty(trim($data['comment']))) {
+                $data['comment'] = null;
+            }
+            
+            $expense = Expense::create($data + ['project_id' => $currentProjectId]);
+            
+            // Отладочная информация
+            \Log::info('Expense created:', [
+                'expense_id' => $expense->id,
+                'project_id' => $expense->project_id,
+                'current_project_id' => $currentProjectId,
+                'data' => $data
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -89,7 +127,7 @@ class ExpensesController extends Controller
         try {
             $validated = $request->validate([
                 'date' => 'required|date',
-                'comment' => 'required|string',
+                'comment' => 'nullable|string',
                 'amount' => 'required|numeric|min:0',
                 'category' => 'required|string|in:' . implode(',', config('expenses.categories'))
             ]);
@@ -97,7 +135,13 @@ class ExpensesController extends Controller
             if ($expense->project_id !== $currentProjectId) {
                 return response()->json(['success' => false, 'message' => 'Нет доступа к расходу'], 403);
             }
-            $expense->update($validated);
+            // Преобразуем пустую строку в null для поля comment
+            $data = $validated;
+            if (isset($data['comment']) && empty(trim($data['comment']))) {
+                $data['comment'] = null;
+            }
+            
+            $expense->update($data);
 
             return response()->json([
                 'success' => true,

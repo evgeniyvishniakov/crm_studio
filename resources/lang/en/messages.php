@@ -43,6 +43,7 @@ return [
     'select_supplier' => 'Select supplier',
     'notes_label' => 'Notes',
     'products_label' => 'Products',
+    'items' => 'items',
     'photo_label' => 'Photo',
     'no_photo' => 'No photo',
     'please_start_typing_product' => 'Please start typing product name and select it from the list',
