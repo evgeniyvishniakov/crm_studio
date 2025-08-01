@@ -7,7 +7,8 @@
         <img id="modalImage" class="modal-image-content" onclick="event.stopPropagation()">
     </div>
 
-    <div class="warehouse-header">
+    <div class="warehouse-container">
+        <div class="warehouse-header">
         <h1>{{ __('messages.warehouse') }}</h1>
         <div id="notification" class="notification">
             <!-- Уведомления будут появляться здесь -->
@@ -46,8 +47,16 @@
         </table>
     </div>
 
+    <!-- Карточки для мобильной версии -->
+    <div class="warehouse-cards" id="warehouseCards" style="display: none;">
+        <!-- Карточки будут загружаться через AJAX -->
+    </div>
+
     <!-- Пагинация -->
     <div id="warehousePagination"></div>
+    
+    <!-- Пагинация для мобильных карточек -->
+    <div id="mobileWarehousePagination" style="display: none;"></div>
 
     <!-- Модальное окно добавления -->
     <div id="addModal" class="modal">
@@ -402,6 +411,29 @@
                             retailPriceElement.textContent = formatPrice(data.warehouse.retail_price);
                             row.querySelector('.quantity').textContent = data.warehouse.quantity + ' {{ __('messages.units') }}';
                         }
+
+                        // Update the mobile card
+                        const card = document.getElementById(`warehouse-card-${id}`);
+                        if (card) {
+                            // Update stock quantity
+                            const stockElement = card.querySelector('.warehouse-stock');
+                            if (stockElement) {
+                                stockElement.textContent = data.warehouse.quantity + ' {{ __('messages.units') }}';
+                            }
+
+                            // Update purchase price
+                            const purchasePriceCardElement = card.querySelector('.warehouse-info-item:first-child .warehouse-info-value');
+                            if (purchasePriceCardElement) {
+                                purchasePriceCardElement.textContent = formatPrice(data.warehouse.purchase_price);
+                            }
+
+                            // Update retail price
+                            const retailPriceCardElement = card.querySelector('.warehouse-info-item:last-child .warehouse-info-value');
+                            if (retailPriceCardElement) {
+                                retailPriceCardElement.textContent = formatPrice(data.warehouse.retail_price);
+                            }
+                        }
+
                         closeEditModal();
                         window.showNotification('success', '{{ __('messages.changes_successfully_saved') }}');
                     }
@@ -483,7 +515,10 @@
         // Функция для удаления товара
         function deleteItem(id) {
             const row = document.getElementById(`warehouse-${id}`);
+            const card = document.getElementById(`warehouse-card-${id}`);
+            
             if (row) row.classList.add('row-deleting');
+            if (card) card.classList.add('row-deleting');
 
             fetch(`/warehouses/${id}`, {
                 method: 'DELETE',
@@ -630,7 +665,9 @@
 
         function renderWarehouseItems(items) {
             const tbody = document.getElementById('warehouseTableBody');
+            const cardsContainer = document.getElementById('warehouseCards');
             tbody.innerHTML = '';
+            cardsContainer.innerHTML = '';
             
             // Если нет товаров, не делаем ничего
             if (!items || items.length === 0) {
@@ -642,6 +679,7 @@
                     `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` :
                     '<div class="no-photo">{{ __('messages.no_photo') }}</div>';
                 
+                // Рендерим строку таблицы
                 const row = document.createElement('tr');
                 row.id = `warehouse-${item.id}`;
                 row.innerHTML = `
@@ -666,6 +704,59 @@
                     </td>
                 `;
                 tbody.appendChild(row);
+
+                // Рендерим карточку для мобильной версии
+                const card = document.createElement('div');
+                card.className = 'warehouse-card';
+                card.id = `warehouse-card-${item.id}`;
+                card.innerHTML = `
+                    <div class="warehouse-card-header">
+                        <div class="warehouse-photo-container">
+                            ${photoHtml}
+                        </div>
+                        <div class="warehouse-main-info">
+                            <div class="warehouse-product-name">${item.product ? item.product.name : 'Товар не найден'}</div>
+                            <div class="warehouse-stock">${item.quantity} {{ __('messages.units') }}</div>
+                        </div>
+                    </div>
+                    <div class="warehouse-info">
+                        <div class="warehouse-info-item">
+                            <div class="warehouse-info-label">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ __('messages.purchase_price') }}
+                            </div>
+                            <div class="warehouse-info-value">${formatPrice(item.purchase_price)}</div>
+                        </div>
+                        <div class="warehouse-info-item">
+                            <div class="warehouse-info-label">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ __('messages.retail_price') }}
+                            </div>
+                            <div class="warehouse-info-value">${formatPrice(item.retail_price)}</div>
+                        </div>
+                    </div>
+                    <div class="warehouse-actions">
+                        <button class="btn-edit" onclick="openEditModal(${item.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            {{ __('messages.edit') }}
+                        </button>
+                        <button class="btn-delete" onclick="confirmDelete(${item.id})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            {{ __('messages.delete') }}
+                        </button>
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
             });
 
             // Добавляем обработчики для изображений
@@ -713,6 +804,8 @@
                 paginationHtml += `<button class="page-btn" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}>&gt;</button>`;
                 paginationHtml += '</div>';
             }
+            
+            // Рендерим пагинацию для десктопа
             let pagContainer = document.getElementById('warehousePagination');
             if (!pagContainer) {
                 pagContainer = document.createElement('div');
@@ -721,8 +814,27 @@
             }
             pagContainer.innerHTML = paginationHtml;
 
-            // Навешиваем обработчики
-            document.querySelectorAll('.page-btn').forEach(btn => {
+            // Рендерим пагинацию для мобильных карточек
+            let mobilePagContainer = document.getElementById('mobileWarehousePagination');
+            if (!mobilePagContainer) {
+                mobilePagContainer = document.createElement('div');
+                mobilePagContainer.id = 'mobileWarehousePagination';
+                document.querySelector('.warehouse-cards').appendChild(mobilePagContainer);
+            }
+            mobilePagContainer.innerHTML = paginationHtml;
+
+            // Навешиваем обработчики для десктопа
+            document.querySelectorAll('#warehousePagination .page-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = parseInt(this.dataset.page);
+                    if (!isNaN(page) && !this.disabled) {
+                        loadWarehouseItems(page);
+                    }
+                });
+            });
+
+            // Навешиваем обработчики для мобильных карточек
+            document.querySelectorAll('#mobileWarehousePagination .page-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const page = parseInt(this.dataset.page);
                     if (!isNaN(page) && !this.disabled) {
@@ -763,9 +875,42 @@
 
         // Инициализация первой загрузки
         loadWarehouseItems(1);
+
+        // Функция для переключения между таблицей и карточками на мобильных устройствах
+        function toggleMobileView() {
+            const tableWrapper = document.querySelector('.table-wrapper');
+            const warehouseCards = document.getElementById('warehouseCards');
+            const warehousePagination = document.getElementById('warehousePagination');
+            const mobileWarehousePagination = document.getElementById('mobileWarehousePagination');
+
+            if (window.innerWidth <= 768) {
+                // На мобильных устройствах показываем карточки
+                if (tableWrapper) tableWrapper.style.display = 'none';
+                if (warehousePagination) warehousePagination.style.display = 'none';
+                if (warehouseCards) warehouseCards.style.display = 'block';
+                if (mobileWarehousePagination) mobileWarehousePagination.style.display = 'block';
+            } else {
+                // На десктопе показываем таблицу
+                if (tableWrapper) tableWrapper.style.display = 'block';
+                if (warehousePagination) warehousePagination.style.display = 'block';
+                if (warehouseCards) warehouseCards.style.display = 'none';
+                if (mobileWarehousePagination) mobileWarehousePagination.style.display = 'none';
+            }
+        }
+
+        // Вызываем функцию при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleMobileView();
+        });
+
+        // Вызываем функцию при изменении размера окна
+        window.addEventListener('resize', function() {
+            toggleMobileView();
+        });
     </script>
 
-</div>
+        </div>
+    </div>
 
 <script>
 function openImageModal(imgElement) {
