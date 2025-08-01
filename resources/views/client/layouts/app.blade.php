@@ -45,6 +45,7 @@
     <script src="/client/js/currency-manager.js"></script>
     <script src="/client/js/language-manager.js"></script>
     <script src="/client/js/calendar-localization.js"></script>
+    <script src="{{ asset('client/js/common.js') }}"></script>
 
     <!-- Данные валюты для JavaScript -->
     @php
@@ -211,7 +212,7 @@
         .user-area {
             display: flex;
             align-items: center;
-            margin-left: 18px;
+            
         }
         .tab-button.active {
             background: linear-gradient(135deg, #3b82f6, #60a5fa);
@@ -741,7 +742,7 @@
                     </div>
                     @endif
 
-                    <div class="dropdown for-message">
+                  <!-- <div class="dropdown for-message">
                         <button class="btn btn-secondary dropdown-toggle" type="button" id="message" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-envelope"></i>
                             <span class="count bg-primary">4</span>
@@ -782,7 +783,7 @@
                             </a>
                         </div>
                     </div>
-                </div>
+                </div>-->
 
                 <div class="user-area dropdown float-right">
                     <a href="#" class="dropdown-toggle active" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

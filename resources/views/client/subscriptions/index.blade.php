@@ -169,43 +169,14 @@
 </div>
 
 <script>
-function renewSubscription() {
-    if (confirm('{{ __("messages.confirm_renew_subscription") }}')) {
-        window.location.href = '{{ route("client.subscriptions.renew") }}';
-    }
-}
-
-function changePlan() {
-    window.location.href = '{{ route("client.subscriptions.change-plan") }}';
-}
-
-function selectPlan(planId) {
-    if (confirm('{{ __("messages.confirm_change_plan") }}')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{{ route("client.subscriptions.change-plan") }}';
-        
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'plan_id';
-        input.value = planId;
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
-        
-        form.appendChild(input);
-        form.appendChild(csrfToken);
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
-
-function cancelAutoRenewal() {
-    if (confirm('{{ __("messages.confirm_cancel_auto_renewal") }}')) {
-        window.location.href = '{{ route("client.subscriptions.cancel") }}';
-    }
-}
+// Переменные для функций подписок
+const confirmRenewSubscriptionMessage = '{{ __("messages.confirm_renew_subscription") }}';
+const confirmChangePlanMessage = '{{ __("messages.confirm_change_plan") }}';
+const confirmCancelAutoRenewalMessage = '{{ __("messages.confirm_cancel_auto_renewal") }}';
+const renewSubscriptionUrl = '{{ route("client.subscriptions.renew") }}';
+const changePlanUrl = '{{ route("client.subscriptions.change-plan") }}';
+const cancelSubscriptionUrl = '{{ route("client.subscriptions.cancel") }}';
+const csrfTokenValue = '{{ csrf_token() }}';
 </script>
+<script src="{{ asset('client/js/subscriptions.js') }}"></script>
 @endsection 
