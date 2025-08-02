@@ -7091,3 +7091,75 @@
         margin-left: auto;
     }
 }
+
+/* Мобильные стили для товаров */
+@media (max-width: 768px) {
+    .products-cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .product-card {
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .product-card-header {
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .product-photo-container {
+        width: 60px;
+        height: 60px;
+        border-radius: 6px;
+    }
+
+    .product-name {
+        font-size: 1rem;
+    }
+
+    .product-category-badge,
+    .product-brand-badge {
+        padding: 3px 6px;
+        font-size: 0.7rem;
+    }
+
+    .product-info-item {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+
+    .product-info-label {
+        min-width: 80px;
+        font-size: 0.8rem;
+    }
+
+    .product-info-label svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .product-actions {
+        gap: 6px;
+    }
+
+    .product-actions .btn-edit,
+    .product-actions .btn-delete {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+        border-radius: 5px;
+    }
+
+    .product-actions svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    /* Скрытие кнопок экспорта и импорта в мобильной версии */
+    .btn-export,
+    .btn-import {
+        display: none !important;
+    }
+}
