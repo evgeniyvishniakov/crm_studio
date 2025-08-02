@@ -782,11 +782,27 @@ function updateTable(products) {
                 </div>
                 <div class="product-main-info">
                     <h3 class="product-name">${product.name}</h3>
-                    ${product.category?.name ? `<span class="product-category-badge">${product.category.name}</span>` : ''}
-                    ${product.brand?.name ? `<span class="product-brand-badge">${product.brand.name}</span>` : ''}
                 </div>
             </div>
             <div class="product-info">
+                <div class="product-info-item">
+                    <span class="product-info-label">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" clip-rule="evenodd" />
+                        </svg>
+                        Категория
+                    </span>
+                    <span class="product-info-value">${product.category?.name ?? '—'}</span>
+                </div>
+                <div class="product-info-item">
+                    <span class="product-info-label">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                        </svg>
+                        Бренд
+                    </span>
+                    <span class="product-info-value">${product.brand?.name ?? '—'}</span>
+                </div>
                 <div class="product-info-item">
                     <span class="product-info-label">
                         <svg viewBox="0 0 20 20" fill="currentColor">
@@ -811,7 +827,7 @@ function updateTable(products) {
                     <svg viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
-                    Изменить
+                    Редактировать
                 </button>
                 <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${product.id})">
                     <svg viewBox="0 0 20 20" fill="currentColor">
@@ -892,7 +908,13 @@ function renderPagination(meta) {
 
 function handleSearch() {
     const searchInput = document.getElementById('searchInput');
-    const query = searchInput.value.trim();
+    const searchInputMobile = document.getElementById('searchInputMobile');
+    const query = searchInput ? searchInput.value.trim() : (searchInputMobile ? searchInputMobile.value.trim() : '');
+    
+    // Синхронизируем поиск между десктопной и мобильной версиями
+    if (searchInput && searchInputMobile) {
+        searchInputMobile.value = searchInput.value;
+    }
     
     // Сбрасываем на первую страницу при поиске
     loadPage(1, query);
@@ -945,15 +967,22 @@ function checkDeletedProducts() {
     .then(response => response.json())
     .then(data => {
         const deletedProductsBtn = document.getElementById('deletedProductsBtn');
+        const deletedProductsBtnMobile = document.getElementById('deletedProductsBtnMobile');
+        
         if (data.success && data.products && data.products.length > 0) {
-            deletedProductsBtn.style.display = 'inline-flex';
+            if (deletedProductsBtn) deletedProductsBtn.style.display = 'inline-flex';
+            if (deletedProductsBtnMobile) deletedProductsBtnMobile.style.display = 'inline-flex';
         } else {
-            deletedProductsBtn.style.display = 'none';
+            if (deletedProductsBtn) deletedProductsBtn.style.display = 'none';
+            if (deletedProductsBtnMobile) deletedProductsBtnMobile.style.display = 'none';
         }
     })
     .catch(error => {
         console.error('Ошибка при проверке удаленных товаров:', error);
-        document.getElementById('deletedProductsBtn').style.display = 'none';
+        const deletedProductsBtn = document.getElementById('deletedProductsBtn');
+        const deletedProductsBtnMobile = document.getElementById('deletedProductsBtnMobile');
+        if (deletedProductsBtn) deletedProductsBtn.style.display = 'none';
+        if (deletedProductsBtnMobile) deletedProductsBtnMobile.style.display = 'none';
     });
 }
 

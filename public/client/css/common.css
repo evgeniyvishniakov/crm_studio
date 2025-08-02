@@ -3273,6 +3273,44 @@ input[type="date"]:focus {
 }
 
 /* Стили для товаров */
+.products-header {
+    margin-bottom: 20px;
+}
+
+/* Мобильная версия заголовка товаров */
+.mobile-header {
+    display: none;
+}
+
+.mobile-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 20px 0;
+}
+
+.mobile-header-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.mobile-header-actions .btn-export,
+.mobile-header-actions .btn-import,
+.mobile-header-actions .btn-add-product,
+.mobile-header-actions .btn-trash {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+}
+
+.mobile-header-actions .search-box {
+    width: 100%;
+    max-width: 300px;
+}
+
 .products-cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

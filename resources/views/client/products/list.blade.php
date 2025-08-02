@@ -42,6 +42,46 @@
                 </button>
             </div>
             </div>
+            
+            <!-- Мобильная версия заголовка -->
+            <div class="mobile-header">
+                <h1 class="mobile-title">{{ __('messages.products') }}</h1>
+                <div class="mobile-header-actions">
+                    <button class="btn-export" onclick="openExportModal()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
+                        {{ __('messages.export') }}
+                    </button>
+                    <button class="btn-import" onclick="openImportModal()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        {{ __('messages.import') }}
+                    </button>
+                    <button class="btn-add-product" onclick="openModal()">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('messages.add_product') }}
+                    </button>
+
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                        <input type="text" id="searchInputMobile" placeholder="{{ __('messages.search') }}..." onkeyup="handleSearch()">
+                    </div>
+                    
+                    <!-- Кнопка удаленных товаров -->
+                    <button id="deletedProductsBtnMobile" class="btn-trash" onclick="showTrashedProducts()" title="{{ __('messages.show_deleted_products') }}" style="display: none;">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                        </svg>
+                        {{ __('messages.deleted_products') }}
+                    </button>
+                </div>
+            </div>
             <div id="notification" class="notification alert alert-success" role="alert">
                 <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>

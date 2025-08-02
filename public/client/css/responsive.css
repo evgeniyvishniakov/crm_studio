@@ -7156,6 +7156,7 @@
     .product-card-header {
         gap: 12px;
         margin-bottom: 12px;
+        align-items: center;
     }
 
     .product-photo-container {
@@ -7209,5 +7210,15 @@
     .btn-export,
     .btn-import {
         display: none !important;
+    }
+    
+    /* Скрываем десктопную версию заголовка */
+    .products-header .header-top {
+        display: none;
+    }
+    
+    /* Показываем мобильную версию заголовка */
+    .mobile-header {
+        display: block;
     }
 }
