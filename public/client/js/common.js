@@ -100,6 +100,10 @@ function setupModalCloseOnOutsideClick() {
     window.onclick = function(event) {
         const modals = document.querySelectorAll('.modal');
         modals.forEach(modal => {
+            // Игнорируем модальные окна услуг
+            if (modal.id === 'addServiceModal' || modal.id === 'editServiceModal') {
+                return;
+            }
             if (event.target === modal) {
                 modal.style.display = 'none';
             }
@@ -207,15 +211,18 @@ function submitForm(formId, url, method = 'POST', successCallback = null, errorC
         if (data.success) {
             if (successCallback) successCallback(data);
         } else {
-            if (data.errors) {
+            if (data.errors && typeof data.errors === 'object') {
                 showErrors(data.errors, formId);
             }
             if (errorCallback) errorCallback(data);
         }
     })
     .catch(error => {
-        console.error('Ошибка:', error);
-        if (error.errors) {
+        // Не выводим в консоль ошибки валидации
+        if (!error.errors || Object.keys(error.errors).length === 0) {
+            console.error('Ошибка:', error);
+        }
+        if (error && error.errors && typeof error.errors === 'object') {
             showErrors(error.errors, formId);
         }
         if (errorCallback) errorCallback(error);

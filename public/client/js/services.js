@@ -24,16 +24,31 @@ function formatDuration(duration) {
 
 // Функции для работы с модальным окном
 function openServiceModal() {
-    openModal('addServiceModal');
+    const modal = document.getElementById('addServiceModal');
+    if (modal) {
+        modal.style.display = 'block';
+        // Предотвращаем закрытие при клике вне модального окна
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                e.stopPropagation();
+            }
+        });
+    }
 }
 
 function closeServiceModal() {
-    closeModal('addServiceModal');
+    const modal = document.getElementById('addServiceModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
     clearErrors();
 }
 
 function closeEditServiceModal() {
-    closeModal('editServiceModal');
+    const modal = document.getElementById('editServiceModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
     clearErrors('editServiceForm');
 }
 
@@ -264,7 +279,16 @@ function openEditModal(serviceId) {
             form.querySelector('[name="duration_hours"]').value = hours;
             form.querySelector('[name="duration_minutes"]').value = minutes;
 
-            openModal('editServiceModal');
+            const modal = document.getElementById('editServiceModal');
+            if (modal) {
+                modal.style.display = 'block';
+                // Предотвращаем закрытие при клике вне модального окна
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        e.stopPropagation();
+                    }
+                });
+            }
         })
         .catch(error => {
             window.showNotification('error', 'Ошибка при загрузке данных услуги');
@@ -519,7 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 function(data) {
                     // Успешное добавление
                     window.showNotification('success', 'Услуга успешно добавлена');
-                    closeModal('addServiceModal');
+                    closeServiceModal();
                     form.reset();
                     
                     // Перезагружаем данные с правильной пагинацией
@@ -527,7 +551,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     loadServices(1);
                 },
                 function(error) {
-                    window.showNotification('error', 'Ошибка при добавлении услуги');
+                    // Не показываем уведомление, если ошибки уже отображены в форме
+                    if (!error.errors || Object.keys(error.errors).length === 0) {
+                        window.showNotification('error', 'Ошибка при добавлении услуги');
+                    }
                 }
             );
         });
@@ -544,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 function(data) {
                     // Успешное редактирование
                     window.showNotification('success', 'Услуга успешно обновлена');
-                    closeModal('editServiceModal');
+                    closeEditServiceModal();
                     
                     // Обновляем данные в таблице без перезагрузки
                     if (data.service) {
@@ -591,7 +618,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 },
                 function(error) {
-                    window.showNotification('error', 'Ошибка при обновлении услуги');
+                    // Не показываем уведомление, если ошибки уже отображены в форме
+                    if (!error.errors || Object.keys(error.errors).length === 0) {
+                        window.showNotification('error', 'Ошибка при обновлении услуги');
+                    }
                 }
             );
         });
