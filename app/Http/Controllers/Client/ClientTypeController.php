@@ -15,7 +15,7 @@ class ClientTypeController extends Controller
         $query = ClientType::where(function($q) use ($currentProjectId) {
             $q->where('project_id', $currentProjectId)
               ->orWhere('is_global', true);
-        });
+        })->orderBy('created_at', 'desc');
 
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;

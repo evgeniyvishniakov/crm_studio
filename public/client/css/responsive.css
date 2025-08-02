@@ -7028,3 +7028,66 @@
 }
 
 /* Размер заголовка карточки услуги в мобильной */
+
+/* Мобильные стили для типов клиентов */
+@media (max-width: 768px) {
+    .client-types-cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .client-type-card {
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .client-type-name {
+        font-size: 1rem;
+    }
+
+    .client-type-info-item {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+
+    .client-type-info-label {
+        min-width: 70px;
+        font-size: 0.8rem;
+    }
+
+    .client-type-info-label svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .client-type-actions {
+        gap: 6px;
+    }
+
+    .client-type-actions .btn-edit,
+    .client-type-actions .btn-delete {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+        border-radius: 5px;
+    }
+
+    .client-type-actions svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .client-type-actions svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .client-type-info-item {
+        justify-content: space-between;
+    }
+
+    .client-type-info-value {
+        text-align: right;
+        margin-left: auto;
+    }
+}

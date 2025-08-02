@@ -96,13 +96,18 @@
     </div>
 
     <!-- Модальное окно подтверждения удаления -->
-    <div id="confirmationModal" class="confirmation-modal">
-        <div class="confirmation-content">
-            <h3>{{ __('messages.confirm_delete_service') }}</h3>
-            <p>{{ __('messages.confirm_delete_service') }}</p>
-            <div class="confirmation-buttons">
-                <button id="cancelDelete" class="cancel-btn">{{ __('messages.cancel') }}</button>
-                <button id="confirmDelete" class="confirm-btn">{{ __('messages.delete') }}</button>
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>{{ __('messages.confirm_delete') }}</h2>
+                <span class="close" onclick="document.getElementById('confirmationModal').style.display='none'">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>{{ __('messages.confirm_delete_service') }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" id="cancelDelete">{{ __('messages.cancel') }}</button>
+                <button type="button" class="btn-delete" id="confirmDelete">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
