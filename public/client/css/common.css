@@ -537,30 +537,7 @@
     height: 16px;
 }
 
-@media (max-width: 768px) {
-    .btn-edit,
-    .btn-delete,
-    .btn-view,
-    .btn-pdf {
-        flex: 1;
-        justify-content: center;
-        padding: 10px 12px;
-        font-size: 13px;
-        font-weight: 500;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        text-decoration: none;
-    }
-    
-    .btn-edit:hover,
-    .btn-delete:hover,
-    .btn-view:hover,
-    .btn-pdf:hover {
-        transform: translateY(-1px);
-    }
-}
+
 
 .widget-section-header {
     margin: 25px 0 15px 0 !important;
@@ -1484,11 +1461,7 @@
         min-width: 300px; /* Минимальная ширина */
     }
     /* Адаптация для мобильных */
-    @media (max-width: 768px) {
-        .product-group {
-            min-width: 200px;
-        }
-    }
+
 
 .delete-btn:hover {
     color: #dc3545 !important;
@@ -1729,19 +1702,7 @@ input[type="date"]:focus {
 }
 
 /* Мобильные стили */
-@media (max-width: 768px) {
-    input[type="date"] {
-        cursor: pointer !important;
-    }
-    
-    .date-picker-wrapper {
-        cursor: pointer !important;
-    }
-    
-    .calendar-icon {
-        cursor: pointer !important;
-    }
-}
+
 
 /* ===== КНОПКА ЗАКРЫТИЯ МОБИЛЬНОГО МЕНЮ ===== */
 /* Принудительно скрываем на всех устройствах по умолчанию */
