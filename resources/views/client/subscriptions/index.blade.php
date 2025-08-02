@@ -168,6 +168,7 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
 // Переменные для функций подписок
 const confirmRenewSubscriptionMessage = '{{ __("messages.confirm_renew_subscription") }}';
@@ -179,4 +180,5 @@ const cancelSubscriptionUrl = '{{ route("client.subscriptions.cancel") }}';
 const csrfTokenValue = '{{ csrf_token() }}';
 </script>
 <script src="{{ asset('client/js/subscriptions.js') }}"></script>
+@endpush
 @endsection 

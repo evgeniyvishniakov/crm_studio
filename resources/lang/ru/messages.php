@@ -1341,6 +1341,7 @@ return [
     'category_active' => 'Активна',
     'category_inactive' => 'Неактивна',
     'confirm_delete_category' => 'Вы уверены, что хотите удалить эту категорию?',
+    'delete_category_confirmation' => 'Вы уверены, что хотите удалить эту категорию?',
     
     // Бренды товаров
     'product_brands' => 'Бренды товаров',

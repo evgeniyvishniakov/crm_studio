@@ -2,7 +2,15 @@
 
 // Функции для работы с модальными окнами
 function openModal() {
-    document.getElementById('addServiceModal').style.display = 'block';
+    const modal = document.getElementById('addServiceModal');
+    modal.style.display = 'block';
+    
+    // Предотвращаем закрытие при клике вне модального окна
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            e.stopPropagation();
+        }
+    });
 }
 
 function closeModal() {
@@ -15,18 +23,31 @@ function closeEditModal() {
     clearCategoryErrors('editServiceForm');
 }
 
-// Закрытие модального окна при клике вне его
-window.onclick = function(event) {
-    if (event.target == document.getElementById('addServiceModal')) {
-        closeModal();
-    }
-    if (event.target == document.getElementById('editServiceModal')) {
-        closeEditModal();
-    }
-    if (event.target == document.getElementById('confirmationModal')) {
-        document.getElementById('confirmationModal').style.display = 'none';
-        window.currentDeleteId = null;
-    }
+// Функция для открытия модального окна редактирования
+function openEditModal(categoryId) {
+    const modal = document.getElementById('editServiceModal');
+    
+    fetch(`/product-categories/${categoryId}/edit`)
+        .then(response => response.json())
+        .then(category => {
+            const form = document.getElementById('editServiceForm');
+            form.querySelector('#editServiceId').value = category.id;
+            form.querySelector('#editServiceName').value = category.name;
+            form.querySelector('#editServiceDescription').value = category.description || '';
+            form.querySelector('#editServiceStatus').value = category.status ? '1' : '0';
+
+            modal.style.display = 'block';
+            
+            // Предотвращаем закрытие при клике вне модального окна
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    e.stopPropagation();
+                }
+            });
+        })
+        .catch(error => {
+            window.showNotification('error', 'Ошибка при загрузке данных категории');
+        });
 }
 
 // Функция для очистки ошибок
@@ -146,23 +167,7 @@ function deleteCategory(categoryId) {
     });
 }
 
-// Функции для работы с модальным окном редактирования
-function openEditModal(categoryId) {
-    fetch(`/product-categories/${categoryId}/edit`)
-        .then(response => response.json())
-        .then(category => {
-            const form = document.getElementById('editServiceForm');
-            form.querySelector('#editServiceId').value = category.id;
-            form.querySelector('#editServiceName').value = category.name;
-            form.querySelector('#editServiceDescription').value = category.description || '';
-            form.querySelector('#editServiceStatus').value = category.status ? '1' : '0';
 
-            document.getElementById('editServiceModal').style.display = 'block';
-        })
-        .catch(error => {
-            window.showNotification('error', 'Ошибка при загрузке данных категории');
-        });
-}
 
 // Функция для обновления строки категории в таблице
 function updateCategoryRow(category) {
@@ -534,7 +539,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-HTTP-Method-Override': 'PUT'
                 },
                 body: formData
             })

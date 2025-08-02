@@ -147,7 +147,9 @@
         </div>
     </div>
 
+@push('scripts')
     <script src="{{ asset('client/js/services.js') }}"></script>
+@endpush
 </div>
 @endsection
 

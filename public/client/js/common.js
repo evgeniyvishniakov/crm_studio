@@ -100,7 +100,7 @@ function setupModalCloseOnOutsideClick() {
     window.onclick = function(event) {
         const modals = document.querySelectorAll('.modal');
         modals.forEach(modal => {
-            // Игнорируем модальные окна услуг
+            // Игнорируем модальные окна услуг и категорий
             if (modal.id === 'addServiceModal' || modal.id === 'editServiceModal') {
                 return;
             }

@@ -1162,6 +1162,7 @@ return [
     'category_active' => 'Active',
     'category_inactive' => 'Inactive',
     'confirm_delete_category' => 'Are you sure you want to delete this category?',
+    'delete_category_confirmation' => 'Are you sure you want to delete this category?',
     
     // Product Brands
     'product_brands' => 'Product Brands',

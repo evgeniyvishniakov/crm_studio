@@ -2317,11 +2317,6 @@ input[type="date"]:focus {
     text-transform: uppercase;
 }
 
-.status-badge.active {
-    background: #dcfce7;
-    color: #166534;
-}
-
 .status-badge.expired {
     background: #fef2f2;
     color: #dc2626;
@@ -2863,5 +2858,7 @@ input[type="date"]:focus {
 .form-row .form-group:last-child .duration-fields {
     margin-top: auto; /* Прижимаем к низу */
 }
+
+
 
 
