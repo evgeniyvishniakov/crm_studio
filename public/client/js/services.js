@@ -88,12 +88,22 @@ function createMobileCards(services = null) {
                     </div>
                     <div class="service-card-info">
                         <div class="service-info-item">
-                            <span class="info-label">Цена:</span>
-                            <span class="info-value">${price}</span>
+                            <span class="service-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                                Цена:
+                            </span>
+                            <span class="service-info-value">${price}</span>
                         </div>
                         <div class="service-info-item">
-                            <span class="info-label">Длительность:</span>
-                            <span class="info-value">${duration}</span>
+                            <span class="service-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                                </svg>
+                                Длительность:
+                            </span>
+                            <span class="service-info-value">${duration}</span>
                         </div>
                     </div>
                     <div class="service-card-actions">
@@ -103,7 +113,7 @@ function createMobileCards(services = null) {
                             </svg>
                             Ред.
                         </button>
-                        <button class="btn-delete">
+                        <button class="btn-delete" onclick="showDeleteConfirmation(${serviceId})">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
@@ -144,16 +154,26 @@ function createMobileCards(services = null) {
                 <div class="service-card-header">
                     <h3 class="service-name">${service.name}</h3>
                 </div>
-                <div class="service-card-info">
-                    <div class="service-info-item">
-                        <span class="info-label">Цена:</span>
-                        <span class="info-value">${price}</span>
+                                    <div class="service-card-info">
+                        <div class="service-info-item">
+                            <span class="service-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                                Цена:
+                            </span>
+                            <span class="service-info-value">${price}</span>
+                        </div>
+                        <div class="service-info-item">
+                            <span class="service-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                                </svg>
+                                Длительность:
+                            </span>
+                            <span class="service-info-value">${durationText}</span>
+                        </div>
                     </div>
-                    <div class="service-info-item">
-                        <span class="info-label">Длительность:</span>
-                        <span class="info-value">${durationText}</span>
-                    </div>
-                </div>
                 <div class="service-card-actions">
                     <button class="btn-edit" onclick="openEditModal(${service.id})">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -161,7 +181,7 @@ function createMobileCards(services = null) {
                         </svg>
                         Ред.
                     </button>
-                    <button class="btn-delete">
+                    <button class="btn-delete" onclick="showDeleteConfirmation(${service.id})">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
@@ -354,7 +374,7 @@ function renderServices(services) {
                     </svg>
                     Ред.
                 </button>
-                <button class="btn-delete">
+                <button class="btn-delete" onclick="showDeleteConfirmation(${service.id})">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>

@@ -321,6 +321,7 @@
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
 }
 
 .btn-view {
@@ -335,41 +336,76 @@
 }
 
 .btn-edit {
-    
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
     color: white;
 }
 
 .btn-edit:hover {
     transform: translateY(-2px);
-    
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
-.widget-section-header {
-    margin: 25px 0 15px 0 !important;
-    font-size: 16px !important;
-}
-
 .btn-delete {
-    background: linear-gradient(135deg, #dc2626, #ef4444);
+    background: linear-gradient(135deg, #ef4444, #f87171);
     color: white;
 }
 
 .btn-delete:hover {
     transform: translateY(-2px);
-    background: linear-gradient(135deg, #b91c1c, #dc2626);
+    background: linear-gradient(135deg, #dc2626, #ef4444);
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
+
 .btn-pdf {
     background: linear-gradient(135deg, #eba70e 60%, #f3c138 100%);
     color: #fff;
     box-shadow: 0 2px 8px rgba(235, 167, 14, 0.15);
 }
+
 .btn-pdf:hover {
     transform: translateY(-2px);
     background: linear-gradient(135deg, #d18c00 60%, #e6b800 100%);
     box-shadow: 0 4px 12px rgba(235, 167, 14, 0.3);
     color: #fff;
+}
+
+.btn-edit svg,
+.btn-delete svg,
+.btn-view svg,
+.btn-pdf svg {
+    width: 16px;
+    height: 16px;
+}
+
+@media (max-width: 768px) {
+    .btn-edit,
+    .btn-delete,
+    .btn-view,
+    .btn-pdf {
+        flex: 1;
+        justify-content: center;
+        padding: 10px 12px;
+        font-size: 13px;
+        font-weight: 500;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .btn-edit:hover,
+    .btn-delete:hover,
+    .btn-view:hover,
+    .btn-pdf:hover {
+        transform: translateY(-1px);
+    }
+}
+
+.widget-section-header {
+    margin: 25px 0 15px 0 !important;
+    font-size: 16px !important;
 }
 
 /* Общие стили для иконок */

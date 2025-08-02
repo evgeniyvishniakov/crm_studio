@@ -1342,7 +1342,24 @@
         color: #1f2937;
     }
     
-    .service-actions {
+    /* Общие стили для кнопок действий в мобильной версии */
+    .service-actions,
+    .category-actions,
+    .product-actions,
+    .client-actions,
+    .supplier-actions,
+    .brand-actions,
+    .client-type-actions,
+    .user-actions,
+    .role-actions,
+    .ticket-actions,
+    .notification-actions,
+    .expense-actions,
+    .purchase-actions,
+    .sale-actions,
+    .warehouse-actions,
+    .appointment-actions,
+    .user-service-actions {
         display: flex;
         gap: 8px;
         margin-top: 16px;
@@ -1351,7 +1368,40 @@
     }
     
     .service-actions .btn-edit,
-    .service-actions .btn-delete {
+    .service-actions .btn-delete,
+    .category-actions .btn-edit,
+    .category-actions .btn-delete,
+    .product-actions .btn-edit,
+    .product-actions .btn-delete,
+    .client-actions .btn-edit,
+    .client-actions .btn-delete,
+    .client-actions .btn-view,
+    .supplier-actions .btn-edit,
+    .supplier-actions .btn-delete,
+    .brand-actions .btn-edit,
+    .brand-actions .btn-delete,
+    .client-type-actions .btn-edit,
+    .client-type-actions .btn-delete,
+    .user-actions .btn-edit,
+    .user-actions .btn-delete,
+    .role-actions .btn-edit,
+    .role-actions .btn-delete,
+    .ticket-actions .btn-chat,
+    .notification-actions .btn-open,
+    .notification-actions .btn-delete,
+    .expense-actions .btn-edit,
+    .expense-actions .btn-delete,
+    .purchase-actions .btn-edit,
+    .purchase-actions .btn-delete,
+    .sale-actions .btn-edit,
+    .sale-actions .btn-delete,
+    .warehouse-actions .btn-edit,
+    .warehouse-actions .btn-delete,
+    .appointment-actions .btn-edit,
+    .appointment-actions .btn-delete,
+    .appointment-actions .btn-view,
+    .user-service-actions .btn-edit,
+    .user-service-actions .btn-delete {
         flex: 1;
         display: flex;
         align-items: center;
@@ -1367,28 +1417,105 @@
         text-decoration: none;
     }
     
-    .service-actions .btn-edit {
+    .service-actions .btn-edit,
+    .category-actions .btn-edit,
+    .product-actions .btn-edit,
+    .client-actions .btn-edit,
+    .supplier-actions .btn-edit,
+    .brand-actions .btn-edit,
+    .client-type-actions .btn-edit,
+    .user-actions .btn-edit,
+    .role-actions .btn-edit,
+    .warehouse-actions .btn-edit,
+    .appointment-actions .btn-edit,
+    .user-service-actions .btn-edit {
         background: linear-gradient(135deg, #3b82f6, #60a5fa);
         color: white;
     }
     
-    .service-actions .btn-edit:hover {
+    .service-actions .btn-edit:hover,
+    .category-actions .btn-edit:hover,
+    .product-actions .btn-edit:hover,
+    .client-actions .btn-edit:hover,
+    .supplier-actions .btn-edit:hover,
+    .brand-actions .btn-edit:hover,
+    .client-type-actions .btn-edit:hover,
+    .user-actions .btn-edit:hover,
+    .role-actions .btn-edit:hover,
+    .warehouse-actions .btn-edit:hover,
+    .appointment-actions .btn-edit:hover,
+    .user-service-actions .btn-edit:hover {
         background: linear-gradient(135deg, #2563eb, #3b82f6);
         transform: translateY(-1px);
     }
     
-    .service-actions .btn-delete {
+    .service-actions .btn-delete,
+    .category-actions .btn-delete,
+    .product-actions .btn-delete,
+    .client-actions .btn-delete,
+    .supplier-actions .btn-delete,
+    .brand-actions .btn-delete,
+    .client-type-actions .btn-delete,
+    .user-actions .btn-delete,
+    .role-actions .btn-delete,
+    .warehouse-actions .btn-delete,
+    .appointment-actions .btn-delete,
+    .user-service-actions .btn-delete {
         background: linear-gradient(135deg, #ef4444, #f87171);
         color: white;
     }
     
-    .service-actions .btn-delete:hover {
+    .service-actions .btn-delete:hover,
+    .category-actions .btn-delete:hover,
+    .product-actions .btn-delete:hover,
+    .client-actions .btn-delete:hover,
+    .supplier-actions .btn-delete:hover,
+    .brand-actions .btn-delete:hover,
+    .client-type-actions .btn-delete:hover,
+    .user-actions .btn-delete:hover,
+    .role-actions .btn-delete:hover,
+    .warehouse-actions .btn-delete:hover,
+    .appointment-actions .btn-delete:hover,
+    .user-service-actions .btn-delete:hover {
         background: linear-gradient(135deg, #dc2626, #ef4444);
         transform: translateY(-1px);
     }
     
     .service-actions .btn-edit svg,
-    .service-actions .btn-delete svg {
+    .service-actions .btn-delete svg,
+    .category-actions .btn-edit svg,
+    .category-actions .btn-delete svg,
+    .product-actions .btn-edit svg,
+    .product-actions .btn-delete svg,
+    .client-actions .btn-edit svg,
+    .client-actions .btn-delete svg,
+    .client-actions .btn-view svg,
+    .supplier-actions .btn-edit svg,
+    .supplier-actions .btn-delete svg,
+    .brand-actions .btn-edit svg,
+    .brand-actions .btn-delete svg,
+    .client-type-actions .btn-edit svg,
+    .client-type-actions .btn-delete svg,
+    .user-actions .btn-edit svg,
+    .user-actions .btn-delete svg,
+    .role-actions .btn-edit svg,
+    .role-actions .btn-delete svg,
+    .ticket-actions .btn-chat svg,
+    .notification-actions .btn-open svg,
+    .notification-actions .btn-delete svg,
+    .expense-actions .btn-edit svg,
+    .expense-actions .btn-delete svg,
+    .purchase-actions .btn-edit svg,
+    .purchase-actions .btn-delete svg,
+    .sale-actions .btn-edit svg,
+    .sale-actions .btn-delete svg,
+    .warehouse-actions .btn-edit svg,
+    .warehouse-actions .btn-delete svg,
+    .appointment-actions .btn-edit svg,
+    .appointment-actions .btn-delete svg,
+    .appointment-actions .btn-view svg,
+    .user-service-actions .btn-edit svg,
+    .user-service-actions .btn-delete svg {
         width: 16px;
         height: 16px;
     }
@@ -1497,56 +1624,7 @@
         max-width: 60%;
     }
     
-    .category-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 16px;
-        padding-top: 12px;
-        border-top: 1px solid #f3f4f6;
-    }
-    
-    .category-actions .btn-edit,
-    .category-actions .btn-delete {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 10px 12px;
-        border: none;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        text-decoration: none;
-    }
-    
-    .category-actions .btn-edit {
-        background: linear-gradient(135deg, #3b82f6, #60a5fa);
-        color: white;
-    }
-    
-    .category-actions .btn-edit:hover {
-        background: linear-gradient(135deg, #2563eb, #3b82f6);
-        transform: translateY(-1px);
-    }
-    
-    .category-actions .btn-delete {
-        background: linear-gradient(135deg, #ef4444, #f87171);
-        color: white;
-    }
-    
-    .category-actions .btn-delete:hover {
-        background: linear-gradient(135deg, #dc2626, #ef4444);
-        transform: translateY(-1px);
-    }
-    
-    .category-actions .btn-edit svg,
-    .category-actions .btn-delete svg {
-        width: 16px;
-        height: 16px;
-    }
+
     
     /* Пагинация для мобильных карточек категорий */
     #mobileCategoriesPagination {
@@ -1601,7 +1679,7 @@
     .category-main-info {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         gap: 10px;
     }
 
@@ -1650,54 +1728,7 @@
         text-align: right;
     }
 
-    .category-actions {
-        display: flex;
-        gap: 8px;
-        justify-content: flex-end;
-    }
 
-    .category-actions .btn-edit,
-    .category-actions .btn-delete {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 12px;
-        border: none;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        min-width: 80px;
-        justify-content: center;
-    }
-
-    .category-actions .btn-edit {
-        background-color: #f3f4f6;
-        color: #374151;
-    }
-
-    .category-actions .btn-edit:hover {
-        background-color: #e5e7eb;
-        transform: translateY(-1px);
-    }
-
-    .category-actions .btn-delete {
-        background-color: #fef2f2;
-        color: #dc2626;
-    }
-
-    .category-actions .btn-delete:hover {
-        background-color: #fee2e2;
-        transform: translateY(-1px);
-    }
-
-    .category-actions .btn-edit svg,
-    .category-actions .btn-delete svg {
-        width: 14px;
-        height: 14px;
-    }
 
     /* Стили для мобильных карточек брендов */
     .brands-cards {
