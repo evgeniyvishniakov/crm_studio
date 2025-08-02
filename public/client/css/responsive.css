@@ -1756,7 +1756,7 @@
         left: 0;
         right: 0;
         height: 3px;
-        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
     }
 
     .brand-card:hover {
@@ -1811,7 +1811,7 @@
     .brand-info-label svg {
         width: 16px;
         height: 16px;
-        color: #9ca3af;
+        color: #f59e0b;
     }
 
     .brand-info-value {
