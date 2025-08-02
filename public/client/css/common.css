@@ -1879,7 +1879,6 @@ input[type="date"]:focus {
     }
     
     .client-info {
-        margin-bottom: 12px;
         display: flex !important;
         flex-direction: column !important;
         align-items: stretch !important;
@@ -2850,6 +2849,7 @@ input[type="date"]:focus {
 /* Скрытие элементов на мобильных по умолчанию */
 .services-cards {
     display: none;
+    padding: 0 15px;
 }
 
 #mobileServicesPagination {
@@ -3277,39 +3277,7 @@ input[type="date"]:focus {
     margin-bottom: 20px;
 }
 
-/* Мобильная версия заголовка товаров */
-.mobile-header {
-    display: none;
-}
 
-.mobile-title {
-    text-align: center;
-    font-size: 24px;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 20px 0;
-}
-
-.mobile-header-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-}
-
-.mobile-header-actions .btn-export,
-.mobile-header-actions .btn-import,
-.mobile-header-actions .btn-add-product,
-.mobile-header-actions .btn-trash {
-    width: 100%;
-    max-width: 300px;
-    justify-content: center;
-}
-
-.mobile-header-actions .search-box {
-    width: 100%;
-    max-width: 300px;
-}
 
 .products-cards {
     display: grid;

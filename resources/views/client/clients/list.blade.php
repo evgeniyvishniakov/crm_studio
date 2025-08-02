@@ -4,23 +4,46 @@
 
     <div class="dashboard-container">
         <div class="clients-header">
-            <h1>{{ __('messages.clients') }}</h1>
-            <div id="notification"></div>
-            <div class="header-actions">
-                <button class="btn-add-client" onclick="openModal()">
-                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                    {{ __('messages.add_client') }}
-                </button>
+            <div class="header-top">
+                <h1>{{ __('messages.clients') }}</h1>
+                <div class="header-actions">
+                    <button class="btn-add-client" onclick="openModal()">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('messages.add_client') }}
+                    </button>
 
-                <div class="search-box">
-                    <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                    </svg>
-                    <input type="text" placeholder="{{ __('messages.search') }}" autocomplete="off">
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="{{ __('messages.search') }}" autocomplete="off">
+                    </div>
                 </div>
             </div>
+            
+            <!-- Мобильная версия заголовка -->
+            <div class="mobile-header">
+                <h1 class="mobile-title">{{ __('messages.clients') }}</h1>
+                <div class="mobile-header-actions">
+                    <button class="btn-add-client" onclick="openModal()">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('messages.add_client') }}
+                    </button>
+
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                        <input type="text" id="searchInputMobile" placeholder="{{ __('messages.search') }}" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            
+            <div id="notification"></div>
         </div>
 
         <div class="table-wrapper">
@@ -101,13 +124,18 @@
     </div>
 
     <!-- Модальное окно подтверждения удаления -->
-    <div id="confirmationModal" class="confirmation-modal">
-        <div class="confirmation-content">
-            <h3>{{ __('messages.delete_confirmation') }}</h3>
-            <p>{{ __('messages.delete_client_confirm') }}</p>
-            <div class="confirmation-buttons">
-                <button id="cancelDelete" class="cancel-btn">{{ __('messages.cancel') }}</button>
-                <button id="confirmDelete" class="confirm-btn">{{ __('messages.delete') }}</button>
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>{{ __('messages.delete_confirmation') }}</h2>
+                <span class="close" onclick="closeConfirmationModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>{{ __('messages.delete_client_confirm') }}</p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelDelete" class="btn-cancel">{{ __('messages.cancel') }}</button>
+                <button id="confirmDelete" class="btn-delete">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
@@ -725,6 +753,12 @@
             clearErrors();
         }
 
+        function closeConfirmationModal() {
+            document.getElementById('confirmationModal').style.display = 'none';
+            currentDeleteRow = null;
+            currentDeleteId = null;
+        }
+
         // Закрытие модального окна при клике вне его
         window.onclick = function(event) {
             if (event.target == document.getElementById('addClientModal')) {
@@ -1065,9 +1099,7 @@
 
         // Обработчики для модального окна подтверждения
         document.getElementById('cancelDelete').addEventListener('click', function() {
-            document.getElementById('confirmationModal').style.display = 'none';
-            currentDeleteRow = null;
-            currentDeleteId = null;
+            closeConfirmationModal();
         });
 
         document.getElementById('confirmDelete').addEventListener('click', function() {
@@ -1081,7 +1113,7 @@
                     deleteClient(currentDeleteRow, currentDeleteId);
                 }
             }
-            document.getElementById('confirmationModal').style.display = 'none';
+            closeConfirmationModal();
         });
 
         // Функция для удаления клиента
@@ -1130,9 +1162,7 @@
             // Закрытие модального окна подтверждения при клике вне его
             const confirmationModal = document.getElementById('confirmationModal');
             if (event.target === confirmationModal) {
-                confirmationModal.style.display = 'none';
-                currentDeleteRow = null;
-                currentDeleteId = null;
+                closeConfirmationModal();
             }
         });
 
@@ -2156,22 +2186,73 @@
         }
 
         // Поиск с пагинацией
-        const searchInput = document.querySelector('.search-box input');
-        searchInput.addEventListener('input', function() {
-            loadClients(1, this.value.trim());
-        });
+        const searchInput = document.getElementById('searchInput');
+        const searchInputMobile = document.getElementById('searchInputMobile');
+        
+        function handleSearch() {
+            const query = searchInput ? searchInput.value.trim() : (searchInputMobile ? searchInputMobile.value.trim() : '');
+            
+            // Синхронизируем поиск между десктопной и мобильной версиями
+            if (searchInput && searchInputMobile) {
+                searchInputMobile.value = searchInput.value;
+            }
+            
+            loadClients(1, query);
+        }
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', handleSearch);
+        }
+        
+        if (searchInputMobile) {
+            searchInputMobile.addEventListener('input', handleSearch);
+        }
+
+        // Функция для переключения между десктопной и мобильной версией
+        function toggleMobileView() {
+            const tableWrapper = document.querySelector('.table-wrapper');
+            const clientsCards = document.getElementById('clientsCardsContainer');
+            const clientsPagination = document.getElementById('clientsPagination');
+            const mobileClientsPagination = document.getElementById('mobileClientsPagination');
+            
+            if (window.innerWidth <= 768) {
+                // Мобильная версия
+                if (tableWrapper) {
+                    tableWrapper.style.display = 'none';
+                }
+                if (clientsCards) {
+                    clientsCards.style.display = 'block';
+                }
+                if (clientsPagination) clientsPagination.style.display = 'none';
+                if (mobileClientsPagination) mobileClientsPagination.style.display = 'block';
+            } else {
+                // Десктопная версия
+                if (tableWrapper) {
+                    tableWrapper.style.display = 'block';
+                }
+                if (clientsCards) {
+                    clientsCards.style.display = 'none';
+                }
+                if (clientsPagination) clientsPagination.style.display = 'block';
+                if (mobileClientsPagination) mobileClientsPagination.style.display = 'none';
+            }
+        }
 
         // Инициализация первой загрузки
         loadClients(1);
+        toggleMobileView(); // Переключаем на правильную версию
+        
+        // Обработчик изменения размера окна
+        window.addEventListener('resize', function() {
+            toggleMobileView();
+        });
         
         // Обработчик клавиши Escape для закрытия модальных окон
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 const confirmationModal = document.getElementById('confirmationModal');
                 if (confirmationModal.style.display === 'block') {
-                    confirmationModal.style.display = 'none';
-                    currentDeleteRow = null;
-                    currentDeleteId = null;
+                    closeConfirmationModal();
                 }
             }
         });

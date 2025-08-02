@@ -207,13 +207,7 @@
         margin-bottom: 20px;
     }
     
-    .clients-header h1 {
-        font-size: 20px;
-        text-align: center;
-        color: #1f2937;
-        font-weight: 600;
-        margin: 0;
-    }
+
     
     /* Действия в заголовке */
     .header-actions {
@@ -221,24 +215,7 @@
         gap: 12px;
     }
     
-    /* Кнопка добавления клиента */
-    .btn-add-client {
-        width: 100%;
-        justify-content: center;
-        padding: 12px 16px;
-        font-size: 14px;
-        background: linear-gradient(135deg, #10b981, #34d399);
-        border: none;
-        border-radius: 10px;
-        color: white;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-    
-    .btn-add-client:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    }
+
     
     /* Поисковая строка */
     .search-box {
@@ -400,7 +377,6 @@
     }
     
     .client-info {
-        margin-bottom: 16px;
         display: flex;
         flex-direction: column;
         gap: 12px;
@@ -1410,7 +1386,7 @@
     .user-service-actions {
         display: flex;
         gap: 8px;
-        margin-top: 16px;
+        
         padding-top: 12px;
         border-top: 1px solid #f3f4f6;
     }
@@ -4907,13 +4883,7 @@
         margin-bottom: 20px;
     }
     
-    .clients-header h1 {
-        font-size: 20px;
-        text-align: center;
-        color: #1f2937;
-        font-weight: 600;
-        margin: 0;
-    }
+    
     
     /* Действия в заголовке */
     .header-actions {
@@ -4921,24 +4891,7 @@
         gap: 12px;
     }
     
-    /* Кнопка добавления пользователя */
-    .btn-add-client {
-        width: 100%;
-        justify-content: center;
-        padding: 12px 16px;
-        font-size: 14px;
-        background: linear-gradient(135deg, #10b981, #34d399);
-        border: none;
-        border-radius: 10px;
-        color: white;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-    
-    .btn-add-client:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    }
+
     
     /* Поисковая строка */
     .search-box {
@@ -5249,7 +5202,7 @@
         text-align: center;
         color: #1f2937;
         font-weight: 600;
-        margin: 0;
+        margin: 25px;
     }
     
     /* Действия в заголовке */
@@ -5258,24 +5211,7 @@
         gap: 12px;
     }
     
-    /* Кнопка добавления роли */
-    .btn-add-client {
-        width: 100%;
-        justify-content: center;
-        padding: 12px 16px;
-        font-size: 14px;
-        background: linear-gradient(135deg, #10b981, #34d399);
-        border: none;
-        border-radius: 10px;
-        color: white;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-    
-    .btn-add-client:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    }
+
     
     /* Скрываем десктопную таблицу */
     .table-wrapper {
@@ -5581,7 +5517,7 @@
     .tickets-cards { display: none; }
     .table-wrapper { display: block; } /* Default desktop */
     .clients-header { flex-direction: column; gap: 15px; }
-    .clients-header h1 { font-size: 24px; margin-bottom: 0; }
+    
     .header-actions { flex-direction: column; gap: 10px; }
     .btn-add-client { width: 100%; }
     .table-wrapper { display: none; } /* Hide desktop table on mobile */
@@ -7219,6 +7155,54 @@
     
     /* Показываем мобильную версию заголовка */
     .mobile-header {
+        display: block;
+    }
+}
+
+/* Общие стили для мобильного заголовка */
+.mobile-header {
+    display: none;
+}
+
+.mobile-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 20px 0;
+}
+
+.mobile-header-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.mobile-header-actions .btn-export,
+.mobile-header-actions .btn-import,
+.mobile-header-actions .btn-add-product,
+.mobile-header-actions .btn-trash,
+.mobile-header-actions .btn-add-client {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+}
+
+.mobile-header-actions .search-box {
+    width: 100%;
+    max-width: 300px;
+}
+
+/* Мобильные стили для клиентов */
+@media (max-width: 768px) {
+    /* Скрываем десктопную версию заголовка */
+    .clients-header .header-top {
+        display: none;
+    }
+    
+    /* Показываем мобильную версию заголовка */
+    .clients-header .mobile-header {
         display: block;
     }
 }
