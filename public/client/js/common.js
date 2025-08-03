@@ -366,5 +366,16 @@ function initializeCommonFunctions() {
     });
 }
 
+// Экспорт функций в глобальную область видимости
+window.clearErrors = clearErrors;
+window.showErrors = showErrors;
+window.toggleMobileView = toggleMobileView;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.openImageModal = openImageModal;
+window.closeImageModal = closeImageModal;
+window.escapeHtml = escapeHtml;
+window.formatPrice = formatPrice;
+
 // Автоматическая инициализация при загрузке
 document.addEventListener('DOMContentLoaded', initializeCommonFunctions); 

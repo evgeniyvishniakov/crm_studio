@@ -621,6 +621,9 @@
         gap: 8px;
         justify-content: space-around;
     }
+    .warehouse-card-actions{
+        display: flex;
+    }
 
     .warehouse-actions .btn-edit,
     .warehouse-actions .btn-delete {
@@ -659,6 +662,45 @@
     .warehouse-actions svg {
         width: 14px;
         height: 14px;
+    }
+
+    /* Специальные стили для кнопок склада в мобильной версии */
+    .warehouse-actions .btn-edit {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+    }
+
+    .warehouse-actions .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+
+    .warehouse-actions .btn-edit:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .warehouse-actions .btn-delete:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .warehouse-actions svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Показываем текст кнопок в мобильной версии */
+    .warehouse-actions .btn-text {
+        display: inline;
+        margin-left: 6px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    /* Скрываем текст кнопок в десктопной версии */
+    .warehouse-actions .btn-text {
+        display: none;
     }
 
     .warehouse-card.row-deleting {
@@ -2755,7 +2797,7 @@
         align-items: center;
     }
     
-    .btn-cancel, .btn-submit {
+    .btn-cancel, .btn-submit, .btn-save {
         width: 48%;
         padding: 12px 16px;
         font-size: 14px;
@@ -2772,9 +2814,9 @@
     }
     
     .btn-submit {
-        background: linear-gradient(135deg, #10b981, #34d399);
-        color: white;
-        border: none;
+        background: linear-gradient(135deg, #10b981, #34d399) !important;
+        color: white !important;
+        border: none !important;
     }
     
     .btn-cancel:hover {
@@ -2782,6 +2824,17 @@
     }
     
     .btn-submit:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+    }
+    
+    .btn-save {
+        background: linear-gradient(135deg, #10b981, #34d399);
+        color: white;
+        border: none;
+    }
+    
+    .btn-save:hover {
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
@@ -3842,7 +3895,8 @@
     }
 
     .warehouse-info-label {
-        display: block;
+        display: flex;
+        align-items: center;
         font-size: 13px;
         color: #6b7280;
         font-weight: 500;
@@ -4287,7 +4341,7 @@
         width: auto;
     }
     
-    .btn-cancel, .btn-submit {
+    .btn-cancel, .btn-submit, .btn-save {
         padding: 10px 12px;
         font-size: 13px;
     }
@@ -7168,7 +7222,9 @@
     color: #333;
     margin: 0 0 20px 0;
 }
-
+.warehouse-header .mobile-title{
+    margin: 20px 0!important;
+}
 .mobile-header-actions {
     display: flex;
     flex-direction: column;
@@ -7290,5 +7346,61 @@
     }
     #mobilePurchasesPagination {
         display: none !important;
+    }
+}
+
+/* Стили для склада на мобильных устройствах */
+@media (max-width: 768px) {
+    .warehouse-header .header-top {
+        display: none;
+    }
+    
+    .warehouse-header .mobile-header {
+        display: flex;
+    }
+    
+    .warehouse-header .mobile-header-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .warehouse-header .mobile-header-actions .btn-add-product {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .warehouse-header .mobile-header-actions .search-box {
+        width: 100%;
+    }
+    
+    /* Стили для кнопок в мобильном заголовке склада */
+    .mobile-header-actions .btn-add-product {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+    
+    .warehouse-cards {
+        display: grid;
+    }
+    
+    .table-wrapper {
+        display: none;
+    }
+    
+    #warehousePagination {
+        display: none;
+    }
+    
+    #mobileWarehousePagination {
+        display: block;
+    }
+
+    /* Стили для иконок в мобильных карточках склада */
+    .warehouse-info-label svg {
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+        color: #6b7280;
     }
 }

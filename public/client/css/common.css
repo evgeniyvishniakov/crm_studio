@@ -671,17 +671,39 @@
 }
 
 .btn-submit {
+    background: linear-gradient(135deg, #28a745, #56bb93) !important;
+    color: white !important;
+    border-color: #28a745 !important;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.15) !important;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px) !important;
+    background: linear-gradient(135deg, #218838, #28a745) !important;
+    border-color: #218838 !important;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
+}
+
+.btn-save {
     background: linear-gradient(135deg, #28a745, #56bb93);
     color: white;
     border-color: #28a745;
     box-shadow: 0 2px 8px rgba(40, 167, 69, 0.15);
 }
 
-.btn-submit:hover {
+.btn-save:hover {
     transform: translateY(-2px);
     background: linear-gradient(135deg, #218838, #28a745);
     border-color: #218838;
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.btn-save:disabled {
+    background: #9ca3af;
+    border-color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 .btn-edit:disabled,
@@ -4027,3 +4049,173 @@ input[type="date"]:focus {
     width: 14px;
     height: 14px;
 }
+
+/* Стили для склада */
+.warehouse-container {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.warehouse-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.warehouse-header .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.warehouse-header .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.warehouse-header .mobile-header {
+    display: none;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+.warehouse-header .mobile-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.warehouse-header .mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.warehouse-cards {
+    display: none;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.warehouse-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.warehouse-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.warehouse-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.warehouse-card-header .product-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid #e0e0e0;
+    cursor: pointer;
+}
+
+.warehouse-card-header .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.warehouse-card .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.warehouse-card .warehouse-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.warehouse-card .warehouse-info-label {
+    font-weight: 500;
+    color: #666;
+}
+
+.warehouse-card .warehouse-info-value {
+    font-weight: 600;
+    color: #333;
+}
+
+.warehouse-card .card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: flex-end;
+}
+
+.warehouse-card .card-actions .btn-edit,
+.warehouse-card .card-actions .btn-delete {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.warehouse-card .card-actions .btn-edit {
+    background-color: #007bff;
+    color: white;
+}
+
+.warehouse-card .card-actions .btn-edit:hover {
+    background-color: #0056b3;
+}
+
+.warehouse-card .card-actions .btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.warehouse-card .card-actions .btn-delete:hover {
+    background-color: #c82333;
+}
+
+    .warehouse-card .card-actions svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Специальные стили для кнопок в таблице склада */
+    .warehouse-table .actions-cell {
+        text-align: center;
+        vertical-align: middle;
+        padding: 40px !important;
+    }
