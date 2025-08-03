@@ -6087,9 +6087,6 @@
         font-size: 18px;
         font-weight: 700;
         color: #10b981;
-        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-        padding: 8px 12px;
-        border-radius: 8px;
         display: inline-block;
         min-width: 0;
     }
@@ -7224,5 +7221,74 @@
         width: 100%;
         max-width: 300px;
         justify-content: center;
+    }
+}
+
+/* Мобильные стили для закупок */
+@media (max-width: 768px) {
+    /* Скрываем десктопную версию заголовка */
+    .purchases-header .header-top {
+        display: none;
+    }
+    
+    /* Показываем мобильную версию заголовка */
+    .purchases-header .mobile-header {
+        display: block;
+    }
+    
+    .purchases-header .mobile-header-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .purchases-header .mobile-header-actions .search-box {
+        width: 100%;
+    }
+    
+    .purchases-header .mobile-header-actions .btn-add-purchase {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Показываем мобильную версию заголовка */
+    .purchases-header .mobile-header {
+        display: block;
+    }
+    
+    /* Стили для кнопок в мобильном заголовке закупок */
+    .mobile-header-actions .btn-add-purchase {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+    
+    /* Принудительное переключение на мобильные карточки */
+    #purchasesList {
+        display: none !important;
+    }
+    #purchasesCards {
+        display: block !important;
+    }
+    #purchasesPagination {
+        display: none !important;
+    }
+    #mobilePurchasesPagination {
+        display: block !important;
+    }
+}
+
+@media (min-width: 769px) {
+    /* Принудительное переключение на десктопную таблицу */
+    #purchasesList {
+        display: block !important;
+    }
+    #purchasesCards {
+        display: none !important;
+    }
+    #purchasesPagination {
+        display: block !important;
+    }
+    #mobilePurchasesPagination {
+        display: none !important;
     }
 }
