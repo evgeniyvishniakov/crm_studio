@@ -7206,3 +7206,23 @@
         display: block;
     }
 }
+
+/* Мобильные стили для записей */
+@media (max-width: 768px) {
+    /* Скрываем десктопную версию заголовка */
+    .appointments-header .header-top {
+        display: none;
+    }
+    
+    /* Показываем мобильную версию заголовка */
+    .appointments-header .mobile-header {
+        display: block;
+    }
+    
+    /* Стили для кнопок в мобильном заголовке записей */
+    .mobile-header-actions .btn-add-appointment {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}

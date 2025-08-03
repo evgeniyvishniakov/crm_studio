@@ -960,20 +960,20 @@
                 <td>${data.client.phone || ''}</td>
                 <td>${typeHtml}</td>
                 <td class="actions-cell" style="vertical-align: middle;">
-                    <button class="btn-view">
+                    <button class="btn-view" data-client-id="${data.client.id}">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                             <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                         </svg>
 
                     </button>
-                    <button class="btn-edit">
+                    <button class="btn-edit" data-client-id="${data.client.id}">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                         </svg>
 
                     </button>
-                    <button class="btn-delete">
+                    <button class="btn-delete" data-client-id="${data.client.id}">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
@@ -1086,57 +1086,55 @@
         document.addEventListener('click', function(e) {
             if (e.target.closest('.btn-delete')) {
                 const row = e.target.closest('tr');
-                const clientId = row.id.split('-')[1];
+                if (row && row.id) {
+                    const idParts = row.id.split('-');
+                    const clientId = idParts.length > 1 ? idParts[1] : null;
+                    
+                    if (clientId) {
+                        // Сохраняем ссылку на удаляемую строку
+                        currentDeleteRow = row;
+                        currentDeleteId = clientId;
 
-                // Сохраняем ссылку на удаляемую строку
-                currentDeleteRow = row;
-                currentDeleteId = clientId;
-
-                // Показываем модальное окно подтверждения
-                document.getElementById('confirmationModal').style.display = 'block';
-            }
-        });
-
-        // Обработчики для модального окна подтверждения
-        document.getElementById('cancelDelete').addEventListener('click', function() {
-            closeConfirmationModal();
-        });
-
-        document.getElementById('confirmDelete').addEventListener('click', function() {
-            if (currentDeleteRow && currentDeleteId) {
-                // Проверяем, является ли currentDeleteRow карточкой или строкой
-                if (currentDeleteRow.classList.contains('client-card')) {
-                    // Это карточка - используем функцию для карточек
-                    deleteClientCard(currentDeleteRow, currentDeleteId);
-                } else {
-                    // Это строка таблицы - используем обычную функцию
-                    deleteClient(currentDeleteRow, currentDeleteId);
+                        // Показываем модальное окно подтверждения
+                        document.getElementById('confirmationModal').style.display = 'block';
+                    }
                 }
             }
-            closeConfirmationModal();
         });
+
+
 
         // Функция для удаления клиента
         function deleteClient(row, clientId) {
+            // Проверяем, что параметры не равны null
+            if (!row || !clientId) {
+                console.error('Ошибка: row или clientId равны null');
+                showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                return;
+            }
+            
             // Добавляем класс для анимации
             row.classList.add('row-deleting');
 
             // Отправляем запрос на удаление
+            console.log('Отправляем запрос на удаление клиента (таблица):', clientId);
             fetch(`/clients/${clientId}`, {
                 method: 'DELETE',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
             })
                 .then(response => {
+                    console.log('Ответ сервера (статус таблица):', response.status);
                     if (!response.ok) {
                         throw new Error('Ошибка при удалении');
                     }
                     return response.json();
                 })
                 .then(data => {
+                    console.log('Ответ сервера (данные таблица):', data);
                     if (data.success) {
                         // Удаляем строку после завершения анимации
                         setTimeout(() => {
@@ -1146,7 +1144,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
+                    console.error('Ошибка при удалении клиента (таблица):', error);
                     row.classList.remove('row-deleting');
                     showNotification('error', '{{ __('messages.error_deleting_client') }}');
                 });
@@ -1161,7 +1159,7 @@
             
             // Закрытие модального окна подтверждения при клике вне его
             const confirmationModal = document.getElementById('confirmationModal');
-            if (event.target === confirmationModal) {
+            if (confirmationModal && event.target === confirmationModal) {
                 closeConfirmationModal();
             }
         });
@@ -1215,9 +1213,11 @@
         // Обработчик клика по кнопке редактирования
         document.addEventListener('click', function(e) {
             if (e.target.closest('.btn-edit')) {
-                const row = e.target.closest('tr');
-                const clientId = row.id.split('-')[1];
-                openEditModal(clientId);
+                const button = e.target.closest('.btn-edit');
+                const clientId = button.dataset.clientId;
+                if (clientId) {
+                    openEditModal(clientId);
+                }
             }
         });
 
@@ -1752,12 +1752,10 @@
                 // Используем делегирование событий для кнопок просмотра
                 document.addEventListener('click', function(e) {
                     if (e.target.closest('.btn-view')) {
-                        const row = e.target.closest('tr');
-                        if (row) {
-                            const clientId = row.id.split('-')[1];
-                            if (clientId) {
-                                openViewModal(clientId);
-                            }
+                        const button = e.target.closest('.btn-view');
+                        const clientId = button.dataset.clientId;
+                        if (clientId) {
+                            openViewModal(clientId);
                         }
                     }
                 });
@@ -1765,29 +1763,62 @@
                 // Используем делегирование событий для кнопок редактирования
                 document.addEventListener('click', function(e) {
                     if (e.target.closest('.btn-edit')) {
-                        const row = e.target.closest('tr');
-                        if (row) {
-                            const clientId = row.id.split('-')[1];
-                            if (clientId) {
-                                openEditModal(clientId);
-                            }
+                        const button = e.target.closest('.btn-edit');
+                        const clientId = button.dataset.clientId;
+                        if (clientId) {
+                            openEditModal(clientId);
                         }
                     }
                 });
 
                 // Используем делегирование событий для кнопок удаления
                 document.addEventListener('click', function(e) {
-                    if (e.target.closest('.btn-delete')) {
-                        const row = e.target.closest('tr');
-                        if (row) {
-                            const clientId = row.id.split('-')[1];
-                            if (clientId) {
+                    if (e.target.closest('.btn-delete') && !e.target.closest('#confirmDelete')) {
+                        const button = e.target.closest('.btn-delete');
+                        const clientId = button.dataset.clientId;
+                        if (clientId) {
+                            // Определяем, является ли это карточкой или строкой таблицы
+                            const card = button.closest('.client-card');
+                            const row = button.closest('tr');
+                            
+                            if (card) {
+                                // Это карточка
+                                currentDeleteRow = card;
+                                currentDeleteId = clientId;
+                            } else if (row) {
+                                // Это строка таблицы
                                 currentDeleteRow = row;
                                 currentDeleteId = clientId;
-                                document.getElementById('confirmationModal').style.display = 'block';
                             }
+                            
+                            document.getElementById('confirmationModal').style.display = 'block';
+                        } else {
+                            console.error('Ошибка: data-client-id не найден на кнопке');
+                            console.error('Кнопка HTML:', button.outerHTML);
                         }
                     }
+                });
+
+                // Обработчики для модального окна подтверждения
+                document.getElementById('cancelDelete').addEventListener('click', function() {
+                    closeConfirmationModal();
+                });
+
+                document.getElementById('confirmDelete').addEventListener('click', function() {
+                    if (currentDeleteRow && currentDeleteId) {
+                        // Проверяем, является ли currentDeleteRow карточкой или строкой
+                        if (currentDeleteRow.classList.contains('client-card')) {
+                            // Это карточка - используем функцию для карточек
+                            deleteClientCard(currentDeleteRow, currentDeleteId);
+                        } else {
+                            // Это строка таблицы - используем функцию для строк
+                            deleteClientRow(currentDeleteRow, currentDeleteId);
+                        }
+                    } else {
+                        console.error('Ошибка: currentDeleteRow или currentDeleteId равны null');
+                        showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                    }
+                    closeConfirmationModal();
                 });
             } catch (error) {
                 console.error('Ошибка при инициализации:', error);
@@ -1906,18 +1937,18 @@
                             </div>
                         </td>
                         <td class="actions-cell" style="vertical-align: middle;">
-                            <button class="btn-view">
+                            <button class="btn-view" data-client-id="${client.id}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                                     <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                                 </svg>
                             </button>
-                            <button class="btn-edit">
+                            <button class="btn-edit" data-client-id="${client.id}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
                             </button>
-                            <button class="btn-delete">
+                            <button class="btn-delete" data-client-id="${client.id}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
@@ -2004,18 +2035,18 @@
                         </div>
                     </td>
                     <td class="actions-cell" style="vertical-align: middle;">
-                        <button class="btn-view">
+                        <button class="btn-view" data-client-id="${client.id}">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                             </svg>
                         </button>
-                        <button class="btn-edit">
+                        <button class="btn-edit" data-client-id="${client.id}">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                             </svg>
                         </button>
-                        <button class="btn-delete">
+                        <button class="btn-delete" data-client-id="${client.id}">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
@@ -2070,18 +2101,18 @@
                         </div>
                     </div>
                     <div class="client-actions">
-                        <button class="btn-view" onclick="viewClient(${client.id})">
+                        <button class="btn-view" data-client-id="${client.id}">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                             </svg>
                         </button>
-                        <button class="btn-edit" onclick="editClient(${client.id})">
+                        <button class="btn-edit" data-client-id="${client.id}">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                             </svg>
                         </button>
-                        <button class="btn-delete" onclick="deleteClient(${client.id})">
+                        <button class="btn-delete" data-client-id="${client.id}">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
@@ -2251,7 +2282,7 @@
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 const confirmationModal = document.getElementById('confirmationModal');
-                if (confirmationModal.style.display === 'block') {
+                if (confirmationModal && confirmationModal.style.display === 'block') {
                     closeConfirmationModal();
                 }
             }
@@ -2278,27 +2309,83 @@
             }
         }
         
-        // Функция для удаления карточки клиента
-        function deleteClientCard(card, clientId) {
+        // Функция для удаления строки таблицы клиента
+        function deleteClientRow(row, clientId) {
+            // Проверяем, что параметры не равны null
+            if (!row || !clientId) {
+                console.error('Ошибка: row или clientId равны null');
+                showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                return;
+            }
+            
             // Добавляем класс для анимации
-            card.classList.add('row-deleting');
+            row.classList.add('row-deleting');
 
             // Отправляем запрос на удаление
+            console.log('Отправляем запрос на удаление клиента (строка):', clientId);
             fetch(`/clients/${clientId}`, {
                 method: 'DELETE',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
             })
                 .then(response => {
+                    console.log('Ответ сервера (статус строка):', response.status);
                     if (!response.ok) {
                         throw new Error('Ошибка при удалении');
                     }
                     return response.json();
                 })
                 .then(data => {
+                    console.log('Ответ сервера (данные строка):', data);
+                    if (data.success) {
+                        // Удаляем строку после завершения анимации
+                        setTimeout(() => {
+                            row.remove();
+                            showNotification('success', '{{ __('messages.client_deleted_successfully') }}');
+                        }, 300);
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при удалении клиента (строка):', error);
+                    row.classList.remove('row-deleting');
+                    showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                });
+        }
+
+        // Функция для удаления карточки клиента
+        function deleteClientCard(card, clientId) {
+            // Проверяем, что параметры не равны null
+            if (!card || !clientId) {
+                console.error('Ошибка: card или clientId равны null');
+                showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                return;
+            }
+            
+            // Добавляем класс для анимации
+            card.classList.add('row-deleting');
+
+            // Отправляем запрос на удаление
+            console.log('Отправляем запрос на удаление клиента (карточка):', clientId);
+            fetch(`/clients/${clientId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    console.log('Ответ сервера (статус карточка):', response.status);
+                    if (!response.ok) {
+                        throw new Error('Ошибка при удалении');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Ответ сервера (данные карточка):', data);
                     if (data.success) {
                         // Удаляем карточку после завершения анимации
                         setTimeout(() => {
@@ -2308,7 +2395,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Ошибка:', error);
+                    console.error('Ошибка при удалении клиента (карточка):', error);
                     card.classList.remove('row-deleting');
                     showNotification('error', '{{ __('messages.error_deleting_client') }}');
                 });

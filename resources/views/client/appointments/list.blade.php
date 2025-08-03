@@ -800,33 +800,68 @@
     </style>
 
     <div class="appointments-header">
-        <h1>{{ __('messages.appointments') }}</h1>
-        <div class="header-actions">
-            <div class="view-switcher">
-                <button class="btn-view-switch {{ $viewType === 'list' ? 'active' : '' }}" data-view="list">
-                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+        <div class="header-top">
+            <h1>{{ __('messages.appointments') }}</h1>
+            <div class="header-actions">
+                <div class="view-switcher">
+                    <button class="btn-view-switch {{ $viewType === 'list' ? 'active' : '' }}" data-view="list">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ __('messages.list_view') }}
+                    </button>
+                    <button class="btn-view-switch {{ $viewType === 'calendar' ? 'active' : '' }}" data-view="calendar">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ __('messages.calendar_view') }}
+                    </button>
+                </div>
+                <button class="btn-add-appointment" id="addAppointmentBtn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
-                    {{ __('messages.list_view') }}
+                    {{ __('messages.add_appointment') }}
                 </button>
-                <button class="btn-view-switch {{ $viewType === 'calendar' ? 'active' : '' }}" data-view="calendar">
-                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
-                    {{ __('messages.calendar_view') }}
-                </button>
+                    <input type="text" placeholder="{{ __('messages.search_appointments') }}" id="searchInput">
+                </div>
             </div>
-            <button class="btn-add-appointment" id="addAppointmentBtn">
-                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                </svg>
-                {{ __('messages.add_appointment') }}
-            </button>
-            <div class="search-box">
-                <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                </svg>
-                <input type="text" placeholder="{{ __('messages.search_appointments') }}" id="searchInput">
+        </div>
+
+        <!-- Мобильная версия заголовка -->
+        <div class="mobile-header">
+            <h1 class="mobile-title">{{ __('messages.appointments') }}</h1>
+            <div class="mobile-header-actions">
+                <div class="view-switcher">
+                    <button class="btn-view-switch {{ $viewType === 'list' ? 'active' : '' }}" data-view="list">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ __('messages.list_view') }}
+                    </button>
+                    <button class="btn-view-switch {{ $viewType === 'calendar' ? 'active' : '' }}" data-view="calendar">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ __('messages.calendar_view') }}
+                    </button>
+                </div>
+                <button class="btn-add-appointment" id="addAppointmentBtnMobile">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    {{ __('messages.add_appointment') }}
+                </button>
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <input type="text" placeholder="{{ __('messages.search_appointments') }}" id="searchInputMobile">
+                </div>
             </div>
         </div>
     </div>
@@ -854,7 +889,7 @@
                 @foreach($appointments as $appointment)
                 <tr data-appointment-id="{{ $appointment->id }}">
                     <td>
-                        {{ \Carbon\Carbon::parse($appointment->date)->format('d.m.Y') }}
+                        {{ \Carbon\Carbon::parse($appointment->date)->setTimezone(config('app.timezone'))->format('d.m.Y') }}
                         <br>
                         <small class="text-muted">{{ \Carbon\Carbon::parse($appointment->time)->format('H:i') }}</small>
                     </td>
@@ -1476,13 +1511,18 @@
     </div>
 
     <!-- Модальное окно подтверждения удаления -->
-    <div id="confirmationModal" class="confirmation-modal">
-        <div class="confirmation-content">
-            <h3>{{ __('messages.confirm_delete') }}</h3>
-            <p>{{ __('messages.confirm_delete_appointment') }}</p>
-            <div class="confirmation-buttons">
-                <button class="cancel-btn" id="cancelDelete">{{ __('messages.cancel') }}</button>
-                <button class="confirm-btn" id="confirmDeleteBtn">{{ __('messages.delete') }}</button>
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>{{ __('messages.confirm_delete') }}</h2>
+                <span class="close" onclick="closeConfirmationModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>{{ __('messages.confirm_delete_appointment') }}</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelDelete">{{ __('messages.cancel') }}</button>
+                <button class="btn-delete" id="confirmDeleteBtn">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
@@ -1561,6 +1601,12 @@
 
         function closeViewAppointmentModal() {
             toggleModal('viewAppointmentModal', false);
+        }
+
+        function closeConfirmationModal() {
+            toggleModal('confirmationModal', false);
+            currentDeleteId = null;
+            isDeletingAppointment = false;
         }
 
 
@@ -2071,9 +2117,19 @@
         function renderAppointmentsTable(appointments) {
             const tbody = document.querySelector('#appointmentsTable tbody');
             if (!tbody) return;
+            
+            // Проверяем, что appointments существует и является массивом
+            if (!appointments || !Array.isArray(appointments)) {
+                tbody.innerHTML = '';
+                return;
+            }
+            
             tbody.innerHTML = renderAppointmentsList(appointments);
         }
         function renderAppointmentsList(appointments) {
+            if (!appointments || !Array.isArray(appointments)) {
+                return '';
+            }
             return appointments.map(appointment => `
                 <tr data-appointment-id="${appointment.id}">
                     <td>
@@ -2122,7 +2178,11 @@
         }
 
 
-        document.querySelector('.modal-footer')?.appendChild(document.getElementById('saveAppointmentChanges'));
+        const saveButton = document.getElementById('saveAppointmentChanges');
+        const modalFooter = document.querySelector('.modal-footer');
+        if (saveButton && modalFooter) {
+            modalFooter.appendChild(saveButton);
+        }
 
         function updateTotalAmount() {
             const modal = document.getElementById('viewAppointmentModal');
@@ -2652,7 +2712,8 @@
 
         function formatDateForInput(dateString) {
             if (!dateString) return '';
-            const date = new Date(dateString);
+            // Создаем дату в московском времени
+            const date = new Date(dateString + 'T00:00:00+03:00');
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
@@ -2687,10 +2748,40 @@
             }
         }
 
+        // Функция для переключения между десктопной и мобильной версией
+        function toggleMobileView() {
+            const tableWrapper = document.querySelector('.table-wrapper');
+            const appointmentsCards = document.getElementById('appointmentsCards');
+            const appointmentsPagination = document.getElementById('appointmentsPagination');
+            const mobileAppointmentsPagination = document.getElementById('mobileAppointmentsPagination');
+            
+            if (window.innerWidth <= 768) {
+                // Мобильная версия
+                if (tableWrapper) {
+                    tableWrapper.style.display = 'none';
+                }
+                if (appointmentsCards) {
+                    appointmentsCards.style.display = 'block';
+                }
+                if (appointmentsPagination) appointmentsPagination.style.display = 'none';
+                if (mobileAppointmentsPagination) mobileAppointmentsPagination.style.display = 'block';
+            } else {
+                // Десктопная версия
+                if (tableWrapper) {
+                    tableWrapper.style.display = 'block';
+                }
+                if (appointmentsCards) {
+                    appointmentsCards.style.display = 'none';
+                }
+                if (appointmentsPagination) appointmentsPagination.style.display = 'block';
+                if (mobileAppointmentsPagination) mobileAppointmentsPagination.style.display = 'none';
+            }
+        }
+
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
             // Обработчики кнопок
-            document.getElementById('addAppointmentBtn')?.addEventListener('click', () => {
+            function openAddAppointmentModal() {
                 const modal = document.getElementById('appointmentModal');
                 const form = modal.querySelector('#appointmentForm');
                 
@@ -2713,12 +2804,15 @@
                 
                 // Открываем модальное окно
                 toggleModal('appointmentModal', true);
-            });
+            }
+            
+            document.getElementById('addAppointmentBtn')?.addEventListener('click', openAddAppointmentModal);
+            document.getElementById('addAppointmentBtnMobile')?.addEventListener('click', openAddAppointmentModal);
 
             // Единый обработчик для кнопки отмены
             document.getElementById('cancelDelete')?.addEventListener('click', (e) => {
                 e.stopPropagation(); // Предотвращаем всплытие события
-                toggleModal('confirmationModal', false);
+                closeConfirmationModal();
             });
 
             // Единый обработчик для кнопки подтверждения удаления
@@ -2729,7 +2823,7 @@
                 } else {
                     await deleteProductFromAppointment();
                 }
-                toggleModal('confirmationModal', false);
+                closeConfirmationModal();
             });
 
             // Обработчик формы добавления записи
@@ -2767,11 +2861,36 @@
             });
 
             // Поиск по таблице
-            document.getElementById('searchInput')?.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
+            const searchInput = document.getElementById('searchInput');
+            const searchInputMobile = document.getElementById('searchInputMobile');
+            
+            function handleSearch() {
+                const query = searchInput ? searchInput.value.toLowerCase() : (searchInputMobile ? searchInputMobile.value.toLowerCase() : '');
+                
+                // Синхронизируем поиск между десктопной и мобильной версиями
+                if (searchInput && searchInputMobile) {
+                    searchInputMobile.value = searchInput.value;
+                }
+                
                 document.querySelectorAll('#appointmentsTable tbody tr').forEach(row => {
-                    row.style.display = row.textContent.toLowerCase().includes(searchTerm) ? '' : 'none';
+                    row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
                 });
+            }
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', handleSearch);
+            }
+            
+            if (searchInputMobile) {
+                searchInputMobile.addEventListener('input', handleSearch);
+            }
+            
+            // Инициализация переключения между десктопной и мобильной версиями
+            toggleMobileView();
+            
+            // Обработчик изменения размера окна
+            window.addEventListener('resize', function() {
+                toggleMobileView();
             });
 
             // Делегирование событий
@@ -2801,7 +2920,7 @@
                     toggleModal('viewAppointmentModal', false);
                 }
                 if (e.target == document.getElementById('confirmationModal')) {
-                    toggleModal('confirmationModal', false);
+                    closeConfirmationModal();
                 }
                 if (e.target && e.target.id === 'saveAppointmentChanges') {
                     saveAppointmentChanges();
@@ -3417,7 +3536,12 @@
             const cardsContainer = document.getElementById('appointmentsCards');
             if (!cardsContainer) return;
             
-            if (!appointments || appointments.length === 0) {
+            // Проверяем, что appointments существует и является массивом
+            if (!appointments || !Array.isArray(appointments)) {
+                appointments = [];
+            }
+            
+            if (appointments.length === 0) {
                 cardsContainer.innerHTML = `
                     <div class="appointments-empty">
                         <svg viewBox="0 0 24 24" fill="currentColor">
@@ -3430,7 +3554,10 @@
                 return;
             }
             
-            const cardsHtml = appointments.map(appointment => createAppointmentCard(appointment)).join('');
+            const cardsHtml = appointments.map(appointment => {
+                const card = createAppointmentCard(appointment);
+                return card || '';
+            }).join('');
             cardsContainer.innerHTML = cardsHtml;
             
             // Добавляем обработчики событий для кнопок в карточках
@@ -3438,8 +3565,11 @@
         }
         
         function createAppointmentCard(appointment) {
+            if (!appointment) {
+                return '';
+            }
             const date = new Date(appointment.date);
-            const time = appointment.time.split(':').slice(0, 2).join(':');
+            const time = appointment.time ? appointment.time.split(':').slice(0, 2).join(':') : '';
             const statusNames = {
                 'pending': '{{ __('messages.status_pending') }}',
                 'completed': '{{ __('messages.status_completed') }}',
@@ -3448,7 +3578,7 @@
             };
             
             let instagramHtml = '';
-            if (appointment.client.instagram) {
+            if (appointment.client && appointment.client.instagram) {
                 instagramHtml = `
                     <div class="appointment-client-instagram">
                         <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
@@ -3479,7 +3609,7 @@
                                 </svg>
                                 {{ __('messages.client') }}
                             </div>
-                            <div class="appointment-info-value">${escapeHtml(appointment.client.name)}</div>
+                            <div class="appointment-info-value">${appointment.client ? escapeHtml(appointment.client.name) : '{{ __('messages.client_deleted') }}'}</div>
                         </div>
                         
                         <div class="appointment-info-item">
@@ -3489,7 +3619,7 @@
                                 </svg>
                                 {{ __('messages.service') }}
                             </div>
-                            <div class="appointment-info-value">${escapeHtml(appointment.service.name)}</div>
+                            <div class="appointment-info-value">${appointment.service ? escapeHtml(appointment.service.name) : '{{ __('messages.service_deleted') }}'}</div>
                         </div>
                         
                         <div class="appointment-info-item">
@@ -3646,10 +3776,20 @@
                     console.log('Данные записей:', response.data);
                     console.log('Количество записей:', response.data ? response.data.length : 0);
                     
-                    renderAppointmentsTable(response.data); // обновляет строки таблицы
-                    renderAppointmentsPagination(response.meta); // обновляет пагинацию!
-                    renderAppointmentsCards(response.data); // обновляет мобильные карточки
-                    renderMobileAppointmentsPagination(response.meta); // обновляет мобильную пагинацию
+                    // Проверяем, что response.data существует и является массивом
+                    const appointments = Array.isArray(response.data) ? response.data : [];
+                    const meta = response.meta || {};
+                    
+                    renderAppointmentsTable(appointments); // обновляет строки таблицы
+                    renderAppointmentsPagination(meta); // обновляет пагинацию!
+                    renderAppointmentsCards(appointments); // обновляет мобильные карточки
+                    renderMobileAppointmentsPagination(meta); // обновляет мобильную пагинацию
+                })
+                .catch(error => {
+                    console.error('Ошибка при загрузке записей:', error);
+                    // Показываем пустые данные в случае ошибки
+                    renderAppointmentsTable([]);
+                    renderAppointmentsCards([]);
                 });
         }
 
