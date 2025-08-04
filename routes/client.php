@@ -284,10 +284,11 @@ Route::post('/users/{user}/avatar', [\App\Http\Controllers\Client\ClientUserCont
 
     // Роли и доступы
     Route::get('/roles', [\App\Http\Controllers\Client\RoleController::class, 'index'])->name('roles.index');
-    Route::post('/roles', [\App\Http\Controllers\Client\RoleController::class, 'store'])->name('roles.store');
-    Route::put('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, 'update'])->name('roles.update');
-    Route::delete('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, 'destroy'])->name('roles.destroy');
-    Route::get('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, 'show'])->name('client.roles.show');
+Route::post('/roles', [\App\Http\Controllers\Client\RoleController::class, 'store'])->name('roles.store');
+Route::get('/roles/{id}/edit', [\App\Http\Controllers\Client\RoleController::class, 'edit'])->name('roles.edit');
+Route::put('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, 'update'])->name('roles.update');
+Route::delete('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, 'destroy'])->name('roles.destroy');
+Route::get('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, 'show'])->name('client.roles.show');
 
 
     Route::post('/security/email', [SecurityController::class, 'changeEmail'])->name('client.security.email');

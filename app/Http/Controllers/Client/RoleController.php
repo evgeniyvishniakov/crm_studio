@@ -50,7 +50,6 @@ class RoleController extends Controller
         $user = auth('client')->user();
         $validated = $request->validate([
             'name' => 'required|string|max:64',
-            'label' => 'required|string|max:128',
             'permissions' => 'array',
             'permissions.*' => 'string|exists:permissions,name',
         ]);
@@ -63,10 +62,14 @@ class RoleController extends Controller
         }
         DB::beginTransaction();
         try {
+            // Получаем перевод названия роли
+            $roleName = $validated['name'];
+            $roleLabel = __("messages.role_{$roleName}");
+            
             $roleId = DB::table('roles')->insertGetId([
                 'project_id' => $projectId,
                 'name' => $validated['name'],
-                'label' => $validated['label'],
+                'label' => $roleLabel,
                 'is_system' => 0,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -86,7 +89,7 @@ class RoleController extends Controller
                 'user_id' => $user->id ?? null,
                 'ip' => $request->ip(),
                 'action' => 'create_role',
-                'message' => 'Создана роль: ' . $validated['label'],
+                'message' => 'Создана роль: ' . $roleLabel,
                 'context' => json_encode([
                     'role_id' => $roleId,
                     'name' => $validated['name'],
@@ -101,7 +104,7 @@ class RoleController extends Controller
                 'role' => [
                     'id' => $roleId,
                     'name' => $validated['name'],
-                    'label' => $validated['label'],
+                    'label' => $roleLabel,
                     'is_system' => 0,
                     'permissions' => $permNames,
                 ]
@@ -119,12 +122,44 @@ class RoleController extends Controller
         }
     }
 
+    public function edit($id)
+    {
+        $projectId = auth('client')->user()->project_id;
+        
+        $role = DB::table('roles')
+            ->where('id', $id)
+            ->where('project_id', $projectId)
+            ->first();
+            
+        if (!$role) {
+            return response()->json(['message' => 'Роль не найдена'], 404);
+        }
+        
+        // Получаем разрешения роли
+        $rolePermissions = DB::table('role_permission')
+            ->where('role_id', $id)
+            ->pluck('permission_id')
+            ->toArray();
+            
+        $permissionNames = DB::table('permissions')
+            ->whereIn('id', $rolePermissions)
+            ->pluck('name')
+            ->toArray();
+            
+        return response()->json([
+            'id' => $role->id,
+            'name' => $role->name,
+            'label' => $role->label,
+            'is_system' => $role->is_system,
+            'permissions' => $permissionNames
+        ]);
+    }
+
     public function update(Request $request, $id)
     {
         $projectId = auth('client')->user()->project_id;
         $user = auth('client')->user();
         $validated = $request->validate([
-            'label' => 'required|string|max:128',
             'permissions' => 'array',
             'permissions.*' => 'string|exists:permissions,name',
         ]);
@@ -141,8 +176,12 @@ class RoleController extends Controller
             if (!$role || $role->is_system) {
                 return response()->json(['success' => false, 'message' => 'Системную роль нельзя редактировать'], 403);
             }
+            // Получаем перевод названия роли
+            $roleName = $role->name;
+            $roleLabel = __("messages.role_{$roleName}");
+            
             DB::table('roles')->where('id', $id)->update([
-                'label' => $validated['label'],
+                'label' => $roleLabel,
                 'updated_at' => now(),
             ]);
             // Обновить доступы
@@ -162,7 +201,7 @@ class RoleController extends Controller
                 'user_id' => $user->id ?? null,
                 'ip' => $request->ip(),
                 'action' => 'update_role',
-                'message' => 'Изменена роль: ' . $validated['label'],
+                'message' => 'Изменена роль: ' . $roleLabel,
                 'context' => json_encode([
                     'role_id' => $id,
                     'name' => $role->name,
@@ -175,7 +214,7 @@ class RoleController extends Controller
                 'role' => [
                     'id' => $id,
                     'name' => $role->name,
-                    'label' => $validated['label'],
+                    'label' => $roleLabel,
                     'is_system' => $role->is_system,
                     'permissions' => $validated['permissions'],
                 ],

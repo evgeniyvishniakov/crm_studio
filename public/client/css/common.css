@@ -5144,22 +5144,22 @@ input[type="date"]:focus {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
     color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 20px;
-    font-size: 14px;
+    border: 2px solid #3b82f6;
+    border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
 
 .btn-add-role:hover {
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    border-color: #2563eb;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .btn-add-role svg {
@@ -5422,7 +5422,6 @@ input[type="date"]:focus {
     font-weight: 400;
     white-space: nowrap;
     justify-content: flex-start;
-    width: 100%;
     padding: 4px 0;
 }
 
@@ -5598,4 +5597,49 @@ input[type="date"]:focus {
         padding: 6px 8px;
         font-size: 11px;
     }
+}
+
+
+
+/* Стили для аватарки пользователей */
+.client-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.client-avatar {
+    flex-shrink: 0;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e0e0e0;
+}
+
+.user-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    border: 2px solid #e0e0e0;
+}
+
+.client-details {
+    flex: 1;
+}
+
+.client-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
 }

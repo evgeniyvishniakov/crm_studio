@@ -8,7 +8,7 @@
             <div class="header-top">
         <h1>{{ __('messages.roles_and_permissions') }}</h1>
         <div class="header-actions">
-                    <button class="btn-add-role" id="btnAddRole">
+                    <button class="btn-add-role" onclick="openRoleModal()">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                         </svg>
@@ -27,7 +27,7 @@
             <div class="mobile-header">
                 <h1 class="mobile-title">{{ __('messages.roles_and_permissions') }}</h1>
                 <div class="mobile-header-actions">
-                    <button class="btn-add-role" id="btnAddRoleMobile">
+                    <button class="btn-add-role" onclick="openRoleModal()">
                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                 </svg>
@@ -42,7 +42,7 @@
                 </div>
             </div>
         </div>
-        <div id="notification"></div>
+
     <!-- Десктопная таблица -->
     <div class="table-wrapper">
         <table class=" table-striped clients-table">
@@ -53,7 +53,7 @@
                     <th>{{ __('messages.table_actions') }}</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="rolesTableBody">
                 @forelse($roles as $role)
                     <tr id="role-{{ $role->id }}">
                         <td>{{ __('messages.role_' . $role->name) }}</td>
@@ -74,7 +74,7 @@
                             @endphp
                             {{ $permNames ? implode(', ', $permNames) : '—' }}
                         </td>
-                        <td class="actions-cell" style="vertical-align: middle;">
+                        <td class="actions-cell">
                             @if($role->name !== 'admin' && !$role->is_system)
                                                             <button class="btn-edit" data-id="{{ $role->id }}" title="{{ __('messages.edit') }}">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -90,14 +90,14 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" style="text-align:center; color:#888; padding:40px 0;">{{ __('messages.no_data_yet_add_first_role') }}</td></tr>
+                    <tr><td colspan="3" class="no-data-message">{{ __('messages.no_data_yet_add_first_role') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
     <!-- Мобильные карточки ролей -->
-    <div class="roles-cards" id="rolesCards" style="display: none;">
+    <div class="roles-cards" id="rolesCards">
         @forelse($roles as $role)
             @php
                 // Получаем список permissions для роли
@@ -158,7 +158,7 @@
                 <div class="role-actions">
                     <button class="btn-edit" title="{{ __('messages.edit') }}" onclick="openEditRoleModalFromCard({{ $role->id }})">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828.793-.793z" />
                         </svg>
                         {{ __('messages.edit') }}
                     </button>
@@ -184,23 +184,28 @@
     </div>
 
     <!-- Мобильная пагинация -->
-    <div id="mobileRolesPagination" class="mobile-pagination" style="display: none;">
+    <div id="mobileRolesPagination" class="mobile-pagination">
         <!-- Пагинация будет добавлена через JavaScript -->
     </div>
     <!-- Модальное окно подтверждения удаления -->
-    <div id="roleConfirmationModal" class="confirmation-modal" style="display:none;">
-        <div class="confirmation-content">
-            <h3>{{ __('messages.confirmation_delete') }}</h3>
-            <p>{{ __('messages.are_you_sure_you_want_to_delete_this_role') }}</p>
-            <div class="confirmation-buttons">
-                <button id="cancelDeleteRole" class="cancel-btn">{{ __('messages.cancel') }}</button>
-                <button id="confirmDeleteRole" class="confirm-btn">{{ __('messages.delete') }}</button>
+    <div id="roleConfirmationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>{{ __('messages.confirm_delete') }}</h2>
+                <span class="close" onclick="closeRoleConfirmationModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>{{ __('messages.are_you_sure_you_want_to_delete_this_role') }}</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelDeleteRole">{{ __('messages.cancel') }}</button>
+                <button class="btn-delete" id="confirmDeleteRole">{{ __('messages.delete') }}</button>
             </div>
         </div>
     </div>
 </div>
 <!-- Модальное окно для добавления/редактирования роли -->
-<div id="roleModal" class="modal" style="display:none;">
+<div id="roleModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h2 id="roleModalTitle">{{ __('messages.add_role') }}</h2>
@@ -220,6 +225,8 @@
                         @endforeach
                     </select>
                 </div>
+                
+
             
                 <div class="form-group">
                     <label>{{ __('messages.permissions') }}</label>
@@ -241,6 +248,22 @@
     </div>
 </div>
 @push('scripts')
+    <script>
+        // Переводы разрешений
+        window.permissionTranslations = {
+            @foreach($permissions as $perm)
+                '{{ $perm->name }}': '{{ __("messages.permission_" . str_replace(["-", "."], "_", $perm->name)) }}',
+            @endforeach
+        };
+        
+        // Переводы ролей
+        window.roleTranslations = {
+            @foreach(config('roles') as $key => $label)
+                '{{ $key }}': '{{ __("messages.role_" . $key) }}',
+            @endforeach
+        };
+    </script>
     <script src="{{ asset('client/js/roles.js') }}"></script>
 @endpush
+
 @endsection 

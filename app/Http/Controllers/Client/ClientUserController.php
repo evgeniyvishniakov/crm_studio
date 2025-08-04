@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Admin\User;
 use App\Models\SystemLog;
+use Illuminate\Support\Facades\DB;
 
 class ClientUserController extends Controller
 {
@@ -15,10 +16,13 @@ class ClientUserController extends Controller
     {
         $projectId = auth('client')->user()->project_id;
         $users = User::where('project_id', $projectId)->orderBy('id', 'asc')->get();
-        $roles = \DB::table('roles')
+        
+        // Получаем роли из базы данных (которые вы создали на странице ролей)
+        $roles = DB::table('roles')
             ->where('project_id', $projectId)
-            ->where('name', '!=', 'admin')
-            ->pluck('label', 'name');
+            ->pluck('label', 'name')
+            ->toArray();
+        
         return view('client.users.list', compact('users', 'roles'));
     }
 

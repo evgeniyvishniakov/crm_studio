@@ -1,53 +1,7 @@
 // ===== ФУНКЦИИ ДЛЯ СТРАНИЦЫ РОЛЕЙ =====
 
-// Создаем объект с переводами ролей
-window.roleLabels = {
-    'admin': 'Администратор',
-    'manager': 'Менеджер',
-    'master': 'Мастер',
-    'hairdresser': 'Парикмахер',
-    'cosmetologist': 'Косметолог',
-    'nailmaster': 'Мастер маникюра',
-    'makeup': 'Визажист',
-    'browlash': 'Мастер бровей и ресниц',
-    'massage': 'Массажист',
-    'stylist': 'Стилист',
-    'barber': 'Барбер',
-    'senior_barber': 'Старший барбер',
-    'shaving': 'Мастер бритья',
-    'intern': 'Стажер',
-    'seller': 'Продавец',
-    'storekeeper': 'Кладовщик'
-};
-
-// Создаем объект с переводами разрешений
-window.permissionsLabels = {
-    'dashboard': 'Панель управления',
-    'clients': 'Клиенты',
-    'appointments': 'Записи',
-    'analytics': 'Аналитика',
-    'warehouse': 'Склад',
-    'purchases': 'Закупки',
-    'sales': 'Продажи',
-    'expenses': 'Расходы',
-    'inventory': 'Инвентаризация',
-    'services': 'Услуги',
-    'products': 'Товары',
-    'product-categories': 'Категории товаров',
-    'product-brands': 'Бренды товаров',
-    'suppliers': 'Поставщики',
-    'client-types': 'Типы клиентов',
-    'client.users': 'Пользователи клиента',
-    'roles': 'Роли',
-    'settings': 'Настройки',
-    'email-templates': 'Шаблоны email',
-    'security': 'Безопасность',
-    'analytics.clients': 'Аналитика клиентов',
-    'analytics.turnover': 'Аналитика оборота',
-    'settings.manage': 'Управление настройками',
-    'support.manage': 'Управление поддержкой',
-    'notifications.manage': 'Управление уведомлениями'
-};
+// Используем переводы из Laravel вместо хардкода
+// Переводы передаются из Blade template через window.roleTranslations и window.permissionTranslations
 
 let editingRoleId = null;
 let currentDeleteRoleRow = null;
@@ -55,12 +9,11 @@ let currentDeleteRoleId = null;
 
 // Функция для исправления названий ролей в мобильных карточках
 function fixRoleNames() {
-    const roleNameElements = document.querySelectorAll('.role-name[data-role-name]');
-    roleNameElements.forEach(element => {
-        const roleName = element.getAttribute('data-role-name');
-        const translatedName = getRoleLabel(roleName);
-        if (translatedName && translatedName !== roleName) {
-            element.textContent = translatedName;
+    const roleNames = document.querySelectorAll('.role-name');
+    roleNames.forEach(nameElement => {
+        const roleKey = nameElement.getAttribute('data-role');
+        if (roleKey && window.roleLabels[roleKey]) {
+            nameElement.textContent = window.roleLabels[roleKey];
         }
     });
 }
@@ -68,7 +21,7 @@ function fixRoleNames() {
 // Функции для мобильной версии
 function toggleMobileView() {
     const tableWrapper = document.querySelector('.table-wrapper');
-    const rolesCards = document.getElementById('rolesCards');
+    const rolesCards = document.querySelector('.roles-cards');
     const mobilePagination = document.getElementById('mobileRolesPagination');
     
     if (window.innerWidth <= 768) {
@@ -86,13 +39,23 @@ function toggleMobileView() {
 
 // Функция для открытия модального окна редактирования из карточки
 function openEditRoleModalFromCard(roleId) {
-    openEditRoleModal(roleId);
+    fetch(`/roles/${roleId}/edit`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(role => {
+        openEditRoleModal(role);
+    })
+    .catch(() => window.showNotification('error', 'Ошибка при загрузке данных роли'));
 }
 
 // Функция для показа подтверждения удаления
 function showDeleteConfirmation(roleId) {
     currentDeleteRoleId = roleId;
-    document.getElementById('roleConfirmationModal').style.display = 'block';
+    toggleModal('roleConfirmationModal', true);
 }
 
 // Функция для удаления роли
@@ -107,10 +70,16 @@ function deleteRole(roleId) {
         method: 'DELETE',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
         }
     })
-    .then(res => res.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Ошибка при удалении');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             setTimeout(() => {
@@ -135,11 +104,8 @@ function deleteRole(roleId) {
 function updateRoleCard(role) {
     const roleCard = document.getElementById(`role-card-${role.id}`);
     if (roleCard) {
-        const perms = role.permissions || [];
-        const permNames = perms.map(p => getPermissionLabel(p));
-        
-        const roleType = role.name === 'admin' ? 'admin' : (role.is_system ? 'system' : 'custom');
-        const roleTypeText = role.name === 'admin' || role.is_system ? 'Системная роль' : 'Пользовательская роль';
+        const roleLabel = window.roleTranslations && window.roleTranslations[role.name] ? window.roleTranslations[role.name] : role.name;
+        const permissionsText = translatePermissions(role.permissions);
         
         roleCard.innerHTML = `
             <div class="role-card-header">
@@ -149,36 +115,29 @@ function updateRoleCard(role) {
                             <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                         </svg>
                     </div>
-                    <div class="role-name">${getRoleLabel(role.name)}</div>
+                    <div class="role-name" data-role="${role.name}">${roleLabel}</div>
                 </div>
                 <div class="role-type">
-                    <span class="role-badge ${roleType}">${roleTypeText}</span>
+                    <span class="role-badge ${role.name === 'admin' ? 'admin' : 'custom'}">${role.name === 'admin' ? 'Системная' : 'Пользовательская'}</span>
                 </div>
             </div>
             <div class="role-info">
                 <div class="role-info-item">
                     <div class="role-info-label">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm5 5a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                            <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
+                            <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
                         </svg>
                         Разрешения:
                     </div>
-                    <div class="role-info-value">
-                        ${permNames.length ? `
-                            <div class="permissions-tags">
-                                ${permNames.map(permName => `<span class="permission-tag">${permName}</span>`).join('')}
-                            </div>
-                        ` : `
-                            <span class="no-permissions">Нет разрешений</span>
-                        `}
-                    </div>
+                    <div class="role-info-value">${permissionsText}</div>
                 </div>
             </div>
-            ${role.name !== 'admin' && !role.is_system ? `
+            ${role.name !== 'admin' ? `
             <div class="role-actions">
                 <button class="btn-edit" title="Редактировать" onclick="openEditRoleModalFromCard(${role.id})">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828.793-.793z" />
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
                     Редактировать
                 </button>
@@ -194,296 +153,98 @@ function updateRoleCard(role) {
     }
 }
 
-// Открытие модалки для редактирования роли (AJAX)
-function openEditRoleModal(id) {
-    fetch(`/roles/${id}`)
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success || !data.role) {
-                window.showNotification('error', data.message || 'Ошибка при загрузке роли');
-                return;
-            }
-            const role = data.role;
-            editingRoleId = id;
-            document.getElementById('roleModalTitle').textContent = 'Редактировать роль';
-            document.getElementById('roleSelect').value = role.name;
-            document.getElementById('roleSelect').disabled = true;
-            document.querySelectorAll('.permissions-list input[type="checkbox"]').forEach(cb => {
-                cb.checked = role.permissions.includes(cb.value);
-            });
-            document.getElementById('roleModal').style.display = 'block';
-        })
-        .catch(() => {
-            window.showNotification('error', 'Ошибка при загрузке роли');
-        });
-}
-
-// Открытие модалки для добавления роли
 function openRoleModal() {
-    editingRoleId = null;
+    toggleModal('roleModal', true);
     document.getElementById('roleModalTitle').textContent = 'Добавить роль';
-    document.getElementById('roleSelect').value = '';
-    document.getElementById('roleSelect').disabled = false; // Разрешаем выбор роли при добавлении
-    document.querySelectorAll('.permissions-list input[type="checkbox"]').forEach(cb => cb.checked = false);
-    document.getElementById('roleModal').style.display = 'block';
+    document.getElementById('roleForm').reset();
+    editingRoleId = null;
 }
 
-// Закрытие модалки
 function closeRoleModal() {
-    document.getElementById('roleModal').style.display = 'none';
+    toggleModal('roleModal', false);
 }
 
-// Сохранение роли (создание/редактирование)
-function initRoleForm() {
-    const roleForm = document.getElementById('roleForm');
-    if (roleForm) {
-        roleForm.onsubmit = function(e) {
-            e.preventDefault();
-            const name = document.getElementById('roleSelect').value;
-            const label = document.getElementById('roleSelect').selectedOptions[0].text; // label из option
-            const perms = Array.from(document.querySelectorAll('.permissions-list input[type="checkbox"]:checked')).map(cb => cb.value);
-            const url = editingRoleId ? `/roles/${editingRoleId}` : '/roles';
-            const method = editingRoleId ? 'PUT' : 'POST';
-            const submitBtn = this.querySelector('.btn-submit');
-            const originalBtnText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
-            submitBtn.disabled = true;
-            fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: name,
-                    label: label,
-                    permissions: perms
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success && data.role) {
-                    if (editingRoleId) {
-                        // Отладочный вывод
-                        updateRoleRow(data.role);
-                        // Форсируем обновление: повторно получаем роль с сервера и обновляем строку
-                        fetch(`/roles/${editingRoleId}`)
-                            .then(res => res.json())
-                            .then(fresh => {
-                                if (fresh.success && fresh.role) {
-                                    updateRoleRow(fresh.role);
-                                }
-                            });
-                        window.showNotification('success', 'Роль успешно обновлена');
-                    } else {
-                        addRoleRow(data.role, perms, label);
-                        window.showNotification('success', 'Роль успешно добавлена');
-                    }
-                    closeRoleModal();
-                    this.reset();
-                } else {
-                    window.showNotification('error', data.message || 'Ошибка');
-                }
-            })
-            .finally(() => {
-                submitBtn.innerHTML = originalBtnText;
-                submitBtn.disabled = false;
-            });
-        };
-    }
-}
+function openEditRoleModal(role) {
+    editingRoleId = role.id;
+    document.getElementById('roleModalTitle').textContent = 'Редактировать роль';
+    document.getElementById('roleSelect').value = role.name;
 
-function addRoleRow(role, perms, label) {
-    const tbody = document.querySelector('.clients-table tbody');
-    // Удаляем строку 'Пока нет данных...'
-    const emptyRow = tbody.querySelector('tr td[colspan]');
-    if (emptyRow && emptyRow.textContent.includes('Пока нет данных, добавьте первую роль')) {
-        emptyRow.parentElement.remove();
-    }
-    const tr = document.createElement('tr');
-    tr.id = 'role-' + String(role.id);
-    tr.setAttribute('data-name', role.name);
-    tr.setAttribute('data-perms', perms.join(','));
-    tr.innerHTML = `
-        <td>${getRoleLabel(role.name)}</td>
-        <td>${perms.length ? perms.map(p => getPermissionLabel(p)).join(', ') : '—'}</td>
-        <td class="actions-cell" style="vertical-align: middle;">
-            <button class="btn-edit" data-id="${role.id}" title="Редактировать">
-                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828.793-.793z" />
-                </svg>
-            </button>
-            <button class="btn-delete" data-id="${role.id}" title="Удалить">
-                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-            </button>
-        </td>
-    `;
-    tbody.insertBefore(tr, tbody.firstChild);
-
-    // Создать мобильную карточку
-    const rolesCards = document.getElementById('rolesCards');
-    const noRolesMessage = rolesCards.querySelector('.no-roles-message');
-    if (noRolesMessage) {
-        noRolesMessage.remove();
-    }
     
-    const roleCard = document.createElement('div');
-    roleCard.id = 'role-card-' + role.id;
-    roleCard.className = 'role-card';
-    
-    const permNames = perms.map(p => getPermissionLabel(p));
-    const roleType = role.name === 'admin' ? 'admin' : (role.is_system ? 'system' : 'custom');
-    const roleTypeText = role.name === 'admin' || role.is_system ? 'Системная роль' : 'Пользовательская роль';
-    
-    roleCard.innerHTML = `
-        <div class="role-card-header">
-            <div class="role-main-info">
-                <div class="role-icon">
-                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <div class="role-name">${getRoleLabel(role.name)}</div>
-            </div>
-            <div class="role-type">
-                <span class="role-badge ${roleType}">${roleTypeText}</span>
-            </div>
-        </div>
-        <div class="role-info">
-            <div class="role-info-item">
-                <div class="role-info-label">
-                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm5 5a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
-                    </svg>
-                    Разрешения:
-                </div>
-                <div class="role-info-value">
-                    ${permNames.length ? `
-                        <div class="permissions-tags">
-                            ${permNames.map(permName => `<span class="permission-tag">${permName}</span>`).join('')}
-                        </div>
-                    ` : `
-                        <span class="no-permissions">Нет разрешений</span>
-                    `}
-                </div>
-            </div>
-        </div>
-        ${role.name !== 'admin' && !role.is_system ? `
-        <div class="role-actions">
-            <button class="btn-edit" title="Редактировать" onclick="openEditRoleModalFromCard(${role.id})">
-                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828.793-.793z" />
-                </svg>
-                Редактировать
-            </button>
-            <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${role.id})">
-                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-                Удалить
-            </button>
-        </div>
-        ` : ''}
-    `;
-    rolesCards.insertBefore(roleCard, rolesCards.firstChild);
-}
-
-function updateRoleRow(role) {
-    const tr = document.getElementById('role-' + String(role.id));
-    if (!tr) {
-        return;
-    }
-    const perms = role.permissions || [];
-    tr.setAttribute('data-name', role.name);
-    tr.setAttribute('data-perms', perms.join(','));
-    tr.children[0].textContent = getRoleLabel(role.name);
-    tr.children[1].textContent = perms.length ? perms.map(p => getPermissionLabel(p)).join(', ') : '—';
-    
-    // Обновить мобильную карточку
-    updateRoleCard(role);
-}
-
-function getRoleLabel(name) {
-    if (window.roleLabels && window.roleLabels[name]) {
-        return window.roleLabels[name];
-    }
-    return name;
-}
-
-function getPermissionLabel(name) {
-    if (window.permissionsLabels && window.permissionsLabels[name]) {
-        return window.permissionsLabels[name];
-    }
-    return name;
-}
-
-// --- Удаление роли с подтверждением ---
-function openDeleteRoleModal(btn, id) {
-    currentDeleteRoleRow = btn.closest('tr');
-    currentDeleteRoleId = id;
-    document.getElementById('roleConfirmationModal').style.display = 'block';
-}
-
-// --- Делегирование событий для редактирования и удаления ролей ---
-function initRoleEventListeners() {
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.btn-edit')) {
-            const btn = e.target.closest('.btn-edit');
-            const id = String(btn.dataset.id);
-            openEditRoleModal(id);
-        }
-        if (e.target.closest('.btn-delete')) {
-            const btn = e.target.closest('.btn-delete');
-            const row = btn.closest('tr');
-            const id = String(btn.dataset.id || (row && row.id ? row.id.split('-')[1] : ''));
-            openDeleteRoleModal(btn, id);
-        }
+    // Сбрасываем все чекбоксы
+    document.querySelectorAll('input[name="permissions[]"]').forEach(checkbox => {
+        checkbox.checked = false;
     });
-
-    // Обработчики для модального окна подтверждения удаления
-    const cancelDeleteBtn = document.getElementById('cancelDeleteRole');
-    const confirmDeleteBtn = document.getElementById('confirmDeleteRole');
     
-    if (cancelDeleteBtn) {
-        cancelDeleteBtn.onclick = function() {
-            document.getElementById('roleConfirmationModal').style.display = 'none';
-            currentDeleteRoleRow = null;
-            currentDeleteRoleId = null;
-        };
-    }
-    
-    if (confirmDeleteBtn) {
-        confirmDeleteBtn.onclick = function() {
-            if (!currentDeleteRoleId) return;
-            deleteRole(currentDeleteRoleId);
-            document.getElementById('roleConfirmationModal').style.display = 'none';
-            currentDeleteRoleRow = null;
-            currentDeleteRoleId = null;
-        };
-    }
-}
-
-function onRoleSelectChange() {
-    // label теперь не нужен, функция оставлена пустой
-}
-
-function toggleGroup(group) {
-    const groupCheckbox = document.getElementById('group-' + group);
-    const permsDiv = document.getElementById(group + '-permissions');
-    if (groupCheckbox.checked) {
-        permsDiv.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = true);
+    // Отмечаем разрешения роли
+    if (role.permissions && Array.isArray(role.permissions)) {
+        console.log('Разрешения роли:', role.permissions); // Отладка
+        role.permissions.forEach(permissionName => {
+            const checkbox = document.querySelector(`input[name="permissions[]"][value="${permissionName}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+                console.log('Отмечен чекбокс для:', permissionName); // Отладка
+            } else {
+                console.log('Чекбокс не найден для:', permissionName); // Отладка
+            }
+        });
     } else {
-        permsDiv.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+        console.log('Нет разрешений или не массив:', role.permissions); // Отладка
     }
+    
+    toggleModal('roleModal', true);
 }
+
+function closeEditRoleModal() {
+    toggleModal('roleModal', false);
+}
+
+// Функция для обработки изменения выбора роли
+function onRoleSelectChange() {
+    const roleSelect = document.getElementById('roleSelect');
+    const selectedRole = roleSelect.value;
+    
+    // Сбрасываем все чекбоксы при смене роли
+    document.querySelectorAll('input[name="permissions[]"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+
+
+// Функция для перевода названий разрешений
+function translatePermission(permissionName) {
+    // Сначала проверяем, есть ли прямой перевод в window.permissionTranslations
+    if (window.permissionTranslations && window.permissionTranslations[permissionName]) {
+        return window.permissionTranslations[permissionName];
+    }
+    
+    // Если нет, возвращаем оригинальное название
+    return permissionName;
+}
+
+// Функция для перевода массива разрешений
+function translatePermissions(permissions) {
+    if (!permissions || !Array.isArray(permissions)) return 'Нет разрешений';
+    return permissions.map(translatePermission).join(', ');
+}
+
+// Функция для переключения групп разрешений
+function toggleGroup(groupName) {
+    const checkboxes = document.querySelectorAll(`input[name="permissions[]"][data-group="${groupName}"]`);
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = !allChecked;
+    });
+}
+
+// Функция для показа уведомлений
+
 
 // Функция инициализации поиска
 function initSearch() {
-    const searchInput = document.getElementById('searchInput');
-    const searchInputMobile = document.getElementById('searchInputMobile');
+    const searchInput = document.getElementById('roleSearchInput');
+    const searchInputMobile = document.getElementById('roleSearchInputMobile');
     
     if (searchInput) {
         searchInput.addEventListener('input', function() {
@@ -530,6 +291,260 @@ function handleSearch(searchTerm) {
     });
 }
 
+// --- AJAX добавление/редактирование роли ---
+document.addEventListener('DOMContentLoaded', function() {
+    const roleForm = document.getElementById('roleForm');
+    if (roleForm) {
+        roleForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(roleForm);
+            
+            // Отладка: выводим данные формы
+            console.log('Отправляемые данные:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ':', value);
+            }
+            
+            // Для PUT запроса добавляем _method
+            if (editingRoleId) {
+                formData.append('_method', 'PUT');
+            }
+            
+
+            
+            const url = editingRoleId ? `/roles/${editingRoleId}` : '/roles';
+            const method = editingRoleId ? 'POST' : 'POST'; // Всегда используем POST с _method
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => {
+                console.log('Статус ответа:', response.status); // Отладка
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        console.log('Ошибка валидации:', err); // Отладка
+                        return Promise.reject(err);
+                    });
+                }
+                return response.json().then(data => {
+                    console.log('Ответ сервера:', data); // Отладка
+                    return data;
+                });
+            })
+            .then(data => {
+                console.log('Обрабатываем данные:', data); // Отладка
+                if (data.success) {
+                    const role = data.role;
+                    console.log('Данные роли:', role); // Отладка
+                    
+                    if (editingRoleId) {
+                        // Обновляем существующую роль
+                        updateRoleCard(role);
+                        
+
+                        
+                        // Обновляем строку в таблице
+                        const tr = document.getElementById(`role-${role.id}`);
+                        if (tr) {
+                            const roleLabel = window.roleTranslations && window.roleTranslations[role.name] ? window.roleTranslations[role.name] : role.name;
+                            const permissionsText = translatePermissions(role.permissions);
+                            
+                            tr.innerHTML = `
+                                <td>${roleLabel}</td>
+                                <td>${permissionsText}</td>
+                                <td class="actions-cell">
+                                    ${role.name !== 'admin' ? `
+                                    <button class="btn-edit" data-id="${role.id}" title="Редактировать">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                        </svg>
+                                    </button>
+                                    <button class="btn-delete" data-id="${role.id}" title="Удалить">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    ` : ''}
+                                </td>
+                            `;
+                        }
+                        
+                        window.showNotification('success', 'Роль успешно обновлена');
+                    } else {
+                        // Добавляем новую роль
+                        console.log('Добавляем новую роль в таблицу'); // Отладка
+                        const tbody = document.getElementById('rolesTableBody');
+                        console.log('Найден tbody:', tbody); // Отладка
+                        const tr = document.createElement('tr');
+                        tr.id = `role-${role.id}`;
+                        
+                        const roleLabel = window.roleTranslations && window.roleTranslations[role.name] ? window.roleTranslations[role.name] : role.name;
+                        const permissionsText = translatePermissions(role.permissions);
+                        
+                        tr.innerHTML = `
+                            <td>${roleLabel}</td>
+                            <td>${permissionsText}</td>
+                            <td class="actions-cell">
+                                ${role.name !== 'admin' ? `
+                                <button class="btn-edit" data-id="${role.id}" title="Редактировать">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                </button>
+                                <button class="btn-delete" data-id="${role.id}" title="Удалить">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                                ` : ''}
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+
+                        // Создаем мобильную карточку
+                        const rolesCards = document.querySelector('.roles-cards');
+                        const roleCard = document.createElement('div');
+                        roleCard.id = `role-card-${role.id}`;
+                        roleCard.className = 'role-card';
+                        
+                        roleCard.innerHTML = `
+                            <div class="role-card-header">
+                                <div class="role-main-info">
+                                    <div class="role-icon">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="role-name" data-role="${role.name}">${roleLabel}</div>
+                                </div>
+                                <div class="role-type">
+                                    <span class="role-badge ${role.name === 'admin' ? 'admin' : 'custom'}">${role.name === 'admin' ? 'Системная' : 'Пользовательская'}</span>
+                                </div>
+                            </div>
+                            <div class="role-info">
+                                <div class="role-info-item">
+                                    <div class="role-info-label">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                            <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
+                                        </svg>
+                                        Разрешения:
+                                    </div>
+                                    <div class="role-info-value">${permissionsText}</div>
+                                </div>
+                            </div>
+                            ${role.name !== 'admin' ? `
+                            <div class="role-actions">
+                                <button class="btn-edit" title="Редактировать" onclick="openEditRoleModalFromCard(${role.id})">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                    </svg>
+                                    Редактировать
+                                </button>
+                                <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${role.id})">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    Удалить
+                                </button>
+                            </div>
+                            ` : ''}
+                        `;
+                        rolesCards.appendChild(roleCard);
+                        
+                        window.showNotification('success', 'Роль успешно добавлена');
+                    }
+                    
+                    closeRoleModal();
+                } else {
+                    window.showNotification('error', data.message || 'Ошибка при сохранении роли');
+                }
+            })
+            .catch(err => {
+                window.showNotification('error', 'Ошибка при сохранении роли');
+            });
+        });
+    }
+});
+
+// Обработчики для кнопок удаления
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.btn-delete')) {
+        const tr = e.target.closest('tr');
+        if (tr) {
+            const roleId = tr.id.split('-')[1];
+            currentDeleteRoleId = roleId;
+            toggleModal('roleConfirmationModal', true);
+        }
+    }
+    
+    if (e.target.closest('.btn-edit')) {
+        const tr = e.target.closest('tr');
+        if (tr) {
+            const roleId = tr.id.split('-')[1];
+            fetch(`/roles/${roleId}/edit`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(role => {
+                openEditRoleModal(role);
+            })
+            .catch(() => window.showNotification('error', 'Ошибка при загрузке данных роли'));
+        }
+    }
+});
+
+// Обработчики для модального окна подтверждения удаления
+document.addEventListener('DOMContentLoaded', function() {
+    const cancelRoleDelete = document.getElementById('cancelDeleteRole');
+    const confirmRoleDelete = document.getElementById('confirmDeleteRole');
+    
+    if (cancelRoleDelete) {
+        cancelRoleDelete.addEventListener('click', function() {
+            closeRoleConfirmationModal();
+        });
+    }
+    
+    if (confirmRoleDelete) {
+        confirmRoleDelete.addEventListener('click', function() {
+            if (currentDeleteRoleId) {
+                deleteRole(currentDeleteRoleId);
+            }
+            closeRoleConfirmationModal();
+        });
+    }
+});
+
+// Функция для закрытия модального окна подтверждения удаления
+function closeRoleConfirmationModal() {
+    toggleModal('roleConfirmationModal', false);
+    currentDeleteRoleId = null;
+}
+
+// Функция для переключения модальных окон
+function toggleModal(modalId, show = true) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+
+    if (show) {
+        modal.style.display = 'block';
+        modal.classList.add('show');
+        document.body.classList.add('modal-open');
+    } else {
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        document.body.classList.remove('modal-open');
+    }
+}
+
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
     // Исправляем названия ролей в мобильных карточках
@@ -541,26 +556,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчик изменения размера окна
     window.addEventListener('resize', toggleMobileView);
     
-    // Назначаем обработчики на кнопки добавления роли
-    const btnAddRole = document.getElementById('btnAddRole');
-    const btnAddRoleMobile = document.getElementById('btnAddRoleMobile');
-    
-    if (btnAddRole) {
-        btnAddRole.onclick = openRoleModal;
-    }
-    
-    if (btnAddRoleMobile) {
-        btnAddRoleMobile.onclick = openRoleModal;
-    }
+
     
     // Инициализация поиска
     initSearch();
-    
-    // Инициализация формы ролей
-    initRoleForm();
-    
-    // Инициализация обработчиков событий
-    initRoleEventListeners();
 });
 
 // Экспорт функций для глобального использования
