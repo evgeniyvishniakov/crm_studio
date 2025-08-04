@@ -2290,103 +2290,6 @@ input[type="date"]:focus {
     .pagination .page-btn:hover:not(:disabled):not(.active) {
         transform: translateY(-1px) scale(1.02) !important;
     }
-    
-    /* Мобильные стили для окна подтверждения */
-    .confirmation-modal .confirmation-content {
-        width: 95% !important;
-        max-width: 400px !important;
-        margin: 20px auto !important;
-        padding: 20px !important;
-        overflow: hidden !important;
-        box-sizing: border-box !important;
-    }
-    
-    .confirmation-modal .confirmation-buttons {
-        flex-direction: row;
-        gap: 10px;
-        justify-content: space-between;
-        margin-top: 20px;
-    }
-    
-    .confirmation-modal .confirm-btn,
-    .confirmation-modal .cancel-btn {
-        width: 48%;
-        padding: 12px;
-        font-size: 14px;
-        display: inline-block;
-    }
-    
-    /* Стили для анимации удаления карточек товаров */
-    .product-card.row-deleting {
-        opacity: 0.5;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-    }
-    
-    /* Стили для анимации удаления карточек услуг */
-    .service-card.row-deleting {
-        opacity: 0.5;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-    }
-    
-    /* Стили для анимации удаления карточек категорий */
-    .category-card.row-deleting {
-        opacity: 0.5;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-    }
-    
-    /* Стили для анимации удаления карточек поставщиков */
-    .supplier-card.row-deleting {
-        opacity: 0.5;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-    }
-    
-    /* Стили для анимации удаления карточек типов клиентов */
-    .client-type-card.row-deleting {
-        opacity: 0.5;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-    }
-    
-    /* Стили для анимации удаления карточек пользователей */
-    .user-card.row-deleting {
-        opacity: 0.5;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-    }
-    
-    /* Стили для анимации удаления карточек ролей */
-.role-card.row-deleting {
-    opacity: 0.5;
-    transform: scale(0.8);
-    transition: all 0.3s ease;
-}
-
-/* Стили для анимации удаления карточек уведомлений */
-.notification-card.row-deleting {
-    opacity: 0.5;
-    transform: scale(0.8);
-    transition: all 0.3s ease;
-}
-
-/* Стили для анимации удаления карточек расходов */
-.expense-card.row-deleting {
-    opacity: 0.5;
-    transform: scale(0.8);
-    transition: all 0.3s ease;
-}
-    
-    /* Стили для анимации удаления карточек тикетов */
-    .ticket-card.row-deleting {
-        opacity: 0.5;
-        transform: scale(0.8);
-        transition: all 0.3s ease;
-    }
-    
-
 }
 
 @media (max-width: 480px) {
@@ -4512,5 +4415,614 @@ input[type="date"]:focus {
     
     .mobile-label {
         display: inline;
+    }
+}
+
+/* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ ИНВЕНТАРИЗАЦИИ ===== */
+
+/* Скрываем таблицу на мобильных */
+@media (max-width: 768px) {
+    .inventories-list.table-wrapper {
+        display: none;
+    }
+    
+    .inventories-cards {
+        display: block;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    #mobileInventoriesPagination {
+        display: block !important;
+        margin-top: 20px;
+    }
+    
+    #mobileInventoriesPagination .pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+}
+
+/* Стили для карточек инвентаризации */
+.inventory-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.inventory-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+}
+
+.inventory-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.inventory-card-header {
+    margin-bottom: 12px;
+}
+
+.inventory-main-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.inventory-date {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    line-height: 1.3;
+    flex: 1;
+}
+
+.inventory-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.inventory-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.inventory-info-item:last-child {
+    border-bottom: none;
+}
+
+.inventory-info-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.inventory-info-label svg {
+    width: 16px;
+    height: 16px;
+    color: #9ca3af;
+}
+
+.inventory-info-value {
+    font-size: 14px;
+    color: #1f2937;
+    font-weight: 500;
+    text-align: right;
+}
+
+.inventory-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.inventory-actions .btn-edit,
+.inventory-actions .btn-delete,
+.inventory-actions .btn-pdf {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: #fff;
+}
+
+.inventory-actions .btn-edit {
+    background: #3b82f6;
+    color: white;
+}
+
+.inventory-actions .btn-edit:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.inventory-actions .btn-delete {
+    background: #ef4444;
+    color: white;
+}
+
+.inventory-actions .btn-delete:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+.inventory-actions .btn-pdf {
+    background: #10b981;
+    color: white;
+}
+
+.inventory-actions .btn-pdf:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+.inventory-actions svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Мобильные стили для заголовка инвентаризации */
+@media (max-width: 768px) {
+    .inventories-header {
+        padding: 15px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+    
+    .inventories-header .header-top {
+        display: none;
+    }
+    
+    .inventories-header .mobile-header {
+        display: block;
+    }
+    
+    .inventories-header .mobile-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 15px 0;
+        text-align: center;
+    }
+    
+    .inventories-header .mobile-header-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .inventories-header .btn-add-inventory {
+        width: 100%;
+        padding: 12px 16px;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+    
+    .inventories-header .btn-add-inventory:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+    
+    .inventories-header .search-box {
+        width: 100%;
+        position: relative;
+    }
+    
+    .inventories-header .search-box input {
+        width: 100%;
+        padding: 12px 16px 12px 45px;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 16px;
+        background: #f9fafb;
+        transition: all 0.3s ease;
+    }
+    
+    .inventories-header .search-box input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .inventories-header .search-icon {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: #9ca3af;
+    }
+}
+
+/* Мобильные стили для модальных окон */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95% !important;
+        max-width: none !important;
+        margin: 20px auto;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header h2 {
+        font-size: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px;
+        padding: 12px;
+    }
+    
+    .form-group select option {
+        font-size: 16px;
+        padding: 8px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn-cancel, .btn-submit {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+    
+    .inventory-details {
+        margin-top: 15px;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .inventory-details-modal {
+        margin-top: 15px;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    .pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .pagination .page-btn,
+    .pagination .page-ellipsis {
+        min-width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+    
+    .pagination .page-btn:hover:not(:disabled):not(.active) {
+        background: #f3f4f6;
+    }
+}
+
+/* Мобильные стили для подтверждения */
+@media (max-width: 768px) {
+    .confirmation-modal .confirmation-content {
+        width: 90%;
+        max-width: 400px;
+        padding: 20px;
+    }
+    
+    .confirmation-modal .confirmation-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .confirmation-modal .confirm-btn,
+    .confirmation-modal .cancel-btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+}
+
+/* Анимация удаления для карточек инвентаризации */
+.inventory-card.row-deleting {
+    animation: slideOut 0.3s ease-out forwards;
+    opacity: 0.5;
+    transform: translateX(-100%);
+}
+
+@keyframes slideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+}
+
+/* Мобильные стили для очень маленьких экранов */
+@media (max-width: 480px) {
+    .inventories-header .mobile-title {
+        font-size: 20px;
+    }
+    
+    .inventories-header .btn-add-inventory {
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+    
+    .inventories-header .search-box input {
+        padding: 10px 14px 10px 40px;
+        font-size: 14px;
+    }
+    
+    .inventory-card {
+        padding: 12px;
+    }
+    
+    .inventory-date {
+        font-size: 16px;
+    }
+    
+    .inventory-info-item {
+        padding: 6px 0;
+    }
+    
+    .inventory-info-label {
+        font-size: 12px;
+    }
+    
+    .inventory-info-value {
+        font-size: 12px;
+    }
+    
+    .inventory-actions .btn-edit,
+    .inventory-actions .btn-delete,
+    .inventory-actions .btn-pdf {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+    
+    .modal-content {
+        width: 98% !important;
+        margin: 10px auto;
+    }
+    
+    .modal-header h2 {
+        font-size: 18px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 14px;
+        padding: 10px;
+    }
+    
+    .btn-cancel, .btn-submit {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .pagination {
+        gap: 3px;
+    }
+    
+    .pagination .page-btn,
+    .pagination .page-ellipsis {
+        min-width: 35px;
+        height: 35px;
+        font-size: 12px;
+    }
+    
+    #mobileInventoriesPagination {
+        margin-top: 15px;
+    }
+}
+
+/* Стили для PDF документов */
+
+/* Основные стили для PDF */
+.pdf-document body {
+    font-family: DejaVu Sans, Arial, sans-serif;
+    font-size: 13px;
+    color: #222;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.4;
+}
+
+/* Заголовки для PDF */
+.pdf-document h1 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 8px;
+}
+
+.pdf-document h3 {
+    font-size: 16px;
+    margin: 20px 0 10px 0;
+    color: #444;
+}
+
+/* Мета-информация для PDF */
+.pdf-document .meta {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-left: 4px solid #007bff;
+}
+
+.pdf-document .meta span {
+    display: inline-block;
+    margin-right: 25px;
+    font-weight: 500;
+}
+
+.pdf-document .meta b {
+    color: #495057;
+}
+
+/* Заметки для PDF */
+.pdf-document .notes {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+}
+
+.pdf-document .notes b {
+    color: #856404;
+}
+
+/* Таблицы для PDF */
+.pdf-document table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 12px;
+}
+
+.pdf-document th, 
+.pdf-document td {
+    border: 1px solid #dee2e6;
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.pdf-document th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.pdf-document tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* Цветовые классы для PDF */
+.pdf-document .text-success {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.pdf-document .text-danger {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.pdf-document .text-warning {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+/* Статусы для PDF */
+.pdf-document .status-success {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.pdf-document .status-warning {
+    color: #ffc107;
+    font-weight: 600;
+}
+
+.pdf-document .status-danger {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+/* Футер для PDF */
+.pdf-document .footer {
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+    font-size: 11px;
+    color: #6c757d;
+    text-align: center;
+}
+
+/* Адаптивность для PDF */
+@media print {
+    .pdf-document body {
+        margin: 0;
+        padding: 15px;
+    }
+    
+    .pdf-document table {
+        page-break-inside: avoid;
+    }
+    
+    .pdf-document tr {
+        page-break-inside: avoid;
     }
 }

@@ -131,7 +131,19 @@ function initializeCalendarLocalization() {
         // Проверяем, не был ли уже инициализирован flatpickr для этого поля
         if (input._flatpickr || input.dataset.flatpickrInitialized) return;
         
-        const locale = input.dataset.locale || 'en';
+        let locale = input.dataset.locale || 'en';
+        
+        // Маппинг локалей для flatpickr
+        const localeMapping = {
+            'ru-RU': 'ru',
+            'ru': 'ru',
+            'en-US': 'en',
+            'en': 'en',
+            'ua': 'ua',
+            'uk': 'ua'
+        };
+        
+        locale = localeMapping[locale] || 'en';
         const currentValue = input.value;
         
         // Создаем новый input для flatpickr

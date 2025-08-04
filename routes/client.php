@@ -235,6 +235,7 @@ Route::middleware('auth:client')->group(function () {
         Route::delete('/{inventory}', [InventoryController::class, 'destroy'])->name('destroy');
         Route::get('/{inventory}/items', [InventoryController::class, 'items'])->name('items');
         Route::get('/{inventory}/pdf', [InventoryController::class, 'pdf'])->name('pdf');
+        
     });
     
     // Отчеты

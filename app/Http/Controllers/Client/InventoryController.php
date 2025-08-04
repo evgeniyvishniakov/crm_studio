@@ -164,15 +164,10 @@ class InventoryController extends Controller
         ]);
     }
 
-    /**
-     * Генерация PDF с расхождениями по инвентаризации
-     */
     public function pdf($id)
     {
         $inventory = Inventory::with(['user', 'items.product'])->findOrFail($id);
         $discrepancies = $inventory->items->where('difference', '!=', 0);
-        
-        // Получаем название проекта
         $project = auth()->user()->project;
         $projectName = $project ? $project->project_name : 'Проект';
         
@@ -181,7 +176,9 @@ class InventoryController extends Controller
             'discrepancies' => $discrepancies,
             'projectName' => $projectName,
         ]);
-        $filename = $projectName.'_'.__('messages.inventory').'_'.($inventory->formatted_date ?? $inventory->date).'.pdf';
-        return $pdf->download($filename);
+        
+        return $pdf->download($projectName . '_inventory.pdf');
     }
+
+
 }

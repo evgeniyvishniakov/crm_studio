@@ -1,33 +1,24 @@
-@php use Illuminate\Support\Str; @endphp
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>{{ $projectName ?? 'Проект' }} - {{ __('messages.inventory') }} {{ $inventory->formatted_date ?? $inventory->date }}</title>
-    <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 13px; color: #222; }
-        h1 { font-size: 20px; margin-bottom: 10px; }
-        .meta { margin-bottom: 15px; }
-        .meta span { display: inline-block; margin-right: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #bbb; padding: 6px 8px; text-align: left; }
-        th { background: #f7f7f7; }
-        .text-success { color: #28a745; }
-        .text-danger { color: #dc3545; }
-        .status-success { color: #28a745; }
-        .status-warning { color: #ffc107; }
-        .status-danger { color: #dc3545; }
-    </style>
+                    <link rel="stylesheet" href="{{ asset('client/css/common.css') }}">
 </head>
-<body>
+<body class="pdf-document">
     <h1>{{ $projectName ?? 'Проект' }} - {{ __('messages.inventory') }} {{ $inventory->formatted_date ?? $inventory->date }}</h1>
+    
     <div class="meta">
         <span><b>{{ __('messages.date') }}:</b> {{ $inventory->formatted_date ?? $inventory->date }}</span>
         <span><b>{{ __('messages.responsible') }}:</b> {{ $inventory->user->name ?? '—' }}</span>
     </div>
+    
     @if($inventory->notes)
-        <div style="margin-bottom: 10px;"><b>{{ __('messages.notes') }}:</b> {{ $inventory->notes }}</div>
+        <div class="notes">
+            <b>{{ __('messages.notes') }}:</b> {{ $inventory->notes }}
+        </div>
     @endif
+    
     <h3>{{ __('messages.products_with_discrepancies') }}</h3>
     <table>
         <thead>
@@ -42,7 +33,7 @@
         <tbody>
         @forelse($discrepancies as $item)
             <tr>
-                <td>{{ $item->product->name }}</td>
+                <td><strong>{{ $item->product->name }}</strong></td>
                 <td>{{ $item->warehouse_qty }} {{ __('messages.units') }}</td>
                 <td>{{ $item->actual_qty }} {{ __('messages.units') }}</td>
                 <td class="{{ $item->difference > 0 ? 'text-success' : 'text-danger' }}">
@@ -59,7 +50,11 @@
                 </td>
             </tr>
         @empty
-            <tr><td colspan="5">{{ __('messages.no_discrepancies') }}</td></tr>
+            <tr>
+                <td colspan="5" style="text-align: center; color: #28a745; font-weight: 600;">
+                    {{ __('messages.no_discrepancies') }}
+                </td>
+            </tr>
         @endforelse
         </tbody>
     </table>
