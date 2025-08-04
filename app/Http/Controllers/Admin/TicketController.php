@@ -60,11 +60,11 @@ class TicketController extends Controller
             'ip' => $request->ip()
         ]);
         
-        // Создаем уведомление для клиента о новом сообщении от админа
+        // Создаем уведомление для клиента о новом сообщении от поддержки
         // Проверяем, не создано ли уже уведомление для этого клиента за последнюю минуту
         $existingNotification = Notification::where('user_id', $ticket->user_id)
             ->where('type', 'ticket')
-            ->where('title', 'Новое сообщение от администратора')
+            ->where('title', 'Новое сообщение от поддержки')
             ->where('project_id', $ticket->project_id)
             ->where('created_at', '>=', now()->subMinutes(1))
             ->first();
@@ -73,7 +73,7 @@ class TicketController extends Controller
             Notification::create([
                 'user_id' => $ticket->user_id,
                 'type' => 'ticket',
-                'title' => 'Новое сообщение от администратора',
+                'title' => 'Новое сообщение от поддержки',
                 'body' => $ticket->subject,
                 'url' => route('client.support-tickets.index') . '#ticket-' . $ticket->id,
                 'project_id' => $ticket->project_id,
@@ -91,7 +91,7 @@ class TicketController extends Controller
         foreach ($otherUsersWithSupportAccess as $user) {
             $existingNotification = Notification::where('user_id', $user->id)
                 ->where('type', 'ticket')
-                ->where('title', 'Новое сообщение от администратора')
+                ->where('title', 'Новое сообщение от поддержки')
                 ->where('project_id', $ticket->project_id)
                 ->where('created_at', '>=', now()->subMinutes(1))
                 ->first();
@@ -100,7 +100,7 @@ class TicketController extends Controller
                 Notification::create([
                     'user_id' => $user->id,
                     'type' => 'ticket',
-                    'title' => 'Новое сообщение от администратора',
+                    'title' => 'Новое сообщение от поддержки',
                     'body' => $ticket->subject,
                     'url' => route('admin.tickets.index') . '#ticket-' . $ticket->id,
                     'project_id' => $ticket->project_id,

@@ -191,7 +191,7 @@ return [
     'services_popularity' => 'Популярность услуг',
     
     // Веб-запись
-    'web_booking' => 'Веб-запись',
+    'web_booking' => 'Запись',
     'booking_settings' => 'Настройки записи',
     'schedule_settings' => 'Настройки расписания',
     'master_services' => 'Услуги мастеров',
@@ -1519,7 +1519,7 @@ return [
     // Поддержка
     'support' => 'Поддержка',
     'create_ticket' => 'Создать тикет',
-    'ticket' => 'Тикет',
+    'ticket' => 'Сообщение',
     'subject' => 'Тема',
     'message' => 'Сообщение',
     'send' => 'Отправить',
@@ -1651,7 +1651,7 @@ return [
     'select_valid_date' => 'Выберите корректную дату',
     
     // Веб-запись
-    'web_booking' => 'Веб-запись',
+    'web_booking' => 'Запись',
     'online_booking' => 'Онлайн-запись',
     'book_appointment' => 'Записаться',
     'select_service' => 'Выберите услугу',

@@ -1,5 +1,13 @@
 // ===== ФУНКЦИИ ДЛЯ СТРАНИЦЫ УВЕДОМЛЕНИЙ =====
 
+// Функция для переключения модальных окон
+function toggleModal(modalId, show = true) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = show ? 'block' : 'none';
+    }
+}
+
 // AJAX-пагинация с фильтрами (без поиска)
 let currentPage = 1;
 let typeFilter = '';
@@ -90,7 +98,9 @@ function updateTable(notifications) {
         // Определяем правильное отображение типа уведомления
         let typeDisplay = notification.type.charAt(0).toUpperCase() + notification.type.slice(1);
         if (notification.type === 'web_booking') {
-            typeDisplay = 'Веб-запись';
+            typeDisplay = 'Запись';
+        } else if (notification.type === 'ticket') {
+            typeDisplay = 'Сообщение';
         }
         
         row.innerHTML = `
@@ -142,7 +152,9 @@ function updateMobileCards(notifications) {
         // Определяем правильное отображение типа уведомления
         let typeDisplay = notification.type.charAt(0).toUpperCase() + notification.type.slice(1);
         if (notification.type === 'web_booking') {
-            typeDisplay = 'Веб-запись';
+            typeDisplay = 'Запись';
+        } else if (notification.type === 'ticket') {
+            typeDisplay = 'Сообщение';
         }
 
         const statusBadge = notification.is_read 
@@ -213,7 +225,9 @@ function updateTypeFilter(types) {
         const option = document.createElement('option');
         option.value = type;
         if (type === 'web_booking') {
-            option.textContent = 'Веб-запись';
+            option.textContent = 'Запись';
+        } else if (type === 'ticket') {
+            option.textContent = 'Сообщение';
         } else {
             option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
         }
@@ -363,7 +377,7 @@ function markAllAsRead() {
     currentAction = 'markAllAsRead';
     document.getElementById('confirmationTitle').textContent = 'Подтверждение';
     document.getElementById('confirmationMessage').textContent = 'Вы уверены, что хотите отметить все уведомления как прочитанные?';
-    document.getElementById('confirmationModal').style.display = 'block';
+    toggleModal('confirmationModal');
 }
 
 function deleteNotification(notificationId) {
@@ -372,7 +386,13 @@ function deleteNotification(notificationId) {
     currentNotificationId = notificationId;
     document.getElementById('confirmationTitle').textContent = 'Подтверждение удаления';
     document.getElementById('confirmationMessage').textContent = 'Вы уверены, что хотите удалить это уведомление?';
-    document.getElementById('confirmationModal').style.display = 'block';
+    toggleModal('confirmationModal');
+}
+
+function closeConfirmationModal() {
+    toggleModal('confirmationModal', false);
+    currentAction = null;
+    currentNotificationId = null;
 }
 
 function performMarkAllAsRead() {
@@ -391,6 +411,8 @@ function performMarkAllAsRead() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Закрываем модальное окно только после успешного выполнения
+            closeConfirmationModal();
             // Перезагружаем текущую страницу
             loadPage(currentPage, typeFilter, statusFilter);
         }
@@ -411,6 +433,8 @@ function performDeleteNotification() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Закрываем модальное окно только после успешного выполнения
+            closeConfirmationModal();
             // Перезагружаем текущую страницу
             loadPage(currentPage, typeFilter, statusFilter);
         }
@@ -446,23 +470,17 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (currentAction === 'deleteNotification') {
             performDeleteNotification();
         }
-        document.getElementById('confirmationModal').style.display = 'none';
-        currentAction = null;
-        currentNotificationId = null;
+        // Модальное окно закроется только после успешного выполнения действия
     });
 
     document.getElementById('cancelAction').addEventListener('click', function() {
-        document.getElementById('confirmationModal').style.display = 'none';
-        currentAction = null;
-        currentNotificationId = null;
+        closeConfirmationModal();
     });
 
     // Закрытие модального окна при клике вне его
     window.onclick = function(event) {
         if (event.target == document.getElementById('confirmationModal')) {
-            document.getElementById('confirmationModal').style.display = 'none';
-            currentAction = null;
-            currentNotificationId = null;
+            closeConfirmationModal();
         }
     }
 

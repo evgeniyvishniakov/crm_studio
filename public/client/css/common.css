@@ -6020,6 +6020,216 @@ input[type="date"]:focus {
     margin: 40px 0; 
 }
 
+/* ===== СТИЛИ ДЛЯ УВЕДОМЛЕНИЙ ===== */
+
+/* Заголовок уведомлений */
+.natification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.filter-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Стили для пагинации */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 20px 0;
+}
+
+.page-btn {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    color: #374151;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    min-width: 40px;
+    text-align: center;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.page-btn.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-ellipsis {
+    padding: 8px 12px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+
+
+/* Стили для мобильных карточек уведомлений */
+.notifications-cards {
+    display: none;
+}
+
+.notification-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.notification-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.notification-card-header {
+    margin-bottom: 16px;
+}
+
+.notification-main-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+.notification-type {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.notification-status {
+    flex-shrink: 0;
+}
+
+.status-badge.read {
+    background: linear-gradient(135deg, #10b981 60%, #34d399 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-badge.unread {
+    background: linear-gradient(135deg, #f59e0b 60%, #fbbf24 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.notification-info {
+    margin-bottom: 16px;
+}
+
+.notification-info-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.notification-info-item:last-child {
+    margin-bottom: 0;
+}
+
+.notification-info-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.notification-info-label svg {
+    width: 16px;
+    height: 16px;
+    color: #9ca3af;
+}
+
+.notification-info-value {
+    font-size: 14px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn-open {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #3b82f6 60%, #60a5fa 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-open:hover {
+    background: linear-gradient(135deg, #2563eb 60%, #3b82f6 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-open svg {
+    width: 16px;
+    height: 16px;
+}
+
 /* Стили для тикетов */
 .ticket-row { 
     transition: background 0.18s, box-shadow 0.18s; 
