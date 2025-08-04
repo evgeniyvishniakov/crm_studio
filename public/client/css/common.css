@@ -306,7 +306,8 @@
 .btn-add-appointment,
 .btn-add-expense,
 .btn-add-product,
-.btn-add-inventory{
+.btn-add-inventory,
+.btn-add-user{
     display: flex;
     align-items: center;
     gap: 8px;
@@ -328,7 +329,8 @@
 .btn-add-appointment:hover,
 .btn-add-expense:hover,
 .btn-add-product:hover,
-.btn-add-inventory:hover {
+.btn-add-inventory:hover,
+.btn-add-user:hover {
     transform: translateY(-2px);
     background: linear-gradient(135deg, #2563eb, #3b82f6);
     border-color: #2563eb;
@@ -5024,5 +5026,576 @@ input[type="date"]:focus {
     
     .pdf-document tr {
         page-break-inside: avoid;
+    }
+}
+
+/* ===== СТИЛИ ДЛЯ ПОЛЬЗОВАТЕЛЕЙ ===== */
+
+/* Контейнер пользователей */
+.users-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Inter', Arial, sans-serif !important;
+}
+
+/* Заголовок пользователей */
+.users-header {
+    margin-bottom: 24px;
+}
+
+.users-header .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.users-header .header-top h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.users-header .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Мобильная версия заголовка пользователей */
+.users-header .mobile-header {
+    display: none;
+}
+
+.users-header .mobile-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+}
+
+.users-header .mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+
+
+/* ===== СТИЛИ ДЛЯ РОЛЕЙ ===== */
+
+/* Контейнер ролей */
+.roles-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Inter', Arial, sans-serif !important;
+}
+
+/* Заголовок ролей */
+.roles-header {
+    margin-bottom: 24px;
+}
+
+.roles-header .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.roles-header .header-top h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.roles-header .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Мобильная версия заголовка ролей */
+.roles-header .mobile-header {
+    display: none;
+}
+
+.roles-header .mobile-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+}
+
+.roles-header .mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Кнопка добавления роли */
+.btn-add-role {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-add-role:hover {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-add-role svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Мобильные карточки ролей */
+.roles-cards {
+    display: none;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.role-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.role-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #8b5cf6, #a855f7);
+}
+
+.role-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.role-card-header {
+    margin-bottom: 12px;
+}
+
+.role-main-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.role-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #8b5cf6, #a855f7);
+    border-radius: 8px;
+    color: white;
+}
+
+.role-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.role-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    line-height: 1.3;
+    flex: 1;
+}
+
+.role-type {
+    display: flex;
+    align-items: center;
+}
+
+.role-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-badge.admin {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.role-badge.system {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.role-badge.custom {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.role-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.role-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.role-info-item:last-child {
+    border-bottom: none;
+}
+
+.role-info-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+    min-width: 120px;
+}
+
+.role-info-label svg {
+    width: 16px;
+    height: 16px;
+    color: #9ca3af;
+}
+
+.role-info-value {
+    flex: 1;
+    text-align: right;
+    font-size: 14px;
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.permissions-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.permission-tag {
+    background: #f3f4f6;
+    color: #374151;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.no-permissions {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.role-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.role-actions .btn-edit,
+.role-actions .btn-delete {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.role-actions .btn-edit {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+}
+
+.role-actions .btn-edit:hover {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    transform: translateY(-1px);
+}
+
+.role-actions .btn-delete {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.role-actions .btn-delete:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    transform: translateY(-1px);
+}
+
+.role-actions svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Сообщение об отсутствии ролей */
+.no-roles-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+}
+
+.no-roles-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.no-roles-icon svg {
+    width: 48px;
+    height: 48px;
+    color: #d1d5db;
+}
+
+.no-roles-text {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Стили для списка разрешений в модальном окне */
+.permissions-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 0;
+    padding-left: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.permissions-list label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    font-weight: 400;
+    white-space: nowrap;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 4px 0;
+}
+
+.permissions-list input[type="checkbox"] {
+    margin-right: 8px;
+    margin-left: 0;
+}
+
+.permissions-list span {
+    white-space: nowrap;
+}
+
+/* Мобильная пагинация для ролей */
+#mobileRolesPagination {
+    display: none;
+    margin-top: 20px;
+}
+
+#mobileRolesPagination .pagination {
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Адаптивность для пользователей */
+@media (max-width: 768px) {
+    .users-header .header-top {
+        display: none;
+    }
+
+    .users-header .mobile-header {
+        display: block;
+    }
+
+    .users-header .mobile-title {
+        font-size: 24px;
+    }
+
+    .users-header .mobile-header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .btn-add-user {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+}
+
+/* Адаптивность для ролей */
+@media (max-width: 768px) {
+    .roles-header .header-top {
+        display: none;
+    }
+
+    .roles-header .mobile-header {
+        display: block;
+    }
+
+    .roles-header .mobile-title {
+        font-size: 24px;
+    }
+
+    .roles-header .mobile-header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .btn-add-role {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+
+    .table-wrapper {
+        display: none;
+    }
+
+    .roles-cards {
+        display: block;
+    }
+
+    #mobileRolesPagination {
+        display: block;
+    }
+
+    .role-card {
+        margin: 10px 0;
+        padding: 12px;
+    }
+
+    .role-main-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .role-name {
+        font-size: 16px;
+    }
+
+    .role-info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .role-info-label {
+        min-width: auto;
+    }
+
+    .role-info-value {
+        text-align: left;
+        width: 100%;
+    }
+
+    .permissions-tags {
+        justify-content: flex-start;
+    }
+
+    .role-actions {
+        justify-content: flex-start;
+        margin-top: 12px;
+    }
+
+    .role-actions .btn-edit,
+    .role-actions .btn-delete {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .users-header .mobile-title {
+        font-size: 20px;
+    }
+
+    .btn-add-user {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .roles-header h1 {
+        font-size: 20px;
+    }
+
+    .btn-add-role {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .role-card {
+        padding: 10px;
+    }
+
+    .role-name {
+        font-size: 15px;
+    }
+
+    .role-info-label {
+        font-size: 13px;
+    }
+
+    .role-info-value {
+        font-size: 13px;
+    }
+
+    .permission-tag {
+        font-size: 10px;
+        padding: 1px 6px;
+    }
+
+    .role-actions .btn-edit,
+    .role-actions .btn-delete {
+        padding: 6px 8px;
+        font-size: 11px;
     }
 }

@@ -2,24 +2,46 @@
 
 @section('content')
     <div class="dashboard-container">
-        <div class="clients-header">
-            <h1>{{ __('messages.users') }}</h1>
-            <div id="notification"></div>
-            <div class="header-actions">
-                <button class="btn-add-client" onclick="openUserModal()">
-                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                    {{ __('messages.add_user') }}
-                </button>
-                <div class="search-box">
-                    <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                    </svg>
-                    <input type="text" placeholder="{{ __('messages.search') }}..." autocomplete="off" id="userSearchInput">
+        <div class="users-container">
+            <div class="users-header">
+                <div class="header-top">
+                    <h1>{{ __('messages.users') }}</h1>
+                    <div class="header-actions">
+                        <button class="btn-add-user" onclick="openUserModal()">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            {{ __('messages.add_user') }}
+                        </button>
+                        <div class="search-box">
+                            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                            <input type="text" placeholder="{{ __('messages.search') }}..." autocomplete="off" id="userSearchInput">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Мобильная версия заголовка -->
+                <div class="mobile-header">
+                    <h1 class="mobile-title">{{ __('messages.users') }}</h1>
+                    <div class="mobile-header-actions">
+                        <button class="btn-add-user" onclick="openUserModal()">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            {{ __('messages.add_user') }}
+                        </button>
+                        <div class="search-box">
+                            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                            <input type="text" placeholder="{{ __('messages.search') }}..." autocomplete="off" id="userSearchInputMobile">
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+            <div id="notification"></div>
 
         <!-- Десктопная таблица -->
         <div class="table-wrapper">
@@ -277,6 +299,20 @@
 
 <script>
     window.roles = @json($roles);
+    
+    // Функция для показа уведомлений
+    function showNotification(type, message) {
+        const notification = document.getElementById('notification');
+        if (notification) {
+            notification.innerHTML = `<div class="alert alert-${type === 'success' ? 'success' : 'danger'}">${message}</div>`;
+            notification.style.display = 'block';
+            
+            // Автоматически скрыть через 5 секунд
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+    }
     
     // Функции для мобильной версии
     function toggleMobileView() {
@@ -741,7 +777,6 @@ document.addEventListener('click', function(e) {
         const tr = e.target.closest('tr');
         if (tr) {
             const userId = tr.id.split('-')[1];
-            currentDeleteUserRow = tr;
             currentDeleteUserId = userId;
             document.getElementById('userConfirmationModal').style.display = 'block';
         }
@@ -859,12 +894,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-let currentDeleteUserRow = null;
 let currentDeleteUserId = null;
 
 document.getElementById('cancelUserDelete').addEventListener('click', function() {
     document.getElementById('userConfirmationModal').style.display = 'none';
-    currentDeleteUserRow = null;
     currentDeleteUserId = null;
 });
 
@@ -875,8 +908,13 @@ document.getElementById('confirmUserDelete').addEventListener('click', function(
     document.getElementById('userConfirmationModal').style.display = 'none';
 });
 
-function deleteUser(row, userId) {
-    row.classList.add('row-deleting');
+function deleteUser(userId) {
+    const userCard = document.getElementById(`user-card-${userId}`);
+    const userRow = document.getElementById(`user-${userId}`);
+    
+    if (userCard) userCard.classList.add('row-deleting');
+    if (userRow) userRow.classList.add('row-deleting');
+    
     fetch(`/users/${userId}`, {
         method: 'DELETE',
         headers: {
@@ -894,16 +932,19 @@ function deleteUser(row, userId) {
     .then(data => {
         if (data.success) {
             setTimeout(() => {
-                row.remove();
+                if (userCard) userCard.remove();
+                if (userRow) userRow.remove();
                 showNotification('success', '{{ __('messages.user_successfully_deleted') }}');
             }, 300);
         } else {
-            row.classList.remove('row-deleting');
+            if (userCard) userCard.classList.remove('row-deleting');
+            if (userRow) userRow.classList.remove('row-deleting');
             showNotification('error', data.message || '{{ __('messages.failed_to_delete_user') }}');
         }
     })
     .catch(error => {
-        row.classList.remove('row-deleting');
+        if (userCard) userCard.classList.remove('row-deleting');
+        if (userRow) userRow.classList.remove('row-deleting');
         showNotification('error', '{{ __('messages.failed_to_delete_user') }}');
     });
 }
@@ -921,6 +962,30 @@ function formatDateTime(dateString) {
 </script>
 
 <style>
+/* Стили для уведомлений */
+#notification {
+    margin-bottom: 20px;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
 /* Стили для аватарки пользователей */
 .client-info {
     display: flex;

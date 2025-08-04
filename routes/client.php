@@ -277,9 +277,10 @@ Route::middleware('auth:client')->group(function () {
     Route::get('/users', [\App\Http\Controllers\Client\ClientUserController::class, 'index'])->name('client.users.index');
     Route::post('/users', [\App\Http\Controllers\Client\ClientUserController::class, 'store'])->name('client.users.store');
     Route::get('/users/{user}/edit', [\App\Http\Controllers\Client\ClientUserController::class, 'edit'])->name('client.users.edit');
-    Route::put('/users/{user}', [\App\Http\Controllers\Client\ClientUserController::class, 'update'])->name('client.users.update');
-    Route::delete('/users/{user}', [\App\Http\Controllers\Client\ClientUserController::class, 'destroy'])->name('client.users.destroy');
-    Route::post('/users/{user}/avatar', [\App\Http\Controllers\Client\ClientUserController::class, 'uploadAvatar'])->name('client.users.avatar');
+Route::get('/users/{user}/check', [\App\Http\Controllers\Client\ClientUserController::class, 'check'])->name('client.users.check');
+Route::put('/users/{user}', [\App\Http\Controllers\Client\ClientUserController::class, 'update'])->name('client.users.update');
+Route::delete('/users/{user}', [\App\Http\Controllers\Client\ClientUserController::class, 'destroy'])->name('client.users.destroy');
+Route::post('/users/{user}/avatar', [\App\Http\Controllers\Client\ClientUserController::class, 'uploadAvatar'])->name('client.users.avatar');
 
     // Роли и доступы
     Route::get('/roles', [\App\Http\Controllers\Client\RoleController::class, 'index'])->name('roles.index');

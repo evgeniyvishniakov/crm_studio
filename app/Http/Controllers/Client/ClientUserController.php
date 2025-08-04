@@ -74,25 +74,29 @@ class ClientUserController extends Controller
 
             $userModel = User::create($userData);
             
-            // Логирование создания пользователя
-            SystemLog::create([
-                'level' => 'info',
-                'module' => 'users',
-                'user_email' => $user->email ?? null,
-                'user_id' => $user->id ?? null,
-                'ip' => $request->ip(),
-                'action' => 'create_user',
-                'message' => 'Создан пользователь: ' . $userModel->name,
-                'context' => json_encode([
-                    'user_id' => $userModel->id,
-                    'name' => $userModel->name,
-                    'username' => $userModel->username,
-                    'email' => $userModel->email,
-                    'role' => $userModel->role,
-                    'project_id' => $userModel->project_id,
-                    'avatar' => $userModel->avatar,
-                ]),
-            ]);
+            // Логирование создания пользователя (если таблица существует)
+            try {
+                SystemLog::create([
+                    'level' => 'info',
+                    'module' => 'users',
+                    'user_email' => $user->email ?? null,
+                    'user_id' => $user->id ?? null,
+                    'ip' => $request->ip(),
+                    'action' => 'create_user',
+                    'message' => 'Создан пользователь: ' . $userModel->name,
+                    'context' => json_encode([
+                        'user_id' => $userModel->id,
+                        'name' => $userModel->name,
+                        'username' => $userModel->username,
+                        'email' => $userModel->email,
+                        'role' => $userModel->role,
+                        'project_id' => $userModel->project_id,
+                        'avatar' => $userModel->avatar,
+                    ]),
+                ]);
+            } catch (\Exception $logError) {
+                // Игнорируем ошибки логирования
+            }
             return response()->json([
                 'success' => true,
                 'message' => 'Пользователь успешно добавлен',
@@ -106,7 +110,7 @@ class ClientUserController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $projectId = auth('client')->user()->project_id;
         $user = auth('client')->user();
@@ -120,24 +124,30 @@ class ClientUserController extends Controller
         }
         try {
             $userModel->delete();
-            // Логирование удаления пользователя
-            SystemLog::create([
-                'level' => 'warning',
-                'module' => 'users',
-                'user_email' => $user->email ?? null,
-                'user_id' => $user->id ?? null,
-                'ip' => $request->ip(),
-                'action' => 'delete_user',
-                'message' => 'Удалён пользователь: ' . $userModel->name,
-                'context' => json_encode([
-                    'user_id' => $userModel->id,
-                    'name' => $userModel->name,
-                    'username' => $userModel->username,
-                    'email' => $userModel->email,
-                    'role' => $userModel->role,
-                    'project_id' => $userModel->project_id,
-                ]),
-            ]);
+            
+            // Логирование удаления пользователя (если таблица существует)
+            try {
+                SystemLog::create([
+                    'level' => 'warning',
+                    'module' => 'users',
+                    'user_email' => $user->email ?? null,
+                    'user_id' => $user->id ?? null,
+                    'ip' => $request->ip(),
+                    'action' => 'delete_user',
+                    'message' => 'Удалён пользователь: ' . $userModel->name,
+                    'context' => json_encode([
+                        'user_id' => $userModel->id,
+                        'name' => $userModel->name,
+                        'username' => $userModel->username,
+                        'email' => $userModel->email,
+                        'role' => $userModel->role,
+                        'project_id' => $userModel->project_id,
+                    ]),
+                ]);
+            } catch (\Exception $logError) {
+                // Игнорируем ошибки логирования
+            }
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Пользователь успешно удалён'
@@ -155,6 +165,18 @@ class ClientUserController extends Controller
         $projectId = auth('client')->user()->project_id;
         $user = User::where('project_id', $projectId)->findOrFail($id);
         return response()->json($user);
+    }
+
+    public function check($id)
+    {
+        $projectId = auth('client')->user()->project_id;
+        $user = User::where('project_id', $projectId)->find($id);
+        
+        if (!$user) {
+            return response()->json(['exists' => false], 404);
+        }
+        
+        return response()->json(['exists' => true]);
     }
 
     public function update(Request $request, $id)
@@ -203,25 +225,29 @@ class ClientUserController extends Controller
                 'role' => $validated['role'],
                 'status' => $validated['status'],
             ]);
-            // Логирование обновления пользователя
-            SystemLog::create([
-                'level' => 'info',
-                'module' => 'users',
-                'user_email' => $user->email ?? null,
-                'user_id' => $user->id ?? null,
-                'ip' => $request->ip(),
-                'action' => 'update_user',
-                'message' => 'Изменён пользователь: ' . $userModel->name,
-                'context' => json_encode([
-                    'user_id' => $userModel->id,
-                    'name' => $userModel->name,
-                    'username' => $userModel->username,
-                    'email' => $userModel->email,
-                    'role' => $userModel->role,
-                    'status' => $userModel->status,
-                    'project_id' => $userModel->project_id,
-                ]),
-            ]);
+            // Логирование обновления пользователя (если таблица существует)
+            try {
+                SystemLog::create([
+                    'level' => 'info',
+                    'module' => 'users',
+                    'user_email' => $user->email ?? null,
+                    'user_id' => $user->id ?? null,
+                    'ip' => $request->ip(),
+                    'action' => 'update_user',
+                    'message' => 'Изменён пользователь: ' . $userModel->name,
+                    'context' => json_encode([
+                        'user_id' => $userModel->id,
+                        'name' => $userModel->name,
+                        'username' => $userModel->username,
+                        'email' => $userModel->email,
+                        'role' => $userModel->role,
+                        'status' => $userModel->status,
+                        'project_id' => $userModel->project_id,
+                    ]),
+                ]);
+            } catch (\Exception $logError) {
+                // Игнорируем ошибки логирования
+            }
             return response()->json([
                 'success' => true,
                 'message' => 'Пользователь успешно обновлён',
@@ -258,21 +284,25 @@ class ClientUserController extends Controller
                 
                 $userModel->update(['avatar' => $path]);
                 
-                // Логирование загрузки аватарки
-                SystemLog::create([
-                    'level' => 'info',
-                    'module' => 'users',
-                    'user_email' => $user->email ?? null,
-                    'user_id' => $user->id ?? null,
-                    'ip' => $request->ip(),
-                    'action' => 'upload_avatar',
-                    'message' => 'Загружена аватарка для пользователя: ' . $userModel->name,
-                    'context' => json_encode([
-                        'user_id' => $userModel->id,
-                        'name' => $userModel->name,
-                        'avatar_path' => $path,
-                    ]),
-                ]);
+                // Логирование загрузки аватарки (если таблица существует)
+                try {
+                    SystemLog::create([
+                        'level' => 'info',
+                        'module' => 'users',
+                        'user_email' => $user->email ?? null,
+                        'user_id' => $user->id ?? null,
+                        'ip' => $request->ip(),
+                        'action' => 'upload_avatar',
+                        'message' => 'Загружена аватарка для пользователя: ' . $userModel->name,
+                        'context' => json_encode([
+                            'user_id' => $userModel->id,
+                            'name' => $userModel->name,
+                            'avatar_path' => $path,
+                        ]),
+                    ]);
+                } catch (\Exception $logError) {
+                    // Игнорируем ошибки логирования
+                }
                 
                 return response()->json([
                     'success' => true,
