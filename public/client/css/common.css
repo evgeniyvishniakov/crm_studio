@@ -8,7 +8,8 @@
 .appointments-container,
 .expenses-container,
 .inventories-container,
-.subscriptions-container{
+.subscriptions-container,
+.settings-container{
     max-width: 1200px;
     margin: 0 auto;
 
@@ -1685,7 +1686,7 @@
     flex: 1;
 }
 .settings-pane h5{
-    margin: 50px 0 20px;
+    margin: 0 0 20px;
     font-size: 18px;
 }
 .collapse {
@@ -2922,7 +2923,7 @@ input[type="date"]:focus {
 .form-row {
     display: flex;
     gap: 16px;
-    align-items: flex-end; /* Выравниваем по нижнему краю */
+    
 }
 
 .form-row .form-group {
@@ -5642,4 +5643,474 @@ input[type="date"]:focus {
     font-weight: 600;
     color: #333;
     margin-bottom: 2px;
+}
+
+/* ===== СТИЛИ ДЛЯ СТРАНИЦЫ НАСТРОЕК ===== */
+
+/* Контейнер настроек */
+.settings-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Inter', Arial, sans-serif !important;
+}
+
+/* Заголовок настроек */
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.settings-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+/* Вкладки настроек */
+.dashboard-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.tab-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tab-button:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.tab-button.active {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    border-color: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.tab-button i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Контент настроек */
+.settings-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.settings-pane {
+    padding: 32px;
+    display: block;
+}
+
+.settings-pane h5 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+/* Формы настроек */
+.form-row--2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-row--3col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+    align-items: start;
+}
+
+.form-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-col .form-group {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.form-col .form-group label {
+    margin-bottom: 8px;
+}
+
+.form-col .form-group select {
+    flex: 1;
+}
+
+.form-col .form-group small {
+    margin-top: 4px;
+}
+
+/* Загрузка логотипа */
+.logo-upload-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.logo-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9fafb;
+}
+
+.logo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.logo-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    color: #9ca3af;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo-upload-controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.logo-upload-controls label {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #f3f4f6;
+    color: #374151;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    border: 1px solid #d1d5db;
+}
+
+.logo-upload-controls label:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+/* Предварительный просмотр карты */
+#map_preview {
+    width: 100%;
+    height: 300px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Аккордеон настроек */
+.settings-accordion {
+    margin-top: 32px;
+}
+
+.accordion-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    background: #fff;
+}
+
+.accordion-header {
+    padding: 14px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.accordion-header:hover {
+    background-color: #f9fafb;
+}
+
+.accordion-body {
+    display: none;
+    padding: 18px 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.accordion-body.open {
+    display: block;
+}
+
+.accordion-header i {
+    color: #3b82f6;
+}
+
+/* Лоадер */
+.loader {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Валидация форм */
+.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+/* Уведомления */
+#notification {
+    margin-bottom: 16px;
+}
+
+/* Адаптивность для настроек */
+@media (max-width: 900px) {
+    .form-row--2col,
+    .form-row--3col {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .settings-pane {
+        padding: 24px;
+    }
+    
+    .settings-header h1 {
+        font-size: 24px;
+    }
+    
+    .dashboard-tabs {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    
+    .tab-button {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+}
+
+/* ===== СТИЛИ ДЛЯ ПОДДЕРЖКИ ===== */
+
+/* Стили для чата */
+.chat-link { 
+    color: #2563eb; 
+    text-decoration: underline; 
+    cursor: pointer; 
+}
+
+.chat-link:hover { 
+    color: #1d4ed8; 
+}
+
+.chat-messages { 
+    min-height: 200px; 
+    background: #f9fafb; 
+}
+
+.chat-message { 
+    margin-bottom: 18px; 
+    padding: 10px 16px; 
+    border-radius: 10px; 
+    max-width: 80%; 
+    word-break: break-word; 
+    position: relative; 
+}
+
+.chat-message-me {
+    background: #e5e7eb;
+    color: #222;
+    margin-left: auto;
+    margin-right: 0;
+    text-align: right;
+}
+
+.chat-message-admin {
+    background: #f3f4f6;
+    color: #222;
+    margin-right: auto;
+    margin-left: 0;
+    text-align: left;
+}
+
+.chat-msg-meta { 
+    font-size: 12px; 
+    color: #64748b; 
+    margin-bottom: 4px; 
+    display: flex; 
+    justify-content: space-between; 
+}
+
+.chat-msg-author { 
+    font-weight: 600; 
+}
+
+.chat-msg-text { 
+    font-size: 15px; 
+}
+
+.chat-form { 
+    margin-top: 8px; 
+}
+
+.chat-empty, .chat-loading, .chat-error { 
+    color: #888; 
+    text-align: center; 
+    margin: 40px 0; 
+}
+
+/* Стили для тикетов */
+.ticket-row { 
+    transition: background 0.18s, box-shadow 0.18s; 
+    cursor: pointer; 
+}
+
+.ticket-row:hover {
+    background: #e8f0fe;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+    border-radius: 6px;
+}
+
+.chat-message-me .chat-msg-meta { 
+    color: #64748b; 
+}
+
+.chat-msg-meta, .chat-msg-meta-admin {
+    color: #64748b;
+}
+
+/* Модальное окно чата */
+#ticketChatModal .modal-content.chat-modal-centered {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    max-width: 98vw;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+
+#ticketChatModal .modal-content.chat-modal-centered .modal-body {
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+}
+
+#ticketChatModal .chat-messages {
+    height: 540px !important;
+    min-height: 300px;
+    max-height: 75vh;
+    background: #f9fafb;
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.ticket-row-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed !important;
+}
+
+/* Статусы тикетов */
+.status-badge.status-completed {
+    background: linear-gradient(135deg, #458dd7 60%, #5fbbd7 100%);
+    color: #fff;
+}
+
+.status-badge.status-pending {
+    background: linear-gradient(135deg, #eba70e 60%, #f3c138 100%);
+    color: #fff;
+}
+
+.status-badge.status-cancelled {
+    background: linear-gradient(135deg, #05990b 60%, #56bb93 100%);
+    color: #fff;
+}
+
+.ticket-row-closed {
+    background: #f3f4f6 !important;
+    color: #888 !important;
+}
+
+/* Стили для страницы чата */
+.chat-wrapper { 
+    max-width: 600px; 
+    margin: 0 auto; 
+}
+
+.chat-message-me { 
+    
+    color: black; 
+    margin-left: auto; 
+    text-align: right; 
+}
+
+.chat-message-admin { 
+    background: #e5e7eb; 
+    color: #222; 
+    margin-right: auto; 
+    text-align: left; 
 }
