@@ -117,12 +117,12 @@
                 <p>{{ __('messages.confirm_delete_expense') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeConfirmationModal()">{{ __('messages.cancel') }}</button>
-                <button type="button" class="btn-delete" onclick="deleteExpense()">{{ __('messages.delete') }}</button>
+                    <button type="button" class="btn-cancel" onclick="closeConfirmationModal()">{{ __('messages.cancel') }}</button>
+                    <button type="button" class="btn-delete" onclick="deleteExpense()">{{ __('messages.delete') }}</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 @push('scripts')
 <script src="{{ asset('client/js/expenses.js') }}"></script>

@@ -176,7 +176,7 @@
             <span class="close" onclick="closeConfirmationModal()">&times;</span>
         </div>
         <div class="modal-body">
-            <p id="confirmationMessage">{{ __('messages.confirm_mark_all_as_read') }}</p>
+        <p id="confirmationMessage">{{ __('messages.confirm_mark_all_as_read') }}</p>
         </div>
         <div class="modal-footer">
             <button class="btn-cancel" id="cancelAction">{{ __('messages.cancel') }}</button>
@@ -188,5 +188,5 @@
 
 @push('scripts')
 <script src="{{ asset('client/js/notifications-page.js') }}"></script>
-@endpush
+@endpush 
 @endsection

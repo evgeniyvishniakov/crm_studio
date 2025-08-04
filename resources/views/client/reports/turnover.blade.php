@@ -263,5 +263,5 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
 
 @push('scripts')
 <script src="{{ asset('client/js/turnover-analytics.js') }}"></script>
-@endpush                 
+@endpush
 @endsection                    

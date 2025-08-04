@@ -6,7 +6,7 @@
 
         <div class="stats-grid">
             <!-- Карточка 1: Прибыль -->
-            <div class="stat-card profit-card">
+            <div class="stat-card profit-card finances-group">
                 <div class="stat-icon">
                     <i class="fas fa-coins"></i>
                 </div>
@@ -137,21 +137,21 @@
             </button>
         </div>
 
-        <div class="dashboard-main-content" style="max-width: 1400px; margin: 0 auto; padding: 0 24px;">
-            <div class="chart-container" style="width: 100%; max-width: 100%; padding: 10px; box-sizing: border-box;">
+        <div class="dashboard-main-content">
+            <div class="chart-container">
             <div class="widget-header-modern">
                 <div class="widget-title-container">
                     <i class="fas fa-chart-line chart-icon"></i>
                     <span class="widget-title">{{ __('messages.dynamics') }}</span>
                 </div>
             </div>
-            <div class="chart-toolbar" style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 1rem; width: 100%;">
+            <div class="chart-toolbar">
                 <!-- Dropdown слева -->
-                <div class="dropdown metric-dropdown" style="position: relative; flex-grow: 1;">
-                    <button class="dropdown-toggle metric-toggle" type="button" style="display: flex; align-items: center; gap: 0.5rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; min-width: 140px;">
+                <div class="dropdown metric-dropdown">
+                    <button class="dropdown-toggle metric-toggle" type="button">
                         <i class="fas fa-coins"></i>
                         <span id="selectedMetricLabel">{{ __('messages.profit') }}</span>
-                        <i class="fas fa-chevron-down" style="margin-left: 0.5rem;"></i>
+                        <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-menu metric-menu">
                         <button class="dropdown-item metric-item" data-type="profit"><i class="fas fa-coins"></i> {{ __('messages.profit') }}</button>
@@ -161,17 +161,17 @@
                     </div>
                 </div>
                 <!-- Фильтры справа -->
-                <div class="period-filters" style="display: flex; gap: 0.5rem; margin-left: auto; min-width: 340px; justify-content: flex-end;">
+                <div class="period-filters">
                     <button class="tab-button" data-period="30">{{ __('messages.per_month') }}</button>
                     <button class="tab-button" data-period="90">{{ __('messages.per_3_months') }}</button>
                     <button class="tab-button" data-period="180">{{ __('messages.per_6_months') }}</button>
                     <button class="tab-button" data-period="365">{{ __('messages.per_year') }}</button>
                     <button class="tab-button calendar-button" id="dateRangePicker"><i class="fas fa-calendar"></i></button>
-                    <span id="calendarRangeDisplay" style="min-width:110px;text-align:center;vertical-align:middle;font-family:inherit;font-size:14px;font-weight:600;color: #64748b;"></span>
+                    <span id="calendarRangeDisplay"></span>
                 </div>
             </div>
             <canvas id="universalChart" height="150"></canvas>
-            <div id="custom-month-labels" style="display: none; justify-content: space-between; font-size: 12px; font-weight: 600; color: #22223b; height: 12px;"></div>
+            <div id="custom-month-labels"></div>
         </div>
             <div class="dashboard-widgets-grid-2x2" style="display: grid; grid-template-columns: 34% 64%; gap: 1.6rem; margin: 32px 0 0 0; align-items: stretch;">
                 <!-- 1. Календарь -->
@@ -771,8 +771,8 @@
                     card.style.display = 'none';
                 });
                 
-                // Скрываем все карточки финансов
-                document.querySelectorAll('.stat-card.finances-group').forEach(card => {
+                // Скрываем карточки финансов (кроме прибыли)
+                document.querySelectorAll('.stat-card.finances-group:not(.profit-card)').forEach(card => {
                     card.style.display = 'none';
                 });
                 
@@ -785,6 +785,8 @@
                     document.querySelectorAll('.stat-card.activity-group').forEach(card => {
                         card.style.display = 'flex';
                     });
+                    // Прибыль всегда видна
+                    document.querySelector('.stat-card.profit-card').style.display = 'flex';
                 }
             });
         });
@@ -964,40 +966,85 @@
         // Вставляю функцию в начало основного <script> блока, до всех fetch/then:
         function renderCustomMonthLabels(labels) {
             const container = document.getElementById('custom-month-labels');
-            if (!container) return;
-            container.innerHTML = '';
-            if ((currentPeriod !== '365' && currentPeriod !== '90' && currentPeriod !== '180') || !window.universalChart) {
-                container.style.display = 'none';
+            if (!container) {
+                console.log('Container not found');
                 return;
             }
-            container.style.display = 'block';
+            container.innerHTML = '';
+            if (currentPeriod === '30' || !window.universalChart) {
+                container.style.display = 'none';
+                console.log('Hiding labels for period:', currentPeriod);
+                return;
+            }
+            console.log('Rendering labels for period:', currentPeriod, 'labels:', labels, 'chart type:', universalChart.config.type);
+            
+            // Устанавливаем стили контейнера
+            container.style.display = 'flex';
+            container.style.justifyContent = 'space-between';
+            container.style.alignItems = 'center';
+            container.style.height = '20px';
+            container.style.marginTop = '-15px';
+            container.style.fontSize = '12px';
+            container.style.fontWeight = '600';
+            container.style.color = '#22223b';
             container.style.position = 'relative';
-            container.style.height = '12px';
-            container.style.marginTop = '0px';
+            container.style.width = '80%';
+            container.style.marginLeft = '120px';
+            
             // Получаем координаты точек
             const meta = universalChart.getDatasetMeta(0);
-            if (!meta || !meta.data) return;
-            const points = meta.data.map(point => point.x);
+            if (!meta || !meta.data) {
+                console.log('No meta data found');
+                return;
+            }
+            
+            // Для столбчатых графиков используем центр столбца, для линейных - точку
+            const points = meta.data.map(point => {
+                if (universalChart.config.type === 'bar') {
+                    return point.x + (point.width / 2);
+                }
+                return point.x;
+            });
+            
+            console.log('Points:', points);
+            
+            // Создаем метки каждые 3 недели
             labels.forEach((label, i) => {
+                // Показываем только каждую третью метку (каждые 3 недели)
+                if (i % 3 !== 0) return;
+                
                 let text = label;
                 if (currentPeriod === '365') {
                     const monthNum = label.split('.')[0];
                     const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
                     const idx = parseInt(monthNum, 10) - 1;
                     text = months[idx] ?? label;
+                } else {
+                    // Для периодов 90/180 дней показываем только дату начала недели
+                    // Убираем диапазон и оставляем только первую дату
+                    text = label.split(' - ')[0];
                 }
-                // Для 90/180 text = label (дата начала недели)
+                
                 const span = document.createElement('span');
                 span.textContent = text;
                 span.style.position = 'absolute';
-                span.style.left = (points[i] - 20) + 'px';
-                span.style.width = '40px';
-                span.style.textAlign = 'center';
-                span.style.fontSize = '12px';
+                
+                // Используем процентное позиционирование вместо абсолютных координат
+                const percentage = (i / (labels.length - 1)) * 100;
+                span.style.left = percentage + '%';
+                span.style.transform = 'translateX(-50%)';
+                
+                span.style.fontSize = '11px';
                 span.style.color = '#22223b';
                 span.style.pointerEvents = 'none';
-                span.style.transform = 'translateY(-6px)';
+                span.style.zIndex = '1000';
+                span.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                span.style.padding = '1px 3px';
+                span.style.borderRadius = '2px';
+                span.style.fontWeight = '600';
+                span.style.whiteSpace = 'nowrap';
                 container.appendChild(span);
+                console.log('Added label:', text, 'at percentage:', percentage + '%');
             });
         }
         // ... существующий код ...

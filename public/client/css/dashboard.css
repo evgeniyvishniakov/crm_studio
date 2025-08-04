@@ -904,4 +904,75 @@ body {
         height: 30px;
         font-size: 0.8rem;
     }
-} 
+}
+
+/* Стили для раздела "Динамика показателей" */
+.dashboard-main-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.chart-toolbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.dropdown.metric-dropdown {
+    position: relative;
+    flex-grow: 1;
+}
+
+.dropdown-toggle.metric-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    min-width: 140px;
+}
+
+.dropdown-toggle.metric-toggle i.fas.fa-chevron-down {
+    margin-left: 0.5rem;
+}
+
+.period-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+    min-width: 340px;
+    justify-content: flex-end;
+}
+
+#calendarRangeDisplay {
+    min-width: 110px;
+    text-align: center;
+    vertical-align: middle;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+#custom-month-labels {
+    display: none;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    color: #22223b;
+    height: 12px;
+}
