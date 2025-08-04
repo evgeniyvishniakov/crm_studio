@@ -31,12 +31,15 @@ class Warehouse extends Model
             ->first();
 
         if (!$item) {
-            throw new \Exception('Товар отсутствует на складе');
+            // Убираем проверку отсутствия товара на складе
+            // throw new \Exception('Товар отсутствует на складе');
+            return true;
         }
 
-        if ($item->quantity < $quantity) {
-            throw new \Exception('Недостаточно товара на складе. Доступно: '.$item->quantity);
-        }
+        // Убираем проверку недостаточного количества
+        // if ($item->quantity < $quantity) {
+        //     throw new \Exception('Недостаточно товара на складе. Доступно: '.$item->quantity);
+        // }
 
         return true;
     }

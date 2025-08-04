@@ -2703,6 +2703,15 @@
         border-radius: 8px;
         background: #f9fafb;
         transition: all 0.2s ease;
+        min-height: 44px;
+    }
+    
+    /* Специальные стили для поля поиска клиентов в мобильной версии */
+    .client-search-input {
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        line-height: 1.4 !important;
     }
     
     .form-group input:focus,
@@ -4306,6 +4315,15 @@
     .form-group textarea {
         padding: 10px 12px;
         font-size: 13px;
+        min-height: 44px;
+    }
+    
+    /* Специальные стили для поля поиска клиентов в мобильной версии */
+    .client-search-input {
+        min-height: 44px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        line-height: 1.4 !important;
     }
     
     /* Специальные стили для полей даты и времени на маленьких экранах */
@@ -7402,5 +7420,169 @@
         height: 16px;
         margin-right: 8px;
         color: #6b7280;
+    }
+}
+
+/* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ РАЗДЕЛА "ПРОДАЖИ" ===== */
+
+@media (max-width: 768px) {
+    .sales-header .header-top {
+        display: none;
+    }
+    
+    .sales-header .mobile-header {
+        display: block;
+        margin-bottom: 20px;
+    }
+    
+    .sales-header .mobile-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 15px;
+    }
+    
+    .sales-header .mobile-header-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .sales-header .mobile-header-actions .btn-add-sale {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+    
+    .sales-list {
+        display: none;
+    }
+    
+    .sales-cards {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .sale-card-actions .btn-edit {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+    }
+    
+    .sale-card-actions .btn-edit:hover {
+        background-color: #0056b3;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+    
+    .sale-card-actions .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        border: none;
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+    }
+    
+    .sale-card-actions .btn-delete:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+    
+    .sale-card-actions .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+    }
+    
+    .sale-card-actions .btn-delete:hover {
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+    
+    .sale-card-actions svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .sale-info-label {
+        display: flex;
+        align-items: center;
+    }
+    
+    .sale-info-label svg {
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+        color: #6b7280;
+    }
+    
+    .btn-text {
+        display: inline-block;
+        margin-left: 4px;
+    }
+}
+
+@media (min-width: 769px) {
+    .sales-header .mobile-header {
+        display: none;
+    }
+    
+    .sales-header .header-top {
+        display: flex;
+    }
+    
+    .sales-list {
+        display: block;
+    }
+    
+    .sales-cards {
+        display: none;
+    }
+    
+    .btn-text {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .sales-header .mobile-title {
+        font-size: 1.25rem;
+    }
+    
+    .sales-header .mobile-header-actions .btn-add-sale {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    
+    .sale-card {
+        margin-bottom: 15px;
+    }
+    
+    .sale-card-header {
+        padding: 12px;
+    }
+    
+    .sale-card-body {
+        padding: 12px;
+    }
+    
+    .sale-card-actions {
+        padding: 12px;
+    }
+    
+    .sale-card-actions .btn-edit,
+    .sale-card-actions .btn-delete {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    .sale-info-item {
+        margin-bottom: 8px;
+    }
+    
+    .sale-info-label {
+        font-size: 0.8rem;
+    }
+    
+    .sale-info-value {
+        font-size: 0.875rem;
     }
 }

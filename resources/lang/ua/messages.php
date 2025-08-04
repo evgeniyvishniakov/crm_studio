@@ -783,6 +783,8 @@ return [
     'add_at_least_one_product' => 'Додайте хоча б один товар',
     'sale_updated' => 'Продаж успішно оновлено',
     'error_updating_sale' => 'Помилка оновлення продажу',
+    'delete_sale_confirm' => 'Ви впевнені, що хочете видалити цей продаж?',
+    'max_available_quantity' => 'Максимальна доступна кількість: :quantity',
     
     // Витрати
     'expenses' => 'Витрати',

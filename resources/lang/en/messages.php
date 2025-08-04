@@ -654,6 +654,8 @@ return [
     'add_at_least_one_product' => 'Add at least one product',
     'sale_updated' => 'Sale successfully updated',
     'error_updating_sale' => 'Error updating sale',
+    'delete_sale_confirm' => 'Are you sure you want to delete this sale?',
+    'max_available_quantity' => 'Maximum available quantity: :quantity',
     
     // Expenses
     'expenses' => 'Expenses',

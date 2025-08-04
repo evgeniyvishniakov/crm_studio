@@ -779,6 +779,8 @@ return [
     'add_at_least_one_product' => 'Добавьте хотя бы один товар',
     'sale_updated' => 'Продажа успешно обновлена',
     'error_updating_sale' => 'Ошибка при обновлении продажи',
+    'delete_sale_confirm' => 'Вы уверены, что хотите удалить эту продажу?',
+    'max_available_quantity' => 'Максимальное доступное количество: :quantity',
     
     // Расходы
     'expenses' => 'Расходы',

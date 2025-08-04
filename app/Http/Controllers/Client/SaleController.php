@@ -218,6 +218,7 @@ class SaleController extends Controller
             'employee_id' => 'required|exists:admin_users,id',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
+            'items.*.wholesale_price' => 'required|numeric',
             'items.*.retail_price' => 'required|numeric',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
