@@ -325,16 +325,16 @@ function openEditSaleModal(id) {
                         <input type="hidden" name="id" value="${sale.id}">
                         <div class="form-row date-client-row">
                             <div class="form-group">
-                                <label>Клиент *</label>
+                                <label>${window.messages.client} *</label>
                                 <select name="client_id" required class="form-control">
-                                    <option value="">Выберите клиента</option>
+                                    <option value="">${window.messages.select_client}</option>
                                     ${window.allClients ? window.allClients.map(client => 
                                         `<option value="${client.id}" ${sale.client_id == client.id ? 'selected' : ''}>${client.name}</option>`
                                     ).join('') : ''}
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Дата *</label>
+                                <label>${window.messages.date} *</label>
                                 <input type="date" name="date" required class="form-control" 
                                        value="${typeof window.formatDateForInput === 'function' ? window.formatDateForInput(sale.date) : sale.date}"
                                        data-locale="${document.querySelector('input[name="date"]')?.getAttribute('data-locale') || 'ru'}"
@@ -342,9 +342,9 @@ function openEditSaleModal(id) {
                                        data-day-names="${document.querySelector('input[name="date"]')?.getAttribute('data-day-names') || '[]'}">
                             </div>
                             <div class="form-group">
-                                <label>Сотрудник *</label>
+                                <label>${window.messages.employee_master} *</label>
                                 <select name="employee_id" required class="form-control">
-                                    <option value="">Выберите сотрудника</option>
+                                    <option value="">${window.messages.select_employee}</option>
                                     ${window.allEmployees ? window.allEmployees.map(employee => 
                                         `<option value="${employee.id}" ${sale.employee_id == employee.id ? 'selected' : ''}>${employee.name}</option>`
                                     ).join('') : ''}
@@ -352,19 +352,19 @@ function openEditSaleModal(id) {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Примечания</label>
+                            <label>${window.messages.notes}</label>
                             <textarea name="notes" rows="2" class="form-control">${sale.notes || ''}</textarea>
                         </div>
                         <div class="items-container" id="editItemsContainer">
-                            <h3>Товары</h3>
+                            <h3>${window.messages.products}</h3>
                             <!-- Шаблон для новых товаров -->
                             <div class="item-row template" style="display: none;">
                                 <div class="form-row">
                                     <div class="form-group product-field">
-                                        <label>Товар *</label>
+                                        <label>${window.messages.product} *</label>
                                         <div class="product-search-container">
                                             <input type="text" class="product-search-input form-control"
-                                                   placeholder="Начните вводить название товара"
+                                                   placeholder="${window.messages.start_typing_product_name}"
                                                    oninput="searchProducts(this)"
                                                    onfocus="showProductDropdown(this)" autocomplete="off">
                                             <div class="product-dropdown" style="display: none;">
@@ -372,7 +372,7 @@ function openEditSaleModal(id) {
                                             </div>
                                             <select name="items[0][product_id]" class="form-control product-select" style="display: none;"
                                                     onchange="updateProductPrices(this)">
-                                                <option value="">Выберите товар</option>
+                                                <option value="">${window.messages.select_product}</option>
                                                 ${window.allProducts ? window.allProducts.map(product => 
                                                     `<option value="${product.id}"
                                                             data-wholesale="${product.wholesale_price || 0}"
@@ -385,17 +385,29 @@ function openEditSaleModal(id) {
                                         </div>
                                     </div>
                                     <div class="form-group price-field">
-                                        <label>Оптовая цена *</label>
+                                        <label>
+                                            <span class="desktop-label">${window.messages.wholesale_price}</span>
+                                            <span class="mobile-label">${window.messages.wholesale_price_mobile}</span>
+                                            *
+                                        </label>
                                         <input type="number" step="0.01" name="items[0][wholesale_price]" required
                                                class="form-control wholesale-price" min="0" value="0">
                                     </div>
                                     <div class="form-group price-field">
-                                        <label>Розничная цена *</label>
+                                        <label>
+                                            <span class="desktop-label">${window.messages.retail_price}</span>
+                                            <span class="mobile-label">${window.messages.retail_price_mobile}</span>
+                                            *
+                                        </label>
                                         <input type="number" step="0.01" name="items[0][retail_price]" required
                                                class="form-control retail-price" min="0" value="0">
                                     </div>
                                     <div class="form-group quantity-field">
-                                        <label>Количество *</label>
+                                        <label>
+                                            <span class="desktop-label">${window.messages.quantity}</span>
+                                            <span class="mobile-label">${window.messages.quantity_mobile}</span>
+                                            *
+                                        </label>
                                         <input type="number" name="items[0][quantity]" required
                                                class="form-control quantity" min="1" value="1"
                                                oninput="validateQuantity(this)">
@@ -413,12 +425,12 @@ function openEditSaleModal(id) {
                                 <div class="item-row">
                                     <div class="form-row">
                                         <div class="form-group product-field">
-                                            <label>Товар *</label>
+                                            <label>${window.messages.product} *</label>
                                             <div class="product-search-container">
                                                 <input type="text"
                                                        id="product-search-edit-${index}"
                                                        class="product-search-input form-control"
-                                                       placeholder="Начните вводить название товара"
+                                                       placeholder="${window.messages.start_typing_product_name}"
                                                        oninput="searchProducts(this)"
                                                        onfocus="showProductDropdown(this)"
                                                        value="${item.product ? item.product.name : ''}"
@@ -427,7 +439,7 @@ function openEditSaleModal(id) {
                                                     <div class="product-dropdown-list"></div>
                                                 </div>
                                                 <select name="items[${index}][product_id]" class="form-control product-select" style="display: none;" onchange="updateProductPrices(this)">
-                                                    <option value="">Выберите товар</option>
+                                                    <option value="">${window.messages.select_product}</option>
                                                     ${window.allProducts ? window.allProducts.map(product => 
                                                         `<option value="${product.id}"
                                                                 data-wholesale="${product.wholesale_price || 0}"
@@ -441,15 +453,27 @@ function openEditSaleModal(id) {
                                             </div>
                                         </div>
                                         <div class="form-group price-field">
-                                            <label>Оптовая цена *</label>
+                                            <label>
+                                                <span class="desktop-label">${window.messages.wholesale_price}</span>
+                                                <span class="mobile-label">${window.messages.wholesale_price_mobile}</span>
+                                                *
+                                            </label>
                                             <input type="number" step="0.01" name="items[${index}][wholesale_price]" required class="form-control" value="${item.wholesale_price}">
                                         </div>
                                         <div class="form-group price-field">
-                                            <label>Розничная цена *</label>
+                                            <label>
+                                                <span class="desktop-label">${window.messages.retail_price}</span>
+                                                <span class="mobile-label">${window.messages.retail_price_mobile}</span>
+                                                *
+                                            </label>
                                             <input type="number" step="0.01" name="items[${index}][retail_price]" required class="form-control" value="${item.retail_price}">
                                         </div>
                                         <div class="form-group quantity-field">
-                                            <label>Количество *</label>
+                                            <label>
+                                                <span class="desktop-label">${window.messages.quantity}</span>
+                                                <span class="mobile-label">${window.messages.quantity_mobile}</span>
+                                                *
+                                            </label>
                                             <input type="number" name="items[${index}][quantity]" required class="form-control" value="${item.quantity}" min="1" oninput="validateQuantity(this)">
                                         </div>
                                         <div class="form-group remove-field">

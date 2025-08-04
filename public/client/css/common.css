@@ -4494,3 +4494,23 @@ input[type="date"]:focus {
 .sale-table td {
     padding: 25px 15px !important;
 }
+
+/* Стили для мобильных лейблов в модальных окнах */
+.desktop-label {
+    display: inline;
+}
+
+.mobile-label {
+    display: none;
+}
+
+/* На мобильных устройствах показываем сокращенные лейблы */
+@media (max-width: 768px) {
+    .desktop-label {
+        display: none;
+    }
+    
+    .mobile-label {
+        display: inline;
+    }
+}

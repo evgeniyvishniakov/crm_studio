@@ -163,17 +163,29 @@
                                     </div>
                                 </div>
                                 <div class="form-group price-field">
-                                    <label>{{ __('messages.wholesale_price') }} *</label>
+                                    <label>
+                                        <span class="desktop-label">{{ __('messages.wholesale_price') }}</span>
+                                        <span class="mobile-label">{{ __('messages.wholesale_price_mobile') }}</span>
+                                        *
+                                    </label>
                                     <input type="number" step="0.01" name="items[0][wholesale_price]"
                                             class="form-control wholesale-price" min="0" value="0" readonly>
                                 </div>
                                 <div class="form-group price-field">
-                                    <label>{{ __('messages.retail_price') }} *</label>
+                                    <label>
+                                        <span class="desktop-label">{{ __('messages.retail_price') }}</span>
+                                        <span class="mobile-label">{{ __('messages.retail_price_mobile') }}</span>
+                                        *
+                                    </label>
                                     <input type="number" step="0.01" name="items[0][retail_price]"
                                             class="form-control retail-price" min="0" value="0" >
                                 </div>
                                 <div class="form-group quantity-field">
-                                    <label>{{ __('messages.quantity') }} *</label>
+                                    <label>
+                                        <span class="desktop-label">{{ __('messages.quantity') }}</span>
+                                        <span class="mobile-label">{{ __('messages.quantity_mobile') }}</span>
+                                        *
+                                    </label>
                                     <input type="number" name="items[0][quantity]"
                                            class="form-control quantity" min="1" value="1"
                                            oninput="validateQuantity(this)">
@@ -214,17 +226,29 @@
                                     </div>
                                 </div>
                                 <div class="form-group price-field">
-                                    <label>{{ __('messages.wholesale_price') }} *</label>
+                                    <label>
+                                        <span class="desktop-label">{{ __('messages.wholesale_price') }}</span>
+                                        <span class="mobile-label">{{ __('messages.wholesale_price_mobile') }}</span>
+                                        *
+                                    </label>
                                     <input type="number" step="0.01" name="items[0][wholesale_price]"
                                            required class="form-control wholesale-price" min="0" value="0" readonly>
                                 </div>
                                 <div class="form-group price-field">
-                                    <label>{{ __('messages.retail_price') }} *</label>
+                                    <label>
+                                        <span class="desktop-label">{{ __('messages.retail_price') }}</span>
+                                        <span class="mobile-label">{{ __('messages.retail_price_mobile') }}</span>
+                                        *
+                                    </label>
                                     <input type="number" step="0.01" name="items[0][retail_price]"
                                            required class="form-control retail-price" min="0" value="0" >
                                 </div>
                                 <div class="form-group quantity-field">
-                                    <label>{{ __('messages.quantity') }} *</label>
+                                    <label>
+                                        <span class="desktop-label">{{ __('messages.quantity') }}</span>
+                                        <span class="mobile-label">{{ __('messages.quantity_mobile') }}</span>
+                                        *
+                                    </label>
                                     <input type="number" name="items[0][quantity]" required
                                            class="form-control quantity" min="1" value="1"
                                            oninput="validateQuantity(this)">
@@ -293,7 +317,23 @@
         
         // Переводы для JavaScript
         window.messages = {
-            max_available_quantity: '{{ __("messages.max_available_quantity") }}'
+            max_available_quantity: '{{ __("messages.max_available_quantity") }}',
+            wholesale_price: '{{ __("messages.wholesale_price") }}',
+            wholesale_price_mobile: '{{ __("messages.wholesale_price_mobile") }}',
+            quantity: '{{ __("messages.quantity") }}',
+            quantity_mobile: '{{ __("messages.quantity_mobile") }}',
+            product: '{{ __("messages.product") }}',
+            retail_price: '{{ __("messages.retail_price") }}',
+            retail_price_mobile: '{{ __("messages.retail_price_mobile") }}',
+            client: '{{ __("messages.client") }}',
+            date: '{{ __("messages.date") }}',
+            employee_master: '{{ __("messages.employee_master") }}',
+            notes: '{{ __("messages.notes") }}',
+            products: '{{ __("messages.products") }}',
+            select_client: '{{ __("messages.select_client") }}',
+            select_employee: '{{ __("messages.select_employee") }}',
+            select_product: '{{ __("messages.select_product") }}',
+            start_typing_product_name: '{{ __("messages.start_typing_product_name") }}'
         };
     </script>
     <script src="{{ asset('client/js/sales.js') }}"></script>
