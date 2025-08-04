@@ -6324,3 +6324,36 @@ input[type="date"]:focus {
     margin-right: auto; 
     text-align: left; 
 }
+
+/* ===== СТИЛИ ДЛЯ АНАЛИТИКИ ПО ОБОРОТУ ===== */
+.period-tooltip {
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+}
+.period-tooltip i {
+    color: #64748b;
+    font-size: 18px;
+    vertical-align: middle;
+}
+.period-tooltip-text {
+    display: none;
+    position: absolute;
+    left: 120%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    color: #222;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 14px 18px;
+    font-size: 14px;
+    min-width: 320px;
+    z-index: 1000;
+    white-space: pre-line;
+}
+.period-tooltip:hover .period-tooltip-text,
+.period-tooltip:focus .period-tooltip-text {
+    display: block;
+}
