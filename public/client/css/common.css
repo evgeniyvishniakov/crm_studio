@@ -6357,3 +6357,147 @@ input[type="date"]:focus {
 .period-tooltip:focus .period-tooltip-text {
     display: block;
 }
+
+/* ===== СТИЛИ ДЛЯ РАСХОДОВ ===== */
+/* Используются общие стили для таблиц и кнопок */
+.expenses-container {
+    padding: 24px;
+    background: #f8fafc;
+    min-height: 100vh;
+}
+
+.expenses-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.expenses-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.expenses-header .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+
+
+
+
+.expense-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.expenses-cards {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.expense-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.expense-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.expense-card-header {
+    margin-bottom: 16px;
+}
+
+.expense-main-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.expense-category {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 16px;
+}
+
+.expense-amount {
+    font-weight: 700;
+    color: #ef4444;
+    font-size: 18px;
+}
+
+.expense-info {
+    margin-bottom: 16px;
+}
+
+.expense-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 8px 0;
+}
+
+.expense-info-item:last-child {
+    margin-bottom: 0;
+}
+
+.expense-info-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.expense-info-label svg {
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+}
+
+.expense-info-value {
+    color: #334155;
+    font-weight: 500;
+    font-size: 14px;
+    text-align: right;
+}
+
+.expense-card .expense-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.expense-card .expense-actions .btn-edit,
+.expense-card .expense-actions .btn-delete {
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+.currency-amount {
+    font-weight: 600;
+    color: #ef4444;
+}
+
+.expense-card.row-deleting {
+    opacity: 0.5;
+    transform: scale(0.98);
+    transition: all 0.3s ease;
+}

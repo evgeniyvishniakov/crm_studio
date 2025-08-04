@@ -6163,6 +6163,7 @@
 
     .expense-card-header {
         margin-bottom: 12px;
+        margin-top: 12px;
     }
 
     .expense-main-info {
@@ -6180,7 +6181,7 @@
     }
 
     .expense-category {
-        font-size: 14px;
+        font-size: 15px;
         color: #6b7280;
         font-weight: 500;
         background: #f3f4f6;
@@ -8217,6 +8218,146 @@
         padding: 8px 12px;
         font-size: 12px;
     }
-    
+}
 
+/* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ РАСХОДОВ ===== */
+@media (max-width: 768px) {
+    .expenses-container {
+        padding: 16px;
+    }
+    
+    .expenses-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .expenses-header h1 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+    
+    .expenses-header .header-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .btn-add-expense {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+        font-size: 16px;
+    }
+    
+    .search-box {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .expenses-table {
+        display: none;
+    }
+    
+    .expenses-cards {
+        display: grid;
+        gap: 12px;
+    }
+    
+    .expense-card {
+        padding: 16px;
+    }
+    
+    .expense-main-info {
+        
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .expense-category {
+        font-size: 15px;
+    }
+    
+    .expense-amount {
+        font-size: 16px;
+    }
+    
+    .expense-info-item {
+        
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .expense-info-value {
+        text-align: left;
+        font-size: 13px;
+    }
+    
+    .expense-card .expense-actions {
+        justify-content: center;
+        margin-top: 12px;
+    }
+    
+    .expense-card .expense-actions .btn-edit,
+    .expense-card .expense-actions .btn-delete {
+        flex: 1;
+        justify-content: center;
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    #expensesPagination {
+        display: none;
+    }
+    
+    #mobileExpensesPagination {
+        display: block;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .expenses-container {
+        padding: 12px;
+    }
+    
+    .expenses-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .btn-add-expense {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    .search-box input {
+        font-size: 14px;
+        padding: 10px 30px;
+    }
+    
+    .expense-card {
+        padding: 12px;
+    }
+    
+    .expense-category {
+        font-size: 15px;
+    }
+    
+    .expense-amount {
+        font-size: 15px;
+    }
+    
+    .expense-info-label {
+        font-size: 12px;
+    }
+    
+    .expense-info-value {
+        font-size: 12px;
+    }
+    
+    .expense-card .expense-actions .btn-edit,
+    .expense-card .expense-actions .btn-delete {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
 }
