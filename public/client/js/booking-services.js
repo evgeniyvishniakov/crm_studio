@@ -1,5 +1,23 @@
 // ===== ФУНКЦИИ ДЛЯ УПРАВЛЕНИЯ УСЛУГАМИ МАСТЕРОВ =====
 
+// Функция для форматирования валюты
+function formatCurrency(amount) {
+    if (window.CurrencyManager) {
+        return window.CurrencyManager.formatAmount(amount);
+    } else {
+        // Fallback форматирование - убираем .00 если нет копеек
+        const num = parseFloat(amount);
+        if (isNaN(num)) return amount;
+        
+        // Если число целое, не показываем .00
+        if (Number.isInteger(num)) {
+            return num.toLocaleString('ru-RU') + ' ₴';
+        } else {
+            return num.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₴';
+        }
+    }
+}
+
 // Функции для управления услугами мастеров
 function addUserService() {
     // Очищаем форму
@@ -23,7 +41,14 @@ function editUserService(userServiceId) {
             'Accept': 'application/json',
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.message || 'Ошибка при загрузке данных');
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success && data.userServices.length > 0) {
             const userService = data.userServices[0];
@@ -52,77 +77,143 @@ function editUserService(userServiceId) {
             const modal = document.getElementById('userServiceModal');
             modal.style.display = 'block';
         } else {
-            window.showNotification('error', translations.error_loading_service_data);
+            window.showNotification('error', data.message || translations.error_loading_service_data);
         }
     })
     .catch(error => {
         console.error('Ошибка при загрузке данных:', error);
-        window.showNotification('error', translations.error_loading_data);
+        window.showNotification('error', error.message || translations.error_loading_data);
     });
 }
 
 function deleteUserService(userServiceId) {
-    currentDeleteUserServiceId = userServiceId;
-    const confirmationModal = document.getElementById('confirmationModal');
-    confirmationModal.style.display = 'block';
+    // Проверяем, не удаляется ли уже эта запись
+    if (window.currentDeleteId === userServiceId) {
+        console.log('Запись уже в процессе удаления:', userServiceId);
+        return;
+    }
+    
+    // Находим элементы для удаления
+    const row = document.querySelector(`tr[data-user-service-id="${userServiceId}"]`);
+    const card = document.querySelector(`.user-service-card[data-user-service-id="${userServiceId}"]`);
+    
+    // Проверяем, что элементы существуют
+    if (!row && !card) {
+        console.error('Элементы для удаления не найдены:', userServiceId);
+        window.showNotification('error', 'Элемент не найден');
+        return;
+    }
+    
+    // Сохраняем ссылки на элементы для удаления
+    window.currentDeleteRow = row;
+    window.currentDeleteCard = card;
+    window.currentDeleteId = userServiceId;
+    
+    // Показываем модальное окно подтверждения
+    document.getElementById('confirmationModal').style.display = 'block';
 }
 
 function confirmDeleteUserService() {
-    const userServiceId = currentDeleteUserServiceId;
-    if (!userServiceId) {
+    if (!window.currentDeleteId) return;
+    
+    // Проверяем, не выполняется ли уже удаление
+    if (window.isDeleting) {
+        console.log('Удаление уже выполняется, игнорируем повторный запрос');
         return;
     }
+    
+    // Устанавливаем флаг выполнения удаления
+    window.isDeleting = true;
 
-    fetch(`/booking/user-services/${userServiceId}`, {
+    // Добавляем класс для анимации удаления
+    if (window.currentDeleteRow) window.currentDeleteRow.classList.add('row-deleting');
+    if (window.currentDeleteCard) window.currentDeleteCard.classList.add('row-deleting');
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    console.log('CSRF Token:', csrfToken ? csrfToken.getAttribute('content') : 'not found');
+    console.log('Request URL:', `/booking/user-services/${window.currentDeleteId}`);
+    console.log('Request method:', 'DELETE');
+    
+    fetch(`/booking/user-services/${window.currentDeleteId}`, {
         method: 'DELETE',
         headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'X-CSRF-TOKEN': csrfToken ? csrfToken.getAttribute('content') : '',
             'Accept': 'application/json',
+            'Content-Type': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                console.error('Error response data:', errorData);
+                throw new Error(errorData.message || 'Ошибка при удалении');
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
-            window.showNotification('success', data.message);
-            
-            // Удаляем строку из таблицы
-            const row = document.querySelector(`tr[data-user-service-id="${userServiceId}"]`);
-            if (row) {
-                row.remove();
+            // Немедленно удаляем элементы из DOM
+            if (window.currentDeleteRow) {
+                console.log('Удаляем строку из таблицы:', window.currentDeleteRow);
+                window.currentDeleteRow.remove();
+            }
+            if (window.currentDeleteCard) {
+                console.log('Удаляем карточку:', window.currentDeleteCard);
+                window.currentDeleteCard.remove();
             }
             
-            // Удаляем мобильную карточку
-            const card = document.querySelector(`.user-service-card[data-user-service-id="${userServiceId}"]`);
-            if (card) {
-                card.remove();
-            }
+            // Показываем уведомление об успехе
+            window.showNotification('success', translations.service_deleted_successfully || 'Услуга успешно удалена');
             
-            // Если таблица и карточки пустые, показываем сообщение
+            // Обновляем статистику
+            updateStatistics();
+            
+            // Проверяем, есть ли еще услуги
             const tbody = document.getElementById('user-services-tbody');
-            const userServicesCards = document.getElementById('userServicesCards');
-            const hasTableRows = tbody && tbody.children.length > 0;
-            const hasCards = userServicesCards && userServicesCards.children.length > 0;
+            const cards = document.getElementById('userServicesCards');
             
-            if (!hasTableRows && !hasCards) {
+            if (tbody && tbody.children.length === 0) {
+                // Если нет услуг, показываем сообщение
                 const noServicesMessage = document.querySelector('#tab-user-services .text-center');
                 if (noServicesMessage) {
                     noServicesMessage.style.display = 'block';
                 }
             }
             
-            // Обновляем статистику в первой вкладке
-            updateStatistics();
+            if (cards && cards.children.length === 0) {
+                // Если нет карточек, показываем сообщение
+                const noServicesMessage = document.querySelector('#tab-user-services .text-center');
+                if (noServicesMessage) {
+                    noServicesMessage.style.display = 'block';
+                }
+            }
         } else {
-            window.showNotification('error', 'Ошибка: ' + data.message);
+            window.showNotification('error', data.message || 'Ошибка при удалении услуги');
         }
-        
-        // Закрываем модальное окно подтверждения в любом случае
-        closeConfirmationModal();
     })
     .catch(error => {
         console.error('Ошибка при удалении:', error);
-        window.showNotification('error', translations.error_deleting);
-        // Закрываем модальное окно подтверждения даже при ошибке
+        window.showNotification('error', error.message || translations.error_deleting || 'Произошла ошибка при удалении');
+        
+        // Убираем класс анимации при ошибке
+        if (window.currentDeleteRow) {
+            window.currentDeleteRow.classList.remove('row-deleting');
+            console.log('Убрали класс анимации со строки');
+        }
+        if (window.currentDeleteCard) {
+            window.currentDeleteCard.classList.remove('row-deleting');
+            console.log('Убрали класс анимации с карточки');
+        }
+    })
+    .finally(() => {
+        // Сбрасываем флаг выполнения удаления
+        window.isDeleting = false;
+        
+        // Закрываем модальное окно
         closeConfirmationModal();
     });
 }
@@ -191,12 +282,15 @@ function saveUserService() {
             
             console.log('Данные с сервера:', data);
             console.log('userServiceId:', userServiceId);
+            console.log('userService объект:', data.userService);
             
             if (!userServiceId) {
                 // Если это новая запись, добавляем её в таблицу
                 if (data.userService) {
                     console.log('Добавляем новую услугу:', data.userService);
                     addUserServiceToTable(data.userService);
+                } else {
+                    console.error('userService не найден в ответе сервера');
                 }
             } else {
                 // Если это редактирование, обновляем существующую строку
@@ -225,10 +319,293 @@ function closeUserServiceModal() {
     modal.style.display = 'none';
 }
 
+// Функция для обновления услуги в таблице
+function updateUserServiceInTable(userService) {
+    // Проверяем, что userService и его свойства существуют
+    if (!userService || !userService.id) {
+        console.error('updateUserServiceInTable: userService или userService.id не определены', userService);
+        return;
+    }
+    
+    const tbody = document.getElementById('user-services-tbody');
+    const existingRow = tbody.querySelector(`tr[data-user-service-id="${userService.id}"]`);
+    
+    if (existingRow) {
+        // Используем данные, которые возвращает сервер
+        // Проверяем разные возможные форматы данных
+        const userName = userService.user_name || userService.user?.name || 'Неизвестный мастер';
+        const userEmail = userService.user_email || userService.user?.email || '';
+        const serviceName = userService.service_name || userService.service?.name || 'Неизвестная услуга';
+        const serviceDescription = userService.service_description || userService.service?.description || '';
+        
+        // Используем цену и длительность из userService, если они есть, иначе из базовой услуги
+        const price = userService.price !== null && userService.price !== undefined ? userService.price : (userService.service_price || 0);
+        const duration = userService.duration !== null && userService.duration !== undefined ? userService.duration : (userService.service_duration || 0);
+        
+        // Обновляем существующую строку
+        existingRow.innerHTML = `
+            <td>
+                <div class="master-info">
+                    <div class="master-name">${userName}</div>
+                    <div class="master-details">${userEmail}</div>
+                </div>
+            </td>
+            <td>
+                <div class="service-info">
+                    <div class="service-name">${serviceName}</div>
+                    <div class="service-details">${serviceDescription}</div>
+                </div>
+            </td>
+            <td>${formatCurrency(price)}</td>
+            <td>${formatDuration(duration, !userService.is_custom_duration)}</td>
+            <td>
+                <span class="status-badge ${userService.is_active_for_booking ? 'active' : 'inactive'}">
+                    ${userService.is_active_for_booking ? 'Активна' : 'Неактивна'}
+                </span>
+            </td>
+            <td class="actions-cell">
+                <button type="button" class="btn-edit" onclick="editUserService(${userService.id})" title="Редактировать">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                </button>
+                <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="Удалить">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                </button>
+            </td>
+        `;
+    }
+    
+    // Также обновляем карточку в мобильной версии
+    const existingCard = document.querySelector(`.user-service-card[data-user-service-id="${userService.id}"]`);
+    if (existingCard) {
+        // Используем данные, которые возвращает сервер
+        // Проверяем разные возможные форматы данных
+        const userName = userService.user_name || userService.user?.name || 'Неизвестный мастер';
+        const userEmail = userService.user_email || userService.user?.email || '';
+        const serviceName = userService.service_name || userService.service?.name || 'Неизвестная услуга';
+        
+        // Используем цену и длительность из userService, если они есть, иначе из базовой услуги
+        const price = userService.price !== null && userService.price !== undefined ? userService.price : (userService.service_price || 0);
+        const duration = userService.duration !== null && userService.duration !== undefined ? userService.duration : (userService.service_duration || 0);
+        
+        existingCard.innerHTML = `
+            <div class="user-service-card-header">
+                <div class="user-service-main-info">
+                    <h3 class="user-service-name">${userName} - ${serviceName}</h3>
+                    <div class="user-service-status">
+                        <span class="status-badge ${userService.is_active_for_booking ? 'active' : 'inactive'}">
+                            ${userService.is_active_for_booking ? 'Активна' : 'Неактивна'}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="user-service-info">
+                <div class="user-service-info-item">
+                    <div class="user-service-info-label">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Мастер
+                    </div>
+                    <div class="user-service-info-value">${userEmail}</div>
+                </div>
+                <div class="user-service-info-item">
+                    <div class="user-service-info-label">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Цена
+                    </div>
+                    <div class="user-service-info-value">${formatCurrency(userService.price || 0)}</div>
+                </div>
+                <div class="user-service-info-item">
+                    <div class="user-service-info-label">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Длительность
+                    </div>
+                    <div class="user-service-info-value">${formatDuration(userService.duration || 0, !userService.is_custom_duration)}</div>
+                </div>
+            </div>
+            <div class="user-service-actions">
+                <button type="button" class="btn-edit" onclick="editUserService(${userService.id})" title="Редактировать">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                    Редактировать
+                </button>
+                <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="Удалить">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                    Удалить
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Функция для добавления новой услуги в таблицу
+function addUserServiceToTable(userService) {
+    // Проверяем, что userService и его свойства существуют
+    if (!userService || !userService.id) {
+        console.error('addUserServiceToTable: userService или userService.id не определены', userService);
+        return;
+    }
+    
+    console.log('addUserServiceToTable - Полученные данные:', userService);
+    
+    const tbody = document.getElementById('user-services-tbody');
+    const userServicesCards = document.getElementById('userServicesCards');
+    
+    // Используем данные, которые возвращает сервер
+    // Проверяем разные возможные форматы данных
+    const userName = userService.user_name || userService.user?.name || 'Неизвестный мастер';
+    const userEmail = userService.user_email || userService.user?.email || '';
+    const serviceName = userService.service_name || userService.service?.name || 'Неизвестная услуга';
+    const serviceDescription = userService.service_description || userService.service?.description || '';
+    
+    // Используем цену и длительность из userService, если они есть, иначе из базовой услуги
+    const price = userService.price !== null && userService.price !== undefined ? userService.price : (userService.service_price || 0);
+    const duration = userService.duration !== null && userService.duration !== undefined ? userService.duration : (userService.service_duration || 0);
+    
+    console.log('addUserServiceToTable - Обработанные данные:', {
+        userName,
+        userEmail,
+        serviceName,
+        serviceDescription,
+        price: userService.price,
+        duration: userService.duration
+    });
+    
+    // Добавляем строку в таблицу
+    const newRow = document.createElement('tr');
+    newRow.setAttribute('data-user-service-id', userService.id);
+    newRow.innerHTML = `
+        <td>
+            <div class="master-info">
+                <div class="master-name">${userName}</div>
+                <div class="master-details">${userEmail}</div>
+            </div>
+        </td>
+        <td>
+            <div class="service-info">
+                <div class="service-name">${serviceName}</div>
+                <div class="service-details">${serviceDescription}</div>
+            </div>
+        </td>
+        <td>${formatCurrency(price)}</td>
+        <td>${formatDuration(duration, !userService.is_custom_duration)}</td>
+        <td>
+            <span class="status-badge ${userService.is_active_for_booking ? 'active' : 'inactive'}">
+                ${userService.is_active_for_booking ? 'Активна' : 'Неактивна'}
+            </span>
+        </td>
+        <td class="actions-cell">
+            <button type="button" class="btn-edit" onclick="editUserService(${userService.id})" title="Редактировать">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
+            </button>
+            <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="Удалить">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
+            </button>
+        </td>
+    `;
+    tbody.appendChild(newRow);
+    
+    // Добавляем карточку в мобильную версию
+    if (userServicesCards) {
+        const newCard = document.createElement('div');
+        newCard.className = 'user-service-card';
+        newCard.setAttribute('data-user-service-id', userService.id);
+        
+        // Используем те же данные для мобильной версии
+        const mobileUserName = userService.user_name || userService.user?.name || 'Неизвестный мастер';
+        const mobileUserEmail = userService.user_email || userService.user?.email || '';
+        const mobileServiceName = userService.service_name || userService.service?.name || 'Неизвестная услуга';
+        // Используем те же переменные price и duration для мобильной версии
+        newCard.innerHTML = `
+            <div class="user-service-card-header">
+                <div class="user-service-main-info">
+                    <h3 class="user-service-name">${mobileUserName} - ${mobileServiceName}</h3>
+                    <div class="user-service-status">
+                        <span class="status-badge ${userService.is_active_for_booking ? 'active' : 'inactive'}">
+                            ${userService.is_active_for_booking ? 'Активна' : 'Неактивна'}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="user-service-info">
+                <div class="user-service-info-item">
+                    <div class="user-service-info-label">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Мастер
+                    </div>
+                    <div class="user-service-info-value">${mobileUserEmail}</div>
+                </div>
+                <div class="user-service-info-item">
+                    <div class="user-service-info-label">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Цена
+                    </div>
+                    <div class="user-service-info-value">${formatCurrency(price)}</div>
+                </div>
+                <div class="user-service-info-item">
+                    <div class="user-service-info-label">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Длительность
+                    </div>
+                    <div class="user-service-info-value">${formatDuration(duration, !userService.is_custom_duration)}</div>
+                </div>
+            </div>
+            <div class="user-service-actions">
+                <button type="button" class="btn-edit" onclick="editUserService(${userService.id})" title="Редактировать">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                    Редактировать
+                </button>
+                <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="Удалить">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                    Удалить
+                </button>
+            </div>
+        `;
+        userServicesCards.appendChild(newCard);
+    }
+    
+    // Скрываем сообщение "нет услуг" если оно есть
+    const noServicesMessage = document.querySelector('#tab-user-services .text-center');
+    if (noServicesMessage) {
+        noServicesMessage.style.display = 'none';
+    }
+}
+
 function closeConfirmationModal() {
     const modal = document.getElementById('confirmationModal');
-    modal.style.display = 'none';
-    currentDeleteUserServiceId = null; // Сбрасываем ID при закрытии модального окна
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    // Сбрасываем все переменные при закрытии модального окна
+    window.currentDeleteId = null;
+    window.currentDeleteRow = null;
+    window.currentDeleteCard = null;
+    window.isDeleting = false; // Сбрасываем флаг выполнения удаления
 }
 
 // Функция поиска в таблице услуг мастеров
@@ -303,3 +680,55 @@ function toggleUserServicesView() {
         console.log('Переключено на десктопную версию');
     }
 }
+
+// Функция для обновления статистики
+function updateStatistics() {
+    // Здесь можно добавить логику обновления статистики
+    // Например, пересчет количества активных/неактивных услуг
+    console.log('Статистика обновлена');
+}
+
+// Инициализация обработчиков при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Переключаем на правильную версию при загрузке
+    toggleUserServicesView();
+    
+    // Обработчики для модального окна подтверждения удаления
+    const cancelDeleteBtn = document.getElementById('cancelDelete');
+    const confirmDeleteBtn = document.getElementById('confirmDelete');
+    
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', function() {
+            closeConfirmationModal();
+        });
+    }
+    
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function() {
+            confirmDeleteUserService();
+        });
+    }
+    
+    // Обработчик для закрытия модального окна по клику на крестик
+    const closeBtn = document.querySelector('#confirmationModal .close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+            closeConfirmationModal();
+        });
+    }
+    
+    // Обработчик для закрытия модального окна по клику вне его
+    const confirmationModal = document.getElementById('confirmationModal');
+    if (confirmationModal) {
+        confirmationModal.addEventListener('click', function(e) {
+            if (e.target === confirmationModal) {
+                closeConfirmationModal();
+            }
+        });
+    }
+});
+
+// Обработчик изменения размера окна
+window.addEventListener('resize', function() {
+    toggleUserServicesView();
+});

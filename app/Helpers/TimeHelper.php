@@ -44,13 +44,7 @@ class TimeHelper
      */
     private static function getMinutesText($minutes)
     {
-        if ($minutes == 1) {
-            return 'минута';
-        } elseif ($minutes < 5) {
-            return 'минуты';
-        } else {
-            return 'минут';
-        }
+        return __('messages.minute');
     }
 
     /**

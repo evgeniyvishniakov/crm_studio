@@ -113,7 +113,9 @@ class CurrencyHelper
 
         // Fallback для старых валют
         $symbol = self::getSymbol($currency);
-        $formattedAmount = number_format($amount, 0, '.', ' ');
+        // Если число целое, не показываем десятичные знаки
+        $decimalPlaces = (floor($amount) == $amount) ? 0 : 2;
+        $formattedAmount = number_format($amount, $decimalPlaces, '.', ' ');
         return $formattedAmount . ' ' . $symbol;
     }
 

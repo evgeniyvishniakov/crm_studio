@@ -204,18 +204,20 @@
         <!-- Вкладка настроек расписания -->
         <div class="settings-pane" id="tab-schedule-settings" style="display: none;">
             <div class="clients-header">
-                <h1>{{ __('messages.schedule_settings') }}</h1>
-                <div class="header-actions">
-                    <div class="form-group mb-3" style="margin-bottom: 0;">
-                        <label for="user-select" style="margin-bottom: 8px; font-weight: 600; color: #333;">{{ __('messages.select_master') }}</label>
-                        <select class="form-control" id="user-select" style="min-width: 250px; border-radius: 8px; border: 1px solid #d1d5db; padding: 8px 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.2s ease;">
-                            <option value="">{{ __('messages.select_master_placeholder') }}</option>
-                            @foreach($users as $user)
-                                @if($user)
-                                    <option value="{{ $user->id }}" {{ $loop->first ? 'selected' : '' }}>{{ $user->name ?? __('messages.deleted_user') }}</option>
-                                @endif
-                            @endforeach
-                        </select>
+                <div class="header-top">
+                    <h1>{{ __('messages.schedule_settings') }}</h1>
+                    <div class="header-actions">
+                        <div class="form-group mb-3" style="margin-bottom: 0;">
+                            <label for="user-select" style="margin-bottom: 8px; font-weight: 600; color: #333;">{{ __('messages.select_master') }}</label>
+                            <select class="form-control" id="user-select" style="min-width: 250px; border-radius: 8px; border: 1px solid #d1d5db; padding: 8px 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+                                <option value="">{{ __('messages.select_master_placeholder') }}</option>
+                                @foreach($users as $user)
+                                    @if($user)
+                                        <option value="{{ $user->id }}" {{ $loop->first ? 'selected' : '' }}>{{ $user->name ?? __('messages.deleted_user') }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -257,20 +259,22 @@
          <!-- Вкладка услуг мастеров -->
          <div class="settings-pane" id="tab-user-services" style="display: none;">
              <div class="clients-header">
-                 <h1>{{ __('messages.master_services_management') }}</h1>
-                 <div class="header-actions">
-                     <button class="btn-add-client" onclick="addUserService()">
-                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
-                             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                         </svg>
-                         {{ __('messages.add_service_to_master') }}
-                     </button>
+                 <div class="header-top">
+                     <h1>{{ __('messages.master_services_management') }}</h1>
+                     <div class="header-actions">
+                         <button class="btn-add-client" onclick="addUserService()">
+                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                             </svg>
+                             {{ __('messages.add_service_to_master') }}
+                         </button>
 
-                     <div class="search-box">
-                         <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
-                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                         </svg>
-                         <input type="text" placeholder="{{ __('messages.search_masters_services') }}" id="userServicesSearchInput" autocomplete="off">
+                         <div class="search-box">
+                             <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                                 <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                             </svg>
+                             <input type="text" placeholder="{{ __('messages.search_masters_services') }}" id="userServicesSearchInput" autocomplete="off">
+                         </div>
                      </div>
                  </div>
              </div>
@@ -293,17 +297,17 @@
                              <tr data-user-service-id="{{ $userService->id }}">
                                  <td>{{ $userService->user ? $userService->user->name : __('messages.deleted_user') }}</td>
                                  <td>{{ $userService->service ? $userService->service->name : __('messages.deleted_service') }}</td>
-                                 <td class="currency-amount" data-amount="{{ $userService->price ?: ($userService->service ? $userService->service->price : 0) }}">{!! $userService->price ? \App\Helpers\CurrencyHelper::format($userService->price) : ($userService->service ? \App\Helpers\CurrencyHelper::format($userService->service->price) . ' <small class="text-muted">(' . __('messages.base_price') . ')</small>' : __('messages.not_specified_price')) !!}</td>
-                                 <td>{!! $userService->duration ? \App\Helpers\TimeHelper::formatDuration($userService->duration) : ($userService->service && $userService->service->duration ? \App\Helpers\TimeHelper::formatDuration($userService->service->duration) . ' <small class="text-muted">(' . __('messages.base_duration') . ')</small>' : __('messages.not_specified_duration')) !!}</td>
+                                 <td class="currency-amount" data-amount="{{ $userService->price ?: ($userService->service ? $userService->service->price : 0) }}">{!! $userService->price ? \App\Helpers\CurrencyHelper::format($userService->price) : ($userService->service ? \App\Helpers\CurrencyHelper::format($userService->service->price) : __('messages.not_specified_price')) !!}</td>
+                                 <td>{!! $userService->duration ? \App\Helpers\TimeHelper::formatDuration($userService->duration) : ($userService->service && $userService->service->duration ? \App\Helpers\TimeHelper::formatDuration($userService->service->duration) : __('messages.not_specified_duration')) !!}</td>
                                  <td>
                                      @if($userService->is_active_for_booking)
-                                         <span class="badge badge-success">{{ __('messages.active') }}</span>
+                                         <span class="status-badge active">{{ __('messages.active') }}</span>
                                      @else
-                                         <span class="badge badge-secondary">{{ __('messages.inactive') }}</span>
+                                         <span class="status-badge inactive">{{ __('messages.inactive') }}</span>
                                      @endif
                                  </td>
                                  <td class="actions-cell">
-                                     <button type="button" class="btn-view" onclick="editUserService({{ $userService->id }})" title="{{ __('messages.edit') }}">
+                                     <button type="button" class="btn-edit" onclick="editUserService({{ $userService->id }})" title="{{ __('messages.edit') }}">
                                          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                                              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                                          </svg>
@@ -346,7 +350,7 @@
                                      {{ __('messages.price') }}
                                  </div>
                                  <div class="user-service-info-value currency-amount" data-amount="{{ $userService->price ?: ($userService->service ? $userService->service->price : 0) }}">
-                                     {!! $userService->price ? \App\Helpers\CurrencyHelper::format($userService->price) : ($userService->service ? \App\Helpers\CurrencyHelper::format($userService->service->price) . ' <small class="text-muted">(' . __('messages.base_price') . ')</small>' : __('messages.not_specified_price')) !!}
+                                     {!! $userService->price ? \App\Helpers\CurrencyHelper::format($userService->price) : ($userService->service ? \App\Helpers\CurrencyHelper::format($userService->service->price) : __('messages.not_specified_price')) !!}
                                  </div>
                              </div>
                              <div class="user-service-info-item">
@@ -358,7 +362,7 @@
                                      {{ __('messages.duration') }}
                                  </div>
                                  <div class="user-service-info-value">
-                                     {!! $userService->duration ? \App\Helpers\TimeHelper::formatDuration($userService->duration) : ($userService->service && $userService->service->duration ? \App\Helpers\TimeHelper::formatDuration($userService->service->duration) . ' <small class="text-muted">(' . __('messages.base_duration') . ')</small>' : __('messages.not_specified_duration')) !!}
+                                     {!! $userService->duration ? \App\Helpers\TimeHelper::formatDuration($userService->duration) : ($userService->service && $userService->service->duration ? \App\Helpers\TimeHelper::formatDuration($userService->service->duration) : __('messages.not_specified_duration')) !!}
                                  </div>
                              </div>
                          </div>
@@ -396,7 +400,7 @@
     <div style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 5px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h5 style="margin: 0;">{{ __('messages.schedule_settings') }}</h5>
-            <span style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;" onclick="closeModal()">&times;</span>
+            <span style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;" onclick="closeEditDayModal()">&times;</span>
         </div>
         <div>
             <form id="day-schedule-form">
@@ -442,8 +446,8 @@
             </form>
         </div>
         <div class="form-actions">
-            <button type="button" class="btn-cancel" onclick="closeModal()">{{ __('messages.cancel') }}</button>
-            <button type="button" class="btn-submit" onclick="saveDaySchedule()">{{ __('messages.save') }}</button>
+            <button type="button" class="btn-cancel" onclick="closeEditDayModal()">{{ __('messages.cancel') }}</button>
+            <button type="button" class="btn-save" onclick="saveDaySchedule()">{{ __('messages.save') }}</button>
         </div>
     </div>
 </div>
@@ -507,19 +511,24 @@
         </div>
         <div class="form-actions">
             <button type="button" class="btn-cancel" onclick="closeUserServiceModal()">{{ __('messages.cancel') }}</button>
-            <button type="button" class="btn-submit" onclick="saveUserService()">{{ __('messages.save') }}</button>
+            <button type="button" class="btn-save" onclick="saveUserService()">{{ __('messages.save') }}</button>
         </div>
     </div>
 </div>
 
 <!-- Модальное окно подтверждения удаления -->
-<div id="confirmationModal" class="confirmation-modal">
-    <div class="confirmation-content">
-        <h3>{{ __('messages.confirmation_delete') }}</h3>
-        <p>{{ __('messages.confirm_delete_connection') }}</p>
-        <div class="confirmation-buttons">
-            <button class="cancel-btn" id="cancelDelete">{{ __('messages.cancel') }}</button>
-            <button class="confirm-btn" id="confirmDeleteBtn">{{ __('messages.delete_connection') }}</button>
+<div id="confirmationModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>{{ __('messages.confirm_delete') }}</h2>
+            <span class="close" onclick="closeModal('confirmationModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>{{ __('messages.confirm_delete_connection') }}</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="cancelDelete">{{ __('messages.cancel') }}</button>
+            <button type="button" class="btn-delete" id="confirmDelete">{{ __('messages.delete') }}</button>
         </div>
     </div>
 </div>

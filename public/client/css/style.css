@@ -3440,6 +3440,15 @@ footer.site-footer {
     box-shadow: none !important;
 }
 */
+
+/* Стили для событий календаря с разными статусами */
+#calendar .fc-daygrid-event.status-completed, 
+#calendar .fc-daygrid-event.status-pending, 
+#calendar .fc-daygrid-event.status-cancelled, 
+#calendar .fc-daygrid-event.status-rescheduled {
+    background: transparent !important;
+    color: #665d5d;
+}
 /* Применяем шрифт Inter ко всем элементам FullCalendar */
 .fc, .fc *:not(.fc-event-main):not(.fc-event-title):not(.fc-event-time) {
     font-family: 'Inter', Arial, sans-serif !important;

@@ -34,10 +34,14 @@ class Currency extends Model
     {
         $amount = (float) $amount;
         
+        // Определяем количество десятичных знаков
+        // Если число целое, не показываем десятичные знаки
+        $decimalPlaces = (floor($amount) == $amount) ? 0 : $this->decimal_places;
+        
         // Форматируем число с нужным количеством десятичных знаков
         $formatted = number_format(
             $amount,
-            $this->decimal_places,
+            $decimalPlaces,
             $this->decimal_separator,
             $this->thousands_separator
         );

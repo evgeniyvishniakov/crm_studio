@@ -70,8 +70,8 @@ function renderScheduleTable() {
             </td>
             <td>
                 ${dayData.is_working ? 
-                    '<span class="badge badge-success">Рабочий</span>' : 
-                    '<span class="badge badge-secondary">Выходной</span>'
+                                    '<span class="status-badge working">Рабочий</span>' :
+                '<span class="status-badge day-off">Выходной</span>'
                 }
             </td>
             <td>

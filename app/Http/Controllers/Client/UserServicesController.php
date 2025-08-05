@@ -83,11 +83,15 @@ class UserServicesController extends Controller
             'userService' => [
                 'id' => $userService->id,
                 'user_name' => $userService->user ? $userService->user->name : 'Удаленный пользователь',
+                'user_email' => $userService->user ? $userService->user->email : '',
                 'service_name' => $userService->service ? $userService->service->name : 'Удаленная услуга',
-                'price' => $userService->price,
-                'duration' => $userService->duration,
+                'service_description' => $userService->service ? $userService->service->description : '',
+                'price' => $userService->price ?? ($userService->service ? $userService->service->price : 0),
+                'duration' => $userService->duration ?? ($userService->service ? $userService->service->duration : null),
                 'service_price' => $userService->service ? $userService->service->price : 0,
                 'service_duration' => $userService->service ? $userService->service->duration : null,
+                'is_custom_price' => $userService->price !== null,
+                'is_custom_duration' => $userService->duration !== null,
                 'is_active_for_booking' => $userService->is_active_for_booking
             ]
         ]);
@@ -124,7 +128,14 @@ class UserServicesController extends Controller
                          ->firstOrFail();
         $userService = UserService::whereHas('user', function($query) use ($project) {
             $query->where('project_id', $project->id);
-        })->findOrFail($id);
+        })->find($id);
+
+        if (!$userService) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Запись не найдена'
+            ], 404);
+        }
 
         \Log::info('UserServicesController::update - Найдена запись до обновления:', [
             'userService' => $userService->toArray()
@@ -169,11 +180,15 @@ class UserServicesController extends Controller
             'userService' => [
                 'id' => $userService->id,
                 'user_name' => $userService->user ? $userService->user->name : 'Удаленный пользователь',
+                'user_email' => $userService->user ? $userService->user->email : '',
                 'service_name' => $userService->service ? $userService->service->name : 'Удаленная услуга',
-                'price' => $userService->price,
-                'duration' => $userService->duration,
+                'service_description' => $userService->service ? $userService->service->description : '',
+                'price' => $userService->price ?? ($userService->service ? $userService->service->price : 0),
+                'duration' => $userService->duration ?? ($userService->service ? $userService->service->duration : null),
                 'service_price' => $userService->service ? $userService->service->price : 0,
                 'service_duration' => $userService->service ? $userService->service->duration : null,
+                'is_custom_price' => $userService->price !== null,
+                'is_custom_duration' => $userService->duration !== null,
                 'is_active_for_booking' => $userService->is_active_for_booking
             ]
         ]);
@@ -184,17 +199,39 @@ class UserServicesController extends Controller
      */
     public function destroy($id)
     {
-        $project = Auth::user()->project;
-        $userService = UserService::whereHas('user', function($query) use ($project) {
-            $query->where('project_id', $project->id);
-        })->findOrFail($id);
+        try {
+            $project = Auth::user()->project;
+            $userService = UserService::whereHas('user', function($query) use ($project) {
+                $query->where('project_id', $project->id);
+            })->find($id);
 
-        $userService->delete();
+            if (!$userService) {
+                \Log::warning('UserServicesController::destroy - Запись не найдена', ['id' => $id]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Запись не найдена или уже удалена'
+                ], 404);
+            }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Связь мастера с услугой удалена'
-        ]);
+            $userService->delete();
+            \Log::info('UserServicesController::destroy - Запись удалена', ['id' => $id]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Связь мастера с услугой удалена'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Ошибка при удалении UserService:', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Произошла ошибка при удалении записи'
+            ], 500);
+        }
     }
 
     /**
@@ -245,35 +282,55 @@ class UserServicesController extends Controller
      */
     public function show($id)
     {
-        $project = Auth::user()->project;
-        $userService = UserService::whereHas('user', function($query) use ($project) {
-            $query->where('project_id', $project->id);
-        })->with(['user', 'service'])->findOrFail($id);
+        try {
+            $project = Auth::user()->project;
+            $userService = UserService::whereHas('user', function($query) use ($project) {
+                $query->where('project_id', $project->id);
+            })->with(['user', 'service'])->find($id);
 
-        \Log::info('UserServicesController::show - Данные записи:', [
-            'id' => $id,
-            'userService' => $userService->toArray()
-        ]);
+            if (!$userService) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Запись не найдена'
+                ], 404);
+            }
 
-        $responseData = [
-            'id' => $userService->id,
-            'user_id' => $userService->user_id,
-            'service_id' => $userService->service_id,
-            'user_name' => $userService->user ? $userService->user->name : 'Удаленный пользователь',
-            'service_name' => $userService->service ? $userService->service->name : 'Удаленная услуга',
-            'user_role' => $userService->user ? ($userService->user->role ?? 'user') : 'user',
-            'price' => $userService->price,
-            'duration' => $userService->duration,
-            'description' => $userService->description,
-            'is_active_for_booking' => $userService->is_active_for_booking
-        ];
+            \Log::info('UserServicesController::show - Данные записи:', [
+                'id' => $id,
+                'userService' => $userService->toArray()
+            ]);
 
-        \Log::info('UserServicesController::show - Отправляемые данные:', $responseData);
+            $responseData = [
+                'id' => $userService->id,
+                'user_id' => $userService->user_id,
+                'service_id' => $userService->service_id,
+                'user_name' => $userService->user ? $userService->user->name : 'Удаленный пользователь',
+                'service_name' => $userService->service ? $userService->service->name : 'Удаленная услуга',
+                'user_role' => $userService->user ? ($userService->user->role ?? 'user') : 'user',
+                'price' => $userService->price,
+                'duration' => $userService->duration,
+                'description' => $userService->description,
+                'is_active_for_booking' => $userService->is_active_for_booking
+            ];
 
-        return response()->json([
-            'success' => true,
-            'userServices' => [$responseData]
-        ]);
+            \Log::info('UserServicesController::show - Отправляемые данные:', $responseData);
+
+            return response()->json([
+                'success' => true,
+                'userServices' => [$responseData]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Ошибка при получении UserService:', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Произошла ошибка при получении данных'
+            ], 500);
+        }
     }
 
     /**

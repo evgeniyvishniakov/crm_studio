@@ -18,21 +18,46 @@ const translations = {
 };
 
 // Функция для форматирования длительности (аналог PHP TimeHelper::formatDuration)
-function formatDuration(minutes) {
+function formatDuration(minutes, isBaseDuration = false) {
+    let result = '';
+    
+    // Функция для правильного склонения слова "минут"
+    function getMinuteText(min) {
+        return min + ' ' + (window.translations?.minute || 'мин');
+    }
+    
+    // Функция для правильного склонения слова "час"
+    function getHourText(hours) {
+        if (hours % 10 === 1 && hours % 100 !== 11) {
+            return hours + ' ' + (window.translations?.hour || 'час');
+        } else if ([2, 3, 4].includes(hours % 10) && ![12, 13, 14].includes(hours % 100)) {
+            return hours + ' ' + (window.translations?.hours || 'часа');
+        } else {
+            return hours + ' ' + (window.translations?.hours_many || 'часов');
+        }
+    }
+    
     if (!minutes || minutes < 60) {
-        return '~' + minutes + ' мин';
+        result = '~' + getMinuteText(minutes);
     } else {
         const hours = Math.floor(minutes / 60);
         const remainingMinutes = minutes % 60;
         
         if (remainingMinutes == 0) {
-            return '~' + hours + ' час';
+            result = '~' + getHourText(hours);
         } else {
-            const hourText = hours + ' час';
-            const minuteText = remainingMinutes + ' мин';
-            return '~' + hourText + ' ' + minuteText;
+            const hourText = getHourText(hours);
+            const minuteText = getMinuteText(remainingMinutes);
+            result = '~' + hourText + ' ' + minuteText;
         }
     }
+    
+    // Добавляем "(базовая длительность)" если это базовая длительность
+    if (isBaseDuration) {
+        result += ' (' + (window.translations?.base_duration || 'базовая длительность') + ')';
+    }
+    
+    return result;
 }
 
 // Функция для форматирования валюты
@@ -362,8 +387,8 @@ function renderScheduleTable() {
             </td>
             <td>
                 ${dayData.is_working ? 
-                    '<span class="badge badge-success">Рабочий</span>' : 
-                    '<span class="badge badge-secondary">Выходной</span>'
+                                    '<span class="status-badge working">Рабочий</span>' :
+                '<span class="status-badge day-off">Выходной</span>'
                 }
             </td>
             <td>
@@ -373,7 +398,7 @@ function renderScheduleTable() {
                 }
             </td>
             <td class="actions-cell">
-                <button type="button" class="btn-view" onclick="editDay(${day.id})" title="Редактировать" style="display: flex; align-items: center; gap: 6px;">
+                <button type="button" class="btn-edit" onclick="editDay(${day.id})" title="Редактировать" style="display: flex; align-items: center; gap: 6px;">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                     </svg>
@@ -478,7 +503,7 @@ function editDay(dayOfWeek) {
     modal.style.display = 'block';
 }
 
-function closeModal() {
+function closeEditDayModal() {
     const modal = document.getElementById('editDayModal');
     modal.style.display = 'none';
     
@@ -531,7 +556,7 @@ function saveDaySchedule() {
     };
     
     // Закрываем модальное окно
-    closeModal();
+    closeEditDayModal();
     
     // Обновляем таблицу и карточки
     renderScheduleTable();
@@ -599,7 +624,7 @@ function initializeModals() {
     if (modalElement) {
         modalElement.addEventListener('click', function(e) {
             if (e.target === this) {
-                closeModal();
+                closeEditDayModal();
             }
         });
     }
@@ -624,13 +649,13 @@ function initializeKeyboardHandlers() {
             const confirmationModal = document.getElementById('confirmationModal');
             
             if (editModal && editModal.style.display === 'block') {
-                closeModal();
+                closeEditDayModal();
             }
             if (userServiceModal && userServiceModal.style.display === 'block') {
                 closeUserServiceModal();
             }
             if (confirmationModal && confirmationModal.style.display === 'block') {
-                closeConfirmationModal();
+                closeModal('confirmationModal');
             }
         }
     });
@@ -648,17 +673,20 @@ function initializeResizeHandlers() {
 function initializeConfirmationHandlers() {
     // Обработчики для модального окна подтверждения
     const cancelDeleteBtn = document.getElementById('cancelDelete');
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDelete');
     
     if (cancelDeleteBtn) {
         cancelDeleteBtn.addEventListener('click', function() {
-            closeConfirmationModal();
+            closeModal('confirmationModal');
         });
     }
     
     if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', function() {
-            confirmDeleteUserService();
+            if (window.currentDeleteId) {
+                confirmDeleteUserService();
+            }
+            closeModal('confirmationModal');
         });
     }
     
@@ -667,7 +695,8 @@ function initializeConfirmationHandlers() {
     if (confirmationModal) {
         confirmationModal.addEventListener('click', function(e) {
             if (e.target === this) {
-                closeConfirmationModal();
+                closeModal('confirmationModal');
+                window.currentDeleteId = null;
             }
         });
     }
@@ -691,4 +720,4 @@ function initializeViewToggles() {
     window.addEventListener('resize', function() {
         toggleUserServicesView();
     });
-} 
+}

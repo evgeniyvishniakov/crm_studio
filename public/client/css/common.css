@@ -1616,9 +1616,12 @@
 
 /* Status badge universal styles */
 .status-badge {
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-weight: 500;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     display: inline-block;
     text-align: center;
     min-width: 100px;
@@ -1630,6 +1633,16 @@
 .status-cancelled {
     background: linear-gradient(135deg, #F44336 60%, #eb7171 100%);
     color: #fff;
+}
+
+.status-working {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.status-day-off {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
 }
 
 /* Две колонки для форм */
@@ -2393,9 +2406,9 @@ input[type="date"]:focus {
 
 /* Бейджи статуса подписки */
 .status-badge {
-    padding: 6px 12px;
+    padding: 4px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
 }
@@ -2924,6 +2937,10 @@ input[type="date"]:focus {
     display: flex;
     gap: 16px;
     
+}
+
+#booking-settings-form .mb-4 {
+    flex-direction: row!important;
 }
 
 .form-row .form-group {
@@ -6157,7 +6174,7 @@ input[type="date"]:focus {
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
 }
 
@@ -6493,7 +6510,7 @@ input[type="date"]:focus {
 
 .currency-amount {
     font-weight: 600;
-    color: #ef4444;
+    color: #10b981;
 }
 
 .expense-card.row-deleting {
@@ -7043,9 +7060,11 @@ label {
 .master-info, .service-info {
     flex: 1;
 }
+#user-services-tbody .actions-cell{
+    padding: 30px 0 !important;
+}
 
 .master-name, .service-name {
-    font-weight: 600;
     color: #374151;
     margin-bottom: 4px;
     font-size: 14px;

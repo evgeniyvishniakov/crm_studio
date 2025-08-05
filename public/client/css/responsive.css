@@ -2556,7 +2556,7 @@
         align-items: center;
         gap: 6px;
         padding: 8px 16px;
-        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
         color: white;
         border: none;
         border-radius: 8px;
@@ -2568,8 +2568,9 @@
     }
     
     .schedule-actions .btn-edit:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
     }
     
     .schedule-actions .btn-edit svg {
@@ -4847,6 +4848,13 @@
     height: 16px;
 }
 
+/* Анимация удаления для карточек услуг мастеров */
+.user-service-card.row-deleting {
+    opacity: 0.5;
+    transform: translateX(-100%);
+    transition: all 0.3s ease;
+}
+
 /* Стили для модального окна услуг мастеров */
 #userServiceModal .modal-content {
     max-width: 500px;
@@ -6747,9 +6755,9 @@
 }
 
 .status-badge {
-    padding: 8px 16px;
+    padding: 4px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;

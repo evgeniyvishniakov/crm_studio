@@ -10,6 +10,18 @@
     <meta name="description" content="CRM Studio - Система управления салоном красоты">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="current-language" content="{{ \App\Helpers\LanguageHelper::getCurrentLanguage() }}">
+    
+    <!-- Переводы для JavaScript -->
+    <script>
+        window.translations = {
+            minute: '{{ __("messages.minute") }}',
+            hour: '{{ __("messages.hour") }}',
+            hours: '{{ __("messages.hours") }}',
+            hours_many: '{{ __("messages.hours_many") }}',
+            base_duration: '{{ __("messages.base_duration") }}'
+        };
+    </script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" href="">

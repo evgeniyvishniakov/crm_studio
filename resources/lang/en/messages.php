@@ -98,6 +98,13 @@ return [
     'error_saving' => 'Error saving',
     'appointment_successfully_created' => 'Appointment successfully created',
     'client_work' => 'Client Work',
+    
+    // Time translations
+    'minute' => 'min',
+    'hour' => 'hour',
+    'hours' => 'hours',
+    'hours_many' => 'hours',
+    'base_duration' => 'base duration',
     'client_analytics' => 'Client Analytics',
     'appointments_analytics' => 'Appointments Analytics',
     

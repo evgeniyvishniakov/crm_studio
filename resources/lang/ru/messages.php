@@ -98,6 +98,13 @@ return [
     'error_saving' => 'Ошибка при сохранении',
     'appointment_successfully_created' => 'Запись успешно создана',
     'client_work' => 'Работа с клиентами',
+    
+    // Переводы времени
+    'minute' => 'мин',
+    'hour' => 'час',
+    'hours' => 'часа',
+    'hours_many' => 'часов',
+    'base_duration' => 'базовая длительность',
     'client_analytics' => 'Аналитика по клиентам',
     'appointments_analytics' => 'Аналитика по записям',
     
