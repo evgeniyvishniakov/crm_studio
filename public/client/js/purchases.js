@@ -196,8 +196,14 @@ function resetPurchaseForm() {
 // Функция для показа/скрытия деталей закупки
 function togglePurchaseDetailsRow(id) {
     const detailsRow = document.getElementById(`details-row-${id}`);
+    const tableRow = document.getElementById(`table-row-${id}`);
+    
     if (detailsRow) {
         detailsRow.style.display = detailsRow.style.display === 'none' ? 'table-row' : 'none';
+    }
+    
+    if (tableRow) {
+        tableRow.style.display = tableRow.style.display === 'none' ? 'table-row' : 'none';
     }
 }
 
@@ -565,7 +571,7 @@ function addPurchaseToDOM(purchase) {
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg> ${window.translations?.edit || 'Редактировать'}
                     </button>
                     <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
-                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> Удалить
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> ${window.translations?.delete || 'Удалить'}
                     </button>
                 </div>
             </td>
@@ -840,7 +846,7 @@ function renderPurchases(purchases) {
                     </button>
                     <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                        Удалить
+                        ${window.translations?.delete || 'Удалить'}
                     </button>
                 </div>
             </td>
@@ -866,7 +872,7 @@ function renderPurchases(purchases) {
                     <td>${item.product ? item.product.name : 'Товар не найден'}</td>
                     <td class="currency-amount" data-amount="${item.purchase_price}">${formatCurrency(item.purchase_price)}</td>
                     <td class="currency-amount" data-amount="${item.retail_price}">${formatCurrency(item.retail_price)}</td>
-                    <td>${item.quantity} шт</td>
+                    <td>${item.quantity} ${window.translations?.pieces || 'шт'}</td>
                     <td class="currency-amount" data-amount="${item.total}">${formatCurrency(item.total)}</td>
                 </tr>
             `).join('');
@@ -876,7 +882,21 @@ function renderPurchases(purchases) {
             <td colspan="5">
                 <div class="purchases-details">
                     <div class="purchases-notes">${purchase.notes || '—'}</div>
-                    <table class="table-wrapper table-striped purchases-table">
+                </div>
+            </td>
+        `;
+        tbody.appendChild(detailsRow);
+
+        // Создаем отдельную строку для таблицы товаров
+        const tableRow = document.createElement('tr');
+        tableRow.className = 'purchases-table-row';
+        tableRow.id = `table-row-${purchase.id}`;
+        tableRow.style.display = 'none';
+        
+        tableRow.innerHTML = `
+            <td colspan="5" class="purchases-table-cell">
+                <div class="table-wrapper table-striped purchases-table">
+                    <table class="purchases-table">
                         <thead>
                         <tr>
                             <th>${window.translations?.photo || 'Фото'}</th>
@@ -894,6 +914,7 @@ function renderPurchases(purchases) {
                 </div>
             </td>
         `;
+        tbody.appendChild(tableRow);
         tbody.appendChild(detailsRow);
     });
 }
@@ -962,7 +983,7 @@ function updateMobileCards(purchases) {
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                     </svg>
-                    Удалить
+                    ${window.translations?.delete || 'Удалить'}
                 </button>
             </div>
         `;

@@ -2,7 +2,6 @@
 .clients-container,
 .products-container,
 .warehouse-container,
-.purchases-container,
 .sales-container,
 .services-container,
 .appointments-container,
@@ -13,6 +12,13 @@
     max-width: 1200px;
     margin: 0 auto;
 
+    font-family: 'Inter', Arial, sans-serif !important;
+}
+
+/* Контейнер закупок с увеличенной шириной */
+.purchases-container {
+    max-width: 1400px;
+    margin: 0 auto;
     font-family: 'Inter', Arial, sans-serif !important;
 }
 
@@ -1031,10 +1037,57 @@
         padding: 20px;
     }
 
+    /* Make the table inside purchase details stretch to full width */
+    .purchase-details .table-wrapper {
+        width: 100%;
+        margin: 0;
+        max-width: none;
+    }
+
+    .purchase-details .table-wrapper table {
+        width: 100%;
+        table-layout: auto;
+        max-width: none;
+    }
+
+    /* Ensure the table cell containing the nested table takes full width */
+    .purchase-details-row td {
+        padding: 0;
+        width: 100%;
+    }
+
+    .purchase-details {
+        padding: 20px;
+        width: 100%;
+    }
+
+    /* Styles for the separate table row */
+    .purchases-table-row td {
+        padding: 0;
+        width: 100%;
+    }
+
+    .purchases-table-cell {
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    .purchases-table-cell .table-wrapper {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+    }
+
+    .purchases-table-cell .purchases-table {
+        width: 100% !important;
+        max-width: none !important;
+        table-layout: auto !important;
+    }
+
     .purchase-notes {
         margin-bottom: 15px;
-        color: #6c757d;
         font-style: italic;
+        color: #6c757d;
     }
 
     .items-container {
@@ -7794,4 +7847,66 @@ label {
 .widget-form-actions .btn-secondary:hover {
     background: linear-gradient(135deg, #5a6268, #6c757d);
     transform: translateY(-1px);
+}
+
+/* Стили для колонок вложенной таблицы закупок */
+.purchases-table-cell .purchases-table th:nth-child(1),
+.purchases-table-cell .purchases-table td:nth-child(1) {
+    width: 80px !important;
+    max-width: 80px !important;
+    min-width: 80px !important;
+}
+
+.purchases-table-cell .purchases-table th:nth-child(2),
+.purchases-table-cell .purchases-table td:nth-child(2) {
+    width: 25% !important;
+    min-width: 200px !important;
+}
+
+.purchases-table-cell .purchases-table th:nth-child(3),
+.purchases-table-cell .purchases-table td:nth-child(3) {
+    width: 15% !important;
+    min-width: 120px !important;
+}
+
+.purchases-table-cell .purchases-table th:nth-child(4),
+.purchases-table-cell .purchases-table td:nth-child(4) {
+    width: 15% !important;
+    min-width: 120px !important;
+}
+
+.purchases-table-cell .purchases-table th:nth-child(5),
+.purchases-table-cell .purchases-table td:nth-child(5) {
+    width: 10% !important;
+    min-width: 100px !important;
+}
+
+.purchases-table-cell .purchases-table th:nth-child(6),
+.purchases-table-cell .purchases-table td:nth-child(6) {
+    width: 15% !important;
+    min-width: 120px !important;
+}
+
+/* Стили для фото в таблице закупок */
+.purchases-table-cell .purchases-table .product-photo {
+    width: 60px !important;
+    height: 60px !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
+}
+
+.purchases-table-cell .purchases-table .no-photo {
+    width: 60px !important;
+    height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #f3f4f6 !important;
+    border-radius: 8px !important;
+    font-size: 10px !important;
+    color: #6b7280 !important;
+    text-align: center !important;
+    padding: 4px !important;
+    word-wrap: break-word !important;
+    line-height: 1.2 !important;
 }
