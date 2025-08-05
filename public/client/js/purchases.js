@@ -220,13 +220,13 @@ function editPurchase(event, id) {
                         <input type="hidden" name="_method" value="PUT">
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Дата</label>
+                                <label>${window.translations?.date || 'Дата'}</label>
                                 <input type="date" name="date" required class="form-control" value="${purchase.date}">
                             </div>
                             <div class="form-group">
-                                <label>Поставщик</label>
+                                <label>${window.translations?.supplier || 'Поставщик'}</label>
                                 <select name="supplier_id" required class="form-control">
-                                    <option value="">Выберите поставщика</option>
+                                    <option value="">${window.translations?.select_supplier || 'Выберите поставщика'}</option>
                                     ${window.suppliers ? window.suppliers.map(supplier => 
                                         `<option value="${supplier.id}" ${purchase.supplier_id == supplier.id ? 'selected' : ''}>${supplier.name}</option>`
                                     ).join('') : ''}
@@ -234,21 +234,21 @@ function editPurchase(event, id) {
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Примечания</label>
+                            <label>${window.translations?.notes || 'Примечания'}</label>
                             <textarea name="notes" rows="2" class="form-control">${purchase.notes || ''}</textarea>
                         </div>
                         <div class="items-container" id="editItemsContainer">
-                            <h3>Товары</h3>
+                            <h3>${window.translations?.products || 'Товары'}</h3>
                             ${purchase.items.map((item, index) => `
                                 <div class="item-row">
                                     <div class="form-row">
                                          <div class="form-group">
-                                            <label>Товар</label>
+                                            <label>${window.translations?.product || 'Товар'}</label>
                                             <div class="product-search-container">
                                                 <input type="text"
                                                        id="product-search-edit-${index}"
                                                        class="product-search-input form-control"
-                                                       placeholder="Начните вводить название товара"
+                                                       placeholder="${window.translations?.start_typing_product_name || 'Начните вводить название товара'}"
                                                        oninput="searchProducts(this)"
                                                        onfocus="showProductDropdown(this)"
                                                        value="${item.product_name}"
@@ -262,15 +262,15 @@ function editPurchase(event, id) {
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <label>Закупочная цена</label>
+                                            <label>${window.translations?.purchase_price || 'Закупочная цена'}</label>
                                             <input type="number" step="0.01" name="items[${index}][purchase_price]" required class="form-control" value="${item.purchase_price}">
                                         </div>
                                         <div class="form-group">
-                                            <label>Розничная цена</label>
+                                            <label>${window.translations?.retail_price || 'Розничная цена'}</label>
                                             <input type="number" step="0.01" name="items[${index}][retail_price]" required class="form-control" value="${item.retail_price}">
                                         </div>
                                         <div class="form-group">
-                                            <label>Количество</label>
+                                            <label>${window.translations?.quantity || 'Количество'}</label>
                                             <input type="number" name="items[${index}][quantity]" required class="form-control" value="${item.quantity}">
                                         </div>
                                         <div class="form-group">
@@ -289,10 +289,10 @@ function editPurchase(event, id) {
                                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                                 </svg>
-                                Добавить товар
+                                ${window.translations?.add_product || 'Добавить товар'}
                             </button>
-                            <button type="button" class="btn-cancel" onclick="closeEditPurchaseModal()">Отмена</button>
-                            <button type="submit" class="btn-submit">Сохранить изменения</button>
+                            <button type="button" class="btn-cancel" onclick="closeEditPurchaseModal()">${window.translations?.cancel || 'Отмена'}</button>
+                            <button type="submit" class="btn-submit">${window.translations?.save_changes || 'Сохранить изменения'}</button>
                         </div>
                     </form>
                 `;
@@ -542,7 +542,7 @@ function addPurchaseToDOM(purchase) {
         return `
         <tr>
             <td>
-                ${item.product && item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` : `<div class="no-photo">Нет фото</div>`}
+                ${item.product && item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>${window.translations?.no_photo || 'Нет фото'}</div>'">` : `<div class="no-photo">${window.translations?.no_photo || 'Нет фото'}</div>`}
             </td>
             <td>${item.product ? item.product.name : 'Товар не найден'}</td>
             <td class="currency-amount" data-amount="${purchasePrice}">${formatCurrency(purchasePrice)}</td>
@@ -562,7 +562,7 @@ function addPurchaseToDOM(purchase) {
             <td>
                 <div class="purchases-actions">
                     <button class="btn-edit" onclick="editPurchase(event, ${purchase.id})">
-                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg> Редактировать
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg> ${window.translations?.edit || 'Редактировать'}
                     </button>
                     <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> Удалить
@@ -577,12 +577,12 @@ function addPurchaseToDOM(purchase) {
                     <table class="table-wrapper table-striped purchases-table">
                         <thead>
                             <tr>
-                                <th>Фото</th>
-                                <th>Товар</th>
-                                <th>Закупочная цена</th>
-                                <th>Розничная цена</th>
-                                <th>Количество</th>
-                                <th>Сумма</th>
+                                <th>${window.translations?.photo || 'Фото'}</th>
+                                <th>${window.translations?.product || 'Товар'}</th>
+                                <th>${window.translations?.purchase_price || 'Закупочная цена'}</th>
+                                <th>${window.translations?.retail_price || 'Розничная цена'}</th>
+                                <th>${window.translations?.quantity || 'Количество'}</th>
+                                <th>${window.translations?.sum || 'Сумма'}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -629,7 +629,7 @@ function updatePurchaseRowInDOM(purchase) {
         return `
         <tr>
             <td>
-                ${item.product && item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` : `<div class="no-photo">Нет фото</div>`}
+                ${item.product && item.product.photo ? `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>${window.translations?.no_photo || 'Нет фото'}</div>'">` : `<div class="no-photo">${window.translations?.no_photo || 'Нет фото'}</div>`}
             </td>
             <td>${item.product ? item.product.name : 'Товар не найден'}</td>
             <td class="currency-amount" data-amount="${purchasePrice}">${formatCurrency(purchasePrice)}</td>
@@ -646,12 +646,12 @@ function updatePurchaseRowInDOM(purchase) {
             <table class="table-wrapper table-striped purchases-table">
                 <thead>
                     <tr>
-                        <th>Фото</th>
-                        <th>Товар</th>
-                        <th>Закупочная цена</th>
-                        <th>Розничная цена</th>
-                        <th>Количество</th>
-                        <th>Сумма</th>
+                        <th>${window.translations?.photo || 'Фото'}</th>
+                        <th>${window.translations?.product || 'Товар'}</th>
+                        <th>${window.translations?.purchase_price || 'Закупочная цена'}</th>
+                        <th>${window.translations?.retail_price || 'Розничная цена'}</th>
+                        <th>${window.translations?.quantity || 'Количество'}</th>
+                        <th>${window.translations?.sum || 'Сумма'}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -836,7 +836,7 @@ function renderPurchases(purchases) {
                 <div class="purchases-actions">
                     <button class="btn-edit" onclick="editPurchase(event, ${purchase.id})">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
-                        Редактировать
+                        ${window.translations?.edit || 'Редактировать'}
                     </button>
                     <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
@@ -859,8 +859,8 @@ function renderPurchases(purchases) {
                 <tr>
                     <td>
                         ${item.product && item.product.photo ? 
-                            `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` : 
-                            '<div class="no-photo">Нет фото</div>'
+                            `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>${window.translations?.no_photo || 'Нет фото'}</div>'">` : 
+                            `<div class="no-photo">${window.translations?.no_photo || 'Нет фото'}</div>`
                         }
                     </td>
                     <td>${item.product ? item.product.name : 'Товар не найден'}</td>
@@ -879,12 +879,12 @@ function renderPurchases(purchases) {
                     <table class="table-wrapper table-striped purchases-table">
                         <thead>
                         <tr>
-                            <th>Фото</th>
-                            <th>Товар</th>
-                            <th>Закупочная цена</th>
-                            <th>Розничная цена</th>
-                            <th>Количество</th>
-                            <th>Сумма</th>
+                            <th>${window.translations?.photo || 'Фото'}</th>
+                            <th>${window.translations?.product || 'Товар'}</th>
+                            <th>${window.translations?.purchase_price || 'Закупочная цена'}</th>
+                            <th>${window.translations?.retail_price || 'Розничная цена'}</th>
+                            <th>${window.translations?.quantity || 'Количество'}</th>
+                            <th>${window.translations?.sum || 'Сумма'}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -956,7 +956,7 @@ function updateMobileCards(purchases) {
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                     </svg>
-                    Редактировать
+                    ${window.translations?.edit || 'Редактировать'}
                 </button>
                 <button class="btn-delete" onclick="confirmDeletePurchase(event, ${purchase.id})">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">

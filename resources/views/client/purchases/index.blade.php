@@ -249,6 +249,27 @@
         // Инициализация глобальных переменных для закупок
         window.allProducts = @json($products);
         window.suppliers = @json($suppliers);
+        
+                   // Переводы для JavaScript
+           window.translations = {
+               date: '{{ __("messages.date") }}',
+               supplier: '{{ __("messages.supplier") }}',
+               notes: '{{ __("messages.notes") }}',
+               products: '{{ __("messages.products") }}',
+               product: '{{ __("messages.product") }}',
+               purchase_price: '{{ __("messages.purchase_price") }}',
+               retail_price: '{{ __("messages.retail_price") }}',
+               quantity: '{{ __("messages.quantity") }}',
+               add_product: '{{ __("messages.add_product") }}',
+               cancel: '{{ __("messages.cancel") }}',
+               save_changes: '{{ __("messages.save_changes") }}',
+               select_supplier: '{{ __("messages.select_supplier") }}',
+               start_typing_product_name: '{{ __("messages.start_typing_product_name") }}',
+               edit: '{{ __("messages.edit") }}',
+               photo: '{{ __("messages.photo") }}',
+               sum: '{{ __("messages.sum") }}',
+               no_photo: '{{ __("messages.no_photo") }}'
+           };
     </script>
     <script src="{{ asset('client/js/purchases.js') }}"></script>
 @endpush

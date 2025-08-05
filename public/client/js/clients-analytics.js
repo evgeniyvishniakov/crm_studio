@@ -406,6 +406,16 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => updateChart(chart, labels, datasets), 120);
             return;
         }
+        
+        // Принудительный сброс и обновление
+        chart.data.labels = [];
+        chart.data.datasets = [];
+        chart.update('none'); // Отключаем анимацию для быстрого обновления
+        
+        // Устанавливаем новые данные
+        chart.data.labels = labels;
+        chart.data.datasets = datasets;
+        
         // Градиент для bar и line графиков
         if (chart && chart.config && chart.config.type) {
             const ctx = chart.ctx;
@@ -472,13 +482,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
-        // Принудительный сброс и обновление
-        chart.data.labels = [];
-        chart.data.datasets = [];
-        chart.update();
-        chart.data.labels = labels;
-        chart.data.datasets = datasets;
-        chart.update();
+        
+        // Финальное обновление с анимацией
+        chart.update('active');
     }
 
     // --- Логика переключения вкладок и фильтров ---
@@ -521,18 +527,30 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 Object.values(charts).forEach(chart => {
                     if (chart && chart.resize) chart.resize();
-                    if (chart && chart.update) chart.update();
+                    if (chart && chart.update) chart.update('active');
                 });
             }, 120);
+            
+            // Дополнительное обновление через небольшую задержку для гарантии
+            setTimeout(() => {
+                Object.values(charts).forEach(chart => {
+                    if (chart && chart.update) chart.update('active');
+                });
+            }, 200);
         });
     });
 
     const filterButtons = document.querySelectorAll('.filter-section .filter-button');
     const periodMapping = {
+        'За тиждень': 'week',
         'За неделю': 'week',
+        'За 2 тижні': '2weeks',
         'За 2 недели': '2weeks',
+        'За місяць': 'month',
         'За месяц': 'month',
+        'За півроку': 'half_year',
         'За полгода': 'half_year',
+        'За рік': 'year',
         'За год': 'year'
     };
 
@@ -540,9 +558,12 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', () => {
             if (button.id === 'dateRangePicker') return; 
 
-            // Сбросить отображение диапазона диапазона ДО обновления графиков
-            calendarRangeDisplay.textContent = '';
-            calendarRangeDisplay.style.minWidth = '';
+            // Сбросить отображение диапазона ДО обновления графиков
+            const calendarRangeDisplay = document.getElementById('calendarRangeDisplay');
+            if (calendarRangeDisplay) {
+                calendarRangeDisplay.textContent = '';
+                calendarRangeDisplay.style.minWidth = '';
+            }
 
             filterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
@@ -550,7 +571,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const periodKey = button.textContent.trim();
             const period = periodMapping[periodKey];
             if (period) {
-                const activeTabId = document.querySelector('.tab-button.active').getAttribute('data-tab');
+                const activeTab = document.querySelector('.tab-button.active');
+                const activeTabId = activeTab ? activeTab.getAttribute('data-tab') : 'unknown';
                 // Всегда обновлять все графики для выбранной вкладки
                 if (activeTabId === 'clients-analytics') {
                     updateClientAnalytics(period);
@@ -569,7 +591,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateLtvByClientTypeAnalytics(period);
                     updateTopServicesByRevenueAnalytics(period);
                 }
-                // УБРАН программный клик по вкладке
+                
+                // Принудительное обновление всех графиков после смены периода
+                setTimeout(() => {
+                    Object.values(charts).forEach(chart => {
+                        if (chart && chart.resize) chart.resize();
+                        if (chart && chart.update) chart.update('active');
+                    });
+                }, 100);
             }
         });
     });
@@ -578,7 +607,10 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeCharts();
     // Сразу выбираем период месяц
     const filterButtonsArr = Array.from(document.querySelectorAll('.filter-section .filter-button'));
-    const monthBtn = filterButtonsArr.find(btn => btn.textContent.trim() === 'За месяц');
+    const monthBtn = filterButtonsArr.find(btn => 
+        btn.textContent.trim() === 'За месяц' || 
+        btn.textContent.trim() === 'За місяць'
+    );
     if (monthBtn) {
         filterButtonsArr.forEach(btn => btn.classList.remove('active'));
         monthBtn.classList.add('active');

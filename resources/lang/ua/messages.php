@@ -226,7 +226,7 @@ return [
     'start_typing_product_name' => 'Почніть вводити назву товару',
     'select_product' => 'Виберіть товар',
     'quantity' => 'Кількість',
-    'edit_product_on_warehouse' => 'Редагувати товар на складі',
+    'edit_product_on_warehouse' => 'Редагування',
     'delete_confirmation' => 'Підтвердження видалення',
     'confirm_delete_product_from_warehouse' => 'Ви впевнені, що хочете видалити цей товар зі складу?',
     'confirm_delete_expense' => 'Ви впевнені, що хочете видалити цю витрату?',

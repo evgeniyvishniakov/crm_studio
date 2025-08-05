@@ -6,6 +6,11 @@ function toggleAnimationSettings() {
     const animationType = document.getElementById('widget_animation_type');
     const animationSettingsRow = document.getElementById('animationSettingsRow');
     
+    // Проверяем существование элементов перед обращением к их свойствам
+    if (!animationEnabled || !animationType || !animationSettingsRow) {
+        return;
+    }
+    
     if (animationEnabled.checked && animationType.value !== 'none') {
         animationSettingsRow.style.display = 'flex';
         animationSettingsRow.style.opacity = '1';
@@ -19,12 +24,19 @@ function toggleAnimationSettings() {
 
 // Инициализация при загрузке страницы
 function initializeWidgetSettings() {
+    // Проверяем, что элементы существуют перед инициализацией
+    const animationEnabled = document.getElementById('widget_animation_enabled');
+    const animationType = document.getElementById('widget_animation_type');
+    const animationSettingsRow = document.getElementById('animationSettingsRow');
+    
+    // Если элементы не найдены, выходим из функции
+    if (!animationEnabled || !animationType || !animationSettingsRow) {
+        return;
+    }
+    
     toggleAnimationSettings();
     
     // Добавляем обработчики событий
-    const animationEnabled = document.getElementById('widget_animation_enabled');
-    const animationType = document.getElementById('widget_animation_type');
-    
     if (animationEnabled) {
         animationEnabled.addEventListener('change', toggleAnimationSettings);
     }
@@ -33,7 +45,6 @@ function initializeWidgetSettings() {
     }
     
     // Добавляем стили для плавных переходов
-    const animationSettingsRow = document.getElementById('animationSettingsRow');
     if (animationSettingsRow) {
         animationSettingsRow.style.transition = 'all 0.3s ease';
     }
@@ -318,7 +329,12 @@ function initializeModal() {
 
 // Инициализация всех функций при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
-    initializeWidgetSettings();
-    initializeFormSubmission();
-    initializeModal();
+    // Проверяем, находимся ли мы на странице настроек виджета
+    const isWidgetSettingsPage = document.getElementById('widgetSettingsForm') !== null;
+    
+    if (isWidgetSettingsPage) {
+        initializeWidgetSettings();
+        initializeFormSubmission();
+        initializeModal();
+    }
 }); 

@@ -134,28 +134,28 @@ function openEditModal(id) {
                     <input type="hidden" name="_method" value="PUT">
                     <input type="hidden" id="editItemId" name="id" value="${data.warehouse.id || ''}">
                     <div class="form-group">
-                        <label>Товар</label>
+                        <label>${window.translations?.product || 'Товар'}</label>
                         <input type="text" class="form-control" value="${escapeHtml(data.warehouse.product_name || '')}" readonly>
                     </div>
                     <div class="form-group">
-                        <label>Цена закупки *</label>
+                        <label>${window.translations?.purchase_price || 'Цена закупки'} *</label>
                         <input type="number" step="0.01" id="editPurchasePrice" name="purchase_price"
                                value="${data.warehouse.purchase_price || ''}" required>
                     </div>
                     <div class="form-group">
-                        <label>Розничная цена *</label>
+                        <label>${window.translations?.retail_price || 'Розничная цена'} *</label>
                         <input type="number" step="0.01" id="editRetailPrice" name="retail_price"
                                value="${data.warehouse.retail_price || ''}" required>
                     </div>
                     <div class="form-group">
-                        <label>Количество *</label>
+                        <label>${window.translations?.quantity || 'Количество'} *</label>
                         <input type="number" id="editQuantity" name="quantity"
                                value="${data.warehouse.quantity || ''}" required>
                     </div>
-                                         <div class="form-actions">
-                         <button type="button" class="btn-cancel" onclick="closeEditModal()">Отмена</button>
-                         <button type="submit" class="btn-submit">Сохранить</button>
-                     </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeEditModal()">${window.translations?.cancel || 'Отмена'}</button>
+                        <button type="submit" class="btn-submit">${window.translations?.save || 'Сохранить'}</button>
+                    </div>
                 </form>
             `;
             

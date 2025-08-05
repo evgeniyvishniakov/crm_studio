@@ -184,6 +184,16 @@
     <script>
         // Инициализация глобальных переменных
         window.allProducts = @json($products);
+        
+        // Переводы для JavaScript
+        window.translations = {
+            product: '{{ __("messages.product") }}',
+            purchase_price: '{{ __("messages.purchase_price") }}',
+            retail_price: '{{ __("messages.retail_price") }}',
+            quantity: '{{ __("messages.quantity") }}',
+            cancel: '{{ __("messages.cancel") }}',
+            save: '{{ __("messages.save") }}'
+        };
     </script>
     <script src="{{ asset('client/js/warehouse.js') }}"></script>
     @endpush
