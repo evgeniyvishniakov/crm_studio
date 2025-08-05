@@ -6501,3 +6501,221 @@ input[type="date"]:focus {
     transform: scale(0.98);
     transition: all 0.3s ease;
 }
+
+/* ===== СТИЛИ ДЛЯ LAYOUT APP.BLADE.PHP ===== */
+
+/* Основные стили для body и общих элементов */
+body, .navbar, .sidebar, .form-control, .btn, .nav, .dropdown-menu, .site-footer, .header, .content {
+    font-family: 'Inter', Arial, sans-serif !important;
+}
+
+body {
+    background: #f8f9fa !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#right-panel {
+    background: #f8f9fa !important;
+}
+
+#weatherWidget .currentDesc {
+    color: #ffffff!important;
+}
+
+.traffic-chart {
+    min-height: 335px;
+}
+
+#flotPie1 {
+    height: 150px;
+}
+
+#flotPie1 td {
+    padding:3px;
+}
+
+#flotPie1 table {
+    top: 20px!important;
+    right: -10px!important;
+}
+
+.chart-container {
+    display: table;
+    min-width: 270px;
+    text-align: left;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#flotLine5 {
+    height: 105px;
+}
+
+#flotBarChart {
+    height: 150px;
+}
+
+#cellPaiChart{
+    height: 160px;
+}
+
+/* Стили для активного меню */
+.navbar .navbar-nav li.active > a .menu-icon {
+    color: #03a9f3 !important;
+    opacity: 0.7 !important;
+}
+
+.menu-item-has-children.active > a,
+.sub-menu li.active > a,
+.menu-item-has-children.active > a .menu-icon,
+.sub-menu li.active > i {
+    color: #03a9f3 !important;
+    background: none !important;
+    background-color: transparent !important;
+}
+
+.menu-item-has-children.active .dropdown-toggle,
+.menu-item-has-children.active .dropdown-toggle:hover,
+.menu-item-has-children.active .dropdown-toggle:focus {
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* Позволяем Bootstrap управлять отображением подменю */
+.menu-item-has-children .sub-menu {
+    position: relative;
+    z-index: 1000;
+}
+
+/* Убеждаемся, что другие элементы меню не перекрываются */
+.menu-item-has-children.dropdown + .menu-item-has-children.dropdown {
+    margin-top: 0;
+}
+
+/* Стили для корректного отображения подменю */
+.sub-menu.children {
+    position: relative;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 2px;
+}
+
+/* Управление высотой меню */
+.sidebar-menu {
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+/* Убеждаемся, что элементы меню не перекрываются */
+.menu-item-has-children {
+    position: relative;
+}
+
+/* Стили для навигации */
+.navbar-nav .active > a,
+.navbar-nav li.active > a,
+.navbar-nav li.active > a:focus,
+.navbar-nav li.active > a:active,
+.navbar-nav li.active > a:hover,
+.navbar-nav a:focus,
+.navbar-nav a:active,
+.navbar-nav a:visited {
+    background: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    filter: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    border: none !important;
+    border-color: transparent !important;
+    user-select: none !important;
+}
+
+/* Стили для header */
+.header-menu {
+    display: flex;
+    align-items: center;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-area {
+    display: flex;
+    align-items: center;
+}
+
+/* Стили для кнопок */
+.tab-button.active {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    border-color: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
+    border-color: #3b82f6 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1.5rem !important;
+}
+
+.btn-primary:active, .btn-primary:focus, .btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+    border-color: #2563eb !important;
+    color: #fff !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1.5rem !important;
+}
+
+/* Стили для отключенных ссылок */
+.disabled-link {
+    pointer-events: none;
+    color: #aaa !important;
+    opacity: 0.7;
+}
+
+.menu-label {
+    margin-left: 6px;
+}
+
+.lock-icon {
+    margin-left: 8px;
+    color: #aaa;
+    font-size: 1em;
+    vertical-align: middle;
+}
+
+/* ===== СТИЛИ ДЛЯ LAYOUT AUTH.BLADE.PHP ===== */
+
+/* Стили для body в auth layout */
+body {
+    background: #f8f9fa !important;
+    font-family: 'Inter', Arial, sans-serif !important;
+}
+
+.auth-header {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 24px;
+}
+
+.auth-header img {
+    width: 48px;
+}
+
+.auth-header h2 {
+    font-weight: 700;
+    margin-top: 12px;
+    margin-bottom: 0;
+}

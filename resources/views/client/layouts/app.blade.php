@@ -46,6 +46,7 @@
     <script src="/client/js/language-manager.js"></script>
     <script src="/client/js/calendar-localization.js"></script>
     <script src="{{ asset('client/js/common.js') }}"></script>
+    <script src="{{ asset('client/js/layouts.js') }}"></script>
 
     <!-- Данные валюты для JavaScript -->
     @php
@@ -65,177 +66,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body, .navbar, .sidebar, .form-control, .btn, .nav, .dropdown-menu, .site-footer, .header, .content {
-            font-family: 'Inter', Arial, sans-serif !important;
-        }
-        body {
-            background: #f8f9fa !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        
-        #right-panel {
-            background: #f8f9fa !important;
-        }
-        
-        #weatherWidget .currentDesc {
-            color: #ffffff!important;
-        }
-        .traffic-chart {
-            min-height: 335px;
-        }
-        #flotPie1  {
-            height: 150px;
-        }
-        #flotPie1 td {
-            padding:3px;
-        }
-        #flotPie1 table {
-            top: 20px!important;
-            right: -10px!important;
-        }
-        .chart-container {
-            display: table;
-            min-width: 270px ;
-            text-align: left;
-            padding-top: 10px;
-            padding-bottom: 10px;
-        }
-        #flotLine5  {
-            height: 105px;
-        }
-
-        #flotBarChart {
-            height: 150px;
-        }
-        #cellPaiChart{
-            height: 160px;
-        }
-        
-        /* Оставляю только стили для .active и иконки, удаляю универсальные color: #03a9f3 !important для всех ссылок меню */
-
-        .navbar .navbar-nav li.active > a .menu-icon {
-            color: #03a9f3 !important;
-            opacity: 0.7 !important;
-        }
-        .menu-item-has-children.active > a,
-        .sub-menu li.active > a,
-        .menu-item-has-children.active > a .menu-icon,
-        .sub-menu li.active > i {
-            color: #03a9f3 !important;
-            background: none !important;
-            background-color: transparent !important;
-           
-        }
-        .menu-item-has-children.active .dropdown-toggle,
-        .menu-item-has-children.active .dropdown-toggle:hover,
-        .menu-item-has-children.active .dropdown-toggle:focus {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        /* Позволяем Bootstrap управлять отображением подменю */
-        .menu-item-has-children .sub-menu {
-            position: relative;
-            z-index: 1000;
-        }
-
-        /* Убеждаемся, что другие элементы меню не перекрываются */
-        .menu-item-has-children.dropdown + .menu-item-has-children.dropdown {
-            margin-top: 0;
-        }
-
-        /* Стили для корректного отображения подменю */
-        .sub-menu.children {
-            position: relative;
-            background: #fff;
-            border: 1px solid #e9ecef;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-top: 2px;
-        }
-
-        /* Управление высотой меню */
-        .sidebar-menu {
-            max-height: calc(100vh - 100px);
-            overflow-y: auto;
-        }
-
-        /* Убеждаемся, что элементы меню не перекрываются */
-        .menu-item-has-children {
-            position: relative;
-        }
-
-        @media (max-width: 768px) {
-            .navbar-nav .open > a,
-            .navbar-nav .show > a {
-                background: none !important;
-                background-color: transparent !important;
-                color: #03a9f3 !important;
-                box-shadow: none !important;
-                outline: none !important;
-            }
-        }
-
-        .navbar-nav .active > a,
-        .navbar-nav li.active > a,
-        .navbar-nav li.active > a:focus,
-        .navbar-nav li.active > a:active,
-        .navbar-nav li.active > a:hover,
-        .navbar-nav a:focus,
-        .navbar-nav a:active,
-        .navbar-nav a:visited {
-            background: none !important;
-            background-color: transparent !important;
-            box-shadow: none !important;
-            outline: none !important;
-            filter: none !important;
-            -webkit-tap-highlight-color: transparent !important;
-            -webkit-box-shadow: none !important;
-            -moz-box-shadow: none !important;
-            border: none !important;
-            border-color: transparent !important;
-            user-select: none !important;
-        }
-
-        .header-menu {
-            display: flex;
-            align-items: center;
-        
-        }
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .user-area {
-            display: flex;
-            align-items: center;
-            
-        }
-        .tab-button.active {
-            background: linear-gradient(135deg, #3b82f6, #60a5fa);
-            border-color: #3b82f6;
-            color: white;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
-            border-color: #3b82f6 !important;
-            color: #fff !important;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
-            border-radius: 12px !important;
-            padding: 0.75rem 1.5rem !important;
-        }
-        .btn-primary:active, .btn-primary:focus, .btn-primary:hover {
-            background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
-            border-color: #2563eb !important;
-            color: #fff !important;
-            border-radius: 12px !important;
-            padding: 0.75rem 1.5rem !important;
-        }
-    </style>
 </head>
 
 <body data-page="{{ request()->route()->getName() }}">
@@ -676,22 +506,6 @@
         </div><!-- /.navbar-collapse -->
     </nav>
 </aside>
-<style>
-.disabled-link {
-    pointer-events: none;
-    color: #aaa !important;
-    opacity: 0.7;
-}
-.menu-label {
-    margin-left: 6px;
-}
-.lock-icon {
-    margin-left: 8px;
-    color: #aaa;
-    font-size: 1em;
-    vertical-align: middle;
-}
-</style>
 <!-- /#left-panel -->
 <!-- Right Panel -->
 <div id="right-panel" class="right-panel">
@@ -832,28 +646,5 @@
 
 <!-- Scripts -->
 @stack('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-        var activeMenuItem = document.querySelector('#left-panel .navbar-nav li.active > a');
-        var containers = [
-            document.querySelector('#left-panel .main-menu'),
-            document.querySelector('#left-panel .navbar-nav'),
-            document.getElementById('left-panel')
-        ];
-        var scrollContainer = containers.find(function(el) {
-            return el && el.scrollHeight > el.clientHeight;
-        });
-        if (activeMenuItem && scrollContainer) {
-            var itemRect = activeMenuItem.getBoundingClientRect();
-            var containerRect = scrollContainer.getBoundingClientRect();
-            var offset = itemRect.top - containerRect.top;
-            var itemHeight = activeMenuItem.offsetHeight;
-            var containerHeight = scrollContainer.clientHeight;
-            scrollContainer.scrollTop += offset - (containerHeight / 2) + (itemHeight / 2);
-        }
-    }, 200);
-});
-</script>
 </body>
 </html>

@@ -8361,3 +8361,16 @@
         font-size: 12px;
     }
 }
+
+/* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ LAYOUT APP.BLADE.PHP ===== */
+
+@media (max-width: 768px) {
+    .navbar-nav .open > a,
+    .navbar-nav .show > a {
+        background: none !important;
+        background-color: transparent !important;
+        color: #03a9f3 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+}
