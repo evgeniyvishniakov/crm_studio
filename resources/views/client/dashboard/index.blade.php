@@ -173,7 +173,7 @@
             <canvas id="universalChart" height="150"></canvas>
             <div id="custom-month-labels"></div>
         </div>
-            <div class="dashboard-widgets-grid-2x2" style="display: grid; grid-template-columns: 34% 64%; gap: 1.6rem; margin: 32px 0 0 0; align-items: stretch;">
+            <div class="dashboard-widgets-grid-2x2">
                 <!-- 1. Календарь -->
                 <div class="widget-card calendar-widget">
                     <div class="widget-content">
@@ -240,7 +240,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" style="text-align: center; padding: 20px; color: #888;">
+                                            <td colspan="5" class="appointments-table-empty">
                                                 {{ __('messages.no_active_appointments') }}
                                             </td>
                                         </tr>
@@ -1094,23 +1094,6 @@
                                 const indicator = document.createElement('div');
                                 indicator.className = 'appointment-count-indicator';
                                 indicator.textContent = dayEvents.length;
-                                indicator.style.cssText = `
-                                    position: absolute;
-                                    bottom: 40%;
-                                    left: 50%;
-                                    transform: translate(-50%, 50%);
-                                    background: linear-gradient(135deg, #3b82f6, #60a5fa);
-                                    color: #ffffff !important;
-                                    border-radius: 4px;
-                                    padding: 2px 6px;
-                                    font-size: 11px;
-                                    font-weight: 600;
-                                    z-index: 10;
-                                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                                    min-width: 16px;
-                                    text-align: center;
-                                    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-                                `;
                                 dayEl.style.position = 'relative';
                                 dayEl.appendChild(indicator);
                 
@@ -1203,7 +1186,7 @@
             return evDate === dateStr;
         });
         if (events.length === 0) {
-            eventsBlock.innerHTML = '<div style="color:#888;">{{ __('messages.no_appointments_for_day') }}</div>';
+            eventsBlock.innerHTML = '<div class="calendar-modal-empty">{{ __('messages.no_appointments_for_day') }}</div>';
         } else {
             eventsBlock.innerHTML = events.map(ev => {
                 const time = ev.extendedProps.time ? ev.extendedProps.time.slice(0, 5) : (ev.start ? new Date(ev.start).toLocaleTimeString('{{ app()->getLocale() }}-{{ strtoupper(app()->getLocale()) }}', { hour: '2-digit', minute: '2-digit' }) : '');
@@ -1218,10 +1201,10 @@
                     case 'rescheduled': statusName = '{{ __('messages.rescheduled') }}'; statusClass = 'rescheduled'; break;
                     default: statusName = status; statusClass = 'default'; break;
                 }
-                return `<div style='margin-bottom:0.7em; display:flex; align-items:center; gap:0.5em;'>
+                return `<div class="calendar-modal-event-item">
                     <span class='fc-dot' style='background:${getStatusColor(status)}'></span>
-                    <span><b>${time}</b> ${ev.extendedProps.client || ''} <span style='color:#888;'>(${ev.extendedProps.service || ''})</span></span>
-                    <span class="status-badge status-${statusClass}" style="margin-left:auto; font-size:12px; padding:2px 8px; min-width:unset;">${statusName}</span>
+                    <span><b>${time}</b> ${ev.extendedProps.client || ''} <span class="calendar-modal-service-name">(${ev.extendedProps.service || ''})</span></span>
+                    <span class="status-badge status-${statusClass} calendar-modal-status-badge">${statusName}</span>
                 </div>`
             }).join('');
         }
@@ -1324,12 +1307,12 @@
 </script>
 
 <!-- Модальное окно для записей дня -->
-<div id="calendarDayModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:9999; align-items:center; justify-content:center;">
-  <div style="background:#fff; border-radius:12px; max-width:500px; width:96vw; padding:24px 18px 18px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.18); position:relative;">
-    <button id="closeDayModalBtn" style="position:absolute; right:12px; top:10px; background:none; border:none; font-size:1.5em; color:#aaa; cursor:pointer;">&times;</button>
-    <h3 id="modalDayTitle" style="margin-bottom:1em; font-size:1.1em;">{{ __('messages.appointments_for_day') }}</h3>
+<div id="calendarDayModal">
+      <div class="calendar-modal-content">
+          <button id="closeDayModalBtn">&times;</button>
+          <h3 id="modalDayTitle">{{ __('messages.appointments_for_day') }}</h3>
     <div id="modalDayEvents"></div>
-          <button id="modalAddAppointmentBtn" style="margin-top:1.2em; background:linear-gradient(135deg, #3b82f6, #60a5fa); color:#fff; border:2px solid #3b82f6; border-radius:8px; padding:0.6em 1.2em; font-weight:600; cursor:pointer; transition:all 0.3s ease; box-shadow:0 2px 8px rgba(59,130,246,0.15);">{{ __('messages.add_new') }}</button>
+                      <button id="modalAddAppointmentBtn">{{ __('messages.add_new') }}</button>
   </div>
 </div>
 

@@ -3443,7 +3443,6 @@ footer.site-footer {
 /* Применяем шрифт Inter ко всем элементам FullCalendar */
 .fc, .fc *:not(.fc-event-main):not(.fc-event-title):not(.fc-event-time) {
     font-family: 'Inter', Arial, sans-serif !important;
-    color: #6c757d !important;
 }
 
 /* ... существующие стили ... */

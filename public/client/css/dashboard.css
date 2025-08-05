@@ -299,6 +299,7 @@ body {
     grid-template-columns: 34% 64%;
     gap: 1.6rem;
     margin: 32px 0 0 0;
+    align-items: stretch;
 }
 .widget-card {
     background: #fff;
@@ -975,4 +976,112 @@ body {
     font-weight: 600;
     color: #22223b;
     height: 12px;
+}
+
+/* Стили для индикатора количества записей в календаре */
+.appointment-count-indicator {
+    position: absolute;
+    bottom: 40%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    color: #ffffff !important;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    min-width: 16px;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Стили для элементов в модальном окне календаря */
+.calendar-modal-event-item {
+    margin-bottom: 0.7em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.calendar-modal-service-name {
+    color: #888;
+}
+
+.calendar-modal-status-badge {
+    margin-left: auto;
+    font-size: 12px;
+    padding: 2px 8px;
+    min-width: unset;
+}
+
+/* Стили для пустого состояния таблицы записей */
+.appointments-table-empty {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+}
+
+/* Стили для пустого состояния модального окна календаря */
+.calendar-modal-empty {
+    color: #888;
+}
+
+/* Стили для модального окна календаря */
+#calendarDayModal {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.25);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-modal-content {
+    background: #fff;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 96vw;
+    padding: 24px 18px 18px 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    position: relative;
+}
+
+#closeDayModalBtn {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    color: #aaa;
+    cursor: pointer;
+}
+
+#modalDayTitle {
+    margin-bottom: 1em;
+    font-size: 1.1em;
+}
+
+#modalAddAppointmentBtn {
+    margin-top: 1.2em;
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    color: #fff;
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+    padding: 0.6em 1.2em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#modalAddAppointmentBtn:hover {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
