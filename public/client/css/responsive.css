@@ -3834,6 +3834,116 @@
         transform: translateX(26px);
     }
 
+    /* ===== СТИЛИ ДЛЯ TELEGRAM FORM ACTIONS (мобильная версия) ===== */
+    .telegram-form-actions {
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .telegram-form-actions .btn {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .telegram-form-actions .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .telegram-form-actions .btn-primary:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        transform: translateY(-1px);
+    }
+
+    .telegram-form-actions .btn-info {
+        background: linear-gradient(135deg, #17a2b8, #20c997);
+        color: white;
+        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+    }
+
+    .telegram-form-actions .btn-info:hover {
+        background: linear-gradient(135deg, #138496, #17a2b8);
+        transform: translateY(-1px);
+    }
+
+    .telegram-form-actions .btn-secondary {
+        background: linear-gradient(135deg, #6c757d, #868e96);
+        color: white;
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    }
+
+    .telegram-form-actions .btn-secondary:hover {
+        background: linear-gradient(135deg, #5a6268, #6c757d);
+        transform: translateY(-1px);
+    }
+
+    /* ===== СТИЛИ ДЛЯ EMAIL FORM ACTIONS (мобильная версия) ===== */
+    .email-form-actions {
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .email-form-actions .btn {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .email-form-actions .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: white;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .email-form-actions .btn-primary:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        transform: translateY(-1px);
+    }
+
+    .email-form-actions .btn-info {
+        background: linear-gradient(135deg, #17a2b8, #20c997);
+        color: white;
+        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+    }
+
+    .email-form-actions .btn-info:hover {
+        background: linear-gradient(135deg, #138496, #17a2b8);
+        transform: translateY(-1px);
+    }
+
+    .email-form-actions .btn-secondary {
+        background: linear-gradient(135deg, #6c757d, #868e96);
+        color: white;
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    }
+
+    .email-form-actions .btn-secondary:hover {
+        background: linear-gradient(135deg, #5a6268, #6c757d);
+        transform: translateY(-1px);
+    }
+
 
 }
 
