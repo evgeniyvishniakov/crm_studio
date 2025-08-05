@@ -161,7 +161,5 @@
 </div>
 
 
-@push('scripts')
-<script src="{{ asset('client/js/email-settings.js') }}"></script>
-@endpush
+
 @endsection 

@@ -139,6 +139,4 @@
 </div>
 @endsection
 
-@push('scripts')
-<script src="{{ asset('client/js/telegram-settings.js') }}"></script>
-@endpush 
+ 

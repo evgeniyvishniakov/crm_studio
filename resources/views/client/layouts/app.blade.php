@@ -53,12 +53,15 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/en.global.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/uk.global.min.js'></script>
     <script src="{{ asset('client/js/main.js') }}"></script>
-    <script src="/client/js/notifications.js"></script>
-    <script src="/client/js/currency-manager.js"></script>
-    <script src="/client/js/language-manager.js"></script>
-    <script src="/client/js/calendar-localization.js"></script>
+    <script src="{{ asset('client/js/notifications.js') }}"></script>
+    <script src="{{ asset('client/js/currency-manager.js') }}"></script>
+    <script src="{{ asset('client/js/language-manager.js') }}"></script>
+    <script src="{{ asset('client/js/calendar-localization.js') }}"></script>
     <script src="{{ asset('client/js/common.js') }}"></script>
     <script src="{{ asset('client/js/layouts.js') }}"></script>
+    <script src="{{ asset('client/js/telegram-settings.js') }}"></script>
+    <script src="{{ asset('client/js/email-settings.js') }}"></script>
+    <script src="{{ asset('client/js/widget-settings.js') }}"></script>
 
     <!-- Данные валюты для JavaScript -->
     @php

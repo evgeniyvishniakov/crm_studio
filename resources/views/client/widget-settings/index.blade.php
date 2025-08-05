@@ -512,7 +512,4 @@
         </div>
     </div>
 </div>
-@push('scripts')
-<script src="{{ asset('client/js/widget-settings.js') }}"></script>
-@endpush
 @endsection 
