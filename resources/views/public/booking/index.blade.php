@@ -779,23 +779,25 @@
                     use App\Helpers\TimeHelper;
                 @endphp
                     @foreach($services as $service)
-                        @php
-                            // Получаем минимальную цену и максимальную длительность для этой услуги
-                            $serviceUserServices = $userServices->where('service_id', $service->id);
-                            $minPrice = $serviceUserServices->min('price') ?: $service->price;
-                            $maxDuration = $serviceUserServices->min('duration') ?: $service->duration ?: 60;
-                        @endphp
-                        <div class="service-card" data-service-id="{{ $service->id }}" data-duration="{{ $maxDuration }}">
-                            <h5>{{ $service->name }}</h5>
-                            <p>
-                                @if($minPrice)
-                                    {{ __('messages.price_from') }} {{ number_format($minPrice, 0, ',', ' ') }} ₽
-                                @endif
-                                @if($maxDuration)
-                                    • {{ __('messages.duration') }}: {{ \App\Helpers\TimeHelper::formatDuration($maxDuration) }}
-                                @endif
-                            </p>
-                        </div>
+                        @if($service)
+                            @php
+                                // Получаем минимальную цену и максимальную длительность для этой услуги
+                                $serviceUserServices = $userServices->where('service_id', $service->id);
+                                $minPrice = $serviceUserServices->min('price') ?: $service->price;
+                                $maxDuration = $serviceUserServices->min('duration') ?: $service->duration ?: 60;
+                            @endphp
+                            <div class="service-card" data-service-id="{{ $service->id }}" data-duration="{{ $maxDuration }}">
+                                <h5>{{ $service->name }}</h5>
+                                <p>
+                                    @if($minPrice)
+                                        {{ __('messages.price_from') }} {{ number_format($minPrice, 0, ',', ' ') }} ₽
+                                    @endif
+                                    @if($maxDuration)
+                                        • {{ __('messages.duration') }}: {{ \App\Helpers\TimeHelper::formatDuration($maxDuration) }}
+                                    @endif
+                                </p>
+                            </div>
+                        @endif
                     @endforeach
                 </div>
                 <div class="mt-3">
@@ -810,24 +812,26 @@
             
                 <div id="masters-list">
                     @foreach($users as $user)
-                        @php
-                            $userServicesForUser = $userServices->where('user_id', $user->id);
-                        @endphp
-                        <div class="master-card" data-user-id="{{ $user->id }}" style="display: none;">
-                            <div class="master-info">
-                                <div class="master-avatar">
-                                    @if($user->avatar)
-                                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="master-avatar-img">
-                                    @else
-                                        <div class="master-avatar-placeholder">{{ substr($user->name, 0, 1) }}</div>
-                                    @endif
-                                </div>
-                                <div class="master-details">
-                                    <h5>{{ $user->name }}</h5>
-                                    <p>{{ $user->position ?? 'Мастер' }}</p>
+                        @if($user)
+                            @php
+                                $userServicesForUser = $userServices->where('user_id', $user->id);
+                            @endphp
+                            <div class="master-card" data-user-id="{{ $user->id }}" style="display: none;">
+                                <div class="master-info">
+                                    <div class="master-avatar">
+                                        @if($user->avatar)
+                                            <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->name }}" class="master-avatar-img">
+                                        @else
+                                            <div class="master-avatar-placeholder">{{ substr($user->name, 0, 1) }}</div>
+                                        @endif
+                                    </div>
+                                    <div class="master-details">
+                                        <h5>{{ $user->name }}</h5>
+                                        <p>{{ $user->position ?? 'Мастер' }}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
                     @endforeach
                 </div>
                 <div class="mt-3">

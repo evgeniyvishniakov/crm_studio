@@ -52,10 +52,10 @@ class PublicBookingController extends Controller
         ->get();
         
         // Получаем уникальные услуги из активных UserService
-        $services = $userServices->pluck('service')->unique('id')->values();
+        $services = $userServices->pluck('service')->filter()->unique('id')->values();
         
         // Получаем мастеров, у которых есть активные услуги
-        $users = $userServices->pluck('user')->unique('id')->values();
+        $users = $userServices->pluck('user')->filter()->unique('id')->values();
 
         return view('public.booking.index', compact(
             'project',

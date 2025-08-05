@@ -5280,8 +5280,8 @@
         letter-spacing: 0.5px;
     }
     
-    .status-badge.status-completed {
-        background: linear-gradient(135deg, #10b981, #34d399);
+    .status-badge    .status-completed {
+        background: linear-gradient(135deg, #4CAF50, #56bb93);
         color: white;
     }
     

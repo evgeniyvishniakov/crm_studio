@@ -19,6 +19,11 @@ class BookingManagementController extends Controller
     public function index()
     {
         $user = Auth::user();
+        
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        
         $project = Project::with(['bookingSettings'])->findOrFail($user->project_id);
         
         // Получаем или создаем настройки бронирования
@@ -75,6 +80,11 @@ class BookingManagementController extends Controller
     public function updateSettings(Request $request)
     {
         $user = Auth::user();
+        
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Пользователь не авторизован'], 401);
+        }
+        
         $project = Project::findOrFail($user->project_id);
         
         $validated = $request->validate([
@@ -128,6 +138,11 @@ class BookingManagementController extends Controller
     public function schedules()
     {
         $user = Auth::user();
+        
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        
         $users = User::where('project_id', $user->project_id)->get();
         
         $userSchedules = UserSchedule::whereIn('user_id', $users->pluck('id'))
@@ -145,6 +160,10 @@ class BookingManagementController extends Controller
     {
         $userId = $request->input('user_id');
         $user = Auth::user();
+        
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Пользователь не авторизован'], 401);
+        }
         
         // Проверяем, что пользователь принадлежит тому же проекту
         $targetUser = User::where('id', $userId)
@@ -180,6 +199,10 @@ class BookingManagementController extends Controller
     {
         $user = Auth::user();
         $userId = $request->input('user_id');
+        
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Пользователь не авторизован'], 401);
+        }
         
         // Проверяем, что пользователь принадлежит тому же проекту
         $targetUser = User::where('id', $userId)
