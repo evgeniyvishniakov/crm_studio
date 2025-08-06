@@ -447,16 +447,20 @@ class BackupController extends Controller
             $result = $zip->open($backupPath, ZipArchive::CREATE);
             
             if ($result === TRUE) {
-                // Добавляем файлы проекта (исключаем node_modules, vendor, .git)
+                // Добавляем файлы проекта (исключаем ненужные папки и файлы)
                 $this->addFolderToZip($zip, base_path(), [
                     'node_modules',
                     'vendor',
                     '.git',
+                    '.idea',
+                    '.cursor',
                     'storage/logs',
                     'storage/framework/cache',
                     'storage/framework/sessions',
                     'storage/framework/views',
-                    'storage/backups'
+                    'storage/backups',
+                    'storage/app/public/uploads/temp',
+                    'storage/app/public/uploads/cache'
                 ]);
                 
                 if ($zip->close()) {
