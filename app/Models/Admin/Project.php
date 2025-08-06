@@ -32,23 +32,11 @@ class Project extends Model
         'map_zoom',
         'about',
         'social_links',
-        'telegram_bot_token',
-        'telegram_chat_id',
-        'telegram_notifications_enabled',
-        'email_host',
-        'email_port',
-        'email_username',
-        'email_password',
-        'email_encryption',
-        'email_from_name',
-        'email_notifications_enabled',
     ];
 
     protected $casts = [
         'registered_at' => 'datetime',
         'social_links' => 'array',
-        'telegram_notifications_enabled' => 'boolean',
-        'email_notifications_enabled' => 'boolean',
     ];
 
     /**
@@ -159,6 +147,22 @@ class Project extends Model
     }
 
     /**
+     * Связь с настройками email
+     */
+    public function emailSettings()
+    {
+        return $this->hasOne(\App\Models\EmailSetting::class);
+    }
+
+    /**
+     * Связь с настройками telegram
+     */
+    public function telegramSettings()
+    {
+        return $this->hasOne(\App\Models\TelegramSetting::class);
+    }
+
+    /**
      * Получить или создать настройки виджета
      */
     public function getOrCreateWidgetSettings()
@@ -176,6 +180,38 @@ class Project extends Model
             'widget_animation_duration' => 300,
             'widget_border_radius' => 25,
             'widget_text_color' => '#ffffff',
+        ]);
+    }
+
+    /**
+     * Получить или создать настройки email
+     */
+    public function getOrCreateEmailSettings()
+    {
+        return $this->emailSettings()->firstOrCreate([
+            'project_id' => $this->id
+        ], [
+            'email_host' => null,
+            'email_port' => 587,
+            'email_username' => null,
+            'email_password' => null,
+            'email_encryption' => 'tls',
+            'email_from_name' => null,
+            'email_notifications_enabled' => false
+        ]);
+    }
+
+    /**
+     * Получить или создать настройки telegram
+     */
+    public function getOrCreateTelegramSettings()
+    {
+        return $this->telegramSettings()->firstOrCreate([
+            'project_id' => $this->id
+        ], [
+            'telegram_bot_token' => null,
+            'telegram_chat_id' => null,
+            'telegram_notifications_enabled' => false
         ]);
     }
 } 

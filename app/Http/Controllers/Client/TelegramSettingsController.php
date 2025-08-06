@@ -28,7 +28,10 @@ class TelegramSettingsController extends Controller
         $user = Auth::user();
         $project = Project::find($user->project_id);
 
-        return view('client.telegram-settings.index', compact('project'));
+        // Получаем или создаем настройки telegram
+        $telegramSettings = $project->getOrCreateTelegramSettings();
+
+        return view('client.telegram-settings.index', compact('project', 'telegramSettings'));
     }
 
     /**
@@ -44,6 +47,9 @@ class TelegramSettingsController extends Controller
             'telegram_chat_id' => 'nullable|string|max:255',
             'telegram_notifications_enabled' => 'boolean',
         ]);
+
+        // Получаем или создаем настройки telegram
+        $telegramSettings = $project->getOrCreateTelegramSettings();
 
         // Если включены уведомления, проверяем обязательность токена и chat_id
         if ($validated['telegram_notifications_enabled'] ?? false) {
@@ -67,7 +73,8 @@ class TelegramSettingsController extends Controller
             }
         }
 
-        $project->update($validated);
+        // Обновляем настройки telegram
+        $telegramSettings->update($validated);
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([

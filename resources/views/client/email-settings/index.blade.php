@@ -38,7 +38,7 @@
                         <div class="form-group email-form-group">
                             <label for="email_host">{{ __('messages.email_host') }}</label>
                             <input type="text" class="form-control" id="email_host" name="email_host" 
-                                   value="{{ old('email_host', $project->email_host) }}" 
+                                   value="{{ old('email_host', $emailSettings->email_host) }}" 
                                    placeholder="{{ __('messages.email_host_placeholder') }}"
                                    required>
                             <small class="form-text text-muted">{{ __('messages.email_host_hint') }}</small>
@@ -48,7 +48,7 @@
                         <div class="form-group email-form-group">
                             <label for="email_port">{{ __('messages.email_port') }}</label>
                             <input type="number" class="form-control" id="email_port" name="email_port" 
-                                   value="{{ old('email_port', $project->email_port) }}" 
+                                   value="{{ old('email_port', $emailSettings->email_port) }}" 
                                    placeholder="587"
                                    required>
                             <small class="form-text text-muted">{{ __('messages.email_port_hint') }}</small>
@@ -61,7 +61,7 @@
                         <div class="form-group email-form-group">
                             <label for="email_username">{{ __('messages.email_username') }}</label>
                             <input type="email" class="form-control" id="email_username" name="email_username" 
-                                   value="{{ old('email_username', $project->email_username) }}" 
+                                   value="{{ old('email_username', $emailSettings->email_username) }}" 
                                    placeholder="your-email@gmail.com"
                                    required>
                             <small class="form-text text-muted">{{ __('messages.email_username_hint') }}</small>
@@ -71,7 +71,7 @@
                         <div class="form-group email-form-group">
                             <label for="email_password">{{ __('messages.email_password') }}</label>
                             <input type="password" class="form-control" id="email_password" name="email_password" 
-                                   value="{{ old('email_password', $project->email_password) }}" 
+                                   value="{{ old('email_password', $emailSettings->email_password) }}" 
                                    placeholder="{{ __('messages.email_password_placeholder') }}"
                                    required>
                             <small class="form-text text-muted">{{ __('messages.email_password_hint') }}</small>
@@ -84,9 +84,9 @@
                         <div class="form-group email-form-group">
                             <label for="email_encryption">{{ __('messages.email_encryption') }}</label>
                             <select class="form-control" id="email_encryption" name="email_encryption" required>
-                                <option value="tls" {{ old('email_encryption', $project->email_encryption) == 'tls' ? 'selected' : '' }}>TLS</option>
-                                <option value="ssl" {{ old('email_encryption', $project->email_encryption) == 'ssl' ? 'selected' : '' }}>SSL</option>
-                                <option value="none" {{ old('email_encryption', $project->email_encryption) == 'none' ? 'selected' : '' }}>{{ __('messages.none') }}</option>
+                                <option value="tls" {{ old('email_encryption', $emailSettings->email_encryption) == 'tls' ? 'selected' : '' }}>TLS</option>
+                                <option value="ssl" {{ old('email_encryption', $emailSettings->email_encryption) == 'ssl' ? 'selected' : '' }}>SSL</option>
+                                <option value="none" {{ old('email_encryption', $emailSettings->email_encryption) == 'none' ? 'selected' : '' }}>{{ __('messages.none') }}</option>
                             </select>
                             <small class="form-text text-muted">{{ __('messages.email_encryption_hint') }}</small>
                         </div>
@@ -95,7 +95,7 @@
                         <div class="form-group email-form-group">
                             <label for="email_from_name">{{ __('messages.email_from_name') }}</label>
                             <input type="text" class="form-control" id="email_from_name" name="email_from_name" 
-                                   value="{{ old('email_from_name', $project->email_from_name) }}" 
+                                   value="{{ old('email_from_name', $emailSettings->email_from_name) }}" 
                                    placeholder="{{ __('messages.email_from_name_placeholder') }}"
                                    required>
                             <small class="form-text text-muted">{{ __('messages.email_from_name_hint') }}</small>
@@ -114,7 +114,7 @@
                                    class="custom-control-input" 
                                    id="email_notifications_enabled_desktop" 
                                    name="email_notifications_enabled" 
-                                   {{ old('email_notifications_enabled', $project->email_notifications_enabled) ? 'checked' : '' }}>
+                                   {{ old('email_notifications_enabled', $emailSettings->email_notifications_enabled) ? 'checked' : '' }}>
                             <label class="custom-control-label" for="email_notifications_enabled_desktop"></label>
                         </div>
                         <!-- Мобильный кастомный переключатель -->
@@ -122,7 +122,7 @@
                             <input type="checkbox" 
                                    id="email_notifications_enabled_mobile" 
                                    name="email_notifications_enabled" 
-                                   {{ old('email_notifications_enabled', $project->email_notifications_enabled) ? 'checked' : '' }}>
+                                   {{ old('email_notifications_enabled', $emailSettings->email_notifications_enabled) ? 'checked' : '' }}>
                             <span class="email-slider"></span>
                         </label>
                     </div>

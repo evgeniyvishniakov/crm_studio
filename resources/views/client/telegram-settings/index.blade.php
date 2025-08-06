@@ -41,7 +41,7 @@
                                    class="form-control @error('telegram_bot_token') is-invalid @enderror" 
                                    id="telegram_bot_token" 
                                    name="telegram_bot_token" 
-                                   value="{{ old('telegram_bot_token', $project->telegram_bot_token) }}"
+                                   value="{{ old('telegram_bot_token', $telegramSettings->telegram_bot_token) }}"
                                    placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz">
                             @error('telegram_bot_token')
                                 <div class="invalid-feedback">{{ $error }}</div>
@@ -59,7 +59,7 @@
                                    class="form-control @error('telegram_chat_id') is-invalid @enderror" 
                                    id="telegram_chat_id" 
                                    name="telegram_chat_id" 
-                                   value="{{ old('telegram_chat_id', $project->telegram_chat_id) }}"
+                                   value="{{ old('telegram_chat_id', $telegramSettings->telegram_chat_id) }}"
                                    placeholder="-1001234567890 или 123456789">
                             @error('telegram_chat_id')
                                 <div class="invalid-feedback">{{ $error }}</div>
@@ -85,7 +85,7 @@
                                            id="telegram_notifications_enabled_desktop" 
                                            name="telegram_notifications_enabled" 
                                            value="1"
-                                           {{ old('telegram_notifications_enabled', $project->telegram_notifications_enabled) ? 'checked' : '' }}>
+                                           {{ old('telegram_notifications_enabled', $telegramSettings->telegram_notifications_enabled) ? 'checked' : '' }}>
                                     <label class="custom-control-label" for="telegram_notifications_enabled_desktop"></label>
                                 </div>
                                 <!-- Мобильный кастомный переключатель -->
@@ -94,7 +94,7 @@
                                            id="telegram_notifications_enabled_mobile" 
                                            name="telegram_notifications_enabled" 
                                            value="1"
-                                           {{ old('telegram_notifications_enabled', $project->telegram_notifications_enabled) ? 'checked' : '' }}>
+                                           {{ old('telegram_notifications_enabled', $telegramSettings->telegram_notifications_enabled) ? 'checked' : '' }}>
                                     <span class="telegram-slider"></span>
                                 </label>
                             </div>

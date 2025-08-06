@@ -14,7 +14,10 @@ class EmailSettingsController extends Controller
         $user = auth()->user();
         $project = $user->project;
         
-        return view('client.email-settings.index', compact('project'));
+        // Получаем или создаем настройки email
+        $emailSettings = $project->getOrCreateEmailSettings();
+        
+        return view('client.email-settings.index', compact('project', 'emailSettings'));
     }
 
     public function update(Request $request)
@@ -44,7 +47,11 @@ class EmailSettingsController extends Controller
         $user = auth()->user();
         $project = $user->project;
 
-        $project->update([
+        // Получаем или создаем настройки email
+        $emailSettings = $project->getOrCreateEmailSettings();
+
+        // Обновляем настройки email
+        $emailSettings->update([
             'email_host' => $request->email_host,
             'email_port' => $request->email_port,
             'email_username' => $request->email_username,
