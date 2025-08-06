@@ -35,7 +35,7 @@ class WidgetController extends Controller
 
         // Находим проект по slug
         $project = Project::where('booking_enabled', true)
-            ->where('widget_enabled', true)
+            ->with('widgetSettings')
             ->get()
             ->first(function($project) use ($slug) {
                 return $project->slug === $slug;
@@ -44,7 +44,17 @@ class WidgetController extends Controller
         if (!$project) {
             return response()->json([
                 'success' => false,
-                'message' => 'Проект не найден или виджет отключен'
+                'message' => 'Проект не найден'
+            ], 404);
+        }
+
+        // Получаем настройки виджета
+        $widgetSettings = $project->getOrCreateWidgetSettings();
+
+        if (!$widgetSettings->widget_enabled) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Виджет отключен'
             ], 404);
         }
 
@@ -52,15 +62,15 @@ class WidgetController extends Controller
         return response()->json([
             'success' => true,
             'config' => [
-                'button_text' => $project->widget_button_text ?? 'Записаться',
-                'button_color' => $project->widget_button_color ?? '#007bff',
-                'text_color' => $project->widget_text_color ?? '#ffffff',
-                'position' => $project->widget_position ?? 'bottom-right',
-                'size' => $project->widget_size ?? 'medium',
-                'border_radius' => $project->widget_border_radius ?? 25,
-                'animation_enabled' => $project->widget_animation_enabled ?? true,
-                'animation_type' => $project->widget_animation_type ?? 'scale',
-                'animation_duration' => $project->widget_animation_duration ?? 300,
+                'button_text' => $widgetSettings->widget_button_text,
+                'button_color' => $widgetSettings->widget_button_color,
+                'text_color' => $widgetSettings->widget_text_color,
+                'position' => $widgetSettings->widget_position,
+                'size' => $widgetSettings->widget_size,
+                'border_radius' => $widgetSettings->widget_border_radius,
+                'animation_enabled' => $widgetSettings->widget_animation_enabled,
+                'animation_type' => $widgetSettings->widget_animation_type,
+                'animation_duration' => $widgetSettings->widget_animation_duration,
                 'project_name' => $project->project_name,
                 'project_slug' => $project->slug
             ]

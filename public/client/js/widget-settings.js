@@ -65,7 +65,10 @@ function initializeFormSubmission() {
         
         const formData = new FormData(this);
         
-        fetch('/client/widget-settings/update', {
+        // Добавляем скрытое поле _method для PUT запроса
+        formData.append('_method', 'PUT');
+        
+        fetch('/widget-settings', {
             method: 'POST',
             body: formData,
             headers: {
@@ -117,7 +120,7 @@ function initializeFormSubmission() {
 
 // Генерация кода виджета
 function generateWidgetCode() {
-    fetch('/client/widget-settings/generate-code', {
+    fetch('/widget-settings/generate-code', {
         method: 'GET',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

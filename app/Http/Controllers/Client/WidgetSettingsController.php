@@ -13,21 +13,24 @@ class WidgetSettingsController extends Controller
         $user = Auth::guard('client')->user();
         $project = $user->project;
         
-        // Получаем настройки виджета
-        $widgetSettings = [
-            'enabled' => $project->widget_enabled ?? false,
-            'button_text' => $project->widget_button_text ?? 'Записаться',
-            'button_color' => $project->widget_button_color ?? '#007bff',
-            'position' => $project->widget_position ?? 'bottom-right',
-            'size' => $project->widget_size ?? 'medium',
-            'animation_enabled' => $project->widget_animation_enabled ?? true,
-            'animation_type' => $project->widget_animation_type ?? 'scale',
-            'animation_duration' => $project->widget_animation_duration ?? 300,
-            'border_radius' => $project->widget_border_radius ?? 25,
-            'text_color' => $project->widget_text_color ?? '#ffffff',
+        // Получаем или создаем настройки виджета
+        $widgetSettings = $project->getOrCreateWidgetSettings();
+        
+        // Преобразуем в формат для view
+        $widgetSettingsArray = [
+            'enabled' => $widgetSettings->widget_enabled,
+            'button_text' => $widgetSettings->widget_button_text,
+            'button_color' => $widgetSettings->widget_button_color,
+            'position' => $widgetSettings->widget_position,
+            'size' => $widgetSettings->widget_size,
+            'animation_enabled' => $widgetSettings->widget_animation_enabled,
+            'animation_type' => $widgetSettings->widget_animation_type,
+            'animation_duration' => $widgetSettings->widget_animation_duration,
+            'border_radius' => $widgetSettings->widget_border_radius,
+            'text_color' => $widgetSettings->widget_text_color,
         ];
         
-        return view('client.widget-settings.index', compact('project', 'widgetSettings'));
+        return view('client.widget-settings.index', compact('project', 'widgetSettings', 'widgetSettingsArray'));
     }
     
     public function update(Request $request)
@@ -48,8 +51,11 @@ class WidgetSettingsController extends Controller
             'widget_text_color' => 'required|string|max:7',
         ]);
         
-        // Обновляем настройки проекта
-        $project->update($validated);
+        // Получаем или создаем настройки виджета
+        $widgetSettings = $project->getOrCreateWidgetSettings();
+        
+        // Обновляем настройки виджета
+        $widgetSettings->update($validated);
         
         return response()->json([
             'success' => true,
@@ -61,8 +67,9 @@ class WidgetSettingsController extends Controller
     {
         $user = Auth::guard('client')->user();
         $project = $user->project;
+        $widgetSettings = $project->getOrCreateWidgetSettings();
         
-        if (!$project->widget_enabled) {
+        if (!$widgetSettings->widget_enabled) {
             return response()->json([
                 'success' => false,
                 'message' => __('messages.widget_not_enabled')
@@ -70,28 +77,28 @@ class WidgetSettingsController extends Controller
         }
         
         // Генерируем код для вставки на сайт
-        $widgetCode = $this->generateWidgetCode($project);
+        $widgetCode = $this->generateWidgetCode($project, $widgetSettings);
         
         // Определяем, является ли позиция inline для отладки
-        $isInline = in_array($project->widget_position, ['inline-left', 'inline-center', 'inline-right']);
+        $isInline = in_array($widgetSettings->widget_position, ['inline-left', 'inline-center', 'inline-right']);
         
         return response()->json([
             'success' => true,
             'code' => $widgetCode,
             'debug' => [
-                'position' => $project->widget_position,
+                'position' => $widgetSettings->widget_position,
                 'is_inline' => $isInline
             ]
         ]);
     }
     
-    private function generateWidgetCode($project)
+    private function generateWidgetCode($project, $widgetSettings)
     {
         // Определяем, является ли позиция inline
-        $isInline = in_array($project->widget_position, ['inline-left', 'inline-center', 'inline-right']);
+        $isInline = in_array($widgetSettings->widget_position, ['inline-left', 'inline-center', 'inline-right']);
         
         // Отладочная информация
-        \Log::info('Widget position: ' . $project->widget_position);
+        \Log::info('Widget position: ' . $widgetSettings->widget_position);
         \Log::info('Is inline: ' . ($isInline ? 'true' : 'false'));
         
         if ($isInline) {
@@ -104,19 +111,19 @@ class WidgetSettingsController extends Controller
 
 <!-- Или используйте этот HTML код для кнопки: -->
 <button onclick=\"openBookingModal()\" style='
-    background-color: {$project->widget_button_color};
-    color: {$project->widget_text_color};
+    background-color: {$widgetSettings->widget_button_color};
+    color: {$widgetSettings->widget_text_color};
     border: none;
-    border-radius: {$project->widget_border_radius}px;
+    border-radius: {$widgetSettings->widget_border_radius}px;
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    {$this->getPositionStyles($project->widget_position)}
-    {$this->getSizeStyles($project->widget_size)}
-    {$this->getAnimationStyles($project)}
-    {$this->getAnimationJavaScript($project)}
+    {$this->getPositionStyles($widgetSettings->widget_position)}
+    {$this->getSizeStyles($widgetSettings->widget_size)}
+    {$this->getAnimationStyles($widgetSettings)}
+    {$this->getAnimationJavaScript($widgetSettings)}
 '>
-    {$project->widget_button_text}
+    {$widgetSettings->widget_button_text}
 </button>";
         } else {
             // Для фиксированных позиций создаем простой код
@@ -169,15 +176,15 @@ class WidgetSettingsController extends Controller
         }
     }
     
-    private function getAnimationStyles($project)
+    private function getAnimationStyles($widgetSettings)
     {
-        if (!$project->widget_animation_enabled || $project->widget_animation_type === 'none') {
+        if (!$widgetSettings->widget_animation_enabled || $widgetSettings->widget_animation_type === 'none') {
             return '';
         }
         
-        $duration = $project->widget_animation_duration . 'ms';
+        $duration = $widgetSettings->widget_animation_duration . 'ms';
         
-        switch ($project->widget_animation_type) {
+        switch ($widgetSettings->widget_animation_type) {
             case 'scale':
                 return "
                     transition: transform {$duration} ease;
@@ -199,15 +206,15 @@ class WidgetSettingsController extends Controller
         }
     }
     
-    private function getAnimationJavaScript($project)
+    private function getAnimationJavaScript($widgetSettings)
     {
-        if (!$project->widget_animation_enabled || $project->widget_animation_type === 'none') {
+        if (!$widgetSettings->widget_animation_enabled || $widgetSettings->widget_animation_type === 'none') {
             return '';
         }
         
-        $duration = $project->widget_animation_duration;
+        $duration = $widgetSettings->widget_animation_duration;
         
-        switch ($project->widget_animation_type) {
+        switch ($widgetSettings->widget_animation_type) {
             case 'scale':
                 return "
                     onmouseover='this.style.transform=\"scale(1.1)\"'

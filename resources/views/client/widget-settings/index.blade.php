@@ -68,7 +68,7 @@
                                        id="widget_enabled" 
                                        name="widget_enabled" 
                                        value="1"
-                                       {{ old('widget_enabled', $widgetSettings['enabled']) ? 'checked' : '' }}>
+                                       {{ old('widget_enabled', $widgetSettingsArray['enabled']) ? 'checked' : '' }}>
                                 <label class="custom-control-label" for="widget_enabled">
                                     <strong>{{ __('messages.enable_website_widget') }}</strong>
                                 </label>
@@ -91,7 +91,7 @@
                                        class="form-control @error('widget_button_text') is-invalid @enderror" 
                                        id="widget_button_text" 
                                        name="widget_button_text" 
-                                       value="{{ old('widget_button_text', $widgetSettings['button_text']) }}"
+                                       value="{{ old('widget_button_text', $widgetSettingsArray['button_text']) }}"
                                        placeholder="{{ __('messages.button_text_placeholder') }}">
                                 @error('widget_button_text')
                                     <div class="invalid-feedback">{{ $error }}</div>
@@ -105,13 +105,13 @@
                                 <select class="form-control @error('widget_size') is-invalid @enderror" 
                                         id="widget_size" 
                                         name="widget_size">
-                                    <option value="small" {{ old('widget_size', $widgetSettings['size']) == 'small' ? 'selected' : '' }}>
+                                    <option value="small" {{ old('widget_size', $widgetSettingsArray['size']) == 'small' ? 'selected' : '' }}>
                                         {{ __('messages.small') }}
                                     </option>
-                                    <option value="medium" {{ old('widget_size', $widgetSettings['size']) == 'medium' ? 'selected' : '' }}>
+                                    <option value="medium" {{ old('widget_size', $widgetSettingsArray['size']) == 'medium' ? 'selected' : '' }}>
                                         {{ __('messages.medium') }}
                                     </option>
-                                    <option value="large" {{ old('widget_size', $widgetSettings['size']) == 'large' ? 'selected' : '' }}>
+                                    <option value="large" {{ old('widget_size', $widgetSettingsArray['size']) == 'large' ? 'selected' : '' }}>
                                         {{ __('messages.large') }}
                                     </option>
                                 </select>
@@ -136,7 +136,7 @@
                                        class="form-control @error('widget_button_color') is-invalid @enderror" 
                                        id="widget_button_color" 
                                        name="widget_button_color" 
-                                       value="{{ old('widget_button_color', $widgetSettings['button_color']) }}">
+                                       value="{{ old('widget_button_color', $widgetSettingsArray['button_color']) }}">
                                 @error('widget_button_color')
                                     <div class="invalid-feedback">{{ $error }}</div>
                                 @enderror
@@ -150,7 +150,7 @@
                                        class="form-control @error('widget_text_color') is-invalid @enderror" 
                                        id="widget_text_color" 
                                        name="widget_text_color" 
-                                       value="{{ old('widget_text_color', $widgetSettings['text_color']) }}">
+                                       value="{{ old('widget_text_color', $widgetSettingsArray['text_color']) }}">
                                 @error('widget_text_color')
                                     <div class="invalid-feedback">{{ $error }}</div>
                                 @enderror
@@ -171,28 +171,28 @@
                                 <select class="form-control @error('widget_position') is-invalid @enderror" 
                                         id="widget_position" 
                                         name="widget_position">
-                                    <option value="bottom-right" {{ old('widget_position', $widgetSettings['position']) == 'bottom-right' ? 'selected' : '' }}>
+                                    <option value="bottom-right" {{ old('widget_position', $widgetSettingsArray['position']) == 'bottom-right' ? 'selected' : '' }}>
                                         {{ __('messages.bottom_right') }}
                                     </option>
-                                    <option value="bottom-left" {{ old('widget_position', $widgetSettings['position']) == 'bottom-left' ? 'selected' : '' }}>
+                                    <option value="bottom-left" {{ old('widget_position', $widgetSettingsArray['position']) == 'bottom-left' ? 'selected' : '' }}>
                                         {{ __('messages.bottom_left') }}
                                     </option>
-                                    <option value="top-right" {{ old('widget_position', $widgetSettings['position']) == 'top-right' ? 'selected' : '' }}>
+                                    <option value="top-right" {{ old('widget_position', $widgetSettingsArray['position']) == 'top-right' ? 'selected' : '' }}>
                                         {{ __('messages.top_right') }}
                                     </option>
-                                    <option value="top-left" {{ old('widget_position', $widgetSettings['position']) == 'top-left' ? 'selected' : '' }}>
+                                    <option value="top-left" {{ old('widget_position', $widgetSettingsArray['position']) == 'top-left' ? 'selected' : '' }}>
                                         {{ __('messages.top_left') }}
                                     </option>
-                                    <option value="center" {{ old('widget_position', $widgetSettings['position']) == 'center' ? 'selected' : '' }}>
+                                    <option value="center" {{ old('widget_position', $widgetSettingsArray['position']) == 'center' ? 'selected' : '' }}>
                                         {{ __('messages.center') }}
                                     </option>
-                                    <option value="inline-left" {{ old('widget_position', $widgetSettings['position']) == 'inline-left' ? 'selected' : '' }}>
+                                    <option value="inline-left" {{ old('widget_position', $widgetSettingsArray['position']) == 'inline-left' ? 'selected' : '' }}>
                                         {{ __('messages.inline_left') }}
                                     </option>
-                                    <option value="inline-center" {{ old('widget_position', $widgetSettings['position']) == 'inline-center' ? 'selected' : '' }}>
+                                    <option value="inline-center" {{ old('widget_position', $widgetSettingsArray['position']) == 'inline-center' ? 'selected' : '' }}>
                                         {{ __('messages.inline_center') }}
                                     </option>
-                                    <option value="inline-right" {{ old('widget_position', $widgetSettings['position']) == 'inline-right' ? 'selected' : '' }}>
+                                    <option value="inline-right" {{ old('widget_position', $widgetSettingsArray['position']) == 'inline-right' ? 'selected' : '' }}>
                                         {{ __('messages.inline_right') }}
                                     </option>
                                 </select>
@@ -209,7 +209,7 @@
                                        class="form-control @error('widget_border_radius') is-invalid @enderror" 
                                        id="widget_border_radius" 
                                        name="widget_border_radius" 
-                                       value="{{ old('widget_border_radius', $widgetSettings['border_radius']) }}"
+                                       value="{{ old('widget_border_radius', $widgetSettingsArray['border_radius']) }}"
                                        min="0" 
                                        max="50" 
                                        step="1">
@@ -234,7 +234,7 @@
                                        id="widget_animation_enabled" 
                                        name="widget_animation_enabled" 
                                        value="1"
-                                       {{ old('widget_animation_enabled', $widgetSettings['animation_enabled']) ? 'checked' : '' }}>
+                                       {{ old('widget_animation_enabled', $widgetSettingsArray['animation_enabled']) ? 'checked' : '' }}>
                                 <label class="custom-control-label" for="widget_animation_enabled">
                                     <strong>{{ __('messages.enable_animation') }}</strong>
                                 </label>
@@ -250,19 +250,19 @@
                                 <select class="form-control @error('widget_animation_type') is-invalid @enderror" 
                                         id="widget_animation_type" 
                                         name="widget_animation_type">
-                                    <option value="scale" {{ old('widget_animation_type', $widgetSettings['animation_type']) == 'scale' ? 'selected' : '' }}>
+                                    <option value="scale" {{ old('widget_animation_type', $widgetSettingsArray['animation_type']) == 'scale' ? 'selected' : '' }}>
                                         {{ __('messages.scale') }}
                                     </option>
-                                    <option value="bounce" {{ old('widget_animation_type', $widgetSettings['animation_type']) == 'bounce' ? 'selected' : '' }}>
+                                    <option value="bounce" {{ old('widget_animation_type', $widgetSettingsArray['animation_type']) == 'bounce' ? 'selected' : '' }}>
                                         {{ __('messages.bounce') }}
                                     </option>
-                                    <option value="pulse" {{ old('widget_animation_type', $widgetSettings['animation_type']) == 'pulse' ? 'selected' : '' }}>
+                                    <option value="pulse" {{ old('widget_animation_type', $widgetSettingsArray['animation_type']) == 'pulse' ? 'selected' : '' }}>
                                         {{ __('messages.pulse') }}
                                     </option>
-                                    <option value="shake" {{ old('widget_animation_type', $widgetSettings['animation_type']) == 'shake' ? 'selected' : '' }}>
+                                    <option value="shake" {{ old('widget_animation_type', $widgetSettingsArray['animation_type']) == 'shake' ? 'selected' : '' }}>
                                         {{ __('messages.shake') }}
                                     </option>
-                                    <option value="none" {{ old('widget_animation_type', $widgetSettings['animation_type']) == 'none' ? 'selected' : '' }}>
+                                    <option value="none" {{ old('widget_animation_type', $widgetSettingsArray['animation_type']) == 'none' ? 'selected' : '' }}>
                                         {{ __('messages.none') }}
                                     </option>
                                 </select>
@@ -279,7 +279,7 @@
                                        class="form-control @error('widget_animation_duration') is-invalid @enderror" 
                                        id="widget_animation_duration" 
                                        name="widget_animation_duration" 
-                                       value="{{ old('widget_animation_duration', $widgetSettings['animation_duration']) }}"
+                                       value="{{ old('widget_animation_duration', $widgetSettingsArray['animation_duration']) }}"
                                        min="100" 
                                        max="2000" 
                                        step="50">

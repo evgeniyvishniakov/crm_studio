@@ -44,16 +44,6 @@ class Project extends Model
         'email_encryption',
         'email_from_name',
         'email_notifications_enabled',
-        'widget_enabled',
-        'widget_button_text',
-        'widget_button_color',
-        'widget_position',
-        'widget_size',
-        'widget_animation_enabled',
-        'widget_animation_type',
-        'widget_animation_duration',
-        'widget_border_radius',
-        'widget_text_color',
     ];
 
     protected $casts = [
@@ -62,8 +52,6 @@ class Project extends Model
         'booking_enabled' => 'boolean',
         'telegram_notifications_enabled' => 'boolean',
         'email_notifications_enabled' => 'boolean',
-        'widget_enabled' => 'boolean',
-        'widget_animation_enabled' => 'boolean',
     ];
 
     /**
@@ -158,6 +146,35 @@ class Project extends Model
             'advance_booking_days' => 30,
             'allow_same_day_booking' => true,
             'require_confirmation' => false
+        ]);
+    }
+
+    /**
+     * Связь с настройками виджета
+     */
+    public function widgetSettings()
+    {
+        return $this->hasOne(\App\Models\WidgetSetting::class);
+    }
+
+    /**
+     * Получить или создать настройки виджета
+     */
+    public function getOrCreateWidgetSettings()
+    {
+        return $this->widgetSettings()->firstOrCreate([
+            'project_id' => $this->id
+        ], [
+            'widget_enabled' => false,
+            'widget_button_text' => 'Записаться',
+            'widget_button_color' => '#007bff',
+            'widget_position' => 'bottom-right',
+            'widget_size' => 'medium',
+            'widget_animation_enabled' => true,
+            'widget_animation_type' => 'scale',
+            'widget_animation_duration' => 300,
+            'widget_border_radius' => 25,
+            'widget_text_color' => '#ffffff',
         ]);
     }
 } 
