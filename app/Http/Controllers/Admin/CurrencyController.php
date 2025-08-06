@@ -110,10 +110,6 @@ class CurrencyController extends Controller
 
         // Проверяем, нужно ли установить валюту по умолчанию
         if ($request->boolean('is_default')) {
-            \Log::info('Устанавливаем валюту по умолчанию', [
-                'currency_id' => $currency->id,
-                'currency_code' => $currency->code
-            ]);
             $currency->setAsDefault();
         }
         

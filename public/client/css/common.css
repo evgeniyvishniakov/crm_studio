@@ -11,7 +11,6 @@
 .settings-container{
     max-width: 1200px;
     margin: 0 auto;
-
     font-family: 'Inter', Arial, sans-serif !important;
 }
 
@@ -6434,8 +6433,6 @@ input[type="date"]:focus {
 /* Используются общие стили для таблиц и кнопок */
 .expenses-container {
     padding: 24px;
-    background: #f8fafc;
-    min-height: 100vh;
 }
 
 .expenses-header {
@@ -6454,11 +6451,28 @@ input[type="date"]:focus {
     margin: 0;
 }
 
+.expenses-header .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
+    width: 100%;
+}
+
+.expenses-header .header-top h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+}
+
 .expenses-header .header-actions {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 15px;
 }
+
 
 
 

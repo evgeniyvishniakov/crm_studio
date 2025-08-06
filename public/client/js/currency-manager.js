@@ -233,24 +233,48 @@ class CurrencyManager {
         if (window.Chart && window.Chart.instances) {
             Object.values(window.Chart.instances).forEach(chart => {
                 if (chart.config && chart.config.options && chart.config.options.plugins) {
-                    // Обновляем tooltips
+                    // Обновляем tooltips (исключаем графики, которые не должны показывать валюту)
                     if (chart.config.options.plugins.tooltip) {
-                        chart.config.options.plugins.tooltip.callbacks = {
-                            ...chart.config.options.plugins.tooltip.callbacks,
-                            label: (context) => {
-                                const label = context.dataset.label || '';
-                                const value = context.parsed.y || context.parsed;
-                                return `${label}: ${this.formatAmount(value)}`;
-                            }
-                        };
+                        // Проверяем, является ли это графиком клиентской базы
+                        const isClientDynamicsChart = chart.canvas && chart.canvas.id === 'clientDynamicsChart';
+                        const isTopClientsByVisitsChart = chart.canvas && chart.canvas.id === 'topClientsByVisitsChart';
+                        const isLoadChart = chart.canvas && chart.canvas.id === 'loadChart';
+                        const isServicesChart = chart.canvas && chart.canvas.id === 'servicesChart';
+                        const isTopEmployeesProceduresBar = chart.canvas && chart.canvas.id === 'topEmployeesProceduresBar';
+                        const isEmployeesProceduresDynamicsChart = chart.canvas && chart.canvas.id === 'employeesProceduresDynamicsChart';
+                        const isTopServicesByRevenueChart = chart.canvas && chart.canvas.id === 'topServicesByRevenueChart';
+                        
+                        // Не применяем форматирование валюты к tooltip графиков количества
+                        if (!isClientDynamicsChart && !isTopClientsByVisitsChart && !isLoadChart && !isServicesChart && !isTopEmployeesProceduresBar && !isEmployeesProceduresDynamicsChart && !isTopServicesByRevenueChart) {
+                            chart.config.options.plugins.tooltip.callbacks = {
+                                ...chart.config.options.plugins.tooltip.callbacks,
+                                label: (context) => {
+                                    const label = context.dataset.label || '';
+                                    const value = context.parsed.y || context.parsed;
+                                    return `${label}: ${this.formatAmount(value)}`;
+                                }
+                            };
+                        }
                     }
                     
-                    // Обновляем оси Y
+                    // Обновляем оси Y (исключаем графики, которые не должны показывать валюту)
                     if (chart.config.options.scales && chart.config.options.scales.y) {
-                        chart.config.options.scales.y.ticks = {
-                            ...chart.config.options.scales.y.ticks,
-                            callback: (value) => this.formatAmount(value)
-                        };
+                        // Проверяем, является ли это графиком клиентской базы
+                        const isClientDynamicsChart = chart.canvas && chart.canvas.id === 'clientDynamicsChart';
+                        const isTopClientsByVisitsChart = chart.canvas && chart.canvas.id === 'topClientsByVisitsChart';
+                        const isLoadChart = chart.canvas && chart.canvas.id === 'loadChart';
+                        const isServicesChart = chart.canvas && chart.canvas.id === 'servicesChart';
+                        const isTopEmployeesProceduresBar = chart.canvas && chart.canvas.id === 'topEmployeesProceduresBar';
+                        const isEmployeesProceduresDynamicsChart = chart.canvas && chart.canvas.id === 'employeesProceduresDynamicsChart';
+                        const isTopServicesByRevenueChart = chart.canvas && chart.canvas.id === 'topServicesByRevenueChart';
+                        
+                        // Не применяем форматирование валюты к графикам количества
+                        if (!isClientDynamicsChart && !isTopClientsByVisitsChart && !isLoadChart && !isServicesChart && !isTopEmployeesProceduresBar && !isEmployeesProceduresDynamicsChart && !isTopServicesByRevenueChart) {
+                            chart.config.options.scales.y.ticks = {
+                                ...chart.config.options.scales.y.ticks,
+                                callback: (value) => this.formatAmount(value)
+                            };
+                        }
                     }
                     
                     chart.update();

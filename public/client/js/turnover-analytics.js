@@ -19,20 +19,25 @@ function getPeriodParams(period) {
     let start;
     switch (period) {
         case 'За неделю':
+        case 'За тиждень':
             start = new Date(end);
             start.setDate(end.getDate() - ((end.getDay() + 6) % 7)); // последний понедельник
             break;
         case 'За 2 недели':
+        case 'За 2 тижні':
             start = new Date(end);
             start.setDate(end.getDate() - ((end.getDay() + 6) % 7) - 7); // предпоследний понедельник
             break;
         case 'За месяц':
+        case 'За місяць':
             start = new Date(end.getFullYear(), end.getMonth(), 1); // строго 1-е число месяца
             break;
         case 'За полгода':
+        case 'За півроку':
             start = new Date(end.getFullYear(), end.getMonth() - 5, 1);
             break;
         case 'За год':
+        case 'За рік':
             start = new Date(end.getFullYear(), end.getMonth() - 11, 1);
             break;
         default:
@@ -368,7 +373,12 @@ function updateTopsAnalytics(params = '') {
     let url = '/reports/turnover-tops';
     if (params) url += '?' + params;
     fetch(url)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             const barColor = 'rgba(59, 130, 246, 0.7)';
             const barColor2 = 'rgba(16, 185, 129, 0.7)';
@@ -376,6 +386,27 @@ function updateTopsAnalytics(params = '') {
             if (charts.topSalesBar) charts.topSalesBar.destroy();
             const topSalesBar = document.getElementById('topSalesBar');
             if (topSalesBar) {
+                // Проверяем, есть ли данные
+                if (data.topSales.data.length === 0) {
+                    // Показываем сообщение "Нет данных"
+                    topSalesBar.style.display = 'none';
+                    const noDataDiv = topSalesBar.parentNode.querySelector('.no-data-message') || 
+                                    document.createElement('div');
+                    noDataDiv.className = 'no-data-message';
+                    noDataDiv.innerHTML = '<p style="text-align: center; color: #6b7280; font-size: 16px; margin: 40px 0;">Нет данных о продажах за выбранный период</p>';
+                    if (!topSalesBar.parentNode.querySelector('.no-data-message')) {
+                        topSalesBar.parentNode.appendChild(noDataDiv);
+                    }
+                    return;
+                }
+                
+                // Скрываем сообщение "Нет данных" если оно есть
+                const noDataDiv = topSalesBar.parentNode.querySelector('.no-data-message');
+                if (noDataDiv) {
+                    noDataDiv.remove();
+                }
+                topSalesBar.style.display = 'block';
+                
                 const maxValue = data.topSales.data.length > 0 ? Math.max(...data.topSales.data) : 0;
                 const ctx = topSalesBar.getContext('2d');
                 const area = {left: 0, right: topSalesBar.width};
@@ -428,6 +459,27 @@ function updateTopsAnalytics(params = '') {
             if (charts.topPurchasesBar) charts.topPurchasesBar.destroy();
             const topPurchasesBar = document.getElementById('topPurchasesBar');
             if (topPurchasesBar) {
+                // Проверяем, есть ли данные
+                if (data.topPurchases.data.length === 0) {
+                    // Показываем сообщение "Нет данных"
+                    topPurchasesBar.style.display = 'none';
+                    const noDataDiv = topPurchasesBar.parentNode.querySelector('.no-data-message') || 
+                                    document.createElement('div');
+                    noDataDiv.className = 'no-data-message';
+                    noDataDiv.innerHTML = '<p style="text-align: center; color: #6b7280; font-size: 16px; margin: 40px 0;">Нет данных о закупках за выбранный период</p>';
+                    if (!topPurchasesBar.parentNode.querySelector('.no-data-message')) {
+                        topPurchasesBar.parentNode.appendChild(noDataDiv);
+                    }
+                    return;
+                }
+                
+                // Скрываем сообщение "Нет данных" если оно есть
+                const noDataDiv = topPurchasesBar.parentNode.querySelector('.no-data-message');
+                if (noDataDiv) {
+                    noDataDiv.remove();
+                }
+                topPurchasesBar.style.display = 'block';
+                
                 const maxValue = data.topPurchases.data.length > 0 ? Math.max(...data.topPurchases.data) : 0;
                 const ctx = topPurchasesBar.getContext('2d');
                 const area = {left: 0, right: topPurchasesBar.width};
@@ -480,6 +532,27 @@ function updateTopsAnalytics(params = '') {
             if (charts.topClientsBySalesBar) charts.topClientsBySalesBar.destroy();
             const topClientsBySalesBar = document.getElementById('topClientsBySalesBar');
             if (topClientsBySalesBar) {
+                // Проверяем, есть ли данные
+                if (data.topClients.data.length === 0) {
+                    // Показываем сообщение "Нет данных"
+                    topClientsBySalesBar.style.display = 'none';
+                    const noDataDiv = topClientsBySalesBar.parentNode.querySelector('.no-data-message') || 
+                                    document.createElement('div');
+                    noDataDiv.className = 'no-data-message';
+                    noDataDiv.innerHTML = '<p style="text-align: center; color: #6b7280; font-size: 16px; margin: 40px 0;">Нет данных о клиентах за выбранный период</p>';
+                    if (!topClientsBySalesBar.parentNode.querySelector('.no-data-message')) {
+                        topClientsBySalesBar.parentNode.appendChild(noDataDiv);
+                    }
+                    return;
+                }
+                
+                // Скрываем сообщение "Нет данных" если оно есть
+                const noDataDiv = topClientsBySalesBar.parentNode.querySelector('.no-data-message');
+                if (noDataDiv) {
+                    noDataDiv.remove();
+                }
+                topClientsBySalesBar.style.display = 'block';
+                
                 const maxValue = data.topClients.data.length > 0 ? Math.max(...data.topClients.data) : 0;
                 const ctx = topClientsBySalesBar.getContext('2d');
                 const area = {left: 0, right: topClientsBySalesBar.width};
@@ -529,6 +602,9 @@ function updateTopsAnalytics(params = '') {
                     }
                 });
             }
+        })
+        .catch(error => {
+            console.error('Ошибка при загрузке данных для топов:', error);
         });
 } 
 

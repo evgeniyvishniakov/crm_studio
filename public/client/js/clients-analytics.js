@@ -26,7 +26,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { precision: 0 },
+                            ticks: { 
+                                precision: 0,
+                                callback: function(value) {
+                                    return value.toString();
+                                }
+                            },
                             grid: { display: true, color: '#e5e7eb' }
                         },
                         x: {
@@ -55,13 +60,39 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             clientTypesChart: { type: 'pie', options: {} },
             newVsReturningChart: { type: 'doughnut', options: {} },
-            topClientsByVisitsChart: { type: 'bar', options: { scales: { y: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' }, ticks: { precision: 0 } }, x: { grid: { display: false } } } } },
+            topClientsByVisitsChart: { 
+                type: 'bar', 
+                options: { 
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { display: true, color: '#e5e7eb' }, 
+                            ticks: { 
+                                precision: 0,
+                                callback: function(value) {
+                                    return value.toString();
+                                }
+                            } 
+                        }, 
+                        x: { grid: { display: false } } 
+                    } 
+                } 
+            },
             // Аналитика по записям
             loadChart: { 
                 type: 'bar', 
                 options: { 
                     scales: { 
-                        y: { beginAtZero: true, ticks: { precision: 0 }, grid: { display: true, color: '#e5e7eb' } },
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { 
+                                precision: 0,
+                                callback: function(value) {
+                                    return value.toString();
+                                }
+                            }, 
+                            grid: { display: true, color: '#e5e7eb' } 
+                        },
                         x: { ticks: { autoSkip: true, maxRotation: 0 }, grid: { display: false } }
                     },
                     plugins: {
@@ -89,7 +120,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 options: { 
                     indexAxis: 'y', 
                     scales: { 
-                        x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, 
+                        x: { 
+                            beginAtZero: true, 
+                            grid: { display: true, color: '#e5e7eb' },
+                            ticks: {
+                                precision: 0,
+                                callback: function(value) {
+                                    return value.toString();
+                                }
+                            }
+                        }, 
                         y: { grid: { display: false } } 
                     }, 
                     plugins: { 
@@ -100,6 +140,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                     // Убираем скобки и число
                                     const label = tooltipItems[0].label;
                                     return label.replace(/\s*\(\d+\)$/, '');
+                                },
+                                label: function(context) {
+                                    return `Количество записей: ${context.parsed.x}`;
                                 }
                             }
                         }
@@ -109,10 +152,107 @@ document.addEventListener('DOMContentLoaded', function() {
             // Финансовая аналитика
             topClientsByRevenueChart: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } },
             avgCheckChart: { type: 'line', options: { scales: { y: { grid: { display: false } }, x: { grid: { display: false } } } } },
-            topServicesByRevenueChart: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } },
+            topServicesByRevenueChart: { 
+                type: 'bar', 
+                options: { 
+                    indexAxis: 'y', 
+                    scales: { 
+                        x: { 
+                            beginAtZero: true, 
+                            grid: { display: true, color: '#e5e7eb' },
+                            ticks: {
+                                callback: function(value) {
+                                    // Для оси X (выручка) используем форматирование валюты
+                                    if (window.CurrencyManager) {
+                                        return window.CurrencyManager.formatAmount(value);
+                                    }
+                                    return value.toString();
+                                }
+                            }
+                        }, 
+                        y: { 
+                            grid: { display: false },
+                            ticks: {
+                                callback: function(value) {
+                                    // Для оси Y (названия услуг) не используем форматирование валюты
+                                    return value.toString();
+                                }
+                            }
+                        } 
+                    }, 
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    // В tooltip показываем выручку с форматированием валюты
+                                    if (window.CurrencyManager) {
+                                        return `Выручка: ${window.CurrencyManager.formatAmount(context.parsed.x)}`;
+                                    }
+                                    return `Выручка: ${context.parsed.x}`;
+                                }
+                            }
+                        }
+                    } 
+                } 
+            },
             // Аналитика по сотрудникам
-            topEmployeesProceduresBar: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } },
-            employeesProceduresDynamicsChart: { type: 'line', options: { scales: { y: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, x: { grid: { display: false } } } } },
+            topEmployeesProceduresBar: { 
+                type: 'bar', 
+                options: { 
+                    indexAxis: 'y', 
+                    scales: { 
+                        x: { 
+                            beginAtZero: true, 
+                            grid: { display: true, color: '#e5e7eb' },
+                            ticks: {
+                                precision: 0,
+                                callback: function(value) {
+                                    return value.toString();
+                                }
+                            }
+                        }, 
+                        y: { grid: { display: false } } 
+                    }, 
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Количество процедур: ${context.parsed.x}`;
+                                }
+                            }
+                        }
+                    } 
+                } 
+            },
+            employeesProceduresDynamicsChart: { 
+                type: 'line', 
+                options: { 
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { display: true, color: '#e5e7eb' },
+                            ticks: {
+                                precision: 0,
+                                callback: function(value) {
+                                    return value.toString();
+                                }
+                            }
+                        }, 
+                        x: { grid: { display: false } } 
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Количество процедур: ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    }
+                } 
+            },
             topEmployeesRevenueBar: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } },
             employeesAverageCheckBar: { type: 'bar', options: { scales: { y: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } } }
         };
