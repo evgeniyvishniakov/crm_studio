@@ -967,16 +967,16 @@
         function renderCustomMonthLabels(labels) {
             const container = document.getElementById('custom-month-labels');
             if (!container) {
-                console.log('Container not found');
+    
                 return;
             }
             container.innerHTML = '';
             if (currentPeriod === '30' || !window.universalChart) {
                 container.style.display = 'none';
-                console.log('Hiding labels for period:', currentPeriod);
+    
                 return;
             }
-            console.log('Rendering labels for period:', currentPeriod, 'labels:', labels, 'chart type:', universalChart.config.type);
+
             
             // Устанавливаем стили контейнера
             container.style.display = 'flex';
@@ -994,7 +994,7 @@
             // Получаем координаты точек
             const meta = universalChart.getDatasetMeta(0);
             if (!meta || !meta.data) {
-                console.log('No meta data found');
+    
                 return;
             }
             
@@ -1006,7 +1006,7 @@
                 return point.x;
             });
             
-            console.log('Points:', points);
+
             
             // Создаем метки каждые 3 недели
             labels.forEach((label, i) => {
@@ -1044,7 +1044,7 @@
                 span.style.fontWeight = '600';
                 span.style.whiteSpace = 'nowrap';
                 container.appendChild(span);
-                console.log('Added label:', text, 'at percentage:', percentage + '%');
+
             });
         }
         // ... существующий код ...

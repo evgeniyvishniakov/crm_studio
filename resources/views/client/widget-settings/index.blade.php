@@ -33,7 +33,7 @@
     <div class="desktop-content d-none d-md-block">
         <div class="settings-header">
             <h1>{{ __('messages.website_widget') }}</h1>
-            <div id="notification"></div>
+        
         </div>
 
         <div class="settings-content">

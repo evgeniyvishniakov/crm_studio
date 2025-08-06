@@ -77,14 +77,14 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/en.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ua.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/uk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body data-page="{{ request()->route()->getName() }}">
-    <div id="notification"></div>
+
 @php
     $user = auth()->user();
     $userPermissions = $user ? $user->permissions()->pluck('name')->toArray() : [];

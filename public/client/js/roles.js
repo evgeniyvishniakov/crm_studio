@@ -177,18 +177,13 @@ function openEditRoleModal(role) {
     
     // Отмечаем разрешения роли
     if (role.permissions && Array.isArray(role.permissions)) {
-        console.log('Разрешения роли:', role.permissions); // Отладка
+
         role.permissions.forEach(permissionName => {
             const checkbox = document.querySelector(`input[name="permissions[]"][value="${permissionName}"]`);
             if (checkbox) {
                 checkbox.checked = true;
-                console.log('Отмечен чекбокс для:', permissionName); // Отладка
-            } else {
-                console.log('Чекбокс не найден для:', permissionName); // Отладка
             }
         });
-    } else {
-        console.log('Нет разрешений или не массив:', role.permissions); // Отладка
     }
     
     toggleModal('roleModal', true);
@@ -300,9 +295,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(roleForm);
             
             // Отладка: выводим данные формы
-            console.log('Отправляемые данные:');
+    
             for (let [key, value] of formData.entries()) {
-                console.log(key + ':', value);
+
             }
             
             // Для PUT запроса добавляем _method
@@ -324,23 +319,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: formData
             })
             .then(response => {
-                console.log('Статус ответа:', response.status); // Отладка
+
                 if (!response.ok) {
                     return response.json().then(err => {
-                        console.log('Ошибка валидации:', err); // Отладка
+
                         return Promise.reject(err);
                     });
                 }
                 return response.json().then(data => {
-                    console.log('Ответ сервера:', data); // Отладка
+
                     return data;
                 });
             })
             .then(data => {
-                console.log('Обрабатываем данные:', data); // Отладка
+
                 if (data.success) {
                     const role = data.role;
-                    console.log('Данные роли:', role); // Отладка
+
                     
                     if (editingRoleId) {
                         // Обновляем существующую роль
@@ -377,9 +372,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         window.showNotification('success', 'Роль успешно обновлена');
                     } else {
                         // Добавляем новую роль
-                        console.log('Добавляем новую роль в таблицу'); // Отладка
                         const tbody = document.getElementById('rolesTableBody');
-                        console.log('Найден tbody:', tbody); // Отладка
                         const tr = document.createElement('tr');
                         tr.id = `role-${role.id}`;
                         

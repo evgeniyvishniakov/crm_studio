@@ -130,7 +130,7 @@
 </div>
 
 <!-- Уведомление -->
-<div id="notification" class="position-fixed" style="top: 20px; right: 20px; z-index: 9999; display: none;">
+
     <div class="alert alert-success">
         <i class="fas fa-check"></i> <span id="notification-text"></span>
     </div>

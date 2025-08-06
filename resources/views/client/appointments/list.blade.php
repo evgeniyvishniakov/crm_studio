@@ -1,7 +1,7 @@
 @extends('client.layouts.app')
 
 @section('content')
-<div id="notification" class="notification"></div>
+
 <div class="dashboard-container">
     <style>
 /* Цвет текста событий в Неделя и День — белый */
@@ -3771,10 +3771,7 @@
             fetch(`/appointments/ajax?page=${page}`)
                 .then(res => res.json())
                 .then(response => {
-                    console.log('=== DEBUG: loadAppointments ===');
-                    console.log('Ответ от сервера:', response);
-                    console.log('Данные записей:', response.data);
-                    console.log('Количество записей:', response.data ? response.data.length : 0);
+
                     
                     // Проверяем, что response.data существует и является массивом
                     const appointments = Array.isArray(response.data) ? response.data : [];
@@ -3804,29 +3801,7 @@
             return date.toLocaleDateString('ru-RU');
         }
 
-        // Функция для показа уведомлений (как в клиентах)
-        function showNotification(type, message) {
-            const notification = document.getElementById('notification');
-            notification.className = `notification ${type} show`;
 
-            const icon = type === 'success' ?
-                '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>' :
-                '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>';
-
-            notification.innerHTML = `
-            <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-                ${icon}
-            </svg>
-            <span class="notification-message">${message}</span>
-        `;
-
-            setTimeout(() => {
-                notification.className = `notification ${type}`;
-            }, 3000);
-        }
-
-        // Делаем функцию доступной глобально
-        window.showNotification = showNotification;
 
         // Функция для открытия модального окна добавления записи
         function openAddAppointmentModal() {

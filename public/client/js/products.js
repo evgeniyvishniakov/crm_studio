@@ -629,7 +629,7 @@ let searchQuery = '';
 let isFirstLoad = true;
 
 function loadPage(page, search = '') {
-    console.log('Load page called with page:', page, 'search:', search);
+
     currentPage = page;
     searchQuery = search;
     
@@ -666,7 +666,7 @@ function loadPage(page, search = '') {
         return response.json();
     })
     .then(data => {
-        console.log('Data received:', data);
+
         updateTable(data.data);
         renderPagination(data.meta);
         
@@ -685,9 +685,7 @@ function updateTable(products) {
     const tbody = document.getElementById('productsTableBody');
     const productsCards = document.getElementById('productsCards');
     
-    console.log('Update table called with products:', products);
-    console.log('Table body:', tbody);
-    console.log('Products cards:', productsCards);
+
     
     tbody.innerHTML = '';
     productsCards.innerHTML = '';
@@ -993,19 +991,17 @@ function toggleMobileView() {
     const productsPagination = document.getElementById('productsPagination');
     const mobileProductsPagination = document.getElementById('mobileProductsPagination');
     
-    console.log('Toggle mobile view - window width:', window.innerWidth);
-    console.log('Table wrapper:', tableWrapper);
-    console.log('Products cards:', productsCards);
+
     
     if (window.innerWidth <= 768) {
         // Мобильная версия
         if (tableWrapper) {
             tableWrapper.style.display = 'none';
-            console.log('Table wrapper hidden');
+    
         }
         if (productsCards) {
             productsCards.style.display = 'block';
-            console.log('Products cards shown');
+
         }
         if (productsPagination) productsPagination.style.display = 'none';
         if (mobileProductsPagination) mobileProductsPagination.style.display = 'block';
@@ -1013,11 +1009,11 @@ function toggleMobileView() {
         // Десктопная версия
         if (tableWrapper) {
             tableWrapper.style.display = 'block';
-            console.log('Table wrapper shown');
+    
         }
         if (productsCards) {
             productsCards.style.display = 'none';
-            console.log('Products cards hidden');
+
         }
         if (productsPagination) productsPagination.style.display = 'block';
         if (mobileProductsPagination) mobileProductsPagination.style.display = 'none';

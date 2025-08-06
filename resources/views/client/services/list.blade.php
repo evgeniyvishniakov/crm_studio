@@ -5,7 +5,7 @@
     <div class="services-container">
         <div class="services-header">
             <h1>{{ __('messages.services') }}</h1>
-            <div id="notification" class="notification alert alert-success" role="alert">
+            
                 <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                 </svg>

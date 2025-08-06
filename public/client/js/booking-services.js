@@ -53,7 +53,7 @@ function editUserService(userServiceId) {
         if (data.success && data.userServices.length > 0) {
             const userService = data.userServices[0];
             
-            console.log('editUserService - Загруженные данные:', userService);
+        
             
             // Заполняем форму данными для редактирования
             document.getElementById('user-service-id').value = userService.id;
@@ -63,12 +63,6 @@ function editUserService(userServiceId) {
             document.getElementById('modal-price').value = userService.price || '';
             document.getElementById('modal-duration').value = userService.duration || '';
             document.getElementById('modal-description').value = userService.description || '';
-            
-            console.log('editUserService - Заполненные поля формы:', {
-                price: document.getElementById('modal-price').value,
-                duration: document.getElementById('modal-duration').value,
-                description: document.getElementById('modal-description').value
-            });
             
             // Обновляем заголовок модального окна
             document.getElementById('userServiceModalTitle').textContent = translations.edit_service_to_master;
@@ -89,7 +83,7 @@ function editUserService(userServiceId) {
 function deleteUserService(userServiceId) {
     // Проверяем, не удаляется ли уже эта запись
     if (window.currentDeleteId === userServiceId) {
-        console.log('Запись уже в процессе удаления:', userServiceId);
+
         return;
     }
     
@@ -118,7 +112,7 @@ function confirmDeleteUserService() {
     
     // Проверяем, не выполняется ли уже удаление
     if (window.isDeleting) {
-        console.log('Удаление уже выполняется, игнорируем повторный запрос');
+
         return;
     }
     
@@ -130,9 +124,7 @@ function confirmDeleteUserService() {
     if (window.currentDeleteCard) window.currentDeleteCard.classList.add('row-deleting');
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]');
-    console.log('CSRF Token:', csrfToken ? csrfToken.getAttribute('content') : 'not found');
-    console.log('Request URL:', `/booking/user-services/${window.currentDeleteId}`);
-    console.log('Request method:', 'DELETE');
+
     
     fetch(`/booking/user-services/${window.currentDeleteId}`, {
         method: 'DELETE',
@@ -143,8 +135,7 @@ function confirmDeleteUserService() {
         }
     })
     .then(response => {
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
+
         
         if (!response.ok) {
             return response.json().then(errorData => {
@@ -158,11 +149,11 @@ function confirmDeleteUserService() {
         if (data.success) {
             // Немедленно удаляем элементы из DOM
             if (window.currentDeleteRow) {
-                console.log('Удаляем строку из таблицы:', window.currentDeleteRow);
+
                 window.currentDeleteRow.remove();
             }
             if (window.currentDeleteCard) {
-                console.log('Удаляем карточку:', window.currentDeleteCard);
+
                 window.currentDeleteCard.remove();
             }
             
@@ -202,11 +193,11 @@ function confirmDeleteUserService() {
         // Убираем класс анимации при ошибке
         if (window.currentDeleteRow) {
             window.currentDeleteRow.classList.remove('row-deleting');
-            console.log('Убрали класс анимации со строки');
+            
         }
         if (window.currentDeleteCard) {
             window.currentDeleteCard.classList.remove('row-deleting');
-            console.log('Убрали класс анимации с карточки');
+            
         }
     })
     .finally(() => {
@@ -232,20 +223,10 @@ function saveUserService() {
         duration: formData.get('duration') || null,
         description: formData.get('description') || null
     };
-    
-    console.log('saveUserService - Отправляемые данные:', {
-        userServiceId: userServiceId,
-        data: data,
-        isEdit: !!userServiceId
-    });
+
     
     // Дополнительная отладка - проверяем значения полей формы
-    console.log('saveUserService - Значения полей формы:', {
-        price: document.getElementById('modal-price').value,
-        duration: document.getElementById('modal-duration').value,
-        description: document.getElementById('modal-description').value,
-        isActive: document.getElementById('modal-is-active').checked
-    });
+
     
     const url = userServiceId ? 
         `/booking/user-services/${userServiceId}` : 
@@ -253,10 +234,7 @@ function saveUserService() {
     
     const method = userServiceId ? 'PUT' : 'POST';
     
-    console.log('saveUserService - URL и метод:', {
-        url: url,
-        method: method
-    });
+
     
     fetch(url, {
         method: method,
@@ -280,21 +258,19 @@ function saveUserService() {
             window.showNotification('success', data.message);
             closeUserServiceModal();
             
-            console.log('Данные с сервера:', data);
-            console.log('userServiceId:', userServiceId);
-            console.log('userService объект:', data.userService);
+
             
             if (!userServiceId) {
                 // Если это новая запись, добавляем её в таблицу
                 if (data.userService) {
-                    console.log('Добавляем новую услугу:', data.userService);
+
                     addUserServiceToTable(data.userService);
                 } else {
                     console.error('userService не найден в ответе сервера');
                 }
             } else {
                 // Если это редактирование, обновляем существующую строку
-                console.log('Обновляем существующую услугу:', data.userService);
+
                 updateUserServiceInTable(data.userService);
             }
             
@@ -457,7 +433,7 @@ function addUserServiceToTable(userService) {
         return;
     }
     
-    console.log('addUserServiceToTable - Полученные данные:', userService);
+
     
     const tbody = document.getElementById('user-services-tbody');
     const userServicesCards = document.getElementById('userServicesCards');
@@ -473,14 +449,8 @@ function addUserServiceToTable(userService) {
     const price = userService.price !== null && userService.price !== undefined ? userService.price : (userService.service_price || 0);
     const duration = userService.duration !== null && userService.duration !== undefined ? userService.duration : (userService.service_duration || 0);
     
-    console.log('addUserServiceToTable - Обработанные данные:', {
-        userName,
-        userEmail,
-        serviceName,
-        serviceDescription,
-        price: userService.price,
-        duration: userService.duration
-    });
+
+
     
     // Добавляем строку в таблицу
     const newRow = document.createElement('tr');
@@ -661,23 +631,18 @@ function searchUserServices(searchTerm) {
 function toggleUserServicesView() {
     const tableWrapper = document.querySelector('#tab-user-services .table-wrapper');
     const userServicesCards = document.getElementById('userServicesCards');
-    
-    console.log('toggleUserServicesView вызвана. Ширина окна:', window.innerWidth);
-    console.log('Найденные элементы:', {
-        tableWrapper: !!tableWrapper,
-        userServicesCards: !!userServicesCards
-    });
+
     
     if (window.innerWidth <= 768) {
         // Мобильная версия
         if (tableWrapper) tableWrapper.style.display = 'none';
         if (userServicesCards) userServicesCards.style.display = 'grid';
-        console.log('Переключено на мобильную версию');
+
     } else {
         // Десктопная версия
         if (tableWrapper) tableWrapper.style.display = 'block';
         if (userServicesCards) userServicesCards.style.display = 'none';
-        console.log('Переключено на десктопную версию');
+
     }
 }
 
@@ -685,7 +650,7 @@ function toggleUserServicesView() {
 function updateStatistics() {
     // Здесь можно добавить логику обновления статистики
     // Например, пересчет количества активных/неактивных услуг
-    console.log('Статистика обновлена');
+
 }
 
 // Инициализация обработчиков при загрузке страницы

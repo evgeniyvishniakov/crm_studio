@@ -104,7 +104,7 @@ function initializeCalendarLocalization() {
             rangeSeparator: ' to ',
             time_24hr: false
         },
-        ua: {
+        uk: {
             weekdays: {
                 shorthand: ['Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
                 longhand: ['Неділя', 'Понеділок', 'Вівторок', 'Середа', 'Четвер', 'П\'ятниця', 'Субота']
@@ -139,8 +139,8 @@ function initializeCalendarLocalization() {
             'ru': 'ru',
             'en-US': 'en',
             'en': 'en',
-            'ua': 'ua',
-            'uk': 'ua'
+            'ua': 'uk',
+            'uk': 'uk'
         };
         
         locale = localeMapping[locale] || 'en';

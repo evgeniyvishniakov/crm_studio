@@ -8,7 +8,7 @@
         <!-- Заголовок страницы -->
         <div class="subscriptions-header">
             <h1>{{ __('messages.subscriptions') }}</h1>
-            <div id="notification"></div>
+        
         </div>
 
         <!-- Основной контент -->

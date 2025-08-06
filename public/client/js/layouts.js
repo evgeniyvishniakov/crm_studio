@@ -35,7 +35,7 @@ function initializeAppLayout() {
  */
 function initializeAuthLayout() {
     // Здесь можно добавить специфичные скрипты для страниц авторизации
-    console.log('Auth layout initialized');
+
 }
 
 // ===== ОБЩИЕ ФУНКЦИИ =====

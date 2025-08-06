@@ -17,66 +17,57 @@ let currentPage = 1;
 
 // ===== ЧАСТЬ 2: Вспомогательные функции =====
 function setTodayDateInSales() {
-    console.log('=== НАЧАЛО setTodayDateInSales() ===');
+    
     
     try {
         // Попробуем разные селекторы
         let dateInput = document.querySelector('#saleForm input[name="date"]');
-        console.log('Селектор 1 - #saleForm input[name="date"]:', dateInput);
+
         
         if (!dateInput) {
             dateInput = document.querySelector('input[name="date"]');
-            console.log('Селектор 2 - input[name="date"]:', dateInput);
+
         }
         
         if (!dateInput) {
             dateInput = document.querySelector('#saleForm input[type="date"]');
-            console.log('Селектор 3 - #saleForm input[type="date"]:', dateInput);
+
         }
         
         if (!dateInput) {
             const allDateInputs = document.querySelectorAll('input[type="date"]');
-            console.log('Все поля даты на странице:', allDateInputs);
             if (allDateInputs.length > 0) {
                 dateInput = allDateInputs[0];
-                console.log('Берем первое поле даты:', dateInput);
             }
         }
         
         if (dateInput) {
             // Используем глобальную функцию setTodayDate
             if (typeof window.setTodayDate === 'function') {
-                console.log('Используем глобальную функцию setTodayDate');
+
                 window.setTodayDate(dateInput);
             } else {
-                console.log('Глобальная функция setTodayDate не найдена, используем локальную логику');
                 const today = new Date();
                 const year = today.getFullYear();
                 const month = String(today.getMonth() + 1).padStart(2, '0');
                 const day = String(today.getDate()).padStart(2, '0');
                 const todayString = `${year}-${month}-${day}`;
-                console.log('Устанавливаем дату:', todayString);
                 dateInput.value = todayString;
-                console.log('Значение поля после установки:', dateInput.value);
                 
                 // Попробуем также вызвать событие change
                 dateInput.dispatchEvent(new Event('change', { bubbles: true }));
-                console.log('Событие change отправлено');
             }
         } else {
-            console.warn('Поле даты не найдено ни одним способом!');
+
             
             const saleForm = document.getElementById('saleForm');
-            console.log('Форма продажи найдена:', saleForm);
-            if (saleForm) {
-                console.log('HTML формы продажи:', saleForm.innerHTML);
-            }
+
         }
     } catch (error) {
         console.error('Ошибка в setTodayDateInSales():', error);
     }
     
-    console.log('=== КОНЕЦ setTodayDateInSales() ===');
+
 }
 
 // ===== ЧАСТЬ 3: Функции поиска и выбора клиентов =====
@@ -268,25 +259,21 @@ function escapeHtml(text) {
 
 // ===== ЧАСТЬ 4: Функции модальных окон =====
 function openSaleModal() {
-    console.log('Открытие модального окна продажи...');
+
     
     const saleForm = document.getElementById('saleForm');
     const saleModal = document.getElementById('saleModal');
     
-    console.log('Форма продажи найдена:', saleForm);
-    console.log('Модальное окно найдено:', saleModal);
+
     
     if (saleForm) {
         saleForm.reset();
-        console.log('Форма сброшена');
+
     }
     
     if (saleModal) {
         saleModal.style.display = 'block';
-        console.log('Модальное окно показано');
-        
-        // Устанавливаем дату сразу после показа модального окна
-        console.log('Устанавливаем дату сразу после показа модального окна...');
+
         setTodayDateInSales();
     }
     
@@ -294,7 +281,7 @@ function openSaleModal() {
     
     // Также попробуем установить дату с задержкой на всякий случай
     setTimeout(() => {
-        console.log('Вызываем setTodayDateInSales() с задержкой...');
+
         setTodayDateInSales();
     }, 100);
 }
@@ -306,15 +293,14 @@ function closeSaleModal() {
 }
 
 function openEditSaleModal(id) {
-    console.log('Открытие модального окна редактирования продажи:', id);
+
     
     fetch(`/sales/${id}/edit`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 const sale = data.sale;
-                console.log('Данные продажи:', sale);
-                console.log('Дата продажи:', sale.date);
+
                 const modalBody = document.getElementById('editSaleModalBody');
 
                 // Создаем форму редактирования
@@ -506,12 +492,11 @@ function openEditSaleModal(id) {
                 // Инициализируем календарь для поля даты с небольшой задержкой
                 setTimeout(() => {
                     const dateInput = document.querySelector('#editSaleForm input[name="date"]');
-                    console.log('Поле даты в форме редактирования:', dateInput);
-                    console.log('Значение поля даты:', dateInput?.value);
+
                     
                     if (dateInput && typeof initializeDatePicker === 'function') {
                         initializeDatePicker(dateInput);
-                        console.log('Календарь инициализирован');
+
                     }
                     
                     // Убираем установку максимального количества для полей количества
@@ -566,14 +551,14 @@ window.onclick = function(event) {
 function addItemRow(containerId = 'itemsContainer') {
     const container = document.getElementById(containerId);
     if (!container) {
-        console.warn(`Контейнер ${containerId} не найден`);
+
         return;
     }
 
     // Ищем шаблон в текущем контейнере
     const template = container.querySelector('.template');
     if (!template) {
-        console.warn('Шаблон товара не найден в контейнере', containerId);
+
         return;
     }
 
@@ -892,8 +877,7 @@ function deleteSale() {
 
 // ===== ЧАСТЬ 8: Функции рендеринга данных =====
 function renderSales(sales) {
-    console.log('=== renderSales вызвана ===');
-    console.log('sales:', sales);
+
     
     const tableBody = document.getElementById('salesTableBody');
     const cardsContainer = document.getElementById('salesCards');
@@ -1132,14 +1116,13 @@ function renderPagination(meta) {
 
 // ===== ЧАСТЬ 10: Функции загрузки данных =====
 function loadSales(page = 1, search = '') {
-    console.log('=== loadSales вызвана ===');
-    console.log('page:', page, 'search:', search);
+
     
     currentPage = page;
     const searchValue = search !== undefined ? search : document.getElementById('searchInput').value.trim();
     const url = `/sales?search=${encodeURIComponent(searchValue)}&page=${page}`;
     
-    console.log('URL для загрузки:', url);
+
 
     fetch(url, {
         headers: {
@@ -1149,8 +1132,7 @@ function loadSales(page = 1, search = '') {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('=== Данные получены ===');
-        console.log('data:', data);
+
         
         if (data.clients) {
             allClients = data.clients;
@@ -1159,7 +1141,7 @@ function loadSales(page = 1, search = '') {
             allProducts = data.products;
         }
         
-        console.log('Вызываем renderSales с данными:', data.data);
+
         renderSales(data.data);
         renderPagination(data.meta);
     })
@@ -1223,7 +1205,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Устанавливаем сегодняшнюю дату в поле даты при загрузке страницы
     setTimeout(() => {
-        console.log('Инициализация: устанавливаем дату...');
+
         setTodayDateInSales();
     }, 200);
     

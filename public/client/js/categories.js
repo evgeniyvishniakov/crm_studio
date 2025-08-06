@@ -66,16 +66,16 @@ function clearCategoryErrors(formId = 'addServiceForm') {
 
 // Функция для отображения ошибок
 function showCategoryErrors(errors, formId = 'addServiceForm') {
-    console.log('showCategoryErrors вызвана с:', { errors, formId });
+
     clearCategoryErrors(formId);
 
     Object.entries(errors).forEach(([field, messages]) => {
-        console.log('Обрабатываем поле:', field, 'сообщения:', messages);
+
         const input = document.querySelector(`#${formId} [name="${field}"]`);
-        console.log('Найденный input:', input);
+
         if (input) {
             const inputGroup = input.closest('.form-group');
-            console.log('Найденная группа:', inputGroup);
+
             inputGroup.classList.add('has-error');
 
             const errorElement = document.createElement('div');
@@ -88,9 +88,9 @@ function showCategoryErrors(errors, formId = 'addServiceForm') {
             errorElement.style.fontWeight = 'bold';
 
             inputGroup.appendChild(errorElement);
-            console.log('Ошибка добавлена в DOM');
+
         } else {
-            console.log('Input не найден для поля:', field);
+
         }
     });
 }
@@ -500,10 +500,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                console.log('Ошибка в categories.js:', error);
+        
                 if (error.errors) {
                     // Показываем ошибки валидации в форме
-                    console.log('Показываем ошибки валидации:', error.errors);
+
                     showCategoryErrors(error.errors);
                     window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
                 } else {
@@ -565,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                console.log('Ошибка редактирования в categories.js:', error);
+        
                 if (error.errors) {
                     // Показываем ошибки валидации в форме
                     showCategoryErrors(error.errors, 'editServiceForm');

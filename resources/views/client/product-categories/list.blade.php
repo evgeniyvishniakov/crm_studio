@@ -5,7 +5,7 @@
     <div class="services-container">
         <div class="services-header">
             <h1>{{ __('messages.product_categories') }}</h1>
-            <div id="notification"></div>
+        
             <div class="categories-header-actions">
                 <button class="btn-add-service" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">

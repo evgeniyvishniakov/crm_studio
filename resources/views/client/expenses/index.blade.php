@@ -5,7 +5,7 @@
     <div class="expenses-container">
         <div class="expenses-header">
             <h1>{{ __('messages.expenses') }}</h1>
-            <div id="notification" class="notification">
+            
                 <!-- Уведомления будут появляться здесь -->
             </div>
             <div class="header-actions">

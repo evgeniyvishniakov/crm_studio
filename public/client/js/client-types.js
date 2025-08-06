@@ -67,25 +67,25 @@ let currentDeleteId = null;
 
 // Функция для показа модального окна подтверждения удаления
 function showDeleteConfirmation(clientTypeId) {
-    console.log('showDeleteConfirmation вызвана с ID:', clientTypeId);
+
     
     // Находим строку и карточку для удаления
     const row = document.getElementById('client-type-' + clientTypeId);
     const card = document.getElementById('client-type-card-' + clientTypeId);
     
-    console.log('Найденные элементы в showDeleteConfirmation:', { row, card });
+
     
     currentDeleteRow = row;
     currentDeleteId = clientTypeId;
     
-    console.log('Установлены переменные:', { currentDeleteRow, currentDeleteId });
+
     
     document.getElementById('confirmationModal').style.display = 'block';
 }
 
 // Функция для удаления типа клиента
 function deleteClientType(rowOrId, clientTypeId) {
-    console.log('deleteClientType вызвана с:', { rowOrId, clientTypeId });
+
     
     let row;
     let card;
@@ -100,12 +100,12 @@ function deleteClientType(rowOrId, clientTypeId) {
         card = document.getElementById('client-type-card-' + clientTypeId);
     }
     
-    console.log('Найденные элементы:', { row, card, clientTypeId });
+
     
     if (row) row.classList.add('row-deleting');
     if (card) card.classList.add('row-deleting');
 
-    console.log('Отправляем запрос на удаление:', `/client-types/${clientTypeId}`);
+
 
     fetch(`/client-types/${clientTypeId}`, {
         method: 'DELETE',
@@ -116,14 +116,14 @@ function deleteClientType(rowOrId, clientTypeId) {
         }
     })
         .then(response => {
-            console.log('Получен ответ:', response.status, response.statusText);
+    
             if (!response.ok) {
                 return response.json().then(err => Promise.reject({status: response.status, ...err}));
             }
             return response.json();
         })
         .then(data => {
-            console.log('Данные ответа:', data);
+    
             if (data.success) {
                 setTimeout(() => {
                     if (row) row.remove();
@@ -676,12 +676,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmDeleteBtn = document.getElementById('confirmDelete');
     if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', function() {
-            console.log('Кнопка подтверждения удаления нажата');
-            console.log('currentDeleteId:', currentDeleteId);
-            console.log('currentDeleteRow:', currentDeleteRow);
+            
             
             if (currentDeleteId) {
-                console.log('Вызываем deleteClientType с ID:', currentDeleteId);
+            
                 deleteClientType(currentDeleteId);
             } else {
                 console.error('currentDeleteId не установлен!');

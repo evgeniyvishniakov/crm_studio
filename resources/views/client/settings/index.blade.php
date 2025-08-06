@@ -6,7 +6,7 @@
 <div class="dashboard-container settings-container">
     <div class="settings-header">
         <h1>{{ __('messages.settings') }}</h1>
-        <div id="notification"></div>
+    
     </div>
     <div class="dashboard-tabs" style="margin-bottom:28px;">
         <button class="tab-button active" data-tab="profile"><i class="fa fa-user" style="margin-right:8px;"></i>{{ __('messages.profile') }}</button>

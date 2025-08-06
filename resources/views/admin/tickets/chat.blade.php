@@ -19,7 +19,7 @@
         </div>
     </div>
 </div>
-<div id="notification"></div>
+
 @push('scripts')
 <script>
 const ticketId = {{ $ticket->id }};

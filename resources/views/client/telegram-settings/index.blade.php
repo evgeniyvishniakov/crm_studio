@@ -6,7 +6,7 @@
 <div class="dashboard-container">
     <div class="settings-header telegram-settings-header">
         <h1>{{ __('messages.telegram_settings') }}</h1>
-        <div id="notification"></div>
+    
     </div>
 
     <div class="settings-content telegram-settings-content">

@@ -1141,7 +1141,7 @@
                         }
                         
                         // Отладочная информация
-                        console.log(`День ${currentDate.getDate()}: isWorkingDay = ${isWorkingDay}, masterSchedule = ${!!masterSchedule}`);
+        
                      
                       if (isToday) {
                           dayElement.classList.add('today');
@@ -1191,11 +1191,7 @@
          
                  function selectDate(date) {
             const dateString = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
-            console.log('selectDate called for date:', dateString);
-            console.log('Date object toString():', date.toString());
-            console.log('Date object toUTCString():', date.toUTCString());
-            console.log('Date object getDay():', date.getDay()); // Debug: Raw JS day of week
-            console.log('masterSchedule:', masterSchedule);
+
             
             // --- ПРОВЕРКА: ограничения по датам из настроек бронирования ---
             const today = new Date();
@@ -1227,7 +1223,7 @@
                 const dayOfWeek = date.getDay();
                 const ourDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
                 const schedule = masterSchedule[ourDayOfWeek];
-                console.log('Day of week (JS):', dayOfWeek, 'Our format:', ourDayOfWeek, 'Schedule:', schedule);
+    
                 if (!schedule || !schedule.is_working) {
                     alert('Мастер не работает в этот день!');
                     // Убираем выделение с дня, если он не рабочий
@@ -1286,7 +1282,7 @@
           }
          
                  function loadTimeSlots() {
-            console.log('loadTimeSlots called with:', {
+
                 selectedService,
                 selectedMaster,
                 selectedDate
@@ -1297,10 +1293,8 @@
             
             // Проверяем, что элементы существуют
             if (!timeSlotsContainer || !slotsDiv) {
-                console.error('Не найдены элементы time-slots-container или time-slots');
-                console.log('Текущий шаг:', currentStep);
-                console.log('Элемент time-slots-container:', timeSlotsContainer);
-                console.log('Элемент time-slots:', slotsDiv);
+
+
                 return;
             }
             
@@ -1321,14 +1315,14 @@
                 })
             })
                          .then(response => {
-                 console.log('Response status:', response.status);
+
                  if (!response.ok) {
                      throw new Error(`HTTP error! status: ${response.status}`);
                  }
                  return response.json();
              })
                          .then(data => {
-                console.log('Response data:', data);
+
                 if (data.success) {
                     displayTimeSlots(data.slots);
                 } else {
@@ -1348,7 +1342,7 @@
                          function displayTimeSlots(slots) {
             const slotsDiv = document.getElementById('time-slots');
             if (!slotsDiv) {
-                console.error('Не найден элемент time-slots');
+
                 return;
             }
             if (slots.length === 0) {
@@ -1379,7 +1373,7 @@
         function submitBooking() {
             // Проверяем, не отправляется ли уже форма
             if (isSubmitting) {
-                console.log('Form is already being submitted, ignoring click');
+
                 return;
             }
             
@@ -1408,9 +1402,7 @@
                 client_notes: document.getElementById('client-notes').value
             };
             
-            console.log('Отправляемые данные:', formData);
-            console.log('selectedDate тип:', typeof selectedDate);
-            console.log('selectedDate значение:', selectedDate);
+
             
             fetch('{{ route("public.booking.store", $project->slug) }}', {
                 method: 'POST',
@@ -1421,12 +1413,7 @@
                 body: JSON.stringify(formData)
             })
             .then(response => {
-                console.log('Submit response status:', response.status);
-                console.log('Submit response headers:', response.headers);
-                
-                // Проверяем тип контента
-                const contentType = response.headers.get('content-type');
-                console.log('Content-Type:', contentType);
+
                 
                 if (!response.ok) {
                     // Если ответ не OK, пробуем получить текст для диагностики
@@ -1447,7 +1434,7 @@
                 return response.json();
             })
             .then(data => {
-                console.log('Submit response data:', data);
+
                 if (data.success) {
                     showSuccess(data.booking);
                     // Сбрасываем флаг при успешной отправке

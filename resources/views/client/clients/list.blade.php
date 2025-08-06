@@ -43,7 +43,7 @@
                 </div>
             </div>
             
-            <div id="notification"></div>
+
         </div>
 
         <div class="table-wrapper">
@@ -822,26 +822,7 @@
             }
         }
 
-        // Функция для показа уведомлений
-        function showNotification(type, message) {
-            const notification = document.getElementById('notification');
-            notification.className = `notification ${type} show`;
 
-            const icon = type === 'success' ?
-                '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>' :
-                '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>';
-
-            notification.innerHTML = `
-            <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-                ${icon}
-            </svg>
-            <span class="notification-message">${message}</span>
-        `;
-
-            setTimeout(() => {
-                notification.className = `notification ${type}`;
-            }, 3000);
-        }
 
         // Функция для очистки ошибок
         function clearErrors() {
@@ -893,7 +874,7 @@
             // Валидация поля Instagram: только латинские буквы, цифры и _ . -
             const instagramInput = document.getElementById('clientInstagram');
             if (instagramInput.value && !/^[a-zA-Z0-9_.-]+$/.test(instagramInput.value)) {
-                showNotification('error', '{{ __('messages.instagram_validation_error') }}');
+                window.showNotification('error', '{{ __('messages.instagram_validation_error') }}');
                 instagramInput.focus();
                 e.preventDefault();
                 return false;
@@ -986,7 +967,7 @@
                         clientsTableBody.insertBefore(newRow, clientsTableBody.firstChild);
 
                         // Показываем уведомление
-                        showNotification('success', `{{ __('messages.client_added_successfully') }}`.replace(':name', data.client.name));
+                        window.showNotification('success', `{{ __('messages.client_added_successfully') }}`.replace(':name', data.client.name));
 
                         // Закрываем модальное окно и очищаем форму
                         closeModal();
@@ -1000,9 +981,9 @@
 
                     if (error.errors) {
                         showErrors(error.errors);
-                        showNotification('error', '{{ __('messages.please_fix_errors') }}');
+                        window.showNotification('error', '{{ __('messages.please_fix_errors') }}');
                     } else {
-                        showNotification('error', error.message || '{{ __('messages.error_adding_client') }}');
+                        window.showNotification('error', error.message || '{{ __('messages.error_adding_client') }}');
                     }
                 })
                 .finally(() => {
@@ -1109,7 +1090,7 @@
             // Проверяем, что параметры не равны null
             if (!row || !clientId) {
                 console.error('Ошибка: row или clientId равны null');
-                showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                window.showNotification('error', '{{ __('messages.error_deleting_client') }}');
                 return;
             }
             
@@ -1117,7 +1098,7 @@
             row.classList.add('row-deleting');
 
             // Отправляем запрос на удаление
-            console.log('Отправляем запрос на удаление клиента (таблица):', clientId);
+
             fetch(`/clients/${clientId}`, {
                 method: 'DELETE',
                 headers: {
@@ -1127,26 +1108,26 @@
                 }
             })
                 .then(response => {
-                    console.log('Ответ сервера (статус таблица):', response.status);
+
                     if (!response.ok) {
                         throw new Error('Ошибка при удалении');
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Ответ сервера (данные таблица):', data);
+
                     if (data.success) {
                         // Удаляем строку после завершения анимации
                         setTimeout(() => {
                             row.remove();
-                            showNotification('success', '{{ __('messages.client_deleted_successfully') }}');
+                            window.showNotification('success', '{{ __('messages.client_deleted_successfully') }}');
                         }, 300);
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка при удалении клиента (таблица):', error);
                     row.classList.remove('row-deleting');
-                    showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                    window.showNotification('error', '{{ __('messages.error_deleting_client') }}');
                 });
         }
 
@@ -1202,7 +1183,7 @@
                 })
                 .catch(error => {
                     console.error('Ошибка при получении данных клиента:', error);
-                    showNotification('error', '{{ __('messages.error_loading_client') }}');
+                    window.showNotification('error', '{{ __('messages.error_loading_client') }}');
                 });
         }
 
@@ -1252,7 +1233,7 @@
                     if (data.success) {
                         // Обновляем строку в таблице
                         updateClientRow(data.client);
-                        showNotification('success', '{{ __('messages.client_updated_successfully') }}');
+                        window.showNotification('success', '{{ __('messages.client_updated_successfully') }}');
                         closeEditModal();
                     }
                 })
@@ -1260,9 +1241,9 @@
                     console.error('Ошибка:', error);
                     if (error.errors) {
                         showErrors(error.errors, 'editClientForm');
-                        showNotification('error', '{{ __('messages.please_fix_errors') }}');
+                        window.showNotification('error', '{{ __('messages.please_fix_errors') }}');
                     } else {
-                        showNotification('error', '{{ __('messages.error_updating_client') }}');
+                        window.showNotification('error', '{{ __('messages.error_updating_client') }}');
                     }
                 })
                 .finally(() => {
@@ -1711,7 +1692,7 @@
                 })
                 .catch(error => {
                     console.error('Ошибка при получении данных клиента:', error);
-                    showNotification('error', '{{ __('messages.error_loading_client') }}');
+                    window.showNotification('error', '{{ __('messages.error_loading_client') }}');
                 });
         }
 
@@ -1816,7 +1797,7 @@
                         }
                     } else {
                         console.error('Ошибка: currentDeleteRow или currentDeleteId равны null');
-                        showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                        window.showNotification('error', '{{ __('messages.error_deleting_client') }}');
                     }
                     closeConfirmationModal();
                 });
@@ -2314,7 +2295,7 @@
             // Проверяем, что параметры не равны null
             if (!row || !clientId) {
                 console.error('Ошибка: row или clientId равны null');
-                showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                window.showNotification('error', '{{ __('messages.error_deleting_client') }}');
                 return;
             }
             
@@ -2322,7 +2303,7 @@
             row.classList.add('row-deleting');
 
             // Отправляем запрос на удаление
-            console.log('Отправляем запрос на удаление клиента (строка):', clientId);
+
             fetch(`/clients/${clientId}`, {
                 method: 'DELETE',
                 headers: {
@@ -2332,26 +2313,26 @@
                 }
             })
                 .then(response => {
-                    console.log('Ответ сервера (статус строка):', response.status);
+
                     if (!response.ok) {
                         throw new Error('Ошибка при удалении');
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Ответ сервера (данные строка):', data);
+
                     if (data.success) {
                         // Удаляем строку после завершения анимации
                         setTimeout(() => {
                             row.remove();
-                            showNotification('success', '{{ __('messages.client_deleted_successfully') }}');
+                            window.showNotification('success', '{{ __('messages.client_deleted_successfully') }}');
                         }, 300);
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка при удалении клиента (строка):', error);
                     row.classList.remove('row-deleting');
-                    showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                    window.showNotification('error', '{{ __('messages.error_deleting_client') }}');
                 });
         }
 
@@ -2360,7 +2341,7 @@
             // Проверяем, что параметры не равны null
             if (!card || !clientId) {
                 console.error('Ошибка: card или clientId равны null');
-                showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                window.showNotification('error', '{{ __('messages.error_deleting_client') }}');
                 return;
             }
             
@@ -2368,7 +2349,7 @@
             card.classList.add('row-deleting');
 
             // Отправляем запрос на удаление
-            console.log('Отправляем запрос на удаление клиента (карточка):', clientId);
+
             fetch(`/clients/${clientId}`, {
                 method: 'DELETE',
                 headers: {
@@ -2378,26 +2359,26 @@
                 }
             })
                 .then(response => {
-                    console.log('Ответ сервера (статус карточка):', response.status);
+
                     if (!response.ok) {
                         throw new Error('Ошибка при удалении');
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Ответ сервера (данные карточка):', data);
+
                     if (data.success) {
                         // Удаляем карточку после завершения анимации
                         setTimeout(() => {
                             card.remove();
-                            showNotification('success', '{{ __('messages.client_deleted_successfully') }}');
+                            window.showNotification('success', '{{ __('messages.client_deleted_successfully') }}');
                         }, 300);
                     }
                 })
                 .catch(error => {
                     console.error('Ошибка при удалении клиента (карточка):', error);
                     card.classList.remove('row-deleting');
-                    showNotification('error', '{{ __('messages.error_deleting_client') }}');
+                    window.showNotification('error', '{{ __('messages.error_deleting_client') }}');
                 });
         }
     </script>

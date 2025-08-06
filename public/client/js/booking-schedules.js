@@ -157,7 +157,7 @@ function saveDaySchedule() {
     // Обновляем таблицу
     renderScheduleTable();
     
-    console.log('Расписание обновлено');
+    
     showNotification('Расписание обновлено');
 }
 

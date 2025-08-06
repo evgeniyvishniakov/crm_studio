@@ -17,7 +17,8 @@
         </form>
     </div>
 </div>
-<div id="notification"></div>
+
+
 @push('scripts')
 <script>
 // Глобальная переменная для ID тикета

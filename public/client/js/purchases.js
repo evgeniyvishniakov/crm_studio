@@ -796,7 +796,7 @@ function loadPurchases(page = 1, search = '') {
     })
     .then(response => response.json())
     .then(data => {
-        console.log('loadPurchases received data:', data);
+
         // Обновляем allProducts для поиска в модальных окнах
         if (data.products) {
             allProducts = data.products;
@@ -921,13 +921,11 @@ function renderPurchases(purchases) {
 
 // Функция обновления мобильных карточек
 function updateMobileCards(purchases) {
-    console.log('updateMobileCards called with:', purchases);
     const cardsContainer = document.getElementById('purchasesCards');
-    console.log('cardsContainer:', cardsContainer);
     cardsContainer.innerHTML = '';
 
     if (!purchases || purchases.length === 0) {
-        console.log('No purchases to display');
+
         return;
     }
 
@@ -1109,22 +1107,18 @@ function toggleMobileView() {
     const purchasesPagination = document.getElementById('purchasesPagination');
     const mobilePurchasesPagination = document.getElementById('mobilePurchasesPagination');
     
-    console.log('toggleMobileView called, window width:', window.innerWidth);
-    console.log('tableWrapper:', tableWrapper);
-    console.log('purchasesCards:', purchasesCards);
-    console.log('purchasesPagination:', purchasesPagination);
-    console.log('mobilePurchasesPagination:', mobilePurchasesPagination);
+
     
     if (window.innerWidth <= 768) {
         // Мобильная версия
-        console.log('Switching to mobile view');
+
         if (tableWrapper) tableWrapper.style.setProperty('display', 'none', 'important');
         if (purchasesCards) purchasesCards.style.setProperty('display', 'block', 'important');
         if (purchasesPagination) purchasesPagination.style.setProperty('display', 'none', 'important');
         if (mobilePurchasesPagination) mobilePurchasesPagination.style.setProperty('display', 'block', 'important');
     } else {
         // Десктопная версия
-        console.log('Switching to desktop view');
+
         if (tableWrapper) tableWrapper.style.setProperty('display', 'block', 'important');
         if (purchasesCards) purchasesCards.style.setProperty('display', 'none', 'important');
         if (purchasesPagination) purchasesPagination.style.setProperty('display', 'block', 'important');

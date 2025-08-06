@@ -881,16 +881,16 @@ function updateAllStatCardsByPeriod(period, animate = false, startDate = null, e
 function renderCustomMonthLabels(labels) {
     const container = document.getElementById('custom-month-labels');
     if (!container) {
-        console.log('Container not found');
+        
         return;
     }
     container.innerHTML = '';
     if (currentPeriod === '30' || !window.universalChart) {
         container.style.display = 'none';
-        console.log('Hiding labels for period:', currentPeriod);
+        
         return;
     }
-    console.log('Rendering labels for period:', currentPeriod, 'labels:', labels, 'chart type:', universalChart.config.type);
+    
     
     // Устанавливаем стили контейнера
     container.style.display = 'flex';
@@ -908,7 +908,7 @@ function renderCustomMonthLabels(labels) {
     // Получаем координаты точек
     const meta = universalChart.getDatasetMeta(0);
     if (!meta || !meta.data) {
-        console.log('No meta data found');
+        
         return;
     }
     
@@ -920,7 +920,7 @@ function renderCustomMonthLabels(labels) {
         return point.x;
     });
     
-    console.log('Points:', points);
+    
     
     // Создаем метки каждые 3 недели
     labels.forEach((label, i) => {
@@ -958,7 +958,7 @@ function renderCustomMonthLabels(labels) {
         span.style.fontWeight = '600';
         span.style.whiteSpace = 'nowrap';
         container.appendChild(span);
-        console.log('Added label:', text, 'at percentage:', percentage + '%');
+        
     });
 }
 
@@ -1167,14 +1167,10 @@ const datasets = {
             30: [10000, 12000, 15000, 14000, 16000, 18000, 17500, 17000, 16800, 16500, 16200, 16000, 15800, 15500, 15300, 15000, 14800, 14500, 14300, 14000, 13800, 13500, 13300, 13000, 12800, 12500, 12300, 12000, 11800, 11500],
             90: [10000, 10500, 11000, 11500, 12000, 12500, 13000, 13500, 14000, 14500, 15000, 15500, 16000, 16500, 17000, 17500, 18000, 18500, 19000, 19500, 20000, 20500, 21000, 21500, 22000, 22500, 23000, 23500, 24000, 24500, 25000, 25500, 26000, 26500, 27000, 27500, 28000, 28500, 29000, 29500, 30000, 30500, 31000, 31500, 32000, 32500, 33000, 33500, 34000, 34500, 35000, 35500, 36000, 36500, 37000, 37500, 38000, 38500, 39000, 39500, 40000, 40500, 41000, 41500, 42000, 42500, 43000, 43500, 44000, 44500, 45000, 45500, 46000, 46500, 47000, 47500, 48000, 48500, 49000, 49500]
         }
-        window.selectedRange = null;
-        currentPeriod = this.dataset.period;
-        updateAllStatCardsByPeriod(currentPeriod, false);
-        // ... остальной код ...
-    });
-});
+    }
+};
 
-// В updateChartByRange:
+
 function updateChartByRange(startDate, endDate) {
     updateAllStatCardsByPeriod(null, false, startDate, endDate);
     // ... остальной код ...

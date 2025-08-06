@@ -167,7 +167,7 @@ function copyWidgetCode() {
 
 // Предварительный просмотр виджета
 function previewWidget() {
-    console.log('previewWidget function called');
+
     
     const buttonText = document.getElementById('widget_button_text').value || 'Записаться';
     const buttonColor = document.getElementById('widget_button_color').value || '#007bff';
@@ -179,21 +179,12 @@ function previewWidget() {
     const borderRadius = document.getElementById('widget_border_radius').value || 25;
     const textColor = document.getElementById('widget_text_color').value || '#ffffff';
     
-    console.log('Button text:', buttonText);
-    console.log('Button color:', buttonColor);
-    console.log('Position:', position);
-    console.log('Size:', size);
-    console.log('Animation enabled:', animationEnabled);
-    console.log('Animation type:', animationType);
-    console.log('Animation duration:', animationDuration);
-    console.log('Border radius:', borderRadius);
-    console.log('Text color:', textColor);
+
     
     const previewContainer = document.getElementById('previewWidget');
     const previewBlock = document.getElementById('widgetPreview');
     
-    console.log('Preview container:', previewContainer);
-    console.log('Preview block:', previewBlock);
+
     
     // Определяем стили позиции
     let positionStyles = '';
@@ -281,7 +272,7 @@ function previewWidget() {
         </button>
     `;
     
-    console.log('Button HTML:', buttonHtml);
+
     
     // Скрываем placeholder
     const placeholder = document.getElementById('previewPlaceholder');
