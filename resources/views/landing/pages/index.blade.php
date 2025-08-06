@@ -1,7 +1,7 @@
 @extends('landing.layouts.app')
 
 @section('title', 'CRM Studio - Система управления салоном красоты')
-@section('description', 'Профессиональная CRM система для управления салоном красоты, записями клиентов и аналитикой')
+@section('description', 'Профессиональная CRM система для управления салоном красоты с веб-записью, Telegram уведомлениями и виджетом для сайта')
 
 @section('content')
 
@@ -10,184 +10,76 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6 animate-fade-in-left">
-                <h1 class="display-4 fw-bold mb-4 text-dark gradient-text">Управляйте салоном красоты эффективно</h1>
-                <p class="lead mb-4 text-muted">CRM Studio - это современная система управления, которая поможет вам организовать работу салона, вести клиентскую базу и увеличить прибыль.</p>
+                <h1 class="display-4 fw-bold mb-4 text-dark gradient-text">Автоматизируйте записи клиентов</h1>
+                <p class="lead mb-4 text-muted">CRM Studio - современная система с веб-записью, Telegram уведомлениями и виджетом для сайта. Увеличьте количество клиентов и упростите работу салона.</p>
                 <div class="d-flex gap-3">
                     <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
                         <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно
                     </a>
+                    <a href="#features" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-play me-2"></i>Смотреть функции
+                    </a>
                 </div>
             </div>
             <div class="col-lg-6 animate-fade-in-right">
-                <div class="card border-0 shadow-lg card-3d">
-                    <div class="card-body p-0">
-                        <div class="bg-gradient-primary text-white p-4 rounded-top">
-                            <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Панель управления</h5>
-                        </div>
-                        <div class="p-4">
-                            <div class="row g-3">
-                                <div class="col-6">
-                                    <div class="stat-card bg-success-light interactive-element" role="region" aria-label="Статистика прибыли">
-                                        <div class="stat-icon bg-flat-color-1">
-                                            <i class="fas fa-coins" aria-hidden="true"></i>
+                <div class="device-showcase">
+                    <div class="laptop-mockup">
+                        <div class="laptop-screen">
+                            <div class="dashboard-preview">
+                                <div class="dashboard-header bg-gradient-primary text-white p-3">
+                                    <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>Панель управления</h6>
+                                </div>
+                                <div class="dashboard-content p-3">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="stat-mini bg-success-light p-2 rounded">
+                                                <small class="text-muted">Прибыль</small>
+                                                <div class="fw-bold">₴125,400</div>
+                                            </div>
                                         </div>
-                                        <div class="stat-content">
-                                            <h3 class="stat-title">Прибыль</h3>
-                                            <p class="stat-value counter" data-target="125400" aria-live="polite">₽125,400</p>
+                                        <div class="col-6">
+                                            <div class="stat-mini bg-info-light p-2 rounded">
+                                                <small class="text-muted">Клиенты</small>
+                                                <div class="fw-bold">1,247</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="stat-mini bg-warning-light p-2 rounded">
+                                                <small class="text-muted">Записи</small>
+                                                <div class="fw-bold">89</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="stat-mini bg-primary-light p-2 rounded">
+                                                <small class="text-muted">Продажи</small>
+                                                <div class="fw-bold">₴45,200</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="stat-card bg-info-light interactive-element" role="region" aria-label="Статистика клиентов">
-                                        <div class="stat-icon bg-flat-color-3">
-                                            <i class="fas fa-users" aria-hidden="true"></i>
-                                        </div>
-                                        <div class="stat-content">
-                                            <h3 class="stat-title">Клиенты</h3>
-                                            <p class="stat-value counter" data-target="1247" aria-live="polite">1,247</p>
-                                        </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="mobile-preview">
+                                <div class="mobile-header bg-gradient-primary text-white p-2">
+                                    <small><i class="fas fa-calendar me-1"></i>Записи</small>
+                                </div>
+                                <div class="mobile-content p-2">
+                                    <div class="appointment-item bg-light p-2 rounded mb-1">
+                                        <small class="text-muted">14:00</small>
+                                        <div class="fw-bold">Маникюр</div>
+                                        <small>Анна П.</small>
+                                    </div>
+                                    <div class="appointment-item bg-light p-2 rounded mb-1">
+                                        <small class="text-muted">15:30</small>
+                                        <div class="fw-bold">Стрижка</div>
+                                        <small>Мария К.</small>
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="stat-card bg-warning-light interactive-element" role="region" aria-label="Статистика записей">
-                                        <div class="stat-icon bg-flat-color-4">
-                                            <i class="fas fa-calendar-check" aria-hidden="true"></i>
-                                        </div>
-                                        <div class="stat-content">
-                                            <h3 class="stat-title">Записи</h3>
-                                            <p class="stat-value counter" data-target="89" aria-live="polite">89</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="stat-card bg-primary-light interactive-element" role="region" aria-label="Статистика продаж">
-                                        <div class="stat-icon bg-flat-color-2">
-                                            <i class="fas fa-shopping-cart" aria-hidden="true"></i>
-                                        </div>
-                                        <div class="stat-content">
-                                            <h3 class="stat-title">Продажи</h3>
-                                            <p class="stat-value counter" data-target="45200" aria-live="polite">₽45,200</p>
-                                        </div>
-                                    </div>
-                                    
-
-</section>
-
-<!-- Features Section -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold mb-4 section-title">Все возможности в одной системе</h2>
-                <p class="lead text-muted">Полный набор инструментов для эффективного управления салоном красоты</p>
-            </div>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-lg-4 col-md-6 feature-item">
-                <div class="card h-100 border-0 shadow-sm card-3d">
-                    <div class="card-body text-center p-4">
-                        <div class="stat-icon bg-flat-color-1 mx-auto mb-3 feature-icon">
-                            <i class="fas fa-users"></i>
+                            </div>
                         </div>
-                        <h4 class="card-title">Управление клиентами</h4>
-                        <p class="card-text text-muted">Ведите базу клиентов, отслеживайте историю посещений, управляйте типами клиентов и анализируйте их поведение.</p>
-                        <ul class="list-unstyled text-start">
-                            <li><i class="fas fa-check text-success me-2"></i>База клиентов</li>
-                            <li><i class="fas fa-check text-success me-2"></i>История посещений</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Типы клиентов</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Аналитика по клиентам</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6 feature-item">
-                <div class="card h-100 border-0 shadow-sm card-3d">
-                    <div class="card-body text-center p-4">
-                        <div class="stat-icon bg-flat-color-3 mx-auto mb-3 feature-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <h4 class="card-title">Записи и расписание</h4>
-                        <p class="card-text text-muted">Управляйте записями клиентов, создавайте расписание мастеров, отслеживайте статусы и отправляйте уведомления.</p>
-                        <ul class="list-unstyled text-start">
-                            <li><i class="fas fa-check text-success me-2"></i>Календарь записей</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Расписание мастеров</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Статусы записей</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Уведомления</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6 feature-item">
-                <div class="card h-100 border-0 shadow-sm card-3d">
-                    <div class="card-body text-center p-4">
-                        <div class="stat-icon bg-flat-color-2 mx-auto mb-3 feature-icon">
-                            <i class="fas fa-boxes"></i>
-                        </div>
-                        <h4 class="card-title">Управление товарами</h4>
-                        <p class="card-text text-muted">Ведите складской учет, управляйте закупками и продажами, проводите инвентаризацию и анализируйте товарооборот.</p>
-                        <ul class="list-unstyled text-start">
-                            <li><i class="fas fa-check text-success me-2"></i>Складской учет</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Закупки и продажи</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Инвентаризация</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Аналитика товаров</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6 feature-item">
-                <div class="card h-100 border-0 shadow-sm card-3d">
-                    <div class="card-body text-center p-4">
-                        <div class="stat-icon bg-flat-color-5 mx-auto mb-3 feature-icon">
-                            <i class="fas fa-chart-bar"></i>
-                        </div>
-                        <h4 class="card-title">Аналитика и отчеты</h4>
-                        <p class="card-text text-muted">Получайте детальную аналитику по всем аспектам работы салона, создавайте отчеты и отслеживайте ключевые показатели.</p>
-                        <ul class="list-unstyled text-start">
-                            <li><i class="fas fa-check text-success me-2"></i>Финансовая аналитика</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Аналитика клиентов</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Аналитика сотрудников</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Детальные отчеты</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6 feature-item">
-                <div class="card h-100 border-0 shadow-sm card-3d">
-                    <div class="card-body text-center p-4">
-                        <div class="stat-icon bg-flat-color-4 mx-auto mb-3 feature-icon">
-                            <i class="fas fa-plug"></i>
-                        </div>
-                        <h4 class="card-title">Интеграции</h4>
-                        <p class="card-text text-muted">Подключайте дополнительные сервисы для автоматизации работы: Telegram уведомления, email рассылки, виджеты для сайта.</p>
-                        <ul class="list-unstyled text-start">
-                            <li><i class="fas fa-check text-success me-2"></i>Telegram уведомления</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Email рассылки</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Виджет для сайта</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Веб-запись</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4 col-md-6 feature-item">
-                <div class="card h-100 border-0 shadow-sm card-3d">
-                    <div class="card-body text-center p-4">
-                        <div class="stat-icon bg-flat-color-6 mx-auto mb-3 feature-icon">
-                            <i class="fas fa-cogs"></i>
-                        </div>
-                        <h4 class="card-title">Настройки и роли</h4>
-                        <p class="card-text text-muted">Настраивайте систему под свои нужды, создавайте роли и права доступа, управляйте пользователями и настройками.</p>
-                        <ul class="list-unstyled text-start">
-                            <li><i class="fas fa-check text-success me-2"></i>Роли и права доступа</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Управление пользователями</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Настройки системы</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Безопасность</li>
-                        </ul>
                     </div>
                 </div>
             </div>
@@ -195,392 +87,489 @@
     </div>
 </section>
 
-<!-- Web Booking Section -->
-<section class="py-5">
+<!-- Веб-запись Section -->
+<section id="web-booking" class="py-5">
     <div class="container">
         <div class="row align-items-center">
-            <!-- Phone Mockup with Form -->
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <div class="position-relative">
-                    <!-- iPhone 15 Pro Max Mockup -->
-                    <div class="phone-mockup mx-auto" style="max-width: 320px;">
-                        <div class="iphone-15-pro-max">
-                            <!-- Left Edge -->
-                            <div class="iphone-edge iphone-edge-left"></div>
-                            
-                            <!-- Right Edge -->
-                            <div class="iphone-edge iphone-edge-right"></div>
-                            
-                            <!-- Top Edge -->
-                            <div class="iphone-edge iphone-edge-top"></div>
-                            
-                            <!-- Bottom Edge -->
-                            <div class="iphone-edge iphone-edge-bottom"></div>
-                            
-                            <!-- Main Frame -->
-                            <div class="iphone-frame-15">
-                                <!-- Dynamic Island -->
-                                <div class="dynamic-island">
-                                    <div class="dynamic-island-camera"></div>
-                                    <div class="dynamic-island-sensor"></div>
-                                </div>
-                                
-                                <!-- iPhone Screen -->
-                                <div class="iphone-screen-15">
-                                    <!-- Status Bar -->
-                                    <div class="status-bar-15">
-                                        <div class="status-left">
-                                            <span class="time">9:41</span>
-                                        </div>
-                                        <div class="status-right">
-                                            <i class="fas fa-signal text-dark"></i>
-                                            <i class="fas fa-wifi text-dark ms-1"></i>
-                                            <i class="fas fa-battery-three-quarters text-dark ms-1"></i>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Real Booking Form Demo -->
-                                    <div class="booking-demo screen-content active" id="booking-screen">
-                                        <!-- Form Header -->
-                                        <div class="text-center mb-3">
-                                            <div class="stat-icon bg-flat-color-1 mx-auto mb-2" style="width: 50px; height: 50px; font-size: 1.5rem;">
-                                                <i class="fas fa-calendar-plus feature-icon"></i>
-                                            </div>
-                                            <h5 class="mb-1 fw-bold">Записаться онлайн</h5>
-                                            <small class="text-muted">CRM Studio</small>
-                                        </div>
-                                        <!-- Step Indicator -->
-                                        <div class="step-indicator-demo mb-3">
-                                            <div class="step active">1</div>
-                                            <div class="step">2</div>
-                                            <div class="step">3</div>
-                                            <div class="step">4</div>
-                                        </div>
-                                        
-                                        <!-- Step 1: Service Selection -->
-                                        <div class="step-content-demo active" id="demo-step1">
-                                            <h6 class="mb-3">Выберите услугу</h6>
-                                            <div class="service-card-demo selected">
-                                                <h6>Стрижка</h6>
-                                                <small class="text-muted">от 1 500 ₽ • 60 мин</small>
-                                            </div>
-                                            <div class="service-card-demo">
-                                                <h6>Окрашивание</h6>
-                                                <small class="text-muted">от 3 000 ₽ • 120 мин</small>
-                                            </div>
-                                            <div class="service-card-demo">
-                                                <h6>Маникюр</h6>
-                                                <small class="text-muted">от 800 ₽ • 45 мин</small>
-                                            </div>
-                                            <div class="demo-buttons">
-                                                <button type="button" class="btn btn-next-demo">
-                                                    Далее <i class="fas fa-arrow-right"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Step 2: Master Selection -->
-                                        <div class="step-content-demo" id="demo-step2">
-                                            <h6 class="mb-3">Выберите мастера</h6>
-                                            <div class="master-card-demo selected">
-                                                <div class="master-avatar-demo">А</div>
-                                                <div>
-                                                    <h6>Анна</h6>
-                                                    <small class="text-muted">Стилист</small>
-                                                </div>
-                                            </div>
-                                            <div class="master-card-demo">
-                                                <div class="master-avatar-demo">М</div>
-                                                <div>
-                                                    <h6>Мария</h6>
-                                                    <small class="text-muted">Мастер</small>
-                                                </div>
-                                            </div>
-                                            <div class="demo-buttons">
-                                                <button type="button" class="btn btn-secondary-demo">
-                                                    <i class="fas fa-arrow-left"></i> Назад
-                                                </button>
-                                                <button type="button" class="btn btn-next-demo">
-                                                    Далее <i class="fas fa-arrow-right"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Step 3: Date & Time -->
-                                        <div class="step-content-demo" id="demo-step3">
-                                            <h6 class="mb-3">Выберите дату и время</h6>
-                                            <div class="calendar-demo mb-3">
-                                                <div class="calendar-header-demo">
-                                                    <i class="fas fa-chevron-left"></i>
-                                                    <span>Июль 2025</span>
-                                                    <i class="fas fa-chevron-right"></i>
-                                                </div>
-                                                <div class="calendar-grid-demo">
-                                                    <div class="calendar-day-demo disabled">15</div>
-                                                    <div class="calendar-day-demo disabled">16</div>
-                                                    <div class="calendar-day-demo">17</div>
-                                                    <div class="calendar-day-demo">18</div>
-                                                    <div class="calendar-day-demo selected">19</div>
-                                                    <div class="calendar-day-demo">20</div>
-                                                    <div class="calendar-day-demo">21</div>
-                                                </div>
-                                            </div>
-                                            <div class="time-slots-demo">
-                                                <div class="time-slot-demo">09:00</div>
-                                                <div class="time-slot-demo">10:00</div>
-                                                <div class="time-slot-demo selected">11:00</div>
-                                                <div class="time-slot-demo">12:00</div>
-                                                <div class="time-slot-demo">13:00</div>
-                                            </div>
-                                            <div class="demo-buttons">
-                                                <button type="button" class="btn btn-secondary-demo">
-                                                    <i class="fas fa-arrow-left"></i> Назад
-                                                </button>
-                                                <button type="button" class="btn btn-next-demo">
-                                                    Далее <i class="fas fa-arrow-right"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Step 4: Client Data -->
-                                        <div class="step-content-demo" id="demo-step4">
-                                            <h6 class="mb-3">Ваши данные</h6>
-                                            <div class="mb-2">
-                                                <input type="text" class="form-control form-control-sm" placeholder="Ваше имя" readonly>
-                                            </div>
-                                            <div class="mb-2">
-                                                <input type="tel" class="form-control form-control-sm" placeholder="+380" readonly>
-                                            </div>
-                                            <div class="mb-2">
-                                                <input type="email" class="form-control form-control-sm" placeholder="Email (необязательно)" readonly>
-                                            </div>
-                                            <div class="mb-3">
-                                                <textarea class="form-control form-control-sm" placeholder="Комментарий" rows="2" readonly></textarea>
-                                            </div>
-                                            <button type="button" class="btn btn-primary btn-sm w-100" disabled>
-                                                <i class="fas fa-check me-1"></i>Записаться
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Instagram Profile Screen -->
-                                    <div class="instagram-screen screen-content" id="instagram-screen">
-                                        <!-- Instagram Profile Header -->
-                                        <div class="instagram-profile-header">
-                                            <div class="profile-avatar">
-                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjY2NzM7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmY5OTY2O3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+" alt="Profile">
-                                            </div>
-                                            <div class="profile-info">
-                                                <h6 class="profile-username">beauty_salon_elite</h6>
-                                                <p class="profile-bio">✨ Салон красоты в центре города ✨<br>Запись онлайн: <span class="text-primary">@crmstudio</span></p>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Profile Stats -->
-                                        <div class="profile-stats">
-                                            <div class="stat-item">
-                                                <span class="stat-number">247</span>
-                                                <span class="stat-label">постов</span>
-                                            </div>
-                                            <div class="stat-item">
-                                                <span class="stat-number">12.5K</span>
-                                                <span class="stat-label">подписчиков</span>
-                                            </div>
-                                            <div class="stat-item">
-                                                <span class="stat-number">1.2K</span>
-                                                <span class="stat-label">подписок</span>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Profile Actions -->
-                                        <div class="profile-actions">
-                                            <button class="btn btn-primary btn-sm">Подписаться</button>
-                                            <button class="btn btn-outline-secondary btn-sm">Сообщение</button>
-                                            <button class="btn btn-outline-secondary btn-sm">
-                                                <i class="fas fa-ellipsis-h"></i>
-                                            </button>
-                                        </div>
-                                        
-                                        <!-- Stories Highlights -->
-                                        <div class="stories-highlights">
-                                            <div class="highlight-item">
-                                                <div class="highlight-avatar">
-                                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMzAiIGZpbGw9InVybCgjZ3JhZGllbnQyKSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDIiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzY2N2VlYTtzdG9wLW9wYWNpdHk6MSIvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM3NjRiYTI7c3RvcC1vcGFjaXR5OjEiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=" alt="Highlight">
-                                                </div>
-                                                <small>Запись</small>
-                                            </div>
-                                            <div class="highlight-item">
-                                                <div class="highlight-avatar">
-                                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMzAiIGZpbGw9InVybCgjZ3JhZGllbnQzKSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDMiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzI4YTc0NTtzdG9wLW9wYWNpdHk6MSIvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM1NmJiOTM7c3RvcC1vcGFjaXR5OjEiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4=" alt="Highlight">
-                                                </div>
-                                                <small>Услуги</small>
-                                            </div>
-                                            <div class="highlight-item">
-                                                <div class="highlight-avatar">
-                                                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMzAiIGZpbGw9InVybCgjZ3JhZGllbnQ0KSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDQyIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjY2NzM7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmY5OTY2O3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+" alt="Highlight">
-                                                </div>
-                                                <small>Мастера</small>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Posts Grid -->
-                                        <div class="posts-grid">
-                                            <div class="post-thumbnail">
-                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50NSkiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQ1IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmY7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjhmOWZhO3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMjAiIGZpbGw9IiM2NjdlZWEiLz4KPC9zdmc+" alt="Post">
-                                            </div>
-                                            <div class="post-thumbnail">
-                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50Nik7Ii8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50NiIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZmO3N0b3Atb3BhY2l0eToxIi8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I2Y4ZjlmYTtzdG9wLW9wYWNpdHk6MSIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjIwIiBmaWxsPSIjNzY0YmEyIi8+Cjwvc3ZnPg==" alt="Post">
-                                            </div>
-                                            <div class="post-thumbnail">
-                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50NykiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQ3IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmY7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjhmOWZhO3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMjAiIGZpbGw9IiMyOGE3NDUiLz4KPC9zdmc+" alt="Post">
-                                            </div>
-                                            <div class="post-thumbnail">
-                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50OCkiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQ4IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmY7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjhmOWZhO3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMjAiIGZpbGw9IiNmZjY2NzMiLz4KPC9zdmc+" alt="Post">
-                                            </div>
-                                            <div class="post-thumbnail">
-                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50OSkiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQ5IiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmY7c3RvcC1vcGFjaXR5OjEiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZjhmOWZhO3N0b3Atb3BhY2l0eToxIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMjAiIGZpbGw9IiNmZjY2NzMiLz4KPC9zdmc+" alt="Post">
-                                            </div>
-                                            <div class="post-thumbnail">
-                                                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50MTApIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50MTAiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I2ZmZjtzdG9wLW9wYWNpdHk6MSIvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmOGY5ZmE7c3RvcC1vcGFjaXR5OjEiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIyMCIgZmlsbD0iIzY2N2VlYSIvPgo8L3N2Zz4=" alt="Post">
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Booking Link Highlight -->
-                                        <div class="booking-link-highlight">
-                                            <div class="link-card">
-                                                <i class="fas fa-calendar-plus"></i>
-                                                <span>Записаться онлайн</span>
-                                                <small>@crmstudio</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Home Indicator -->
-                                    <div class="home-indicator-15"></div>
-                                    
-                                    <!-- Screen Switch Indicator -->
-                                    <div class="screen-switch-indicator">
-                                        <div class="indicator-dot active"></div>
-                                        <div class="indicator-dot"></div>
-                                        <button class="btn btn-sm btn-outline-primary test-switch-btn" style="font-size: 0.6rem; padding: 2px 6px;">
-                                            Тест
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Action Button -->
-                                <div class="action-button"></div>
-                                
-                                <!-- Volume Buttons -->
-                                <div class="volume-buttons">
-                                    <div class="volume-up"></div>
-                                    <div class="volume-down"></div>
-                                </div>
-                                
-                                <!-- Power Button -->
-                                <div class="power-button"></div>
-                            </div>
+            <div class="col-lg-6">
+                <div class="feature-content">
+                    <div class="feature-icon mb-4">
+                        <div class="stat-icon bg-flat-color-1">
+                            <i class="fas fa-link"></i>
                         </div>
                     </div>
-                    
-                    <!-- Floating Elements -->
-                    <div class="position-absolute" style="top: -20px; right: 20px;">
-                        <div class="bg-success text-white rounded-circle p-2 shadow" style="width: 40px; height: 40px;">
-                            <i class="fas fa-check"></i>
+                    <h2 class="display-5 fw-bold mb-4">🔗 Веб-запись через ссылки</h2>
+                    <p class="lead mb-4">Клиенты могут записываться на услуги через ссылки в Instagram, Facebook и других социальных сетях. Простая интеграция в любой профиль.</p>
+                    <div class="feature-benefits">
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Ссылка для Instagram в био</span>
                         </div>
-                    </div>
-                    <div class="position-absolute" style="bottom: 20px; left: -10px;">
-                        <div class="bg-warning text-white rounded-circle p-2 shadow" style="width: 35px; height: 35px;">
-                            <i class="fas fa-clock"></i>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Интеграция с Facebook</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Выбор услуг и мастеров в реальном времени</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Автоматические уведомления о записях</span>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Content -->
             <div class="col-lg-6">
-                <div class="ps-lg-4">
-                    <h2 class="display-5 fw-bold mb-4">Веб-запись для вашего сайта</h2>
-                    <p class="lead text-muted mb-4">Встроите форму записи прямо на ваш сайт или используйте отдельную ссылку для социальных сетей</p>
-                    
-                    <div class="row g-4 mb-4">
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="stat-icon bg-flat-color-1 me-3" style="width: 40px; height: 40px; font-size: 1rem;">
-                                    <i class="fas fa-link feature-icon"></i>
-                                </div>
-                                <div>
-                                    <h5 class="mb-1">Отдельная ссылка</h5>
-                                    <small class="text-muted">Уникальный URL для каждой соцсети</small>
-                                </div>
+                <div class="feature-demo">
+                    <div class="booking-form-preview">
+                        <div class="booking-form-container">
+                            <div class="form-header bg-gradient-primary text-white p-3 rounded-top">
+                                <h6 class="mb-0"><i class="fas fa-calendar-plus me-2"></i>Онлайн запись</h6>
                             </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="stat-icon bg-flat-color-3 me-3" style="width: 40px; height: 40px; font-size: 1rem;">
-                                    <i class="fas fa-mobile-alt feature-icon"></i>
+                            <div class="form-body p-3 bg-white rounded-bottom">
+                                <!-- Шаг 1: Выбор услуги -->
+                                <div class="form-step active" id="demo-step1">
+                                    <h6 class="mb-3">Выберите услугу</h6>
+                                    <div class="service-options">
+                                        <div class="service-option selected">
+                                            <div class="service-info">
+                                                <h5 class="mb-1">Маникюр</h5>
+                                                <p>от 1500 ₴ • 60 мин</p>
+                                            </div>
+                                        </div>
+                                        <div class="service-option">
+                                            <div class="service-info">
+                                                <h5 class="mb-1">Стрижка</h5>
+                                                <p>от 2000 ₴ • 45 мин</p>
+                                            </div>
+                                        </div>
+                                        <div class="service-option">
+                                            <div class="service-info">
+                                                <h5 class="mb-1">Массаж</h5>
+                                                <p>от 3000 ₴ • 90 мин</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions mt-3">
+                                        <button class="btn btn-primary btn-sm w-100">Далее <i class="fas fa-arrow-right ms-1"></i></button>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h5 class="mb-1">Адаптивный дизайн</h5>
-                                    <small class="text-muted">Отлично работает на всех устройствах</small>
+                                
+                                <!-- Шаг 2: Выбор мастера -->
+                                <div class="form-step" id="demo-step2">
+                                    <h6 class="mb-3">Выберите мастера</h6>
+                                    <div class="master-options">
+                                        <div class="master-option selected">
+                                            <div class="master-avatar">
+                                                <div class="avatar-placeholder">А</div>
+                                            </div>
+                                            <div class="master-info">
+                                                <h5 class="mb-1">Анна</h5>
+                                                <p>Мастер маникюра</p>
+                                            </div>
+                                        </div>
+                                        <div class="master-option">
+                                            <div class="master-avatar">
+                                                <div class="avatar-placeholder">М</div>
+                                            </div>
+                                            <div class="master-info">
+                                                <h5 class="mb-1">Мария</h5>
+                                                <p>Парикмахер</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions mt-3">
+                                        <button class="btn btn-secondary btn-sm me-2">Назад</button>
+                                        <button class="btn btn-primary btn-sm">Далее <i class="fas fa-arrow-right ms-1"></i></button>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="stat-icon bg-flat-color-5 me-3" style="width: 40px; height: 40px; font-size: 1rem;">
-                                    <i class="fas fa-instagram feature-icon"></i>
+                                
+                                <!-- Шаг 3: Выбор даты и времени -->
+                                <div class="form-step" id="demo-step3">
+                                    <h6 class="mb-3">Выберите дату и время</h6>
+                                    <div class="calendar-demo">
+                                        <div class="calendar-header">
+                                            <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-left"></i></button>
+                                            <h5 class="mb-0">Январь 2025</h5>
+                                            <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-right"></i></button>
+                                        </div>
+                                        <div class="calendar-grid-demo">
+                                            <div class="calendar-day-demo disabled">1</div>
+                                            <div class="calendar-day-demo disabled">2</div>
+                                            <div class="calendar-day-demo">3</div>
+                                            <div class="calendar-day-demo">4</div>
+                                            <div class="calendar-day-demo selected">5</div>
+                                            <div class="calendar-day-demo">6</div>
+                                            <div class="calendar-day-demo">7</div>
+                                        </div>
+                                    </div>
+                                    <div class="time-slots-demo mt-3">
+                                        <h6 class="mb-2">Доступное время</h6>
+                                        <div class="time-slots-grid-demo">
+                                            <div class="time-slot-demo">10:00</div>
+                                            <div class="time-slot-demo">11:00</div>
+                                            <div class="time-slot-demo selected">14:00</div>
+                                            <div class="time-slot-demo">15:00</div>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions mt-3">
+                                        <button class="btn btn-secondary btn-sm me-2">Назад</button>
+                                        <button class="btn btn-primary btn-sm">Далее <i class="fas fa-arrow-right ms-1"></i></button>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h5 class="mb-1">Instagram Bio Link</h5>
-                                    <small class="text-muted">Идеально для Instagram профиля</small>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="stat-icon bg-flat-color-2 me-3" style="width: 40px; height: 40px; font-size: 1rem;">
-                                    <i class="fas fa-chart-line feature-icon"></i>
-                                </div>
-                                <div>
-                                    <h5 class="mb-1">Аналитика записей</h5>
-                                    <small class="text-muted">Отслеживайте источники клиентов</small>
+                                
+                                <!-- Шаг 4: Данные клиента -->
+                                <div class="form-step" id="demo-step4">
+                                    <h6 class="mb-3">Ваши данные</h6>
+                                    <div class="form-fields">
+                                        <div class="form-group mb-2">
+                                            <input type="text" class="form-control form-control-sm" placeholder="Ваше имя" value="Анна Петрова">
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <input type="tel" class="form-control form-control-sm" placeholder="Телефон" value="+380 99 123 45 67">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <textarea class="form-control form-control-sm" rows="2" placeholder="Комментарий (необязательно)"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button class="btn btn-secondary btn-sm me-2">Назад</button>
+                                        <button class="btn btn-success btn-sm">Записаться <i class="fas fa-check ms-1"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="instagram-highlight p-1 mb-4">
-                        <div class="bg-light rounded-3 p-4">
-                            <h5 class="fw-bold mb-3">
-                                <i class="fab fa-instagram text-danger me-2"></i>
-                                Особенно для Instagram
-                            </h5>
-                            <p class="mb-3">Создайте отдельную ссылку для Instagram Bio, которая будет вести прямо к форме записи. Клиенты смогут записаться в один клик!</p>
-                            <div class="d-flex align-items-center flex-wrap gap-2">
-                                <div class="bg-dark text-white rounded-2 px-3 py-2">
-                                    <small class="font-monospace">crmstudio.com/booking/insta</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Telegram уведомления Section -->
+<section id="telegram-notifications" class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 order-lg-2">
+                <div class="feature-content">
+                    <div class="feature-icon mb-4">
+                        <div class="stat-icon bg-flat-color-3">
+                            <i class="fab fa-telegram"></i>
+                        </div>
+                    </div>
+                    <h2 class="display-5 fw-bold mb-4">📱 Telegram уведомления</h2>
+                    <p class="lead mb-4">Получайте мгновенные уведомления о новых записях, отменах и изменениях в Telegram. Быстрая связь с клиентами.</p>
+                    <div class="feature-benefits">
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Мгновенные уведомления о новых записях</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Уведомления об отменах и переносах</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Автоматические напоминания клиентам</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Статистика и отчеты прямо в чате</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 order-lg-1">
+                <div class="feature-demo">
+                    <div class="telegram-preview">
+                        <div class="telegram-chat">
+                            <div class="chat-header bg-primary text-white p-2 rounded-top">
+                                <i class="fab fa-telegram me-2"></i>CRM Studio Bot
+                            </div>
+                            <div class="chat-messages p-3 bg-white rounded-bottom">
+                                <div class="message bot-message mb-2">
+                                    <div class="message-content bg-light p-2 rounded">
+                                        <small class="text-muted">Новая запись!</small>
+                                        <div>Клиент: Анна Петрова</div>
+                                        <div>Услуга: Маникюр</div>
+                                        <div>Дата: 15.01.2025, 14:00</div>
+                                    </div>
                                 </div>
-                                <button class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-copy me-1"></i>Копировать
-                                </button>
-                                <button class="btn btn-outline-success btn-sm">
-                                    <i class="fab fa-instagram me-1"></i>Добавить в Bio
-                                </button>
+                                <div class="message bot-message mb-2">
+                                    <div class="message-content bg-light p-2 rounded">
+                                        <small class="text-muted">Напоминание</small>
+                                        <div>Завтра в 10:00 - Массаж</div>
+                                        <div>Клиент: Мария Козлова</div>
+                                    </div>
+                                </div>
+                                <div class="message bot-message">
+                                    <div class="message-content bg-light p-2 rounded">
+                                        <small class="text-muted">Статистика за сегодня</small>
+                                        <div>✅ Записей: 8</div>
+                                        <div>💰 Выручка: ₴12,500</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="d-flex gap-3">
-                        <a href="#" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#registerModal">
-                            <i class="fas fa-rocket me-2"></i>Попробовать бесплатно
-                        </a>
-                        <a href="#" class="btn btn-outline-primary btn-lg">
-                            <i class="fas fa-play me-2"></i>Демо виджета
-                        </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Email рассылки Section -->
+<section id="email-marketing" class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="feature-content">
+                    <div class="feature-icon mb-4">
+                        <div class="stat-icon bg-flat-color-2">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                    <h2 class="display-5 fw-bold mb-4">📧 Email рассылки</h2>
+                    <p class="lead mb-4">Автоматические email уведомления для клиентов. Напоминания о записях, поздравления с днями рождения, акции и спецпредложения.</p>
+                    <div class="feature-benefits">
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Автоматические напоминания о записях</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Поздравления с днями рождения</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Персональные акции и скидки</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Красивые шаблоны писем</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="feature-demo">
+                    <div class="email-preview">
+                        <div class="email-template">
+                            <div class="email-header bg-gradient-primary text-white p-3 rounded-top">
+                                <h6 class="mb-0"><i class="fas fa-envelope me-2"></i>Напоминание о записи</h6>
+                            </div>
+                            <div class="email-body p-3 bg-white rounded-bottom">
+                                <div class="email-content">
+                                    <h6>Здравствуйте, Анна!</h6>
+                                    <p>Напоминаем о записи на завтра:</p>
+                                    <div class="appointment-details bg-light p-3 rounded mb-3">
+                                        <div><strong>Услуга:</strong> Маникюр</div>
+                                        <div><strong>Дата:</strong> 15 января 2025</div>
+                                        <div><strong>Время:</strong> 14:00</div>
+                                        <div><strong>Мастер:</strong> Елена</div>
+                                    </div>
+                                    <p>Ждем вас в салоне!</p>
+                                    <button class="btn btn-primary btn-sm">Подтвердить</button>
+                                    <button class="btn btn-outline-secondary btn-sm ms-2">Перенести</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Виджет для сайта Section -->
+<section id="website-widget" class="py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 order-lg-2">
+                <div class="feature-content">
+                    <div class="feature-icon mb-4">
+                        <div class="stat-icon bg-flat-color-4">
+                            <i class="fas fa-code"></i>
+                        </div>
+                    </div>
+                    <h2 class="display-5 fw-bold mb-4">🌐 Виджет для сайта</h2>
+                    <p class="lead mb-4">Красивый и функциональный виджет для вашего сайта. Простая интеграция одной строкой кода.</p>
+                    <div class="feature-benefits">
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Простая интеграция одной строкой кода</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Адаптивный дизайн для всех устройств</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Настройка под дизайн вашего сайта</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Аналитика кликов и конверсий</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 order-lg-1">
+                <div class="feature-demo">
+                    <div class="code-preview">
+                        <div class="code-header bg-dark text-white p-2 rounded-top">
+                            <small><i class="fas fa-code me-2"></i>Код для вставки</small>
+                        </div>
+                        <div class="code-body bg-dark text-light p-3 rounded-bottom">
+                            <pre class="mb-0"><code>&lt;script src="https://crmstudio.com/widget.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  CRMStudio.init({
+    salonId: 'your-salon-id',
+    theme: 'light',
+    position: 'bottom-right'
+  });
+&lt;/script&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Система ролей Section -->
+<section id="roles-system" class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="feature-content">
+                    <div class="feature-icon mb-4">
+                        <div class="stat-icon bg-flat-color-5">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                    </div>
+                    <h2 class="display-5 fw-bold mb-4">🔒 Система ролей и прав</h2>
+                    <p class="lead mb-4">Гибкая система ролей для разных сотрудников. Администратор, менеджер, мастер - каждый видит только нужную информацию.</p>
+                    <div class="feature-benefits">
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Роли: Администратор, Менеджер, Мастер</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Гибкие права доступа к функциям</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Безопасность данных и конфиденциальность</span>
+                        </div>
+                        <div class="benefit-item mb-3">
+                            <i class="fas fa-check-circle text-success me-3"></i>
+                            <span>Аудит действий пользователей</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="feature-demo">
+                    <div class="roles-preview">
+                        <div class="roles-cards">
+                            <div class="role-card mb-3">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0"><i class="fas fa-crown me-2"></i>Администратор</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><i class="fas fa-check text-success me-2"></i>Полный доступ ко всем функциям</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Управление пользователями</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Финансовая отчетность</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="role-card mb-3">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Менеджер</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><i class="fas fa-check text-success me-2"></i>Управление записями</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Работа с клиентами</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Базовая аналитика</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="role-card">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0"><i class="fas fa-user me-2"></i>Мастер</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul class="list-unstyled mb-0">
+                                            <li><i class="fas fa-check text-success me-2"></i>Просмотр своих записей</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Расписание работы</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Личная статистика</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-card bg-success-light interactive-element">
+                    <div class="stat-icon bg-flat-color-1">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-title">Клиентов</h3>
+                        <p class="stat-value counter" data-target="2500">2,500+</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-card bg-info-light interactive-element">
+                    <div class="stat-icon bg-flat-color-3">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-title">Записей</h3>
+                        <p class="stat-value counter" data-target="15000">15,000+</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-card bg-warning-light interactive-element">
+                    <div class="stat-icon bg-flat-color-4">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-title">Прибыль</h3>
+                        <p class="stat-value counter" data-target="500000">₴500,000+</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="stat-card bg-primary-light interactive-element">
+                    <div class="stat-icon bg-flat-color-2">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-title">Оценка</h3>
+                        <p class="stat-value">4.9/5</p>
                     </div>
                 </div>
             </div>
@@ -589,25 +578,25 @@
 </section>
 
 <!-- Testimonials Section -->
-<section class="py-5 bg-light">
+<section class="py-5">
     <div class="container">
         <div class="row text-center mb-5">
             <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold mb-4">Отзывы наших клиентов</h2>
+                <h2 class="display-5 fw-bold mb-4 section-title">Отзывы наших клиентов</h2>
                 <p class="lead text-muted">Что говорят владельцы салонов красоты о CRM Studio</p>
             </div>
         </div>
         
         <div class="row g-4">
-            <div class="col-lg-4 col-md-6 animate-fade-in-up">
-                <div class="card border-0 shadow-sm h-100">
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm card-3d">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
-                            <div class="avatar bg-flat-color-1 text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.2rem; font-weight: 700;">
-                                АК
+                            <div class="avatar me-3 bg-gradient-primary d-flex align-items-center justify-content-center">
+                                <i class="fas fa-user text-white"></i>
                             </div>
                             <div>
-                                <h5 class="mb-0">Анна Коваленко</h5>
+                                <h5 class="mb-1">Анна Петрова</h5>
                                 <small class="text-muted">Салон "Красота"</small>
                             </div>
                         </div>
@@ -618,20 +607,20 @@
                             <i class="fas fa-star text-warning"></i>
                             <i class="fas fa-star text-warning"></i>
                         </div>
-                        <p class="card-text text-muted">"CRM Studio полностью изменила работу нашего салона. Теперь все записи в одном месте, клиенты получают уведомления, а мы видим полную аналитику. Очень удобно!"</p>
+                        <p class="card-text">"Веб-запись через виджет увеличила количество клиентов на 40%! Клиенты записываются в любое время, даже ночью. Telegram уведомления помогают не пропустить ни одной записи."</p>
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-4 col-md-6 animate-fade-in-up">
-                <div class="card border-0 shadow-sm h-100">
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm card-3d">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
-                            <div class="avatar bg-flat-color-3 text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.2rem; font-weight: 700;">
-                                МП
+                            <div class="avatar me-3 bg-gradient-info d-flex align-items-center justify-content-center">
+                                <i class="fas fa-user text-white"></i>
                             </div>
                             <div>
-                                <h5 class="mb-0">Мария Петренко</h5>
+                                <h5 class="mb-1">Михаил Сидоров</h5>
                                 <small class="text-muted">Студия "Элегант"</small>
                             </div>
                         </div>
@@ -642,21 +631,21 @@
                             <i class="fas fa-star text-warning"></i>
                             <i class="fas fa-star text-warning"></i>
                         </div>
-                        <p class="card-text text-muted">"Отличная система! Особенно нравится управление товарами и складом. Всегда знаем, что есть в наличии, а что нужно заказать. Экономит много времени."</p>
+                        <p class="card-text">"Система ролей и прав очень удобна. Каждый мастер видит только свои записи, администратор контролирует все процессы. Email рассылки помогают удерживать клиентов."</p>
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-4 col-md-6 animate-fade-in-up">
-                <div class="card border-0 shadow-sm h-100">
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 border-0 shadow-sm card-3d">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
-                            <div class="avatar bg-flat-color-5 text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; font-size: 1.2rem; font-weight: 700;">
-                                ОС
+                            <div class="avatar me-3 bg-gradient-success d-flex align-items-center justify-content-center">
+                                <i class="fas fa-user text-white"></i>
                             </div>
                             <div>
-                                <h5 class="mb-0">Ольга Сидоренко</h5>
-                                <small class="text-muted">Салон "Престиж"</small>
+                                <h5 class="mb-1">Елена Козлова</h5>
+                                <small class="text-muted">Салон "Грация"</small>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -666,95 +655,7 @@
                             <i class="fas fa-star text-warning"></i>
                             <i class="fas fa-star text-warning"></i>
                         </div>
-                        <p class="card-text text-muted">"Простое и понятное управление клиентами. Аналитика помогает принимать правильные решения. Поддержка отвечает быстро и по делу. Рекомендую всем!"</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="row mt-5">
-            <div class="col-12 text-center">
-                <div class="d-flex justify-content-center align-items-center flex-wrap gap-4">
-                    <div class="text-center">
-                        <h3 class="fw-bold text-primary mb-0">4.9</h3>
-                        <div class="mb-2">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                        </div>
-                        <small class="text-muted">Средний рейтинг</small>
-                    </div>
-                    <div class="text-center">
-                        <h3 class="fw-bold text-primary mb-0">500+</h3>
-                        <small class="text-muted">Довольных клиентов</small>
-                    </div>
-                    <div class="text-center">
-                        <h3 class="fw-bold text-primary mb-0">98%</h3>
-                        <small class="text-muted">Рекомендуют друзьям</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Statistics Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold mb-4">Почему выбирают CRM Studio</h2>
-                <p class="lead text-muted">Тысячи салонов красоты уже используют нашу систему</p>
-            </div>
-        </div>
-        
-        <div class="row g-4 text-center">
-            <div class="col-lg-3 col-md-6 animate-fade-in-up">
-                <div class="card border-0 shadow-sm magnetic">
-                    <div class="card-body p-4">
-                        <div class="stat-icon bg-flat-color-1 mx-auto mb-3">
-                            <i class="fas fa-store"></i>
-                        </div>
-                        <h3 class="stat-value counter" data-target="500">500+</h3>
-                        <p class="stat-title">Салонов красоты</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6 animate-fade-in-up">
-                <div class="card border-0 shadow-sm magnetic">
-                    <div class="card-body p-4">
-                        <div class="stat-icon bg-flat-color-3 mx-auto mb-3">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3 class="stat-value counter" data-target="50000">50,000+</h3>
-                        <p class="stat-title">Клиентов</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6 animate-fade-in-up">
-                <div class="card border-0 shadow-sm magnetic">
-                    <div class="card-body p-4">
-                        <div class="stat-icon bg-flat-color-5 mx-auto mb-3">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <h3 class="stat-value counter" data-target="1000000">1M+</h3>
-                        <p class="stat-title">Записей</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-3 col-md-6 animate-fade-in-up">
-                <div class="card border-0 shadow-sm magnetic">
-                    <div class="card-body p-4">
-                        <div class="stat-icon bg-flat-color-2 mx-auto mb-3">
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <h3 class="stat-value">4.9</h3>
-                        <p class="stat-title">Рейтинг</p>
+                        <p class="card-text">"Аналитика и отчеты показывают реальную картину бизнеса. Видим, какие услуги популярны, какие мастера эффективнее работают. Прибыль выросла на 25% за полгода."</p>
                     </div>
                 </div>
             </div>
@@ -763,13 +664,22 @@
 </section>
 
 <!-- CTA Section -->
-<section class="bg-gradient-primary text-white py-5">
-    <div class="container text-center">
-        <h2 class="display-6 fw-bold mb-4">Готовы начать?</h2>
-        <p class="lead mb-4">Присоединяйтесь к тысячам салонов красоты, которые уже используют CRM Studio</p>
-        <a href="#" class="btn btn-light btn-lg animate-glow" data-bs-toggle="modal" data-bs-target="#registerModal">
-            <i class="fas fa-rocket me-2"></i>Начать бесплатно
-        </a>
+<section class="py-5 bg-gradient-primary text-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold mb-4">Готовы автоматизировать свой салон?</h2>
+                <p class="lead mb-4">Присоединяйтесь к тысячам салонов красоты, которые уже используют CRM Studio</p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a href="#" class="btn btn-light btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
+                        <i class="fas fa-rocket me-2"></i>Начать бесплатно
+                    </a>
+                    <a href="/pricing" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-list me-2"></i>Посмотреть тарифы
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
