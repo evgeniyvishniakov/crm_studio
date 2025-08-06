@@ -907,7 +907,7 @@ function renderSales(sales) {
                             ${photoHtml}
                         </div>
                     </td>
-                    <td class="wholesale-price currency-amount" data-amount="${saleItem.wholesale_price || 0}">${formatPrice(saleItem.wholesale_price || 0)}</td>
+                    <td>${escapeHtml(sale.employee ? sale.employee.name : (window.translations?.employee_not_specified || 'Сотрудник не указан'))}</td>
                     <td class="retail-price currency-amount" data-amount="${saleItem.retail_price || 0}">${formatPrice(saleItem.retail_price || 0)}</td>
                     <td class="quantity">${saleItem.quantity || 0} шт.</td>
                     <td class="total-sum currency-amount" data-amount="${saleItem.total || 0}">${formatPrice(saleItem.total || 0)}</td>
@@ -978,11 +978,11 @@ function renderSales(sales) {
                         <div class="sale-info-item">
                             <div class="sale-info-label">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                 </svg>
-                                Оптовая цена
+                                Сотрудник
                             </div>
-                            <div class="sale-info-value">${formatPrice(saleItem.wholesale_price || 0)}</div>
+                            <div class="sale-info-value">${escapeHtml(sale.employee ? sale.employee.name : (window.translations?.employee_not_specified || 'Сотрудник не указан'))}</div>
                         </div>
                         <div class="sale-info-item">
                             <div class="sale-info-label">

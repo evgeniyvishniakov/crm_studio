@@ -35,7 +35,8 @@
             supplier_inactive: '{{ __("messages.supplier_inactive") }}',
             supplier_contact_person: '{{ __("messages.supplier_contact_person") }}',
             phone: '{{ __("messages.phone") }}',
-            email: '{{ __("messages.email") }}'
+            email: '{{ __("messages.email") }}',
+            employee_not_specified: '{{ __("messages.employee_not_specified") }}'
         };
     </script>
 

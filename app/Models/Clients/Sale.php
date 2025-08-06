@@ -26,6 +26,11 @@ class Sale extends Model
         return $this->belongsTo(Client::class);
     }
 
+    public function employee()
+    {
+        return $this->belongsTo(\App\Models\Admin\User::class, 'employee_id');
+    }
+
     public function items()
     {
         return $this->hasMany(SaleItem::class);

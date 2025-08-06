@@ -17,7 +17,7 @@ class SaleController extends Controller
     public function index(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
-        $query = Sale::with(['client', 'items.product'])
+        $query = Sale::with(['client', 'employee', 'items.product'])
             ->where('project_id', $currentProjectId)
             ->orderBy('date', 'desc');
 
@@ -357,7 +357,7 @@ class SaleController extends Controller
     public function edit(Sale $sale)
     {
         try {
-            $sale->load(['client', 'items.product']);
+            $sale->load(['client', 'employee', 'items.product']);
             $clients = Client::select('id', 'name', 'instagram', 'phone', 'email')->get();
 
             $products = Product::whereHas('warehouse', function($query) {

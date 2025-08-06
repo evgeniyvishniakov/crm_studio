@@ -55,7 +55,7 @@
                     <th>{{ __('messages.client') }}</th>
                     <th>{{ __('messages.product') }}</th>
                     <th>{{ __('messages.photo') }}</th>
-                    <th>{{ __('messages.wholesale_price') }}</th>
+                    <th>{{ __('messages.employee') }}</th>
                     <th>{{ __('messages.retail_price') }}</th>
                     <th>{{ __('messages.quantity') }}</th>
                     <th>{{ __('messages.sum') }}</th>

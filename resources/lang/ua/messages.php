@@ -572,6 +572,7 @@ return [
     'service' => 'Послуга',
     'master' => 'Майстер',
     'employee' => 'Співробітник',
+    'employee_not_specified' => 'Співробітник не вказаний',
     'cost' => 'Вартість',
     'actions' => 'Дії',
     'view' => 'Перегляд',

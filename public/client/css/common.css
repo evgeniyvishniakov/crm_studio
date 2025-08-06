@@ -4199,17 +4199,12 @@ input[type="date"]:focus {
     .sale-table .actions-cell {
         text-align: center;
         vertical-align: middle;
-        padding: 51px 0 !important;
+        padding: 50px 10px !important;
     }
 
 /* ===== СТИЛИ ДЛЯ РАЗДЕЛА "ПРОДАЖИ" ===== */
 
-/* Контейнер продаж */
-.sales-container {
-    padding: 20px;
-    background: #f8fafc;
-    min-height: 100vh;
-}
+
 
 /* Заголовок продаж */
 .sales-header {

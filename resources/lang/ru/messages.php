@@ -556,6 +556,7 @@ return [
     'service' => 'Услуга',
     'master' => 'Мастер',
     'employee' => 'Сотрудник',
+    'employee_not_specified' => 'Сотрудник не указан',
     'cost' => 'Стоимость',
     'actions' => 'Действия',
     'view' => 'Просмотр',
