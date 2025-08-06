@@ -145,8 +145,9 @@
                         </div>
                         <div class="col-md-4">
                             <div class="mb-3">
-                                <label for="thousands_separator" class="form-label">Разделитель тысяч *</label>
-                                <input type="text" class="form-control" id="thousands_separator" name="thousands_separator" maxlength="1" value="," required>
+                                <label for="thousands_separator" class="form-label">Разделитель тысяч</label>
+                                <input type="text" class="form-control" id="thousands_separator" name="thousands_separator" maxlength="1" value="" placeholder="Оставьте пустым для отключения">
+                                <div class="form-text">Оставьте пустым, чтобы отключить разделители тысяч (например, 1400 вместо 1,400)</div>
                             </div>
                         </div>
                     </div>
@@ -228,6 +229,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('currencyForm').reset();
     document.getElementById('currencyId').value = '';
     
+    // Устанавливаем значения по умолчанию для новой валюты
+    document.getElementById('symbol_position').value = 'after';
+    document.getElementById('decimal_places').value = '2';
+    document.getElementById('decimal_separator').value = '.';
+    document.getElementById('thousands_separator').value = '';
+    document.getElementById('is_active').checked = true;
+    document.getElementById('is_default').checked = false;
+    
     const modal = new bootstrap.Modal(document.getElementById('currencyModal'));
     modal.show();
         
@@ -295,9 +304,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('name').value = currency.name;
                 document.getElementById('symbol').value = currency.symbol;
                 document.getElementById('symbol_position').value = currency.symbol_position;
-                document.getElementById('decimal_places').value = currency.decimal_places;
+                document.getElementById('decimal_places').value = currency.decimal_places.toString();
                 document.getElementById('decimal_separator').value = currency.decimal_separator;
                 document.getElementById('thousands_separator').value = currency.thousands_separator;
+                
+                // Отладочная информация
+                console.log('Загруженные данные валюты:', currency);
+                console.log('Установленное значение decimal_places:', document.getElementById('decimal_places').value);
                 document.getElementById('is_active').checked = currency.is_active;
                 document.getElementById('is_default').checked = currency.is_default;
                 
@@ -355,7 +368,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.saveCurrency = function() {
     const form = document.getElementById('currencyForm');
+    
+    // Проверяем обязательные поля
+    const code = document.getElementById('code').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const symbol = document.getElementById('symbol').value.trim();
+    const symbolPosition = document.getElementById('symbol_position').value;
+    const decimalPlaces = document.getElementById('decimal_places').value;
+    const decimalSeparator = document.getElementById('decimal_separator').value.trim();
+    
+    if (!code) {
+        alert('Пожалуйста, введите код валюты');
+        return;
+    }
+    if (!name) {
+        alert('Пожалуйста, введите название валюты');
+        return;
+    }
+    if (!symbol) {
+        alert('Пожалуйста, введите символ валюты');
+        return;
+    }
+    if (!symbolPosition) {
+        alert('Пожалуйста, выберите позицию символа');
+        return;
+    }
+    if (decimalPlaces === '' || decimalPlaces === null || decimalPlaces === undefined) {
+        alert('Пожалуйста, введите количество десятичных знаков');
+        return;
+    }
+    if (!decimalSeparator) {
+        alert('Пожалуйста, введите разделитель десятичных');
+        return;
+    }
+    
     const formData = new FormData(form);
+    
+    // Добавляем CSRF-токен вручную
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
         
         // Правильно обрабатываем чекбоксы
         const isActiveCheckbox = document.getElementById('is_active');
@@ -368,6 +418,24 @@ document.addEventListener('DOMContentLoaded', function() {
         // Добавляем правильные значения
         formData.append('is_active', isActiveCheckbox.checked ? '1' : '0');
         formData.append('is_default', isDefaultCheckbox.checked ? '1' : '0');
+        
+        // Отладочная информация
+        console.log('Отправляемые данные:');
+        for (let [key, value] of formData.entries()) {
+            console.log(key + ': ' + value);
+        }
+        
+        // Дополнительная отладка - проверяем значения полей напрямую
+        console.log('Значения полей напрямую:');
+        console.log('code:', document.getElementById('code').value);
+        console.log('name:', document.getElementById('name').value);
+        console.log('symbol:', document.getElementById('symbol').value);
+        console.log('symbol_position:', document.getElementById('symbol_position').value);
+        console.log('decimal_places:', document.getElementById('decimal_places').value);
+        console.log('decimal_separator:', document.getElementById('decimal_separator').value);
+        console.log('thousands_separator:', document.getElementById('thousands_separator').value);
+        console.log('is_active:', isActiveCheckbox.checked);
+        console.log('is_default:', isDefaultCheckbox.checked);
     
     const url = isEditMode 
             ? `/panel/currencies/${document.getElementById('currencyId').value}`
@@ -375,13 +443,28 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const method = isEditMode ? 'PUT' : 'POST';
     
+    // Создаем объект с данными
+    const data = {
+        code: document.getElementById('code').value,
+        name: document.getElementById('name').value,
+        symbol: document.getElementById('symbol').value,
+        symbol_position: document.getElementById('symbol_position').value,
+        decimal_places: document.getElementById('decimal_places').value,
+        decimal_separator: document.getElementById('decimal_separator').value,
+        thousands_separator: document.getElementById('thousands_separator').value,
+        is_active: isActiveCheckbox.checked ? '1' : '0',
+        is_default: isDefaultCheckbox.checked ? '1' : '0',
+        _token: document.querySelector('meta[name="csrf-token"]').content
+    };
+    
     fetch(url, {
         method: method,
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             'Accept': 'application/json',
+            'Content-Type': 'application/json',
         },
-        body: formData
+        body: JSON.stringify(data)
     })
         .then(response => {
             if (!response.ok) {
@@ -403,6 +486,9 @@ document.addEventListener('DOMContentLoaded', function() {
         })
     .then(data => {
         if (data.success) {
+            // Показываем уведомление об успехе
+            alert('Валюта успешно обновлена!');
+            
             // Закрываем модальное окно
             const modal = bootstrap.Modal.getInstance(document.getElementById('currencyModal'));
             modal.hide();
@@ -693,14 +779,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const symbolPosition = symbolPositionElement.value || 'after';
         const decimalPlaces = decimalPlacesElement.value || '2';
         const decimalSeparator = decimalSeparatorElement.value || '.';
-        const thousandsSeparator = thousandsSeparatorElement.value || ',';
+        const thousandsSeparator = thousandsSeparatorElement.value || '';
         
         try {
         const amount = 1234.56;
+        
+        // Если разделитель тысяч пустой, не используем группировку
+        const useGrouping = thousandsSeparator && thousandsSeparator.trim() !== '';
+        
         const formatted = new Intl.NumberFormat('en-US', {
             minimumFractionDigits: parseInt(decimalPlaces),
             maximumFractionDigits: parseInt(decimalPlaces),
-            useGrouping: true
+            useGrouping: useGrouping
         }).format(amount).replace(/\./g, decimalSeparator).replace(/,/g, thousandsSeparator);
         
         const preview = symbolPosition === 'before' 

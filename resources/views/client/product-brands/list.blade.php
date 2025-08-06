@@ -5,12 +5,6 @@
     <div class="services-container">
         <div class="services-header">
             <h1>{{ __('messages.product_brands') }}</h1>
-            
-                <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                </svg>
-                <span class="notification-message">{{ __('messages.brand_successfully_added') }}!</span>
-            </div>
             <div class="brands-header-actions">
                 <button class="btn-add-service" onclick="openModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -62,7 +56,7 @@
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
-                                {{ __('messages.edit_short') }}
+                                {{ __('messages.edit') }}
                             </button>
                             <button class="btn-delete">
                                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">

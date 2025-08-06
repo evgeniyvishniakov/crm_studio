@@ -11,9 +11,9 @@ function formatCurrency(amount) {
         
         // Если число целое, не показываем .00
         if (Number.isInteger(num)) {
-            return num.toLocaleString('ru-RU') + ' ₴';
+            return num.toString() + ' ₴';
         } else {
-            return num.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₴';
+            return num.toFixed(2) + ' ₴';
         }
     }
 }

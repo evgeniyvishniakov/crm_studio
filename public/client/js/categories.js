@@ -237,13 +237,13 @@ function renderCategories(categories) {
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
-                    Ред.
+                    ${window.translations?.edit || 'Редактировать'}
                 </button>
                 <button class="btn-delete" onclick="showDeleteConfirmation(${category.id})">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
-                    Удалить
+                    ${window.translations?.delete || 'Удалить'}
                 </button>
             </td>
         `;
@@ -260,7 +260,7 @@ function renderCategories(categories) {
                     <div class="category-main-info">
                         <h3 class="category-name">${category.name}</h3>
                         <span class="status-badge ${category.status ? 'active' : 'inactive'}">
-                            ${category.status ? 'Активна' : 'Неактивна'}
+                            ${category.status ? (window.translations?.category_active || 'Активна') : (window.translations?.category_inactive || 'Неактивна')}
                         </span>
                     </div>
                 </div>
@@ -270,7 +270,7 @@ function renderCategories(categories) {
                             <svg viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                             </svg>
-                            Описание
+                            ${window.translations?.description || 'Описание'}
                         </span>
                         <span class="category-info-value">${category.description ?? '—'}</span>
                     </div>
@@ -280,13 +280,13 @@ function renderCategories(categories) {
                         <svg viewBox="0 0 20 20" fill="currentColor">
                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                         </svg>
-                        Редактировать
+                        ${window.translations?.edit || 'Редактировать'}
                     </button>
                     <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${category.id})">
                         <svg viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
-                        Удалить
+                        ${window.translations?.delete || 'Удалить'}
                     </button>
                 </div>
             `;

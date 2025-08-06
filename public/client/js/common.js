@@ -320,10 +320,12 @@ function formatDate(dateString) {
  */
 function formatPrice(value) {
     if (value === null || value === undefined) return '0';
-    return parseFloat(value).toLocaleString('ru-RU', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
+    const num = parseFloat(value);
+    if (num % 1 === 0) {
+        return Math.floor(num).toString();
+    } else {
+        return num.toFixed(2);
+    }
 }
 
 // ===== ОБЩИЕ ФУНКЦИИ ДЛЯ РАБОТЫ С HTML =====

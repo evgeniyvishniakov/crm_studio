@@ -19,7 +19,23 @@
             hour: '{{ __("messages.hour") }}',
             hours: '{{ __("messages.hours") }}',
             hours_many: '{{ __("messages.hours_many") }}',
-            base_duration: '{{ __("messages.base_duration") }}'
+            base_duration: '{{ __("messages.base_duration") }}',
+            edit: '{{ __("messages.edit") }}',
+            delete: '{{ __("messages.delete") }}',
+            description: '{{ __("messages.description") }}',
+            active: '{{ __("messages.active") }}',
+            inactive: '{{ __("messages.inactive") }}',
+            category_active: '{{ __("messages.category_active") }}',
+            category_inactive: '{{ __("messages.category_inactive") }}',
+            brand_active: '{{ __("messages.brand_active") }}',
+            brand_inactive: '{{ __("messages.brand_inactive") }}',
+            brand_country: '{{ __("messages.brand_country") }}',
+            website: '{{ __("messages.website") }}',
+            supplier_active: '{{ __("messages.supplier_active") }}',
+            supplier_inactive: '{{ __("messages.supplier_inactive") }}',
+            supplier_contact_person: '{{ __("messages.supplier_contact_person") }}',
+            phone: '{{ __("messages.phone") }}',
+            email: '{{ __("messages.email") }}'
         };
     </script>
 

@@ -920,7 +920,7 @@
                             {{ $statusNames[$appointment->status] ?? __('messages.status_pending') }}
                         </span>
                     </td>
-                    <td class="currency-amount" data-amount="{{ $appointment->price }}">{{ \App\Helpers\CurrencyHelper::format($appointment->price) }}</td>
+                    <td class="currency-amount" data-amount="{{ $appointment->price }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($appointment->price) }}</td>
                     <td>
                         <div class="appointment-actions actions-cell">
                             <button class="btn-view" data-appointment-id="{{ $appointment->id }}" title="{{ __('messages.view') }}">

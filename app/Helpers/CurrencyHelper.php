@@ -120,6 +120,28 @@ class CurrencyHelper
     }
 
     /**
+     * Форматировать сумму с валютой без разделителей тысяч
+     */
+    public static function formatWithoutThousands($amount, $currency = null)
+    {
+        if ($currency === null) {
+            $currency = self::getCurrentCurrency();
+        }
+
+        $currencyModel = Currency::getByCode($currency);
+        if ($currencyModel) {
+            return $currencyModel->formatAmountWithoutThousands($amount);
+        }
+
+        // Fallback для старых валют
+        $symbol = self::getSymbol($currency);
+        // Если число целое, не показываем десятичные знаки
+        $decimalPlaces = (floor($amount) == $amount) ? 0 : 2;
+        $formattedAmount = number_format($amount, $decimalPlaces, '.', '');
+        return $formattedAmount . ' ' . $symbol;
+    }
+
+    /**
      * Форматировать сумму с валютой (для отладки)
      */
     public static function formatDebug($amount, $currency = null)

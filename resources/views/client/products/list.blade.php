@@ -465,5 +465,52 @@
 @endsection
 
 @push('scripts')
+    <script>
+        // Инициализация глобальных переменных
+        window.allCategories = @json($categories ?? []);
+        window.allBrands = @json($brands);
+        
+        // Переводы для JavaScript
+        window.translations = {
+            no_photo: '{{ __("messages.no_photo") }}',
+            photo: '{{ __("messages.photo") }}',
+            name: '{{ __("messages.name") }}',
+            category: '{{ __("messages.category") }}',
+            brand: '{{ __("messages.brand") }}',
+            purchase_price: '{{ __("messages.purchase_price") }}',
+            retail_price: '{{ __("messages.retail_price") }}',
+            edit: '{{ __("messages.edit") }}',
+            delete: '{{ __("messages.delete") }}',
+            cancel: '{{ __("messages.cancel") }}',
+            save: '{{ __("messages.save") }}',
+            add: '{{ __("messages.add") }}',
+            confirm_delete: '{{ __("messages.confirm_delete") }}',
+            are_you_sure_you_want_to_delete_this_product: '{{ __("messages.are_you_sure_you_want_to_delete_this_product") }}',
+            are_you_sure_you_want_to_delete_all_products: '{{ __("messages.are_you_sure_you_want_to_delete_all_products") }}',
+            are_you_sure_you_want_to_permanently_delete_this_product: '{{ __("messages.are_you_sure_you_want_to_permanently_delete_this_product") }}',
+            select_category: '{{ __("messages.select_category") }}',
+            select_brand: '{{ __("messages.select_brand") }}',
+            choose_file: '{{ __("messages.choose_file") }}',
+            max_file_size_2mb: '{{ __("messages.max_file_size_2mb") }}',
+            allowed_formats_jpeg_png_jpg: '{{ __("messages.allowed_formats_jpeg_png_jpg") }}',
+            import_products: '{{ __("messages.import_products") }}',
+            export_products: '{{ __("messages.export_products") }}',
+            import: '{{ __("messages.import") }}',
+            export: '{{ __("messages.export") }}',
+            download_excel: '{{ __("messages.download_excel") }}',
+            export_to_excel: '{{ __("messages.export_to_excel") }}',
+            select_filters_for_export: '{{ __("messages.select_filters_for_export") }}',
+            file_will_be_downloaded_in_xlsx_format: '{{ __("messages.file_will_be_downloaded_in_xlsx_format") }}',
+            will_open_in_excel_without_problems_with_cyrillic_and_separators: '{{ __("messages.will_open_in_excel_without_problems_with_cyrillic_and_separators") }}',
+            all: '{{ __("messages.all") }}',
+            all_products: '{{ __("messages.all_products") }}',
+            only_with_photo: '{{ __("messages.only_with_photo") }}',
+            only_without_photo: '{{ __("messages.only_without_photo") }}',
+            deleted_products: '{{ __("messages.deleted_products") }}',
+            loading: '{{ __("messages.loading") }}',
+            delete_all_products: '{{ __("messages.delete_all_products") }}',
+            excel_xlsx_xls_csv_max_size_5mb: '{{ __("messages.excel_xlsx_xls_csv_max_size_5mb") }}'
+        };
+    </script>
     <script src="{{ asset('client/js/products.js') }}"></script>
 @endpush

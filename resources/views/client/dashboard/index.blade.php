@@ -12,7 +12,7 @@
                 </div>
                 <div class="stat-content">
                     <h3 class="stat-title">{{ __('messages.profit') }}</h3>
-                    <p class="stat-value currency-amount" data-amount="{{ $totalProfit }}">{{ \App\Helpers\CurrencyHelper::format($totalProfit) }}</p>
+                    <p class="stat-value currency-amount" data-amount="{{ $totalProfit }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($totalProfit) }}</p>
                     @if($showDynamics)
                         <p class="stat-change positive">
                             <i class="fas fa-arrow-up"></i>
@@ -29,7 +29,7 @@
                 </div>
                 <div class="stat-content">
                     <h3 class="stat-title">{{ __('messages.product_sales') }}</h3>
-                    <p class="stat-value currency-amount" data-amount="{{ $productsRevenue }}">{{ \App\Helpers\CurrencyHelper::format($productsRevenue) }}</p>
+                    <p class="stat-value currency-amount" data-amount="{{ $productsRevenue }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($productsRevenue) }}</p>
                     @if($showDynamics)
                         <p class="stat-change positive">
                             <i class="fas fa-arrow-up"></i>
@@ -46,7 +46,7 @@
                 </div>
                 <div class="stat-content">
                     <h3 class="stat-title">{{ __('messages.service_sales') }}</h3>
-                    <p class="stat-value currency-amount" data-amount="{{ $servicesRevenue }}">{{ \App\Helpers\CurrencyHelper::format($servicesRevenue) }}</p>
+                    <p class="stat-value currency-amount" data-amount="{{ $servicesRevenue }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($servicesRevenue) }}</p>
                     @if($showDynamics)
                         <p class="stat-change positive">
                             <i class="fas fa-arrow-up"></i>
@@ -63,7 +63,7 @@
                 </div>
                 <div class="stat-content">
                     <h3 class="stat-title">{{ __('messages.expenses') }}</h3>
-                    <p class="stat-value currency-amount" data-amount="{{ $totalExpenses }}">{{ \App\Helpers\CurrencyHelper::format($totalExpenses) }}</p>
+                    <p class="stat-value currency-amount" data-amount="{{ $totalExpenses }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($totalExpenses) }}</p>
                     @if($showDynamics)
                         <p class="stat-change negative">
                             <i class="fas fa-arrow-down"></i>
@@ -236,7 +236,7 @@
                                             <td>{{ $appointment->client->name ?? __('messages.client_not_found') }}</td>
                                             <td>{{ $appointment->service->name ?? __('messages.service_not_found') }}</td>
                                             <td><span class="status-badge status-{{ $statusInfo['class'] }}">{{ $statusInfo['name'] }}</span></td>
-                                            <td class="currency-amount" data-amount="{{ $appointment->price }}">{{ \App\Helpers\CurrencyHelper::format($appointment->price) }}</td>
+                                            <td class="currency-amount" data-amount="{{ $appointment->price }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($appointment->price) }}</td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -266,7 +266,7 @@
                                     <i class="fas fa-spa item-icon"></i>
                                     <span class="item-label">{{ __('messages.services_profit') }}</span>
                                 </div>
-                                <div class="item-value currency-amount" data-amount="{{ $todayServicesProfit ?? 2000 }}">{{ \App\Helpers\CurrencyHelper::format($todayServicesProfit ?? 2000) }}</div>
+                                <div class="item-value currency-amount" data-amount="{{ $todayServicesProfit ?? 2000 }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($todayServicesProfit ?? 2000) }}</div>
                             </div>
                             <!-- 2. Прибыль Товары -->
                             <div class="summary-grid-item products-profit">
@@ -274,7 +274,7 @@
                                     <i class="fas fa-boxes-stacked item-icon"></i>
                                     <span class="item-label">{{ __('messages.products_profit') }}</span>
                                 </div>
-                                <div class="item-value currency-amount" data-amount="{{ $todayProductsProfit ?? 1200 }}">{{ \App\Helpers\CurrencyHelper::format($todayProductsProfit ?? 1200) }}</div>
+                                <div class="item-value currency-amount" data-amount="{{ $todayProductsProfit ?? 1200 }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($todayProductsProfit ?? 1200) }}</div>
                             </div>
                             <!-- 3. Услуг оказано -->
                             <div class="summary-grid-item services-count">

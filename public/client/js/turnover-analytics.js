@@ -9,7 +9,7 @@ function formatCurrency(value) {
     } else {
         value = parseFloat(value);
         if (isNaN(value)) return '0';
-        return value.toLocaleString('ru-RU') + ' грн';
+        return value.toString() + ' грн';
     }
 }
 
@@ -61,13 +61,13 @@ document.addEventListener('DOMContentLoaded', function () {
     updateSuppliersAnalytics(params);
 
     if (document.getElementById('stockTotalQty')) {
-        document.getElementById('stockTotalQty').textContent = stockTotalQty.toLocaleString('ru-RU');
+        document.getElementById('stockTotalQty').textContent = stockTotalQty.toString();
     }
     if (document.getElementById('stockTotalWholesale')) {
-        document.getElementById('stockTotalWholesale').textContent = stockTotalWholesale.toLocaleString('ru-RU');
+        document.getElementById('stockTotalWholesale').textContent = stockTotalWholesale.toString();
     }
     if (document.getElementById('stockTotalRetail')) {
-        document.getElementById('stockTotalRetail').textContent = stockTotalRetail.toLocaleString('ru-RU');
+        document.getElementById('stockTotalRetail').textContent = stockTotalRetail.toString();
     }
 });
 
@@ -776,13 +776,13 @@ function updateSuppliersAnalytics(params = '') {
             }
             
             if (document.getElementById('stockTotalQty')) {
-                document.getElementById('stockTotalQty').textContent = data.stockTotalQty.toLocaleString('ru-RU');
+                document.getElementById('stockTotalQty').textContent = data.stockTotalQty.toString();
             }
             if (document.getElementById('stockTotalWholesale')) {
-                document.getElementById('stockTotalWholesale').textContent = data.stockTotalWholesale.toLocaleString('ru-RU');
+                document.getElementById('stockTotalWholesale').textContent = data.stockTotalWholesale.toString();
             }
             if (document.getElementById('stockTotalRetail')) {
-                document.getElementById('stockTotalRetail').textContent = data.stockTotalRetail.toLocaleString('ru-RU');
+                document.getElementById('stockTotalRetail').textContent = data.stockTotalRetail.toString();
             }
 
             const turnoverDaysChart = document.getElementById('turnoverDaysChart');
@@ -992,7 +992,7 @@ function updateEmployeesAnalytics(params = '') {
                                 suggestedMax: maxValue * 1.1,
                                 grid: { display: true, color: '#e5e7eb' },
                                 ticks: {
-                                    callback: function(value) { return value.toLocaleString('ru-RU'); },
+                                    callback: function(value) { return value.toString(); },
                                     padding: 8
                                 }
                             },

@@ -127,7 +127,7 @@
                                              <div class="master-details">
                                                  {{ $userActiveServices->count() }} {{ $userActiveServices->count() == 1 ? __('messages.service') : ($userActiveServices->count() < 5 ? __('messages.services_2') : __('messages.services_5')) }}
                                                  @if($userActiveServices->count() > 0 && $userActiveServices->min('price') > 0)
-                                                     • {{ __('messages.from') }} <span class="currency-amount" data-amount="{{ $userActiveServices->min('price') }}">{{ \App\Helpers\CurrencyHelper::format($userActiveServices->min('price')) }}</span>
+                                                     • {{ __('messages.from') }} <span class="currency-amount" data-amount="{{ $userActiveServices->min('price') }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($userActiveServices->min('price')) }}</span>
                                                  @endif
                                              </div>
                                          </div>
@@ -180,7 +180,7 @@
                                              <div class="service-name">{{ $service->name ?? __('messages.deleted_service') }}</div>
                                              <div class="service-details">
                                                  @if($mastersCount > 0 && $avgPrice > 0)
-                                                     {{ $masterNames }} • <span class="currency-amount" data-amount="{{ $avgPrice }}">{{ \App\Helpers\CurrencyHelper::format($avgPrice) }}</span>
+                                                     {{ $masterNames }} • <span class="currency-amount" data-amount="{{ $avgPrice }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($avgPrice) }}</span>
                                                  @elseif($mastersCount > 0)
                                                      {{ $masterNames }}
                                                  @else
@@ -310,7 +310,7 @@
                              <tr data-user-service-id="{{ $userService->id }}">
                                  <td>{{ $userService->user ? $userService->user->name : __('messages.deleted_user') }}</td>
                                  <td>{{ $userService->service ? $userService->service->name : __('messages.deleted_service') }}</td>
-                                 <td class="currency-amount" data-amount="{{ $userService->price ?: ($userService->service ? $userService->service->price : 0) }}">{!! $userService->price ? \App\Helpers\CurrencyHelper::format($userService->price) : ($userService->service ? \App\Helpers\CurrencyHelper::format($userService->service->price) : __('messages.not_specified_price')) !!}</td>
+                                 <td class="currency-amount" data-amount="{{ $userService->price ?: ($userService->service ? $userService->service->price : 0) }}">{!! $userService->price ? \App\Helpers\CurrencyHelper::formatWithoutThousands($userService->price) : ($userService->service ? \App\Helpers\CurrencyHelper::formatWithoutThousands($userService->service->price) : __('messages.not_specified_price')) !!}</td>
                                  <td>{!! $userService->duration ? \App\Helpers\TimeHelper::formatDuration($userService->duration) : ($userService->service && $userService->service->duration ? \App\Helpers\TimeHelper::formatDuration($userService->service->duration) : __('messages.not_specified_duration')) !!}</td>
                                  <td>
                                      @if($userService->is_active_for_booking)
@@ -363,7 +363,7 @@
                                      {{ __('messages.price') }}
                                  </div>
                                  <div class="user-service-info-value currency-amount" data-amount="{{ $userService->price ?: ($userService->service ? $userService->service->price : 0) }}">
-                                     {!! $userService->price ? \App\Helpers\CurrencyHelper::format($userService->price) : ($userService->service ? \App\Helpers\CurrencyHelper::format($userService->service->price) : __('messages.not_specified_price')) !!}
+                                     {!! $userService->price ? \App\Helpers\CurrencyHelper::formatWithoutThousands($userService->price) : ($userService->service ? \App\Helpers\CurrencyHelper::formatWithoutThousands($userService->service->price) : __('messages.not_specified_price')) !!}
                                  </div>
                              </div>
                              <div class="user-service-info-item">

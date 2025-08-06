@@ -68,7 +68,7 @@ function formatCurrency(amount) {
         // Fallback форматирование
         const num = parseFloat(amount);
         if (isNaN(num)) return amount;
-        return num.toLocaleString('ru-RU') + ' ₽';
+        return num.toString() + ' ₽';
     }
 }
 

@@ -34,14 +34,19 @@ class CurrencyController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        // Логируем входящие данные
+        \Log::info('Создание валюты', [
+            'request_data' => $request->all()
+        ]);
+        
         $request->validate([
             'code' => 'required|string|max:3|unique:currencies,code',
             'name' => 'required|string|max:255',
             'symbol' => 'required|string|max:10',
             'symbol_position' => 'required|in:before,after',
-            'decimal_places' => 'required|integer|min:0|max:4',
+            'decimal_places' => 'required|integer|min:0|max:4|gte:0',
             'decimal_separator' => 'required|string|max:1',
-            'thousands_separator' => 'required|string|max:1',
+            'thousands_separator' => 'nullable|string|max:1',
             'is_active' => 'boolean',
             'is_default' => 'boolean',
         ]);
@@ -83,23 +88,37 @@ class CurrencyController extends Controller
      */
     public function update(Request $request, Currency $currency): JsonResponse
     {
+        // Логируем входящие данные
+        \Log::info('Обновление валюты', [
+            'currency_id' => $currency->id,
+            'request_data' => $request->all()
+        ]);
+        
         $request->validate([
             'code' => 'required|string|max:3|unique:currencies,code,' . $currency->id,
             'name' => 'required|string|max:255',
             'symbol' => 'required|string|max:10',
             'symbol_position' => 'required|in:before,after',
-            'decimal_places' => 'required|integer|min:0|max:4',
+            'decimal_places' => 'required|integer|min:0|max:4|gte:0',
             'decimal_separator' => 'required|string|max:1',
-            'thousands_separator' => 'required|string|max:1',
+            'thousands_separator' => 'nullable|string|max:1',
             'is_active' => 'boolean',
             'is_default' => 'boolean',
         ]);
 
         $currency->update($request->all());
 
+        // Проверяем, нужно ли установить валюту по умолчанию
         if ($request->boolean('is_default')) {
+            \Log::info('Устанавливаем валюту по умолчанию', [
+                'currency_id' => $currency->id,
+                'currency_code' => $currency->code
+            ]);
             $currency->setAsDefault();
         }
+        
+        // Обновляем объект валюты после изменений
+        $currency->refresh();
 
         return response()->json([
             'success' => true,

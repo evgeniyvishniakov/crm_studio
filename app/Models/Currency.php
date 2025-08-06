@@ -43,7 +43,34 @@ class Currency extends Model
             $amount,
             $decimalPlaces,
             $this->decimal_separator,
-            $this->thousands_separator
+            $this->thousands_separator ?: ''
+        );
+
+        // Добавляем символ валюты в нужную позицию
+        if ($this->symbol_position === 'before') {
+            return $this->symbol . $formatted;
+        } else {
+            return $formatted . ' ' . $this->symbol;
+        }
+    }
+
+    /**
+     * Форматирует сумму без разделителей тысяч
+     */
+    public function formatAmountWithoutThousands($amount): string
+    {
+        $amount = (float) $amount;
+        
+        // Определяем количество десятичных знаков
+        // Если число целое, не показываем десятичные знаки
+        $decimalPlaces = (floor($amount) == $amount) ? 0 : $this->decimal_places;
+        
+        // Форматируем число без разделителей тысяч
+        $formatted = number_format(
+            $amount,
+            $decimalPlaces,
+            $this->decimal_separator,
+            '' // Пустая строка вместо разделителя тысяч
         );
 
         // Добавляем символ валюты в нужную позицию
@@ -83,10 +110,15 @@ class Currency extends Model
      */
     public function setAsDefault(): void
     {
-        // Снимаем флаг с других валют
-        static::where('is_default', true)->update(['is_default' => false]);
+        // Снимаем флаг с других валют (кроме текущей)
+        static::where('is_default', true)
+            ->where('id', '!=', $this->id)
+            ->update(['is_default' => false]);
         
         // Устанавливаем флаг для текущей валюты
         $this->update(['is_default' => true]);
+        
+        // Обновляем текущий объект
+        $this->refresh();
     }
 } 
