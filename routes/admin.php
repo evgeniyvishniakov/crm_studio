@@ -98,6 +98,14 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     Route::delete('/currencies/{currency}', [\App\Http\Controllers\Admin\CurrencyController::class, 'destroy'])->name('currencies.destroy');
     Route::post('/currencies/{currency}/set-default', [\App\Http\Controllers\Admin\CurrencyController::class, 'setDefault'])->name('currencies.set-default');
     Route::post('/currencies/{currency}/toggle-active', [\App\Http\Controllers\Admin\CurrencyController::class, 'toggleActive'])->name('currencies.toggle-active');
+
+    // Резервные копии
+    Route::get('/backups', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->name('backups.index');
+    Route::post('/backups/database', [\App\Http\Controllers\Admin\BackupController::class, 'createDatabaseBackup'])->name('backups.database.create');
+    Route::post('/backups/files', [\App\Http\Controllers\Admin\BackupController::class, 'createFilesBackup'])->name('backups.files.create');
+    Route::get('/backups/{type}/{filename}/download', [\App\Http\Controllers\Admin\BackupController::class, 'downloadBackup'])->name('backups.download');
+    Route::delete('/backups/{type}/{filename}', [\App\Http\Controllers\Admin\BackupController::class, 'deleteBackup'])->name('backups.delete');
+    Route::post('/backups/database/restore', [\App\Http\Controllers\Admin\BackupController::class, 'restoreDatabase'])->name('backups.database.restore');
     Route::post('/currencies/clear-cache', [\App\Http\Controllers\Admin\CurrencyController::class, 'clearCache'])->name('currencies.clear-cache');
 
     // Управление языками

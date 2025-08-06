@@ -14,7 +14,7 @@
             <span class="fw-bold">CRM Studio Admin</span>
         </div>
     </div>
-    <div class="sidebar-content p-3">
+    <div class="sidebar-content p-3" style="max-height: calc(100vh - 80px); overflow-y: auto;">
         <ul class="nav flex-column">
             <li class="nav-item mb-2">
                 <a href="{{ route('admin.dashboard') }}" class="nav-link text-white {{ request()->routeIs('admin.dashboard') ? 'active bg-primary' : '' }}">
@@ -50,6 +50,12 @@
                 <a href="{{ route('admin.currencies.index') }}" class="nav-link text-white {{ request()->routeIs('admin.currencies.*') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-dollar-sign me-2"></i>
                     Валюты
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ route('admin.backups.index') }}" class="nav-link text-white {{ request()->routeIs('admin.backups.*') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-database me-2"></i>
+                    Резервные копии
                 </a>
             </li>
             <li class="nav-item mb-2">
@@ -121,5 +127,29 @@
     pointer-events: none;
     color: #aaa !important;
     opacity: 0.7;
+}
+
+/* Стили для скроллбара в сайдбаре */
+.sidebar-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+    background: #343a40;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+    background: #6c757d;
+    border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: #adb5bd;
+}
+
+/* Для Firefox */
+.sidebar-content {
+    scrollbar-width: thin;
+    scrollbar-color: #6c757d #343a40;
 }
 </style> 
