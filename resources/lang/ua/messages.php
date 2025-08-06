@@ -1275,6 +1275,9 @@ return [
     'photo_required' => 'Фото обов\'язкове',
     'photo_max_size' => 'Максимальний розмір фото: 2MB',
     'photo_allowed_formats' => 'Дозволені формати: JPG, PNG, GIF',
+    'max_file_size_2mb' => 'Максимальний розмір: 2MB.',
+    'allowed_formats_jpeg_png_jpg' => 'Дозволені формати: JPEG, PNG, JPG',
+    'file_not_selected' => 'Файл не вибрано',
     
     // Категорії товарів
     'product_categories' => 'Категорії товарів',

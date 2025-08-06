@@ -140,12 +140,12 @@ function openEditModal(id) {
                     <div class="form-group">
                         <label>${window.translations?.purchase_price || 'Цена закупки'} *</label>
                         <input type="number" step="0.01" id="editPurchasePrice" name="purchase_price"
-                               value="${data.warehouse.purchase_price || ''}" required>
+                               value="${formatPriceForInput(data.warehouse.purchase_price)}" required>
                     </div>
                     <div class="form-group">
                         <label>${window.translations?.retail_price || 'Розничная цена'} *</label>
                         <input type="number" step="0.01" id="editRetailPrice" name="retail_price"
-                               value="${data.warehouse.retail_price || ''}" required>
+                               value="${formatPriceForInput(data.warehouse.retail_price)}" required>
                     </div>
                     <div class="form-group">
                         <label>${window.translations?.quantity || 'Количество'} *</label>
@@ -397,8 +397,8 @@ function renderWarehouseItems(items) {
     // Рендерим таблицу
     tableBody.innerHTML = items.map(item => {
         const photoHtml = item.product && item.product.photo ?
-            `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` :
-            '<div class="no-photo">Нет фото</div>';
+            `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>${window.translations?.no_photo || 'Нет фото'}</div>'">` :
+            `<div class="no-photo">${window.translations?.no_photo || 'Нет фото'}</div>`;
         
         return `
             <tr data-id="${item.id}">
@@ -430,8 +430,8 @@ function renderWarehouseItems(items) {
     // Рендерим карточки для мобильных устройств
     cardsContainer.innerHTML = items.map(item => {
         const photoHtml = item.product && item.product.photo ?
-            `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` :
-            '<div class="no-photo">Нет фото</div>';
+            `<img src="/storage/${item.product.photo}" class="product-photo" alt="${item.product ? item.product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>${window.translations?.no_photo || 'Нет фото'}</div>'">` :
+            `<div class="no-photo">${window.translations?.no_photo || 'Нет фото'}</div>`;
         
         return `
             <div class="warehouse-card" id="warehouse-card-${item.id}">
@@ -515,6 +515,24 @@ function formatPrice(price) {
     }
     
     return formatted + ' ₴';
+}
+
+// Функция для форматирования цены для полей ввода (без символа валюты)
+function formatPriceForInput(price) {
+    if (price === null || price === undefined || price === '') {
+        return '';
+    }
+    const numPrice = parseFloat(price);
+    if (isNaN(numPrice)) {
+        return '';
+    }
+    // Если цена целая (без копеек), возвращаем целое число
+    if (numPrice % 1 === 0) {
+        return Math.floor(numPrice).toString();
+    } else {
+        // Если есть копейки, возвращаем с двумя знаками после запятой
+        return numPrice.toFixed(2);
+    }
 }
 
 // ===== ЧАСТЬ 7: Функции пагинации =====

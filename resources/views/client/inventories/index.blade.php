@@ -128,7 +128,7 @@
                                                         @if($item->product->photo)
                                                             <img src="{{ Storage::url($item->product->photo) }}" class="product-photo" alt="{{ $item->product->name }}">
                                                         @else
-                                                            <div class="no-photo">Нет фото</div>
+                                                            <div class="no-photo">{{ __('messages.no_photo') }}</div>
                                                         @endif
                                                     </td>
                                                     <td class="large-col">{{ $item->product->name }}</td>

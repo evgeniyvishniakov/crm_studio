@@ -158,16 +158,22 @@
                     </div>
                     <div class="form-group">
                         <label for="productPhoto">{{ __('messages.photo') }}</label>
-                        <input type="file" id="productPhoto" name="photo" accept="image/jpeg,image/png,image/jpg">
-                        <small class="form-text text-muted">{{ __('messages.max_file_size_2mb') }} {{ __('messages.allowed_formats_jpeg_png_jpg') }}</small>
+                        <div class="logo-upload-controls">
+                            <label for="productPhoto" class="btn btn-outline-secondary" style="cursor:pointer;display:inline-block;">{{ __('messages.choose_file') }}</label>
+                            <input type="file" id="productPhoto" name="photo" accept="image/jpeg,image/png,image/jpg" style="display:none;" onchange="document.getElementById('product-filename').textContent = this.files[0]?.name || ''">
+                            <span id="product-filename" style="margin-left:12px;font-size:0.95em;color:#888;"></span>
+                            <small class="form-text text-muted">{{ __('messages.max_file_size_2mb') }} {{ __('messages.allowed_formats_jpeg_png_jpg') }}</small>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="productPurchasePrice">{{ __('messages.purchase_price') }} *</label>
-                        <input type="number" id="productPurchasePrice" name="purchase_price" min="0" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="productRetailPrice">{{ __('messages.retail_price') }} *</label>
-                        <input type="number" id="productRetailPrice" name="retail_price" min="0" step="0.01" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productPurchasePrice">{{ __('messages.purchase_price') }} *</label>
+                            <input type="number" id="productPurchasePrice" name="purchase_price" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productRetailPrice">{{ __('messages.retail_price') }} *</label>
+                            <input type="number" id="productRetailPrice" name="retail_price" min="0" step="0.01" required>
+                        </div>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeModal()">{{ __('messages.cancel') }}</button>
@@ -265,17 +271,23 @@
                     </div>
                     <div class="form-group">
                         <label for="editProductPhoto">{{ __('messages.photo') }}</label>
-                        <input type="file" id="editProductPhoto" name="photo" accept="image/jpeg,image/png,image/jpg">
-                        <small class="form-text text-muted">{{ __('messages.max_file_size_2mb') }} {{ __('messages.allowed_formats_jpeg_png_jpg') }}</small>
+                        <div class="logo-upload-controls">
+                            <label for="editProductPhoto" class="btn btn-outline-secondary" style="cursor:pointer;display:inline-block;">{{ __('messages.choose_file') }}</label>
+                            <input type="file" id="editProductPhoto" name="photo" accept="image/jpeg,image/png,image/jpg" style="display:none;" onchange="document.getElementById('edit-product-filename').textContent = this.files[0]?.name || ''">
+                            <span id="edit-product-filename" style="margin-left:12px;font-size:0.95em;color:#888;"></span>
+                            <small class="form-text text-muted">{{ __('messages.max_file_size_2mb') }} {{ __('messages.allowed_formats_jpeg_png_jpg') }}</small>
+                        </div>
                         <div id="currentPhotoContainer" class="mt-2"></div>
                     </div>
-                    <div class="form-group">
-                        <label for="editProductPurchasePrice">{{ __('messages.purchase_price') }} *</label>
-                        <input type="number" id="editProductPurchasePrice" name="purchase_price" min="0" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editProductRetailPrice">{{ __('messages.retail_price') }} *</label>
-                        <input type="number" id="editProductRetailPrice" name="retail_price" min="0" step="0.01" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editProductPurchasePrice">{{ __('messages.purchase_price') }} *</label>
+                            <input type="number" id="editProductPurchasePrice" name="purchase_price" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editProductRetailPrice">{{ __('messages.retail_price') }} *</label>
+                            <input type="number" id="editProductRetailPrice" name="retail_price" min="0" step="0.01" required>
+                        </div>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeEditModal()">{{ __('messages.cancel') }}</button>

@@ -444,7 +444,7 @@ function openEditSaleModal(id) {
                                                 <span class="mobile-label">${window.messages.wholesale_price_mobile}</span>
                                                 *
                                             </label>
-                                            <input type="number" step="0.01" name="items[${index}][wholesale_price]" required class="form-control" value="${item.wholesale_price}">
+                                            <input type="number" step="0.01" name="items[${index}][wholesale_price]" required class="form-control" value="${formatPriceForInput(item.wholesale_price)}">
                                         </div>
                                         <div class="form-group price-field">
                                             <label>
@@ -452,7 +452,7 @@ function openEditSaleModal(id) {
                                                 <span class="mobile-label">${window.messages.retail_price_mobile}</span>
                                                 *
                                             </label>
-                                            <input type="number" step="0.01" name="items[${index}][retail_price]" required class="form-control" value="${item.retail_price}">
+                                            <input type="number" step="0.01" name="items[${index}][retail_price]" required class="form-control" value="${formatPriceForInput(item.retail_price)}">
                                         </div>
                                         <div class="form-group quantity-field">
                                             <label>
@@ -894,8 +894,8 @@ function renderSales(sales) {
         sale.items.forEach((saleItem, itemIndex) => {
             const product = saleItem.product;
             const photoHtml = product && product.photo ?
-                `<img src="/storage/${product.photo}" class="product-photo" alt="${product ? product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` :
-                '<div class="no-photo">Нет фото</div>';
+                `<img src="/storage/${product.photo}" class="product-photo" alt="${product ? product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>${window.translations?.no_photo || 'Нет фото'}</div>'">` :
+                `<div class="no-photo">${window.translations?.no_photo || 'Нет фото'}</div>`;
             
             tableHtml += `
                 <tr data-id="${sale.id}" data-item-id="${saleItem.id}">
@@ -936,8 +936,8 @@ function renderSales(sales) {
         sale.items.forEach((saleItem, itemIndex) => {
             const product = saleItem.product;
             const photoHtml = product && product.photo ?
-                `<img src="/storage/${product.photo}" class="product-photo" alt="${product ? product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">` :
-                '<div class="no-photo">Нет фото</div>';
+                `<img src="/storage/${product.photo}" class="product-photo" alt="${product ? product.name : 'Товар не найден'}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>${window.translations?.no_photo || 'Нет фото'}</div>'">` :
+                `<div class="no-photo">${window.translations?.no_photo || 'Нет фото'}</div>`;
             
             cardsHtml += `
                 <div class="sale-card" id="sale-card-${sale.id}-${saleItem.id}">
@@ -1047,6 +1047,24 @@ function formatPrice(price) {
     }
     
     return formatted + ' ₴';
+}
+
+// Функция для форматирования цены для полей ввода (без символа валюты)
+function formatPriceForInput(price) {
+    if (price === null || price === undefined || price === '') {
+        return '';
+    }
+    const numPrice = parseFloat(price);
+    if (isNaN(numPrice)) {
+        return '';
+    }
+    // Если цена целая (без копеек), возвращаем целое число
+    if (numPrice % 1 === 0) {
+        return Math.floor(numPrice).toString();
+    } else {
+        // Если есть копейки, возвращаем с двумя знаками после запятой
+        return numPrice.toFixed(2);
+    }
 }
 
 function formatDate(dateString) {

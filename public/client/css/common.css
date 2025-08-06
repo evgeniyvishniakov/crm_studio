@@ -471,7 +471,7 @@
     display: flex;
     gap: 8px;
     justify-content: center;
-    padding: 23px !important;
+    padding: 40px !important;
 }
 
 .btn-view,
@@ -3727,9 +3727,10 @@ input[type="date"]:focus {
 /* Стили для загрузки файла в модальном окне импорта */
 .logo-upload-controls {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
     flex-wrap: wrap;
+    justify-content: flex-start;
 }
 
 .logo-upload-controls label {
@@ -3743,6 +3744,7 @@ input[type="date"]:focus {
     transition: all 0.3s ease;
     border: none;
     display: inline-block;
+    align-self: flex-start;
 }
 
 .logo-upload-controls label:hover {

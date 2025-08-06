@@ -391,12 +391,12 @@ function editProduct(id) {
                         <img src="/storage/${product.photo}" alt="Текущее фото" style="max-width: 200px; margin-top: 10px;">
                     `;
                 } else {
-                    photoContainer.innerHTML = '<p>Нет фото</p>';
+                    photoContainer.innerHTML = `<p>${window.translations?.no_photo || 'Нет фото'}</p>`;
                 }
 
-                // Подставляем цены
-                document.getElementById('editProductPurchasePrice').value = product.purchase_price ?? '';
-                document.getElementById('editProductRetailPrice').value = product.retail_price ?? '';
+                // Подставляем цены с правильным форматированием
+                document.getElementById('editProductPurchasePrice').value = formatPriceForInput(product.purchase_price);
+                document.getElementById('editProductRetailPrice').value = formatPriceForInput(product.retail_price);
 
                 document.getElementById('editProductModal').style.display = 'block';
             } else {
@@ -436,7 +436,7 @@ document.getElementById('editProductForm').addEventListener('submit', function(e
                 if (data.product.photo) {
                     photoCell.innerHTML = `<a href="/storage/${data.product.photo}" class="zoomable-image" data-img="/storage/${data.product.photo}"><img src="/storage/${data.product.photo}" alt="${data.product.name}" class="product-photo"></a>`;
                 } else {
-                    photoCell.innerHTML = '<div class="no-photo">Нет фото</div>';
+                    photoCell.innerHTML = `<div class="no-photo">${window.translations?.no_photo || 'Нет фото'}</div>`;
                 }
                 // Обновляем название
                 row.querySelector('td:nth-child(2)').textContent = data.product.name;
@@ -456,9 +456,9 @@ document.getElementById('editProductForm').addEventListener('submit', function(e
                 const photoContainer = card.querySelector('.product-photo-container');
                 if (photoContainer) {
                     if (data.product.photo) {
-                        photoContainer.innerHTML = `<img src="/storage/${data.product.photo}" alt="${data.product.name}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">`;
+                        photoContainer.innerHTML = `<img src="/storage/${data.product.photo}" alt="${data.product.name}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>${window.translations?.no_photo || 'Нет фото'}</div>'">`;
                     } else {
-                        photoContainer.innerHTML = '<div class="no-photo">Нет фото</div>';
+                        photoContainer.innerHTML = `<div class="no-photo">${window.translations?.no_photo || 'Нет фото'}</div>`;
                     }
                 }
                 
@@ -536,6 +536,24 @@ function formatPrice(price) {
         } else {
             return Number(price).toFixed(2) + ' ' + symbol;
         }
+    }
+}
+
+// Функция для форматирования цены для полей ввода (без символа валюты)
+function formatPriceForInput(price) {
+    if (price === null || price === undefined || price === '') {
+        return '';
+    }
+    const numPrice = parseFloat(price);
+    if (isNaN(numPrice)) {
+        return '';
+    }
+    // Если цена целая (без копеек), возвращаем целое число
+    if (numPrice % 1 === 0) {
+        return Math.floor(numPrice).toString();
+    } else {
+        // Если есть копейки, возвращаем с двумя знаками после запятой
+        return numPrice.toFixed(2);
     }
 }
 
@@ -706,9 +724,9 @@ function updateTable(products) {
         if (product.photo) {
             const photoUrl = `/storage/${product.photo}`;
             // Добавляем обработчик ошибки загрузки изображения
-            photoHtml = `<a href="${photoUrl}" class="zoomable-image" data-img="${photoUrl}"><img src="${photoUrl}" alt="${product.name}" class="product-photo" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'"></a>`;
+            photoHtml = `<a href="${photoUrl}" class="zoomable-image" data-img="${photoUrl}"><img src="${photoUrl}" alt="${product.name}" class="product-photo" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>${window.translations?.no_photo || 'Нет фото'}</div>'"></a>`;
         } else {
-            photoHtml = '<div class="no-photo">Нет фото</div>';
+            photoHtml = `<div class="no-photo">${window.translations?.no_photo || 'Нет фото'}</div>`;
         }
         
         // Создаем ячейки отдельно
@@ -768,9 +786,9 @@ function updateTable(products) {
         let cardPhotoHtml;
         if (product.photo) {
             const photoUrl = `/storage/${product.photo}`;
-            cardPhotoHtml = `<img src="${photoUrl}" alt="${product.name}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>Нет фото</div>'">`;
+            cardPhotoHtml = `<img src="${photoUrl}" alt="${product.name}" onerror="this.parentElement.innerHTML='<div class=\\'no-photo\\'>${window.translations?.no_photo || 'Нет фото'}</div>'">`;
         } else {
-            cardPhotoHtml = '<div class="no-photo">Нет фото</div>';
+            cardPhotoHtml = `<div class="no-photo">${window.translations?.no_photo || 'Нет фото'}</div>`;
         }
 
         card.innerHTML = `

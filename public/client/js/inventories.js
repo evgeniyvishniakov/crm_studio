@@ -417,7 +417,7 @@ function updateAnalysisTable(data) {
         if (window.allProducts) {
             product = window.allProducts.find(p => p.id == item.product_id);
         }
-        let photoHtml = '<div class="no-photo">Нет фото</div>';
+        let photoHtml = `<div class="no-photo">${window.messages?.no_photo || 'Нет фото'}</div>`;
         if (product && product.photo) {
             photoHtml = `<a href="#" class="zoomable-image" data-img="/storage/${product.photo}">
                 <img src="/storage/${product.photo}" alt="${item.product_name}" class="product-photo">

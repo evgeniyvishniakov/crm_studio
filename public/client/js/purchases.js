@@ -16,6 +16,24 @@ function formatCurrency(value) {
     }
 }
 
+// Функция для форматирования цены для полей ввода (без символа валюты)
+function formatPriceForInput(price) {
+    if (price === null || price === undefined || price === '') {
+        return '';
+    }
+    const numPrice = parseFloat(price);
+    if (isNaN(numPrice)) {
+        return '';
+    }
+    // Если цена целая (без копеек), возвращаем целое число
+    if (numPrice % 1 === 0) {
+        return Math.floor(numPrice).toString();
+    } else {
+        // Если есть копейки, возвращаем с двумя знаками после запятой
+        return numPrice.toFixed(2);
+    }
+}
+
 // Используем универсальную функцию уведомлений из notifications.js
 
 // Функции для работы с модальными окнами
@@ -269,11 +287,11 @@ function editPurchase(event, id) {
                                         </div>
                                         <div class="form-group">
                                             <label>${window.translations?.purchase_price || 'Закупочная цена'}</label>
-                                            <input type="number" step="0.01" name="items[${index}][purchase_price]" required class="form-control" value="${item.purchase_price}">
+                                            <input type="number" step="0.01" name="items[${index}][purchase_price]" required class="form-control" value="${formatPriceForInput(item.purchase_price)}">
                                         </div>
                                         <div class="form-group">
                                             <label>${window.translations?.retail_price || 'Розничная цена'}</label>
-                                            <input type="number" step="0.01" name="items[${index}][retail_price]" required class="form-control" value="${item.retail_price}">
+                                            <input type="number" step="0.01" name="items[${index}][retail_price]" required class="form-control" value="${formatPriceForInput(item.retail_price)}">
                                         </div>
                                         <div class="form-group">
                                             <label>${window.translations?.quantity || 'Количество'}</label>
