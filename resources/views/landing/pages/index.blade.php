@@ -891,6 +891,194 @@
     </div>
 </section>
 
+<!-- Функционал Section -->
+<section id="features-grid" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-4">🚀 Полный функционал CRM</h2>
+            <p class="lead">Все необходимые инструменты для управления вашим бизнесом в одном месте</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Онлайн-запись -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <h5>Онлайн-запись</h5>
+                    <p>Дайте вашим клиентам возможность записываться 24/7 через ссылки в соцсетях</p>
+                </div>
+            </div>
+            
+            <!-- Электронный журнал -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h5>Электронный журнал</h5>
+                    <p>Составляйте и обрабатывайте расписание для каждого сотрудника</p>
+                </div>
+            </div>
+            
+            <!-- Клиентская база -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h5>Клиентская база</h5>
+                    <p>Управляйте всей информацией о своих клиентах в одном месте</p>
+                </div>
+            </div>
+            
+            <!-- Уведомления -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h5>Уведомления</h5>
+                    <p>Различные автоматизированные SMS, WhatsApp и Email уведомления</p>
+                </div>
+            </div>
+            
+            <!-- Управление товарами -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h5>Управление товарами</h5>
+                    <p>Полный контроль над товарами, категориями, брендами и поставщиками</p>
+                </div>
+            </div>
+            
+            <!-- Инвентаризация -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <h5>Инвентаризация</h5>
+                    <p>Управляйте инвентарями и автоматически рассчитывайте расходы</p>
+                </div>
+            </div>
+            
+            <!-- Финансовая отчетность -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5>Финансовая отчетность</h5>
+                    <p>Подробные отчеты о доходах, расходах и остатках</p>
+                </div>
+            </div>
+            
+            <!-- Аналитика и статистика -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h5>Аналитика и статистика</h5>
+                    <p>Подробные данные и графики, необходимые для роста и расширения бизнеса</p>
+                </div>
+            </div>
+            
+            <!-- Программы Лояльности -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h5>Программы Лояльности</h5>
+                    <p>Создавайте программы лояльности для ваших клиентов</p>
+                </div>
+            </div>
+            
+            <!-- Закупки и продажи -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h5>Закупки и продажи</h5>
+                    <p>Управление закупками товаров и продажами с полной аналитикой</p>
+                </div>
+            </div>
+            
+            <!-- Система ролей -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h5>Система ролей</h5>
+                    <p>Гибкая система ролей для администраторов, менеджеров и мастеров</p>
+                </div>
+            </div>
+            
+            <!-- Резервные копии -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h5>Резервные копии</h5>
+                    <p>Автоматическое создание резервных копий базы данных и файлов</p>
+                </div>
+            </div>
+            
+            <!-- Управление записями -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h5>Управление записями</h5>
+                    <p>Полный контроль над записями клиентов и расписанием мастеров</p>
+                </div>
+            </div>
+            
+            <!-- Аналитика по клиентам -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h5>Аналитика по клиентам</h5>
+                    <p>Детальная аналитика клиентской базы и динамики записей</p>
+                </div>
+            </div>
+            
+            <!-- Аналитика товарооборота -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h5>Аналитика товарооборота</h5>
+                    <p>Подробные отчеты по продажам, закупкам и товарообороту</p>
+                </div>
+            </div>
+            
+            <!-- Виджет и Ссылки -->
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-grid-card">
+                    <div class="feature-grid-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h5>Виджет и Ссылки</h5>
+                    <p>Генерируйте ссылки и виджеты для вашего бизнеса</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- CTA Section -->
 <section class="py-5 bg-gradient-primary text-white">
     <div class="container">

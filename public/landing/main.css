@@ -2787,4 +2787,152 @@ footer a:hover {
 .stat-mini-large .fw-bold {
     font-size: 1.1rem !important;
     line-height: 1.2;
-} 
+}
+
+/* Стили для сетки функционала */
+.feature-grid-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.feature-grid-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.feature-grid-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.feature-grid-icon i {
+    font-size: 2rem;
+    color: white;
+}
+
+.feature-grid-card:hover .feature-grid-icon {
+    transform: scale(1.1);
+}
+
+.feature-grid-card h5 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #374151;
+}
+
+.feature-grid-card p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Pricing Tabs Styles */
+.nav-pills .nav-link {
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-weight: 500;
+    color: #6b7280;
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+    margin: 0 4px;
+}
+
+.nav-pills .nav-link:hover {
+    background: #f9fafb;
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+.nav-pills .nav-link.active {
+    background: #1f2937;
+    color: white;
+    border-color: #1f2937;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Pricing Cards Styles */
+.card {
+    transition: all 0.2s ease;
+    border-radius: 12px;
+    border: 1px solid #f3f4f6;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+    border-color: #e5e7eb;
+}
+
+/* Badge Styles */
+.badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Table Styles */
+.table thead th {
+    font-weight: 600;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* Accordion Styles */
+.accordion-button {
+    border-radius: 8px;
+    font-weight: 500;
+    color: #374151;
+    background: white;
+    border: 1px solid #e5e7eb;
+}
+
+.accordion-button:not(.collapsed) {
+    background: #f9fafb;
+    color: #1f2937;
+    border-color: #d1d5db;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(31, 41, 55, 0.1);
+    border-color: #1f2937;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .nav-pills .nav-link {
+        margin: 2px;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
