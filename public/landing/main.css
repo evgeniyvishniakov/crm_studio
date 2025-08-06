@@ -2010,7 +2010,7 @@ footer a:hover {
     font-size: 0.9rem;
 }
 
-/* Календарь - точно как в оригинале */
+/* Календарь - улучшенная версия */
 .calendar-demo {
     background: #f8f9fa;
     border-radius: 8px;
@@ -2023,19 +2023,46 @@ footer a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .calendar-header h5 {
     font-weight: 600;
     color: #495057;
     margin: 0;
+    font-size: 1.1rem;
+}
+
+.calendar-header .btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+}
+
+/* Дни недели */
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.weekday {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #6c757d;
+    background: #e9ecef;
+    border-radius: 4px;
+    text-transform: uppercase;
 }
 
 .calendar-grid-demo {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    gap: 4px;
 }
 
 .calendar-day-demo {
@@ -2043,31 +2070,78 @@ footer a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 0.85rem;
     background: white;
     border: 1px solid #e9ecef;
+    position: relative;
 }
 
 .calendar-day-demo:hover {
     background: #e3f2fd;
     border-color: #2196f3;
     color: #1976d2;
+    transform: scale(1.05);
+    z-index: 1;
 }
 
 .calendar-day-demo.selected {
-    background: #2196f3;
+    background: #f8f9ff;
     border-color: #2196f3;
-    color: white;
+    color: #2196f3;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
 }
 
 .calendar-day-demo.disabled {
-    opacity: 0.4;
+    opacity: 0.3;
     cursor: not-allowed;
-    background: #f5f5f5;
+    background: #f8f9fa;
+    color: #adb5bd;
+}
+
+.calendar-day-demo.other-month {
+    opacity: 0.4;
+    color: #adb5bd;
+    background: #f8f9fa;
+}
+
+.calendar-day-demo.today {
+    background: #fff3e0;
+    border-color: #ff9800;
+    color: #e65100;
+    font-weight: 600;
+}
+
+/* Анимация для выбранного дня */
+.calendar-day-demo.selected::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid #2196f3;
+    border-radius: 6px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* Временные слоты - точно как в оригинале */
@@ -2082,8 +2156,8 @@ footer a:hover {
 
 .time-slots-grid-demo {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
 }
 
 .time-slot-demo {
@@ -2107,6 +2181,8 @@ footer a:hover {
 .time-slot-demo.selected {
     border-color: #007bff;
     background-color: #f8f9ff;
+    color: #007bff;
+    font-weight: 600;
 }
 
 /* Форма - точно как в оригинале */
@@ -2188,6 +2264,68 @@ footer a:hover {
     background: linear-gradient(135deg, #1e7e34, #28a745);
     border-color: #1e7e34;
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Индикатор прогресса для демо */
+.demo-progress {
+    text-align: center;
+}
+
+.progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+    background: var(--primary-color);
+    transform: scale(1.2);
+}
+
+/* Анимации для переключения шагов */
+.form-step {
+    display: none;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.5s ease;
+}
+
+.form-step.active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Анимация появления элементов */
+.service-option, .master-option, .calendar-day-demo, .time-slot-demo {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.service-option:nth-child(1) { animation-delay: 0.1s; }
+.service-option:nth-child(2) { animation-delay: 0.2s; }
+.service-option:nth-child(3) { animation-delay: 0.3s; }
+
+.master-option:nth-child(1) { animation-delay: 0.1s; }
+.master-option:nth-child(2) { animation-delay: 0.2s; }
+.master-option:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Instagram демонстрация (оставляем для других секций) */
@@ -2390,4 +2528,263 @@ footer a:hover {
         justify-content: center;
         text-align: left;
     }
+}
+
+/* Аналитика секция */
+.analytics-preview {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.analytics-dashboard {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+}
+
+.chart-preview {
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.chart-bars {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    height: 80px;
+    gap: 4px;
+}
+
+.chart-bar {
+    flex: 1;
+    border-radius: 2px 2px 0 0;
+    transition: all 0.3s ease;
+    min-width: 8px;
+}
+
+.chart-bar:hover {
+    transform: scaleY(1.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Стили для слайдера графиков */
+.chart-step {
+    display: none;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.5s ease;
+}
+
+.chart-step.active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Горизонтальные столбики - большие */
+.horizontal-bars-large {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 120px;
+    justify-content: space-between;
+}
+
+.horizontal-bar-large {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+}
+
+.bar-label-large {
+    width: 60px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.bar-container-large {
+    flex: 1;
+    height: 16px;
+    background: #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.bar-fill-large {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #10b981, #34d399);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.bar-fill-large::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+    animation: shimmer 2s infinite;
+}
+
+.bar-value-large {
+    width: 40px;
+    text-align: right;
+    font-weight: 700;
+    color: #10b981;
+    font-size: 0.9rem;
+}
+
+/* Круговая диаграмма - большая */
+.pie-chart-large-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    height: 100px;
+}
+
+.pie-chart-large {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.pie-segment-large {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #667eea 0deg 120deg, #e5e7eb 120deg 360deg);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.pie-center-large {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 2;
+}
+
+.pie-value-large {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #374151;
+    line-height: 1;
+}
+
+.pie-label-large {
+    font-size: 0.7rem;
+    color: #6b7280;
+    line-height: 1;
+}
+
+.pie-legend-large {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.legend-item-large {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.legend-color-large {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.legend-text-large {
+    color: #374151;
+    font-weight: 600;
+}
+
+/* Линейный график - большой */
+.line-chart-large-container {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Индикатор прогресса для графиков */
+.chart-progress {
+    text-align: center;
+}
+
+.chart-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.chart-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #d1d5db;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.chart-dot.active {
+    background: #667eea;
+    transform: scale(1.2);
+}
+
+/* Большие карточки статистики */
+.stat-mini-large {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 1rem !important;
+}
+
+.stat-mini-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.stat-mini-large small {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.stat-mini-large .fw-bold {
+    font-size: 1.1rem !important;
+    line-height: 1.2;
 } 
