@@ -1022,6 +1022,11 @@ function renderSales(sales) {
         });
     });
     cardsContainer.innerHTML = cardsHtml;
+    
+    // Инициализируем обработчики изображений после рендеринга
+    setTimeout(() => {
+        initSalesImageHandlers();
+    }, 50);
 }
 
 // Используем общую функцию formatPrice из common.js и добавляем знак валюты
@@ -1144,6 +1149,11 @@ function loadSales(page = 1, search = '') {
 
         renderSales(data.data);
         renderPagination(data.meta);
+        
+        // Инициализируем обработчики изображений после рендеринга
+        setTimeout(() => {
+            initSalesImageHandlers();
+        }, 100);
     })
     .catch(error => {
         console.error('Ошибка при загрузке данных:', error);
@@ -1187,6 +1197,24 @@ function closeImageModal() {
     }
 }
 
+// Функция для инициализации обработчиков изображений
+function initSalesImageHandlers() {
+    document.querySelectorAll('.product-photo').forEach(img => {
+        img.style.cursor = 'pointer';
+        img.style.transition = 'transform 0.2s ease';
+        img.onclick = function() {
+            openImageModal(this);
+        };
+        // Добавляем эффект при наведении
+        img.onmouseenter = function() {
+            this.style.transform = 'scale(1.05)';
+        };
+        img.onmouseleave = function() {
+            this.style.transform = 'scale(1)';
+        };
+    });
+}
+
 // ===== ЧАСТЬ 13: Инициализация и обработчики событий =====
 document.addEventListener('DOMContentLoaded', function() {
     // Инициализация глобальных переменных
@@ -1212,8 +1240,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчики для изображений товаров
     const productImages = document.querySelectorAll('.product-photo');
     productImages.forEach(img => {
+        img.style.cursor = 'pointer';
+        img.style.transition = 'transform 0.2s ease';
         img.onclick = function() {
             openImageModal(this);
+        };
+        // Добавляем эффект при наведении
+        img.onmouseenter = function() {
+            this.style.transform = 'scale(1.05)';
+        };
+        img.onmouseleave = function() {
+            this.style.transform = 'scale(1)';
         };
     });
     

@@ -242,6 +242,12 @@
         </div>
     </div>
 
+    <!-- Модальное окно для увеличения изображений -->
+    <div id="imageModal" class="modal image-modal" onclick="closeImageModal()">
+        <span class="close" onclick="closeImageModal()">&times;</span>
+        <img id="modalImage" class="modal-content">
+    </div>
+
 @endsection
 
 @push('scripts')

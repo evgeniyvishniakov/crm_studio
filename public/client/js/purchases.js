@@ -809,6 +809,11 @@ function loadPurchases(page = 1, search = '') {
         
         // Переключаем на правильную версию после загрузки данных
         toggleMobileView();
+        
+        // Инициализируем обработчики изображений после рендеринга
+        setTimeout(() => {
+            initImageHandlers();
+        }, 100);
     })
     .catch(error => {
         console.error('Error loading purchases:', error);
@@ -1179,4 +1184,26 @@ document.addEventListener('DOMContentLoaded', function() {
 // Вызываем toggleMobileView при изменении размера окна
 window.addEventListener('resize', function() {
     toggleMobileView();
-}); 
+});
+
+// Функция для инициализации обработчиков изображений
+function initImageHandlers() {
+    document.querySelectorAll('.product-photo').forEach(img => {
+        img.style.cursor = 'pointer';
+        img.style.transition = 'transform 0.2s ease';
+        img.onclick = function() {
+            if (typeof window.openImageModal === 'function') {
+                window.openImageModal(this);
+            }
+        };
+        // Добавляем эффект при наведении
+        img.onmouseenter = function() {
+            this.style.transform = 'scale(1.05)';
+        };
+        img.onmouseleave = function() {
+            this.style.transform = 'scale(1)';
+        };
+    });
+}
+
+ 

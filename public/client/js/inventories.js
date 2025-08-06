@@ -906,6 +906,26 @@ document.addEventListener('click', function(e) {
     }
 });
 
+// Обработчики для изображений товаров с классом product-photo
+function initInventoryImageHandlers() {
+    document.querySelectorAll('.product-photo').forEach(img => {
+        img.style.cursor = 'pointer';
+        img.style.transition = 'transform 0.2s ease';
+        img.onclick = function() {
+            if (typeof window.openImageModal === 'function') {
+                window.openImageModal(this);
+            }
+        };
+        // Добавляем эффект при наведении
+        img.onmouseenter = function() {
+            this.style.transform = 'scale(1.05)';
+        };
+        img.onmouseleave = function() {
+            this.style.transform = 'scale(1)';
+        };
+    });
+}
+
 // Поиск инвентаризаций
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
@@ -1415,6 +1435,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Инициализируем поиск для мобильных карточек
     searchMobileInventories();
+    
+    // Инициализируем обработчики изображений
+    setTimeout(() => {
+        initInventoryImageHandlers();
+    }, 500);
     
     // Обработчик для мобильного поиска
     const mobileSearchInput = document.getElementById('searchInputMobile');
