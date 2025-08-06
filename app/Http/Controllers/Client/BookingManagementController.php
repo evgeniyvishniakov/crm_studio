@@ -106,21 +106,30 @@ class BookingManagementController extends Controller
             'advance_booking_days.max' => __('messages.advance_booking_days_max_value'),
         ]);
 
+        // Получаем или создаем настройки бронирования
+        $bookingSettings = $project->getOrCreateBookingSettings();
+        
+        // Обрабатываем boolean поля, которые могут отсутствовать в запросе
+        $bookingEnabled = $validated['booking_enabled'] ?? false;
+        $allowSameDayBooking = $validated['allow_same_day_booking'] ?? false;
+        $requireConfirmation = $validated['require_confirmation'] ?? false;
+        
         // Если включаем онлайн-запись и ссылки еще нет - генерируем её
         $bookingUrl = null;
-        if ($validated['booking_enabled'] && !$project->booking_url) {
+        if ($bookingEnabled && !$bookingSettings->booking_url) {
             $bookingUrl = url('/book/' . $project->slug);
         }
 
-        // Обновляем проект
-        $project->update([
-            'booking_enabled' => $validated['booking_enabled'],
-            'booking_url' => $bookingUrl ?? $project->booking_url,
+        // Обновляем настройки бронирования
+        $bookingSettings->update([
+            'booking_enabled' => $bookingEnabled,
+            'booking_url' => $bookingUrl ?? $bookingSettings->booking_url,
+            'working_hours_start' => $validated['working_hours_start'],
+            'working_hours_end' => $validated['working_hours_end'],
+            'advance_booking_days' => $validated['advance_booking_days'],
+            'allow_same_day_booking' => $allowSameDayBooking,
+            'require_confirmation' => $requireConfirmation,
         ]);
-
-        // Обновляем или создаем настройки бронирования
-        $bookingSettings = $project->getOrCreateBookingSettings();
-        $bookingSettings->update($validated);
 
         // Обновляем проект из базы, чтобы получить актуальные данные
         $project->refresh();

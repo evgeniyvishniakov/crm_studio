@@ -13,6 +13,8 @@ class BookingSetting extends Model
 
     protected $fillable = [
         'project_id',
+        'booking_enabled',
+        'booking_url',
         'booking_interval',
         'working_hours_start',
         'working_hours_end',
@@ -26,6 +28,7 @@ class BookingSetting extends Model
     ];
 
     protected $casts = [
+        'booking_enabled' => 'boolean',
         'booking_interval' => 'integer',
         'advance_booking_days' => 'integer',
         'allow_same_day_booking' => 'boolean',
@@ -50,6 +53,8 @@ class BookingSetting extends Model
         return static::firstOrCreate(
             ['project_id' => $projectId],
             [
+                'booking_enabled' => false,
+                'booking_url' => null,
                 'booking_interval' => 30,
                 'working_hours_start' => '09:00:00',
                 'working_hours_end' => '18:00:00',

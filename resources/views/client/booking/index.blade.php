@@ -33,7 +33,7 @@
                         <div class="form-group mb-3">
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input" id="booking_enabled" name="booking_enabled" 
-                                       {{ $project->booking_enabled ? 'checked' : '' }}>
+                                       {{ $bookingSettings->booking_enabled ? 'checked' : '' }}>
                                 <label class="custom-control-label" for="booking_enabled">
                                     <strong>{{ __('messages.enable_web_booking') }}</strong>
                                 </label>
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                                          <div class="form-col">
-                         <div class="alert alert-info" id="booking-url-block" style="{{ $project->booking_enabled ? 'display: block;' : 'display: none;' }}">
+                         <div class="alert alert-info" id="booking-url-block" style="{{ $bookingSettings->booking_enabled ? 'display: block;' : 'display: none;' }}">
                              <strong>{{ __('messages.client_link') }}</strong><br>
                              <div class="input-group mt-2">
                                  <input type="text" class="form-control" value="{{ $project->booking_url }}" readonly id="booking-url">
@@ -81,14 +81,27 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group mb-3">
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="allow_same_day_booking" name="allow_same_day_booking" 
-                                   {{ $bookingSettings->allow_same_day_booking ? 'checked' : '' }}>
-                            <label class="custom-control-label" for="allow_same_day_booking">
-                                {{ __('messages.allow_same_day_booking') }}
-                            </label>
+                <div class="form-row form-row--2col">
+                    <div class="form-col">
+                        <div class="form-group mb-3">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="allow_same_day_booking" name="allow_same_day_booking" 
+                                       {{ $bookingSettings->allow_same_day_booking ? 'checked' : '' }}>
+                                <label class="custom-control-label" for="allow_same_day_booking">
+                                    {{ __('messages.allow_same_day_booking') }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group mb-3">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="require_confirmation" name="require_confirmation" 
+                                       {{ $bookingSettings->require_confirmation ? 'checked' : '' }}>
+                                <label class="custom-control-label" for="require_confirmation">
+                                    {{ __('messages.require_confirmation') }}
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>

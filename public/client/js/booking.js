@@ -179,13 +179,14 @@ function initializeBookingForm() {
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + translations.saving;
             
-            // Правильно обрабатываем boolean значения
-            const formDataObj = {};
+            // Правильно обрабатываем boolean значения для FormData
+            const processedFormData = new FormData();
             for (let [key, value] of formData.entries()) {
-                if (key === 'booking_enabled' || key === 'allow_same_day_booking') {
-                    formDataObj[key] = value === 'on' || value === 'true' || value === true;
+                if (key === 'booking_enabled' || key === 'allow_same_day_booking' || key === 'require_confirmation') {
+                    // Для чекбоксов: если значение 'on', то true, иначе false
+                    processedFormData.append(key, value === 'on' ? '1' : '0');
                 } else {
-                    formDataObj[key] = value;
+                    processedFormData.append(key, value);
                 }
             }
             
@@ -194,9 +195,8 @@ function initializeBookingForm() {
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formDataObj)
+                body: processedFormData
             })
             .then(response => response.json())
             .then(data => {
@@ -210,7 +210,8 @@ function initializeBookingForm() {
                     
                     // Показываем/скрываем блок с URL
                     const urlBlock = document.getElementById('booking-url-block');
-                    if (formDataObj.booking_enabled) {
+                    const bookingEnabledCheckbox = document.getElementById('booking_enabled');
+                    if (bookingEnabledCheckbox && bookingEnabledCheckbox.checked) {
                         urlBlock.style.display = 'block';
                     } else {
                         urlBlock.style.display = 'none';

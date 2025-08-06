@@ -26,14 +26,12 @@ class Project extends Model
         'status',
         'phone',
         'website',
-        'booking_url', // Ссылка для онлайн-записи
         'address',
         'map_latitude',
         'map_longitude',
         'map_zoom',
         'about',
         'social_links',
-        'booking_enabled',
         'telegram_bot_token',
         'telegram_chat_id',
         'telegram_notifications_enabled',
@@ -49,7 +47,6 @@ class Project extends Model
     protected $casts = [
         'registered_at' => 'datetime',
         'social_links' => 'array',
-        'booking_enabled' => 'boolean',
         'telegram_notifications_enabled' => 'boolean',
         'email_notifications_enabled' => 'boolean',
     ];
@@ -115,9 +112,11 @@ class Project extends Model
      */
     public function getBookingUrlAttribute()
     {
+        $bookingSettings = $this->getOrCreateBookingSettings();
+        
         // Если есть сохраненная ссылка - используем её
-        if ($this->attributes['booking_url'] ?? null) {
-            return $this->attributes['booking_url'];
+        if ($bookingSettings->booking_url) {
+            return $bookingSettings->booking_url;
         }
         
         // Иначе генерируем новую
@@ -140,6 +139,8 @@ class Project extends Model
         return $this->bookingSettings()->firstOrCreate([
             'project_id' => $this->id
         ], [
+            'booking_enabled' => false,
+            'booking_url' => null,
             'booking_interval' => 30,
             'working_hours_start' => '09:00:00',
             'working_hours_end' => '18:00:00',
