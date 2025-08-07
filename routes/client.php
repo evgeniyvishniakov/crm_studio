@@ -262,6 +262,37 @@ Route::middleware('auth:client')->group(function () {
         Route::get('/employees-average-check', [AppointmentsController::class, 'getEmployeesAverageCheck']);
     });
 
+    // Зарплата
+    Route::prefix('salary')->name('salary.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Client\SalaryController::class, 'index'])->name('index');
+        
+        // Настройки зарплаты (модальные окна)
+        Route::prefix('settings')->name('settings.')->group(function () {
+            Route::post('/', [\App\Http\Controllers\Client\SalaryController::class, 'storeSetting'])->name('store');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Client\SalaryController::class, 'editSetting'])->name('edit');
+            Route::put('/{id}', [\App\Http\Controllers\Client\SalaryController::class, 'updateSetting'])->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Client\SalaryController::class, 'destroySetting'])->name('destroy');
+        });
+
+        // Расчеты зарплаты
+        Route::prefix('calculations')->name('calculations.')->group(function () {
+            Route::get('/create', [\App\Http\Controllers\Client\SalaryController::class, 'createCalculation'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Client\SalaryController::class, 'storeCalculation'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Client\SalaryController::class, 'showCalculation'])->name('show');
+            Route::post('/{id}/approve', [\App\Http\Controllers\Client\SalaryController::class, 'approveCalculation'])->name('approve');
+            Route::get('/by-user/{userId}', [\App\Http\Controllers\Client\SalaryController::class, 'getCalculationsByUser'])->name('by-user');
+            Route::get('/{id}/details', [\App\Http\Controllers\Client\SalaryController::class, 'getCalculationDetails'])->name('details');
+        });
+
+        // Выплаты
+        Route::prefix('payments')->name('payments.')->group(function () {
+            Route::get('/create', [\App\Http\Controllers\Client\SalaryController::class, 'createPayment'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Client\SalaryController::class, 'storePayment'])->name('store');
+            Route::get('/{id}', [\App\Http\Controllers\Client\SalaryController::class, 'showPayment'])->name('show');
+            Route::post('/{id}/approve', [\App\Http\Controllers\Client\SalaryController::class, 'approvePayment'])->name('approve');
+        });
+    });
+
     // Аналитика расходов
     Route::prefix('analytics')->group(function () {
         Route::get('expenses-by-month', [TurnoverReportController::class, 'expensesByMonth']);

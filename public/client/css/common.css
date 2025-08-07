@@ -411,7 +411,12 @@
 .expenses-table thead,
 .appointments-table thead,
 .inventories-table thead,
-.natification-table thead{
+.natification-table thead,
+.salary-settings-table thead,
+.salary-calculations-table thead,
+.salary-payments-table thead,
+.salary-reports-table thead,
+.salary-overview-table thead{
     background-color: #e0e4e9 !important;
     border-bottom: 1px solid #e5e7eb;
 }
@@ -425,7 +430,12 @@
 .appointments-table th,
 .expenses-table th,
 .inventories-table th,
-.natification-table th
+.natification-table th,
+.salary-settings-table th,
+.salary-calculations-table th,
+.salary-payments-table th,
+.salary-reports-table th,
+.salary-overview-table th
 {
     padding: 16px;
     text-align: center;
@@ -445,7 +455,12 @@
 .appointments-table td,
 .expenses-table td,
 .inventories-table td,
-.natification-table td{
+.natification-table td,
+.salary-settings-table td,
+.salary-calculations-table td,
+.salary-payments-table td,
+.salary-reports-table td,
+.salary-overview-table td{
     padding: 14px;
     font-size: 14px;
     color: #4b5563;
@@ -461,7 +476,12 @@
 .appointments-table th:last-child td,
 .expenses-table th:last-child td,
 .inventories-table th:last-child td,
-.natification-table th:last-child td{
+.natification-table th:last-child td,
+.salary-settings-table tr:last-child td,
+.salary-calculations-table tr:last-child td,
+.salary-payments-table tr:last-child td,
+.salary-reports-table tr:last-child td,
+.salary-overview-table tr:last-child td{
     border-bottom: none;
 }
 
@@ -472,6 +492,178 @@
     justify-content: center;
     padding: 40px !important;
 }
+
+/* Стили для таблиц без горизонтальной прокрутки */
+.table-wrapper {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table-striped {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+/* Специальные стили для таблиц зарплаты */
+.salary-calculations-table,
+.salary-payments-table,
+.salary-settings-table {
+    width: 100%;
+}
+
+/* Стили для колонок в таблицах зарплаты */
+.salary-calculations-table th:nth-child(1),
+.salary-calculations-table td:nth-child(1) {
+    width: 15%;
+}
+
+.salary-calculations-table th:nth-child(2),
+.salary-calculations-table td:nth-child(2) {
+    width: 12%;
+}
+
+.salary-calculations-table th:nth-child(3),
+.salary-calculations-table td:nth-child(3),
+.salary-calculations-table th:nth-child(4),
+.salary-calculations-table td:nth-child(4) {
+    width: 14%;
+}
+
+.salary-calculations-table th:nth-child(5),
+.salary-calculations-table td:nth-child(5) {
+    width: 12%;
+}
+
+.salary-calculations-table th:nth-child(6),
+.salary-calculations-table td:nth-child(6) {
+    width: 10%;
+}
+
+.salary-calculations-table th:nth-child(7),
+.salary-calculations-table td:nth-child(7) {
+    width: 13%;
+}
+
+/* Стили для таблицы выплат */
+.salary-payments-table th:nth-child(1),
+.salary-payments-table td:nth-child(1) {
+    width: 18%;
+}
+
+.salary-payments-table th:nth-child(2),
+.salary-payments-table td:nth-child(2) {
+    width: 15%;
+}
+
+.salary-payments-table th:nth-child(3),
+.salary-payments-table td:nth-child(3) {
+    width: 12%;
+}
+
+.salary-payments-table th:nth-child(4),
+.salary-payments-table td:nth-child(4) {
+    width: 15%;
+}
+
+.salary-payments-table th:nth-child(5),
+.salary-payments-table td:nth-child(5) {
+    width: 12%;
+}
+
+.salary-payments-table th:nth-child(6),
+.salary-payments-table td:nth-child(6) {
+    width: 18%;
+}
+
+/* Стили для таблицы настроек зарплаты */
+.salary-settings-table th:nth-child(1),
+.salary-settings-table td:nth-child(1) {
+    width: 25%;
+}
+
+.salary-settings-table th:nth-child(2),
+.salary-settings-table td:nth-child(2) {
+    width: 15%;
+}
+
+.salary-settings-table th:nth-child(3),
+.salary-settings-table td:nth-child(3) {
+    width: 15%;
+}
+
+.salary-settings-table th:nth-child(4),
+.salary-settings-table td:nth-child(4) {
+    width: 15%;
+}
+
+.salary-settings-table th:nth-child(5),
+.salary-settings-table td:nth-child(5) {
+    width: 15%;
+}
+
+.salary-settings-table th:nth-child(6),
+.salary-settings-table td:nth-child(6) {
+    width: 15%;
+}
+
+/* Стили для переноса текста в таблицах зарплаты */
+.salary-calculations-table td,
+.salary-payments-table td,
+.salary-settings-table td {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    vertical-align: top;
+}
+
+/* Стили для длинных дат и периодов */
+.salary-calculations-table td:nth-child(2),
+.salary-payments-table td:nth-child(3) {
+                font-size: 13px;
+            line-height: 1.3;
+        }
+
+        /* Стили для модального окна деталей расчета */
+        .calculation-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .calculation-breakdown {
+            margin-bottom: 20px;
+        }
+
+        .calculation-breakdown h4 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .calculation-breakdown .table-striped tr.total-row {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+
+        .calculation-notes {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+
+        .calculation-notes h4 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #dee2e6;
+            text-align: right;
+        }
 
 .btn-view,
 .btn-edit,

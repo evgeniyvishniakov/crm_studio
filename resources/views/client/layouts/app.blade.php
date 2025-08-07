@@ -255,6 +255,18 @@
                         
                     </a>
                 </li>
+                <li class="{{ request()->routeIs('salary.*') ? 'active' : '' }}">
+                    @php $hasAccess = $isAdmin || in_array('salary', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('salary.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="Зарплата">
+                        @if($hasAccess)
+                            <i class="menu-icon fa fa-money-bill-wave"></i>
+                        @else
+                            <i class="menu-icon fas fa-lock"></i>
+                        @endif
+                        Зарплата
+                        
+                    </a>
+                </li>
 
                 <li class="menu-title">{{ __('messages.services_title') }}</li>
 

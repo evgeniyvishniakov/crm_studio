@@ -95,4 +95,44 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
     {
         return $this->userServices()->with('service');
     }
+
+    /**
+     * Связь с настройками зарплаты
+     */
+    public function salarySettings()
+    {
+        return $this->hasMany(\App\Models\Clients\SalarySetting::class);
+    }
+
+    /**
+     * Связь с расчетами зарплаты
+     */
+    public function salaryCalculations()
+    {
+        return $this->hasMany(\App\Models\Clients\SalaryCalculation::class);
+    }
+
+    /**
+     * Связь с выплатами зарплаты
+     */
+    public function salaryPayments()
+    {
+        return $this->hasMany(\App\Models\Clients\SalaryPayment::class);
+    }
+
+    /**
+     * Связь с продажами как сотрудник
+     */
+    public function sales()
+    {
+        return $this->hasMany(\App\Models\Clients\Sale::class, 'employee_id');
+    }
+
+    /**
+     * Связь с записями как мастер
+     */
+    public function appointments()
+    {
+        return $this->hasMany(\App\Models\Clients\Appointment::class, 'user_id');
+    }
 }
