@@ -12,6 +12,7 @@ use App\Models\Admin\User;
 use App\Models\Clients\Appointment;
 use App\Models\Clients\Sale;
 use Carbon\Carbon;
+use App\Helpers\CurrencyHelper;
 
 class SalaryController extends Controller
 {
@@ -75,6 +76,9 @@ class SalaryController extends Controller
             ->with('user')
             ->get();
 
+        // Получаем данные о валюте
+        $currencyData = CurrencyHelper::getCurrencyData();
+
         return view('client.salary.index', compact(
             'employees',
             'salarySettings',
@@ -84,7 +88,8 @@ class SalaryController extends Controller
             'recentCalculations',
             'recentPayments',
             'monthlyStats',
-            'topEmployees'
+            'topEmployees',
+            'currencyData'
         ));
     }
 

@@ -1,10 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Показываем первую вкладку по умолчанию
-    showTab('salary-overview');
+    // Получаем сохраненную вкладку или показываем первую по умолчанию
+    const savedTab = localStorage.getItem('salaryActiveTab') || 'salary-overview';
+    showTab(savedTab);
 });
 
 // Функция переключения вкладок
 function showTab(tabName) {
+    // Сохраняем активную вкладку в localStorage
+    localStorage.setItem('salaryActiveTab', tabName);
+    
     // Скрываем все вкладки
     const panes = document.querySelectorAll('.settings-pane');
     panes.forEach(pane => {
@@ -67,8 +71,7 @@ function showSalarySettingModal(id = null) {
                     document.getElementById('fixedSalary').value = setting.fixed_salary || '';
                     document.getElementById('servicePercentage').value = setting.service_percentage || '';
                     document.getElementById('salesPercentage').value = setting.sales_percentage || '';
-                    document.getElementById('minSalary').value = setting.min_salary || '';
-                    document.getElementById('maxSalary').value = setting.max_salary || '';
+
                     toggleSalaryFields();
                 }
             })
@@ -85,6 +88,9 @@ function showSalarySettingModal(id = null) {
     // Показываем модальное окно
     modal.style.display = 'block';
     document.body.classList.add('modal-open');
+    
+    // Вызываем функцию для правильного отображения полей
+    toggleSalaryFields();
 }
 
 function editSalarySetting(id) {
@@ -102,12 +108,12 @@ function toggleSalaryFields() {
     
     // Показываем нужные поля в зависимости от типа
     if (salaryType === 'fixed') {
-        fixedSalaryRow.style.display = 'block';
+        fixedSalaryRow.style.display = 'flex';
     } else if (salaryType === 'percentage') {
-        percentageRow.style.display = 'block';
+        percentageRow.style.display = 'flex';
     } else if (salaryType === 'mixed') {
-        fixedSalaryRow.style.display = 'block';
-        percentageRow.style.display = 'block';
+        fixedSalaryRow.style.display = 'flex';
+        percentageRow.style.display = 'flex';
     }
 }
 
@@ -242,9 +248,18 @@ function fillCalculationDetails(calculation) {
 
 // Функция форматирования валюты
 function formatCurrency(amount) {
-    if (!amount || amount == 0) return '0 ₽';
+    if (!amount || amount == 0) {
+        return window.currencyData && window.currencyData.symbol ? `0 ${window.currencyData.symbol}` : '0 ₴';
+    }
+    
     const num = parseFloat(amount);
-    return num % 1 === 0 ? `${num.toLocaleString('ru-RU')} ₽` : `${num.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₽`;
+    const symbol = window.currencyData && window.currencyData.symbol ? window.currencyData.symbol : '₴';
+    
+    if (num % 1 === 0) {
+        return `${num.toLocaleString('ru-RU')} ${symbol}`;
+    } else {
+        return `${num.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${symbol}`;
+    }
 }
 
 function closeSalaryCalculationDetailsModal() {
@@ -260,7 +275,7 @@ function toggleCalculationPeriod() {
     const periodEnd = document.getElementById('periodEnd');
     
     if (period === 'custom') {
-        customPeriodRow.style.display = 'block';
+        customPeriodRow.style.display = 'flex';
     } else {
         customPeriodRow.style.display = 'none';
         
@@ -365,18 +380,19 @@ function loadCalculationsForUser(userId) {
                 
                 console.log('Количество расчетов:', data.calculations.length);
                 
-                data.calculations.forEach(calculation => {
-                    const periodStart = new Date(calculation.period_start).toLocaleDateString('ru-RU');
-                    const periodEnd = new Date(calculation.period_end).toLocaleDateString('ru-RU');
-                    const amount = parseFloat(calculation.total_salary).toLocaleString('ru-RU', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-                    
-                    options += `<option value="${calculation.id}" data-amount="${calculation.total_salary}">
-                        ${periodStart} - ${periodEnd} (${amount} ₽)
-                    </option>`;
-                });
+                                 data.calculations.forEach(calculation => {
+                     const periodStart = new Date(calculation.period_start).toLocaleDateString('ru-RU');
+                     const periodEnd = new Date(calculation.period_end).toLocaleDateString('ru-RU');
+                     const amount = parseFloat(calculation.total_salary).toLocaleString('ru-RU', {
+                         minimumFractionDigits: 2,
+                         maximumFractionDigits: 2
+                     });
+                     const symbol = window.currencyData && window.currencyData.symbol ? window.currencyData.symbol : '₴';
+                     
+                     options += `<option value="${calculation.id}" data-amount="${calculation.total_salary}">
+                         ${periodStart} - ${periodEnd} (${amount} ${symbol})
+                     </option>`;
+                 });
                 
                 calculationSelect.innerHTML = options;
             } else {

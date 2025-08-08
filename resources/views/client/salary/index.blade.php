@@ -94,7 +94,7 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <h5 class="text-muted fw-normal mt-0">Выплачено в этом месяце</h5>
-                                    <h3 class="mt-3 mb-3">{{ number_format($stats['total_payments_this_month'] ?? 0, 2) }} ₽</h3>
+                                    <h3 class="mt-3 mb-3">{{ \App\Helpers\CurrencyHelper::format($stats['total_payments_this_month'] ?? 0) }}</h3>
                                 </div>
                                 <div class="avatar-sm">
                                     <span class="avatar-title bg-soft-warning rounded">
@@ -137,9 +137,9 @@
                                                     {{ $calculation->period_end->format('d.m.Y') }}
                                                 </td>
                                                 <td>
-                                                    <span class="currency-amount" data-amount="{{ $calculation->total_salary }}">
-                                                        {{ number_format($calculation->total_salary, 2) }} ₽
-                                                    </span>
+                                                                                    <span class="currency-amount" data-amount="{{ $calculation->total_salary }}">
+                                    {{ \App\Helpers\CurrencyHelper::format($calculation->total_salary) }}
+                                </span>
                                                 </td>
                                                 <td>
                                                     <span class="status-badge status-{{ $calculation->status === 'pending' ? 'pending' : ($calculation->status === 'approved' ? 'done' : 'cancel') }}">
@@ -186,9 +186,9 @@
                                             <tr>
                                                 <td>{{ $payment->user->name }}</td>
                                                 <td>
-                                                    <span class="currency-amount" data-amount="{{ $payment->amount }}">
-                                                        {{ number_format($payment->amount, 2) }} ₽
-                                                    </span>
+                                                                                    <span class="currency-amount" data-amount="{{ $payment->amount }}">
+                                    {{ \App\Helpers\CurrencyHelper::format($payment->amount) }}
+                                </span>
                                                 </td>
                                                 <td>{{ $payment->payment_date->format('d.m.Y') }}</td>
                                                 <td>
@@ -229,7 +229,6 @@
                         <tr>
                             <th>Сотрудник</th>
                             <th>Тип зарплаты</th>
-                            <th>Фиксированная</th>
                             <th>Процент от услуг</th>
                             <th>Процент от продаж</th>
                             <th>Действия</th>
@@ -238,38 +237,11 @@
                     <tbody id="salary-settings-tbody">
                         @foreach($salarySettings ?? [] as $setting)
                         <tr data-setting-id="{{ $setting->id }}">
+                            <td>{{ $setting->user->name }}</td>
                             <td>
-                                <div class="d-flex align-items-center">
-                                    @if($setting->user->avatar)
-                                        <img src="{{ asset('storage/' . $setting->user->avatar) }}" 
-                                             class="rounded-circle me-2" width="32" height="32" 
-                                             alt="{{ $setting->user->name }}">
-                                    @else
-                                        <div class="avatar-sm me-2">
-                                            <span class="avatar-title bg-soft-primary rounded-circle">
-                                                {{ strtoupper(substr($setting->user->name, 0, 1)) }}
-                                            </span>
-                                        </div>
-                                    @endif
-                                    <div>
-                                        <h6 class="mb-0">{{ $setting->user->name }}</h6>
-                                        <small class="text-muted">{{ $setting->user->email }}</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="status-badge status-{{ $setting->salary_type === 'fixed' ? 'done' : ($setting->salary_type === 'percentage' ? 'pending' : 'rescheduled') }}">
+                                <span class="status-badge status-done">
                                     {{ $setting->salary_type_text }}
                                 </span>
-                            </td>
-                            <td>
-                                @if($setting->fixed_salary)
-                                    <span class="currency-amount" data-amount="{{ $setting->fixed_salary }}">
-                                        {{ number_format($setting->fixed_salary, 2) }} ₽
-                                    </span>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
                             </td>
                             <td>
                                 @if($setting->service_percentage)
@@ -345,11 +317,11 @@
                                 {{ $calculation->period_start->format('d.m.Y') }} - 
                                 {{ $calculation->period_end->format('d.m.Y') }}
                             </td>
-                            <td>{{ $calculation->services_count }} ({{ number_format($calculation->services_amount, 2) }} ₽)</td>
-                            <td>{{ $calculation->sales_count }} ({{ number_format($calculation->sales_amount, 2) }} ₽)</td>
+                            <td>{{ $calculation->services_count }} ({{ \App\Helpers\CurrencyHelper::format($calculation->services_amount) }})</td>
+                            <td>{{ $calculation->sales_count }} ({{ \App\Helpers\CurrencyHelper::format($calculation->sales_amount) }})</td>
                             <td>
                                 <span class="currency-amount" data-amount="{{ $calculation->total_salary }}">
-                                    {{ number_format($calculation->total_salary, 2) }} ₽
+                                    {{ \App\Helpers\CurrencyHelper::format($calculation->total_salary) }}
                                 </span>
                             </td>
                             <td>
@@ -417,7 +389,7 @@
                             <td>{{ $payment->user->name }}</td>
                             <td>
                                 <span class="currency-amount" data-amount="{{ $payment->amount }}">
-                                    {{ number_format($payment->amount, 2) }} ₽
+                                    {{ \App\Helpers\CurrencyHelper::format($payment->amount) }}
                                 </span>
                             </td>
                             <td>{{ $payment->payment_date->format('d.m.Y') }}</td>
@@ -485,14 +457,14 @@
                                             <td>{{ $stat->year }}/{{ $stat->month }}</td>
                                             <td>{{ $stat->calculations_count }}</td>
                                             <td>
-                                                <span class="currency-amount" data-amount="{{ $stat->total_salary }}">
-                                                    {{ number_format($stat->total_salary, 2) }} ₽
-                                                </span>
+                                                                                <span class="currency-amount" data-amount="{{ $stat->total_salary }}">
+                                    {{ \App\Helpers\CurrencyHelper::format($stat->total_salary) }}
+                                </span>
                                             </td>
                                             <td>
-                                                <span class="currency-amount" data-amount="{{ $stat->avg_salary }}">
-                                                    {{ number_format($stat->avg_salary, 2) }} ₽
-                                                </span>
+                                                                                <span class="currency-amount" data-amount="{{ $stat->avg_salary }}">
+                                    {{ \App\Helpers\CurrencyHelper::format($stat->avg_salary) }}
+                                </span>
                                             </td>
                                         </tr>
                                         @endforeach
@@ -525,15 +497,15 @@
                                         <tr>
                                             <td>{{ $employee->user->name }}</td>
                                             <td>
-                                                <span class="currency-amount" data-amount="{{ $employee->total_earned }}">
-                                                    {{ number_format($employee->total_earned, 2) }} ₽
-                                                </span>
+                                                                                <span class="currency-amount" data-amount="{{ $employee->total_earned }}">
+                                    {{ \App\Helpers\CurrencyHelper::format($employee->total_earned) }}
+                                </span>
                                             </td>
                                             <td>{{ $employee->calculations_count }}</td>
                                             <td>
-                                                <span class="currency-amount" data-amount="{{ $employee->total_earned / $employee->calculations_count }}">
-                                                    {{ number_format($employee->total_earned / $employee->calculations_count, 2) }} ₽
-                                                </span>
+                                                                                <span class="currency-amount" data-amount="{{ $employee->total_earned / $employee->calculations_count }}">
+                                    {{ \App\Helpers\CurrencyHelper::format($employee->total_earned / $employee->calculations_count) }}
+                                </span>
                                             </td>
                                         </tr>
                                         @endforeach
@@ -584,7 +556,7 @@
 
                 <div class="form-row" id="fixedSalaryRow" style="display: none;">
                     <div class="form-group">
-                        <label>Фиксированная зарплата (₽)</label>
+                        <label>Фиксированная зарплата ({{ \App\Helpers\CurrencyHelper::getSymbol() }})</label>
                         <input type="number" name="fixed_salary" step="0.01" min="0" class="form-control" id="fixedSalary" placeholder="0.00">
                     </div>
                 </div>
@@ -600,16 +572,7 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Минимальная зарплата (₽)</label>
-                        <input type="number" name="min_salary" step="0.01" min="0" class="form-control" id="minSalary" placeholder="0.00">
-                    </div>
-                    <div class="form-group">
-                        <label>Максимальная зарплата (₽)</label>
-                        <input type="number" name="max_salary" step="0.01" min="0" class="form-control" id="maxSalary" placeholder="0.00">
-                    </div>
-                </div>
+
 
                 <div class="form-actions">
                     <button type="button" class="btn-cancel" onclick="closeSalarySettingModal()">Отмена</button>
@@ -664,11 +627,11 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Бонусы (₽)</label>
+                        <label>Бонусы ({{ \App\Helpers\CurrencyHelper::getSymbol() }})</label>
                         <input type="number" name="bonuses" step="0.01" min="0" class="form-control" id="bonuses" placeholder="0.00">
                     </div>
                     <div class="form-group">
-                        <label>Штрафы (₽)</label>
+                        <label>Штрафы ({{ \App\Helpers\CurrencyHelper::getSymbol() }})</label>
                         <input type="number" name="penalties" step="0.01" min="0" class="form-control" id="penalties" placeholder="0.00">
                     </div>
                 </div>
@@ -717,7 +680,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Сумма выплаты (₽) *</label>
+                        <label>Сумма выплаты ({{ \App\Helpers\CurrencyHelper::getSymbol() }}) *</label>
                         <input type="number" name="amount" step="0.01" min="0" required class="form-control" id="paymentAmount" placeholder="0.00">
                     </div>
                     <div class="form-group">
@@ -847,6 +810,10 @@
 </div>
 
 @push('scripts')
+<script>
+// Данные о валюте для JavaScript
+window.currencyData = @json($currencyData);
+</script>
 <script src="{{ asset('client/js/salary.js') }}"></script>
 @endpush
 @endsection
