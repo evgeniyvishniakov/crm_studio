@@ -141,7 +141,9 @@
     transition: all 0.2s ease;
     text-decoration: none;
 }
-
+#tab-salary-reports .header-title{
+    margin-bottom: 15px;
+}
 .brand-actions .btn-edit {
     background: linear-gradient(135deg, #3b82f6, #60a5fa);
     color: white;
@@ -6799,6 +6801,11 @@ input[type="date"]:focus {
 .currency-amount {
     font-weight: 600;
     color: #10b981;
+}
+
+/* Специальный стиль для штрафов в модальном окне расчета зарплаты */
+#detailPenalties.currency-amount {
+    color: inherit;
 }
 
 .expense-card.row-deleting {

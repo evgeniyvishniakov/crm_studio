@@ -265,6 +265,7 @@ Route::middleware('auth:client')->group(function () {
     // Зарплата
     Route::prefix('salary')->name('salary.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Client\SalaryController::class, 'index'])->name('index');
+        Route::get('/statistics', [\App\Http\Controllers\Client\SalaryController::class, 'getStatistics'])->name('statistics');
         
         // Настройки зарплаты (модальные окна)
         Route::prefix('settings')->name('settings.')->group(function () {

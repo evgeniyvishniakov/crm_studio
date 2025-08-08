@@ -59,18 +59,18 @@ class SalaryController extends Controller
         // Последние выплаты
         $recentPayments = $salaryPayments->take(5);
 
-        // Статистика по месяцам
-        $monthlyStats = SalaryCalculation::where('project_id', $project->id)
-            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as calculations_count, SUM(total_salary) as total_salary, AVG(total_salary) as avg_salary')
+        // Статистика по месяцам (выплаты)
+        $monthlyStats = SalaryPayment::where('project_id', $project->id)
+            ->selectRaw('YEAR(payment_date) as year, MONTH(payment_date) as month, COUNT(*) as payments_count, SUM(amount) as total_amount, AVG(amount) as avg_amount')
             ->groupBy('year', 'month')
             ->orderBy('year', 'desc')
             ->orderBy('month', 'desc')
             ->limit(12)
             ->get();
 
-        // Топ сотрудников
-        $topEmployees = SalaryCalculation::where('project_id', $project->id)
-            ->selectRaw('user_id, SUM(total_salary) as total_earned, COUNT(*) as calculations_count')
+        // Топ сотрудников по выплатам
+        $topEmployees = SalaryPayment::where('project_id', $project->id)
+            ->selectRaw('user_id, SUM(amount) as total_earned, COUNT(*) as payments_count')
             ->groupBy('user_id')
             ->orderBy('total_earned', 'desc')
             ->limit(10)
@@ -109,6 +109,25 @@ class SalaryController extends Controller
             'max_salary' => 'nullable|numeric|min:0',
         ]);
 
+        // Дополнительная валидация в зависимости от типа зарплаты
+        if ($request->salary_type === 'fixed' || $request->salary_type === 'mixed') {
+            if (empty($request->fixed_salary) || $request->fixed_salary <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('messages.error_fixed_salary_required')
+                ]);
+            }
+        }
+
+        if ($request->salary_type === 'percentage' || $request->salary_type === 'mixed') {
+            if (empty($request->service_percentage) && empty($request->sales_percentage)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('messages.error_percentage_required')
+                ]);
+            }
+        }
+
         $project = Auth::guard('client')->user()->project;
 
         // Проверяем, что настройки для этого сотрудника еще не существуют
@@ -134,9 +153,21 @@ class SalaryController extends Controller
             'max_salary' => $request->max_salary,
         ]);
 
+        // Загружаем связанные данные пользователя
+        $setting->load('user');
+
         return response()->json([
             'success' => true,
-            'message' => 'Настройки зарплаты созданы успешно'
+            'message' => __('messages.settings_created_successfully'),
+            'setting' => [
+                'id' => $setting->id,
+                'user_id' => $setting->user_id,
+                'salary_type' => $setting->salary_type,
+                'fixed_salary' => $setting->fixed_salary,
+                'service_percentage' => $setting->service_percentage,
+                'sales_percentage' => $setting->sales_percentage,
+                'user_name' => $setting->user->name,
+            ]
         ]);
     }
 
@@ -149,7 +180,7 @@ class SalaryController extends Controller
         
         return response()->json([
             'success' => true,
-            'data' => $setting
+            'setting' => $setting
         ]);
     }
 
@@ -167,6 +198,25 @@ class SalaryController extends Controller
             'max_salary' => 'nullable|numeric|min:0',
         ]);
 
+        // Дополнительная валидация в зависимости от типа зарплаты
+        if ($request->salary_type === 'fixed' || $request->salary_type === 'mixed') {
+            if (empty($request->fixed_salary) || $request->fixed_salary <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('messages.error_fixed_salary_required')
+                ]);
+            }
+        }
+
+        if ($request->salary_type === 'percentage' || $request->salary_type === 'mixed') {
+            if (empty($request->service_percentage) && empty($request->sales_percentage)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('messages.error_percentage_required')
+                ]);
+            }
+        }
+
         $setting = SalarySetting::findOrFail($id);
         
         $setting->update([
@@ -178,9 +228,21 @@ class SalaryController extends Controller
             'max_salary' => $request->max_salary,
         ]);
 
+        // Загружаем связанные данные пользователя
+        $setting->load('user');
+
         return response()->json([
             'success' => true,
-            'message' => 'Настройки зарплаты обновлены успешно'
+            'message' => __('messages.settings_updated_successfully'),
+            'setting' => [
+                'id' => $setting->id,
+                'user_id' => $setting->user_id,
+                'salary_type' => $setting->salary_type,
+                'fixed_salary' => $setting->fixed_salary,
+                'service_percentage' => $setting->service_percentage,
+                'sales_percentage' => $setting->sales_percentage,
+                'user_name' => $setting->user->name,
+            ]
         ]);
     }
 
@@ -517,6 +579,48 @@ class SalaryController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Выплата зарплаты удалена успешно'
+        ]);
+    }
+
+    /**
+     * Получить статистику зарплаты
+     */
+    public function getStatistics()
+    {
+        $user = Auth::guard('client')->user();
+        $project = $user->project;
+
+        // Получаем статистику
+        $stats = [
+            'salary_settings_count' => SalarySetting::where('project_id', $project->id)->count(),
+            'payments_this_month' => SalaryPayment::where('project_id', $project->id)
+                ->whereMonth('payment_date', now()->month)
+                ->whereYear('payment_date', now()->year)
+                ->count(),
+        ];
+
+        // Получаем статистику по месяцам (выплаты)
+        $monthlyStats = SalaryPayment::where('project_id', $project->id)
+            ->selectRaw('YEAR(payment_date) as year, MONTH(payment_date) as month, COUNT(*) as payments_count, SUM(amount) as total_amount, AVG(amount) as avg_amount')
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
+            ->get();
+
+        // Получаем топ сотрудников по выплатам
+        $topEmployees = SalaryPayment::where('salary_payments.project_id', $project->id)
+            ->join('admin_users', 'salary_payments.user_id', '=', 'admin_users.id')
+            ->selectRaw('admin_users.name, SUM(salary_payments.amount) as total_earned, COUNT(*) as payments_count')
+            ->groupBy('admin_users.id', 'admin_users.name')
+            ->orderBy('total_earned', 'desc')
+            ->limit(10)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'stats' => $stats,
+            'monthlyStats' => $monthlyStats,
+            'topEmployees' => $topEmployees
         ]);
     }
 

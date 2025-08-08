@@ -1833,4 +1833,205 @@ return [
     
     // Mobile version messages
     'inventory_mobile_unavailable' => 'Inventory is not available on mobile devices. Please use the desktop version.',
+    
+    // Salary - main sections
+    'salary' => 'Salary',
+    'salary_overview' => 'Salary Overview',
+    'salary_settings' => 'Salary Settings',
+    'salary_calculations' => 'Calculations',
+    'salary_payments' => 'Payments',
+    'salary_reports' => 'Reports',
+    
+    // Salary statistics
+    'total_employees' => 'Total Employees',
+    'employees_with_salary' => 'With Salary Settings',
+    'calculations_this_month' => 'Calculations This Month',
+    'payments_this_month' => 'Payments This Month',
+    'total_payments_this_month' => 'Total Paid This Month',
+    
+    // Recent records
+    'recent_calculations' => 'Recent Salary Calculations',
+    'recent_payments' => 'Recent Payments',
+    'no_calculations' => 'No salary calculations found',
+    'no_payments' => 'No payments found',
+    
+    // Salary settings
+    'add_salary_settings' => 'Add Settings',
+    'edit_salary_settings' => 'Edit Salary Settings',
+    'salary_settings_absent' => 'No salary settings found',
+    'add_salary_settings_for_employees' => 'Add salary settings for your employees',
+    
+    // Salary calculations
+    'salary_calculations_title' => 'Salary Calculations',
+    'calculate_salary' => 'Calculate Salary',
+    'no_calculations_found' => 'No salary calculations found',
+    
+    // Salary payments
+    'salary_payments_title' => 'Salary Payments',
+    'create_payment' => 'Create Payment',
+    'no_payments_found' => 'No payments found',
+    
+    // Salary reports
+    'salary_reports_title' => 'Salary Reports',
+    'monthly_statistics' => 'Monthly Statistics',
+    'top_employees_by_salary' => 'Top Employees by Salary',
+    
+    // Tables
+    'employee' => 'Employee',
+    'period' => 'Period',
+    'amount' => 'Amount',
+    'payment_date' => 'Payment Date',
+    'payment_method' => 'Payment Method',
+    'salary_type' => 'Salary Type',
+    'service_percentage' => 'Service Percentage',
+    'sales_percentage' => 'Sales Percentage',
+    'total_earnings' => 'Total Earnings',
+    'calculations_count' => 'Calculations Count',
+    'payments_count' => 'Payments Count',
+    'average_salary' => 'Average Salary',
+    'average_payment' => 'Average Payment',
+    'month' => 'Month',
+    'calculations_count_header' => 'Calculations Count',
+    'payments_count_header' => 'Payments Count',
+    'total_amount' => 'Total Amount',
+    
+    // Salary types
+    'fixed_salary' => 'Fixed Salary',
+    'percentage_salary' => 'Percentage Salary',
+    'mixed_salary' => 'Mixed Salary',
+    
+    // Payment methods
+    'cash' => 'Cash',
+    'bank_transfer' => 'Bank Transfer',
+    'card' => 'Card',
+    
+    // Statuses
+    'pending' => 'Pending',
+    'approved' => 'Approved',
+    'paid' => 'Paid',
+    'cancelled' => 'Cancelled',
+    'calculated' => 'Calculated',
+    
+    // Modal windows
+    'add_salary_settings_modal' => 'Add Salary Settings',
+    'edit_salary_settings_modal' => 'Edit Salary Settings',
+    'calculate_salary_modal' => 'Calculate Salary',
+    'create_payment_modal' => 'Create Payment',
+    'payment_details_modal' => 'Payment Details',
+    'calculation_details_modal' => 'Calculation Details',
+    
+    // Forms
+    'select_employee' => 'Select Employee',
+    'salary_type_label' => 'Salary Type',
+    'fixed_salary_label' => 'Fixed Salary',
+    'service_percentage_label' => 'Service Percentage (%)',
+    'sales_percentage_label' => 'Sales Percentage (%)',
+    'payment_amount_label' => 'Payment Amount',
+    'payment_date_label' => 'Payment Date',
+    'payment_method_label' => 'Payment Method',
+    'calculation_period_label' => 'Calculation Period',
+    'current_month' => 'Current Month',
+    'last_month' => 'Last Month',
+    'custom_period' => 'Custom Period',
+    'start_date' => 'Start Date',
+    'end_date' => 'End Date',
+    'calculation_id' => 'Salary Calculation',
+    'select_calculation' => 'Select calculation (optional)',
+    'reference_number' => 'Reference Number',
+    'notes' => 'Notes',
+    
+    // Actions
+    'approve' => 'Approve',
+    'approve_calculation' => 'Approve Calculation',
+    'approve_payment' => 'Approve Payment',
+    'view' => 'View',
+    'view_calculation' => 'View Calculation',
+    'view_payment' => 'View Payment',
+    'delete_calculation' => 'Delete Calculation',
+    'delete_payment' => 'Delete Payment',
+    
+    // Messages
+    'salary_settings_created' => 'Salary settings created successfully',
+    'salary_settings_updated' => 'Salary settings updated successfully',
+    'salary_settings_deleted' => 'Salary settings deleted successfully',
+    'calculation_created' => 'Salary calculation created successfully',
+    'calculation_approved' => 'Calculation approved successfully',
+    'calculation_deleted' => 'Salary calculation deleted successfully',
+    'payment_created' => 'Payment created successfully',
+    'payment_approved' => 'Payment approved successfully',
+    'payment_deleted' => 'Payment deleted successfully',
+    'payment_details_loaded' => 'Payment details loaded',
+    
+    // Errors
+    'error_loading_payment_details' => 'Error loading payment details',
+    'error_creating_salary_settings' => 'Error creating salary settings',
+    'error_updating_salary_settings' => 'Error updating salary settings',
+    'error_deleting_salary_settings' => 'Error deleting salary settings',
+    'error_creating_calculation' => 'Error creating calculation',
+    'error_approving_calculation' => 'Error approving calculation',
+    'error_deleting_calculation' => 'Error deleting calculation',
+    'error_creating_payment' => 'Error creating payment',
+    'error_approving_payment' => 'Error approving payment',
+    'error_deleting_payment' => 'Error deleting payment',
+    'error_fixed_salary_required' => 'Fixed salary amount is required',
+    'error_percentage_required' => 'At least one percentage is required for percentage salary',
+    'settings_created_successfully' => 'Salary settings created successfully',
+    'settings_updated_successfully' => 'Salary settings updated successfully',
+    
+    // Confirmations
+
+    'confirm_delete_calculation' => 'Are you sure you want to delete this salary calculation? This action cannot be undone.',
+    'confirm_delete_payment' => 'Are you sure you want to delete this salary payment? This action cannot be undone.',
+    'confirm_delete' => 'Confirm Delete',
+    'confirm_delete_setting' => 'Are you sure you want to delete these salary settings? This action cannot be undone.',
+    
+    // Payment details
+    'payment_details' => 'Payment Details',
+    'payment_employee' => 'Employee',
+    'payment_amount' => 'Amount',
+    'payment_status' => 'Status',
+    'payment_created_at' => 'Created At',
+    'payment_approved_by' => 'Approved By',
+    'payment_approved_at' => 'Approved At',
+    
+    // Calculation details
+    'calculation_details' => 'Calculation Details',
+    'calculation_employee' => 'Employee',
+    'calculation_period' => 'Period',
+    'calculation_total' => 'Total Amount',
+    'calculation_status' => 'Status',
+    'calculation_services_amount' => 'Services Amount',
+    'calculation_sales_amount' => 'Sales Amount',
+    'calculation_created_at' => 'Created At',
+    'calculation_approved_by' => 'Approved By',
+    'calculation_approved_at' => 'Approved At',
+    
+    // General statuses
+    'unknown' => 'Unknown',
+    'select_type' => 'Select type',
+    'select_period' => 'Select period',
+    'select_method' => 'Select method',
+    'bonuses' => 'Bonuses',
+    'penalties' => 'Penalties',
+    'notes_label' => 'Notes',
+    'notes_placeholder' => 'Additional information about the calculation',
+    'other' => 'Other',
+    'reference_number' => 'Reference Number',
+    'reference_placeholder' => 'Receipt number, check number, etc.',
+    'payment_notes_placeholder' => 'Additional information about the payment',
+    'calculation_details_modal' => 'Salary Calculation Details',
+    'calculation_breakdown' => 'Calculation Breakdown:',
+    'services_count' => 'Services Count:',
+    'services_amount' => 'Services Amount:',
+    'service_percentage_label' => 'Service Percentage:',
+    'service_income' => 'Service Income:',
+    'sales_count' => 'Sales Count:',
+    'sales_amount' => 'Sales Amount:',
+    'sales_percentage_label' => 'Sales Percentage:',
+    'sales_income' => 'Sales Income:',
+    'fixed_salary_label' => 'Fixed Salary:',
+    'percentage_salary_label' => 'Percentage Salary:',
+    'bonuses_label' => 'Bonuses:',
+    'penalties_label' => 'Penalties:',
+    'total_to_pay' => 'Total to Pay:',
 ]; 

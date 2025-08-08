@@ -76,10 +76,10 @@ class SalaryPayment extends Model
     public function getPaymentMethodTextAttribute()
     {
         return match($this->payment_method) {
-            'cash' => 'Наличные',
-            'bank' => 'Банковский перевод',
-            'card' => 'Карта',
-            default => 'Неизвестно'
+            'cash' => __('messages.cash'),
+            'bank' => __('messages.bank_transfer'),
+            'card' => __('messages.card'),
+            default => __('messages.unknown')
         };
     }
 
@@ -89,10 +89,10 @@ class SalaryPayment extends Model
     public function getStatusTextAttribute()
     {
         return match($this->status) {
-            'pending' => 'Ожидает',
-            'approved' => 'Выплачено',
-            'cancelled' => 'Отменено',
-            default => 'Неизвестно'
+            'pending' => __('messages.pending'),
+            'approved' => __('messages.paid'),
+            'cancelled' => __('messages.cancelled'),
+            default => __('messages.unknown')
         };
     }
 

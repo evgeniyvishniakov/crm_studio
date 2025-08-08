@@ -64,7 +64,7 @@ function showSalarySettingModal(id = null) {
         fetch(`/salary/settings/${id}/edit`)
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
+                if (data.success && data.setting) {
                     const setting = data.setting;
                     document.getElementById('salarySettingUserId').value = setting.user_id;
                     document.getElementById('salaryType').value = setting.salary_type;
@@ -73,6 +73,8 @@ function showSalarySettingModal(id = null) {
                     document.getElementById('salesPercentage').value = setting.sales_percentage || '';
 
                     toggleSalaryFields();
+                } else {
+                    window.showNotification('error', 'Ошибка при загрузке данных настроек');
                 }
             })
             .catch(error => {
@@ -101,19 +103,33 @@ function toggleSalaryFields() {
     const salaryType = document.getElementById('salaryType').value;
     const fixedSalaryRow = document.getElementById('fixedSalaryRow');
     const percentageRow = document.getElementById('percentageRow');
+    const fixedSalaryInput = document.getElementById('fixedSalary');
+    const servicePercentageInput = document.getElementById('servicePercentage');
+    const salesPercentageInput = document.getElementById('salesPercentage');
     
     // Скрываем все поля
     fixedSalaryRow.style.display = 'none';
     percentageRow.style.display = 'none';
     
+    // Сбрасываем обязательность полей
+    fixedSalaryInput.required = false;
+    servicePercentageInput.required = false;
+    salesPercentageInput.required = false;
+    
     // Показываем нужные поля в зависимости от типа
     if (salaryType === 'fixed') {
         fixedSalaryRow.style.display = 'flex';
+        fixedSalaryInput.required = true;
     } else if (salaryType === 'percentage') {
         percentageRow.style.display = 'flex';
+        servicePercentageInput.required = true;
+        salesPercentageInput.required = true;
     } else if (salaryType === 'mixed') {
         fixedSalaryRow.style.display = 'flex';
         percentageRow.style.display = 'flex';
+        fixedSalaryInput.required = true;
+        servicePercentageInput.required = true;
+        salesPercentageInput.required = true;
     }
 }
 
@@ -178,7 +194,7 @@ function fillCalculationDetails(calculation) {
     
     const statusElement = document.getElementById('detailStatus');
     statusElement.textContent = calculation.status_text;
-    statusElement.className = `status-badge status-${calculation.status_color}`;
+    statusElement.className = '';
     
     const createdAt = new Date(calculation.created_at).toLocaleDateString('ru-RU');
     document.getElementById('detailCreatedAt').textContent = createdAt;
@@ -207,7 +223,17 @@ function fillCalculationDetails(calculation) {
     document.getElementById('detailFixedSalary').textContent = formatCurrency(calculation.fixed_salary);
     document.getElementById('detailPercentageSalary').textContent = formatCurrency(calculation.percentage_salary);
     document.getElementById('detailBonuses').textContent = formatCurrency(calculation.bonuses);
-    document.getElementById('detailPenalties').textContent = formatCurrency(calculation.penalties);
+    
+    // Штрафы: красным если больше 0, обычным если 0
+    const penaltiesElement = document.getElementById('detailPenalties');
+    const penaltiesAmount = parseFloat(calculation.penalties) || 0;
+    penaltiesElement.textContent = formatCurrency(calculation.penalties);
+    if (penaltiesAmount > 0) {
+        penaltiesElement.style.color = '#dc3545'; // красный цвет
+    } else {
+        penaltiesElement.style.color = '#6c757d'; // обычный серый цвет
+    }
+    
     document.getElementById('detailFinalTotal').textContent = formatCurrency(calculation.total_salary);
     
     // Показываем/скрываем примечания
@@ -290,15 +316,18 @@ function approveSalaryCalculation(id) {
                 if (row) {
                     const statusCell = row.querySelector('td:nth-child(6)');
                     if (statusCell) {
-                            statusCell.innerHTML = '<span class="status-badge status-done">Утверждено</span>';
-                        }
+                            statusCell.innerHTML = '<span class="status-badge">' + (window.translations ? window.translations.approved : 'Утверждено') + '</span>';
+                    }
                         // Скрываем кнопку утверждения
                         const approveBtn = row.querySelector('button[onclick*="approveSalaryCalculation"]');
                         if (approveBtn) {
                             approveBtn.style.display = 'none';
-                        }
+                }
                     }
                     window.showNotification('success', 'Расчет утвержден успешно');
+            
+            // Обновляем статистику в отчетах
+            updateSalaryStatistics();
             } else {
             window.showNotification('error', data.message || 'Ошибка при утверждении');
             }
@@ -448,7 +477,7 @@ function approveSalaryPayment(id) {
                     const statusCell = row.querySelector('td:nth-child(5)');
                     if (statusCell) {
                     statusCell.innerHTML = '<span class="status-badge status-done">Выплачено</span>';
-                }
+                    }
                 // Скрываем кнопку подтверждения
                 const approveBtn = row.querySelector('button[onclick*="approveSalaryPayment"]');
                 if (approveBtn) {
@@ -456,6 +485,9 @@ function approveSalaryPayment(id) {
                 }
             }
             window.showNotification('success', 'Выплата подтверждена успешно');
+            
+            // Обновляем статистику в отчетах
+            updateSalaryStatistics();
             } else {
             window.showNotification('error', data.message || 'Ошибка при подтверждении');
             }
@@ -588,8 +620,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = settingId ? `/salary/settings/${settingId}` : '/salary/settings';
             const method = settingId ? 'PUT' : 'POST';
             
+            // Для PUT запросов нужно использовать специальный подход
+            if (method === 'PUT') {
+                formData.append('_method', 'PUT');
+            }
+            
             fetch(url, {
-                method: method,
+                method: 'POST', // Всегда используем POST, но добавляем _method для PUT
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json'
@@ -601,8 +638,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     window.showNotification('success', data.message || 'Настройки сохранены успешно');
                     closeSalarySettingModal();
-                    // Перезагружаем страницу для обновления данных
-                    location.reload();
+                    
+                    // Добавляем или обновляем настройку в таблице без перезагрузки
+                    if (data.setting) {
+                        const existingRow = document.querySelector(`tr[data-setting-id="${data.setting.id}"]`);
+                        if (existingRow) {
+                            // Обновляем существующую строку
+                            updateSettingRow(existingRow, data.setting);
+                } else {
+                            // Добавляем новую строку
+                            addSettingToTable(data.setting);
+                        }
+                    }
                 } else {
                     window.showNotification('error', data.message || 'Ошибка при сохранении');
                 }
@@ -658,6 +705,11 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             
             const formData = new FormData(this);
+            
+            // Отладочная информация
+            console.log('Form data payment_method:', formData.get('payment_method'));
+            console.log('Form data user_id:', formData.get('user_id'));
+            console.log('Form data amount:', formData.get('amount'));
             
             fetch('/salary/payments', {
                 method: 'POST',
@@ -749,16 +801,16 @@ function confirmAction(id, type) {
     const confirmBtn = document.getElementById('confirmDeleteBtn');
     
     if (type === 'calculation') {
-        messageElement.textContent = 'Вы уверены, что хотите удалить этот расчет зарплаты? Это действие нельзя отменить.';
-        confirmBtn.textContent = 'Удалить';
+        messageElement.textContent = window.translations ? window.translations.confirm_delete_calculation : 'Вы уверены, что хотите удалить этот расчет зарплаты? Это действие нельзя отменить.';
+        confirmBtn.textContent = window.translations ? window.translations.delete : 'Удалить';
         confirmBtn.className = 'btn-delete';
     } else if (type === 'payment') {
-        messageElement.textContent = 'Вы уверены, что хотите удалить эту выплату зарплаты? Это действие нельзя отменить.';
-        confirmBtn.textContent = 'Удалить';
+        messageElement.textContent = window.translations ? window.translations.confirm_delete_payment : 'Вы уверены, что хотите удалить эту выплату зарплаты? Это действие нельзя отменить.';
+        confirmBtn.textContent = window.translations ? window.translations.delete : 'Удалить';
         confirmBtn.className = 'btn-delete';
     } else if (type === 'setting') {
-        messageElement.textContent = 'Вы уверены, что хотите удалить эти настройки зарплаты? Это действие нельзя отменить.';
-        confirmBtn.textContent = 'Удалить';
+        messageElement.textContent = window.translations ? window.translations.confirm_delete_setting : 'Вы уверены, что хотите удалить эти настройки зарплаты? Это действие нельзя отменить.';
+        confirmBtn.textContent = window.translations ? window.translations.delete : 'Удалить';
         confirmBtn.className = 'btn-delete';
     }
     
@@ -815,6 +867,54 @@ function executeAction() {
                 if (row) {
                     row.remove();
                 }
+                
+                // Проверяем, стала ли таблица пустой после удаления
+                if (currentDeleteType === 'setting') {
+                    const tbody = document.getElementById('salary-settings-tbody');
+                    if (tbody && tbody.children.length === 0) {
+                        // Таблица пустая, показываем сообщение
+                        const tableWrapper = tbody.closest('.table-wrapper');
+                        if (tableWrapper) {
+                            tableWrapper.style.display = 'none';
+                        }
+                        
+                        // Показываем сообщение об отсутствии настроек
+                        const emptyMessage = document.querySelector('#tab-salary-settings .text-center');
+                        if (emptyMessage) {
+                            emptyMessage.style.display = 'block';
+                        }
+                    }
+                } else if (currentDeleteType === 'calculation') {
+                    const tbody = document.getElementById('salary-calculations-tbody');
+                    if (tbody && tbody.children.length === 0) {
+                        // Таблица пустая, показываем сообщение
+                        const tableWrapper = tbody.closest('.table-wrapper');
+                        if (tableWrapper) {
+                            tableWrapper.style.display = 'none';
+                        }
+                        
+                        // Показываем сообщение об отсутствии расчетов
+                        const emptyMessage = document.querySelector('#tab-salary-calculations .text-center');
+                        if (emptyMessage) {
+                            emptyMessage.style.display = 'block';
+                        }
+                    }
+                } else if (currentDeleteType === 'payment') {
+                    const tbody = document.getElementById('salary-payments-tbody');
+                    if (tbody && tbody.children.length === 0) {
+                        // Таблица пустая, показываем сообщение
+                        const tableWrapper = tbody.closest('.table-wrapper');
+                        if (tableWrapper) {
+                            tableWrapper.style.display = 'none';
+                        }
+                        
+                        // Показываем сообщение об отсутствии выплат
+                        const emptyMessage = document.querySelector('#tab-salary-payments .text-center');
+                        if (emptyMessage) {
+                            emptyMessage.style.display = 'block';
+                        }
+                    }
+                }
             }
             window.showNotification('success', data.message || successMessage);
         } else {
@@ -843,18 +943,17 @@ function addCalculationToTable(calculation) {
     const periodEnd = new Date(calculation.period_end).toLocaleDateString('ru-RU');
     const totalSalary = formatCurrency(calculation.total_salary);
     
-    // Убираем все дополнительные классы статуса, оставляем только status-badge
-    const statusClass = '';
-    
+    // Для расчетов НЕ добавляем цветовые классы статуса - только базовый status-badge
     let statusText = '';
     if (calculation.status === 'calculated') {
-        statusText = 'Рассчитано';
+        statusText = window.translations ? window.translations.calculated : 'Рассчитано';
     } else if (calculation.status === 'approved') {
-        statusText = 'Утверждено';
+        statusText = window.translations ? window.translations.approved : 'Утверждено';
     } else if (calculation.status === 'paid') {
-        statusText = 'Оплачено';
+        statusText = window.translations ? window.translations.paid : 'Оплачено';
     }
     
+    // Только базовый класс status-badge без цветовых модификаторов
     const statusBadge = `<span class="status-badge">${statusText}</span>`;
     
     let approveButton = '';
@@ -904,6 +1003,17 @@ function addCalculationToTable(calculation) {
     
     // Добавляем новую строку в начало таблицы
     tbody.insertAdjacentHTML('afterbegin', newRow);
+    
+    // Скрываем сообщение об отсутствии расчетов и показываем таблицу
+    const tableWrapper = tbody.closest('.table-wrapper');
+    if (tableWrapper) {
+        tableWrapper.style.display = 'block';
+    }
+    
+    const emptyMessage = document.querySelector('#tab-salary-calculations .text-center');
+    if (emptyMessage) {
+        emptyMessage.style.display = 'none';
+    }
 }
 
 // Функция добавления новой выплаты в таблицу
@@ -916,14 +1026,18 @@ function addPaymentToTable(payment) {
     
     let statusBadge = '';
     if (payment.status === 'pending') {
-        statusBadge = '<span class="status-badge status-pending">Ожидает</span>';
+        const statusText = window.translations ? window.translations.pending : 'Ожидает';
+        statusBadge = `<span class="status-badge status-pending">${statusText}</span>`;
     } else if (payment.status === 'approved') {
-        statusBadge = '<span class="status-badge status-done">Выплачено</span>';
+        const statusText = window.translations ? window.translations.paid : 'Выплачено';
+        statusBadge = `<span class="status-badge status-done">${statusText}</span>`;
     } else if (payment.status === 'cancelled') {
-        statusBadge = '<span class="status-badge status-cancelled">Отменено</span>';
+        const statusText = window.translations ? window.translations.cancelled : 'Отменено';
+        statusBadge = `<span class="status-badge status-cancelled">${statusText}</span>`;
     } else {
         // По умолчанию для новых выплат
-        statusBadge = '<span class="status-badge status-pending">Ожидает</span>';
+        const statusText = window.translations ? window.translations.pending : 'Ожидает';
+        statusBadge = `<span class="status-badge status-pending">${statusText}</span>`;
     }
     
     let approveButton = '';
@@ -937,27 +1051,62 @@ function addPaymentToTable(payment) {
         `;
     }
     
-    // Преобразуем метод выплаты в читаемый вид
-    let paymentMethodText = '';
-    switch(payment.payment_method) {
-        case 'cash':
-            paymentMethodText = 'Наличные';
-            break;
-        case 'bank':
-            paymentMethodText = 'Банковский перевод';
-            break;
-        case 'card':
-            paymentMethodText = 'Карта';
-            break;
-        default:
-            paymentMethodText = payment.payment_method || '-';
+    // Преобразуем метод выплаты в читаемый вид с использованием переводов
+    let paymentMethodText = '-';
+    
+    // Отладочная информация
+    console.log('Payment object:', payment);
+    console.log('Payment method:', payment.payment_method);
+    console.log('Payment method type:', typeof payment.payment_method);
+    console.log('Window translations:', window.translations);
+    
+    // Проверяем, что payment_method определен и не является строкой "undefined"
+    if (payment.payment_method && 
+        payment.payment_method !== 'undefined' && 
+        payment.payment_method !== undefined && 
+        payment.payment_method !== null) {
+        
+        if (window.translations && window.translations.cash && window.translations.bank_transfer && window.translations.card) {
+            switch(payment.payment_method) {
+                case 'cash':
+                    paymentMethodText = window.translations.cash;
+                    break;
+                case 'bank':
+                    paymentMethodText = window.translations.bank_transfer;
+                    break;
+                case 'card':
+                    paymentMethodText = window.translations.card;
+                    break;
+                default:
+                    paymentMethodText = '-';
+            }
+        } else {
+            // Fallback на русский язык
+            switch(payment.payment_method) {
+                case 'cash':
+                    paymentMethodText = 'Наличные';
+                    break;
+                case 'bank':
+                    paymentMethodText = 'Банковский перевод';
+                    break;
+                case 'card':
+                    paymentMethodText = 'Карта';
+                    break;
+                default:
+                    paymentMethodText = '-';
+            }
+        }
     }
+    
+    console.log('Final payment method text:', paymentMethodText);
     
     const newRow = `
         <tr data-payment-id="${payment.id}">
             <td>${payment.user_name}</td>
+            <td>
+                <span class="currency-amount">${amount}</span>
+            </td>
             <td>${paymentDate}</td>
-            <td>${amount}</td>
             <td>${paymentMethodText}</td>
             <td>${statusBadge}</td>
             <td>
@@ -981,6 +1130,17 @@ function addPaymentToTable(payment) {
     
     // Добавляем новую строку в начало таблицы
     tbody.insertAdjacentHTML('afterbegin', newRow);
+    
+    // Скрываем сообщение об отсутствии выплат и показываем таблицу
+    const tableWrapper = tbody.closest('.table-wrapper');
+    if (tableWrapper) {
+        tableWrapper.style.display = 'block';
+    }
+    
+    const emptyMessage = document.querySelector('#tab-salary-payments .text-center');
+    if (emptyMessage) {
+        emptyMessage.style.display = 'none';
+    }
 }
 
 // Функция удаления расчета зарплаты
@@ -991,4 +1151,186 @@ function deleteSalaryCalculation(id) {
 // Функция удаления выплаты зарплаты
 function deleteSalaryPayment(id) {
     confirmAction(id, 'payment');
+}
+
+// Функция обновления существующей строки настроек
+function updateSettingRow(row, setting) {
+    let salaryTypeText = '';
+    if (setting.salary_type === 'fixed') {
+        salaryTypeText = window.translations ? window.translations.fixed_salary : 'Фиксированная';
+    } else if (setting.salary_type === 'percentage') {
+        salaryTypeText = window.translations ? window.translations.percentage_salary : 'Процентная';
+    } else if (setting.salary_type === 'mixed') {
+        salaryTypeText = window.translations ? window.translations.mixed_salary : 'Смешанная';
+    }
+
+    // Обновляем ячейки
+    row.cells[0].textContent = setting.user_name;
+    row.cells[1].textContent = salaryTypeText;
+    
+    // Показываем проценты только для процентной и смешанной зарплаты
+    if (setting.salary_type === 'fixed') {
+        row.cells[2].textContent = '-';
+        row.cells[3].textContent = '-';
+    } else {
+        row.cells[2].textContent = setting.service_percentage ? setting.service_percentage + '%' : '-';
+        row.cells[3].textContent = setting.sales_percentage ? setting.sales_percentage + '%' : '-';
+    }
+}
+
+// Функция добавления новой настройки в таблицу
+function addSettingToTable(setting) {
+    const tbody = document.getElementById('salary-settings-tbody');
+    if (!tbody) return;
+    
+    let salaryTypeText = '';
+    if (setting.salary_type === 'fixed') {
+        salaryTypeText = window.translations ? window.translations.fixed_salary : 'Фиксированная';
+    } else if (setting.salary_type === 'percentage') {
+        salaryTypeText = window.translations ? window.translations.percentage_salary : 'Процентная';
+    } else if (setting.salary_type === 'mixed') {
+        salaryTypeText = window.translations ? window.translations.mixed_salary : 'Смешанная';
+    }
+    
+    // Определяем отображение процентов в зависимости от типа зарплаты
+    let servicePercentageText = '-';
+    let salesPercentageText = '-';
+    
+    if (setting.salary_type !== 'fixed') {
+        servicePercentageText = setting.service_percentage ? setting.service_percentage + '%' : '-';
+        salesPercentageText = setting.sales_percentage ? setting.sales_percentage + '%' : '-';
+    }
+    
+    const newRow = `
+        <tr data-setting-id="${setting.id}">
+            <td>${setting.user_name}</td>
+            <td>${salaryTypeText}</td>
+            <td>${servicePercentageText}</td>
+            <td>${salesPercentageText}</td>
+            <td>
+                <div class="actions-cell">
+                    <button class="btn-edit" onclick="editSalarySetting(${setting.id})" title="Редактировать">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                        </svg>
+                    </button>
+                    <button class="btn-delete" onclick="deleteSalarySetting(${setting.id})" title="Удалить">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `;
+    
+    // Добавляем новую строку в начало таблицы
+    tbody.insertAdjacentHTML('afterbegin', newRow);
+    
+    // Скрываем сообщение об отсутствии настроек и показываем таблицу
+    const tableWrapper = tbody.closest('.table-wrapper');
+    if (tableWrapper) {
+        tableWrapper.style.display = 'block';
+    }
+    
+    const emptyMessage = document.querySelector('#tab-salary-settings .text-center');
+    if (emptyMessage) {
+        emptyMessage.style.display = 'none';
+    }
+}
+
+// Функция обновления статистики зарплаты
+function updateSalaryStatistics() {
+    // Обновляем статистику в обзоре зарплаты
+    fetch('/salary/statistics')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Обновляем статистику в обзоре
+                const statsContainer = document.querySelector('#tab-salary-overview .stats-cards');
+                if (statsContainer) {
+                    // Обновляем количество выплат в этом месяце
+                    const paymentsThisMonthElement = statsContainer.querySelector('.stat-card:nth-child(2) .stat-number');
+                    if (paymentsThisMonthElement) {
+                        paymentsThisMonthElement.textContent = data.stats.payments_this_month || 0;
+                    }
+                }
+                
+                // Обновляем статистику в отчетах
+                updateReportsStatistics(data);
+            }
+        })
+        .catch(error => {
+            console.error('Error updating statistics:', error);
+        });
+}
+
+// Функция обновления статистики в отчетах
+function updateReportsStatistics(data) {
+    // Обновляем статистику по месяцам
+    if (data.monthlyStats) {
+        updateMonthlyStatistics(data.monthlyStats);
+    }
+    
+    // Обновляем топ сотрудников
+    if (data.topEmployees) {
+        updateTopEmployeesStatistics(data.topEmployees);
+    }
+}
+
+// Функция обновления статистики по месяцам
+function updateMonthlyStatistics(monthlyStats) {
+    const tbody = document.querySelector('.salary-reports-table tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    monthlyStats.forEach(stat => {
+        const row = `
+            <tr>
+                <td>${stat.year}/${stat.month}</td>
+                <td>${stat.payments_count}</td>
+                <td>
+                    <span class="currency-amount" data-amount="${stat.total_amount}">
+                        ${formatCurrency(stat.total_amount)}
+                    </span>
+                </td>
+                <td>
+                    <span class="currency-amount" data-amount="${stat.avg_amount}">
+                        ${formatCurrency(stat.avg_amount)}
+                    </span>
+                </td>
+            </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', row);
+    });
+}
+
+// Функция обновления топ сотрудников
+function updateTopEmployeesStatistics(topEmployees) {
+    const tbody = document.querySelector('.salary-reports-table:nth-child(2) tbody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    topEmployees.forEach(employee => {
+        const avgSalary = employee.payments_count > 0 ? employee.total_earned / employee.payments_count : 0;
+        const row = `
+            <tr>
+                <td>${employee.name}</td>
+                <td>
+                    <span class="currency-amount" data-amount="${employee.total_earned}">
+                        ${formatCurrency(employee.total_earned)}
+                    </span>
+                </td>
+                <td>${employee.payments_count}</td>
+                <td>
+                    <span class="currency-amount" data-amount="${avgSalary}">
+                        ${formatCurrency(avgSalary)}
+                    </span>
+                </td>
+            </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', row);
+    });
 }

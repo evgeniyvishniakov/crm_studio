@@ -69,10 +69,10 @@ class SalaryCalculation extends Model
     public function getStatusTextAttribute()
     {
         return match($this->status) {
-            'calculated' => 'Рассчитано',
-            'approved' => 'Утверждено',
-            'paid' => 'Выплачено',
-            default => 'Неизвестно'
+            'calculated' => __('messages.calculated'),
+            'approved' => __('messages.approved'),
+            'paid' => __('messages.paid'),
+            default => __('messages.unknown')
         };
     }
 

@@ -50,10 +50,10 @@ class SalarySetting extends Model
     public function getSalaryTypeTextAttribute()
     {
         return match($this->salary_type) {
-            'fixed' => 'Фиксированная',
-            'percentage' => 'Процентная',
-            'mixed' => 'Смешанная',
-            default => 'Неизвестно'
+            'fixed' => __('messages.fixed_salary'),
+            'percentage' => __('messages.percentage_salary'),
+            'mixed' => __('messages.mixed_salary'),
+            default => __('messages.unknown')
         };
     }
 

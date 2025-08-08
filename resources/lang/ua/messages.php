@@ -1977,4 +1977,205 @@ return [
     
     // Повідомлення для мобільної версії
     'inventory_mobile_unavailable' => 'Інвентаризація недоступна на мобільних пристроях. Використовуйте десктопну версію.',
+    
+    // Зарплата - основні розділи
+    'salary' => 'Зарплата',
+    'salary_overview' => 'Огляд зарплати',
+    'salary_settings' => 'Налаштування зарплати',
+    'salary_calculations' => 'Розрахунки',
+    'salary_payments' => 'Виплати',
+    'salary_reports' => 'Звіти',
+    
+    // Статистика зарплати
+    'total_employees' => 'Всього співробітників',
+    'employees_with_salary' => 'З налаштуваннями зарплати',
+    'calculations_this_month' => 'Розрахунків цього місяця',
+    'payments_this_month' => 'Виплат цього місяця',
+    'total_payments_this_month' => 'Виплачено цього місяця',
+    
+    // Останні записи
+    'recent_calculations' => 'Останні розрахунки зарплати',
+    'recent_payments' => 'Останні виплати',
+    'no_calculations' => 'Розрахунки зарплати відсутні',
+    'no_payments' => 'Виплати відсутні',
+    
+    // Налаштування зарплати
+    'add_salary_settings' => 'Додати налаштування',
+    'edit_salary_settings' => 'Редагувати налаштування зарплати',
+    'salary_settings_absent' => 'Налаштування зарплати відсутні',
+    'add_salary_settings_for_employees' => 'Додайте налаштування зарплати для ваших співробітників',
+    
+    // Розрахунки зарплати
+    'salary_calculations_title' => 'Розрахунки зарплати',
+    'calculate_salary' => 'Розрахувати зарплату',
+    'no_calculations_found' => 'Розрахунки зарплати відсутні',
+    
+    // Виплати зарплати
+    'salary_payments_title' => 'Виплати зарплати',
+    'create_payment' => 'Створити виплату',
+    'no_payments_found' => 'Виплати відсутні',
+    
+    // Звіти по зарплаті
+    'salary_reports_title' => 'Звіти по зарплаті',
+    'monthly_statistics' => 'Статистика по місяцях',
+    'top_employees_by_salary' => 'Топ співробітників по зарплаті',
+    
+    // Таблиці
+    'employee' => 'Співробітник',
+    'period' => 'Період',
+    'amount' => 'Сума',
+    'payment_date' => 'Дата виплати',
+    'payment_method' => 'Метод виплати',
+    'salary_type' => 'Тип зарплати',
+    'service_percentage' => 'Відсоток від послуг',
+    'sales_percentage' => 'Відсоток від продажів',
+    'total_earnings' => 'Загальний заробіток',
+    'calculations_count' => 'Кількість розрахунків',
+    'payments_count' => 'Кількість виплат',
+    'average_salary' => 'Середня зарплата',
+    'average_payment' => 'Середня виплата',
+    'month' => 'Місяць',
+    'calculations_count_header' => 'Кількість розрахунків',
+    'payments_count_header' => 'Кількість виплат',
+    'total_amount' => 'Загальна сума',
+    
+    // Типи зарплати
+    'fixed_salary' => 'Фіксована',
+    'percentage_salary' => 'Відсоткова',
+    'mixed_salary' => 'Змішана',
+    
+    // Методи виплат
+    'cash' => 'Готівка',
+    'bank_transfer' => 'Банківський переказ',
+    'card' => 'Карта',
+    
+    // Статуси
+    'pending' => 'Очікує',
+    'approved' => 'Затверджено',
+    'paid' => 'Виплачено',
+    'cancelled' => 'Скасовано',
+    'calculated' => 'Розраховано',
+    
+    // Модальні вікна
+    'add_salary_settings_modal' => 'Додати налаштування зарплати',
+    'edit_salary_settings_modal' => 'Редагувати налаштування зарплати',
+    'calculate_salary_modal' => 'Розрахувати зарплату',
+    'create_payment_modal' => 'Створити виплату',
+    'payment_details_modal' => 'Деталі виплати',
+    'calculation_details_modal' => 'Деталі розрахунку',
+    
+    // Форми
+    'select_employee' => 'Виберіть співробітника',
+    'salary_type_label' => 'Тип зарплати',
+    'fixed_salary_label' => 'Фіксована зарплата',
+    'service_percentage_label' => 'Відсоток від послуг (%)',
+    'sales_percentage_label' => 'Відсоток від продажів (%)',
+    'payment_amount_label' => 'Сума виплати',
+    'payment_date_label' => 'Дата виплати',
+    'payment_method_label' => 'Метод виплати',
+    'calculation_period_label' => 'Період розрахунку',
+    'current_month' => 'Поточний місяць',
+    'last_month' => 'Минулий місяць',
+    'custom_period' => 'Довільний період',
+    'start_date' => 'Дата початку',
+    'end_date' => 'Дата закінчення',
+    'calculation_id' => 'Розрахунок зарплати',
+    'select_calculation' => 'Виберіть розрахунок (необов\'язково)',
+    'reference_number' => 'Номер референсу',
+    'notes' => 'Примітки',
+    
+    // Дії
+    'approve' => 'Затвердити',
+    'approve_calculation' => 'Затвердити розрахунок',
+    'approve_payment' => 'Підтвердити виплату',
+    'view' => 'Перегляд',
+    'view_calculation' => 'Перегляд розрахунку',
+    'view_payment' => 'Перегляд виплати',
+    'delete_calculation' => 'Видалити розрахунок',
+    'delete_payment' => 'Видалити виплату',
+    
+    // Повідомлення
+    'salary_settings_created' => 'Налаштування зарплати створені успішно',
+    'salary_settings_updated' => 'Налаштування зарплати оновлені успішно',
+    'salary_settings_deleted' => 'Налаштування зарплати видалені успішно',
+    'calculation_created' => 'Розрахунок зарплати створений успішно',
+    'calculation_approved' => 'Розрахунок затверджений успішно',
+    'calculation_deleted' => 'Розрахунок зарплати видалений успішно',
+    'payment_created' => 'Виплата створена успішно',
+    'payment_approved' => 'Виплата підтверджена успішно',
+    'payment_deleted' => 'Виплата видалена успішно',
+    'payment_details_loaded' => 'Деталі виплати завантажені',
+    
+    // Помилки
+    'error_loading_payment_details' => 'Помилка при завантаженні даних виплати',
+    'error_creating_salary_settings' => 'Помилка при створенні налаштувань зарплати',
+    'error_updating_salary_settings' => 'Помилка при оновленні налаштувань зарплати',
+    'error_deleting_salary_settings' => 'Помилка при видаленні налаштувань зарплати',
+    'error_creating_calculation' => 'Помилка при створенні розрахунку',
+    'error_approving_calculation' => 'Помилка при затвердженні розрахунку',
+    'error_deleting_calculation' => 'Помилка при видаленні розрахунку',
+    'error_creating_payment' => 'Помилка при створенні виплати',
+    'error_approving_payment' => 'Помилка при підтвердженні виплати',
+    'error_deleting_payment' => 'Помилка при видаленні виплати',
+    'error_fixed_salary_required' => 'Для фіксованої зарплати необхідно вказати суму',
+    'error_percentage_required' => 'Для відсоткової зарплати необхідно вказати хоча б один відсоток',
+    'settings_created_successfully' => 'Налаштування зарплати створені успішно',
+    'settings_updated_successfully' => 'Налаштування зарплати оновлені успішно',
+    
+    // Підтвердження
+
+    'confirm_delete_calculation' => 'Ви впевнені, що хочете видалити цей розрахунок зарплати? Цю дію не можна скасувати.',
+    'confirm_delete_payment' => 'Ви впевнені, що хочете видалити цю виплату зарплати? Цю дію не можна скасувати.',
+    'confirm_delete' => 'Підтвердження видалення',
+    'confirm_delete_setting' => 'Ви впевнені, що хочете видалити ці налаштування зарплати? Цю дію не можна скасувати.',
+    
+    // Деталі виплати
+    'payment_details' => 'Деталі виплати',
+    'payment_employee' => 'Співробітник',
+    'payment_amount' => 'Сума',
+    'payment_status' => 'Статус',
+    'payment_created_at' => 'Дата створення',
+    'payment_approved_by' => 'Підтвердив',
+    'payment_approved_at' => 'Дата підтвердження',
+    
+    // Деталі розрахунку
+    'calculation_details' => 'Деталі розрахунку',
+    'calculation_employee' => 'Співробітник',
+    'calculation_period' => 'Період',
+    'calculation_total' => 'Загальна сума',
+    'calculation_status' => 'Статус',
+    'calculation_services_amount' => 'Сума від послуг',
+    'calculation_sales_amount' => 'Сума від продажів',
+    'calculation_created_at' => 'Дата створення',
+    'calculation_approved_by' => 'Затвердив',
+    'calculation_approved_at' => 'Дата затвердження',
+    
+    // Загальні статуси
+    'unknown' => 'Невідомо',
+    'select_type' => 'Виберіть тип',
+    'select_period' => 'Виберіть період',
+    'select_method' => 'Виберіть метод',
+    'bonuses' => 'Бонуси',
+    'penalties' => 'Штрафи',
+    'notes_label' => 'Примітки',
+    'notes_placeholder' => 'Додаткова інформація про розрахунок',
+    'other' => 'Інше',
+    'reference_number' => 'Номер документа',
+    'reference_placeholder' => 'Номер квитанції, чека тощо.',
+    'payment_notes_placeholder' => 'Додаткова інформація про виплату',
+    'calculation_details_modal' => 'Деталі розрахунку зарплати',
+    'calculation_breakdown' => 'Деталізація розрахунку:',
+    'services_count' => 'Кількість послуг:',
+    'services_amount' => 'Сума послуг:',
+    'service_percentage_label' => 'Відсоток від послуг:',
+    'service_income' => 'Дохід від послуг:',
+    'sales_count' => 'Кількість продажів:',
+    'sales_amount' => 'Сума продажів:',
+    'sales_percentage_label' => 'Відсоток від продажів:',
+    'sales_income' => 'Дохід від продажів:',
+    'fixed_salary_label' => 'Фіксована:',
+    'percentage_salary_label' => 'Відсоткова:',
+    'bonuses_label' => 'Бонуси:',
+    'penalties_label' => 'Штрафи:',
+    'total_to_pay' => 'Разом до виплати:',
 ]; 

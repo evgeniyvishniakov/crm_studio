@@ -2007,4 +2007,205 @@ return [
     
     // Сообщения для мобильной версии
     'inventory_mobile_unavailable' => 'Инвентаризация недоступна на мобильных устройствах. Используйте десктопную версию.',
+    
+    // Зарплата - основные разделы
+    'salary' => 'Зарплата',
+    'salary_overview' => 'Обзор зарплаты',
+    'salary_settings' => 'Настройки зарплаты',
+    'salary_calculations' => 'Расчеты',
+    'salary_payments' => 'Выплаты',
+    'salary_reports' => 'Отчеты',
+    
+    // Статистика зарплаты
+    'total_employees' => 'Всего сотрудников',
+    'employees_with_salary' => 'С настройками зарплаты',
+    'calculations_this_month' => 'Расчетов в этом месяце',
+    'payments_this_month' => 'Выплат в этом месяце',
+    'total_payments_this_month' => 'Выплачено в этом месяце',
+    
+    // Последние записи
+    'recent_calculations' => 'Последние расчеты зарплаты',
+    'recent_payments' => 'Последние выплаты',
+    'no_calculations' => 'Расчеты зарплаты отсутствуют',
+    'no_payments' => 'Выплаты отсутствуют',
+    
+    // Настройки зарплаты
+    'add_salary_settings' => 'Добавить настройки',
+    'edit_salary_settings' => 'Редактировать настройки зарплаты',
+    'salary_settings_absent' => 'Настройки зарплаты отсутствуют',
+    'add_salary_settings_for_employees' => 'Добавьте настройки зарплаты для ваших сотрудников',
+    
+    // Расчеты зарплаты
+    'salary_calculations_title' => 'Расчеты зарплаты',
+    'calculate_salary' => 'Рассчитать зарплату',
+    'no_calculations_found' => 'Расчеты зарплаты отсутствуют',
+    
+    // Выплаты зарплаты
+    'salary_payments_title' => 'Выплаты зарплаты',
+    'create_payment' => 'Создать выплату',
+    'no_payments_found' => 'Выплаты отсутствуют',
+    
+    // Отчеты по зарплате
+    'salary_reports_title' => 'Отчеты по зарплате',
+    'monthly_statistics' => 'Статистика по месяцам',
+    'top_employees_by_salary' => 'Топ сотрудников по зарплате',
+    
+    // Таблицы
+    'employee' => 'Сотрудник',
+    'period' => 'Период',
+    'amount' => 'Сумма',
+    'payment_date' => 'Дата выплаты',
+    'payment_method' => 'Метод выплаты',
+    'salary_type' => 'Тип зарплаты',
+    'service_percentage' => 'Процент от услуг',
+    'sales_percentage' => 'Процент от продаж',
+    'total_earnings' => 'Общий заработок',
+    'calculations_count' => 'Количество расчетов',
+    'payments_count' => 'Количество выплат',
+    'average_salary' => 'Средняя зарплата',
+    'average_payment' => 'Средняя выплата',
+    'month' => 'Месяц',
+    'calculations_count_header' => 'Количество расчетов',
+    'payments_count_header' => 'Количество выплат',
+    'total_amount' => 'Общая сумма',
+    
+    // Типы зарплаты
+    'fixed_salary' => 'Фиксированная зарплата',
+    'percentage_salary' => 'Процентная зарплата',
+    'mixed_salary' => 'Смешанная зарплата',
+    
+    // Методы выплат
+    'cash' => 'Наличные',
+    'bank_transfer' => 'Банковский перевод',
+    'card' => 'Карта',
+    
+    // Статусы
+    'pending' => 'Ожидает',
+    'approved' => 'Утверждено',
+    'paid' => 'Выплачено',
+    'cancelled' => 'Отменено',
+    'calculated' => 'Рассчитано',
+    
+    // Модальные окна
+    'add_salary_settings_modal' => 'Добавить настройки зарплаты',
+    'edit_salary_settings_modal' => 'Редактировать настройки зарплаты',
+    'calculate_salary_modal' => 'Рассчитать зарплату',
+    'create_payment_modal' => 'Создать выплату',
+    'payment_details_modal' => 'Детали выплаты',
+    'calculation_details_modal' => 'Детали расчета',
+    
+    // Формы
+    'select_employee' => 'Выберите сотрудника',
+    'salary_type_label' => 'Тип зарплаты',
+    'fixed_salary_label' => 'Фиксированная зарплата',
+    'service_percentage_label' => 'Процент от услуг (%)',
+    'sales_percentage_label' => 'Процент от продаж (%)',
+    'payment_amount_label' => 'Сумма выплаты',
+    'payment_date_label' => 'Дата выплаты',
+    'payment_method_label' => 'Метод выплаты',
+    'calculation_period_label' => 'Период расчета',
+    'current_month' => 'Текущий месяц',
+    'last_month' => 'Прошлый месяц',
+    'custom_period' => 'Произвольный период',
+    'start_date' => 'Дата начала',
+    'end_date' => 'Дата окончания',
+    'calculation_id' => 'Расчет зарплаты',
+    'select_calculation' => 'Выберите расчет (необязательно)',
+    'reference_number' => 'Номер референса',
+    'notes' => 'Примечания',
+    
+    // Действия
+    'approve' => 'Утвердить',
+    'approve_calculation' => 'Утвердить расчет',
+    'approve_payment' => 'Подтвердить выплату',
+    'view' => 'Просмотр',
+    'view_calculation' => 'Просмотр расчета',
+    'view_payment' => 'Просмотр выплаты',
+    'delete_calculation' => 'Удалить расчет',
+    'delete_payment' => 'Удалить выплату',
+    
+    // Сообщения
+    'salary_settings_created' => 'Настройки зарплаты созданы успешно',
+    'salary_settings_updated' => 'Настройки зарплаты обновлены успешно',
+    'salary_settings_deleted' => 'Настройки зарплаты удалены успешно',
+    'calculation_created' => 'Расчет зарплаты создан успешно',
+    'calculation_approved' => 'Расчет утвержден успешно',
+    'calculation_deleted' => 'Расчет зарплаты удален успешно',
+    'payment_created' => 'Выплата создана успешно',
+    'payment_approved' => 'Выплата подтверждена успешно',
+    'payment_deleted' => 'Выплата удалена успешно',
+    'payment_details_loaded' => 'Детали выплаты загружены',
+    
+    // Ошибки
+    'error_loading_payment_details' => 'Ошибка при загрузке данных выплаты',
+    'error_creating_salary_settings' => 'Ошибка при создании настроек зарплаты',
+    'error_updating_salary_settings' => 'Ошибка при обновлении настроек зарплаты',
+    'error_deleting_salary_settings' => 'Ошибка при удалении настроек зарплаты',
+    'error_creating_calculation' => 'Ошибка при создании расчета',
+    'error_approving_calculation' => 'Ошибка при утверждении расчета',
+    'error_deleting_calculation' => 'Ошибка при удалении расчета',
+    'error_creating_payment' => 'Ошибка при создании выплаты',
+    'error_approving_payment' => 'Ошибка при подтверждении выплаты',
+    'error_deleting_payment' => 'Ошибка при удалении выплаты',
+    'error_fixed_salary_required' => 'Для фиксированной зарплаты необходимо указать сумму',
+    'error_percentage_required' => 'Для процентной зарплаты необходимо указать хотя бы один процент',
+    'settings_created_successfully' => 'Настройки зарплаты созданы успешно',
+    'settings_updated_successfully' => 'Настройки зарплаты обновлены успешно',
+    
+    // Подтверждения
+
+    'confirm_delete_calculation' => 'Вы уверены, что хотите удалить этот расчет зарплаты? Это действие нельзя отменить.',
+    'confirm_delete_payment' => 'Вы уверены, что хотите удалить эту выплату зарплаты? Это действие нельзя отменить.',
+    'confirm_delete' => 'Подтверждение удаления',
+    'confirm_delete_setting' => 'Вы уверены, что хотите удалить эти настройки зарплаты? Это действие нельзя отменить.',
+    
+    // Детали выплаты
+    'payment_details' => 'Детали выплаты',
+    'payment_employee' => 'Сотрудник',
+    'payment_amount' => 'Сумма',
+    'payment_status' => 'Статус',
+    'payment_created_at' => 'Дата создания',
+    'payment_approved_by' => 'Подтвердил',
+    'payment_approved_at' => 'Дата подтверждения',
+    
+    // Детали расчета
+    'calculation_details' => 'Детали расчета',
+    'calculation_employee' => 'Сотрудник',
+    'calculation_period' => 'Период',
+    'calculation_total' => 'Общая сумма',
+    'calculation_status' => 'Статус',
+    'calculation_services_amount' => 'Сумма от услуг',
+    'calculation_sales_amount' => 'Сумма от продаж',
+    'calculation_created_at' => 'Дата создания',
+    'calculation_approved_by' => 'Утвердил',
+    'calculation_approved_at' => 'Дата утверждения',
+    
+    // Общие статусы
+    'unknown' => 'Неизвестно',
+    'select_type' => 'Выберите тип',
+    'select_period' => 'Выберите период',
+    'select_method' => 'Выберите метод',
+    'bonuses' => 'Бонусы',
+    'penalties' => 'Штрафы',
+    'notes_label' => 'Примечания',
+    'notes_placeholder' => 'Дополнительная информация о расчете',
+    'other' => 'Другое',
+    'reference_number' => 'Номер документа',
+    'reference_placeholder' => 'Номер квитанции, чека и т.д.',
+    'payment_notes_placeholder' => 'Дополнительная информация о выплате',
+    'calculation_details_modal' => 'Детали расчета зарплаты',
+    'calculation_breakdown' => 'Детализация расчета:',
+    'services_count' => 'Количество услуг:',
+    'services_amount' => 'Сумма услуг:',
+    'service_percentage_label' => 'Процент от услуг:',
+    'service_income' => 'Доход от услуг:',
+    'sales_count' => 'Количество продаж:',
+    'sales_amount' => 'Сумма продаж:',
+    'sales_percentage_label' => 'Процент от продаж:',
+    'sales_income' => 'Доход от продаж:',
+    'fixed_salary_label' => 'Фиксированная зарплата:',
+    'percentage_salary_label' => 'Процентная зарплата:',
+    'bonuses_label' => 'Бонусы:',
+    'penalties_label' => 'Штрафы:',
+    'total_to_pay' => 'Итого к выплате:',
 ]; 
