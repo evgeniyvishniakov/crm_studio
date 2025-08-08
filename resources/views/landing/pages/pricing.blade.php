@@ -104,8 +104,11 @@
                 <div class="row justify-content-center">
                     <!-- Месяц -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <div class="card-body p-4">
+                        <div class="card h-100 border-0 shadow-sm border-success border-2">
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-success" style="font-size: 0.7rem;">Базовый</span>
+                            </div>
+                            <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">Месяц</h3>
                                     <div class="mb-3">
@@ -127,7 +130,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-outline-dark btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-success btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -136,11 +139,16 @@
 
                     <!-- 3 месяца -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm position-relative border-success border-2">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-success">Рекомендуем</span>
+                        <div class="card h-100 position-relative border-success border-3 shadow-lg" style="transform: scale(1.05); z-index: 10;">
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-success px-2 py-1" style="font-size: 0.7rem; font-weight: 700;">
+                                    <i class="fas fa-star me-1"></i>ТОП
+                                </span>
                             </div>
-                            <div class="card-body p-4">
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-success" style="font-size: 0.7rem;">Экономия 10%</span>
+                            </div>
+                            <div class="card-body p-4" style="padding-top: 3.5rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">3 месяца</h3>
                                     <div class="mb-3">
@@ -172,11 +180,11 @@
 
                     <!-- 6 месяцев -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm position-relative">
+                        <div class="card h-100 border-0 shadow-sm border-success border-2">
                             <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning">Экономия 15%</span>
+                                <span class="badge bg-success" style="font-size: 0.7rem;">Экономия 15%</span>
                             </div>
-                            <div class="card-body p-4">
+                            <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">6 месяцев</h3>
                                     <div class="mb-3">
@@ -199,7 +207,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-warning btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-success btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -208,11 +216,11 @@
 
                     <!-- Год -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm position-relative">
+                        <div class="card h-100 border-0 shadow-sm border-success border-2">
                             <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-danger">Экономия 25%</span>
+                                <span class="badge bg-success" style="font-size: 0.7rem;">Экономия 25%</span>
                             </div>
-                            <div class="card-body p-4">
+                            <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">Год</h3>
                                     <div class="mb-3">
@@ -235,7 +243,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-danger btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-success btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -249,8 +257,11 @@
                 <div class="row justify-content-center">
                     <!-- Месяц -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <div class="card-body p-4">
+                        <div class="card h-100 border-0 shadow-sm border-primary border-2">
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-primary" style="font-size: 0.7rem;">Базовый</span>
+                            </div>
+                            <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">Месяц</h3>
                                     <div class="mb-3">
@@ -268,11 +279,11 @@
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-primary fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-outline-dark btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -281,11 +292,16 @@
 
                     <!-- 3 месяца -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm position-relative border-primary border-2">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-primary">Рекомендуем</span>
+                        <div class="card h-100 position-relative border-primary border-3 shadow-lg" style="transform: scale(1.05); z-index: 10;">
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-primary px-2 py-1" style="font-size: 0.7rem; font-weight: 700;">
+                                    <i class="fas fa-star me-1"></i>ТОП
+                                </span>
                             </div>
-                            <div class="card-body p-4">
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-primary" style="font-size: 0.7rem;">Экономия 10%</span>
+                            </div>
+                            <div class="card-body p-4" style="padding-top: 3.5rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">3 месяца</h3>
                                     <div class="mb-3">
@@ -304,7 +320,7 @@
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-primary fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
@@ -317,11 +333,11 @@
 
                     <!-- 6 месяцев -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm position-relative">
+                        <div class="card h-100 border-0 shadow-sm border-primary border-2">
                             <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning">Экономия 15%</span>
+                                <span class="badge bg-primary" style="font-size: 0.7rem;">Экономия 15%</span>
                             </div>
-                            <div class="card-body p-4">
+                            <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">6 месяцев</h3>
                                     <div class="mb-3">
@@ -340,11 +356,11 @@
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-primary fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-warning btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -353,11 +369,11 @@
 
                     <!-- Год -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm position-relative">
+                        <div class="card h-100 border-0 shadow-sm border-primary border-2">
                             <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-danger">Экономия 25%</span>
+                                <span class="badge bg-primary" style="font-size: 0.7rem;">Экономия 25%</span>
                             </div>
-                            <div class="card-body p-4">
+                            <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">Год</h3>
                                     <div class="mb-3">
@@ -376,11 +392,11 @@
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-primary fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-danger btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -394,8 +410,11 @@
                 <div class="row justify-content-center">
                     <!-- Месяц -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <div class="card-body p-4">
+                        <div class="card h-100 border-0 shadow-sm border-warning border-2">
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Базовый</span>
+                            </div>
+                            <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">Месяц</h3>
                                     <div class="mb-3">
@@ -413,11 +432,11 @@
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-warning fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-outline-dark btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-warning btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -426,11 +445,16 @@
 
                     <!-- 3 месяца -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm position-relative border-warning border-2">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning">Рекомендуем</span>
+                        <div class="card h-100 position-relative border-warning border-3 shadow-lg" style="transform: scale(1.05); z-index: 10;">
+                            <div class="position-absolute top-0 start-0 m-3">
+                                <span class="badge bg-warning text-dark px-2 py-1" style="font-size: 0.7rem; font-weight: 700;">
+                                    <i class="fas fa-star me-1"></i>ТОП
+                                </span>
                             </div>
-                            <div class="card-body p-4">
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Экономия 10%</span>
+                            </div>
+                            <div class="card-body p-4" style="padding-top: 3.5rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">3 месяца</h3>
                                     <div class="mb-3">
@@ -449,7 +473,7 @@
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-warning fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
@@ -462,11 +486,11 @@
 
                     <!-- 6 месяцев -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm position-relative">
+                        <div class="card h-100 border-0 shadow-sm border-warning border-2">
                             <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning">Экономия 15%</span>
+                                <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Экономия 15%</span>
                             </div>
-                            <div class="card-body p-4">
+                            <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">6 месяцев</h3>
                                     <div class="mb-3">
@@ -485,7 +509,7 @@
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-warning fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
@@ -498,11 +522,11 @@
 
                     <!-- Год -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm position-relative">
+                        <div class="card h-100 border-0 shadow-sm border-warning border-2">
                             <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-danger">Экономия 25%</span>
+                                <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Экономия 25%</span>
                             </div>
-                            <div class="card-body p-4">
+                            <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
                                     <h3 class="h5 fw-bold text-dark mb-3">Год</h3>
                                     <div class="mb-3">
@@ -521,11 +545,11 @@
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-warning fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-danger btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-warning btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>

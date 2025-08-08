@@ -2957,3 +2957,56 @@ footer a:hover {
         font-size: 0.9rem;
     }
 }
+
+/* Стили для рекомендуемых тарифов */
+.border-success.shadow-lg {
+    animation: pulse-glow-green 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow-green {
+    0% {
+        box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+    }
+    100% {
+        box-shadow: 0 20px 60px rgba(40, 167, 69, 0.5);
+    }
+}
+
+.border-primary.shadow-lg {
+    animation: pulse-glow-blue 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow-blue {
+    0% {
+        box-shadow: 0 10px 30px rgba(13, 110, 253, 0.3);
+    }
+    100% {
+        box-shadow: 0 20px 60px rgba(13, 110, 253, 0.5);
+    }
+}
+
+.border-warning.shadow-lg {
+    animation: pulse-glow-yellow 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow-yellow {
+    0% {
+        box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
+    }
+    100% {
+        box-shadow: 0 20px 60px rgba(255, 193, 7, 0.5);
+    }
+}
+
+/* Hover эффекты для карточек тарифов */
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
+}
+
+/* На мобильных отключаем масштабирование */
+@media (max-width: 768px) {
+    [style*="transform: scale"] {
+        transform: none !important;
+    }
+}
