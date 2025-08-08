@@ -90,7 +90,7 @@ class SalaryPayment extends Model
     {
         return match($this->status) {
             'pending' => 'Ожидает',
-            'approved' => 'Подтверждено',
+            'approved' => 'Выплачено',
             'cancelled' => 'Отменено',
             default => 'Неизвестно'
         };
@@ -123,5 +123,14 @@ class SalaryPayment extends Model
     public function canApprove()
     {
         return $this->status === 'pending';
+    }
+
+    /**
+     * Проверить, можно ли удалить
+     */
+    public function canDelete()
+    {
+        // Можно удалить только если статус "pending" или "approved"
+        return in_array($this->status, ['pending', 'approved']);
     }
 }

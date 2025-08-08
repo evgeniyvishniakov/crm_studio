@@ -344,6 +344,13 @@
                                         </svg>
                                     </button>
                                     @endif
+                                    @if($calculation->canDelete())
+                                    <button class="btn-delete" onclick="deleteSalaryCalculation({{ $calculation->id }})" title="Удалить">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -395,7 +402,7 @@
                             <td>{{ $payment->payment_date->format('d.m.Y') }}</td>
                             <td>{{ $payment->payment_method_text }}</td>
                             <td>
-                                <span class="status-badge status-{{ $payment->status === 'pending' ? 'pending' : ($payment->status === 'approved' ? 'done' : 'cancel') }}">
+                                <span class="status-badge status-{{ $payment->status === 'pending' ? 'pending' : ($payment->status === 'approved' ? 'done' : 'cancelled') }}">
                                     {{ $payment->status_text }}
                                 </span>
                             </td>
@@ -408,9 +415,16 @@
                                         </svg>
                                     </button>
                                     @if($payment->canApprove())
-                                    <button class="btn-edit" onclick="approveSalaryPayment({{ $payment->id }})" title="Подтвердить">
+                                    <button class="btn-edit" onclick="approveSalaryPayment({{ $payment->id }})" title="Подтвердить выплату">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                    @endif
+                                    @if($payment->canDelete())
+                                    <button class="btn-delete" onclick="deleteSalaryPayment({{ $payment->id }})" title="Удалить">
+                                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                         </svg>
                                     </button>
                                     @endif
@@ -805,6 +819,88 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn-cancel" onclick="closeSalaryCalculationDetailsModal()">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно просмотра выплаты -->
+<div id="salaryPaymentDetailsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Детали выплаты</h2>
+            <span class="close" onclick="closeSalaryPaymentDetailsModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="payment-details">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Сотрудник:</strong> <span id="paymentDetailEmployee"></span></p>
+                        <p><strong>Дата выплаты:</strong> <span id="paymentDetailDate"></span></p>
+                        <p><strong>Сумма:</strong> <span id="paymentDetailAmount" class="currency-amount"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Метод выплаты:</strong> <span id="paymentDetailMethod"></span></p>
+                        <p><strong>Статус:</strong> <span id="paymentDetailStatus"></span></p>
+                        <p><strong>Дата создания:</strong> <span id="paymentDetailCreatedAt"></span></p>
+                    </div>
+                </div>
+
+                <div class="payment-info" id="paymentInfoSection">
+                    <div class="table-wrapper">
+                        <table class="table-striped">
+                            <tbody>
+                                <tr id="referenceNumberRow" style="display: none;">
+                                    <td><strong>Номер референса:</strong></td>
+                                    <td><span id="paymentDetailReference"></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="payment-approval-info" id="paymentApprovalSection" style="display: none;">
+                    <div class="approval-card">
+                        <div class="approval-icon">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="approval-details">
+                            <div class="approval-person">
+                                <strong>Подтвердил:</strong> <span id="paymentDetailApprovedBy"></span>
+                            </div>
+                            <div class="approval-date">
+                                <strong>Дата:</strong> <span id="paymentDetailApprovedAt"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-notes" id="paymentNotesSection" style="display: none;">
+                    <h4>Примечания:</h4>
+                    <p id="paymentDetailNotes"></p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeSalaryPaymentDetailsModal()">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления -->
+<div id="confirmationModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Подтверждение удаления</h2>
+            <span class="close" onclick="closeConfirmationModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p id="confirmationMessage">Вы уверены, что хотите удалить этот элемент? Это действие нельзя отменить.</p>
+        </div>
+        <div class="modal-footer">
+            <button id="cancelDelete" class="btn-cancel">Отмена</button>
+            <button id="confirmDeleteBtn" class="btn-delete">Удалить</button>
         </div>
     </div>
 </div>

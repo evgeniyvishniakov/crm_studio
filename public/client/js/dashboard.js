@@ -1331,10 +1331,8 @@ function showDayModal(dateStr, allEvents) {
     closeBtn.onclick = function() {
         modal.style.display = 'none';
     };
-    // Закрытие по клику вне окна
-    modal.onclick = function(e) {
-        if (e.target === modal) modal.style.display = 'none';
-    };
+    // Модальные окна теперь закрываются только по кнопкам
+    // Убираем автоматическое закрытие при клике вне модального окна
 }
 
 // === Календарь выбора диапазона дат для графика ===

@@ -203,7 +203,7 @@
     .btn-delete:hover,
     .btn-view:hover,
     .btn-pdf:hover {
-        transform: translateY(-1px);
+        /* Анимация приподнимания убрана */
     }
 }
 
@@ -635,7 +635,6 @@
     .client-actions .btn-view:hover,
     .client-actions .btn-edit:hover,
     .client-actions .btn-delete:hover {
-        transform: translateY(-1px);
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     
@@ -832,13 +831,11 @@
 
     .warehouse-actions .btn-edit:hover {
         background: #2563eb;
-        transform: translateY(-1px);
-    }
+        }
 
     .warehouse-actions .btn-delete:hover {
         background: #dc2626;
-        transform: translateY(-1px);
-    }
+        }
 
     .warehouse-actions svg {
         width: 14px;
@@ -857,12 +854,10 @@
     }
 
     .warehouse-actions .btn-edit:hover {
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
 
     .warehouse-actions .btn-delete:hover {
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
 
@@ -1487,8 +1482,7 @@
 
     .product-actions .btn-edit:hover {
         background: #059669;
-        transform: translateY(-1px);
-    }
+        }
 
     .product-actions .btn-delete {
         background: #ef4444;
@@ -1497,8 +1491,7 @@
 
     .product-actions .btn-delete:hover {
         background: #dc2626;
-        transform: translateY(-1px);
-    }
+        }
 
     .product-actions .btn-edit svg,
     .product-actions .btn-delete svg {
@@ -1693,8 +1686,7 @@
     .appointment-actions .btn-edit:hover,
     .user-service-actions .btn-edit:hover {
         background: linear-gradient(135deg, #2563eb, #3b82f6);
-        transform: translateY(-1px);
-    }
+        }
     
     .service-actions .btn-delete,
     .category-actions .btn-delete,
@@ -1725,8 +1717,7 @@
     .appointment-actions .btn-delete:hover,
     .user-service-actions .btn-delete:hover {
         background: linear-gradient(135deg, #dc2626, #ef4444);
-        transform: translateY(-1px);
-    }
+        }
     
     .service-actions .btn-edit svg,
     .service-actions .btn-delete svg,
@@ -2099,8 +2090,7 @@
 
     .brand-actions .btn-edit:hover {
         background: linear-gradient(135deg, #2563eb, #3b82f6);
-        transform: translateY(-1px);
-    }
+        }
 
     .brand-actions .btn-delete {
         background: linear-gradient(135deg, #ef4444, #f87171);
@@ -2109,8 +2099,7 @@
 
     .brand-actions .btn-delete:hover {
         background: linear-gradient(135deg, #dc2626, #ef4444);
-        transform: translateY(-1px);
-    }
+        }
 
     .brand-actions .btn-edit svg,
     .brand-actions .btn-delete svg {
@@ -2251,8 +2240,7 @@
 
     .supplier-actions .btn-edit:hover {
         background: linear-gradient(135deg, #2563eb, #3b82f6);
-        transform: translateY(-1px);
-    }
+        }
 
     .supplier-actions .btn-delete {
         background: linear-gradient(135deg, #ef4444, #f87171);
@@ -2261,8 +2249,7 @@
 
     .supplier-actions .btn-delete:hover {
         background: linear-gradient(135deg, #dc2626, #ef4444);
-        transform: translateY(-1px);
-    }
+        }
 
     .supplier-actions .btn-edit svg,
     .supplier-actions .btn-delete svg {
@@ -2403,8 +2390,7 @@
 
     .client-type-actions .btn-edit:hover {
         background: linear-gradient(135deg, #2563eb, #3b82f6);
-        transform: translateY(-1px);
-    }
+        }
 
     .client-type-actions .btn-delete {
         background: linear-gradient(135deg, #ef4444, #f87171);
@@ -2413,8 +2399,7 @@
 
     .client-type-actions .btn-delete:hover {
         background: linear-gradient(135deg, #dc2626, #ef4444);
-        transform: translateY(-1px);
-    }
+        }
 
     .client-type-actions .btn-edit svg,
     .client-type-actions .btn-delete svg {
@@ -2569,7 +2554,6 @@
     
     .schedule-actions .btn-edit:hover {
         background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        transform: translateY(-1px);
         box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
     }
     
@@ -2838,7 +2822,6 @@
     .appointment-actions .btn-view:hover,
     .appointment-actions .btn-edit:hover,
     .appointment-actions .btn-delete:hover {
-        transform: translateY(-1px);
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     
@@ -4414,7 +4397,6 @@
     
     .sale-actions .btn-edit:hover {
         background: linear-gradient(135deg, #2563eb, #3b82f6);
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
     
@@ -4425,7 +4407,6 @@
     
     .sale-actions .btn-delete:hover {
         background: linear-gradient(135deg, #dc2626, #ef4444);
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
     
@@ -4980,7 +4961,6 @@
 
 .user-service-actions .btn-edit:hover {
     background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
 }
 
@@ -5004,7 +4984,6 @@
 
 .user-service-actions .btn-delete:hover {
     background: linear-gradient(135deg, #dc2626, #b91c1c);
-    transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
 }
 
@@ -5534,7 +5513,6 @@
     
     .user-actions .btn-edit:hover {
         background: linear-gradient(135deg, #2563eb, #3b82f6);
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
     
@@ -5545,7 +5523,6 @@
     
     .user-actions .btn-delete:hover {
         background: linear-gradient(135deg, #dc2626, #ef4444);
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
     
@@ -5840,7 +5817,6 @@
     
     .role-actions .btn-edit:hover {
         background: linear-gradient(135deg, #2563eb, #3b82f6);
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
     
@@ -5851,7 +5827,6 @@
     
     .role-actions .btn-delete:hover {
         background: linear-gradient(135deg, #dc2626, #ef4444);
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
     
@@ -6278,7 +6253,6 @@
     }
 
     .notification-actions .btn-delete:hover {
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
 
@@ -6424,7 +6398,6 @@
     }
 
     .expense-actions .btn-edit:hover {
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
 
@@ -6434,7 +6407,6 @@
     }
 
     .expense-actions .btn-delete:hover {
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
 
@@ -6585,7 +6557,6 @@
     }
 
     .purchase-actions .btn-edit:hover {
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
 
@@ -6595,7 +6566,6 @@
     }
 
     .purchase-actions .btn-delete:hover {
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
 
@@ -6781,7 +6751,6 @@
     
     .sale-actions .btn-edit:hover {
         background: linear-gradient(135deg, #2563eb, #3b82f6);
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
     
@@ -6792,7 +6761,6 @@
     
     .sale-actions .btn-delete:hover {
         background: linear-gradient(135deg, #dc2626, #ef4444);
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
     
@@ -7828,7 +7796,6 @@
     
     .sale-card-actions .btn-edit:hover {
         background-color: #0056b3;
-        transform: translateY(-1px);
         box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
     }
     
@@ -7840,7 +7807,6 @@
     }
     
     .sale-card-actions .btn-delete:hover {
-        transform: translateY(-1px);
         box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
     }
     

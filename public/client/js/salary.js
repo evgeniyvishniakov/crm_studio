@@ -77,7 +77,7 @@ function showSalarySettingModal(id = null) {
             })
             .catch(error => {
                 console.error('Error:', error);
-                showNotification('Ошибка при загрузке данных', 'error');
+                window.showNotification('error', 'Ошибка при загрузке данных');
             });
     } else {
         // Добавление
@@ -118,32 +118,7 @@ function toggleSalaryFields() {
 }
 
 function deleteSalarySetting(id) {
-    if (confirm('Вы уверены, что хотите удалить эти настройки зарплаты?')) {
-        fetch(`/salary/settings/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Удаляем строку из таблицы
-                const row = document.querySelector(`tr[data-setting-id="${id}"]`);
-                if (row) {
-                    row.remove();
-                }
-                showNotification('Настройки зарплаты удалены успешно', 'success');
-            } else {
-                showNotification(data.message || 'Ошибка при удалении', 'error');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('Ошибка при удалении настроек', 'error');
-        });
-    }
+    confirmAction(id, 'setting');
 }
 
 // Функции для работы с расчетами зарплаты
@@ -182,13 +157,13 @@ function viewSalaryCalculation(id) {
             if (data.success) {
                 fillCalculationDetails(data.calculation);
             } else {
-                showNotification('Ошибка при загрузке деталей расчета', 'error');
+                window.showNotification('error', 'Ошибка при загрузке деталей расчета');
                 closeSalaryCalculationDetailsModal();
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showNotification('Ошибка при загрузке деталей расчета', 'error');
+            window.showNotification('error', 'Ошибка при загрузке деталей расчета');
             closeSalaryCalculationDetailsModal();
         });
 }
@@ -300,7 +275,6 @@ function toggleCalculationPeriod() {
 }
 
 function approveSalaryCalculation(id) {
-    if (confirm('Вы уверены, что хотите утвердить этот расчет зарплаты?')) {
         fetch(`/salary/calculations/${id}/approve`, {
             method: 'POST',
             headers: {
@@ -311,24 +285,28 @@ function approveSalaryCalculation(id) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Обновляем статус в таблице
+                    // Обновляем статус в таблице и скрываем кнопку утверждения
                 const row = document.querySelector(`tr[data-calculation-id="${id}"]`);
                 if (row) {
                     const statusCell = row.querySelector('td:nth-child(6)');
                     if (statusCell) {
-                        statusCell.innerHTML = '<span class="badge bg-success">Утверждено</span>';
+                            statusCell.innerHTML = '<span class="status-badge status-done">Утверждено</span>';
+                        }
+                        // Скрываем кнопку утверждения
+                        const approveBtn = row.querySelector('button[onclick*="approveSalaryCalculation"]');
+                        if (approveBtn) {
+                            approveBtn.style.display = 'none';
+                        }
                     }
-                }
-                showNotification('Расчет утвержден успешно', 'success');
+                    window.showNotification('success', 'Расчет утвержден успешно');
             } else {
-                showNotification(data.message || 'Ошибка при утверждении', 'error');
+            window.showNotification('error', data.message || 'Ошибка при утверждении');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showNotification('Ошибка при утверждении расчета', 'error');
+        window.showNotification('error', 'Ошибка при утверждении расчета');
         });
-    }
 }
 
 // Функции для работы с выплатами
@@ -380,19 +358,19 @@ function loadCalculationsForUser(userId) {
                 
                 console.log('Количество расчетов:', data.calculations.length);
                 
-                                 data.calculations.forEach(calculation => {
-                     const periodStart = new Date(calculation.period_start).toLocaleDateString('ru-RU');
-                     const periodEnd = new Date(calculation.period_end).toLocaleDateString('ru-RU');
-                     const amount = parseFloat(calculation.total_salary).toLocaleString('ru-RU', {
-                         minimumFractionDigits: 2,
-                         maximumFractionDigits: 2
-                     });
+                data.calculations.forEach(calculation => {
+                    const periodStart = new Date(calculation.period_start).toLocaleDateString('ru-RU');
+                    const periodEnd = new Date(calculation.period_end).toLocaleDateString('ru-RU');
+                    const amount = parseFloat(calculation.total_salary).toLocaleString('ru-RU', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
                      const symbol = window.currencyData && window.currencyData.symbol ? window.currencyData.symbol : '₴';
-                     
-                     options += `<option value="${calculation.id}" data-amount="${calculation.total_salary}">
+                    
+                    options += `<option value="${calculation.id}" data-amount="${calculation.total_salary}">
                          ${periodStart} - ${periodEnd} (${amount} ${symbol})
-                     </option>`;
-                 });
+                    </option>`;
+                });
                 
                 calculationSelect.innerHTML = options;
             } else {
@@ -430,12 +408,30 @@ function fillPaymentAmountFromCalculation(calculationId) {
 }
 
 function viewSalaryPayment(id) {
-    // Заглушка - будет реализована позже
-    alert('Просмотр выплаты будет реализован');
+    fetch(`/salary/payments/${id}/details`, {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            fillPaymentDetails(data.payment);
+            document.getElementById('salaryPaymentDetailsModal').style.display = 'block';
+            document.body.classList.add('modal-open');
+        } else {
+            window.showNotification('error', data.message || 'Ошибка при загрузке данных выплаты');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        window.showNotification('error', 'Ошибка при загрузке данных выплаты');
+    });
 }
 
 function approveSalaryPayment(id) {
-    if (confirm('Вы уверены, что хотите подтвердить эту выплату?')) {
         fetch(`/salary/payments/${id}/approve`, {
             method: 'POST',
             headers: {
@@ -446,24 +442,28 @@ function approveSalaryPayment(id) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Обновляем статус в таблице
+            // Обновляем статус в таблице и скрываем кнопку подтверждения
                 const row = document.querySelector(`tr[data-payment-id="${id}"]`);
                 if (row) {
                     const statusCell = row.querySelector('td:nth-child(5)');
                     if (statusCell) {
-                        statusCell.innerHTML = '<span class="badge bg-success">Подтверждено</span>';
-                    }
+                    statusCell.innerHTML = '<span class="status-badge status-done">Выплачено</span>';
                 }
-                showNotification('Выплата подтверждена успешно', 'success');
+                // Скрываем кнопку подтверждения
+                const approveBtn = row.querySelector('button[onclick*="approveSalaryPayment"]');
+                if (approveBtn) {
+                    approveBtn.style.display = 'none';
+                }
+            }
+            window.showNotification('success', 'Выплата подтверждена успешно');
             } else {
-                showNotification(data.message || 'Ошибка при подтверждении', 'error');
+            window.showNotification('error', data.message || 'Ошибка при подтверждении');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showNotification('Ошибка при подтверждении выплаты', 'error');
+        window.showNotification('error', 'Ошибка при подтверждении выплаты');
         });
-    }
 }
 
 // Функции закрытия модальных окон
@@ -483,6 +483,84 @@ function closeSalaryPaymentModal() {
     const modal = document.getElementById('salaryPaymentModal');
     modal.style.display = 'none';
     document.body.classList.remove('modal-open');
+}
+
+function closeSalaryPaymentDetailsModal() {
+    const modal = document.getElementById('salaryPaymentDetailsModal');
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
+
+function fillPaymentDetails(payment) {
+    // Основная информация
+    document.getElementById('paymentDetailEmployee').textContent = payment.user_name;
+    document.getElementById('paymentDetailDate').textContent = new Date(payment.payment_date).toLocaleDateString('ru-RU');
+    document.getElementById('paymentDetailAmount').textContent = formatCurrency(payment.amount);
+    document.getElementById('paymentDetailAmount').setAttribute('data-amount', payment.amount);
+    
+    // Метод выплаты
+    let paymentMethodText = '';
+    switch(payment.payment_method) {
+        case 'cash':
+            paymentMethodText = 'Наличные';
+            break;
+        case 'bank':
+            paymentMethodText = 'Банковский перевод';
+            break;
+        case 'card':
+            paymentMethodText = 'Карта';
+            break;
+        default:
+            paymentMethodText = payment.payment_method || '-';
+    }
+    document.getElementById('paymentDetailMethod').textContent = paymentMethodText;
+    
+    // Статус
+    let statusText = '';
+    switch(payment.status) {
+        case 'pending':
+            statusText = 'Ожидает';
+            break;
+        case 'approved':
+            statusText = 'Выплачено';
+            break;
+        case 'cancelled':
+            statusText = 'Отменено';
+            break;
+        default:
+            statusText = 'Неизвестно';
+    }
+    document.getElementById('paymentDetailStatus').innerHTML = `<span class="status-badge">${statusText}</span>`;
+    
+    // Дата создания
+    document.getElementById('paymentDetailCreatedAt').textContent = new Date(payment.created_at).toLocaleDateString('ru-RU');
+    
+    // Дополнительная информация
+    const referenceNumberRow = document.getElementById('referenceNumberRow');
+    if (payment.reference_number) {
+        document.getElementById('paymentDetailReference').textContent = payment.reference_number;
+        referenceNumberRow.style.display = 'table-row';
+    } else {
+        referenceNumberRow.style.display = 'none';
+    }
+    
+    const approvalSection = document.getElementById('paymentApprovalSection');
+    if (payment.approved_by && payment.approved_at) {
+        document.getElementById('paymentDetailApprovedBy').textContent = payment.approved_by_name || 'Неизвестно';
+        document.getElementById('paymentDetailApprovedAt').textContent = new Date(payment.approved_at).toLocaleDateString('ru-RU');
+        approvalSection.style.display = 'block';
+    } else {
+        approvalSection.style.display = 'none';
+    }
+    
+    // Примечания
+    const notesSection = document.getElementById('paymentNotesSection');
+    if (payment.notes) {
+        document.getElementById('paymentDetailNotes').textContent = payment.notes;
+        notesSection.style.display = 'block';
+    } else {
+        notesSection.style.display = 'none';
+    }
 }
 
 // Функция очистки ошибок
@@ -521,17 +599,17 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showNotification(data.message || 'Настройки сохранены успешно', 'success');
+                    window.showNotification('success', data.message || 'Настройки сохранены успешно');
                     closeSalarySettingModal();
                     // Перезагружаем страницу для обновления данных
                     location.reload();
                 } else {
-                    showNotification(data.message || 'Ошибка при сохранении', 'error');
+                    window.showNotification('error', data.message || 'Ошибка при сохранении');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showNotification('Ошибка при сохранении настроек', 'error');
+                window.showNotification('error', 'Ошибка при сохранении настроек');
             });
         });
     }
@@ -555,17 +633,20 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showNotification(data.message || 'Расчет создан успешно', 'success');
+                    window.showNotification('success', data.message || 'Расчет создан успешно');
                     closeSalaryCalculationModal();
-                    // Перезагружаем страницу для обновления данных
-                    location.reload();
+                    
+                    // Добавляем новый расчет в таблицу без перезагрузки
+                    if (data.calculation) {
+                        addCalculationToTable(data.calculation);
+                    }
                 } else {
-                    showNotification(data.message || 'Ошибка при создании расчета', 'error');
+                    window.showNotification('error', data.message || 'Ошибка при создании расчета');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showNotification('Ошибка при создании расчета', 'error');
+                window.showNotification('error', 'Ошибка при создании расчета');
             });
         });
     }
@@ -589,17 +670,20 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showNotification(data.message || 'Выплата создана успешно', 'success');
+                    window.showNotification('success', data.message || 'Выплата создана успешно');
                     closeSalaryPaymentModal();
-                    // Перезагружаем страницу для обновления данных
-                    location.reload();
+                    
+                    // Добавляем новую выплату в таблицу без перезагрузки
+                    if (data.payment) {
+                        addPaymentToTable(data.payment);
+                    }
                 } else {
-                    showNotification(data.message || 'Ошибка при создании выплаты', 'error');
+                    window.showNotification('error', data.message || 'Ошибка при создании выплаты');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showNotification('Ошибка при создании выплаты', 'error');
+                window.showNotification('error', 'Ошибка при создании выплаты');
             });
         });
     }
@@ -626,41 +710,285 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Закрытие модальных окон при клике вне их
+    // Закрытие модального окна деталей выплаты при клике вне его
     window.addEventListener('click', function(event) {
-        const modals = ['salarySettingModal', 'salaryCalculationModal', 'salaryPaymentModal', 'salaryCalculationDetailsModal'];
-        modals.forEach(modalId => {
-            const modal = document.getElementById(modalId);
-            if (event.target === modal) {
-                modal.style.display = 'none';
-                document.body.classList.remove('modal-open');
-            }
-        });
+        const paymentDetailsModal = document.getElementById('salaryPaymentDetailsModal');
+        if (event.target === paymentDetailsModal) {
+            closeSalaryPaymentDetailsModal();
+        }
     });
+    
+    // Обработчик кнопки "Отмена" в модальном окне удаления
+    const cancelDeleteBtn = document.getElementById('cancelDelete');
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', function() {
+            closeConfirmationModal();
+        });
+    }
+    
+    // Обработчик кнопки "Удалить" в модальном окне удаления
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function() {
+            executeAction();
+        });
+    }
 });
 
-// Вспомогательная функция для показа уведомлений
-function showNotification(message, type = 'info') {
-    // Создаем элемент уведомления
-    const notification = document.createElement('div');
-    notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
-    notification.style.position = 'fixed';
-    notification.style.top = '20px';
-    notification.style.right = '20px';
-    notification.style.zIndex = '9999';
-    notification.style.minWidth = '300px';
+// Глобальные переменные для модального окна удаления
+let currentDeleteId = null;
+let currentDeleteType = null; // 'calculation' или 'payment'
+
+// Функции для работы с модальным окном подтверждения удаления
+function confirmAction(id, type) {
+    currentDeleteId = id;
+    currentDeleteType = type;
     
-    notification.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    // Устанавливаем сообщение в зависимости от типа
+    const messageElement = document.getElementById('confirmationMessage');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    
+    if (type === 'calculation') {
+        messageElement.textContent = 'Вы уверены, что хотите удалить этот расчет зарплаты? Это действие нельзя отменить.';
+        confirmBtn.textContent = 'Удалить';
+        confirmBtn.className = 'btn-delete';
+    } else if (type === 'payment') {
+        messageElement.textContent = 'Вы уверены, что хотите удалить эту выплату зарплаты? Это действие нельзя отменить.';
+        confirmBtn.textContent = 'Удалить';
+        confirmBtn.className = 'btn-delete';
+    } else if (type === 'setting') {
+        messageElement.textContent = 'Вы уверены, что хотите удалить эти настройки зарплаты? Это действие нельзя отменить.';
+        confirmBtn.textContent = 'Удалить';
+        confirmBtn.className = 'btn-delete';
+    }
+    
+    // Показываем модальное окно
+    document.getElementById('confirmationModal').style.display = 'block';
+}
+
+function closeConfirmationModal() {
+    document.getElementById('confirmationModal').style.display = 'none';
+    currentDeleteId = null;
+    currentDeleteType = null;
+}
+
+function executeAction() {
+    if (!currentDeleteId || !currentDeleteType) return;
+
+    const actionBtn = document.getElementById('confirmDeleteBtn');
+    const originalText = actionBtn.innerHTML;
+    actionBtn.innerHTML = 'Выполнение...';
+    actionBtn.disabled = true;
+
+    let url = '';
+    let method = 'DELETE';
+    let successMessage = '';
+    let errorMessage = '';
+
+    if (currentDeleteType === 'calculation') {
+        url = `/salary/calculations/${currentDeleteId}`;
+        successMessage = 'Расчет зарплаты удален успешно';
+        errorMessage = 'Ошибка при удалении расчета';
+    } else if (currentDeleteType === 'payment') {
+        url = `/salary/payments/${currentDeleteId}`;
+        successMessage = 'Выплата зарплаты удалена успешно';
+        errorMessage = 'Ошибка при удалении выплаты';
+    } else if (currentDeleteType === 'setting') {
+        url = `/salary/settings/${currentDeleteId}`;
+        successMessage = 'Настройки зарплаты удалены успешно';
+        errorMessage = 'Ошибка при удалении настроек';
+    }
+
+    fetch(url, {
+        method: method,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (currentDeleteType === 'calculation' || currentDeleteType === 'payment' || currentDeleteType === 'setting') {
+                // Удаляем строку из таблицы
+                const row = document.querySelector(`tr[data-${currentDeleteType.replace('approve_', '')}-id="${currentDeleteId}"]`);
+                if (row) {
+                    row.remove();
+                }
+            }
+            window.showNotification('success', data.message || successMessage);
+        } else {
+            window.showNotification('error', data.message || errorMessage);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        window.showNotification('error', errorMessage);
+    })
+    .finally(() => {
+        closeConfirmationModal();
+        actionBtn.innerHTML = originalText;
+        actionBtn.disabled = false;
+    });
+}
+
+// Используем глобальную функцию уведомлений из notifications.js
+
+// Функция добавления нового расчета в таблицу
+function addCalculationToTable(calculation) {
+    const tbody = document.getElementById('salary-calculations-tbody');
+    if (!tbody) return;
+    
+    const periodStart = new Date(calculation.period_start).toLocaleDateString('ru-RU');
+    const periodEnd = new Date(calculation.period_end).toLocaleDateString('ru-RU');
+    const totalSalary = formatCurrency(calculation.total_salary);
+    
+    // Убираем все дополнительные классы статуса, оставляем только status-badge
+    const statusClass = '';
+    
+    let statusText = '';
+    if (calculation.status === 'calculated') {
+        statusText = 'Рассчитано';
+    } else if (calculation.status === 'approved') {
+        statusText = 'Утверждено';
+    } else if (calculation.status === 'paid') {
+        statusText = 'Оплачено';
+    }
+    
+    const statusBadge = `<span class="status-badge">${statusText}</span>`;
+    
+    let approveButton = '';
+    if (calculation.status === 'calculated') {
+        approveButton = `
+            <button class="btn-edit" onclick="approveSalaryCalculation(${calculation.id})" title="Утвердить">
+                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+            </button>
+        `;
+    }
+    
+    const servicesAmount = formatCurrency(calculation.services_amount || 0);
+    const salesAmount = formatCurrency(calculation.sales_amount || 0);
+    
+    const newRow = `
+        <tr data-calculation-id="${calculation.id}">
+            <td>${calculation.user_name}</td>
+            <td>${periodStart} - ${periodEnd}</td>
+            <td>${calculation.services_count || 0} (${servicesAmount})</td>
+            <td>${calculation.sales_count || 0} (${salesAmount})</td>
+            <td>
+                <span class="currency-amount" data-amount="${calculation.total_salary}">
+                    ${totalSalary}
+                </span>
+            </td>
+            <td>${statusBadge}</td>
+            <td>
+                <div class="actions-cell">
+                    <button class="btn-view" onclick="viewSalaryCalculation(${calculation.id})" title="Просмотр">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    ${approveButton}
+                    <button class="btn-delete" onclick="deleteSalaryCalculation(${calculation.id})" title="Удалить">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
+            </td>
+        </tr>
     `;
     
-    document.body.appendChild(notification);
+    // Добавляем новую строку в начало таблицы
+    tbody.insertAdjacentHTML('afterbegin', newRow);
+}
+
+// Функция добавления новой выплаты в таблицу
+function addPaymentToTable(payment) {
+    const tbody = document.getElementById('salary-payments-tbody');
+    if (!tbody) return;
     
-    // Автоматически удаляем уведомление через 5 секунд
-    setTimeout(() => {
-        if (notification.parentNode) {
-            notification.parentNode.removeChild(notification);
-        }
-    }, 5000);
+    const paymentDate = new Date(payment.payment_date).toLocaleDateString('ru-RU');
+    const amount = formatCurrency(payment.amount);
+    
+    let statusBadge = '';
+    if (payment.status === 'pending') {
+        statusBadge = '<span class="status-badge status-pending">Ожидает</span>';
+    } else if (payment.status === 'approved') {
+        statusBadge = '<span class="status-badge status-done">Выплачено</span>';
+    } else if (payment.status === 'cancelled') {
+        statusBadge = '<span class="status-badge status-cancelled">Отменено</span>';
+    } else {
+        // По умолчанию для новых выплат
+        statusBadge = '<span class="status-badge status-pending">Ожидает</span>';
+    }
+    
+    let approveButton = '';
+    if (payment.status === 'pending' || !payment.status) {
+        approveButton = `
+            <button class="btn-edit" onclick="approveSalaryPayment(${payment.id})" title="Подтвердить выплату">
+                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+            </button>
+        `;
+    }
+    
+    // Преобразуем метод выплаты в читаемый вид
+    let paymentMethodText = '';
+    switch(payment.payment_method) {
+        case 'cash':
+            paymentMethodText = 'Наличные';
+            break;
+        case 'bank':
+            paymentMethodText = 'Банковский перевод';
+            break;
+        case 'card':
+            paymentMethodText = 'Карта';
+            break;
+        default:
+            paymentMethodText = payment.payment_method || '-';
+    }
+    
+    const newRow = `
+        <tr data-payment-id="${payment.id}">
+            <td>${payment.user_name}</td>
+            <td>${paymentDate}</td>
+            <td>${amount}</td>
+            <td>${paymentMethodText}</td>
+            <td>${statusBadge}</td>
+            <td>
+                <div class="actions-cell">
+                    <button class="btn-view" onclick="viewSalaryPayment(${payment.id})" title="Просмотр">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                    ${approveButton}
+                    <button class="btn-delete" onclick="deleteSalaryPayment(${payment.id})" title="Удалить">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `;
+    
+    // Добавляем новую строку в начало таблицы
+    tbody.insertAdjacentHTML('afterbegin', newRow);
+}
+
+// Функция удаления расчета зарплаты
+function deleteSalaryCalculation(id) {
+    confirmAction(id, 'calculation');
+}
+
+// Функция удаления выплаты зарплаты
+function deleteSalaryPayment(id) {
+    confirmAction(id, 'payment');
 }

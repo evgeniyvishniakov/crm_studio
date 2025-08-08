@@ -148,7 +148,6 @@
 }
 
 .brand-actions .btn-edit:hover {
-    transform: translateY(-2px);
     background: linear-gradient(135deg, #2563eb, #3b82f6);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
@@ -159,7 +158,6 @@
 }
 
 .brand-actions .btn-delete:hover {
-    transform: translateY(-2px);
     background: linear-gradient(135deg, #dc2626, #ef4444);
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
@@ -734,7 +732,6 @@ table.salary-payments-table .actions-cell {
 }
 
 .btn-view:hover {
-    transform: translateY(-2px);
     background: linear-gradient(135deg, #008ba3, #00acc1);
     box-shadow: 0 4px 12px rgba(0, 172, 193, 0.3);
 }
@@ -745,7 +742,6 @@ table.salary-payments-table .actions-cell {
 }
 
 .btn-edit:hover {
-    transform: translateY(-2px);
     background: linear-gradient(135deg, #2563eb, #3b82f6);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
@@ -756,7 +752,6 @@ table.salary-payments-table .actions-cell {
 }
 
 .btn-delete:hover {
-    transform: translateY(-2px);
     background: linear-gradient(135deg, #dc2626, #ef4444);
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
@@ -768,7 +763,6 @@ table.salary-payments-table .actions-cell {
 }
 
 .btn-pdf:hover {
-    transform: translateY(-2px);
     background: linear-gradient(135deg, #d18c00 60%, #e6b800 100%);
     box-shadow: 0 4px 12px rgba(235, 167, 14, 0.3);
     color: #fff;
@@ -3369,7 +3363,6 @@ input[type="date"]:focus {
 }
 
 .supplier-actions .btn-edit:hover {
-    transform: translateY(-2px);
     background: linear-gradient(135deg, #2563eb, #3b82f6);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
@@ -3380,7 +3373,6 @@ input[type="date"]:focus {
 }
 
 .supplier-actions .btn-delete:hover {
-    transform: translateY(-2px);
     background: linear-gradient(135deg, #dc2626, #ef4444);
     box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
@@ -4009,8 +4001,7 @@ input[type="date"]:focus {
 
 .btn-delete:hover {
     background: linear-gradient(135deg, #dc2626, #ef4444);
-    transform: translateY(-1px);
-}
+    }
 
 /* Стили для футера модального окна */
 .modal-footer {
@@ -4246,8 +4237,7 @@ input[type="date"]:focus {
 
 .purchase-actions .btn-edit:hover {
     background: linear-gradient(135deg, #2563eb, #3b82f6);
-    transform: translateY(-1px);
-}
+    }
 
 .purchase-actions .btn-delete {
     background: linear-gradient(135deg, #ef4444, #f87171);
@@ -4256,8 +4246,7 @@ input[type="date"]:focus {
 
 .purchase-actions .btn-delete:hover {
     background: linear-gradient(135deg, #dc2626, #ef4444);
-    transform: translateY(-1px);
-}
+    }
 
 .purchase-actions svg {
     width: 14px;
@@ -4598,8 +4587,7 @@ input[type="date"]:focus {
 
 .sale-card-actions .btn-edit:hover {
     background-color: #0056b3;
-    transform: translateY(-1px);
-}
+    }
 
 .sale-card-actions .btn-delete {
     background: linear-gradient(135deg, #ef4444, #dc2626);
@@ -4608,8 +4596,7 @@ input[type="date"]:focus {
 
 .sale-card-actions .btn-delete:hover {
     background: linear-gradient(135deg, #dc2626, #b91c1c);
-    transform: translateY(-1px);
-}
+    }
 
 .sale-card-actions svg {
     width: 16px;
@@ -4870,8 +4857,7 @@ input[type="date"]:focus {
 
 .inventory-actions .btn-edit:hover {
     background: #2563eb;
-    transform: translateY(-1px);
-}
+    }
 
 .inventory-actions .btn-delete {
     background: #ef4444;
@@ -4880,8 +4866,7 @@ input[type="date"]:focus {
 
 .inventory-actions .btn-delete:hover {
     background: #dc2626;
-    transform: translateY(-1px);
-}
+    }
 
 .inventory-actions .btn-pdf {
     background: #10b981;
@@ -4890,8 +4875,7 @@ input[type="date"]:focus {
 
 .inventory-actions .btn-pdf:hover {
     background: #059669;
-    transform: translateY(-1px);
-}
+    }
 
 .inventory-actions svg {
     width: 14px;
@@ -5663,8 +5647,7 @@ input[type="date"]:focus {
 
 .role-actions .btn-edit:hover {
     background: linear-gradient(135deg, #2563eb, #1e40af);
-    transform: translateY(-1px);
-}
+    }
 
 .role-actions .btn-delete {
     background: linear-gradient(135deg, #ef4444, #dc2626);
@@ -5673,8 +5656,7 @@ input[type="date"]:focus {
 
 .role-actions .btn-delete:hover {
     background: linear-gradient(135deg, #dc2626, #b91c1c);
-    transform: translateY(-1px);
-}
+    }
 
 .role-actions svg {
     width: 14px;
@@ -6025,7 +6007,7 @@ input[type="date"]:focus {
 }
 
 .settings-pane {
-    padding: 32px;
+    padding: 32px 0 0 0;
     display: block;
 }
 
@@ -6035,7 +6017,7 @@ input[type="date"]:focus {
     color: #1f2937;
     margin-bottom: 24px;
     padding-bottom: 12px;
-    border-bottom: 2px solid #f3f4f6;
+    
 }
 
 /* Формы настроек */
@@ -6589,6 +6571,11 @@ input[type="date"]:focus {
 
 /* Статусы тикетов */
 .status-badge.status-completed {
+    background: linear-gradient(135deg, #4CAF50 60%, #56bb93 100%);
+    color: #fff;
+}
+
+.status-badge.status-done {
     background: linear-gradient(135deg, #4CAF50 60%, #56bb93 100%);
     color: #fff;
 }
@@ -8157,4 +8144,72 @@ label {
     padding: 4px !important;
     word-wrap: break-word !important;
     line-height: 1.2 !important;
+}
+
+/* Стили для информации о подтверждении выплаты */
+.payment-approval-info {
+    margin-top: 20px;
+}
+
+.payment-approval-info h4 {
+    margin-bottom: 15px;
+    color: #1e293b;
+}
+
+.approval-card {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.approval-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 50%;
+    margin-right: 16px;
+    flex-shrink: 0;
+}
+
+.approval-icon svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.approval-details {
+    flex: 1;
+}
+
+.approval-person {
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: #1e293b;
+}
+
+.approval-date {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.approval-person strong,
+.approval-date strong {
+    color: #374151;
+}
+
+/* Стили для примечаний выплаты */
+.payment-notes {
+    margin-top: 20px;
+}
+
+.payment-notes h4 {
+    margin-bottom: 10px;
+    color: #1e293b;
 }

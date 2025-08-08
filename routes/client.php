@@ -280,6 +280,7 @@ Route::middleware('auth:client')->group(function () {
             Route::post('/', [\App\Http\Controllers\Client\SalaryController::class, 'storeCalculation'])->name('store');
             Route::get('/{id}', [\App\Http\Controllers\Client\SalaryController::class, 'showCalculation'])->name('show');
             Route::post('/{id}/approve', [\App\Http\Controllers\Client\SalaryController::class, 'approveCalculation'])->name('approve');
+            Route::delete('/{id}', [\App\Http\Controllers\Client\SalaryController::class, 'destroyCalculation'])->name('destroy');
             Route::get('/by-user/{userId}', [\App\Http\Controllers\Client\SalaryController::class, 'getCalculationsByUser'])->name('by-user');
             Route::get('/{id}/details', [\App\Http\Controllers\Client\SalaryController::class, 'getCalculationDetails'])->name('details');
         });
@@ -289,7 +290,9 @@ Route::middleware('auth:client')->group(function () {
             Route::get('/create', [\App\Http\Controllers\Client\SalaryController::class, 'createPayment'])->name('create');
             Route::post('/', [\App\Http\Controllers\Client\SalaryController::class, 'storePayment'])->name('store');
             Route::get('/{id}', [\App\Http\Controllers\Client\SalaryController::class, 'showPayment'])->name('show');
+            Route::get('/{id}/details', [\App\Http\Controllers\Client\SalaryController::class, 'getPaymentDetails'])->name('details');
             Route::post('/{id}/approve', [\App\Http\Controllers\Client\SalaryController::class, 'approvePayment'])->name('approve');
+            Route::delete('/{id}', [\App\Http\Controllers\Client\SalaryController::class, 'destroyPayment'])->name('destroy');
         });
     });
 

@@ -112,4 +112,13 @@ class SalaryCalculation extends Model
     {
         return $this->status === 'approved';
     }
+
+    /**
+     * Проверить, можно ли удалить
+     */
+    public function canDelete()
+    {
+        // Можно удалить только если нет связанных выплат и статус не "paid"
+        return $this->status !== 'paid' && $this->payments()->count() === 0;
+    }
 }

@@ -263,10 +263,24 @@ class SalaryController extends Controller
             $request->notes
         );
 
+        // Загружаем связанные данные для отображения в таблице
+        $calculation->load('user');
+        
         return response()->json([
             'success' => true,
             'message' => 'Расчет зарплаты создан успешно',
-            'calculation_id' => $calculation->id
+            'calculation' => [
+                'id' => $calculation->id,
+                'user_name' => $calculation->user->name,
+                'period_start' => $calculation->period_start,
+                'period_end' => $calculation->period_end,
+                'total_salary' => $calculation->total_salary,
+                'services_count' => $calculation->services_count,
+                'services_amount' => $calculation->services_amount,
+                'sales_count' => $calculation->sales_count,
+                'sales_amount' => $calculation->sales_amount,
+                'status' => $calculation->status
+            ]
         ]);
     }
 
@@ -336,13 +350,24 @@ class SalaryController extends Controller
             'payment_method' => $request->payment_method,
             'reference_number' => $request->reference_number,
             'notes' => $request->notes,
+            'status' => 'pending',
             'created_by' => $user->id,
         ]);
 
+        // Загружаем связанные данные для отображения в таблице
+        $payment->load('user');
+        
         return response()->json([
             'success' => true,
             'message' => 'Выплата создана успешно',
-            'payment_id' => $payment->id
+            'payment' => [
+                'id' => $payment->id,
+                'user_name' => $payment->user->name,
+                'payment_date' => $payment->payment_date,
+                'amount' => $payment->amount,
+                'payment_method' => $payment->payment_method,
+                'status' => $payment->status
+            ]
         ]);
     }
 
@@ -354,6 +379,41 @@ class SalaryController extends Controller
         $payment = SalaryPayment::with(['user', 'project', 'calculation', 'createdBy', 'approvedBy'])->findOrFail($id);
         
         return view('client.salary.payments.show', compact('payment'));
+    }
+
+    /**
+     * Получить детали выплаты для модального окна
+     */
+    public function getPaymentDetails($id)
+    {
+        $payment = SalaryPayment::with(['user', 'createdBy', 'approvedBy'])->findOrFail($id);
+        $user = Auth::guard('client')->user();
+        
+        // Проверяем, что выплата принадлежит проекту пользователя
+        if ($payment->project_id !== $user->project->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Доступ запрещен'
+            ], 403);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'payment' => [
+                'id' => $payment->id,
+                'user_name' => $payment->user->name,
+                'payment_date' => $payment->payment_date,
+                'amount' => $payment->amount,
+                'payment_method' => $payment->payment_method,
+                'reference_number' => $payment->reference_number,
+                'status' => $payment->status,
+                'notes' => $payment->notes,
+                'created_at' => $payment->created_at,
+                'approved_by' => $payment->approved_by,
+                'approved_at' => $payment->approved_at,
+                'approved_by_name' => $payment->approvedBy ? $payment->approvedBy->name : null,
+            ]
+        ]);
     }
 
     /**
@@ -372,7 +432,7 @@ class SalaryController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Выплата утверждена успешно'
+            'message' => 'Выплата подтверждена успешно'
         ]);
     }
 
@@ -385,13 +445,77 @@ class SalaryController extends Controller
         
         $calculations = SalaryCalculation::where('project_id', $project->id)
             ->where('user_id', $userId)
-            ->whereIn('status', ['calculated', 'approved'])
+            ->where('status', 'approved')
             ->orderBy('created_at', 'desc')
             ->get(['id', 'period_start', 'period_end', 'total_salary', 'status']);
 
         return response()->json([
             'success' => true,
             'calculations' => $calculations
+        ]);
+    }
+
+    /**
+     * Удалить расчет зарплаты
+     */
+    public function destroyCalculation($id)
+    {
+        $calculation = SalaryCalculation::findOrFail($id);
+        $user = Auth::guard('client')->user();
+        
+        // Проверяем, что расчет принадлежит проекту пользователя
+        if ($calculation->project_id !== $user->project->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Доступ запрещен'
+            ], 403);
+        }
+        
+        // Проверяем, можно ли удалить
+        if (!$calculation->canDelete()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Невозможно удалить этот расчет'
+            ], 400);
+        }
+        
+        $calculation->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Расчет зарплаты удален успешно'
+        ]);
+    }
+
+    /**
+     * Удалить выплату зарплаты
+     */
+    public function destroyPayment($id)
+    {
+        $payment = SalaryPayment::findOrFail($id);
+        $user = Auth::guard('client')->user();
+        
+        // Проверяем, что выплата принадлежит проекту пользователя
+        if ($payment->project_id !== $user->project->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Доступ запрещен'
+            ], 403);
+        }
+        
+        // Проверяем, можно ли удалить
+        if (!$payment->canDelete()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Невозможно удалить эту выплату'
+            ], 400);
+        }
+        
+        $payment->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Выплата зарплаты удалена успешно'
         ]);
     }
 

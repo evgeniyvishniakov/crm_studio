@@ -1071,10 +1071,6 @@ function initZoomableImages() {
         modal.style.display = 'none';
         modalImg.src = '';
     };
-    modal.onclick = function(e) {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-            modalImg.src = '';
-        }
-    };
+    // Модальные окна теперь закрываются только по кнопкам
+    // Убираем автоматическое закрытие при клике вне модального окна
 } 
