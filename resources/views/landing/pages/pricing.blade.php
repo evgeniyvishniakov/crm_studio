@@ -52,7 +52,7 @@
             <div class="col-lg-3 col-md-6">
                 <div class="text-center">
                     <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                        <i class="fas fa-chart-line text-warning fa-lg"></i>
+                        <i class="fas fa-chart-line text-bright-yellow fa-lg"></i>
                     </div>
                     <h5 class="fw-bold">Аналитика и отчеты</h5>
                     <p class="text-muted small">Детальная статистика, финансовые отчеты, аналитика</p>
@@ -425,14 +425,14 @@
                                 
                                 <div class="text-center mb-4">
                                     <div class="bg-warning bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-infinity text-warning fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-warning mb-0">Без лимита сотрудников</h6>
+                                        <i class="fas fa-infinity text-bright-yellow fa-2x mb-2"></i>
+                                        <h6 class="fw-bold text-bright-yellow mb-0">Без лимита сотрудников</h6>
                                     </div>
                                     <p class="text-muted small">Для крупных салонов и сетей</p>
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-warning fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-bright-yellow fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
@@ -466,14 +466,14 @@
                                 
                                 <div class="text-center mb-4">
                                     <div class="bg-warning bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-infinity text-warning fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-warning mb-0">Без лимита сотрудников</h6>
+                                        <i class="fas fa-infinity text-bright-yellow fa-2x mb-2"></i>
+                                        <h6 class="fw-bold text-bright-yellow mb-0">Без лимита сотрудников</h6>
                                     </div>
                                     <p class="text-muted small">Для крупных салонов и сетей</p>
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-warning fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-bright-yellow fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
@@ -502,14 +502,14 @@
                                 
                                 <div class="text-center mb-4">
                                     <div class="bg-warning bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-infinity text-warning fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-warning mb-0">Без лимита сотрудников</h6>
+                                        <i class="fas fa-infinity text-bright-yellow fa-2x mb-2"></i>
+                                        <h6 class="fw-bold text-bright-yellow mb-0">Без лимита сотрудников</h6>
                                     </div>
                                     <p class="text-muted small">Для крупных салонов и сетей</p>
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-warning fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-bright-yellow fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
@@ -538,14 +538,14 @@
                                 
                                 <div class="text-center mb-4">
                                     <div class="bg-warning bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-infinity text-warning fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-warning mb-0">Без лимита сотрудников</h6>
+                                        <i class="fas fa-infinity text-bright-yellow fa-2x mb-2"></i>
+                                        <h6 class="fw-bold text-bright-yellow mb-0">Без лимита сотрудников</h6>
                                     </div>
                                     <p class="text-muted small">Для крупных салонов и сетей</p>
                                 </div>
                                 
                                 <div class="text-center mb-4">
-                                    <p class="text-warning fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                    <p class="text-bright-yellow fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
@@ -644,22 +644,7 @@
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="py-5 bg-dark text-white">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="h3 fw-bold mb-4">Готовы начать?</h2>
-                <p class="text-muted mb-4">Присоединяйтесь к тысячам салонов красоты, которые уже используют CRM Studio</p>
-                <div class="d-flex gap-3 justify-content-center">
-                    <a href="#" class="btn btn-light btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
-                        <i class="fas fa-rocket me-2"></i>Попробовать бесплатно 7 дней
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 @include('landing.components.register-modal')
 @endsection

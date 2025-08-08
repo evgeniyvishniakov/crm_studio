@@ -201,20 +201,11 @@ body {
     overflow: hidden;
 }
 
-.card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--gradient-primary);
-    transform: scaleX(0);
-    transition: transform var(--transition-normal) ease;
-}
+/* Убрали градиентный border-top при hover */
 
-.card:hover::before {
-    transform: scaleX(1);
+/* Мягкий желтый цвет для текста */
+.text-bright-yellow {
+    color: #e6b800 !important;
 }
 
 .card:hover {
@@ -2999,19 +2990,22 @@ footer a:hover {
 }
 
 /* Hover эффекты для карточек тарифов */
-.border-success:hover {
+.card.border-success:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 45px rgba(40, 167, 69, 0.2);
+    border: none !important;
 }
 
-.border-primary:hover {
+.card.border-primary:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 45px rgba(13, 110, 253, 0.2);
+    border: none !important;
 }
 
-.border-warning:hover {
+.card.border-warning:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 45px rgba(255, 193, 7, 0.2);
+    border: none !important;
 }
 
 /* На мобильных отключаем масштабирование */
@@ -3051,7 +3045,7 @@ footer a:hover {
 }
 
 .btn-tab-yellow {
-    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    background: linear-gradient(135deg, #f8d7a0 0%, #e6b800 100%);
     color: white !important;
     box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
     border: none;
@@ -3062,4 +3056,86 @@ footer a:hover {
     box-shadow: 0 15px 40px rgba(255, 193, 7, 0.4);
     background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
     color: white !important;
+}
+
+/* Красивые стили для табов тарифов */
+#pricingTabs .nav-link {
+    background: white;
+    border: 2px solid #e9ecef;
+    color: #6c757d;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 1rem 2rem;
+    margin: 0 0.5rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#pricingTabs .nav-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: #dee2e6;
+}
+
+/* Активный таб - зеленый */
+#pricingTabs .nav-link.active#small-tab {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border-color: #28a745;
+    color: white;
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+}
+
+#pricingTabs .nav-link.active#small-tab:hover {
+    box-shadow: 0 12px 35px rgba(40, 167, 69, 0.4);
+}
+
+/* Активный таб - синий */
+#pricingTabs .nav-link.active#medium-tab {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border-color: #007bff;
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+}
+
+#pricingTabs .nav-link.active#medium-tab:hover {
+    box-shadow: 0 12px 35px rgba(0, 123, 255, 0.4);
+}
+
+/* Активный таб - желтый */
+#pricingTabs .nav-link.active#large-tab {
+    background: linear-gradient(135deg, #f8d7a0 0%, #e6b800 100%);
+    border-color: #ffc107;
+    color: white;
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+}
+
+#pricingTabs .nav-link.active#large-tab:hover {
+    box-shadow: 0 12px 35px rgba(255, 193, 7, 0.4);
+}
+
+/* Анимация переключения табов */
+#pricingTabs .nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+#pricingTabs .nav-link:hover::before {
+    left: 100%;
+}
+
+/* Мобильная адаптация табов */
+@media (max-width: 768px) {
+    #pricingTabs .nav-link {
+        font-size: 0.9rem;
+        padding: 0.8rem 1.5rem;
+        margin: 0.25rem 0;
+    }
 }
