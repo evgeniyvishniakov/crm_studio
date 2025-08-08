@@ -27,7 +27,10 @@
     gap: 15px;
     margin-top: 20px;
 }
-
+.form-row{
+    margin-right: 5px;
+    margin-left: 5px;
+}
 .brand-card {
     background: white;
     border-radius: 12px;
