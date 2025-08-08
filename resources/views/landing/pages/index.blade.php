@@ -1025,10 +1025,10 @@
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
-                        <i class="fas fa-database"></i>
+                        <i class="fas fa-money-bill-wave"></i>
                     </div>
-                    <h5>Резервные копии</h5>
-                    <p>Автоматическое создание резервных копий базы данных и файлов</p>
+                    <h5>Зарплата</h5>
+                    <p>Автоматический расчёт зарплаты сотрудников с поддержкой бонусов и процентов</p>
                 </div>
             </div>
             
