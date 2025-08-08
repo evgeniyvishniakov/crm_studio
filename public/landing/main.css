@@ -2999,9 +2999,19 @@ footer a:hover {
 }
 
 /* Hover эффекты для карточек тарифов */
-.card:hover {
+.border-success:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 15px 45px rgba(40, 167, 69, 0.2);
+}
+
+.border-primary:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 45px rgba(13, 110, 253, 0.2);
+}
+
+.border-warning:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 45px rgba(255, 193, 7, 0.2);
 }
 
 /* На мобильных отключаем масштабирование */
@@ -3009,4 +3019,47 @@ footer a:hover {
     [style*="transform: scale"] {
         transform: none !important;
     }
+}
+
+/* Отдельные классы кнопок для табов тарифов */
+.btn-tab-green {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+    border: none;
+}
+
+.btn-tab-green:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(40, 167, 69, 0.4);
+    background: linear-gradient(135deg, #1e7e34 0%, #17a2b8 100%);
+    color: white !important;
+}
+
+.btn-tab-blue {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+    border: none;
+}
+
+.btn-tab-blue:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 123, 255, 0.4);
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    color: white !important;
+}
+
+.btn-tab-yellow {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    color: white !important;
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+    border: none;
+}
+
+.btn-tab-yellow:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(255, 193, 7, 0.4);
+    background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+    color: white !important;
 }

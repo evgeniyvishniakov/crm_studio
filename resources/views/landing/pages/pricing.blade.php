@@ -130,7 +130,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-success btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-green btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -171,7 +171,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-success btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-green btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -207,7 +207,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-success btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-green btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -243,7 +243,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-success btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-green btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -283,7 +283,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-blue btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -324,7 +324,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-blue btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -360,7 +360,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-blue btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -396,7 +396,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-primary btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-blue btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -412,7 +412,7 @@
                     <div class="col-lg-3 col-md-6 mb-4">
                         <div class="card h-100 border-0 shadow-sm border-warning border-2">
                             <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Базовый</span>
+                                <span class="badge bg-warning" style="font-size: 0.7rem;">Базовый</span>
                             </div>
                             <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
@@ -436,7 +436,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-warning btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-yellow btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -447,12 +447,12 @@
                     <div class="col-lg-3 col-md-6 mb-4">
                         <div class="card h-100 position-relative border-warning border-3 shadow-lg" style="transform: scale(1.05); z-index: 10;">
                             <div class="position-absolute top-0 start-0 m-3">
-                                <span class="badge bg-warning text-dark px-2 py-1" style="font-size: 0.7rem; font-weight: 700;">
+                                <span class="badge bg-warning px-2 py-1" style="font-size: 0.7rem; font-weight: 700;">
                                     <i class="fas fa-star me-1"></i>ТОП
                                 </span>
                             </div>
                             <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Экономия 10%</span>
+                                <span class="badge bg-warning" style="font-size: 0.7rem;">Экономия 10%</span>
                             </div>
                             <div class="card-body p-4" style="padding-top: 3.5rem !important;">
                                 <div class="text-center mb-4">
@@ -477,7 +477,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-warning btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-yellow btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -488,7 +488,7 @@
                     <div class="col-lg-3 col-md-6 mb-4">
                         <div class="card h-100 border-0 shadow-sm border-warning border-2">
                             <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Экономия 15%</span>
+                                <span class="badge bg-warning" style="font-size: 0.7rem;">Экономия 15%</span>
                             </div>
                             <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
@@ -513,7 +513,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-warning btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-yellow btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
@@ -524,7 +524,7 @@
                     <div class="col-lg-3 col-md-6 mb-4">
                         <div class="card h-100 border-0 shadow-sm border-warning border-2">
                             <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning text-dark" style="font-size: 0.7rem;">Экономия 25%</span>
+                                <span class="badge bg-warning" style="font-size: 0.7rem;">Экономия 25%</span>
                             </div>
                             <div class="card-body p-4" style="padding-top: 3rem !important;">
                                 <div class="text-center mb-4">
@@ -549,7 +549,7 @@
                                     <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                 </div>
                                 
-                                <a href="#" class="btn btn-warning btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <a href="#" class="btn btn-tab-yellow btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
                                     Выбрать план
                                 </a>
                             </div>
