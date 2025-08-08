@@ -49,6 +49,7 @@ class SalaryController extends Controller
             'total_employees' => $employees->count(),
             'employees_with_salary' => $salarySettings->count(),
             'calculations_this_month' => $salaryCalculations->where('created_at', '>=', Carbon::now()->startOfMonth())->count(),
+            'payments_this_month' => $salaryPayments->where('created_at', '>=', Carbon::now()->startOfMonth())->count(),
             'total_payments_this_month' => $salaryPayments->where('created_at', '>=', Carbon::now()->startOfMonth())->sum('amount'),
         ];
 

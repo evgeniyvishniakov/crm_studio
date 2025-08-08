@@ -57,12 +57,12 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h5 class="text-muted fw-normal mt-0">С настройками зарплаты</h5>
-                                    <h3 class="mt-3 mb-3">{{ $stats['employees_with_salary'] ?? 0 }}</h3>
+                                    <h5 class="text-muted fw-normal mt-0">Выплат в этом месяце</h5>
+                                    <h3 class="mt-3 mb-3">{{ $stats['payments_this_month'] ?? 0 }}</h3>
                                 </div>
                                 <div class="avatar-sm">
                                     <span class="avatar-title bg-soft-success rounded">
-                                        <i class="mdi mdi-calculator font-20 text-success"></i>
+                                        <i class="mdi mdi-cash-multiple font-20 text-success"></i>
                                     </span>
                                 </div>
                             </div>
@@ -107,108 +107,100 @@
                 </div>
             </div>
 
-            <div class="row">
-                <!-- Последние расчеты -->
-                <div class="col-xl-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="header-title">Последние расчеты зарплаты</h4>
-                                <button class="btn btn-sm btn-outline-primary" onclick="showTab('salary-calculations')">Все расчеты</button>
-                            </div>
-
-                            @if(($recentCalculations ?? collect())->count() > 0)
-                                <div class="table-wrapper">
-                                    <table class="table-striped salary-overview-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Сотрудник</th>
-                                                <th>Период</th>
-                                                <th>Сумма</th>
-                                                <th>Статус</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($recentCalculations ?? [] as $calculation)
-                                            <tr>
-                                                <td>{{ $calculation->user->name }}</td>
-                                                <td>
-                                                    {{ $calculation->period_start->format('d.m.Y') }} - 
-                                                    {{ $calculation->period_end->format('d.m.Y') }}
-                                                </td>
-                                                <td>
-                                                                                    <span class="currency-amount" data-amount="{{ $calculation->total_salary }}">
-                                    {{ \App\Helpers\CurrencyHelper::format($calculation->total_salary) }}
-                                </span>
-                                                </td>
-                                                <td>
-                                                    <span class="status-badge status-{{ $calculation->status === 'pending' ? 'pending' : ($calculation->status === 'approved' ? 'done' : 'cancel') }}">
-                                                        {{ $calculation->status_text }}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @else
-                                <div class="text-center py-4">
-                                    <i class="mdi mdi-information-outline text-muted" style="font-size: 48px;"></i>
-                                    <p class="text-muted mt-2">Расчеты зарплаты отсутствуют</p>
-                                </div>
-                            @endif
-                        </div>
+            <!-- Последние расчеты -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="header-title">Последние расчеты зарплаты</h4>
                     </div>
+
+                    @if(($recentCalculations ?? collect())->count() > 0)
+                        <div class="table-wrapper">
+                            <table class="table-striped salary-overview-table">
+                                <thead>
+                                    <tr>
+                                        <th>Сотрудник</th>
+                                        <th>Период</th>
+                                        <th>Сумма</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($recentCalculations ?? [] as $calculation)
+                                    <tr>
+                                        <td>{{ $calculation->user->name }}</td>
+                                        <td>
+                                            {{ $calculation->period_start->format('d.m.Y') }} - 
+                                            {{ $calculation->period_end->format('d.m.Y') }}
+                                        </td>
+                                        <td>
+                                            <span class="currency-amount" data-amount="{{ $calculation->total_salary }}">
+                                {{ \App\Helpers\CurrencyHelper::format($calculation->total_salary) }}
+                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge status-{{ $calculation->status === 'pending' ? 'pending' : ($calculation->status === 'approved' ? 'done' : 'cancel') }}">
+                                                {{ $calculation->status_text }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-4">
+                            <i class="mdi mdi-information-outline text-muted" style="font-size: 48px;"></i>
+                            <p class="text-muted mt-2">Расчеты зарплаты отсутствуют</p>
+                        </div>
+                    @endif
                 </div>
+            </div>
 
-                <!-- Последние выплаты -->
-                <div class="col-xl-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="header-title">Последние выплаты</h4>
-                                <button class="btn btn-sm btn-outline-primary" onclick="showTab('salary-payments')">Все выплаты</button>
-                            </div>
-
-                            @if(($recentPayments ?? collect())->count() > 0)
-                                <div class="table-wrapper">
-                                    <table class="table-striped salary-overview-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Сотрудник</th>
-                                                <th>Сумма</th>
-                                                <th>Дата</th>
-                                                <th>Статус</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($recentPayments ?? [] as $payment)
-                                            <tr>
-                                                <td>{{ $payment->user->name }}</td>
-                                                <td>
-                                                                                    <span class="currency-amount" data-amount="{{ $payment->amount }}">
-                                    {{ \App\Helpers\CurrencyHelper::format($payment->amount) }}
-                                </span>
-                                                </td>
-                                                <td>{{ $payment->payment_date->format('d.m.Y') }}</td>
-                                                <td>
-                                                    <span class="status-badge status-{{ $payment->status === 'pending' ? 'pending' : ($payment->status === 'approved' ? 'done' : 'cancel') }}">
-                                                        {{ $payment->status_text }}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @else
-                                <div class="text-center py-4">
-                                    <i class="mdi mdi-information-outline text-muted" style="font-size: 48px;"></i>
-                                    <p class="text-muted mt-2">Выплаты отсутствуют</p>
-                                </div>
-                            @endif
-                        </div>
+            <!-- Последние выплаты -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="header-title">Последние выплаты</h4>
                     </div>
+
+                    @if(($recentPayments ?? collect())->count() > 0)
+                        <div class="table-wrapper">
+                            <table class="table-striped salary-overview-table">
+                                <thead>
+                                    <tr>
+                                        <th>Сотрудник</th>
+                                        <th>Сумма</th>
+                                        <th>Дата</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($recentPayments ?? [] as $payment)
+                                    <tr>
+                                        <td>{{ $payment->user->name }}</td>
+                                        <td>
+                                            <span class="currency-amount" data-amount="{{ $payment->amount }}">
+                                {{ \App\Helpers\CurrencyHelper::format($payment->amount) }}
+                            </span>
+                                        </td>
+                                        <td>{{ $payment->payment_date->format('d.m.Y') }}</td>
+                                        <td>
+                                            <span class="status-badge status-{{ $payment->status === 'pending' ? 'pending' : ($payment->status === 'approved' ? 'done' : 'cancel') }}">
+                                                {{ $payment->status_text }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="text-center py-4">
+                            <i class="mdi mdi-information-outline text-muted" style="font-size: 48px;"></i>
+                            <p class="text-muted mt-2">Выплаты отсутствуют</p>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
