@@ -1855,6 +1855,13 @@ footer a:hover {
     padding: 2rem 0;
 }
 
+/* Фиксированная высота для секции веб-записи */
+#web-booking {
+    height: 650px; /* Высота для секции */
+    display: flex;
+    align-items: center;
+}
+
 .feature-icon {
     display: inline-block;
 }
@@ -1878,6 +1885,8 @@ footer a:hover {
 .booking-form-preview {
     max-width: 400px;
     margin: 0 auto;
+    height: 570px; /* Высота для превью */
+    overflow: hidden;
 }
 
 .booking-form-container {
@@ -1887,6 +1896,8 @@ footer a:hover {
     border: 1px solid #e9ecef;
     padding: 30px;
     position: relative;
+    height: 520px; /* Высота для самого большого слайда (календарь + время) */
+    overflow: hidden;
 }
 
 .form-header {
@@ -1902,11 +1913,21 @@ footer a:hover {
 }
 
 .form-step {
-    display: none;
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .form-step.active {
-    display: block;
+    opacity: 1;
+    visibility: visible;
+    position: relative;
+    height: 100%;
 }
 
 /* Опции услуг - точно как в оригинале */
@@ -2292,15 +2313,20 @@ footer a:hover {
 
 /* Анимации для переключения шагов */
 .form-step {
-    display: none;
     opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     transform: translateX(20px);
-    transition: all 0.5s ease;
+    transition: all 0.3s ease;
 }
 
 .form-step.active {
-    display: block;
     opacity: 1;
+    visibility: visible;
+    position: relative;
     transform: translateX(0);
 }
 
@@ -2527,6 +2553,19 @@ footer a:hover {
     .benefit-item {
         justify-content: center;
         text-align: left;
+    }
+    
+    /* Уменьшаем высоту на мобильных */
+    #web-booking {
+        height: 550px;
+    }
+    
+    .booking-form-container {
+        height: 450px;
+    }
+    
+    .booking-form-preview {
+        height: 500px;
     }
 }
 
