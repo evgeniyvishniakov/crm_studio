@@ -14,7 +14,7 @@
                 <p class="lead mb-4 text-muted">CRM Studio - современная система с веб-записью, Telegram уведомлениями и виджетом для сайта. Увеличьте количество клиентов и упростите работу салона.</p>
                 <div class="d-flex gap-3">
                     <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
-                        <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно
+                        <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
                     </a>
                     <a href="#features" class="btn btn-outline-primary btn-lg">
                         <i class="fas fa-play me-2"></i>Смотреть функции
@@ -753,57 +753,7 @@
     </div>
 </section>
 
-<!-- Statistics Section -->
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="stat-card bg-success-light interactive-element">
-                    <div class="stat-icon bg-flat-color-1">
-                        <i class="fas fa-users"></i>
-                                </div>
-                    <div class="stat-content">
-                        <h3 class="stat-title">Клиентов</h3>
-                        <p class="stat-value counter" data-target="2500">2,500+</p>
-                                </div>
-                            </div>
-                        </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="stat-card bg-info-light interactive-element">
-                    <div class="stat-icon bg-flat-color-3">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3 class="stat-title">Записей</h3>
-                        <p class="stat-value counter" data-target="15000">15,000+</p>
-                                </div>
-                            </div>
-                        </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="stat-card bg-warning-light interactive-element">
-                    <div class="stat-icon bg-flat-color-4">
-                        <i class="fas fa-coins"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3 class="stat-title">Прибыль</h3>
-                        <p class="stat-value counter" data-target="500000">₴500,000+</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="stat-card bg-primary-light interactive-element">
-                    <div class="stat-icon bg-flat-color-2">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="stat-content">
-                        <h3 class="stat-title">Оценка</h3>
-                        <p class="stat-value">4.9/5</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 <!-- Testimonials Section -->
 <section class="py-5">
@@ -885,6 +835,26 @@
                         </div>
                         <p class="card-text">"Аналитика и отчеты показывают реальную картину бизнеса. Видим, какие услуги популярны, какие мастера эффективнее работают. Прибыль выросла на 25% за полгода."</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Middle Section -->
+<section class="py-5 bg-gradient-primary text-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="display-5 fw-bold mb-4">Попробуйте CRM Studio бесплатно</h2>
+                <p class="lead mb-4">7 дней полного доступа ко всем функциям без ограничений</p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a href="#" class="btn btn-light btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
+                        <i class="fas fa-rocket me-2"></i>Попробовать бесплатно 7 дней
+                    </a>
+                    <a href="#features-grid" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-list me-2"></i>Посмотреть функции
+                    </a>
                 </div>
             </div>
         </div>
@@ -1076,28 +1046,19 @@
                 </div>
             </div>
         </div>
+        
+        <!-- CTA после функций -->
+        <div class="text-center mt-5">
+            <h3 class="fw-bold mb-3">Понравились функции? Попробуйте прямо сейчас!</h3>
+            <p class="lead text-muted mb-4">7 дней бесплатного тестирования всех возможностей CRM Studio</p>
+            <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
+                <i class="fas fa-rocket me-2"></i>Попробовать бесплатно 7 дней
+            </a>
+        </div>
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="py-5 bg-gradient-primary text-white">
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold mb-4">Готовы автоматизировать свой салон?</h2>
-                <p class="lead mb-4">Присоединяйтесь к тысячам салонов красоты, которые уже используют CRM Studio</p>
-                <div class="d-flex gap-3 justify-content-center">
-                    <a href="#" class="btn btn-light btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
-                        <i class="fas fa-rocket me-2"></i>Начать бесплатно
-                    </a>
-                    <a href="/pricing" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-list me-2"></i>Посмотреть тарифы
-                    </a>
-            </div>
-        </div>
-                        </div>
-                    </div>
-</section>
+
 
 @include('landing.components.register-modal')
 @endsection
