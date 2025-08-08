@@ -34,7 +34,7 @@ Route::get('/pricing', function () {
 })->name('beautyflow.pricing');
 
 Route::get('/features', function () {
-    return view('landing.pages.features');
+    return redirect(route('beautyflow.index') . '#features-grid');
 })->name('beautyflow.features');
 
 Route::get('/integrations', function () {

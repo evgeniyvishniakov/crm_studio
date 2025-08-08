@@ -562,7 +562,7 @@
 </section>
 
 <!-- FAQ Section -->
-<section class="py-5">
+<section class="py-5 bg-white">
     <div class="container">
         <div class="row text-center mb-5">
             <div class="col-lg-8 mx-auto">
@@ -574,67 +574,70 @@
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <div class="accordion" id="faqAccordion">
-                    <div class="accordion-item border-0 shadow-sm mb-3">
+                    <div class="accordion-item border-0 shadow-sm mb-4 rounded-3 overflow-hidden">
                         <h2 class="accordion-header">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                                Все ли функции доступны во всех тарифах?
+                            <button class="accordion-button bg-white fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-check-circle text-primary"></i>
+                                    </div>
+                                    <span>Все ли функции доступны во всех тарифах?</span>
+                                </div>
                             </button>
                         </h2>
                         <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Да, все функции CRM Studio доступны во всех тарифах. Разница только в количестве сотрудников, которые могут использовать систему одновременно.
+                            <div class="accordion-body bg-white border-top">
+                                <div class="ps-5">
+                                    <p class="mb-2 text-dark"><strong>Да, абсолютно все функции CRM Studio доступны во всех тарифах!</strong></p>
+                                    <p class="text-muted mb-0">Разница только в количестве сотрудников, которые могут использовать систему одновременно. Вы получаете полный функционал независимо от выбранного плана.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="accordion-item border-0 shadow-sm mb-3">
+                    <div class="accordion-item border-0 shadow-sm mb-4 rounded-3 overflow-hidden">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-                                Можно ли изменить тариф в процессе использования?
+                            <button class="accordion-button collapsed bg-white fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-sync-alt text-success"></i>
+                                    </div>
+                                    <span>Можно ли изменить тариф в процессе использования?</span>
+                                </div>
                             </button>
                         </h2>
                         <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Да, вы можете изменить тариф в любое время. При переходе на более дорогой план доплата будет рассчитана пропорционально оставшимся дням текущего периода.
+                            <div class="accordion-body bg-white border-top">
+                                <div class="ps-5">
+                                    <p class="mb-2 text-dark"><strong>Конечно! Вы можете изменить тариф в любое время.</strong></p>
+                                    <p class="text-muted mb-0">При переходе на более дорогой план доплата будет рассчитана пропорционально оставшимся дням текущего периода. Никаких ограничений или штрафов.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="accordion-item border-0 shadow-sm mb-3">
+                    <div class="accordion-item border-0 shadow-sm mb-4 rounded-3 overflow-hidden">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                                Что происходит после окончания пробного периода?
+                            <button class="accordion-button collapsed bg-white fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-credit-card text-warning"></i>
+                                    </div>
+                                    <span>Какие способы оплаты принимаются?</span>
+                                </div>
                             </button>
                         </h2>
                         <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                После окончания 7-дневного пробного периода вам нужно будет выбрать один из платных тарифов для продолжения работы с системой.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="accordion-item border-0 shadow-sm mb-3">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
-                                Есть ли возможность отменить подписку?
-                            </button>
-                        </h2>
-                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Да, вы можете отменить подписку в любое время. Доступ к системе сохранится до конца оплаченного периода.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="accordion-item border-0 shadow-sm mb-3">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
-                                Какие способы оплаты принимаются?
-                            </button>
-                        </h2>
-                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Мы принимаем оплату банковскими картами, электронными платежами и банковскими переводами. Все платежи защищены SSL-шифрованием.
+                            <div class="accordion-body bg-white border-top">
+                                <div class="ps-5">
+                                    <p class="mb-2 text-dark"><strong>Мы принимаем все популярные способы оплаты:</strong></p>
+                                    <ul class="text-muted mb-0">
+                                        <li>Банковские карты (Visa, MasterCard)</li>
+                                        <li>Электронные платежи</li>
+                                        <li>Банковские переводы</li>
+                                    </ul>
+                                    <p class="text-muted small mt-2 mb-0"><i class="fas fa-shield-alt text-success me-1"></i>Все платежи защищены SSL-шифрованием</p>
+                                </div>
                             </div>
                         </div>
                     </div>

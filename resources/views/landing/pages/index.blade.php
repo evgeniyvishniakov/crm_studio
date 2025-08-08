@@ -6,7 +6,7 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="hero-section py-5">
+<section class="hero-section py-5 bg-light">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6 animate-fade-in-left">
