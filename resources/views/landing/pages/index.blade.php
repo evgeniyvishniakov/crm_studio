@@ -16,7 +16,7 @@
                     <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
                         <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
                     </a>
-                    <a href="#features" class="btn btn-outline-primary btn-lg">
+                    <a href="#features-grid" class="btn btn-outline-primary btn-lg">
                         <i class="fas fa-play me-2"></i>Смотреть функции
                     </a>
                 </div>
@@ -557,7 +557,7 @@
 </section>
 
 <!-- Аналитика Section -->
-<section id="analytics" class="py-5">
+<section id="analytics" class="py-5 bg-light">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6 order-lg-2">

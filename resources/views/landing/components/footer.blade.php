@@ -28,8 +28,18 @@
                 </ul>
             </div>
             <div class="col-lg-3 col-md-6 mb-4">
+                <h5>О нас</h5>
+                <ul class="list-unstyled">
+                    <li><a href="{{ route('beautyflow.about') }}" class="text-muted text-decoration-none">О компании</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Команда</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">История</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Отзывы клиентов</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
                 <h5>Контакты</h5>
                 <ul class="list-unstyled">
+                    <li><a href="{{ route('beautyflow.contact') }}" class="text-muted text-decoration-none">Связаться с нами</a></li>
                     <li><i class="fas fa-phone me-2"></i>+7 (999) 123-45-67</li>
                     <li><i class="fas fa-envelope me-2"></i>info@crmstudio.ru</li>
                     <li><i class="fas fa-map-marker-alt me-2"></i>Москва, ул. Примерная, 123</li>
