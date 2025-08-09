@@ -643,7 +643,7 @@ aside.left-panel {
           color: #607d8b;
           float: left;
           margin-top: 8px;
-          width: 55px;
+          width: 25px;
           text-align: left;
           z-index: 9; }
         .navbar .navbar-nav li > a .menu-title-text {
@@ -3355,7 +3355,10 @@ footer.site-footer {
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #b0b8c1 #f5f6fa;
+    padding-right: 2px;
 }
+
+
 
 
 

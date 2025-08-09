@@ -99,9 +99,9 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ УЗКОГО СКРОЛЛБАРА -->
+    <!-- Стили для узкого скроллбара -->
     <style>
-        /* Узкий скроллбар для меню - принудительно */
+        /* Узкий скроллбар для меню */
         #left-panel .main-menu::-webkit-scrollbar,
         #left-panel .navbar-nav::-webkit-scrollbar,
         .navbar-nav::-webkit-scrollbar,
@@ -110,7 +110,17 @@
         .sidebar-menu::-webkit-scrollbar,
         nav.navbar::-webkit-scrollbar {
             width: 3px !important;
-            background: #f5f6fa !important;
+            background: transparent !important;
+        }
+        
+        /* Отступ справа для скроллбара */
+        #left-panel .main-menu,
+        #left-panel .navbar-nav,
+        .navbar-nav,
+        .main-menu,
+        aside.left-panel,
+        .sidebar-menu {
+            padding-right: 2px !important;
         }
         
         #left-panel .main-menu::-webkit-scrollbar-thumb,
@@ -144,6 +154,24 @@
         nav.navbar {
             scrollbar-width: thin !important;
             scrollbar-color: #b0b8c1 #f5f6fa !important;
+        }
+        
+        /* Расстояние между иконками и текстом в меню */
+        #left-panel .navbar-nav li a .menu-icon {
+            margin-right: 6px !important;
+        }
+        
+        #left-panel .navbar-nav li a {
+            padding-left: 20px !important;
+        }
+        
+        /* Для подменю */
+        #left-panel .sub-menu li a {
+            padding-left: 45px !important;
+        }
+        
+        #left-panel .sub-menu li a .menu-icon {
+            margin-right: 6px !important;
         }
     </style>
 </head>

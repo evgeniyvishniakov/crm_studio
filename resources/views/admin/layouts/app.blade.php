@@ -15,14 +15,21 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('admin/main.css') }}" rel="stylesheet">
     
-    <!-- ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ УЗКОГО СКРОЛЛБАРА АДМИН ПАНЕЛЬ -->
+    <!-- Стили для узкого скроллбара админ панель -->
     <style>
         /* Узкий скроллбар для админ сайдбара */
         .sidebar-content::-webkit-scrollbar,
         .sidebar::-webkit-scrollbar,
         nav.sidebar::-webkit-scrollbar {
             width: 3px !important;
-            background: #343a40 !important;
+            background: transparent !important;
+        }
+        
+        /* Отступ справа для скроллбара */
+        .sidebar-content,
+        .sidebar,
+        nav.sidebar {
+            padding-right: 1px !important;
         }
         
         .sidebar-content::-webkit-scrollbar-thumb,
@@ -44,6 +51,16 @@
         nav.sidebar {
             scrollbar-width: thin !important;
             scrollbar-color: #6c757d #343a40 !important;
+        }
+        
+        /* Расстояние между иконками и текстом в админ меню */
+        .sidebar .nav-link i.me-2 {
+            margin-right: 6px !important;
+        }
+        
+        .sidebar .nav-link {
+            padding-left: 12px !important;
+            padding-right: 12px !important;
         }
     </style>
     
