@@ -120,7 +120,8 @@
         .main-menu,
         aside.left-panel,
         .sidebar-menu {
-            padding-right: 2px !important;
+            padding-right: 0px !important;
+            margin-left: 3px !important;
         }
         
         #left-panel .main-menu::-webkit-scrollbar-thumb,
