@@ -12,9 +12,34 @@ use App\Models\Clients\SaleItem;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Carbon\CarbonPeriod;
+use App\Helpers\LanguageHelper;
 
 class DashboardController extends Controller
 {
+    /**
+     * Форматировать дату с учетом текущего языка пользователя
+     */
+    private function formatDateForChart($date)
+    {
+        $currentLanguage = LanguageHelper::getCurrentLanguage();
+        
+        // Словари месяцев для разных языков
+        $months = [
+            'ru' => ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+            'ua' => ['Січ', 'Лют', 'Бер', 'Кві', 'Тра', 'Чер', 'Лип', 'Сер', 'Вер', 'Жов', 'Лис', 'Гру'],
+            'en' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        ];
+        
+        $day = $date->format('d');
+        $monthIndex = (int)$date->format('n') - 1; // n дает месяц без ведущего нуля (1-12)
+        
+        // Получаем массив месяцев для текущего языка, по умолчанию русский
+        $monthsArray = $months[$currentLanguage] ?? $months['ru'];
+        $monthName = $monthsArray[$monthIndex] ?? $date->format('M');
+        
+        return $day . ' ' . $monthName;
+    }
+
     public function index()
     {
         $currentProjectId = $this->getCurrentProjectId();
@@ -143,7 +168,7 @@ class DashboardController extends Controller
         if ($startDate && $endDate) {
             $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
             foreach ($period as $date) {
-                $labels[] = $date->format('d M');
+                $labels[] = $this->formatDateForChart($date);
                 $profit = $this->getProfitForDate($date->toDateString());
                 $data[] = round($profit, 2);
             }
@@ -159,7 +184,7 @@ class DashboardController extends Controller
             $end = $now;
             $periodRange = \Carbon\CarbonPeriod::create($start, $end);
             foreach ($periodRange as $date) {
-                $labels[] = $date->format('d M');
+                $labels[] = $this->formatDateForChart($date);
                 $profit = $this->getProfitForDate($date->toDateString());
                 $data[] = round($profit, 2);
             }
@@ -231,7 +256,7 @@ class DashboardController extends Controller
         $maxDays = min($days, $daysSinceStart);
         for ($i = $maxDays; $i >= 0; $i--) {
             $date = $now->copy()->subDays($i)->toDateString();
-            $labels[] = $now->copy()->subDays($i)->format('d M');
+            $labels[] = $this->formatDateForChart($now->copy()->subDays($i));
             $profit = $this->getProfitForDate($date);
             $data[] = round($profit, 2);
         }
@@ -300,7 +325,7 @@ class DashboardController extends Controller
         if ($startDate && $endDate) {
             $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
             foreach ($period as $date) {
-                $labels[] = $date->format('d M');
+                $labels[] = $this->formatDateForChart($date);
                 $sales = $this->getSalesForDate($date->toDateString());
                 $data[] = round($sales, 2);
             }
@@ -316,7 +341,7 @@ class DashboardController extends Controller
             $end = $now;
             $periodRange = \Carbon\CarbonPeriod::create($start, $end);
             foreach ($periodRange as $date) {
-                $labels[] = $date->format('d M');
+                $labels[] = $this->formatDateForChart($date);
                 $sales = $this->getSalesForDate($date->toDateString());
                 $data[] = round($sales, 2);
             }
@@ -372,7 +397,7 @@ class DashboardController extends Controller
         $maxDays = min($days, $daysSinceStart);
         for ($i = $maxDays; $i >= 0; $i--) {
             $date = $now->copy()->subDays($i)->toDateString();
-            $labels[] = $now->copy()->subDays($i)->format('d M');
+            $labels[] = $this->formatDateForChart($now->copy()->subDays($i));
             $sales = $this->getSalesForDate($date);
             $data[] = round($sales, 2);
         }
@@ -421,7 +446,7 @@ class DashboardController extends Controller
         if ($startDate && $endDate) {
             $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
             foreach ($period as $date) {
-                $labels[] = $date->format('d M');
+                $labels[] = $this->formatDateForChart($date);
                 $sum = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
                     ->where('status', 'completed')
                     ->where('project_id', $currentProjectId)
@@ -440,7 +465,7 @@ class DashboardController extends Controller
             $end = $now;
             $periodRange = \Carbon\CarbonPeriod::create($start, $end);
             foreach ($periodRange as $date) {
-                $labels[] = $date->format('d M');
+                $labels[] = $this->formatDateForChart($date);
                 $sum = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
                     ->where('status', 'completed')
                     ->where('project_id', $currentProjectId)
@@ -505,7 +530,7 @@ class DashboardController extends Controller
         $maxDays = min($days, $daysSinceStart);
         for ($i = $maxDays; $i >= 0; $i--) {
             $date = $now->copy()->subDays($i)->toDateString();
-            $labels[] = $now->copy()->subDays($i)->format('d M');
+            $labels[] = $this->formatDateForChart($now->copy()->subDays($i));
             $sum = \App\Models\Clients\Appointment::whereDate('date', $date)
                 ->where('status', 'completed')
                 ->where('project_id', $currentProjectId)
@@ -531,7 +556,7 @@ class DashboardController extends Controller
         if ($startDate && $endDate) {
             $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
             foreach ($period as $date) {
-                $labels[] = $date->format('d M');
+                $labels[] = $this->formatDateForChart($date);
                 $sum = \App\Models\Clients\Expense::whereDate('date', $date->toDateString())
                     ->where('project_id', $currentProjectId)
                     ->sum('amount');
@@ -549,7 +574,7 @@ class DashboardController extends Controller
             $end = $now;
             $periodRange = \Carbon\CarbonPeriod::create($start, $end);
             foreach ($periodRange as $date) {
-                $labels[] = $date->format('d M');
+                $labels[] = $this->formatDateForChart($date);
                 $sum = \App\Models\Clients\Expense::whereDate('date', $date->toDateString())
                     ->where('project_id', $currentProjectId)
                     ->sum('amount');
@@ -619,7 +644,7 @@ class DashboardController extends Controller
         $maxDays = min($days, $daysSinceStart);
         for ($i = $maxDays; $i >= 0; $i--) {
             $date = $now->copy()->subDays($i)->toDateString();
-            $labels[] = $now->copy()->subDays($i)->format('d M');
+            $labels[] = $this->formatDateForChart($now->copy()->subDays($i));
             $expenses = \App\Models\Clients\Expense::whereDate('date', $date)
                 ->where('project_id', $currentProjectId)
                 ->sum('amount');
@@ -649,7 +674,7 @@ class DashboardController extends Controller
         if ($startDate && $endDate) {
             $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
             foreach ($period as $date) {
-                $labels[] = $date->format('d M');
+                $labels[] = $this->formatDateForChart($date);
                 // Услуги: завершённые записи за день
                 $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
                     ->where('status', 'completed')
@@ -681,7 +706,7 @@ class DashboardController extends Controller
             $end = $now;
             $periodRange = \Carbon\CarbonPeriod::create($start, $end);
             foreach ($periodRange as $date) {
-                $labels[] = $date->format('d M');
+                $labels[] = $this->formatDateForChart($date);
                 // Услуги: завершённые записи за день
                 $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date->toDateString())
                     ->where('status', 'completed')
@@ -787,7 +812,7 @@ class DashboardController extends Controller
         $maxDays = min($days, $daysSinceStart);
         for ($i = $maxDays; $i >= 0; $i--) {
             $date = $now->copy()->subDays($i)->toDateString();
-            $labels[] = $now->copy()->subDays($i)->format('d M');
+            $labels[] = $this->formatDateForChart($now->copy()->subDays($i));
             // Услуги: завершённые записи за день
             $servicesCount = \App\Models\Clients\Appointment::whereDate('date', $date)
                 ->where('status', 'completed')
