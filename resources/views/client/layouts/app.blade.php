@@ -225,6 +225,26 @@
             margin-top: 0px !important; /* Убираем отступ */
             vertical-align: top !important;
         }
+        
+        /* Поворот стрелочек в подменю */
+        .navbar .navbar-nav li.menu-item-has-children a:before {
+            transition: transform 0.3s ease !important;
+        }
+        
+        /* При раскрытии меню - стрелочка поворачивается вниз */
+        .navbar .navbar-nav li.menu-item-has-children.show a:before,
+        .navbar .navbar-nav li.menu-item-has-children a[aria-expanded="true"]:before,
+        .navbar .navbar-nav li.menu-item-has-children .dropdown-toggle[aria-expanded="true"]:before {
+            transform: rotate(135deg) !important;
+            border-color: #03a9f3 #03a9f3 transparent transparent !important;
+        }
+        
+        /* При закрытии меню - стрелочка смотрит вправо */
+        .navbar .navbar-nav li.menu-item-has-children a[aria-expanded="false"]:before,
+        .navbar .navbar-nav li.menu-item-has-children .dropdown-toggle[aria-expanded="false"]:before {
+            transform: rotate(45deg) !important;
+            border-color: #607d8b #607d8b transparent transparent !important;
+        }
     </style>
 </head>
 
