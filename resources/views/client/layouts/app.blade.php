@@ -227,9 +227,16 @@
             vertical-align: top !important;
         }
         
-        /* Поворот стрелочек в подменю */
+        /* Поворот стрелочек в подменю - стабильное позиционирование */
         .navbar .navbar-nav li.menu-item-has-children a:before {
-            transition: transform 0.3s ease !important;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.6s ease !important;
+            transform-origin: center center !important;
+            position: absolute !important;
+            right: 15px !important;
+            top: 50% !important;
+            margin-top: -4px !important;
+            transform: rotate(45deg) !important; /* Базовое состояние - вправо */
+            border-color: #607d8b #607d8b transparent transparent !important;
         }
         
         /* При раскрытии меню - стрелочка поворачивается вниз */
@@ -238,13 +245,41 @@
         .navbar .navbar-nav li.menu-item-has-children .dropdown-toggle[aria-expanded="true"]:before {
             transform: rotate(135deg) !important;
             border-color: #03a9f3 #03a9f3 transparent transparent !important;
+            right: 15px !important;
+            top: 50% !important;
+            margin-top: -4px !important;
         }
         
-        /* При закрытии меню - стрелочка смотрит вправо */
-        .navbar .navbar-nav li.menu-item-has-children a[aria-expanded="false"]:before,
-        .navbar .navbar-nav li.menu-item-has-children .dropdown-toggle[aria-expanded="false"]:before {
-            transform: rotate(45deg) !important;
-            border-color: #607d8b #607d8b transparent transparent !important;
+        /* Плавная анимация для сдвига меню при раскрытии */
+        #left-panel .main-menu,
+        #left-panel .navbar-nav,
+        .navbar-nav {
+            transition: margin-left 0.3s ease, padding 0.3s ease !important;
+        }
+        
+        /* Анимация для подменю */
+        .sub-menu.children {
+            transition: all 0.3s ease !important;
+        }
+        
+        /* Плавное появление подменю */
+        .sub-menu.children.collapse {
+            transition: height 0.3s ease !important;
+        }
+        
+        /* Анимация при закрытии подменю */
+        .sub-menu.children.collapsing {
+            transition: height 0.3s ease !important;
+        }
+        
+        /* Общая анимация для всех состояний меню */
+        .menu-item-has-children {
+            transition: all 0.3s ease !important;
+        }
+        
+        /* Плавное возвращение меню при закрытии */
+        .navbar .navbar-nav li.menu-item-has-children:not(.show) {
+            transition: all 0.3s ease !important;
         }
     </style>
 </head>
@@ -404,18 +439,7 @@
                         
                     </a>
                 </li>
-                <li class="{{ request()->routeIs('salary.*') ? 'active' : '' }}">
-                    @php $hasAccess = $isAdmin || in_array('salary', $userPermissions); @endphp
-                    <a href="{{ $hasAccess ? route('salary.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="Зарплата">
-                        @if($hasAccess)
-                            <i class="menu-icon fa fa-money-bill-wave"></i>
-                        @else
-                            <i class="menu-icon fas fa-lock"></i>
-                        @endif
-                        Зарплата
-                        
-                    </a>
-                </li>
+
 
                 <li class="menu-title">{{ __('messages.services_title') }}</li>
 
@@ -587,6 +611,60 @@
                 </li>
                 <li class="menu-item-has-children {{ 
                     request()->routeIs('client.users.*') || 
+                    request()->routeIs('salary.*') || 
+                    request()->routeIs('work-schedules.*') ? 'active' : '' 
+                }}">
+                    <a href="#personnelMenu" data-toggle="collapse" aria-expanded="{{
+                        request()->routeIs('client.users.*') || 
+                        request()->routeIs('salary.*') || 
+                        request()->routeIs('work-schedules.*') ? 'true' : 'false' 
+                    }}" class="dropdown-toggle" title="Персонал">
+                        <i class="menu-icon fa fa-users-cog"></i>Персонал
+                    </a>
+                    <ul id="personnelMenu" class="sub-menu children collapse {{ 
+                        request()->routeIs('client.users.*') || 
+                        request()->routeIs('salary.*') || 
+                        request()->routeIs('work-schedules.*') ? 'show' : '' 
+                    }}">
+                        <li class="{{ request()->routeIs('client.users.*') ? 'active' : '' }}">
+                            @php $hasAccess = $isAdmin || in_array('client.users', $userPermissions); @endphp
+                            <a href="{{ $hasAccess ? route('client.users.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="Сотрудники">
+                                @if($hasAccess)
+                                    <i class="fa fa-user-tie"></i>
+                                @else
+                                    <i class="fas fa-lock"></i>
+                                @endif
+                                <span class="menu-label">Сотрудники</span>
+                                
+                            </a>
+                        </li>
+                        <li class="{{ request()->routeIs('salary.*') ? 'active' : '' }}">
+                            @php $hasAccess = $isAdmin || in_array('salary', $userPermissions); @endphp
+                            <a href="{{ $hasAccess ? route('salary.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="Зарплата">
+                                @if($hasAccess)
+                                    <i class="fa fa-money-bill-wave"></i>
+                                @else
+                                    <i class="fas fa-lock"></i>
+                                @endif
+                                <span class="menu-label">Зарплата</span>
+                                
+                            </a>
+                        </li>
+                        <li class="{{ request()->routeIs('work-schedules.*') ? 'active' : '' }}">
+                            @php $hasAccess = $isAdmin || in_array('work-schedules', $userPermissions); @endphp
+                            <a href="#" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="График работы">
+                                @if($hasAccess)
+                                    <i class="fa fa-calendar-alt"></i>
+                                @else
+                                    <i class="fas fa-lock"></i>
+                                @endif
+                                <span class="menu-label">График работы</span>
+                                
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item-has-children {{ 
                     request()->routeIs('roles.*') || 
                     request()->routeIs('client.settings.*') || 
                     request()->routeIs('admin.roles.*') || 
@@ -598,7 +676,6 @@
                     request()->routeIs('client.subscriptions.*') ? 'active' : '' 
                 }}">
                                         <a href="#settingsMenu" data-toggle="collapse" aria-expanded="{{
-                        request()->routeIs('client.users.*') || 
                         request()->routeIs('roles.*') || 
                         request()->routeIs('client.settings.*') || 
                         request()->routeIs('admin.roles.*') || 
@@ -612,7 +689,6 @@
                         <i class="menu-icon fa fa-cogs"></i>{{ __('messages.settings') }}
                     </a>
                     <ul id="settingsMenu" class="sub-menu children collapse {{ 
-                        request()->routeIs('client.users.*') || 
                         request()->routeIs('roles.*') || 
                         request()->routeIs('client.settings.*') || 
                         request()->routeIs('admin.roles.*') || 
@@ -623,18 +699,6 @@
                         request()->routeIs('client.notifications.*') || 
                         request()->routeIs('client.subscriptions.*') ? 'show' : '' 
                     }}">
-                        <li class="{{ request()->routeIs('client.users.*') ? 'active' : '' }}">
-                            @php $hasAccess = $isAdmin || in_array('client.users', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.users.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.users') }}">
-                                @if($hasAccess)
-                                    <i class="fa fa-users"></i>
-                                @else
-                                    <i class="fas fa-lock"></i>
-                                @endif
-                                <span class="menu-label">{{ __('messages.users') }}</span>
-                                
-                            </a>
-                        </li>
                         <li class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('roles', $userPermissions); @endphp
                             <a href="{{ $hasAccess ? route('roles.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.roles_and_permissions') }}">
