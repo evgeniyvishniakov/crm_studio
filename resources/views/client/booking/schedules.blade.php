@@ -122,8 +122,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <button type="button" class="btn btn-primary" onclick="saveDaySchedule()">Сохранить</button>
+                <button type="button" class="btn-cancel" onclick="closeEditDayModal()">Отмена</button>
+                <button type="button" class="btn-submit" onclick="saveDaySchedule()">Сохранить</button>
             </div>
         </div>
     </div>

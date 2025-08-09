@@ -274,6 +274,7 @@ Route::middleware('auth:client')->group(function () {
         Route::get('/', [\App\Http\Controllers\Client\WorkScheduleController::class, 'index'])->name('index');
         Route::get('/employee-schedule', [\App\Http\Controllers\Client\WorkScheduleController::class, 'getEmployeeSchedule'])->name('employee-schedule');
         Route::post('/employee-schedule', [\App\Http\Controllers\Client\WorkScheduleController::class, 'saveEmployeeSchedule'])->name('save-employee-schedule');
+        Route::get('/refresh-overview', [\App\Http\Controllers\Client\WorkScheduleController::class, 'refreshOverview'])->name('refresh-overview');
         
         // Настройки зарплаты (модальные окна)
         Route::prefix('settings')->name('settings.')->group(function () {

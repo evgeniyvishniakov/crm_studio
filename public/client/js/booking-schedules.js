@@ -251,4 +251,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (editIsWorking) {
         editIsWorking.addEventListener('change', toggleWorkingHoursFields);
     }
-}); 
+});
+
+// Функция закрытия модального окна для schedules.blade.php
+function closeEditDayModal() {
+    const modal = document.getElementById('editDayModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}

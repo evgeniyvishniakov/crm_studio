@@ -460,7 +460,7 @@
         </div>
         <div class="form-actions">
             <button type="button" class="btn-cancel" onclick="closeEditDayModal()">{{ __('messages.cancel') }}</button>
-            <button type="button" class="btn-save" onclick="saveDaySchedule()">{{ __('messages.save') }}</button>
+            <button type="button" class="btn-submit" onclick="saveDaySchedule()">{{ __('messages.save') }}</button>
         </div>
     </div>
 </div>
