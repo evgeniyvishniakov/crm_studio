@@ -267,6 +267,14 @@ Route::middleware('auth:client')->group(function () {
         Route::get('/', [\App\Http\Controllers\Client\SalaryController::class, 'index'])->name('index');
         Route::get('/statistics', [\App\Http\Controllers\Client\SalaryController::class, 'getStatistics'])->name('statistics');
         
+    });
+    
+    // График работы (Персонал)
+    Route::prefix('work-schedules')->name('work-schedules.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Client\WorkScheduleController::class, 'index'])->name('index');
+        Route::get('/employee-schedule', [\App\Http\Controllers\Client\WorkScheduleController::class, 'getEmployeeSchedule'])->name('employee-schedule');
+        Route::post('/employee-schedule', [\App\Http\Controllers\Client\WorkScheduleController::class, 'saveEmployeeSchedule'])->name('save-employee-schedule');
+        
         // Настройки зарплаты (модальные окна)
         Route::prefix('settings')->name('settings.')->group(function () {
             Route::post('/', [\App\Http\Controllers\Client\SalaryController::class, 'storeSetting'])->name('store');

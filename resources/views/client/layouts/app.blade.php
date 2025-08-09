@@ -122,6 +122,7 @@
         .sidebar-menu {
             padding-right: 0px !important;
             margin-left: 3px !important;
+            padding-bottom: 30px;
         }
         
         #left-panel .main-menu::-webkit-scrollbar-thumb,
@@ -177,7 +178,7 @@
         
         /* Уменьшение размера navbar */
         .navbar.navbar-expand-sm.navbar-default {
-            padding: 0 !important;
+            padding:20px 0 !important;
             min-height: auto !important;
         }
         
@@ -197,14 +198,14 @@
         }
         
         .navbar .navbar-nav li > a {
-            padding: 8px 0 !important; /* Уменьшаем вертикальные отступы */
+            padding: 10px 0 !important; /* Уменьшаем вертикальные отступы */
             line-height: 20px !important; /* Уменьшаем высоту строки */
-            font-size: 13px !important; /* Уменьшаем размер шрифта */
+            font-size: 15px !important; /* Уменьшаем размер шрифта */
         }
         
         .navbar .navbar-nav li.menu-title {
             padding: 6px 0 4px 0 !important; /* Уменьшаем отступы заголовков */
-            font-size: 11px !important;
+            font-size: 14px !important;
         }
         
         /* Исправляем позиционирование стрелочек после уменьшения ширины */
@@ -652,7 +653,7 @@
                         </li>
                         <li class="{{ request()->routeIs('work-schedules.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('work-schedules', $userPermissions); @endphp
-                            <a href="#" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="График работы">
+                            <a href="{{ $hasAccess ? route('work-schedules.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="График работы">
                                 @if($hasAccess)
                                     <i class="fa fa-calendar-alt"></i>
                                 @else
