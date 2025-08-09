@@ -563,7 +563,7 @@ body {
     overflow-y: auto;
     padding-right: 0.5rem;
 }
-.todo-list-minimal::-webkit-scrollbar { width: 6px; }
+.todo-list-minimal::-webkit-scrollbar { width: 4px; }
 .todo-list-minimal::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
 .todo-list-minimal::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
 .todo-list-minimal::-webkit-scrollbar-thumb:hover { background: #9ca3af; }

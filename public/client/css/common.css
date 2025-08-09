@@ -7452,7 +7452,7 @@ label {
 
 /* Стили для прокрутки */
 #instructionsContent::-webkit-scrollbar {
-    width: 8px;
+    width: 4px;
 }
 
 #instructionsContent::-webkit-scrollbar-track {
@@ -7729,7 +7729,7 @@ label {
 
 /* Стили для прокрутки */
 #emailInstructionsContent::-webkit-scrollbar {
-    width: 8px;
+    width: 4px;
 }
 
 #emailInstructionsContent::-webkit-scrollbar-track {
@@ -8223,3 +8223,5 @@ label {
     margin-bottom: 10px;
     color: #1e293b;
 }
+
+

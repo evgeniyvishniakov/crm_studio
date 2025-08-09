@@ -15,6 +15,38 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('admin/main.css') }}" rel="stylesheet">
     
+    <!-- ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ УЗКОГО СКРОЛЛБАРА АДМИН ПАНЕЛЬ -->
+    <style>
+        /* Узкий скроллбар для админ сайдбара */
+        .sidebar-content::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar,
+        nav.sidebar::-webkit-scrollbar {
+            width: 3px !important;
+            background: #343a40 !important;
+        }
+        
+        .sidebar-content::-webkit-scrollbar-thumb,
+        .sidebar::-webkit-scrollbar-thumb,
+        nav.sidebar::-webkit-scrollbar-thumb {
+            background: #6c757d !important;
+            border-radius: 2px !important;
+        }
+        
+        .sidebar-content::-webkit-scrollbar-thumb:hover,
+        .sidebar::-webkit-scrollbar-thumb:hover,
+        nav.sidebar::-webkit-scrollbar-thumb:hover {
+            background: #adb5bd !important;
+        }
+        
+        /* Для Firefox */
+        .sidebar-content,
+        .sidebar,
+        nav.sidebar {
+            scrollbar-width: thin !important;
+            scrollbar-color: #6c757d #343a40 !important;
+        }
+    </style>
+    
     @stack('styles')
 </head>
 <body>

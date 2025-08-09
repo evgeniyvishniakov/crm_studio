@@ -129,27 +129,5 @@
     opacity: 0.7;
 }
 
-/* Стили для скроллбара в сайдбаре */
-.sidebar-content::-webkit-scrollbar {
-    width: 6px;
-}
 
-.sidebar-content::-webkit-scrollbar-track {
-    background: #343a40;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb {
-    background: #6c757d;
-    border-radius: 3px;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb:hover {
-    background: #adb5bd;
-}
-
-/* Для Firefox */
-.sidebar-content {
-    scrollbar-width: thin;
-    scrollbar-color: #6c757d #343a40;
-}
 </style> 

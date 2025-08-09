@@ -3356,19 +3356,9 @@ footer.site-footer {
     scrollbar-width: thin;
     scrollbar-color: #b0b8c1 #f5f6fa;
 }
-#left-panel .main-menu::-webkit-scrollbar {
-    width: 8px;
-    background: #f5f6fa;
-    border-radius: 8px;
-}
-#left-panel .main-menu::-webkit-scrollbar-thumb {
-    background: #b0b8c1;
-    border-radius: 8px;
-    transition: background 0.2s;
-}
-#left-panel .main-menu::-webkit-scrollbar-thumb:hover {
-    background: #7a869a;
-}
+
+
+
 
 #left-panel .main-menu,
 #left-panel .navbar-nav {

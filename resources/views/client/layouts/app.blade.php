@@ -98,6 +98,54 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ УЗКОГО СКРОЛЛБАРА -->
+    <style>
+        /* Узкий скроллбар для меню - принудительно */
+        #left-panel .main-menu::-webkit-scrollbar,
+        #left-panel .navbar-nav::-webkit-scrollbar,
+        .navbar-nav::-webkit-scrollbar,
+        .main-menu::-webkit-scrollbar,
+        aside.left-panel::-webkit-scrollbar,
+        .sidebar-menu::-webkit-scrollbar,
+        nav.navbar::-webkit-scrollbar {
+            width: 3px !important;
+            background: #f5f6fa !important;
+        }
+        
+        #left-panel .main-menu::-webkit-scrollbar-thumb,
+        #left-panel .navbar-nav::-webkit-scrollbar-thumb,
+        .navbar-nav::-webkit-scrollbar-thumb,
+        .main-menu::-webkit-scrollbar-thumb,
+        aside.left-panel::-webkit-scrollbar-thumb,
+        .sidebar-menu::-webkit-scrollbar-thumb,
+        nav.navbar::-webkit-scrollbar-thumb {
+            background: #b0b8c1 !important;
+            border-radius: 2px !important;
+        }
+        
+        #left-panel .main-menu::-webkit-scrollbar-thumb:hover,
+        #left-panel .navbar-nav::-webkit-scrollbar-thumb:hover,
+        .navbar-nav::-webkit-scrollbar-thumb:hover,
+        .main-menu::-webkit-scrollbar-thumb:hover,
+        aside.left-panel::-webkit-scrollbar-thumb:hover,
+        .sidebar-menu::-webkit-scrollbar-thumb:hover,
+        nav.navbar::-webkit-scrollbar-thumb:hover {
+            background: #7a869a !important;
+        }
+        
+        /* Для Firefox */
+        #left-panel .main-menu,
+        #left-panel .navbar-nav,
+        .navbar-nav,
+        .main-menu,
+        aside.left-panel,
+        .sidebar-menu,
+        nav.navbar {
+            scrollbar-width: thin !important;
+            scrollbar-color: #b0b8c1 #f5f6fa !important;
+        }
+    </style>
 </head>
 
 <body data-page="{{ request()->route()->getName() }}">
