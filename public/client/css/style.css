@@ -737,6 +737,7 @@ aside.left-panel {
   margin-right: 15px;
   text-align: center; }
 
+
 .open .navbar .navbar-brand.hidden {
   display: block; }
 .open .sub-menu .subtitle {
@@ -3380,6 +3381,7 @@ footer.site-footer {
     overflow: hidden !important;
     display: flex !important;
     flex-direction: column !important;
+    
 }
 #left-panel .main-menu,
 #left-panel .navbar-nav {

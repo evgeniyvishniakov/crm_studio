@@ -167,11 +167,63 @@
         
         /* Для подменю */
         #left-panel .sub-menu li a {
-            padding-left: 45px !important;
+            padding-left: 35px !important;
         }
         
         #left-panel .sub-menu li a .menu-icon {
             margin-right: 6px !important;
+        }
+        
+        /* Уменьшение размера navbar */
+        .navbar.navbar-expand-sm.navbar-default {
+            padding: 0 !important;
+            min-height: auto !important;
+        }
+        
+        /* Уменьшаем ширину левой панели */
+        aside.left-panel {
+            width: 250px !important; /* Было 300px */
+        }
+        
+        #left-panel {
+            width: 250px !important;
+            max-width: 250px !important;
+        }
+        
+        /* Корректируем отступ основного контента */
+        .right-panel {
+            margin-left: 250px !important;
+        }
+        
+        .navbar .navbar-nav li > a {
+            padding: 8px 0 !important; /* Уменьшаем вертикальные отступы */
+            line-height: 20px !important; /* Уменьшаем высоту строки */
+            font-size: 13px !important; /* Уменьшаем размер шрифта */
+        }
+        
+        .navbar .navbar-nav li.menu-title {
+            padding: 6px 0 4px 0 !important; /* Уменьшаем отступы заголовков */
+            font-size: 11px !important;
+        }
+        
+        /* Исправляем позиционирование стрелочек после уменьшения ширины */
+        .navbar .navbar-nav li.menu-item-has-children a:before {
+            right: 15px !important; /* Корректируем позицию стрелочки */
+            top: 50% !important;
+            margin-top: -4px !important;
+        }
+        
+        /* Исправляем выравнивание иконок после изменения размеров */
+        .navbar .navbar-nav li > a .menu-icon {
+            margin-top: 0px !important; /* Убираем отступ сверху */
+            vertical-align: top !important; /* Выравниваем по верху */
+            line-height: 20px !important; /* Соответствует высоте текста */
+        }
+        
+        /* Для подменю тоже корректируем иконки */
+        #left-panel .sub-menu li a .menu-icon {
+            margin-top: 0px !important; /* Убираем отступ */
+            vertical-align: top !important;
         }
     </style>
 </head>
