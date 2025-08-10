@@ -159,11 +159,7 @@
                                                 <span class="time-off-status status-{{ $day['time_off_status'] }}">
                                                     {{ $statusText }}
                                                 </span>
-                                                @if($day['time_off_reason'])
-                                                    <span class="time-off-reason" title="{{ $day['time_off_reason'] }}">
-                                                        💬 {{ Str::limit($day['time_off_reason'], 20) }}
-                                                    </span>
-                                                @endif
+                                                
                                             </div>
                                         @elseif($day['is_working'])
                                             <span class="schedule-time working">
@@ -336,7 +332,7 @@
                             <th style="text-align: center;">Сотрудник</th>
                             <th style="text-align: center;">Тип</th>
                             <th style="text-align: center;">Период</th>
-                            <th style="text-align: center;">Причина</th>
+    
                             <th style="text-align: center;">Статус</th>
                             <th style="text-align: center;">Действия</th>
                         </tr>
@@ -979,16 +975,7 @@ function updateOverviewScheduleTable(schedules) {
                         </span>
                 `;
                 
-                if (day.time_off_reason) {
-                    const reason = day.time_off_reason.length > 20 ? 
-                        day.time_off_reason.substring(0, 20) + '...' : 
-                        day.time_off_reason;
-                    timeOffHtml += `
-                        <span class="time-off-reason" title="${day.time_off_reason}">
-                            💬 ${reason}
-                        </span>
-                    `;
-                }
+
                 
                 timeOffHtml += '</div>';
                 
@@ -1127,7 +1114,7 @@ function loadTimeOffData(timeOffId) {
                 
                 document.getElementById('timeOffStartDate').value = startDate;
                 document.getElementById('timeOffEndDate').value = endDate;
-                document.getElementById('timeOffReason').value = timeOff.reason || '';
+        
             } else {
                 console.error('Ошибка в данных:', data.message);
                 window.showNotification('error', 'Ошибка загрузки данных отсутствия');
@@ -1182,7 +1169,7 @@ function saveTimeOff() {
         type: type,
         start_date: startDate,
         end_date: endDate,
-        reason: document.getElementById('timeOffReason').value
+        
     };
     
     fetch(url, {
@@ -1261,7 +1248,7 @@ function renderTimeOffsTable(timeOffs) {
             <td style="text-align: center;">${timeOff.user ? timeOff.user.name : 'Удаленный пользователь'}</td>
             <td style="text-align: center;">${typeNames[timeOff.type] || timeOff.type}</td>
             <td style="text-align: center;">${formatDate(timeOff.start_date)} - ${formatDate(timeOff.end_date)}</td>
-            <td style="text-align: center;">${timeOff.reason || '-'}</td>
+            
             <td style="text-align: center;">
                 <span class="status-badge status-${timeOff.status}">
                     ${statusNames[timeOff.status] || timeOff.status}
@@ -1573,72 +1560,7 @@ function showWarningOncePerMonth(message) {
     color: white;
 }
 
-/* Стили для модального окна отпусков */
-.time-off-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    padding: 20px;
-    box-sizing: border-box;
-}
 
-.time-off-modal-content {
-    background-color: white;
-    margin: 50px auto;
-    padding: 0;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 600px;
-    position: relative;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.time-off-modal-header {
-    padding: 20px 25px;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.time-off-modal-title {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: #1f2937;
-}
-
-.time-off-modal-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #6b7280;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.time-off-modal-close:hover {
-    color: #374151;
-}
-
-.time-off-modal-body {
-    padding: 25px;
-}
-
-.time-off-modal-footer {
-    padding: 20px 25px;
-    border-top: 1px solid #e5e7eb;
-}
 
 
 
@@ -1656,6 +1578,68 @@ function showWarningOncePerMonth(message) {
 .status-badge.status-rejected {
     background: linear-gradient(135deg, #F44336 60%, #eb7171 100%);
     color: #fff;
+}
+
+/* Стили для модального окна как в модуле Зарплата */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background-color: white;
+    margin: 50px auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close:hover {
+    color: #374151;
+}
+
+.modal-body {
+    padding: 25px;
 }
 
 /* Стили для форм как в модуле Зарплата */
@@ -1775,16 +1759,7 @@ function showWarningOncePerMonth(message) {
     border: 1px solid #c3e6cb;
 }
 
-.time-off-reason {
-    font-size: 11px;
-    padding: 1px 4px;
-    border-radius: 3px;
-    background-color: #f3e5f5;
-    color: #7b1fa2;
-    border: 1px solid #e1bee7;
-    display: inline-block;
-    cursor: help;
-}
+
 
 /* Стили для статистики */
 .stats-container {
@@ -2006,14 +1981,14 @@ function showWarningOncePerMonth(message) {
 </style>
 
 <!-- Модальное окно для отпусков -->
-<div id="timeOffModal" class="time-off-modal">
-    <div class="time-off-modal-content">
-        <div class="time-off-modal-header">
-                                <h3 class="time-off-modal-title" id="timeOffModalTitle">Добавить отсутствие</h3>
-            <button class="time-off-modal-close" onclick="closeTimeOffModal()">&times;</button>
+<div id="timeOffModal" class="modal">
+    <div class="modal-content" style="width: 80%; max-width: 700px;">
+        <div class="modal-header">
+            <h2 id="timeOffModalTitle">Добавить отсутствие</h2>
+            <span class="close" onclick="closeTimeOffModal()">&times;</span>
         </div>
-        <div class="time-off-modal-body">
-                        <form id="timeOffForm">
+        <div class="modal-body">
+            <form id="timeOffForm">
                 <input type="hidden" id="timeOffId" name="time_off_id">
                 
                 <div class="form-row">
@@ -2051,17 +2026,13 @@ function showWarningOncePerMonth(message) {
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="timeOffReason">Причина</label>
-                    <textarea id="timeOffReason" name="reason" rows="3" class="form-control" placeholder="Опишите причину отсутствия (необязательно)"></textarea>
+
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeTimeOffModal()">Отмена</button>
+                    <button type="button" class="btn-submit" onclick="saveTimeOff()">Сохранить</button>
                 </div>
             </form>
-        </div>
-        <div class="time-off-modal-footer">
-            <div class="form-actions">
-                <button type="button" class="btn-cancel" onclick="closeTimeOffModal()">Отмена</button>
-                <button type="button" class="btn-primary" onclick="saveTimeOff()">Сохранить</button>
-            </div>
         </div>
     </div>
 </div>
