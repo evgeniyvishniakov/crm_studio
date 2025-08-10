@@ -20,7 +20,7 @@
                     <a class="nav-link {{ request()->routeIs('beautyflow.pricing') ? 'active' : '' }}" href="{{ route('beautyflow.pricing') }}" role="menuitem">Тарифы</a>
                 </li>
                 <li class="nav-item" role="none">
-                    <a class="nav-link" href="#" role="menuitem">База знаний</a>
+                    <a class="nav-link {{ request()->routeIs('beautyflow.knowledge') ? 'active' : '' }}" href="{{ route('beautyflow.knowledge') }}" role="menuitem">База знаний</a>
                 </li>
                 <li class="nav-item" role="none">
                     <a class="nav-link {{ request()->routeIs('beautyflow.contact') ? 'active' : '' }}" href="{{ route('beautyflow.contact') }}" role="menuitem">Контакты</a>
