@@ -250,15 +250,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Предварительный просмотр -->
-                                <div class="mb-4">
-                                    <h5 class="card-title">Предварительный просмотр</h5>
-                                    <div id="preview" class="border rounded p-3 bg-light">
-                                        <p class="text-muted text-center mb-0">
-                                            Предварительный просмотр появится здесь
-                                        </p>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
 
@@ -330,7 +322,7 @@ function initTinyMCE(element) {
         height: 200,
         menubar: false,
         plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
             'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
             'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
         ],
@@ -428,66 +420,6 @@ function removeTip(button) {
     button.closest('.tip-item').remove();
 }
 
-// Обновляем предварительный просмотр
-document.addEventListener('DOMContentLoaded', function() {
-    const titleInput = document.getElementById('title');
-    const descriptionInput = document.getElementById('description');
-    const previewDiv = document.getElementById('preview');
-    
-    // TinyMCE инициализируется автоматически в начале скрипта
-    
-    function updatePreview() {
-        const title = titleInput.value || 'Заголовок статьи';
-        const description = descriptionInput.value || 'Описание статьи';
 
-        // Собираем информацию о шагах
-        let stepsHtml = '';
-        const stepItems = document.querySelectorAll('.step-item');
-        stepItems.forEach((item, index) => {
-            const stepTitle = item.querySelector('.step-title').value || `Шаг ${index + 1}`;
-            const stepContent = item.querySelector('.step-content-editor');
-            
-            let contentText = '';
-            if (stepContent && tinymce.get(stepContent.id)) {
-                contentText = tinymce.get(stepContent.id).getContent({format: 'text'});
-            } else {
-                contentText = stepContent.value || '';
-            }
-            
-            stepsHtml += `
-                <li class="mb-2">
-                    <strong>${stepTitle}</strong>
-                    <small class="text-muted d-block">${contentText.length > 100 ? contentText.substring(0, 100) + '...' : contentText}</small>
-                </li>
-            `;
-        });
-
-        // Собираем информацию о советах
-        let tipsHtml = '';
-        const tipItems = document.querySelectorAll('.tip-content');
-        tipItems.forEach((tip, index) => {
-            const tipContent = tip.value || '';
-            if (tipContent.trim()) {
-                tipsHtml += `
-                    <li class="mb-1">
-                        <small class="text-muted">${tipContent.length > 50 ? tipContent.substring(0, 50) + '...' : tipContent}</small>
-                    </li>
-                `;
-            }
-        });
-
-        previewDiv.innerHTML = `
-            <h4>${title}</h4>
-            <p class="text-muted">${description}</p>
-            <hr>
-            ${stepsHtml ? `<h6>Шаги:</h6><ol class="mb-3">${stepsHtml}</ol>` : ''}
-            ${tipsHtml ? `<h6>Полезные советы:</h6><ul class="mb-0">${tipsHtml}</ul>` : ''}
-        `;
-    }
-
-    
-
-
-});
 </script>
 @endpush

@@ -301,39 +301,7 @@
 
                             <div class="col-md-4">
                                 <!-- Предварительный просмотр -->
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5 class="mb-0">Предварительный просмотр</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="preview">
-                                            <h4>{{ $article->title }}</h4>
-                                            <p class="text-muted">{{ $article->description }}</p>
-                                            <hr>
-                                            @if($article->steps->count() > 0)
-                                                <h6>Шаги:</h6>
-                                                <ul class="list-unstyled">
-                                                    @foreach($article->steps as $step)
-                                                        <li class="mb-2">
-                                                            <strong>{{ $step->title }}</strong>
-                                                            <small class="text-muted d-block">{{ Str::limit(strip_tags($step->content), 100) }}</small>
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
-                                            @endif
-                                            @if($article->tips->count() > 0)
-                                                <h6>Полезные советы:</h6>
-                                                <ul class="list-unstyled">
-                                                    @foreach($article->tips as $tip)
-                                                        <li class="mb-2">
-                                                            <small class="text-muted">{{ Str::limit(strip_tags($tip->content), 100) }}</small>
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                     </form>
@@ -372,7 +340,7 @@ function initTinyMCE(element) {
         height: 200,
         menubar: false,
         plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap',
             'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
             'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
         ],
@@ -427,7 +395,6 @@ function addStep() {
     initTinyMCE(newEditor);
     
     stepCounter++;
-    updatePreview();
 }
 
 function removeStep(button) {
@@ -441,7 +408,6 @@ function removeStep(button) {
         }
         
         stepItem.remove();
-        updatePreview();
     }
 }
 
@@ -460,77 +426,15 @@ function addTip() {
     `;
     container.insertAdjacentHTML('beforeend', tipHtml);
     tipCounter++;
-    updatePreview();
 }
 
 function removeTip(button) {
     if (document.querySelectorAll('.tip-item').length > 1) {
         button.closest('.tip-item').remove();
-        updatePreview();
     }
 }
 
-function updatePreview() {
-    const titleInput = document.getElementById('title');
-    const descriptionInput = document.getElementById('description');
-    const previewDiv = document.getElementById('preview');
-    
-    const title = titleInput.value || '{{ $article->title }}';
-    const description = descriptionInput.value || '{{ $article->description }}';
-    
-    let stepsHtml = '';
-    let tipsHtml = '';
-    
-    // Собираем информацию о шагах
-    const stepItems = document.querySelectorAll('.step-item');
-    if (stepItems.length > 0) {
-        stepsHtml = '<h6>Шаги:</h6><ul class="list-unstyled">';
-        stepItems.forEach((item, index) => {
-            const stepTitle = item.querySelector('.step-title').value || `Шаг ${index + 1}`;
-            const stepContent = item.querySelector('.step-content-editor');
-            
-            let contentText = '';
-            if (stepContent && tinymce.get(stepContent.id)) {
-                contentText = tinymce.get(stepContent.id).getContent({format: 'text'});
-            } else {
-                contentText = stepContent.value || '';
-            }
-            
-            stepsHtml += `
-                <li class="mb-2">
-                    <strong>${stepTitle}</strong>
-                    <small class="text-muted d-block">${contentText.length > 100 ? contentText.substring(0, 100) + '...' : contentText}</small>
-                </li>
-            `;
-        });
-        stepsHtml += '</ul>';
-    }
-    
-    // Собираем информацию о советах
-    const tipItems = document.querySelectorAll('.tip-item');
-    if (tipItems.length > 0) {
-        tipsHtml = '<h6>Полезные советы:</h6><ul class="list-unstyled">';
-        tipItems.forEach((item) => {
-            const tipContent = item.querySelector('.tip-content').value || '';
-            if (tipContent.trim()) {
-                tipsHtml += `
-                    <li class="mb-2">
-                        <small class="text-muted">${tipContent.length > 100 ? tipContent.substring(0, 100) + '...' : tipContent}</small>
-                    </li>
-                `;
-            }
-        });
-        tipsHtml += '</ul>';
-    }
-    
-    previewDiv.innerHTML = `
-        <h4>${title}</h4>
-        <p class="text-muted">${description}</p>
-        <hr>
-        ${stepsHtml}
-        ${tipsHtml}
-    `;
-}
+
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM загружен, проверяем TinyMCE...');
@@ -551,12 +455,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 500);
     
-    const titleInput = document.getElementById('title');
-    const descriptionInput = document.getElementById('description');
-    
-    
-    
-    
+
 });
 </script>
 @endsection
