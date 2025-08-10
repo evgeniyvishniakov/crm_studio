@@ -1,7 +1,7 @@
 @extends('landing.layouts.app')
 
-@section('title', 'CRM Studio - Система управления салоном красоты')
-@section('description', 'Профессиональная CRM система для управления салоном красоты с веб-записью, Telegram уведомлениями и виджетом для сайта')
+@section('title', 'Trimora - Система управления салоном красоты')
+@section('description', 'Профессиональная система Trimora для управления салоном красоты с веб-записью, Telegram уведомлениями и виджетом для сайта')
 
 @section('content')
 
@@ -11,7 +11,7 @@
         <div class="row align-items-center">
             <div class="col-lg-6 animate-fade-in-left">
                 <h1 class="display-4 fw-bold mb-4 text-dark gradient-text">Автоматизируйте записи клиентов</h1>
-                <p class="lead mb-4 text-muted">CRM Studio - современная система с веб-записью, Telegram уведомлениями и виджетом для сайта. Увеличьте количество клиентов и упростите работу салона.</p>
+                <p class="lead mb-4 text-muted">Trimora - современная система с веб-записью, Telegram уведомлениями и виджетом для сайта. Увеличьте количество клиентов и упростите работу салона.</p>
                 <div class="d-flex gap-3">
                     <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
                         <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
@@ -332,7 +332,7 @@
                     <div class="telegram-preview">
                         <div class="telegram-chat">
                             <div class="chat-header bg-primary text-white p-2 rounded-top">
-                                <i class="fab fa-telegram me-2"></i>CRM Studio Bot
+                                <i class="fab fa-telegram me-2"></i>Trimora Bot
                                                 </div>
                             <div class="chat-messages p-3 bg-white rounded-bottom">
                                 <div class="message bot-message mb-2">
@@ -761,7 +761,7 @@
         <div class="row text-center mb-5">
             <div class="col-lg-8 mx-auto">
                 <h2 class="display-5 fw-bold mb-4 section-title">Отзывы наших клиентов</h2>
-                <p class="lead text-muted">Что говорят владельцы салонов красоты о CRM Studio</p>
+                <p class="lead text-muted">Что говорят владельцы салонов красоты о Trimora</p>
             </div>
         </div>
         
@@ -846,7 +846,7 @@
     <div class="container">
         <div class="row text-center">
             <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold mb-4">Попробуйте CRM Studio бесплатно</h2>
+                <h2 class="display-5 fw-bold mb-4">Попробуйте Trimora бесплатно</h2>
                 <p class="lead mb-4">7 дней полного доступа ко всем функциям без ограничений</p>
                 <div class="d-flex gap-3 justify-content-center">
                     <a href="#" class="btn btn-light btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
@@ -1050,7 +1050,7 @@
         <!-- CTA после функций -->
         <div class="text-center mt-5">
             <h3 class="fw-bold mb-3">Понравились функции? Попробуйте прямо сейчас!</h3>
-            <p class="lead text-muted mb-4">7 дней бесплатного тестирования всех возможностей CRM Studio</p>
+                            <p class="lead text-muted mb-4">7 дней бесплатного тестирования всех возможностей Trimora</p>
             <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
                 <i class="fas fa-rocket me-2"></i>Попробовать бесплатно 7 дней
             </a>

@@ -1,7 +1,7 @@
 @extends('landing.layouts.app')
 
-@section('title', 'О нас - CRM Studio')
-@section('description', 'Узнайте больше о CRM Studio и нашей миссии помочь салонам красоты развиваться')
+@section('title', 'О нас - Trimora')
+@section('description', 'Узнайте больше о Trimora и нашей миссии помочь салонам красоты развиваться')
 
 @section('content')
 <!-- Hero Section -->
@@ -9,7 +9,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-4 fw-bold mb-4">О CRM Studio</h1>
+                <h1 class="display-4 fw-bold mb-4">О Trimora</h1>
                 <p class="lead text-muted">Мы помогаем салонам красоты расти и развиваться с помощью современных технологий</p>
             </div>
         </div>
@@ -24,7 +24,7 @@
                 <h2 class="fw-bold mb-4">Наша миссия</h2>
                 <p class="text-muted mb-4">Мы создаем простые и эффективные решения для управления салонами красоты. Наша цель - помочь владельцам салонов сосредоточиться на том, что они делают лучше всего - создавать красоту и дарить радость клиентам.</p>
                 
-                <h3 class="fw-bold mb-3">Почему CRM Studio?</h3>
+                <h3 class="fw-bold mb-3">Почему Trimora?</h3>
                 <ul class="list-unstyled">
                     <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Простой и интуитивно понятный интерфейс</li>
                     <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Все необходимые функции в одном месте</li>

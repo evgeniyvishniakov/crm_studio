@@ -1,6 +1,6 @@
 @extends('landing.layouts.app')
 
-@section('title', 'Интеграции - CRM Studio')
+@section('title', 'Интеграции - Trimora')
 @section('description', 'Подключите дополнительные сервисы для автоматизации работы вашего салона красоты')
 
 @section('content')

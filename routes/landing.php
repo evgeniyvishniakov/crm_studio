@@ -57,6 +57,10 @@ Route::get('/knowledge', function () {
     return view('landing.pages.knowledge');
 })->name('beautyflow.knowledge');
 
+Route::get('/knowledge/roles', function () {
+    return view('landing.pages.article-roles');
+})->name('beautyflow.knowledge.roles');
+
 Route::post('/register', [RegisterController::class, 'store'])->name('beautyflow.register');
 
 Route::get('/studio', function () {

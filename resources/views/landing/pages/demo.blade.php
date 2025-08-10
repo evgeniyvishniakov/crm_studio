@@ -1,13 +1,13 @@
 @extends('landing.layouts.app')
-@section('title', 'Демо - CRM Studio')
-@section('description', 'Посмотрите, как работает CRM Studio в действии. Интерактивное демо основных функций системы.')
+@section('title', 'Демо - Trimora')
+@section('description', 'Посмотрите, как работает Trimora в действии. Интерактивное демо основных функций системы.')
 @section('content')
 
 <section class="bg-light py-5">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-4 fw-bold mb-4 gradient-text section-title">Демо CRM Studio</h1>
+                <h1 class="display-4 fw-bold mb-4 gradient-text section-title">Демо Trimora</h1>
                 <p class="lead text-muted typing-effect" data-text="Посмотрите, как работает система управления салоном красоты в действии">Посмотрите, как работает система управления салоном красоты в действии</p>
             </div>
         </div>
@@ -475,7 +475,7 @@
 <section class="bg-gradient-primary text-white py-5">
     <div class="container text-center">
         <h2 class="display-6 fw-bold mb-4">Понравилось демо?</h2>
-        <p class="lead mb-4">Начните использовать CRM Studio уже сегодня</p>
+                        <p class="lead mb-4">Начните использовать Trimora уже сегодня</p>
         <a href="#" class="btn btn-light btn-lg animate-glow" data-bs-toggle="modal" data-bs-target="#registerModal">
             <i class="fas fa-rocket me-2"></i>Попробовать бесплатно
         </a>

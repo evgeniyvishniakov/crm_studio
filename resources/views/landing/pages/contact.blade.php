@@ -1,7 +1,7 @@
 @extends('landing.layouts.app')
 
-@section('title', 'Контакты - CRM Studio')
-@section('description', 'Свяжитесь с нами для получения поддержки или консультации по CRM Studio')
+@section('title', 'Контакты - Trimora')
+@section('description', 'Свяжитесь с нами для получения поддержки или консультации по Trimora')
 
 @section('content')
 <!-- Hero Section -->

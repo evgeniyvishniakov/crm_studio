@@ -1,7 +1,7 @@
 @extends('landing.layouts.app')
 
-@section('title', 'Политика конфиденциальности - CRM Studio')
-@section('description', 'Политика обработки персональных данных в CRM Studio')
+@section('title', 'Политика конфиденциальности - Trimora')
+@section('description', 'Политика обработки персональных данных в Trimora')
 
 @section('content')
 <!-- Hero Section -->

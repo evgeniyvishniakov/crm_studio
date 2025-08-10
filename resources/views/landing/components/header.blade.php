@@ -2,7 +2,7 @@
     <div class="container">
         <a class="navbar-brand" href="{{ route('beautyflow.index') }}">
             <i class="fas fa-spa text-primary"></i>
-            <span class="ms-2 fw-bold">CRM Studio</span>
+            <span class="ms-2 fw-bold">Trimora</span>
         </a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Переключить навигацию">

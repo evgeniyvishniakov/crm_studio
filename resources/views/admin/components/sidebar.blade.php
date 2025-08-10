@@ -100,6 +100,12 @@
                     @endif
                 </a>
             </li>
+            <li class="nav-item mb-2">
+                <a href="{{ route('admin.knowledge.index') }}" class="nav-link text-white {{ request()->routeIs('admin.knowledge.*') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-book me-2"></i>
+                    База знаний
+                </a>
+            </li>
         </ul>
         <hr class="border-secondary my-4">
         <ul class="nav flex-column">

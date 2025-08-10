@@ -1,6 +1,6 @@
 @extends('landing.layouts.app')
 
-@section('title', 'Тарифы - CRM Studio')
+@section('title', 'Тарифы - Trimora')
 @section('description', 'Выберите подходящий тариф для вашего салона красоты. Начните с бесплатного пробного периода на 7 дней.')
 
 @section('content')
@@ -11,7 +11,7 @@
             <div class="col-lg-8 mx-auto text-center">
                 <h1 class="display-4 fw-bold mb-4 text-dark">Тарифы</h1>
                 <p class="lead mb-4 text-muted">Выберите план в зависимости от количества сотрудников в вашем салоне</p>
-                <p class="text-muted mb-4">Все тарифы включают полный набор функций CRM Studio</p>
+                <p class="text-muted mb-4">Все тарифы включают полный набор функций Trimora</p>
                 <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
                     <i class="fas fa-rocket me-2"></i>Попробовать бесплатно 7 дней
                 </a>

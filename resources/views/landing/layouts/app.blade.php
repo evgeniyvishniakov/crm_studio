@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'CRM Studio - Система управления салоном красоты')</title>
-    <meta name="description" content="@yield('description', 'CRM Studio - профессиональная система управления салоном красоты')">
-    <meta name="keywords" content="CRM, салон красоты, управление, записи, клиенты, аналитика">
-    <meta name="author" content="CRM Studio">
-    <meta property="og:title" content="@yield('title', 'CRM Studio - Система управления салоном красоты')">
-    <meta property="og:description" content="@yield('description', 'CRM Studio - профессиональная система управления салоном красоты')">
+    <title>@yield('title', 'Trimora - Система управления салоном красоты')</title>
+    <meta name="description" content="@yield('description', 'Trimora - профессиональная система управления салоном красоты')">
+    <meta name="keywords" content="Trimora, салон красоты, управление, записи, клиенты, аналитика">
+    <meta name="author" content="Trimora">
+    <meta property="og:title" content="@yield('title', 'Trimora - Система управления салоном красоты')">
+    <meta property="og:description" content="@yield('description', 'Trimora - профессиональная система управления салоном красоты')">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request()->url() }}">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('title', 'CRM Studio - Система управления салоном красоты')">
-    <meta name="twitter:description" content="@yield('description', 'CRM Studio - профессиональная система управления салоном красоты')">
+    <meta name="twitter:title" content="@yield('title', 'Trimora - Система управления салоном красоты')">
+    <meta name="twitter:description" content="@yield('description', 'Trimora - профессиональная система управления салоном красоты')">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
