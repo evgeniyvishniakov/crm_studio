@@ -668,9 +668,17 @@ class WorkScheduleController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
         
+        // Форматируем даты для каждого отпуска
+        $formattedTimeOffs = $timeOffs->map(function($timeOff) {
+            $timeOffData = $timeOff->toArray();
+            $timeOffData['start_date'] = $timeOff->start_date_input;
+            $timeOffData['end_date'] = $timeOff->end_date_input;
+            return $timeOffData;
+        });
+        
         return response()->json([
             'success' => true,
-            'timeOffs' => $timeOffs
+            'timeOffs' => $formattedTimeOffs
         ]);
     }
     
@@ -694,9 +702,14 @@ class WorkScheduleController extends Controller
             ], 404);
         }
         
+        // Добавляем форматированные даты для HTML input полей
+        $timeOffData = $timeOff->toArray();
+        $timeOffData['start_date'] = $timeOff->start_date_input;
+        $timeOffData['end_date'] = $timeOff->end_date_input;
+        
         return response()->json([
             'success' => true,
-            'timeOff' => $timeOff
+            'timeOff' => $timeOffData
         ]);
     }
     

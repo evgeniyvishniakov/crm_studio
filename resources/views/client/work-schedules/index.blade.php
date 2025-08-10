@@ -5,6 +5,9 @@
 @section('content')
 
 <div class="dashboard-container">
+    <!-- Контейнер для уведомлений -->
+    <div id="notification-container"></div>
+    
     <div class="settings-header">
         <h1>График работы</h1>
     </div>
@@ -429,6 +432,65 @@
 
 @push('scripts')
 <script>
+// Функция для показа уведомлений
+function showNotification(type, message) {
+    const container = document.getElementById('notification-container');
+    if (!container) return;
+    
+    // Создаем элемент уведомления
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    // Определяем иконку в зависимости от типа
+    let icon = '';
+    switch(type) {
+        case 'success':
+            icon = '<i class="fas fa-check-circle notification-icon"></i>';
+            break;
+        case 'error':
+            icon = '<i class="fas fa-exclamation-circle notification-icon"></i>';
+            break;
+        case 'warning':
+            icon = '<i class="fas fa-exclamation-triangle notification-icon"></i>';
+            break;
+        case 'info':
+            icon = '<i class="fas fa-info-circle notification-icon"></i>';
+            break;
+        default:
+            icon = '<i class="fas fa-bell notification-icon"></i>';
+    }
+    
+    // HTML уведомления
+    notification.innerHTML = `
+        ${icon}
+        <span>${message}</span>
+        <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
+    `;
+    
+    // Добавляем в контейнер
+    container.appendChild(notification);
+    
+    // Показываем уведомление
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+    
+    // Автоматически скрываем через 5 секунд
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 800);
+        }
+    }, 5000);
+}
+
+// Делаем функцию доступной глобально
+window.showNotification = showNotification;
+
 // Переводы и данные для JavaScript
 window.translations = {
     working: 'Работает',
@@ -1039,6 +1101,7 @@ function showScheduleModal() {
 }
 
 function showTimeOffModal(timeOffId = null) {
+    console.log('showTimeOffModal вызвана с ID:', timeOffId);
     const modal = document.getElementById('timeOffModal');
     const title = document.getElementById('timeOffModalTitle');
     const form = document.getElementById('timeOffForm');
@@ -1049,10 +1112,12 @@ function showTimeOffModal(timeOffId = null) {
     
     if (timeOffId) {
         // Режим редактирования
+        console.log('Режим редактирования для ID:', timeOffId);
         title.textContent = 'Редактировать отпуск';
         loadTimeOffData(timeOffId);
     } else {
         // Режим создания
+        console.log('Режим создания нового отпуска');
         title.textContent = 'Добавить отпуск';
         // Устанавливаем минимальную дату - сегодня
         const today = new Date().toISOString().split('T')[0];
@@ -1074,13 +1139,20 @@ function loadTimeOffData(timeOffId) {
         .then(data => {
             if (data.success) {
                 const timeOff = data.timeOff;
+                
                 document.getElementById('timeOffId').value = timeOff.id;
                 document.getElementById('timeOffEmployee').value = timeOff.admin_user_id;
                 document.getElementById('timeOffType').value = timeOff.type;
-                document.getElementById('timeOffStartDate').value = timeOff.start_date;
-                document.getElementById('timeOffEndDate').value = timeOff.end_date;
+                
+                // Форматируем даты для input type="date"
+                const startDate = new Date(timeOff.start_date).toISOString().split('T')[0];
+                const endDate = new Date(timeOff.end_date).toISOString().split('T')[0];
+                
+                document.getElementById('timeOffStartDate').value = startDate;
+                document.getElementById('timeOffEndDate').value = endDate;
                 document.getElementById('timeOffReason').value = timeOff.reason || '';
             } else {
+                console.error('Ошибка в данных:', data.message);
                 window.showNotification('error', 'Ошибка загрузки данных отпуска');
             }
         })
@@ -1171,6 +1243,7 @@ function loadTimeOffsData() {
             if (data.success) {
                 renderTimeOffsTable(data.timeOffs);
             } else {
+                console.error('Ошибка в данных отпусков:', data.message);
                 tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4" style="color: #dc3545;">Ошибка загрузки данных</td></tr>';
             }
         })
@@ -1181,6 +1254,7 @@ function loadTimeOffsData() {
 }
 
 function renderTimeOffsTable(timeOffs) {
+    console.log('Рендерим таблицу отпусков:', timeOffs);
     const tbody = document.getElementById('time-offs-tbody');
     
     if (timeOffs.length === 0) {
@@ -1202,7 +1276,9 @@ function renderTimeOffsTable(timeOffs) {
         cancelled: 'Отменено'
     };
     
-    tbody.innerHTML = timeOffs.map(timeOff => `
+    tbody.innerHTML = timeOffs.map(timeOff => {
+        console.log('Обрабатываем отпуск:', timeOff);
+        return `
         <tr>
             <td style="text-align: center;">${timeOff.user ? timeOff.user.name : 'Удаленный пользователь'}</td>
             <td style="text-align: center;">${typeNames[timeOff.type] || timeOff.type}</td>
@@ -1226,7 +1302,8 @@ function renderTimeOffsTable(timeOffs) {
                 </button>
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
 
 function formatDate(dateString) {
@@ -1752,6 +1829,19 @@ function showWarningOncePerMonth(message) {
     font-size: 32px;
     color: #007bff;
     opacity: 0.8;
+}
+
+/* Стили для контейнера уведомлений */
+#notification-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+#notification-container .notification {
+    pointer-events: auto;
 }
 </style>
 

@@ -31,6 +31,22 @@ class EmployeeTimeOff extends Model
     ];
 
     /**
+     * Получить дату начала в формате для HTML input
+     */
+    public function getStartDateInputAttribute()
+    {
+        return $this->start_date ? $this->start_date->format('Y-m-d') : null;
+    }
+
+    /**
+     * Получить дату окончания в формате для HTML input
+     */
+    public function getEndDateInputAttribute()
+    {
+        return $this->end_date ? $this->end_date->format('Y-m-d') : null;
+    }
+
+    /**
      * Связь с сотрудником
      */
     public function user()
