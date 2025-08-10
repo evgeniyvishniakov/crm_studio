@@ -1444,8 +1444,14 @@ return [
     'email_login' => 'Почта/Логин',
     'login' => 'Логин',
     'password' => 'Пароль',
+    'new_password' => 'Новый пароль',
     'generate' => 'Сгенерировать',
     'registration_date' => 'Дата регистрации',
+    'leave_empty_to_keep_current' => 'Оставьте пустым, чтобы сохранить текущий',
+    'password_change_hint' => 'Введите новый пароль или оставьте поле пустым, чтобы не менять текущий пароль',
+    'password_changed' => 'пароль изменен',
+    'show_hide_password' => 'Показать пароль',
+    'hide_password' => 'Скрыть пароль',
     
     // Роли и доступы
     'roles_and_permissions' => 'Роли и Доступы',

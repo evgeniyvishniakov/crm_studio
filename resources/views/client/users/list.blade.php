@@ -203,8 +203,14 @@
                 <div class="form-group">
                     <label for="userPassword">{{ __('messages.password') }} *</label>
                     <div style="display:flex;gap:8px;align-items:center;">
-                        <input type="text" id="userPassword" name="password" required autocomplete="off" style="flex:1;">
+                        <input type="password" id="userPassword" name="password" required autocomplete="off" style="flex:1;">
                         <button type="button" class="btn-cancel" onclick="generateUserPassword()">{{ __('messages.generate') }}</button>
+                        <button type="button" class="btn-cancel" onclick="togglePasswordVisibility('userPassword')" title="{{ __('messages.show_hide_password') }}">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor" style="width: 16px; height: 16px;">
+                                <path d="M10 12a2 20 100-4 2 2 0 000 4z"/>
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <div class="form-group">
@@ -275,6 +281,20 @@
                         <option value="active">{{ __('messages.active') }}</option>
                         <option value="inactive">{{ __('messages.inactive') }}</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="editUserPassword">{{ __('messages.new_password') }}</label>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <input type="password" id="editUserPassword" name="password" autocomplete="new-password" style="flex:1;" placeholder="{{ __('messages.leave_empty_to_keep_current') }}">
+                        <button type="button" class="btn-cancel" onclick="generateEditUserPassword()">{{ __('messages.generate') }}</button>
+                        <button type="button" class="btn-cancel" onclick="togglePasswordVisibility('editUserPassword')" title="{{ __('messages.show_hide_password') }}">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor" style="width: 16px; height: 16px;">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <small class="form-text text-muted">{{ __('messages.password_change_hint') }}</small>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn-cancel" onclick="closeEditUserModal()">{{ __('messages.cancel') }}</button>

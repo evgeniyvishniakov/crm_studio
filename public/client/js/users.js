@@ -183,11 +183,19 @@ function updateUserCard(user) {
 }
 
 function openUserModal() {
+    // Очищаем все поля формы перед открытием
+    document.getElementById('addUserForm').reset();
+    // Очищаем ошибки
+    clearErrors('addUserForm');
     toggleModal('addUserModal', true);
 }
 
 function closeUserModal() {
     toggleModal('addUserModal', false);
+    // Очищаем все поля формы
+    document.getElementById('addUserForm').reset();
+    // Очищаем ошибки
+    clearErrors('addUserForm');
 }
 
 function generateUserPassword() {
@@ -195,6 +203,44 @@ function generateUserPassword() {
     let pass = '';
     for (let i = 0; i < 10; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
     document.getElementById('userPassword').value = pass;
+}
+
+// Функция для генерации пароля при редактировании
+function generateEditUserPassword() {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+    let pass = '';
+    for (let i = 0; i < 10; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    document.getElementById('editUserPassword').value = pass;
+}
+
+// Функция для переключения видимости пароля
+function togglePasswordVisibility(fieldId) {
+    const field = document.getElementById(fieldId);
+    const button = event.target.closest('button');
+    
+    if (field && button) {
+        if (field.type === 'password') {
+            field.type = 'text';
+            // Меняем иконку на "скрыть"
+            button.innerHTML = `
+                <svg class="icon" viewBox="0 0 20 20" fill="currentColor" style="width: 16px; height: 16px;">
+                    <path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414l14 14a1 1 0 001.414-1.414l-1.473-1.473A10.014 10.014 0 0019.542 10C18.268 5.943 14.478 3 10 3a9.958 9.958 0 00-4.512 1.074l-1.78-1.781zm4.261 4.26l1.514 1.515a2.003 2.003 0 012.45 2.45l1.514 1.514a4 4 0 00-5.478-5.478z" clip-rule="evenodd"/>
+                    <path d="M12.454 16.697L9.75 13.992a4 4 0 01-3.742-3.741L2.335 6.578A9.98 9.98 0 00.458 10c1.274 4.057 5.065 7 9.542 7 .847 0 1.669-.105 2.454-.303z"/>
+                </svg>
+            `;
+            button.title = 'Скрыть пароль';
+        } else {
+            field.type = 'password';
+            // Возвращаем иконку "показать"
+            button.innerHTML = `
+                <svg class="icon" viewBox="0 0 20 20" fill="currentColor" style="width: 16px; height: 16px;">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                </svg>
+            `;
+            button.title = 'Показать пароль';
+        }
+    }
 }
 
 function showErrors(errors, formId = 'addUserForm') {
@@ -412,6 +458,7 @@ function openEditUserModal(user) {
     document.getElementById('editUserEmail').value = user.email || '';
     document.getElementById('editUserRole').value = user.role;
     document.getElementById('editUserStatus').value = user.status;
+    document.getElementById('editUserPassword').value = ''; // Очищаем поле пароля
 
     // Отображение текущей аватарки
     const currentAvatarDiv = document.getElementById('currentAvatar');
@@ -451,6 +498,25 @@ function openEditUserModal(user) {
 
 function closeEditUserModal() {
     toggleModal('editUserModal', false);
+    // Очищаем все поля формы
+    document.getElementById('editUserForm').reset();
+    // Очищаем ошибки
+    clearErrors('editUserForm');
+    // Скрываем текущую аватарку
+    const currentAvatarDiv = document.getElementById('currentAvatar');
+    if (currentAvatarDiv) {
+        currentAvatarDiv.style.display = 'none';
+    }
+    // Убираем блокировку для admin
+    const usernameField = document.getElementById('editUserUsername');
+    const roleField = document.getElementById('editUserRole');
+    const submitButton = document.querySelector('#editUserForm .btn-submit');
+    if (usernameField) usernameField.removeAttribute('readonly');
+    if (roleField) roleField.removeAttribute('disabled');
+    if (submitButton) submitButton.removeAttribute('disabled');
+    // Убираем поясняющее сообщение
+    const adminEditNote = document.getElementById('adminEditNote');
+    if (adminEditNote) adminEditNote.remove();
 }
 
 
@@ -592,7 +658,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Обновить мобильную карточку
                 updateUserCard(user);
                 closeEditUserModal();
-                window.showNotification('success', 'Пользователь успешно обновлен');
+                
+                // Проверяем, был ли изменен пароль
+                const passwordField = document.getElementById('editUserPassword');
+                const passwordChanged = passwordField && passwordField.value.trim() !== '';
+                
+                let message = 'Пользователь успешно обновлен';
+                if (passwordChanged) {
+                    message += ' (пароль изменен)';
+                }
+                
+                window.showNotification('success', message);
             } else {
                 window.showNotification('error', data.message || 'Ошибка при обновлении пользователя');
             }

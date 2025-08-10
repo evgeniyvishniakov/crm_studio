@@ -1388,8 +1388,14 @@ return [
     'email_login' => 'Пошта/Логін',
     'login' => 'Логін',
     'password' => 'Пароль',
+    'new_password' => 'Новий пароль',
     'generate' => 'Згенерувати',
     'registration_date' => 'Дата реєстрації',
+    'leave_empty_to_keep_current' => 'Залиште порожнім, щоб зберегти поточний',
+    'password_change_hint' => 'Введіть новий пароль або залиште поле порожнім, щоб не змінювати поточний пароль',
+    'password_changed' => 'пароль змінено',
+    'show_hide_password' => 'Показати пароль',
+    'hide_password' => 'Приховати пароль',
     
     // Ролі та доступы
     'roles_and_permissions' => 'Ролі та Доступи',

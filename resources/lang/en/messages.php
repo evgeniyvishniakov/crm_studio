@@ -1268,8 +1268,14 @@ return [
     'email_login' => 'Email/Login',
     'login' => 'Login',
     'password' => 'Password',
+    'new_password' => 'New Password',
     'generate' => 'Generate',
     'registration_date' => 'Registration Date',
+    'leave_empty_to_keep_current' => 'Leave empty to keep current',
+    'password_change_hint' => 'Enter new password or leave field empty to keep current password',
+    'password_changed' => 'password changed',
+    'show_hide_password' => 'Show Password',
+    'hide_password' => 'Hide Password',
     
     // Roles and Permissions
     'roles_and_permissions' => 'Roles and Permissions',

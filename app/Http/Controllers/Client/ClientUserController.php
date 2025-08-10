@@ -206,6 +206,7 @@ class ClientUserController extends Controller
                 'regex:/^[a-zA-Z0-9]+$/',
             ],
             'email' => 'nullable|email|max:255',
+            'password' => 'nullable|string|min:6',
             'role' => [
                 'required',
                 'string',
@@ -220,15 +221,23 @@ class ClientUserController extends Controller
         ], [
             'username.regex' => 'Логин может содержать только латинские буквы и цифры.',
             'username.min' => 'Логин должен быть не менее 6 символов.',
+            'password.min' => 'Пароль должен быть не менее 6 символов.',
         ]);
         try {
-            $userModel->update([
+            $updateData = [
                 'name' => $validated['name'],
                 'username' => $validated['username'],
                 'email' => $validated['email'] ?? null,
                 'role' => $validated['role'],
                 'status' => $validated['status'],
-            ]);
+            ];
+            
+            // Если указан новый пароль, обновляем его
+            if (!empty($validated['password'])) {
+                $updateData['password'] = bcrypt($validated['password']);
+            }
+            
+            $userModel->update($updateData);
             // Логирование обновления пользователя (если таблица существует)
             try {
                 SystemLog::create([
@@ -247,6 +256,7 @@ class ClientUserController extends Controller
                         'role' => $userModel->role,
                         'status' => $userModel->status,
                         'project_id' => $userModel->project_id,
+                        'password_changed' => !empty($validated['password']),
                     ]),
                 ]);
             } catch (\Exception $logError) {
