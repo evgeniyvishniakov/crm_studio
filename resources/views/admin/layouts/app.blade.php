@@ -14,6 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('admin/main.css') }}" rel="stylesheet">
+    <link href="{{ asset('client/css/notifications.css') }}" rel="stylesheet">
     
     <!-- Стили для узкого скроллбара админ панель -->
     <style>
@@ -62,11 +63,27 @@
             padding-left: 12px !important;
             padding-right: 12px !important;
         }
+        
+        /* Стили для контейнера уведомлений */
+        #notification-container {
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        
+        #notification-container .notification {
+            pointer-events: auto;
+        }
     </style>
     
     @stack('styles')
 </head>
 <body>
+    <!-- Контейнер для уведомлений -->
+    <div id="notification-container"></div>
+    
     <!-- Sidebar -->
     @include('admin.components.sidebar')
     
@@ -83,6 +100,7 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('admin/main.js') }}"></script>
+    <script src="{{ asset('client/js/notifications.js') }}"></script>
     
     @stack('scripts')
 </body>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест уведомлений</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="client/css/notifications.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .test-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-error { background-color: #dc3545; color: white; }
+        .btn-warning { background-color: #ffc107; color: black; }
+        .btn-info { background-color: #17a2b8; color: white; }
+        .btn-success:hover { background-color: #218838; }
+        .btn-error:hover { background-color: #c82333; }
+        .btn-warning:hover { background-color: #e0a800; }
+        .btn-info:hover { background-color: #138496; }
+        
+        .description {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="description">
+        <h1>Тест системы уведомлений</h1>
+        <p>Эта страница демонстрирует работу красивых уведомлений с анимацией, которые теперь доступны на всех страницах CRM Studio.</p>
+        <p><strong>Особенности:</strong></p>
+        <ul>
+            <li>Уведомления выезжают справа с плавной анимацией</li>
+            <li>При появлении нового уведомления, предыдущие поднимаются вверх</li>
+            <li>Автоматическое скрытие через 5 секунд</li>
+            <li>Возможность закрыть вручную</li>
+            <li>4 типа уведомлений: success, error, warning, info</li>
+        </ul>
+    </div>
+
+    <div class="test-buttons">
+        <button class="test-button btn-success" onclick="showNotification('success', 'Операция выполнена успешно!')">
+            Success
+        </button>
+        <button class="test-button btn-error" onclick="showNotification('error', 'Произошла ошибка при выполнении операции')">
+            Error
+        </button>
+        <button class="test-button btn-warning" onclick="showNotification('warning', 'Внимание! Проверьте введенные данные')">
+            Warning
+        </button>
+        <button class="test-button btn-info" onclick="showNotification('info', 'Информационное сообщение для пользователя')">
+            Info
+        </button>
+        <button class="test-button" onclick="showMultipleNotifications()">
+            Показать несколько
+        </button>
+    </div>
+
+    <!-- Контейнер для уведомлений -->
+    <div id="notification-container"></div>
+
+    <script src="client/js/notifications.js"></script>
+    <script>
+        function showMultipleNotifications() {
+            setTimeout(() => showNotification('success', 'Первое уведомление'), 100);
+            setTimeout(() => showNotification('info', 'Второе уведомление'), 300);
+            setTimeout(() => showNotification('warning', 'Третье уведомление'), 600);
+            setTimeout(() => showNotification('error', 'Четвертое уведомление'), 900);
+        }
+    </script>
+</body>
+</html>

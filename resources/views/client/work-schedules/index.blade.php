@@ -5,9 +5,6 @@
 @section('content')
 
 <div class="dashboard-container">
-    <!-- Контейнер для уведомлений -->
-    <div id="notification-container"></div>
-    
     <div class="settings-header">
         <h1>График работы</h1>
     </div>
@@ -432,64 +429,7 @@
 
 @push('scripts')
 <script>
-// Функция для показа уведомлений
-function showNotification(type, message) {
-    const container = document.getElementById('notification-container');
-    if (!container) return;
-    
-    // Создаем элемент уведомления
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    
-    // Определяем иконку в зависимости от типа
-    let icon = '';
-    switch(type) {
-        case 'success':
-            icon = '<i class="fas fa-check-circle notification-icon"></i>';
-            break;
-        case 'error':
-            icon = '<i class="fas fa-exclamation-circle notification-icon"></i>';
-            break;
-        case 'warning':
-            icon = '<i class="fas fa-exclamation-triangle notification-icon"></i>';
-            break;
-        case 'info':
-            icon = '<i class="fas fa-info-circle notification-icon"></i>';
-            break;
-        default:
-            icon = '<i class="fas fa-bell notification-icon"></i>';
-    }
-    
-    // HTML уведомления
-    notification.innerHTML = `
-        ${icon}
-        <span>${message}</span>
-        <button class="notification-close" onclick="this.parentElement.remove()">&times;</button>
-    `;
-    
-    // Добавляем в контейнер
-    container.appendChild(notification);
-    
-    // Показываем уведомление
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 100);
-    
-    // Автоматически скрываем через 5 секунд
-    setTimeout(() => {
-        if (notification.parentElement) {
-            notification.classList.remove('show');
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
-                }
-            }, 800);
-        }
-    }, 5000);
-}
-
-// Делаем функцию доступной глобально
-window.showNotification = showNotification;
+// Используем общую функцию showNotification из notifications.js
 
 // Переводы и данные для JavaScript
 window.translations = {
@@ -537,6 +477,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (tabId === 'time-offs') {
                 loadTimeOffsData();
             }
+            // Загружаем актуальные данные при переходе на вкладку обзора
+            if (tabId === 'schedule-overview') {
+                refreshOverviewDataCompletely();
+            }
         });
     });
     
@@ -547,6 +491,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Загружаем данные для восстановленной вкладки
         if (savedTab === 'time-offs') {
             loadTimeOffsData();
+        }
+        if (savedTab === 'schedule-overview') {
+            refreshOverviewDataCompletely();
         }
     } else {
         // Если нет сохраненной вкладки, показываем первую (обзор)
@@ -565,6 +512,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Загружаем данные только если это не текущая неделя
     if (currentWeekOffset !== 0) {
         loadWeekSchedule();
+    }
+    
+    // Загружаем данные обзора при инициализации, если активна вкладка обзора
+    const activeTab = localStorage.getItem('workSchedules_activeTab') || 'schedule-overview';
+    if (activeTab === 'schedule-overview') {
+        refreshOverviewDataCompletely();
     }
     
     // Инициализируем настройки отображения статистики
@@ -699,6 +652,10 @@ function loadWeekSchedule() {
         .then(data => {
             if (data.success) {
                 updateOverviewScheduleTable(data.schedules);
+                // Обновляем статистику, если она есть в ответе
+                if (data.stats) {
+                    updateOverviewStats(data.stats);
+                }
                 if (data.warning) {
                     // Показываем предупреждение только раз в месяц
                     showWarningOncePerMonth(data.warning);
@@ -935,6 +892,12 @@ function refreshOverviewData() {
         .catch(error => {
             console.error('Ошибка обновления обзора:', error);
         });
+}
+
+// Функция для полного обновления данных обзора
+function refreshOverviewDataCompletely() {
+    // Обновляем расписание недели (это также обновит статистику)
+    loadWeekSchedule();
 }
 
 // Функция склонения слова "запись"
@@ -1222,7 +1185,8 @@ function saveTimeOff() {
         if (data.success) {
             window.showNotification('success', data.message);
             closeTimeOffModal();
-            loadTimeOffsData(); // Обновляем таблицу
+            loadTimeOffsData(); // Обновляем таблицу отпусков
+            refreshOverviewDataCompletely(); // Обновляем данные на вкладке "Обзор"
         } else {
             window.showNotification('error', data.message || 'Ошибка при сохранении');
         }
@@ -1326,7 +1290,8 @@ function deleteTimeOff(timeOffId) {
     .then(data => {
         if (data.success) {
             window.showNotification('success', data.message);
-            loadTimeOffsData(); // Обновляем таблицу
+            loadTimeOffsData(); // Обновляем таблицу отпусков
+            refreshOverviewDataCompletely(); // Обновляем данные на вкладке "Обзор"
         } else {
             window.showNotification('error', data.message || 'Ошибка при удалении');
         }
@@ -1831,18 +1796,7 @@ function showWarningOncePerMonth(message) {
     opacity: 0.8;
 }
 
-/* Стили для контейнера уведомлений */
-#notification-container {
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 9999;
-    pointer-events: none;
-}
 
-#notification-container .notification {
-    pointer-events: auto;
-}
 </style>
 
 <!-- Модальное окно для отпусков -->

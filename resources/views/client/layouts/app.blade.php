@@ -197,6 +197,19 @@
             margin-left: 250px !important;
         }
         
+        /* Стили для контейнера уведомлений */
+        #notification-container {
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        
+        #notification-container .notification {
+            pointer-events: auto;
+        }
+        
         .navbar .navbar-nav li > a {
             padding: 10px 0 !important; /* Уменьшаем вертикальные отступы */
             line-height: 20px !important; /* Уменьшаем высоту строки */
@@ -286,6 +299,9 @@
 </head>
 
 <body data-page="{{ request()->route()->getName() }}">
+
+<!-- Контейнер для уведомлений -->
+<div id="notification-container"></div>
 
 @php
     $user = auth()->user();

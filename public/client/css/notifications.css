@@ -34,6 +34,16 @@
     color: #10b759;
 }
 
+.notification.warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.notification.info {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
 .notification .notification-icon {
     width: 1.2em;
     height: 1.2em;
