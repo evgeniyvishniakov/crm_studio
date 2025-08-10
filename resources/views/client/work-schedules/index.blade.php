@@ -32,93 +32,51 @@
             <h5>Обзор графика работы</h5>
             
             <!-- Статистика -->
-            <div class="row">
-                <div class="col-xl-3 col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h5 class="text-muted fw-normal mt-0">Всего сотрудников</h5>
-                                    <h3 class="mt-3 mb-3">{{ $stats['total_employees'] ?? 0 }}</h3>
-                                </div>
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-soft-primary rounded">
-                                        <i class="mdi mdi-account-group font-20 text-primary"></i>
-                                    </span>
-                                </div>
-                            </div>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-text">
+                            <h5>Всего сотрудников</h5>
+                            <h3>{{ $stats['total_employees'] ?? 0 }}</h3>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h5 class="text-muted fw-normal mt-0">Работает сегодня</h5>
-                                    <h3 class="mt-3 mb-3">{{ $stats['working_today'] ?? 0 }}</h3>
-                                </div>
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-soft-success rounded">
-                                        <i class="mdi mdi-account-check font-20 text-success"></i>
-                                    </span>
-                                </div>
-                            </div>
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-text">
+                            <h5>Работает сегодня</h5>
+                            <h3>{{ $stats['working_today'] ?? 0 }}</h3>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-user-check"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h5 class="text-muted fw-normal mt-0">Записей на неделю</h5>
-                                    <h3 class="mt-3 mb-3">{{ $stats['appointments_this_week'] ?? 0 }}</h3>
-                                </div>
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-soft-info rounded">
-                                        <i class="mdi mdi-calendar-check font-20 text-info"></i>
-                                    </span>
-                                </div>
-                            </div>
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-text">
+                            <h5>Записей на неделю</h5>
+                            <h3>{{ $stats['appointments_this_week'] ?? 0 }}</h3>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h5 class="text-muted fw-normal mt-0">Часов на неделю</h5>
-                                    <h3 class="mt-3 mb-3">{{ $stats['hours_this_week'] ?? 0 }}</h3>
-                                </div>
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-soft-warning rounded">
-                                        <i class="mdi mdi-clock-outline font-20 text-warning"></i>
-                                    </span>
-                                </div>
-                            </div>
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <div class="stat-text">
+                            <h5>Предстоящие отпуска</h5>
+                            <h3>{{ $stats['upcoming_time_offs'] ?? 0 }}</h3>
                         </div>
-                    </div>
-                </div>
-
-                <div class="col-xl-3 col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h5 class="text-muted fw-normal mt-0">Предстоящие отпуска</h5>
-                                    <h3 class="mt-3 mb-3">{{ $stats['upcoming_time_offs'] ?? 0 }}</h3>
-                                </div>
-                                <div class="avatar-sm">
-                                    <span class="avatar-title bg-soft-purple rounded">
-                                        <i class="mdi mdi-umbrella-beach font-20 text-purple"></i>
-                                    </span>
-                                </div>
-                            </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-umbrella-beach"></i>
                         </div>
                     </div>
                 </div>
@@ -1494,7 +1452,7 @@ function showWarningOncePerMonth(message) {
     font-weight: 500;
     color: #374151;
     font-size: 14px;
-    min-width: 180px;
+    min-width: 140px;
     text-align: center;
 }
 
@@ -1746,6 +1704,54 @@ function showWarningOncePerMonth(message) {
     border: 1px solid #e1bee7;
     display: inline-block;
     cursor: help;
+}
+
+/* Стили для статистики */
+.stats-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    flex: 1;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: none;
+    transform: none;
+}
+
+.stat-card:hover {
+    transform: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.stat-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-text h5 {
+    margin: 0 0 10px 0;
+    color: #6c757d;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.stat-text h3 {
+    margin: 0;
+    color: #333;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.stat-icon {
+    font-size: 32px;
+    color: #007bff;
+    opacity: 0.8;
 }
 </style>
 

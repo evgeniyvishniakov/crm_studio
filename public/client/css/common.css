@@ -7306,9 +7306,6 @@ label {
     transition: transform 0.2s ease;
 }
 
-.stat-card:hover {
-    transform: translateY(-2px);
-}
 
 .stat-number {
     font-size: 28px;
