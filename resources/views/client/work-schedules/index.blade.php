@@ -19,9 +19,7 @@
         <button class="tab-button" data-tab="time-offs">
             <i class="fa fa-umbrella-beach" style="margin-right:8px;"></i>Нерабочее время
         </button>
-        <button class="tab-button" data-tab="schedule-reports">
-            <i class="fa fa-chart-line" style="margin-right:8px;"></i>Отчеты
-        </button>
+
     </div>
     
 
@@ -332,7 +330,6 @@
                             <th style="text-align: center;">Сотрудник</th>
                             <th style="text-align: center;">Тип</th>
                             <th style="text-align: center;">Период</th>
-    
                             <th style="text-align: center;">Статус</th>
                             <th style="text-align: center;">Действия</th>
                         </tr>
@@ -340,7 +337,7 @@
                     <tbody id="time-offs-tbody">
                         <!-- Данные будут загружены через AJAX -->
                         <tr>
-                            <td colspan="6" class="text-center py-4">
+                            <td colspan="5" class="text-center py-4">
                                 <i class="fas fa-spinner fa-spin"></i> Загрузка...
                             </td>
                         </tr>
@@ -349,26 +346,7 @@
             </div>
         </div>
 
-        <!-- Вкладка отчетов -->
-        <div class="settings-pane" id="tab-schedule-reports" style="display: none;">
-            <h5>Отчеты по работе</h5>
-            
-            <!-- Статистика по сотрудникам -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="header-title">Статистика рабочего времени</h4>
-                            <div class="text-center py-5">
-                                <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
-                                <h5>Отчеты в разработке</h5>
-                                <p class="text-muted">Детальные отчеты по рабочему времени будут доступны в следующей версии</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
 </div>
 
@@ -1200,7 +1178,7 @@ function saveTimeOff() {
 
 function loadTimeOffsData() {
     const tbody = document.getElementById('time-offs-tbody');
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Загрузка...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Загрузка...</td></tr>';
     
     fetch(`{{ route('work-schedules.time-offs.index') }}`)
         .then(response => response.json())
@@ -1209,12 +1187,12 @@ function loadTimeOffsData() {
                 renderTimeOffsTable(data.timeOffs);
             } else {
                 console.error('Ошибка в данных отпусков:', data.message);
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4" style="color: #dc3545;">Ошибка загрузки данных</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4" style="color: #dc3545;">Ошибка загрузки данных</td></tr>';
             }
         })
         .catch(error => {
             console.error('Ошибка загрузки отпусков:', error);
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4" style="color: #dc3545;">Ошибка загрузки данных</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4" style="color: #dc3545;">Ошибка загрузки данных</td></tr>';
         });
 }
 
@@ -1223,7 +1201,7 @@ function renderTimeOffsTable(timeOffs) {
     const tbody = document.getElementById('time-offs-tbody');
     
     if (timeOffs.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4" style="color: #6c757d; font-style: italic;">Нет данных об отсутствиях</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4" style="color: #6c757d; font-style: italic;">Нет данных об отсутствиях</td></tr>';
         return;
     }
     
@@ -1272,7 +1250,12 @@ function renderTimeOffsTable(timeOffs) {
 }
 
 function formatDate(dateString) {
-    return new Date(dateString).toLocaleDateString('ru-RU');
+    try {
+        return new Date(dateString).toLocaleDateString('ru-RU');
+    } catch (error) {
+        console.error('Ошибка форматирования даты:', error, dateString);
+        return dateString || 'Неизвестная дата';
+    }
 }
 
 function deleteTimeOff(timeOffId) {
@@ -1700,11 +1683,6 @@ function showWarningOncePerMonth(message) {
 /* Стили для select */
 .form-group select.form-control {
     cursor: pointer;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 12px center;
-    background-repeat: no-repeat;
-    background-size: 16px;
-    padding-right: 40px;
 }
 
 /* Стили для действий формы */
@@ -1736,6 +1714,25 @@ function showWarningOncePerMonth(message) {
 .text-purple {
     color: #7b1fa2 !important;
 }
+
+/* Стили для таблицы отпусков */
+#timeOffsTable {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#timeOffsTable th,
+#timeOffsTable td {
+    padding: 12px 8px;
+    vertical-align: middle;
+    word-wrap: break-word;
+}
+
+#timeOffsTable th:nth-child(1) { width: 25%; } /* Сотрудник */
+#timeOffsTable th:nth-child(2) { width: 20%; } /* Тип */
+#timeOffsTable th:nth-child(3) { width: 25%; } /* Период */
+#timeOffsTable th:nth-child(4) { width: 15%; } /* Статус */
+#timeOffsTable th:nth-child(5) { width: 15%; } /* Действия */
 
 /* Стили для статусов отпусков в таблице расписания (как было) */
 .time-off-status {
@@ -1971,11 +1968,48 @@ function showWarningOncePerMonth(message) {
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
+.btn-submit {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.btn-submit:hover {
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
 .btn-edit svg,
 .btn-delete svg,
-.btn-primary svg {
+.btn-primary svg,
+.btn-submit svg {
     width: 16px;
     height: 16px;
+}
+
+/* Стили для ячеек действий */
+.actions-cell {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    align-items: center;
+}
+
+.actions-cell .btn-edit,
+.actions-cell .btn-delete {
+    padding: 6px 10px;
+    font-size: 12px;
 }
 
 </style>
