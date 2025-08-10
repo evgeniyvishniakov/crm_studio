@@ -26,11 +26,11 @@ class PublicBookingController extends Controller
     public function show($slug)
     {
         // Находим проект по slug
-        $project = Project::where('booking_enabled', true)
-            ->get()
-            ->first(function($project) use ($slug) {
-                return $project->slug === $slug;
-            });
+        $project = Project::whereHas('bookingSettings', function($query) {
+            $query->where('booking_enabled', true);
+        })->get()->first(function($project) use ($slug) {
+            return $project->slug === $slug;
+        });
 
         if (!$project) {
             abort(404, 'Страница не найдена');
@@ -115,6 +115,21 @@ class PublicBookingController extends Controller
             ]);
         }
 
+        // Проверяем, не находится ли мастер в отпуске или больничном
+        $timeOff = \App\Models\EmployeeTimeOff::where('project_id', $projectId)
+            ->where('admin_user_id', $userId)
+            ->whereIn('status', ['approved', 'pending']) // Учитываем как одобренные, так и ожидающие
+            ->where('start_date', '<=', $date)
+            ->where('end_date', '>=', $date)
+            ->first();
+
+        if ($timeOff) {
+            return response()->json([
+                'success' => false,
+                'message' => "Мастер в этот день в отпуске: {$timeOff->type_text}"
+            ]);
+        }
+
         // Получаем UserService для проверки доступности
         $userService = \App\Models\Clients\UserService::where('user_id', $userId)
             ->where('service_id', $serviceId)
@@ -161,11 +176,11 @@ class PublicBookingController extends Controller
             'user_id' => 'required|integer'
         ]);
 
-        $project = Project::where('booking_enabled', true)
-            ->get()
-            ->first(function($project) use ($slug) {
-                return $project->slug === $slug;
-            });
+        $project = Project::whereHas('bookingSettings', function($query) {
+            $query->where('booking_enabled', true);
+        })->get()->first(function($project) use ($slug) {
+            return $project->slug === $slug;
+        });
 
         if (!$project) {
             return response()->json([
@@ -191,6 +206,61 @@ class PublicBookingController extends Controller
         return response()->json([
             'success' => true,
             'schedule' => $scheduleData
+        ]);
+    }
+
+    /**
+     * Получить недоступные даты для мастера (отпуска, больничные и т.д.)
+     */
+    public function getUnavailableDates(Request $request, $slug)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|integer'
+        ]);
+
+        $project = Project::whereHas('bookingSettings', function($query) {
+            $query->where('booking_enabled', true);
+        })->get()->first(function($project) use ($slug) {
+            return $project->slug === $slug;
+        });
+
+        if (!$project) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Проект не найден'
+            ]);
+        }
+
+        $userId = $validated['user_id'];
+        
+        // Получаем все отпуска, больничные и другие нерабочие дни для мастера
+        $timeOffs = \App\Models\EmployeeTimeOff::where('project_id', $project->id)
+            ->where('admin_user_id', $userId)
+            ->whereIn('status', ['approved', 'pending']) // Учитываем как одобренные, так и ожидающие
+            ->where('end_date', '>=', Carbon::today()) // Только будущие и текущие
+            ->get();
+        
+        $unavailableDates = [];
+        foreach ($timeOffs as $timeOff) {
+            $startDate = Carbon::parse($timeOff->start_date);
+            $endDate = Carbon::parse($timeOff->end_date);
+            
+            // Добавляем все даты в диапазоне
+            $currentDate = $startDate->copy();
+            while ($currentDate->lte($endDate)) {
+                $unavailableDates[] = [
+                    'date' => $currentDate->format('Y-m-d'),
+                    'type' => $timeOff->type,
+                    'reason' => $timeOff->reason,
+                    'type_text' => $timeOff->type_text
+                ];
+                $currentDate->addDay();
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'unavailable_dates' => $unavailableDates
         ]);
     }
 
@@ -255,6 +325,21 @@ class PublicBookingController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => __('messages.time_already_booked')
+                ], 422);
+            }
+
+            // Проверяем, не находится ли мастер в отпуске или больничном
+            $timeOff = \App\Models\EmployeeTimeOff::where('project_id', $project->id)
+                ->where('admin_user_id', $validated['user_id'])
+                ->whereIn('status', ['approved', 'pending']) // Учитываем как одобренные, так и ожидающие
+                ->where('start_date', '<=', $validated['date'])
+                ->where('end_date', '>=', $validated['date'])
+                ->first();
+
+            if ($timeOff) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Мастер в этот день в отпуске: {$timeOff->type_text}"
                 ], 422);
             }
 

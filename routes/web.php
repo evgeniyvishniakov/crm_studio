@@ -27,5 +27,6 @@ Route::prefix('book')->name('public.booking.')->group(function () {
     Route::get('/{slug}', [\App\Http\Controllers\PublicBookingController::class, 'show'])->name('show');
     Route::post('/{slug}/slots', [\App\Http\Controllers\PublicBookingController::class, 'getAvailableSlots'])->name('slots');
     Route::post('/{slug}/schedule', [\App\Http\Controllers\PublicBookingController::class, 'getMasterSchedule'])->name('schedule');
+    Route::post('/{slug}/unavailable-dates', [\App\Http\Controllers\PublicBookingController::class, 'getUnavailableDates'])->name('unavailable-dates');
     Route::post('/{slug}/store', [\App\Http\Controllers\PublicBookingController::class, 'store'])->name('store');
 });

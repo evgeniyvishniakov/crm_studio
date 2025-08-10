@@ -17,7 +17,7 @@
             <i class="fa fa-calendar-alt" style="margin-right:8px;"></i>Расписание
         </button>
         <button class="tab-button" data-tab="time-offs">
-            <i class="fa fa-umbrella-beach" style="margin-right:8px;"></i>Отпуска
+            <i class="fa fa-umbrella-beach" style="margin-right:8px;"></i>Нерабочее время
         </button>
         <button class="tab-button" data-tab="schedule-reports">
             <i class="fa fa-chart-line" style="margin-right:8px;"></i>Отчеты
@@ -71,10 +71,10 @@
 
                 <div class="stat-card">
                     <div class="stat-content">
-                        <div class="stat-text">
-                            <h5>Предстоящие отпуска</h5>
-                            <h3>{{ $stats['upcoming_time_offs'] ?? 0 }}</h3>
-                        </div>
+                                        <div class="stat-text">
+                    <h5>Предстоящие отсутствия</h5>
+                    <h3>{{ $stats['upcoming_time_offs'] ?? 0 }}</h3>
+                </div>
                         <div class="stat-icon">
                             <i class="fas fa-umbrella-beach"></i>
                         </div>
@@ -214,11 +214,11 @@
                 </div>
             </div>
 
-            <!-- Предстоящие отпуска -->
+            <!-- Предстоящие отсутствия -->
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="header-title">Предстоящие отпуска</h4>
+                        <h4 class="header-title">Предстоящие отсутствия</h4>
                     </div>
 
                     @if($upcomingTimeOffs->count() > 0)
@@ -254,7 +254,7 @@
                     @else
                         <div class="text-center py-4">
                             <i class="mdi mdi-information-outline text-muted" style="font-size: 48px;"></i>
-                            <p class="text-muted mt-2">Нет предстоящих отпусков</p>
+                            <p class="text-muted mt-2">Нет предстоящих отсутствий</p>
                         </div>
                     @endif
                 </div>
@@ -322,9 +322,9 @@
         <!-- Вкладка отпусков -->
         <div class="settings-pane" id="tab-time-offs" style="display: none;">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5>Управление отпусками</h5>
+                <h5>Управление нерабочим временем</h5>
                 <button class="btn btn-primary" onclick="showTimeOffModal()">
-                    <i class="fa fa-plus"></i> Добавить отпуск
+                    <i class="fa fa-plus"></i> Добавить отсутствие
                 </button>
             </div>
 
@@ -422,7 +422,7 @@
         </div>
         <div class="form-actions">
             <button type="button" class="btn-cancel" onclick="closeScheduleModal()">Отмена</button>
-            <button type="button" class="btn-submit" onclick="saveScheduleDay()">Сохранить</button>
+            <button type="button" class="btn-primary" onclick="saveScheduleDay()">Сохранить</button>
         </div>
     </div>
 </div>
@@ -573,12 +573,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Escape') {
             const scheduleModal = document.getElementById('editScheduleModal');
             const timeOffModal = document.getElementById('timeOffModal');
+            const deleteTimeOffModal = document.getElementById('deleteTimeOffModal');
             
             if (scheduleModal && scheduleModal.style.display === 'block') {
                 closeScheduleModal();
             }
             if (timeOffModal && timeOffModal.style.display === 'block') {
                 closeTimeOffModal();
+            }
+            if (deleteTimeOffModal && deleteTimeOffModal.style.display === 'block') {
+                closeDeleteTimeOffModal();
             }
         }
     });
@@ -589,6 +593,16 @@ document.addEventListener('DOMContentLoaded', function() {
         timeOffModal.addEventListener('click', function(event) {
             if (event.target === timeOffModal) {
                 closeTimeOffModal();
+            }
+        });
+    }
+    
+    // Обработчик для закрытия модального окна удаления при клике вне его
+    const deleteTimeOffModal = document.getElementById('deleteTimeOffModal');
+    if (deleteTimeOffModal) {
+        deleteTimeOffModal.addEventListener('click', function(event) {
+            if (event.target === deleteTimeOffModal) {
+                closeDeleteTimeOffModal();
             }
         });
     }
@@ -940,7 +954,7 @@ function updateOverviewScheduleTable(schedules) {
         
         employeeSchedule.schedule.forEach(day => {
             if (day.status === 'time_off') {
-                // Отображение отпуска
+                // Отображение отсутствия
                 const typeNames = {
                     'vacation': 'Отпуск',
                     'sick_leave': 'Больничный',
@@ -1051,7 +1065,7 @@ function updateOverviewStats(stats) {
             statCards[3].textContent = stats.hours_this_week;
         }
         
-        // Предстоящие отпуска
+        // Предстоящие отсутствия
         if (stats.upcoming_time_offs !== undefined) {
             statCards[4].textContent = stats.upcoming_time_offs;
         }
@@ -1076,12 +1090,12 @@ function showTimeOffModal(timeOffId = null) {
     if (timeOffId) {
         // Режим редактирования
         console.log('Режим редактирования для ID:', timeOffId);
-        title.textContent = 'Редактировать отпуск';
+        title.textContent = 'Редактировать отсутствие';
         loadTimeOffData(timeOffId);
     } else {
         // Режим создания
-        console.log('Режим создания нового отпуска');
-        title.textContent = 'Добавить отпуск';
+        console.log('Режим создания нового отсутствия');
+        title.textContent = 'Добавить отсутствие';
         // Устанавливаем минимальную дату - сегодня
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('timeOffStartDate').min = today;
@@ -1116,7 +1130,7 @@ function loadTimeOffData(timeOffId) {
                 document.getElementById('timeOffReason').value = timeOff.reason || '';
             } else {
                 console.error('Ошибка в данных:', data.message);
-                window.showNotification('error', 'Ошибка загрузки данных отпуска');
+                window.showNotification('error', 'Ошибка загрузки данных отсутствия');
             }
         })
         .catch(error => {
@@ -1141,7 +1155,7 @@ function saveTimeOff() {
     }
     
     if (!type) {
-        window.showNotification('error', 'Выберите тип отпуска');
+                    window.showNotification('error', 'Выберите тип отсутствия');
         return;
     }
     
@@ -1222,7 +1236,7 @@ function renderTimeOffsTable(timeOffs) {
     const tbody = document.getElementById('time-offs-tbody');
     
     if (timeOffs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4" style="color: #6c757d; font-style: italic;">Нет данных об отпусках</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4" style="color: #6c757d; font-style: italic;">Нет данных об отсутствиях</td></tr>';
         return;
     }
     
@@ -1275,10 +1289,28 @@ function formatDate(dateString) {
 }
 
 function deleteTimeOff(timeOffId) {
-    if (!confirm('Вы уверены, что хотите удалить этот отпуск?')) {
-        return;
-    }
+    // Показываем модальное окно подтверждения
+    showDeleteTimeOffModal(timeOffId);
+}
+
+function showDeleteTimeOffModal(timeOffId) {
+    const modal = document.getElementById('deleteTimeOffModal');
+    const confirmBtn = document.getElementById('confirmDeleteTimeOff');
     
+            // Сохраняем ID отсутствия для удаления
+    confirmBtn.onclick = function() {
+        performDeleteTimeOff(timeOffId);
+    };
+    
+    modal.style.display = 'block';
+}
+
+function closeDeleteTimeOffModal() {
+    const modal = document.getElementById('deleteTimeOffModal');
+    modal.style.display = 'none';
+}
+
+function performDeleteTimeOff(timeOffId) {
     fetch(`{{ route('work-schedules.time-offs.index') }}/${timeOffId}`, {
         method: 'DELETE',
         headers: {
@@ -1292,6 +1324,7 @@ function deleteTimeOff(timeOffId) {
             window.showNotification('success', data.message);
             loadTimeOffsData(); // Обновляем таблицу отпусков
             refreshOverviewDataCompletely(); // Обновляем данные на вкладке "Обзор"
+            closeDeleteTimeOffModal(); // Закрываем модальное окно
         } else {
             window.showNotification('error', data.message || 'Ошибка при удалении');
         }
@@ -1499,41 +1532,45 @@ function showWarningOncePerMonth(message) {
 }
 
 .status-badge {
-    padding: 4px 8px;
-    border-radius: 12px;
+    padding: 5px 16px;
+    border-radius: 20px;
     font-size: 11px;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    text-align: center;
+    min-width: 100px;
 }
 
 .status-badge.status-pending {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeaa7;
+    background: linear-gradient(135deg, #eba70e 60%, #f3c138 100%);
+    color: #fff;
 }
 
 .status-badge.status-approved {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: linear-gradient(135deg, #4CAF50 60%, #56bb93 100%);
+    color: #fff;
 }
 
 .status-badge.status-rejected {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background: linear-gradient(135deg, #F44336 60%, #eb7171 100%);
+    color: #fff;
 }
 
 .status-badge.working {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
 }
 
 .status-badge.day-off {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+}
+
+.status-badge.status-cancelled {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
 }
 
 /* Стили для модального окна отпусков */
@@ -1598,109 +1635,109 @@ function showWarningOncePerMonth(message) {
     padding: 25px;
 }
 
-.time-off-form-group {
-    margin-bottom: 20px;
-}
-
-.time-off-form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: #374151;
-}
-
-.time-off-form-group input,
-.time-off-form-group select,
-.time-off-form-group textarea {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border-color 0.2s;
-}
-
-.time-off-form-group input:focus,
-.time-off-form-group select:focus,
-.time-off-form-group textarea:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.time-off-form-group textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
 .time-off-modal-footer {
     padding: 20px 25px;
     border-top: 1px solid #e5e7eb;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
 }
 
-.time-off-date-row {
-    display: flex;
-    gap: 15px;
-}
 
-.time-off-date-row .time-off-form-group {
-    flex: 1;
-}
-
-/* Стили для кнопки удаления */
-.btn-delete {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-    margin-left: 5px;
-    transition: background-color 0.2s;
-}
-
-.btn-delete:hover {
-    background-color: #c82333;
-}
-
-.btn-delete .icon {
-    width: 14px;
-    height: 14px;
-}
 
 /* Стили для статусов отпусков */
 .status-badge.status-pending {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeaa7;
+    background: linear-gradient(135deg, #eba70e 60%, #f3c138 100%);
+    color: #fff;
 }
 
 .status-badge.status-approved {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: linear-gradient(135deg, #4CAF50 60%, #56bb93 100%);
+    color: #fff;
 }
 
 .status-badge.status-rejected {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background: linear-gradient(135deg, #F44336 60%, #eb7171 100%);
+    color: #fff;
+}
+
+/* Стили для форм как в модуле Зарплата */
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+    font-size: 14px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+    color: #374151;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    background-color: #ffffff;
+}
+
+.form-control::placeholder {
+    color: #9ca3af;
+}
+
+.form-control:disabled {
+    background-color: #f9fafb;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+/* Специальные стили для textarea */
+.form-group textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+}
+
+/* Стили для select */
+.form-group select.form-control {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+/* Стили для действий формы */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
 }
 
 .status-badge.status-cancelled {
-    background-color: #e2e3e5;
-    color: #6c757d;
-    border: 1px solid #d6d8db;
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
 }
 
-/* Стили для отображения отпусков в таблице */
+/* Стили для отображения отпусков в таблице расписания (как было) */
 .schedule-time.time-off {
     background-color: #e3f2fd;
     color: #0d47a1;
@@ -1716,6 +1753,7 @@ function showWarningOncePerMonth(message) {
     color: #7b1fa2 !important;
 }
 
+/* Стили для статусов отпусков в таблице расписания (как было) */
 .time-off-status {
     font-size: 11px;
     padding: 1px 4px;
@@ -1796,6 +1834,174 @@ function showWarningOncePerMonth(message) {
     opacity: 0.8;
 }
 
+/* Стили для модального окна удаления */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    padding: 20px 20px 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.modal-header .close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-header .close:hover,
+.modal-header .close:focus {
+    color: #000;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-body p {
+    margin: 0 0 10px 0;
+    color: #555;
+    line-height: 1.5;
+}
+
+.modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.modal-footer {
+    padding: 15px 20px 20px 20px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-cancel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    background: linear-gradient(135deg, #6c757d, #868e96);
+    color: white;
+}
+
+.btn-cancel:hover {
+    background: linear-gradient(135deg, #5a6268, #6c757d);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.btn-delete {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    background: linear-gradient(135deg, #ef4444, #f87171);
+    color: white;
+}
+
+.btn-delete:hover {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-edit {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    color: white;
+}
+
+.btn-edit:hover {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.btn-edit svg,
+.btn-delete svg,
+.btn-primary svg {
+    width: 16px;
+    height: 16px;
+}
 
 </style>
 
@@ -1803,56 +2009,77 @@ function showWarningOncePerMonth(message) {
 <div id="timeOffModal" class="time-off-modal">
     <div class="time-off-modal-content">
         <div class="time-off-modal-header">
-            <h3 class="time-off-modal-title" id="timeOffModalTitle">Добавить отпуск</h3>
+                                <h3 class="time-off-modal-title" id="timeOffModalTitle">Добавить отсутствие</h3>
             <button class="time-off-modal-close" onclick="closeTimeOffModal()">&times;</button>
         </div>
         <div class="time-off-modal-body">
-            <form id="timeOffForm">
+                        <form id="timeOffForm">
                 <input type="hidden" id="timeOffId" name="time_off_id">
                 
-                <div class="time-off-form-group">
-                    <label for="timeOffEmployee">Сотрудник *</label>
-                    <select id="timeOffEmployee" name="employee_id" required>
-                        <option value="">Выберите сотрудника</option>
-                        @foreach($allEmployees as $employee)
-                            <option value="{{ $employee->id }}">
-                                {{ $employee->name }} ({{ config('roles.' . $employee->role, $employee->role) }})
-                            </option>
-                        @endforeach
-                    </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="timeOffEmployee">Сотрудник *</label>
+                        <select id="timeOffEmployee" name="employee_id" required class="form-control">
+                            <option value="">Выберите сотрудника</option>
+                            @foreach($allEmployees as $employee)
+                                <option value="{{ $employee->id }}">
+                                    {{ $employee->name }} ({{ config('roles.' . $employee->role, $employee->role) }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="timeOffType">Тип отсутствия *</label>
+                        <select id="timeOffType" name="type" required class="form-control">
+                            <option value="">Выберите тип</option>
+                            <option value="vacation">Отпуск</option>
+                            <option value="sick_leave">Больничный</option>
+                            <option value="personal_leave">Личный отпуск</option>
+                            <option value="unpaid_leave">Отпуск без содержания</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="time-off-form-group">
-                    <label for="timeOffType">Тип отпуска *</label>
-                    <select id="timeOffType" name="type" required>
-                        <option value="">Выберите тип</option>
-                        <option value="vacation">Отпуск</option>
-                        <option value="sick_leave">Больничный</option>
-                        <option value="personal_leave">Личный отпуск</option>
-                        <option value="unpaid_leave">Отпуск без содержания</option>
-                    </select>
-                </div>
-
-                <div class="time-off-date-row">
-                    <div class="time-off-form-group">
+                <div class="form-row">
+                    <div class="form-group">
                         <label for="timeOffStartDate">Дата начала *</label>
-                        <input type="date" id="timeOffStartDate" name="start_date" required>
+                        <input type="date" id="timeOffStartDate" name="start_date" required class="form-control">
                     </div>
-                    <div class="time-off-form-group">
+                    <div class="form-group">
                         <label for="timeOffEndDate">Дата окончания *</label>
-                        <input type="date" id="timeOffEndDate" name="end_date" required>
+                        <input type="date" id="timeOffEndDate" name="end_date" required class="form-control">
                     </div>
                 </div>
 
-                <div class="time-off-form-group">
+                <div class="form-group">
                     <label for="timeOffReason">Причина</label>
-                    <textarea id="timeOffReason" name="reason" placeholder="Опишите причину отпуска (необязательно)"></textarea>
+                    <textarea id="timeOffReason" name="reason" rows="3" class="form-control" placeholder="Опишите причину отсутствия (необязательно)"></textarea>
                 </div>
             </form>
         </div>
         <div class="time-off-modal-footer">
-            <button type="button" class="btn-cancel" onclick="closeTimeOffModal()">Отмена</button>
-            <button type="button" class="btn-submit" onclick="saveTimeOff()">Сохранить</button>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="closeTimeOffModal()">Отмена</button>
+                <button type="button" class="btn-primary" onclick="saveTimeOff()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <!-- Модальное окно подтверждения удаления отсутствия -->
+<div id="deleteTimeOffModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Подтверждение удаления отсутствия</h2>
+            <span class="close" onclick="closeDeleteTimeOffModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>Вы уверены, что хотите удалить это отсутствие?</p>
+            <p><strong>Внимание:</strong> Это действие нельзя отменить.</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeDeleteTimeOffModal()">Отмена</button>
+            <button type="button" class="btn-delete" id="confirmDeleteTimeOff">Удалить</button>
         </div>
     </div>
 </div>

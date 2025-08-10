@@ -947,6 +947,7 @@
         let selectedTime = null;
         let currentMonth = new Date();
         let masterSchedule = null; // Расписание выбранного мастера
+        let unavailableDates = []; // Недоступные даты (отпуска, больничные и т.д.)
         
                  // Инициализация
          document.addEventListener('DOMContentLoaded', function() {
@@ -1140,6 +1141,18 @@
                             isWorkingDay = false;
                         }
                         
+                        // Проверяем, не является ли день отпуском или больничным
+                        let isTimeOffDay = false;
+                        let timeOffReason = '';
+                        if (unavailableDates && unavailableDates.length > 0) {
+                            const dateStr = currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + String(currentDate.getDate()).padStart(2, '0');
+                            const timeOff = unavailableDates.find(item => item.date === dateStr);
+                            if (timeOff) {
+                                isTimeOffDay = true;
+                                timeOffReason = timeOff.type_text;
+                            }
+                        }
+                        
                         // Отладочная информация
         
                      
@@ -1151,6 +1164,7 @@
                                              const isAvailable = !isPast && 
                                                                 !isTooFarInFuture && 
                                                                 isWorkingDay && 
+                                                                !isTimeOffDay &&
                                                                 (isSameDay ? canBookSameDay : true);
                                              
                                              if (isAvailable) {
@@ -1176,6 +1190,8 @@
                                                      } else {
                                                          dayElement.title = 'Выходной день мастера';
                                                      }
+                                                 } else if (isTimeOffDay) {
+                                                     dayElement.title = `Отпуск: ${timeOffReason}`;
                                                  }
                                              }
                   } else {
@@ -1235,6 +1251,20 @@
                 }
             }
             
+            // --- ПРОВЕРКА: не является ли день отпуском или больничным ---
+            if (unavailableDates && unavailableDates.length > 0) {
+                const timeOff = unavailableDates.find(item => item.date === dateString);
+                if (timeOff) {
+                    alert(`В этот день мастер в отпуске: ${timeOff.type_text}!`);
+                    // Убираем выделение с дня, если он в отпуске
+                    const clickedDayElement = document.querySelector(`.calendar-day[data-date="${dateString}"]`);
+                    if (clickedDayElement) {
+                        clickedDayElement.classList.remove('selected');
+                    }
+                    return;
+                }
+            }
+            
             // Убираем выделение со всех дней
             document.querySelectorAll('.calendar-day').forEach(day => {
                 day.classList.remove('selected');
@@ -1282,11 +1312,24 @@
           }
          
                  function loadTimeSlots() {
-
-                selectedService,
-                selectedMaster,
-                selectedDate
-            });
+            // Проверяем, что все необходимые данные выбраны
+            if (!selectedService || !selectedMaster || !selectedDate) {
+                console.error('Missing required data:', {
+                    selectedService,
+                    selectedMaster,
+                    selectedDate
+                });
+                return;
+            }
+            
+            // Проверяем, не является ли выбранная дата отпуском
+            if (unavailableDates && unavailableDates.length > 0) {
+                const timeOff = unavailableDates.find(item => item.date === selectedDate);
+                if (timeOff) {
+                    alert(`В этот день мастер в отпуске: ${timeOff.type_text}!`);
+                    return;
+                }
+            }
             
             const timeSlotsContainer = document.getElementById('time-slots-container');
             const slotsDiv = document.getElementById('time-slots');
@@ -1315,12 +1358,27 @@
                 })
             })
                          .then(response => {
-
-                 if (!response.ok) {
-                     throw new Error(`HTTP error! status: ${response.status}`);
-                 }
-                 return response.json();
-             })
+                // Проверяем заголовок Content-Type
+                const contentType = response.headers.get('content-type');
+                
+                if (!response.ok) {
+                    // Если ответ не OK, пробуем получить текст для диагностики
+                    return response.text().then(text => {
+                        console.error('Error response text:', text);
+                        throw new Error(`HTTP error! status: ${response.status}, response: ${text.substring(0, 200)}`);
+                    });
+                }
+                
+                // Проверяем, что ответ действительно JSON
+                if (!contentType || !contentType.includes('application/json')) {
+                    return response.text().then(text => {
+                        console.error('Non-JSON response:', text);
+                        throw new Error('Server returned non-JSON response: ' + text.substring(0, 200));
+                    });
+                }
+                
+                return response.json();
+            })
                          .then(data => {
 
                 if (data.success) {
@@ -1413,7 +1471,8 @@
                 body: JSON.stringify(formData)
             })
             .then(response => {
-
+                // Проверяем заголовок Content-Type
+                const contentType = response.headers.get('content-type');
                 
                 if (!response.ok) {
                     // Если ответ не OK, пробуем получить текст для диагностики
@@ -1548,6 +1607,8 @@
               .then(data => {
                   if (data.success) {
                       masterSchedule = data.schedule;
+                      // Загружаем недоступные даты (отпуска, больничные)
+                      loadUnavailableDates(userId);
                       // Перерисовываем календарь с учетом расписания
                       renderCalendar();
                       // Проверяем доступность времени для всех дней месяца
@@ -1558,6 +1619,32 @@
               })
               .catch(error => {
                   console.error('Error loading master schedule:', error);
+              });
+          }
+
+          // Функция загрузки недоступных дат (отпуска, больничные и т.д.)
+          function loadUnavailableDates(userId) {
+              fetch('{{ route("public.booking.unavailable-dates", $project->slug) }}', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                  },
+                  body: JSON.stringify({
+                      user_id: userId
+                  })
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      unavailableDates = data.unavailable_dates;
+                      // Перерисовываем календарь с учетом недоступных дат
+                      renderCalendar();
+                  }
+              })
+              .catch(error => {
+                  console.error('Error loading unavailable dates:', error);
+                  unavailableDates = [];
               });
           }
           
@@ -1598,13 +1685,22 @@
                   
                   // Проверяем только будущие дни
                   if (date >= today) {
-                                             const dateStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+                      const dateStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
                       const dayOfWeek = date.getDay();
                       const ourDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
                       const schedule = masterSchedule ? masterSchedule[ourDayOfWeek] : null;
                       
-                      // Если есть расписание и мастер работает
-                      if (schedule && schedule.is_working) {
+                      // Проверяем, не является ли день отпуском
+                      let isTimeOffDay = false;
+                      if (unavailableDates && unavailableDates.length > 0) {
+                          const timeOff = unavailableDates.find(item => item.date === dateStr);
+                          if (timeOff) {
+                              isTimeOffDay = true;
+                          }
+                      }
+                      
+                      // Если есть расписание, мастер работает и не в отпуске
+                      if (schedule && schedule.is_working && !isTimeOffDay) {
                           checkDayAvailability(dateStr, selectedMaster, selectedService).then(available => {
                               const dayElement = document.querySelector(`[data-date="${dateStr}"]`);
                               if (dayElement && !available) {
@@ -1623,6 +1719,8 @@
                          function showSuccess(booking) {
             // Сбрасываем флаг отправки при успехе
             isSubmitting = false;
+            
+            console.log('Данные о записи:', booking);
             
             document.getElementById('step4').classList.remove('active');
             document.getElementById('success').classList.add('active');
