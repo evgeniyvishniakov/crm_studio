@@ -107,45 +107,6 @@
             <!-- Sidebar -->
             <div class="col-lg-4">
                 <div class="sticky-top" style="top: 2rem;">
-                    <!-- Article Info -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Информация о статье</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <strong>Категория:</strong>
-                                <span class="badge bg-primary ms-2">{{ $categories[$article->category] ?? $article->category }}</span>
-                            </div>
-                            
-                            @if($article->steps->count() > 0)
-                                <div class="mb-3">
-                                    <strong>Количество шагов:</strong>
-                                    <span class="badge bg-info ms-2">{{ $article->steps->count() }}</span>
-                                </div>
-                            @endif
-                            
-                            @if($article->tips->count() > 0)
-                                <div class="mb-3">
-                                    <strong>Полезных советов:</strong>
-                                    <span class="badge bg-warning ms-2">{{ $article->tips->count() }}</span>
-                                </div>
-                            @endif
-                            
-                            <div class="mb-3">
-                                <strong>Автор:</strong>
-                                <span class="text-muted ms-2">{{ $article->author }}</span>
-                            </div>
-                            
-                            <div class="mb-0">
-                                <strong>Дата публикации:</strong>
-                                <span class="text-muted ms-2">
-                                    {{ $article->published_at ? $article->published_at->format('d.m.Y') : $article->created_at->format('d.m.Y') }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Related Articles -->
                     <div class="card">
                         <div class="card-header">
