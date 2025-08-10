@@ -87,7 +87,7 @@ Route::get('/knowledge/{slug}', function ($slug) {
     ];
     
     return view('landing.pages.knowledge-article', compact('article', 'categories'));
-})->name('knowledge.show');
+})->name('beautyflow.knowledge.show');
 
 Route::post('/register', [RegisterController::class, 'store'])->name('beautyflow.register');
 

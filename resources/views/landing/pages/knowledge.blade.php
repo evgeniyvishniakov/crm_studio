@@ -101,7 +101,7 @@
                             </div>
                         </div>
                         <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                            <a href="{{ route('knowledge.show', $article->slug) }}" class="btn btn-outline-primary btn-sm">Читать статью</a>
+                            <a href="{{ route('beautyflow.knowledge.show', $article->slug) }}" class="btn btn-outline-primary btn-sm">Читать статью</a>
                         </div>
                     </div>
                 </div>

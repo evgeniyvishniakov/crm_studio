@@ -31,6 +31,16 @@
         border-radius: 4px; 
         padding: 4px; 
     }
+    
+    /* Стили для TinyMCE */
+    .tox-tinymce {
+        border: 1px solid #dee2e6 !important;
+        border-radius: 0.375rem !important;
+    }
+    
+    .step-content-editor {
+        min-height: 200px;
+    }
 </style>
 @endsection
 
@@ -141,7 +151,7 @@
                                             </div>
                                             <div class="mt-3">
                                                 <label class="form-label">Содержание шага <span class="text-danger">*</span></label>
-                                                <textarea class="form-control step-content" 
+                                                <textarea class="form-control step-content step-content-editor" 
                                                           name="steps[0][content]" 
                                                           rows="5" 
                                                           placeholder="Опишите шаг подробно..." 
@@ -270,9 +280,72 @@
 @endsection
 
 @push('scripts')
+<!-- TinyMCE - бесплатная версия -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.2/tinymce.min.js"></script>
 <script>
+// Проверка загрузки TinyMCE
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM загружен, проверяем TinyMCE...');
+    
+    // Ждем немного, чтобы TinyMCE успел загрузиться
+    setTimeout(() => {
+        if (typeof tinymce === 'undefined') {
+            console.error('TinyMCE не загружен после загрузки DOM!');
+        } else {
+            console.log('TinyMCE успешно загружен, версия:', tinymce.majorVersion);
+            
+            // Инициализируем TinyMCE для существующих полей
+            const existingEditors = document.querySelectorAll('.step-content-editor');
+            console.log('Найдено полей для инициализации:', existingEditors.length);
+            existingEditors.forEach(editor => {
+                initTinyMCE(editor);
+            });
+        }
+    }, 500);
+});
+
 let stepCounter = 1;
 let tipCounter = 1;
+
+// Инициализация TinyMCE для всех полей содержания шагов
+function initTinyMCE(element) {
+    console.log('Инициализация TinyMCE для элемента:', element);
+    
+    // Если передан DOM элемент, получаем его селектор
+    let selector = element;
+    if (element instanceof HTMLElement) {
+        if (element.id) {
+            selector = '#' + element.id;
+        } else {
+            // Создаем уникальный ID для элемента
+            element.id = 'tinymce-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            selector = '#' + element.id;
+        }
+    }
+    
+    console.log('Используемый селектор:', selector);
+    
+    tinymce.init({
+        selector: selector,
+        height: 200,
+        menubar: false,
+        plugins: [
+            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+            'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+        ],
+        toolbar: 'undo redo | blocks | ' +
+                'bold italic forecolor | alignleft aligncenter ' +
+                'alignright alignjustify | bullist numlist outdent indent | ' +
+                'removeformat | help',
+        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 14px; }',
+        branding: false,
+        promotion: false,
+                       setup: function(editor) {
+                   console.log('TinyMCE редактор создан:', editor.id);
+               }
+    });
+}
 
 function addStep() {
     const container = document.getElementById('steps-container');
@@ -304,7 +377,7 @@ function addStep() {
         </div>
         <div class="mt-3">
             <label class="form-label">Содержание шага <span class="text-danger">*</span></label>
-            <textarea class="form-control step-content" 
+            <textarea class="form-control step-content step-content-editor" 
                       name="steps[${stepCounter}][content]" 
                       rows="5" 
                       placeholder="Опишите шаг подробно..." 
@@ -313,11 +386,23 @@ function addStep() {
     `;
     container.appendChild(stepDiv);
     
+    // Инициализируем TinyMCE для нового поля
+    const newEditor = stepDiv.querySelector('.step-content-editor');
+    initTinyMCE(newEditor);
+    
     stepCounter++;
 }
 
 function removeStep(button) {
-    button.closest('.step-item').remove();
+    const stepItem = button.closest('.step-item');
+    const editor = stepItem.querySelector('.step-content-editor');
+    
+    // Удаляем редактор TinyMCE перед удалением элемента
+    if (editor && tinymce.get(editor.id)) {
+        tinymce.remove(editor.id);
+    }
+    
+    stepItem.remove();
 }
 
 function addTip() {
@@ -349,6 +434,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const descriptionInput = document.getElementById('description');
     const previewDiv = document.getElementById('preview');
     
+    // TinyMCE инициализируется автоматически в начале скрипта
+    
     function updatePreview() {
         const title = titleInput.value || 'Заголовок статьи';
         const description = descriptionInput.value || 'Описание статьи';
@@ -358,12 +445,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const stepItems = document.querySelectorAll('.step-item');
         stepItems.forEach((item, index) => {
             const stepTitle = item.querySelector('.step-title').value || `Шаг ${index + 1}`;
-            const stepContent = item.querySelector('.step-content').value || '';
+            const stepContent = item.querySelector('.step-content-editor');
+            
+            let contentText = '';
+            if (stepContent && tinymce.get(stepContent.id)) {
+                contentText = tinymce.get(stepContent.id).getContent({format: 'text'});
+            } else {
+                contentText = stepContent.value || '';
+            }
             
             stepsHtml += `
                 <li class="mb-2">
                     <strong>${stepTitle}</strong>
-                    <small class="text-muted d-block">${stepContent.length > 100 ? stepContent.substring(0, 100) + '...' : stepContent}</small>
+                    <small class="text-muted d-block">${contentText.length > 100 ? contentText.substring(0, 100) + '...' : contentText}</small>
                 </li>
             `;
         });
@@ -391,18 +485,9 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    titleInput.addEventListener('input', updatePreview);
-    descriptionInput.addEventListener('input', updatePreview);
+    
 
-    // Обновляем превью при изменении шагов и советов
-    document.addEventListener('input', function(e) {
-        if (e.target.classList.contains('step-title') || e.target.classList.contains('step-content') || e.target.classList.contains('tip-content')) {
-            updatePreview();
-        }
-    });
 
-    // Инициализация предварительного просмотра
-    updatePreview();
 });
 </script>
 @endpush
