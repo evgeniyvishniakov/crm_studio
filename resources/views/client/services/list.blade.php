@@ -30,6 +30,7 @@
                     <th>{{ __('messages.service_name') }}</th>
                     <th>{{ __('messages.service_price') }}</th>
                     <th>{{ __('messages.service_duration') }}</th>
+                    <th>{{ __('messages.service_status') }}</th>
                     <th class="actions-column">{{ __('messages.actions') }}</th>
                 </tr>
                 </thead>
@@ -79,6 +80,13 @@
                                 <span class="duration-label">{{ __('messages.minutes_short') }}</span>
                             </div>
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceStatus">{{ __('messages.service_status') }}</label>
+                        <select id="serviceStatus" name="status">
+                            <option value="1">{{ __('messages.service_active') }}</option>
+                            <option value="0">{{ __('messages.service_inactive') }}</option>
+                        </select>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeServiceModal()">{{ __('messages.cancel') }}</button>
@@ -136,6 +144,13 @@
                                 <span class="duration-label">{{ __('messages.minutes_short') }}</span>
                             </div>
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editServiceStatus">{{ __('messages.service_status') }}</label>
+                        <select id="editServiceStatus" name="status">
+                            <option value="1">{{ __('messages.service_active') }}</option>
+                            <option value="0">{{ __('messages.service_inactive') }}</option>
+                        </select>
                     </div>
                     <div class="form-actions">
                         <button type="button" class="btn-cancel" onclick="closeEditServiceModal()">{{ __('messages.cancel') }}</button>

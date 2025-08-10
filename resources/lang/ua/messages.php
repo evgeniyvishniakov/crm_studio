@@ -440,6 +440,8 @@ return [
     'service_duration' => 'Тривалість',
     'service_price' => 'Ціна',
     'service_status' => 'Статус',
+    'service_active' => 'Активна',
+    'service_inactive' => 'Неактивна',
     'active' => 'Активна',
     'inactive' => 'Неактивна',
     'edit' => 'Редагувати',

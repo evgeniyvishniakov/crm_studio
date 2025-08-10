@@ -226,6 +226,8 @@ return [
     'service_duration' => 'Длительность',
     'service_price' => 'Цена',
     'service_status' => 'Статус',
+    'service_active' => 'Активная',
+    'service_inactive' => 'Неактивная',
     'active' => 'Активна',
     'inactive' => 'Неактивна',
     'edit' => 'Редактировать',

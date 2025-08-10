@@ -15,7 +15,12 @@ class Service extends Model
         'name',
         'price',
         'duration',
+        'status',
         'project_id'
+    ];
+
+    protected $casts = [
+        'status' => 'boolean'
     ];
 
     // Связь с записями (appointments)

@@ -52,6 +52,7 @@ class ServiceController extends Controller
                 'price' => 'nullable|numeric|min:0',
                 'duration_hours' => 'nullable|integer|min:0|max:12',
                 'duration_minutes' => 'nullable|integer|min:0|max:59',
+                'status' => 'boolean',
             ], [
                 'name.required' => 'Поле "Название" обязательно для заполнения.',
                 'name.unique' => 'Услуга с таким названием уже существует.',
@@ -65,6 +66,7 @@ class ServiceController extends Controller
                 'name' => $validated['name'],
                 'price' => $validated['price'] ?? null,
                 'duration' => $duration,
+                'status' => $validated['status'] ?? true,
                 'project_id' => $currentProjectId,
             ]);
             return response()->json([
@@ -151,6 +153,7 @@ class ServiceController extends Controller
                 'price' => 'nullable|numeric|min:0',
                 'duration_hours' => 'nullable|integer|min:0|max:12',
                 'duration_minutes' => 'nullable|integer|min:0|max:59',
+                'status' => 'boolean',
             ], [
                 'name.required' => 'Поле "Название" обязательно для заполнения.',
                 'name.unique' => 'Услуга с таким названием уже существует.',
@@ -167,6 +170,7 @@ class ServiceController extends Controller
                 'name' => $validated['name'],
                 'price' => $validated['price'] ?? null,
                 'duration' => $duration,
+                'status' => $validated['status'] ?? true,
             ]);
             return response()->json([
                 'success' => true,

@@ -73,10 +73,11 @@ function createMobileCards(services = null) {
             const serviceId = row.id.split('-')[1];
             const cells = row.querySelectorAll('td');
             
-            if (cells.length >= 4) {
+            if (cells.length >= 5) {
                 const name = cells[0].textContent;
                 const price = cells[1].textContent;
                 const duration = cells[2].textContent;
+                const status = cells[3].textContent;
                 
                 const card = document.createElement('div');
                 card.className = 'service-card';
@@ -104,6 +105,17 @@ function createMobileCards(services = null) {
                                 Длительность:
                             </span>
                             <span class="service-info-value">${duration}</span>
+                        </div>
+                        <div class="service-info-item">
+                            <span class="service-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 12l2 2 4-4m6 2 0 11-18 0 9 9 0 0118 0z" clip-rule="evenodd" />
+                                </svg>
+                                Статус:
+                            </span>
+                            <span class="service-info-value">
+                                <span class="status-badge ${status.includes('Активная') ? 'active' : 'inactive'}">${status}</span>
+                            </span>
                         </div>
                     </div>
                     <div class="service-card-actions">
@@ -172,6 +184,17 @@ function createMobileCards(services = null) {
                                 Длительность:
                             </span>
                             <span class="service-info-value">${durationText}</span>
+                        </div>
+                        <div class="service-info-item">
+                            <span class="service-info-label">
+                                <svg viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 12l2 2 4-4m6 2 0 11-18 0 9 9 0 0118 0z" clip-rule="evenodd" />
+                                </svg>
+                                Статус:
+                            </span>
+                            <span class="service-info-value">
+                                <span class="status-badge ${service.status ? 'active' : 'inactive'}">${service.status ? 'Активная' : 'Неактивная'}</span>
+                            </span>
                         </div>
                     </div>
                 <div class="service-card-actions">
@@ -298,6 +321,9 @@ function openEditModal(serviceId) {
             const minutes = duration % 60;
             form.querySelector('[name="duration_hours"]').value = hours;
             form.querySelector('[name="duration_minutes"]').value = minutes;
+            
+            // Устанавливаем статус
+            form.querySelector('#editServiceStatus').value = service.status ? '1' : '0';
 
             const modal = document.getElementById('editServiceModal');
             if (modal) {
@@ -363,10 +389,17 @@ function renderServices(services) {
             durationText = '—';
         }
         
+                // Форматируем статус
+        const statusText = service.status ? 'Активная' : 'Неактивная';
+        const statusClass = service.status ? 'active' : 'inactive';
+        
         row.innerHTML = `
             <td>${service.name}</td>
-            <td class="currency-amount" data-amount="${service.price || ''}">${price}</td>
-            <td>${durationText}</td>
+        <td class="currency-amount" data-amount="${service.price || ''}">${price}</td>
+        <td>${durationText}</td>
+        <td class="status-cell">
+            <span class="status-badge ${statusClass}">${statusText}</span>
+        </td>
             <td class="actions-cell">
                 <button class="btn-edit" onclick="openEditModal(${service.id})">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -620,6 +653,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 durationText = '—';
                             }
                             row.cells[2].textContent = durationText;
+                            
+                            // Обновляем статус
+                            const statusText = data.service.status ? 'Активная' : 'Неактивная';
+                            const statusClass = data.service.status ? 'active' : 'inactive';
+                            const statusCell = row.cells[3];
+                            if (statusCell) {
+                                statusCell.innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+                            }
                         }
                         
                         // Также обновляем мобильную карточку
@@ -627,12 +668,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             const card = document.getElementById(`service-card-${data.service.id}`);
                             if (card) {
                                 const nameElement = card.querySelector('.service-name');
-                                const priceElement = card.querySelector('.service-info-item:first-child .info-value');
-                                const durationElement = card.querySelector('.service-info-item:last-child .info-value');
+                                const priceElement = card.querySelector('.service-info-item:nth-child(1) .service-info-value');
+                                const durationElement = card.querySelector('.service-info-item:nth-child(2) .service-info-value');
+                                const statusElement = card.querySelector('.service-info-item:nth-child(3) .service-info-value');
                                 
                                 if (nameElement) nameElement.textContent = data.service.name;
                                 if (priceElement) priceElement.textContent = price;
                                 if (durationElement) durationElement.textContent = durationText;
+                                if (statusElement) statusElement.textContent = statusText;
                             }
                         }
                     }

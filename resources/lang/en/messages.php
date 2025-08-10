@@ -422,6 +422,8 @@ return [
     'service_duration' => 'Duration',
     'service_price' => 'Price',
     'service_status' => 'Status',
+    'service_active' => 'Active',
+    'service_inactive' => 'Inactive',
     'active' => 'Active',
     'inactive' => 'Inactive',
     'edit' => 'Edit',
