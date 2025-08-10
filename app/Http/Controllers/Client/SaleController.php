@@ -11,15 +11,32 @@ use App\Models\Clients\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin\User;
+use Illuminate\Support\Facades\Validator;
 
 class SaleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            // Отключаем автоматическую обработку ошибок валидации
+            if ($request->isMethod('PUT') || $request->isMethod('PATCH')) {
+                $request->setLaravelSession(app('session.store'));
+            }
+            return $next($request);
+        });
+    }
     public function index(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         $query = Sale::with(['client', 'employee', 'items.product'])
             ->where('project_id', $currentProjectId)
             ->orderBy('date', 'desc');
+
+        // Если пользователь не админ, показываем только его продажи
+        if ($currentUser->role !== 'admin') {
+            $query->where('employee_id', $currentUser->id);
+        }
 
         if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
@@ -212,7 +229,23 @@ class SaleController extends Controller
 
     public function update(Request $request, Sale $sale)
     {
-        $validated = $request->validate([
+        $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
+        
+        // Проверяем доступ к проекту
+        if ($sale->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к продаже'], 403);
+        }
+        
+        // Если пользователь не админ, проверяем что это его продажа
+        if ($currentUser->role !== 'admin' && $sale->employee_id !== $currentUser->id) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к продаже'], 403);
+        }
+        
+        // Логируем входящие данные для отладки
+        \Log::info('Sale update request data:', $request->all());
+        
+        $validator = \Validator::make($request->all(), [
             'date' => 'required|date',
             'client_id' => 'required|exists:clients,id',
             'employee_id' => 'required|exists:admin_users,id',
@@ -224,76 +257,97 @@ class SaleController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
+        if ($validator->fails()) {
+            \Log::error('Sale validation failed:', $validator->errors()->toArray());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $validated = $validator->validated();
+
         DB::beginTransaction();
 
         try {
             // Получаем старые товары из продажи
-            $oldItems = $sale->items->keyBy(fn($i) => (string)$i->product_id);
-            $newItems = collect($validated['items'])->keyBy('product_id');
+            $oldItems = $sale->items->keyBy('id');
+            $newItems = collect($validated['items']);
+            $totalAmount = 0;
 
-            // 1. Обрабатываем новые и изменённые товары
-            foreach ($newItems as $productId => $item) {
-                $oldSaleItem = $oldItems[(string)$productId] ?? null;
-                $newQty = $item['quantity'];
-                $oldQty = $oldSaleItem ? $oldSaleItem->quantity : 0;
-
-                if ($oldQty) {
-                    if ($newQty > $oldQty) {
-                        $delta = $newQty - $oldQty;
-                        Warehouse::checkAvailability($productId, $delta, $sale->project_id);
-                        Warehouse::decreaseQuantity($productId, $delta, $sale->project_id);
-                    } elseif ($newQty < $oldQty) {
-                        $delta = $oldQty - $newQty;
-                        Warehouse::increaseQuantity($productId, $delta, $sale->project_id);
+            // 1. Обновляем существующие позиции и обрабатываем изменения количества
+            foreach ($newItems as $index => $item) {
+                $productId = $item['product_id'];
+                $newQty = (int)$item['quantity'];
+                
+                // Ищем существующую позицию по product_id
+                $existingItem = $sale->items->where('product_id', $productId)->first();
+                
+                if ($existingItem) {
+                    $oldQty = $existingItem->quantity;
+                    
+                    // Если количество изменилось, корректируем склад
+                    if ($newQty !== $oldQty) {
+                        if ($newQty > $oldQty) {
+                            // Увеличили количество - берем со склада
+                            $delta = $newQty - $oldQty;
+                            Warehouse::checkAvailability($productId, $delta, $sale->project_id);
+                            Warehouse::decreaseQuantity($productId, $delta, $sale->project_id);
+                        } else {
+                            // Уменьшили количество - возвращаем на склад
+                            $delta = $oldQty - $newQty;
+                            Warehouse::increaseQuantity($productId, $delta, $sale->project_id);
+                        }
                     }
-                    unset($oldItems[(string)$productId]);
+                    
+                    // Обновляем существующую позицию
+                    $existingItem->update([
+                        'wholesale_price' => $item['wholesale_price'],
+                        'retail_price' => $item['retail_price'],
+                        'quantity' => $newQty,
+                        'total' => $item['retail_price'] * $newQty
+                    ]);
+                    
+                    $totalAmount += $item['retail_price'] * $newQty;
+                    
+                    // Убираем из списка старых позиций
+                    $oldItems->forget($existingItem->id);
+                    
                 } else {
+                    // Новый товар - берем со склада
                     Warehouse::checkAvailability($productId, $newQty, $sale->project_id);
                     Warehouse::decreaseQuantity($productId, $newQty, $sale->project_id);
+                    
+                    // Создаем новую позицию
+                    SaleItem::create([
+                        'sale_id' => $sale->id,
+                        'product_id' => $productId,
+                        'wholesale_price' => $item['wholesale_price'],
+                        'retail_price' => $item['retail_price'],
+                        'quantity' => $newQty,
+                        'total' => $item['retail_price'] * $newQty,
+                        'project_id' => $sale->project_id,
+                    ]);
+                    
+                    $totalAmount += $item['retail_price'] * $newQty;
                 }
             }
 
-            // 2. Все товары, которые были в старой продаже, но их нет в новых — вернуть на склад
+            // 2. Удаляем позиции, которых больше нет в продаже, и возвращаем товары на склад
             foreach ($oldItems as $oldItem) {
                 Warehouse::increaseQuantity($oldItem->product_id, $oldItem->quantity, $sale->project_id);
+                $oldItem->delete();
             }
 
-            // 3. Обновить продажу
+            // 3. Обновляем основную информацию о продаже
             $sale->update([
                 'date' => $validated['date'],
                 'client_id' => $validated['client_id'],
                 'employee_id' => $validated['employee_id'],
                 'notes' => $validated['notes'] ?? null,
-                'total_amount' => 0
+                'total_amount' => $totalAmount
             ]);
-
-            // 4. Удалить старые позиции
-            $sale->items()->delete();
-
-            $totalAmount = 0;
-
-            // 5. Добавить новые позиции
-            foreach ($validated['items'] as $item) {
-                $oldSaleItem = $oldItems[(string)$item['product_id']] ?? null;
-                $warehouseItem = Warehouse::where('product_id', $item['product_id'])->first();
-                $product = \App\Models\Clients\Product::find($item['product_id']);
-                $wholesalePrice = $oldSaleItem ? $oldSaleItem->wholesale_price : ($warehouseItem ? $warehouseItem->purchase_price : ($product ? $product->purchase_price : 0));
-                $itemTotal = ($warehouseItem ? $warehouseItem->retail_price : ($product ? $product->retail_price : 0)) * $item['quantity'];
-                $totalAmount += $itemTotal;
-
-                SaleItem::create([
-                    'sale_id' => $sale->id,
-                    'product_id' => $item['product_id'],
-                    'wholesale_price' => $wholesalePrice,
-                    'retail_price' => $item['retail_price'],
-                    'quantity' => $item['quantity'],
-                    'total' => $itemTotal,
-                    'project_id' => $sale->project_id,
-                ]);
-            }
-
-            $sale->total_amount = $totalAmount;
-            $sale->save();
 
             // Подгружаем связи для корректного ответа
             $sale->load(['client', 'items.product']);
@@ -330,6 +384,19 @@ class SaleController extends Controller
 
     public function destroy(Sale $sale)
     {
+        $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
+        
+        // Проверяем доступ к проекту
+        if ($sale->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к продаже'], 403);
+        }
+        
+        // Если пользователь не админ, проверяем что это его продажа
+        if ($currentUser->role !== 'admin' && $sale->employee_id !== $currentUser->id) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к продаже'], 403);
+        }
+        
         DB::beginTransaction();
 
         try {
@@ -356,6 +423,19 @@ class SaleController extends Controller
     }
     public function edit(Sale $sale)
     {
+        $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
+        
+        // Проверяем доступ к проекту
+        if ($sale->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к продаже'], 403);
+        }
+        
+        // Если пользователь не админ, проверяем что это его продажа
+        if ($currentUser->role !== 'admin' && $sale->employee_id !== $currentUser->id) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к продаже'], 403);
+        }
+        
         try {
             $sale->load(['client', 'employee', 'items.product']);
             $clients = Client::select('id', 'name', 'instagram', 'phone', 'email')->get();
@@ -402,10 +482,24 @@ class SaleController extends Controller
     }
     public function deleteItem($sale, $item)
     {
+        $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
+        
         DB::beginTransaction();
 
         try {
             $sale = Sale::findOrFail($sale);
+            
+            // Проверяем доступ к проекту
+            if ($sale->project_id !== $currentProjectId) {
+                return response()->json(['success' => false, 'message' => 'Нет доступа к продаже'], 403);
+            }
+            
+            // Если пользователь не админ, проверяем что это его продажа
+            if ($currentUser->role !== 'admin' && $sale->employee_id !== $currentUser->id) {
+                return response()->json(['success' => false, 'message' => 'Нет доступа к продаже'], 403);
+            }
+            
             $saleItem = $sale->items()->findOrFail($item);
 
             // Возвращаем товар на склад

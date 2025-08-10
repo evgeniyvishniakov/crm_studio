@@ -199,6 +199,7 @@ function selectProduct(element, productName, productId) {
     const input = container.querySelector('.product-search-input');
     const select = container.querySelector('.product-select');
     const dropdown = container.querySelector('.product-dropdown');
+    const hiddenInput = container.querySelector('input[name*="product_id"]');
 
     input.value = productName;
     if (select) {
@@ -208,6 +209,12 @@ function selectProduct(element, productName, productId) {
         select.style.position = 'absolute';
         select.style.left = '-9999px';
     }
+    
+    // Обновляем скрытое поле product_id
+    if (hiddenInput) {
+        hiddenInput.value = productId;
+    }
+    
     dropdown.style.display = 'none';
 
     const product = allProducts.find(p => String(p.id) === String(productId));
@@ -356,7 +363,7 @@ function openEditSaleModal(id) {
                                             <div class="product-dropdown" style="display: none;">
                                                 <div class="product-dropdown-list"></div>
                                             </div>
-                                            <select name="items[0][product_id]" class="form-control product-select" style="display: none;"
+                                            <select class="form-control product-select" style="display: none;"
                                                     onchange="updateProductPrices(this)">
                                                 <option value="">${window.messages.select_product}</option>
                                                 ${window.allProducts ? window.allProducts.map(product => 
@@ -368,6 +375,8 @@ function openEditSaleModal(id) {
                                                     </option>`
                                                 ).join('') : ''}
                                             </select>
+                                            <!-- Скрытое поле для сохранения product_id -->
+                                            <input type="hidden" name="items[0][product_id]" value="">
                                         </div>
                                     </div>
                                     <div class="form-group price-field">
@@ -424,7 +433,7 @@ function openEditSaleModal(id) {
                                                 <div class="product-dropdown" style="display: none;">
                                                     <div class="product-dropdown-list"></div>
                                                 </div>
-                                                <select name="items[${index}][product_id]" class="form-control product-select" style="display: none;" onchange="updateProductPrices(this)">
+                                                <select class="form-control product-select" style="display: none;" onchange="updateProductPrices(this)">
                                                     <option value="">${window.messages.select_product}</option>
                                                     ${window.allProducts ? window.allProducts.map(product => 
                                                         `<option value="${product.id}"
@@ -436,6 +445,8 @@ function openEditSaleModal(id) {
                                                         </option>`
                                                     ).join('') : ''}
                                                 </select>
+                                                <!-- Скрытое поле для сохранения product_id -->
+                                                <input type="hidden" name="items[${index}][product_id]" value="${item.product_id}">
                                             </div>
                                         </div>
                                         <div class="form-group price-field">
@@ -592,8 +603,14 @@ function addItemRow(containerId = 'itemsContainer') {
         searchInput.value = '';
 
         const select = searchContainer.querySelector('.product-select');
-        select.name = `items[${newIndex}][product_id]`;
         select.selectedIndex = 0;
+        
+        // Обновляем имя скрытого поля product_id
+        const hiddenInput = searchContainer.querySelector('input[name*="product_id"]');
+        if (hiddenInput) {
+            hiddenInput.name = `items[${newIndex}][product_id]`;
+            hiddenInput.value = '';
+        }
         
         // Добавляем обработчик события change для автоматического заполнения цен
         select.addEventListener('change', function() {

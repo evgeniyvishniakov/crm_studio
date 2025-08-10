@@ -21,10 +21,19 @@ class AppointmentsController extends Controller
     public function index(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         $viewType = $request->get('view', 'list'); // list или calendar
 
-        $appointments = Appointment::with(['client', 'service', 'user'])
-            ->where('project_id', $currentProjectId)
+        // Базовый запрос для записей
+        $appointmentsQuery = Appointment::with(['client', 'service', 'user'])
+            ->where('project_id', $currentProjectId);
+
+        // Если пользователь не админ, показываем только его записи
+        if ($currentUser->role !== 'admin') {
+            $appointmentsQuery->where('user_id', $currentUser->id);
+        }
+
+        $appointments = $appointmentsQuery
             ->orderBy('date', 'desc')
             ->orderBy('time', 'desc')
             ->paginate(11);
@@ -170,7 +179,15 @@ class AppointmentsController extends Controller
             DB::beginTransaction();
 
             try {
-                $appointment = Appointment::with(['sales.items'])->findOrFail($id);
+                $query = Appointment::with(['sales.items'])->where('project_id', auth()->user()->project_id);
+                
+                // Если пользователь не админ, проверяем что это его запись
+                $currentUser = auth()->user();
+                if ($currentUser->role !== 'admin') {
+                    $query->where('user_id', $currentUser->id);
+                }
+                
+                $appointment = $query->findOrFail($id);
                 $oldClientId = $appointment->client_id;
                 
                 $duration = ($validated['duration_hours'] ?? 0) * 60 + ($validated['duration_minutes'] ?? 0);
@@ -278,8 +295,16 @@ class AppointmentsController extends Controller
     public function destroy($id)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         try {
-            $appointment = Appointment::with('sales.items')->where('project_id', $currentProjectId)->find($id);
+            $query = Appointment::with('sales.items')->where('project_id', $currentProjectId);
+            
+            // Если пользователь не админ, проверяем что это его запись
+            if ($currentUser->role !== 'admin') {
+                $query->where('user_id', $currentUser->id);
+            }
+            
+            $appointment = $query->find($id);
 
             if (!$appointment) {
                 return response()->json([
@@ -319,7 +344,14 @@ class AppointmentsController extends Controller
     public function edit(Appointment $appointment)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
+        
         if ($appointment->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
+        }
+        
+        // Если пользователь не админ, проверяем что это его запись
+        if ($currentUser->role !== 'admin' && $appointment->user_id !== $currentUser->id) {
             return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
         }
         try {
@@ -351,10 +383,17 @@ class AppointmentsController extends Controller
     public function view($id)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         try {
-            $appointment = Appointment::with(['client', 'service', 'sales.items.product', 'user'])
-                ->where('project_id', $currentProjectId)
-                ->findOrFail($id);
+            $query = Appointment::with(['client', 'service', 'sales.items.product', 'user'])
+                ->where('project_id', $currentProjectId);
+            
+            // Если пользователь не админ, показываем только его записи
+            if ($currentUser->role !== 'admin') {
+                $query->where('user_id', $currentUser->id);
+            }
+            
+            $appointment = $query->findOrFail($id);
 
             // Получаем только продажи, связанные с этой конкретной записью
             $saleItems = [];
@@ -412,7 +451,15 @@ class AppointmentsController extends Controller
             ]);
 
             return DB::transaction(function () use ($validated, $appointmentId, $currentProjectId) {
-                $appointment = Appointment::where('project_id', $currentProjectId)->findOrFail($appointmentId);
+                $query = Appointment::where('project_id', $currentProjectId);
+                
+                // Если пользователь не админ, проверяем что это его запись
+                $currentUser = auth()->user();
+                if ($currentUser->role !== 'admin') {
+                    $query->where('user_id', $currentUser->id);
+                }
+                
+                $appointment = $query->findOrFail($appointmentId);
                 $product = Product::with('warehouse')->where('project_id', $currentProjectId)->findOrFail($validated['product_id']);
 
                 // Проверка наличия товара
@@ -471,10 +518,17 @@ class AppointmentsController extends Controller
                 $appointment = $appointment->fresh(['client', 'service']);
 
                 // Получаем все продажи для этого клиента на эту дату
-                $sales = Sale::with(['items.product'])
+                $currentUser = auth()->user();
+                $salesQuery = Sale::with(['items.product'])
                     ->where('client_id', $appointment->client_id)
-                    ->whereDate('date', $appointment->date)
-                    ->get();
+                    ->whereDate('date', $appointment->date);
+                
+                // Если пользователь не админ, показываем только его продажи
+                if ($currentUser->role !== 'admin') {
+                    $salesQuery->where('employee_id', $currentUser->id);
+                }
+                
+                $sales = $salesQuery->get();
 
                 // Формируем список товаров для отображения
                 $saleItems = [];
@@ -528,8 +582,23 @@ class AppointmentsController extends Controller
     public function deleteProduct($appointmentId, $saleId)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         try {
-            return DB::transaction(function () use ($appointmentId, $saleId, $currentProjectId) {
+            return DB::transaction(function () use ($appointmentId, $saleId, $currentProjectId, $currentUser) {
+                // Проверяем доступ к записи
+                $appointment = Appointment::where('project_id', $currentProjectId)
+                    ->where('id', $appointmentId)
+                    ->first();
+                
+                if (!$appointment) {
+                    return response()->json(['success' => false, 'message' => 'Запись не найдена'], 404);
+                }
+                
+                // Если пользователь не админ, проверяем что это его запись
+                if ($currentUser->role !== 'admin' && $appointment->user_id !== $currentUser->id) {
+                    return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
+                }
+                
                 $sale = Sale::where('appointment_id', $appointmentId)
                     ->where('project_id', $currentProjectId)
                     ->findOrFail($saleId);
@@ -560,7 +629,13 @@ class AppointmentsController extends Controller
     public function addProcedure(Request $request, Appointment $appointment)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         if ($appointment->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
+        }
+        
+        // Если пользователь не админ, проверяем что это его запись
+        if ($currentUser->role !== 'admin' && $appointment->user_id !== $currentUser->id) {
             return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
         }
         try {
@@ -594,7 +669,13 @@ class AppointmentsController extends Controller
     public function removeProduct(Appointment $appointment, Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         if ($appointment->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
+        }
+        
+        // Если пользователь не админ, проверяем что это его запись
+        if ($currentUser->role !== 'admin' && $appointment->user_id !== $currentUser->id) {
             return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
         }
         $validated = $request->validate([
@@ -610,9 +691,17 @@ class AppointmentsController extends Controller
     public function calendarEvents(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         try {
-            $appointments = Appointment::with(['client', 'service'])
-                ->where('project_id', $currentProjectId)
+            $query = Appointment::with(['client', 'service'])
+                ->where('project_id', $currentProjectId);
+            
+            // Если пользователь не админ, показываем только его записи
+            if ($currentUser->role !== 'admin') {
+                $query->where('user_id', $currentUser->id);
+            }
+            
+            $appointments = $query
                 ->when($request->start, function($query) use ($request) {
                     return $query->whereDate('date', '>=', Carbon::parse($request->start));
                 })
@@ -668,7 +757,15 @@ class AppointmentsController extends Controller
     public function getEvents()
     {
         $currentProjectId = auth()->user()->project_id;
-        $appointments = Appointment::with(['client', 'service'])->where('project_id', $currentProjectId)->get();
+        $currentUser = auth()->user();
+        $query = Appointment::with(['client', 'service'])->where('project_id', $currentProjectId);
+        
+        // Если пользователь не админ, показываем только его записи
+        if ($currentUser->role !== 'admin') {
+            $query->where('user_id', $currentUser->id);
+        }
+        
+        $appointments = $query->get();
 
         $events = $appointments->map(function($appointment) {
             $start = $appointment->date->format('Y-m-d') . ' ' . $appointment->time;
@@ -698,10 +795,17 @@ class AppointmentsController extends Controller
     public function show($id)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         try {
-            $appointment = Appointment::with(['client', 'service', 'sales.items.product.warehouse'])
-                ->where('project_id', $currentProjectId)
-                ->findOrFail($id);
+            $query = Appointment::with(['client', 'service', 'sales.items.product.warehouse'])
+                ->where('project_id', $currentProjectId);
+            
+            // Если пользователь не админ, показываем только его записи
+            if ($currentUser->role !== 'admin') {
+                $query->where('user_id', $currentUser->id);
+            }
+            
+            $appointment = $query->findOrFail($id);
 
             return response()->json([
                 'success' => true,
@@ -718,7 +822,13 @@ class AppointmentsController extends Controller
     public function updateSales(Request $request, Appointment $appointment)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         if ($appointment->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
+        }
+        
+        // Если пользователь не админ, проверяем что это его запись
+        if ($currentUser->role !== 'admin' && $appointment->user_id !== $currentUser->id) {
             return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
         }
         // Проверка и сохранение данных
@@ -784,8 +894,16 @@ class AppointmentsController extends Controller
             }
         }
 
-        $statuses = Appointment::where('project_id', $currentProjectId)
-            ->whereBetween('date', [$startDate, $endDate])
+        $query = Appointment::where('project_id', $currentProjectId)
+            ->whereBetween('date', [$startDate, $endDate]);
+        
+        // Если пользователь не админ, показываем только его записи
+        $currentUser = auth()->user();
+        if ($currentUser->role !== 'admin') {
+            $query->where('user_id', $currentUser->id);
+        }
+        
+        $statuses = $query
             ->select('status', DB::raw('count(*) as count'))
             ->groupBy('status')
             ->pluck('count', 'status')
@@ -880,8 +998,16 @@ class AppointmentsController extends Controller
             }
         }
 
-        $servicePopularity = Appointment::where('appointments.project_id', $currentProjectId)
-            ->whereBetween('date', [$startDate, $endDate])
+        $query = Appointment::where('appointments.project_id', $currentProjectId)
+            ->whereBetween('date', [$startDate, $endDate]);
+        
+        // Если пользователь не админ, показываем только его записи
+        $currentUser = auth()->user();
+        if ($currentUser->role !== 'admin') {
+            $query->where('appointments.user_id', $currentUser->id);
+        }
+        
+        $servicePopularity = $query
             ->join('services', 'appointments.service_id', '=', 'services.id')
             ->select('services.name', DB::raw('count(appointments.id) as count'))
             ->groupBy('services.name')
@@ -957,9 +1083,17 @@ class AppointmentsController extends Controller
         switch ($period) {
             case 'half_year': // Группировка по неделям, только с данными
                 $dateGroupRaw = 'YEARWEEK(date, 1)';
-                $rawData = Appointment::query()
+                $query = Appointment::query()
                     ->where('project_id', $currentProjectId)
-                    ->whereBetween('date', $periodRange)
+                    ->whereBetween('date', $periodRange);
+                
+                // Если пользователь не админ, показываем только его записи
+                $currentUser = auth()->user();
+                if ($currentUser->role !== 'admin') {
+                    $query->where('user_id', $currentUser->id);
+                }
+                
+                $rawData = $query
                     ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
                     ->groupBy('date_group')
                     ->orderBy('date_group')
@@ -974,9 +1108,17 @@ class AppointmentsController extends Controller
                 return response()->json(['labels' => $labels, 'data' => $values]);
             case 'year': // Группировка по месяцам, только с данными
                 $dateGroupRaw = 'DATE_FORMAT(date, "%Y-%m")';
-                $rawData = Appointment::query()
+                $query = Appointment::query()
                     ->where('project_id', $currentProjectId)
-                    ->whereBetween('date', $periodRange)
+                    ->whereBetween('date', $periodRange);
+                
+                // Если пользователь не админ, показываем только его записи
+                $currentUser = auth()->user();
+                if ($currentUser->role !== 'admin') {
+                    $query->where('user_id', $currentUser->id);
+                }
+                
+                $rawData = $query
                     ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
                     ->groupBy('date_group')
                     ->orderBy('date_group')
@@ -989,9 +1131,17 @@ class AppointmentsController extends Controller
                 $periodIterator = CarbonPeriod::create($periodRange[0], '1 day', $periodRange[1]);
                 $dateGroupFormatter = fn(Carbon $date) => $date->format('Y-m-d');
                 $labelFormatter = fn($dateGroup) => $dateGroup;
-                $data = Appointment::query()
+                $query = Appointment::query()
                     ->where('project_id', $currentProjectId)
-                    ->whereBetween('date', $periodRange)
+                    ->whereBetween('date', $periodRange);
+                
+                // Если пользователь не админ, показываем только его записи
+                $currentUser = auth()->user();
+                if ($currentUser->role !== 'admin') {
+                    $query->where('user_id', $currentUser->id);
+                }
+                
+                $data = $query
                     ->select(DB::raw($dateGroupRaw . ' as date_group'), DB::raw('COUNT(*) as count'))
                     ->groupBy('date_group')
                     ->get()
@@ -1060,6 +1210,12 @@ class AppointmentsController extends Controller
             ->select('name', 'id')
             ->withSum(['appointments as revenue' => function($q) use ($startDate, $endDate, $currentProjectId) {
                 $q->where('project_id', $currentProjectId)->whereBetween('date', [$startDate, $endDate]);
+                
+                // Если пользователь не админ, показываем только его записи
+                $currentUser = auth()->user();
+                if ($currentUser->role !== 'admin') {
+                    $q->where('user_id', $currentUser->id);
+                }
             }], 'price')
             ->orderByDesc('revenue')
             ->limit(5)
@@ -1132,8 +1288,16 @@ class AppointmentsController extends Controller
                 };
             }
         }
-        $checks = Appointment::where('project_id', $currentProjectId)
-            ->whereBetween('date', [$startDate, $endDate])
+        $query = Appointment::where('project_id', $currentProjectId)
+            ->whereBetween('date', [$startDate, $endDate]);
+        
+        // Если пользователь не админ, показываем только его записи
+        $currentUser = auth()->user();
+        if ($currentUser->role !== 'admin') {
+            $query->where('user_id', $currentUser->id);
+        }
+        
+        $checks = $query
             ->selectRaw($groupByRaw.' as period_group, AVG(price) as avg_check')
             ->groupBy('period_group')
             ->orderBy('period_group')
@@ -1192,6 +1356,12 @@ class AppointmentsController extends Controller
             $q->where('project_id', $currentProjectId);
         }, 'clients.sales' => function($q) use ($currentProjectId) {
             $q->where('project_id', $currentProjectId);
+            
+            // Если пользователь не админ, показываем только его продажи
+            $currentUser = auth()->user();
+            if ($currentUser->role !== 'admin') {
+                $q->where('employee_id', $currentUser->id);
+            }
         }])->get();
         $labels = [];
         $data = [];
@@ -1254,6 +1424,12 @@ class AppointmentsController extends Controller
         $services = Service::select('name')
             ->withSum(['appointments as revenue' => function($q) use ($startDate, $endDate, $currentProjectId) {
                 $q->where('appointments.project_id', $currentProjectId)->whereBetween('date', [$startDate, $endDate]);
+                
+                // Если пользователь не админ, показываем только его записи
+                $currentUser = auth()->user();
+                if ($currentUser->role !== 'admin') {
+                    $q->where('appointments.user_id', $currentUser->id);
+                }
             }], 'price')
             ->orderByDesc('revenue')
             ->limit(10)
@@ -1289,10 +1465,17 @@ class AppointmentsController extends Controller
     {
         try {
             $currentProjectId = auth()->user()->project_id;
+            $currentUser = auth()->user();
             $perPage = (int)($request->get('per_page', 11));
             $search = $request->get('search');
             $query = Appointment::with(['client', 'service', 'user'])
                 ->where('project_id', $currentProjectId);
+            
+            // Если пользователь не админ, показываем только его записи
+            if ($currentUser->role !== 'admin') {
+                $query->where('user_id', $currentUser->id);
+            }
+            
             if ($search) {
                 $query->whereHas('client', function($q) use ($search) {
                     $q->where('name', 'like', "%$search%")
@@ -1343,11 +1526,17 @@ class AppointmentsController extends Controller
     public function move(Request $request, Appointment $appointment)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         $request->validate([
             'date' => 'required|date',
             'time' => 'required',
         ]);
         if ($appointment->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
+        }
+        
+        // Если пользователь не админ, проверяем что это его запись
+        if ($currentUser->role !== 'admin' && $appointment->user_id !== $currentUser->id) {
             return response()->json(['success' => false, 'message' => 'Нет доступа к записи'], 403);
         }
         try {
@@ -1376,12 +1565,18 @@ class AppointmentsController extends Controller
     public function getEmployeesProceduresCount(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $period = $request->input('period', 'week');
 
         $query = Appointment::where('project_id', $currentProjectId)
             ->where('status', 'completed');
+        
+        // Если пользователь не админ, показываем только его записи
+        if ($currentUser->role !== 'admin') {
+            $query->where('user_id', $currentUser->id);
+        }
 
         // Применяем фильтры по дате
         if ($startDate && $endDate) {
@@ -1416,12 +1611,18 @@ class AppointmentsController extends Controller
     public function getEmployeesProceduresStructure(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $period = $request->input('period', 'week');
 
         $query = Appointment::where('project_id', $currentProjectId)
             ->where('status', 'completed');
+        
+        // Если пользователь не админ, показываем только его записи
+        if ($currentUser->role !== 'admin') {
+            $query->where('user_id', $currentUser->id);
+        }
 
         if ($startDate && $endDate) {
             $query->whereBetween('date', [$startDate, $endDate]);
@@ -1453,12 +1654,18 @@ class AppointmentsController extends Controller
     public function getEmployeesProceduresDynamics(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $period = $request->input('period', 'week');
 
         $query = Appointment::where('project_id', $currentProjectId)
             ->where('status', 'completed');
+        
+        // Если пользователь не админ, показываем только его записи
+        if ($currentUser->role !== 'admin') {
+            $query->where('user_id', $currentUser->id);
+        }
 
         if ($startDate && $endDate) {
             $query->whereBetween('date', [$startDate, $endDate]);
@@ -1512,6 +1719,12 @@ class AppointmentsController extends Controller
         $query = Appointment::where('project_id', $currentProjectId)
             ->where('status', 'completed')
             ->whereNotNull('duration');
+        
+        // Если пользователь не админ, показываем только его записи
+        $currentUser = auth()->user();
+        if ($currentUser->role !== 'admin') {
+            $query->where('user_id', $currentUser->id);
+        }
 
         if ($startDate && $endDate) {
             $query->whereBetween('date', [$startDate, $endDate]);
@@ -1543,12 +1756,18 @@ class AppointmentsController extends Controller
     public function getEmployeesRevenue(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $period = $request->input('period', 'week');
 
         $query = Appointment::where('project_id', $currentProjectId)
             ->where('status', 'completed');
+        
+        // Если пользователь не админ, показываем только его записи
+        if ($currentUser->role !== 'admin') {
+            $query->where('user_id', $currentUser->id);
+        }
 
         if ($startDate && $endDate) {
             $query->whereBetween('date', [$startDate, $endDate]);
@@ -1583,6 +1802,7 @@ class AppointmentsController extends Controller
     public function getEmployeesAverageCheck(Request $request)
     {
         $currentProjectId = auth()->user()->project_id;
+        $currentUser = auth()->user();
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
         $period = $request->input('period', 'week');
@@ -1591,6 +1811,11 @@ class AppointmentsController extends Controller
             ->where('status', 'completed')
             ->whereNotNull('price')
             ->where('price', '>', 0);
+        
+        // Если пользователь не админ, показываем только его записи
+        if ($currentUser->role !== 'admin') {
+            $query->where('user_id', $currentUser->id);
+        }
 
         if ($startDate && $endDate) {
             $query->whereBetween('date', [$startDate, $endDate]);

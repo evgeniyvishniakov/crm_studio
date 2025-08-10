@@ -50,11 +50,22 @@ class DashboardController extends Controller
         $servicesRevenue = Appointment::where('project_id', $currentProjectId)->where('status', 'completed')->sum('price');
 
         // Продажи товаров: общая прибыль (сумма розничных цен - сумма оптовых цен)
-        $totalRetail = SaleItem::whereHas('sale', function($q) use ($currentProjectId) {
+        $currentUser = auth()->user();
+        $totalRetail = SaleItem::whereHas('sale', function($q) use ($currentProjectId, $currentUser) {
             $q->where('project_id', $currentProjectId);
+            
+            // Если пользователь не админ, показываем только его продажи
+            if ($currentUser->role !== 'admin') {
+                $q->where('employee_id', $currentUser->id);
+            }
         })->sum(\DB::raw('retail_price * quantity'));
-        $totalWholesale = SaleItem::whereHas('sale', function($q) use ($currentProjectId) {
+        $totalWholesale = SaleItem::whereHas('sale', function($q) use ($currentProjectId, $currentUser) {
             $q->where('project_id', $currentProjectId);
+            
+            // Если пользователь не админ, показываем только его продажи
+            if ($currentUser->role !== 'admin') {
+                $q->where('employee_id', $currentUser->id);
+            }
         })->sum(\DB::raw('wholesale_price * quantity'));
         $productsRevenue = $totalRetail - $totalWholesale;
 
@@ -112,8 +123,13 @@ class DashboardController extends Controller
             ->sum('price');
 
         // 2. Прибыль с товаров за сегодня
-        $todayProductsProfit = SaleItem::whereHas('sale', function($q) use ($todayDate, $currentProjectId) {
+        $todayProductsProfit = SaleItem::whereHas('sale', function($q) use ($todayDate, $currentProjectId, $currentUser) {
                 $q->where('project_id', $currentProjectId)->whereDate('date', $todayDate);
+                
+                // Если пользователь не админ, показываем только его продажи
+                if ($currentUser->role !== 'admin') {
+                    $q->where('employee_id', $currentUser->id);
+                }
             })
             ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
             ->value('profit') ?? 0;
@@ -125,8 +141,13 @@ class DashboardController extends Controller
             ->count();
         
         // 4. Товаров продано сегодня (сумма всех quantity из SaleItem)
-        $todaySoldProducts = SaleItem::whereHas('sale', function($q) use ($todayDate, $currentProjectId) {
+        $todaySoldProducts = SaleItem::whereHas('sale', function($q) use ($todayDate, $currentProjectId, $currentUser) {
                 $q->where('project_id', $currentProjectId)->whereDate('date', $todayDate);
+                
+                // Если пользователь не админ, показываем только его продажи
+                if ($currentUser->role !== 'admin') {
+                    $q->where('employee_id', $currentUser->id);
+                }
             })
             ->sum('quantity');
 
@@ -272,8 +293,15 @@ class DashboardController extends Controller
     private function getProfitForDate($date)
     {
         $currentProjectId = $this->getCurrentProjectId();
-        $productsProfit = \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date, $currentProjectId) {
+        $currentUser = auth()->user();
+        
+        $productsProfit = \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date, $currentProjectId, $currentUser) {
             $q->whereDate('date', $date)->where('project_id', $currentProjectId);
+            
+            // Если пользователь не админ, показываем только его продажи
+            if ($currentUser->role !== 'admin') {
+                $q->where('employee_id', $currentUser->id);
+            }
         })
         ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
         ->value('profit') ?? 0;
@@ -296,12 +324,20 @@ class DashboardController extends Controller
     private function getProfitForPeriod($start, $end)
     {
         $currentProjectId = $this->getCurrentProjectId();
-        $productsProfit = \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($start, $end, $currentProjectId) {
+        $currentUser = auth()->user();
+        
+        $productsProfit = \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($start, $end, $currentProjectId, $currentUser) {
             $q->whereBetween('date', [$start, $end])->where('project_id', $currentProjectId);
+            
+            // Если пользователь не админ, показываем только его продажи
+            if ($currentUser->role !== 'admin') {
+                $q->where('employee_id', $currentUser->id);
+            }
         })
         ->selectRaw('SUM((retail_price - wholesale_price) * quantity) as profit')
         ->value('profit') ?? 0;
         $servicesProfit = \App\Models\Clients\Appointment::whereBetween('date', [$start, $end])
+            ->where('status', 'completed')
             ->where('project_id', $currentProjectId)
             ->sum('price');
         $expenses = \App\Models\Clients\Expense::whereBetween('date', [$start, $end])
@@ -386,7 +422,15 @@ class DashboardController extends Controller
                 'data' => $data
             ]);
         }
-        $firstSale = \App\Models\Clients\Sale::orderBy('date', 'asc')->first();
+        $currentUser = auth()->user();
+        $firstSaleQuery = \App\Models\Clients\Sale::orderBy('date', 'asc');
+        
+        // Если пользователь не админ, показываем только его продажи
+        if ($currentUser->role !== 'admin') {
+            $firstSaleQuery->where('employee_id', $currentUser->id);
+        }
+        
+        $firstSale = $firstSaleQuery->first();
         $firstDate = $firstSale ? \Carbon\Carbon::parse($firstSale->date) : $now;
         $daysSinceStart = $now->diffInDays($firstDate);
         $days = 0;
@@ -413,8 +457,15 @@ class DashboardController extends Controller
     private function getSalesForDate($date)
     {
         $currentProjectId = $this->getCurrentProjectId();
-        return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date, $currentProjectId) {
+        $currentUser = auth()->user();
+        
+        return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($date, $currentProjectId, $currentUser) {
                 $q->whereDate('date', $date)->where('project_id', $currentProjectId);
+                
+                // Если пользователь не админ, показываем только его продажи
+                if ($currentUser->role !== 'admin') {
+                    $q->where('employee_id', $currentUser->id);
+                }
             })
             ->selectRaw('SUM(retail_price * quantity) as sales')
             ->value('sales') ?? 0;
@@ -426,8 +477,15 @@ class DashboardController extends Controller
     private function getSalesForPeriod($start, $end)
     {
         $currentProjectId = $this->getCurrentProjectId();
-        return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($start, $end, $currentProjectId) {
+        $currentUser = auth()->user();
+        
+        return \App\Models\Clients\SaleItem::whereHas('sale', function($q) use ($start, $end, $currentProjectId, $currentUser) {
                 $q->whereBetween('date', [$start, $end])->where('project_id', $currentProjectId);
+                
+                // Если пользователь не админ, показываем только его продажи
+                if ($currentUser->role !== 'admin') {
+                    $q->where('employee_id', $currentUser->id);
+                }
             })
             ->selectRaw('SUM(retail_price * quantity) as sales')
             ->value('sales') ?? 0;

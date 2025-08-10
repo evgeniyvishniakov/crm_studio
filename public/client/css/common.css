@@ -4673,6 +4673,7 @@ input[type="date"]:focus {
     display: flex;
     gap: 15px;
     margin-bottom: 15px;
+    align-items: end;
 }
 
 .item-row .form-group {
