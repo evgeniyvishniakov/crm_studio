@@ -5,12 +5,6 @@
     <div class="services-container">
         <div class="services-header">
             <h1>{{ __('messages.services') }}</h1>
-            
-                <svg class="notification-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                </svg>
-                <span class="notification-message">{{ __('messages.service_successfully_added') }}!</span>
-            </div>
             <div class="services-header-actions">
                 <button class="btn-add-service" onclick="openServiceModal()">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -153,6 +147,21 @@
     </div>
 
 @push('scripts')
+    <script>
+        // Переводы для JavaScript
+        window.translations = {
+            service_duration_hours_short: '{{ __("messages.service_duration_hours_short") }}',
+            service_duration_minutes_short: '{{ __("messages.service_duration_minutes_short") }}',
+            edit: '{{ __("messages.edit") }}',
+            delete: '{{ __("messages.delete") }}',
+            cancel: '{{ __("messages.cancel") }}',
+            save: '{{ __("messages.save") }}',
+            confirm_delete: '{{ __("messages.confirm_delete") }}',
+            confirm_delete_service: '{{ __("messages.confirm_delete_service") }}'
+        };
+        
+        
+    </script>
     <script src="{{ asset('client/js/services.js') }}"></script>
 @endpush
 </div>
