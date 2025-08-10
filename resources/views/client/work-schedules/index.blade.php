@@ -24,6 +24,8 @@
         </button>
     </div>
     
+
+    
     <div class="settings-content">
         <!-- Вкладка обзора -->
         <div class="settings-pane" id="tab-schedule-overview">
@@ -164,9 +166,33 @@
                                                 {{ $day['start_time'] }}-{{ $day['end_time'] }}
                                             </span>
                                             <div class="schedule-stats">
-                                                <span class="appointments-count show-appointments">📅 {{ $day['appointments_count'] ?? 0 }} записей</span>
+                                                <span class="appointments-count show-appointments">📅 
+                                                    @php
+                                                        $count = $day['appointments_count'] ?? 0;
+                                                        $lastDigit = $count % 10;
+                                                        $lastTwoDigits = $count % 100;
+                                                        
+                                                        if ($count === 0) {
+                                                            echo 'Без записей';
+                                                        } elseif ($lastTwoDigits >= 11 && $lastTwoDigits <= 14) {
+                                                            echo $count . ' записей';
+                                                        } elseif ($lastDigit === 1) {
+                                                            echo $count . ' запись';
+                                                        } elseif ($lastDigit >= 2 && $lastDigit <= 4) {
+                                                            echo $count . ' записи';
+                                                        } else {
+                                                            echo $count . ' записей';
+                                                        }
+                                                    @endphp
+                                                </span>
                                                 @if(($day['free_hours'] ?? 0) > 0)
-                                                    <span class="free-time show-free-hours">⏰ {{ $day['free_hours'] }}ч свободно</span>
+                                                    <span class="free-time show-free-hours">⏰ 
+                                                        @if(($day['appointments_count'] ?? 0) === 0)
+                                                            В ожидании
+                                                        @else
+                                                            {{ $day['free_hours'] }}ч свободно
+                                                        @endif
+                                                    </span>
                                                 @endif
                                             </div>
                                         @else
@@ -196,22 +222,22 @@
                             <table class="table-striped schedule-overview-table">
                                 <thead>
                                     <tr>
-                                        <th>Сотрудник</th>
-                                        <th>Тип</th>
-                                        <th>Период</th>
-                                        <th>Статус</th>
+                                        <th style="text-align: center;">Сотрудник</th>
+                                        <th style="text-align: center;">Тип</th>
+                                        <th style="text-align: center;">Период</th>
+                                        <th style="text-align: center;">Статус</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($upcomingTimeOffs as $timeOff)
                                     <tr>
-                                        <td>{{ $timeOff->user->name }}</td>
-                                        <td>{{ $timeOff->type_text }}</td>
-                                        <td>
+                                        <td style="text-align: center;">{{ $timeOff->user->name }}</td>
+                                        <td style="text-align: center;">{{ $timeOff->type_text }}</td>
+                                        <td style="text-align: center;">
                                             {{ $timeOff->start_date->format('d.m.Y') }} - 
                                             {{ $timeOff->end_date->format('d.m.Y') }}
                                         </td>
-                                        <td>
+                                        <td style="text-align: center;">
                                             <span class="status-badge status-{{ $timeOff->status }}">
                                                 {{ $timeOff->status_text }}
                                             </span>
@@ -241,9 +267,12 @@
                             <label for="schedule-user-select" style="margin-bottom: 8px; font-weight: 600; color: #333;">Выберите сотрудника</label>
                             <select class="form-control" id="schedule-user-select" style="min-width: 250px; border-radius: 8px; border: 1px solid #d1d5db; padding: 8px 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.2s ease;">
                                 <option value="">Выберите сотрудника...</option>
-                                @foreach($employees as $employee)
+                                @foreach($allEmployees as $employee)
                                     @if($employee)
-                                        <option value="{{ $employee->id }}" {{ $loop->first ? 'selected' : '' }}>{{ $employee->name ?? 'Удаленный пользователь' }}</option>
+                                        <option value="{{ $employee->id }}" {{ $loop->first ? 'selected' : '' }}>
+                                            {{ $employee->name ?? 'Удаленный пользователь' }} 
+                                            ({{ config('roles.' . $employee->role, $employee->role) }})
+                                        </option>
                                     @endif
                                 @endforeach
                             </select>
@@ -270,13 +299,13 @@
                             <!-- Расписание будет загружено через AJAX -->
                         </tbody>
                     </table>
-                </div>
+                        </div>
 
                 <!-- Мобильные карточки расписания -->
                 <div class="schedule-cards" id="scheduleManagementCards" style="display: none;">
                     <!-- Карточки будут добавлены через JavaScript -->
+                    </div>
                 </div>
-            </div>
 
             <!-- Сообщение о выборе сотрудника -->
             <div id="select-employee-message" class="text-center py-5" style="margin-top: 40px;">
@@ -297,15 +326,15 @@
 
             <!-- Таблица отпусков -->
             <div class="table-wrapper">
-                <table class="table-striped time-offs-table" id="timeOffsTable">
+                <table class="table-striped schedule-overview-table" id="timeOffsTable" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; border: 1px solid #e5e7eb;">
                     <thead>
                         <tr>
-                            <th>Сотрудник</th>
-                            <th>Тип</th>
-                            <th>Период</th>
-                            <th>Причина</th>
-                            <th>Статус</th>
-                            <th>Действия</th>
+                            <th style="text-align: center;">Сотрудник</th>
+                            <th style="text-align: center;">Тип</th>
+                            <th style="text-align: center;">Период</th>
+                            <th style="text-align: center;">Причина</th>
+                            <th style="text-align: center;">Статус</th>
+                            <th style="text-align: center;">Действия</th>
                         </tr>
                     </thead>
                     <tbody id="time-offs-tbody">
@@ -414,13 +443,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Функция переключения вкладки
     function switchTab(tabId) {
-        // Убираем активный класс со всех кнопок
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        
-        // Скрываем все панели
-        tabPanes.forEach(pane => pane.style.display = 'none');
-        
-        // Активируем текущую кнопку и панель
+            // Убираем активный класс со всех кнопок
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Скрываем все панели
+            tabPanes.forEach(pane => pane.style.display = 'none');
+            
+            // Активируем текущую кнопку и панель
         const activeButton = document.querySelector(`[data-tab="${tabId}"]`);
         const activePane = document.getElementById('tab-' + tabId);
         
@@ -437,6 +466,11 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const tabId = this.getAttribute('data-tab');
             switchTab(tabId);
+            
+            // Загружаем данные при переходе на вкладку отпусков
+            if (tabId === 'time-offs') {
+                loadTimeOffsData();
+            }
         });
     });
     
@@ -444,13 +478,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const savedTab = localStorage.getItem('workSchedules_activeTab');
     if (savedTab) {
         switchTab(savedTab);
+        // Загружаем данные для восстановленной вкладки
+        if (savedTab === 'time-offs') {
+            loadTimeOffsData();
+        }
     } else {
         // Если нет сохраненной вкладки, показываем первую (обзор)
         switchTab('schedule-overview');
     }
     
+    // Восстанавливаем сохраненную неделю
+    const savedWeekOffset = localStorage.getItem('workSchedules_weekOffset');
+    if (savedWeekOffset) {
+        currentWeekOffset = parseInt(savedWeekOffset);
+    }
+    
     // Инициализация отображения недели
     updateWeekDisplay();
+    
+    // Загружаем данные только если это не текущая неделя
+    if (currentWeekOffset !== 0) {
+        loadWeekSchedule();
+    }
     
     // Инициализируем настройки отображения статистики
     initDisplaySettings();
@@ -503,12 +552,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчик для клавиши Escape
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            const modal = document.getElementById('editScheduleModal');
-            if (modal && modal.style.display === 'block') {
+            const scheduleModal = document.getElementById('editScheduleModal');
+            const timeOffModal = document.getElementById('timeOffModal');
+            
+            if (scheduleModal && scheduleModal.style.display === 'block') {
                 closeScheduleModal();
+            }
+            if (timeOffModal && timeOffModal.style.display === 'block') {
+                closeTimeOffModal();
             }
         }
     });
+    
+    // Обработчик для закрытия модального окна отпусков при клике вне его
+    const timeOffModal = document.getElementById('timeOffModal');
+    if (timeOffModal) {
+        timeOffModal.addEventListener('click', function(event) {
+            if (event.target === timeOffModal) {
+                closeTimeOffModal();
+            }
+        });
+    }
 });
 
 // Переменные для работы с неделями
@@ -517,18 +581,21 @@ let currentWeekOffset = 0; // 0 = текущая неделя, -1 = прошла
 // Функции для календаря
 function previousWeek() {
     currentWeekOffset--;
+    localStorage.setItem('workSchedules_weekOffset', currentWeekOffset);
     loadWeekSchedule();
     updateWeekDisplay();
 }
 
 function nextWeek() {
     currentWeekOffset++;
+    localStorage.setItem('workSchedules_weekOffset', currentWeekOffset);
     loadWeekSchedule();
     updateWeekDisplay();
 }
 
 function currentWeek() {
     currentWeekOffset = 0;
+    localStorage.setItem('workSchedules_weekOffset', currentWeekOffset);
     loadWeekSchedule();
     updateWeekDisplay();
 }
@@ -549,14 +616,26 @@ function updateWeekDisplay() {
 
 // Загрузить расписание недели
 function loadWeekSchedule() {
-    // TODO: Здесь будет AJAX запрос к серверу для получения расписания конкретной недели
     console.log('Loading week schedule for offset:', currentWeekOffset);
     
-    // Пока что просто обновляем отображение
-    // В будущем здесь будет:
-    // fetch(`/work-schedules/week?offset=${currentWeekOffset}`)
-    //     .then(response => response.json())
-    //     .then(data => updateScheduleTable(data));
+    fetch(`{{ route('work-schedules.week') }}?offset=${currentWeekOffset}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+
+                
+                updateOverviewScheduleTable(data.schedules);
+                if (data.warning) {
+                    // Показываем предупреждение только раз в месяц
+                    showWarningOncePerMonth(data.warning);
+                }
+            } else {
+                console.error('Ошибка загрузки данных недели:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка запроса данных недели:', error);
+        });
 }
 
 // Переменные для управления расписанием
@@ -755,8 +834,8 @@ function saveScheduleDay() {
             // Обновляем таблицу
             renderScheduleManagementTable();
             
-            // Обновляем данные на вкладке "Обзор"
-            refreshOverviewData();
+            // Обновляем данные на вкладке "Обзор" с учетом текущей недели
+            loadWeekSchedule();
         } else {
             console.error('Ошибка сохранения:', data.message);
             window.showNotification('error', 'Ошибка: ' + data.message);
@@ -784,6 +863,30 @@ function refreshOverviewData() {
         });
 }
 
+// Функция склонения слова "запись"
+function declensionAppointments(count) {
+    if (count === 0) {
+        return 'Без записей';
+    }
+    
+    const lastDigit = count % 10;
+    const lastTwoDigits = count % 100;
+    
+    // Исключения для 11-14
+    if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
+        return count + ' записей';
+    }
+    
+    // Склонения
+    if (lastDigit === 1) {
+        return count + ' запись';
+    } else if (lastDigit >= 2 && lastDigit <= 4) {
+        return count + ' записи';
+    } else {
+        return count + ' записей';
+    }
+}
+
 // Функция обновления таблицы расписания на вкладке "Обзор"
 function updateOverviewScheduleTable(schedules) {
     const tbody = document.querySelector('.schedule-overview-table tbody');
@@ -795,13 +898,19 @@ function updateOverviewScheduleTable(schedules) {
         const row = document.createElement('tr');
         let scheduleCells = '';
         
-        employeeSchedule.schedule.forEach(day => {
+                employeeSchedule.schedule.forEach(day => {
+
+            
             if (day.is_working) {
                 let statsHtml = '';
                 if (day.appointments_count !== undefined) {
-                    statsHtml += `<span class="appointments-count show-appointments">📅 ${day.appointments_count} записей</span>`;
+                    statsHtml += `<span class="appointments-count show-appointments">📅 ${declensionAppointments(day.appointments_count)}</span>`;
                     if (day.free_hours > 0) {
-                        statsHtml += `<span class="free-time show-free-hours">⏰ ${day.free_hours}ч свободно</span>`;
+                        if (day.appointments_count === 0) {
+                            statsHtml += `<span class="free-time show-free-hours">⏰ В ожидании</span>`;
+                        } else {
+                            statsHtml += `<span class="free-time show-free-hours">⏰ ${day.free_hours}ч свободно</span>`;
+                        }
                     }
                 }
                 
@@ -859,9 +968,226 @@ function showScheduleModal() {
     console.log('showScheduleModal deprecated');
 }
 
-function showTimeOffModal() {
-    // TODO: Показать модальное окно добавления отпуска
-    alert('Модальное окно отпуска будет реализовано');
+function showTimeOffModal(timeOffId = null) {
+    const modal = document.getElementById('timeOffModal');
+    const title = document.getElementById('timeOffModalTitle');
+    const form = document.getElementById('timeOffForm');
+    
+    // Очищаем форму
+    form.reset();
+    document.getElementById('timeOffId').value = '';
+    
+    if (timeOffId) {
+        // Режим редактирования
+        title.textContent = 'Редактировать отпуск';
+        loadTimeOffData(timeOffId);
+    } else {
+        // Режим создания
+        title.textContent = 'Добавить отпуск';
+        // Устанавливаем минимальную дату - сегодня
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('timeOffStartDate').min = today;
+        document.getElementById('timeOffEndDate').min = today;
+    }
+    
+    modal.style.display = 'block';
+}
+
+function closeTimeOffModal() {
+    const modal = document.getElementById('timeOffModal');
+    modal.style.display = 'none';
+}
+
+function loadTimeOffData(timeOffId) {
+    fetch(`{{ route('work-schedules.time-offs.index') }}/${timeOffId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const timeOff = data.timeOff;
+                document.getElementById('timeOffId').value = timeOff.id;
+                document.getElementById('timeOffEmployee').value = timeOff.admin_user_id;
+                document.getElementById('timeOffType').value = timeOff.type;
+                document.getElementById('timeOffStartDate').value = timeOff.start_date;
+                document.getElementById('timeOffEndDate').value = timeOff.end_date;
+                document.getElementById('timeOffReason').value = timeOff.reason || '';
+            } else {
+                window.showNotification('error', 'Ошибка загрузки данных отпуска');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки отпуска:', error);
+            window.showNotification('error', 'Произошла ошибка при загрузке');
+        });
+}
+
+function saveTimeOff() {
+    const form = document.getElementById('timeOffForm');
+    const formData = new FormData(form);
+    
+    // Валидация
+    const employeeId = document.getElementById('timeOffEmployee').value;
+    const type = document.getElementById('timeOffType').value;
+    const startDate = document.getElementById('timeOffStartDate').value;
+    const endDate = document.getElementById('timeOffEndDate').value;
+    
+    if (!employeeId) {
+        window.showNotification('error', 'Выберите сотрудника');
+        return;
+    }
+    
+    if (!type) {
+        window.showNotification('error', 'Выберите тип отпуска');
+        return;
+    }
+    
+    if (!startDate || !endDate) {
+        window.showNotification('error', 'Укажите даты начала и окончания');
+        return;
+    }
+    
+    if (new Date(startDate) > new Date(endDate)) {
+        window.showNotification('error', 'Дата начала не может быть позже даты окончания');
+        return;
+    }
+    
+    const timeOffId = document.getElementById('timeOffId').value;
+    const url = timeOffId ? 
+        `{{ route('work-schedules.time-offs.index') }}/${timeOffId}` : 
+        `{{ route('work-schedules.time-offs.index') }}`;
+    
+    const method = timeOffId ? 'PUT' : 'POST';
+    
+    // Конвертируем FormData в JSON
+    const data = {
+        employee_id: employeeId,
+        type: type,
+        start_date: startDate,
+        end_date: endDate,
+        reason: document.getElementById('timeOffReason').value
+    };
+    
+    fetch(url, {
+        method: method,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.showNotification('success', data.message);
+            closeTimeOffModal();
+            loadTimeOffsData(); // Обновляем таблицу
+        } else {
+            window.showNotification('error', data.message || 'Ошибка при сохранении');
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка при сохранении:', error);
+        window.showNotification('error', 'Произошла ошибка при сохранении');
+    });
+}
+
+function loadTimeOffsData() {
+    const tbody = document.getElementById('time-offs-tbody');
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4"><i class="fas fa-spinner fa-spin"></i> Загрузка...</td></tr>';
+    
+    fetch(`{{ route('work-schedules.time-offs.index') }}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderTimeOffsTable(data.timeOffs);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4" style="color: #dc3545;">Ошибка загрузки данных</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки отпусков:', error);
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4" style="color: #dc3545;">Ошибка загрузки данных</td></tr>';
+        });
+}
+
+function renderTimeOffsTable(timeOffs) {
+    const tbody = document.getElementById('time-offs-tbody');
+    
+    if (timeOffs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4" style="color: #6c757d; font-style: italic;">Нет данных об отпусках</td></tr>';
+        return;
+    }
+    
+    const typeNames = {
+        vacation: 'Отпуск',
+        sick_leave: 'Больничный', 
+        personal_leave: 'Личный отпуск',
+        unpaid_leave: 'Отпуск без содержания'
+    };
+    
+    const statusNames = {
+        pending: 'Ожидает',
+        approved: 'Одобрено',
+        rejected: 'Отклонено',
+        cancelled: 'Отменено'
+    };
+    
+    tbody.innerHTML = timeOffs.map(timeOff => `
+        <tr>
+            <td style="text-align: center;">${timeOff.user ? timeOff.user.name : 'Удаленный пользователь'}</td>
+            <td style="text-align: center;">${typeNames[timeOff.type] || timeOff.type}</td>
+            <td style="text-align: center;">${formatDate(timeOff.start_date)} - ${formatDate(timeOff.end_date)}</td>
+            <td style="text-align: center;">${timeOff.reason || '-'}</td>
+            <td style="text-align: center;">
+                <span class="status-badge status-${timeOff.status}">
+                    ${statusNames[timeOff.status] || timeOff.status}
+                </span>
+            </td>
+            <td style="text-align: center;" class="actions-cell">
+                <button class="btn-edit" onclick="showTimeOffModal(${timeOff.id})" title="Редактировать">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                </button>
+                <button class="btn-delete" onclick="deleteTimeOff(${timeOff.id})" title="Удалить">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString('ru-RU');
+}
+
+function deleteTimeOff(timeOffId) {
+    if (!confirm('Вы уверены, что хотите удалить этот отпуск?')) {
+        return;
+    }
+    
+    fetch(`{{ route('work-schedules.time-offs.index') }}/${timeOffId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.showNotification('success', data.message);
+            loadTimeOffsData(); // Обновляем таблицу
+        } else {
+            window.showNotification('error', data.message || 'Ошибка при удалении');
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка при удалении:', error);
+        window.showNotification('error', 'Произошла ошибка при удалении');
+    });
 }
 
 // Функции управления настройками отображения
@@ -904,6 +1230,21 @@ function toggleFreeHoursDisplay(show) {
     elements.forEach(element => {
         element.style.display = show ? 'inline-block' : 'none';
     });
+}
+
+// Функция показа предупреждения только раз в месяц
+function showWarningOncePerMonth(message) {
+    const warningKey = 'workSchedules_lastWarningShown';
+    const lastShown = localStorage.getItem(warningKey);
+    const now = new Date();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(now.getMonth() - 1);
+    
+    // Если предупреждение не показывалось или прошел месяц
+    if (!lastShown || new Date(lastShown) < oneMonthAgo) {
+        window.showNotification('info', message);
+        localStorage.setItem(warningKey, now.toISOString());
+    }
 }
 </script>
 
@@ -1082,6 +1423,229 @@ function toggleFreeHoursDisplay(show) {
     color: #721c24;
     border: 1px solid #f5c6cb;
 }
+
+/* Стили для модального окна отпусков */
+.time-off-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.time-off-modal-content {
+    background-color: white;
+    margin: 50px auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.time-off-modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.time-off-modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.time-off-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.time-off-modal-close:hover {
+    color: #374151;
+}
+
+.time-off-modal-body {
+    padding: 25px;
+}
+
+.time-off-form-group {
+    margin-bottom: 20px;
+}
+
+.time-off-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.time-off-form-group input,
+.time-off-form-group select,
+.time-off-form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.time-off-form-group input:focus,
+.time-off-form-group select:focus,
+.time-off-form-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.time-off-form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.time-off-modal-footer {
+    padding: 20px 25px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.time-off-date-row {
+    display: flex;
+    gap: 15px;
+}
+
+.time-off-date-row .time-off-form-group {
+    flex: 1;
+}
+
+/* Стили для кнопки удаления */
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    margin-left: 5px;
+    transition: background-color 0.2s;
+}
+
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+.btn-delete .icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* Стили для статусов отпусков */
+.status-badge.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.status-badge.status-approved {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-badge.status-rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-badge.status-cancelled {
+    background-color: #e2e3e5;
+    color: #6c757d;
+    border: 1px solid #d6d8db;
+}
 </style>
+
+<!-- Модальное окно для отпусков -->
+<div id="timeOffModal" class="time-off-modal">
+    <div class="time-off-modal-content">
+        <div class="time-off-modal-header">
+            <h3 class="time-off-modal-title" id="timeOffModalTitle">Добавить отпуск</h3>
+            <button class="time-off-modal-close" onclick="closeTimeOffModal()">&times;</button>
+        </div>
+        <div class="time-off-modal-body">
+            <form id="timeOffForm">
+                <input type="hidden" id="timeOffId" name="time_off_id">
+                
+                <div class="time-off-form-group">
+                    <label for="timeOffEmployee">Сотрудник *</label>
+                    <select id="timeOffEmployee" name="employee_id" required>
+                        <option value="">Выберите сотрудника</option>
+                        @foreach($allEmployees as $employee)
+                            <option value="{{ $employee->id }}">
+                                {{ $employee->name }} ({{ config('roles.' . $employee->role, $employee->role) }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="time-off-form-group">
+                    <label for="timeOffType">Тип отпуска *</label>
+                    <select id="timeOffType" name="type" required>
+                        <option value="">Выберите тип</option>
+                        <option value="vacation">Отпуск</option>
+                        <option value="sick_leave">Больничный</option>
+                        <option value="personal_leave">Личный отпуск</option>
+                        <option value="unpaid_leave">Отпуск без содержания</option>
+                    </select>
+                </div>
+
+                <div class="time-off-date-row">
+                    <div class="time-off-form-group">
+                        <label for="timeOffStartDate">Дата начала *</label>
+                        <input type="date" id="timeOffStartDate" name="start_date" required>
+                    </div>
+                    <div class="time-off-form-group">
+                        <label for="timeOffEndDate">Дата окончания *</label>
+                        <input type="date" id="timeOffEndDate" name="end_date" required>
+                    </div>
+                </div>
+
+                <div class="time-off-form-group">
+                    <label for="timeOffReason">Причина</label>
+                    <textarea id="timeOffReason" name="reason" placeholder="Опишите причину отпуска (необязательно)"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="time-off-modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeTimeOffModal()">Отмена</button>
+            <button type="button" class="btn-submit" onclick="saveTimeOff()">Сохранить</button>
+        </div>
+    </div>
+</div>
+
 @endpush
 @endsection

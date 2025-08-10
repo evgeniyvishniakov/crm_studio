@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use App\Models\Admin\User;
 use App\Models\Clients\Appointment;
 use App\Models\Clients\UserSchedule;
+use App\Models\EmployeeTimeOff;
 
 class WorkScheduleController extends Controller
 {
@@ -22,23 +23,26 @@ class WorkScheduleController extends Controller
         $user = Auth::user();
         $projectId = $user->project_id;
         
-        // Получаем всех сотрудников проекта
-        $employees = User::where('project_id', $projectId)
-            ->where('role', '!=', 'admin')
+        // Получаем всех сотрудников проекта (для настройки расписания)
+        $allEmployees = User::where('project_id', $projectId)
             ->orderBy('name')
             ->get();
             
+        // Получаем сотрудников с расписанием для отображения в таблице
+        $employeesWithSchedule = $this->getEmployeesWithSchedule($projectId);
+        
         // Статистика для обзора
         $stats = $this->getScheduleStats($projectId);
         
-        // Текущие расписания на неделю
-        $currentWeekSchedules = $this->getCurrentWeekSchedules($employees);
+        // Текущие расписания на неделю - показываем только тех, у кого есть расписание
+        $currentWeekSchedules = $this->getWeekSchedulesWithSmartLogic($employeesWithSchedule, 0);
         
         // Предстоящие отпуска/больничные
         $upcomingTimeOffs = $this->getUpcomingTimeOffs($projectId);
         
         return view('client.work-schedules.index', compact(
-            'employees',
+            'employeesWithSchedule',
+            'allEmployees',
             'stats', 
             'currentWeekSchedules',
             'upcomingTimeOffs'
@@ -54,9 +58,7 @@ class WorkScheduleController extends Controller
         $startOfWeek = $today->copy()->startOfWeek();
         $endOfWeek = $today->copy()->endOfWeek();
         
-        $employees = User::where('project_id', $projectId)
-            ->where('role', '!=', 'admin')
-            ->get();
+        $employees = $this->getEmployeesWithSchedule($projectId);
             
         // Сколько сотрудников работает сегодня
         $workingToday = $this->getWorkingEmployeesToday($employees);
@@ -197,14 +199,7 @@ class WorkScheduleController extends Controller
         return $workDays * 8 * $employees->count();
     }
     
-    /**
-     * Получение предстоящих отпусков/больничных
-     */
-    private function getUpcomingTimeOffs($projectId)
-    {
-        // TODO: Реализовать когда создадим таблицу employee_time_offs
-        return collect();
-    }
+
     
     /**
      * Получение названия дня недели
@@ -358,22 +353,495 @@ class WorkScheduleController extends Controller
         $user = Auth::user();
         $projectId = $user->project_id;
         
-        // Получаем всех сотрудников проекта
-        $employees = User::where('project_id', $projectId)
-            ->where('role', '!=', 'admin')
-            ->orderBy('name')
-            ->get();
+        // Получаем сотрудников проекта с расписанием
+        $employees = $this->getEmployeesWithSchedule($projectId);
             
         // Статистика для обзора
         $stats = $this->getScheduleStats($projectId);
         
-        // Текущие расписания на неделю
-        $currentWeekSchedules = $this->getCurrentWeekSchedules($employees);
+        // Используем ту же логику что и для навигации по неделям (offset = 0 = текущая неделя)
+        $currentWeekSchedules = $this->getWeekSchedulesWithSmartLogic($employees, 0);
         
         return response()->json([
             'success' => true,
             'stats' => $stats,
             'currentWeekSchedules' => $currentWeekSchedules
         ]);
+    }
+    
+    /**
+     * API для получения расписания конкретной недели
+     */
+    public function getWeekSchedule(Request $request)
+    {
+        $user = Auth::user();
+        $projectId = $user->project_id;
+        $offset = (int) $request->get('offset', 0);
+        
+        // Получаем сотрудников проекта с расписанием
+        $employees = $this->getEmployeesWithSchedule($projectId);
+            
+        // Получаем расписания на конкретную неделю с умной логикой
+        $weekSchedules = $this->getWeekSchedulesWithSmartLogic($employees, $offset);
+        
+        $response = [
+            'success' => true,
+            'schedules' => $weekSchedules
+        ];
+        
+        // Добавляем предупреждение для старых периодов
+        if ($offset < -4) {
+            $response['warning'] = 'Внимание: Для периодов старше месяца расписание определяется по записям клиентов.';
+        }
+        
+
+        
+        return response()->json($response);
+    }
+    
+    /**
+     * Получение расписаний на конкретную неделю с умной логикой
+     */
+    private function getWeekSchedulesWithSmartLogic($employees, $offset)
+    {
+        $schedules = [];
+        $startOfWeek = Carbon::now()->addWeeks($offset)->startOfWeek();
+        $endOfWeek = Carbon::now()->addWeeks($offset)->endOfWeek();
+        
+        // Получаем все записи на эту неделю для всех сотрудников
+        $appointmentsRaw = Appointment::whereBetween('date', [$startOfWeek, $endOfWeek])
+            ->whereIn('user_id', $employees->pluck('id'))
+            ->orderBy('date')
+            ->orderBy('time')
+            ->get();
+            
+
+            
+        $appointments = $appointmentsRaw->groupBy(['user_id', function($item) {
+            return $item->date->format('Y-m-d'); // Приводим дату к формату Y-m-d
+        }]);
+            
+
+        
+        // Получаем текущие расписания для сравнения
+        $currentSchedules = [];
+        foreach ($employees as $employee) {
+            $userSchedules = UserSchedule::where('user_id', $employee->id)
+                ->orderBy('day_of_week')
+                ->get()
+                ->keyBy('day_of_week');
+            $currentSchedules[$employee->id] = $userSchedules;
+        }
+        
+        // Для прошлых периодов проверяем, есть ли у сотрудника записи вообще
+        $employeesWithHistoricalAppointments = [];
+        if ($offset < 0) {
+            foreach ($employees as $employee) {
+                $hasAnyAppointments = Appointment::where('user_id', $employee->id)->exists();
+                $employeesWithHistoricalAppointments[$employee->id] = $hasAnyAppointments;
+            }
+        }
+        
+        foreach ($employees as $employee) {
+            $weekSchedule = [];
+            
+            for ($i = 0; $i < 7; $i++) {
+                $date = $startOfWeek->copy()->addDays($i);
+                $dayOfWeek = $date->dayOfWeek; // 0 = воскресенье, 1 = понедельник
+                $dateString = $date->format('Y-m-d');
+                
+                // Получаем записи на этот день
+                $appointmentsForDay = $appointments->get($employee->id, collect())->get($dateString, collect());
+                $appointmentsCount = $appointmentsForDay->count();
+                
+                if ($appointmentsCount > 0) {
+                    // ЕСТЬ ЗАПИСИ = РАБОЧИЙ ДЕНЬ
+                    
+                    // Берем время работы из расписания сотрудника (если есть)
+                    $daySchedule = null;
+                    if (isset($currentSchedules[$employee->id])) {
+                        $daySchedule = $currentSchedules[$employee->id]->get($dayOfWeek);
+                    }
+                    
+                    if ($daySchedule && $daySchedule->is_working) {
+                        // Используем расписание для расчета свободного времени
+                        $totalMinutes = $this->calculateWorkingMinutes($daySchedule->start_time, $daySchedule->end_time);
+                        
+                        // Считаем занятое время: длительность услуг + интервалы
+                        $serviceDuration = $appointmentsForDay->sum('duration') ?: ($appointmentsCount * 60);
+                        $intervalMinutes = $appointmentsCount * ($daySchedule->booking_interval ?? 30); // Интервал для каждой записи
+                        $bookedMinutes = $serviceDuration + $intervalMinutes;
+                        
+                        $freeMinutes = max(0, $totalMinutes - $bookedMinutes);
+                        
+                        $weekSchedule[] = [
+                            'date' => $date,
+                            'day_name' => $this->getDayName($dayOfWeek),
+                            'is_working' => true,
+                            'start_time' => $daySchedule->start_time_formatted,
+                            'end_time' => $daySchedule->end_time_formatted,
+                            'status' => 'working',
+                            'appointments_count' => $appointmentsCount,
+                            'free_hours' => round($freeMinutes / 60, 1),
+                            'source' => 'schedule_with_appointments'
+                        ];
+                    } else {
+                        // Нет расписания - определяем время по записям
+                        $firstTime = $appointmentsForDay->min('time');
+                        $lastAppointment = $appointmentsForDay->sortByDesc('time')->first();
+                        $lastTime = Carbon::parse($lastAppointment->time)->addMinutes($lastAppointment->duration ?? 60);
+                        $totalMinutes = Carbon::parse($firstTime)->diffInMinutes($lastTime);
+                        
+                        // Считаем занятое время: длительность услуг + интервалы (используем стандартный интервал 30 мин)
+                        $serviceDuration = $appointmentsForDay->sum('duration') ?: ($appointmentsCount * 60);
+                        $intervalMinutes = $appointmentsCount * 30; // Стандартный интервал 30 минут
+                        $bookedMinutes = $serviceDuration + $intervalMinutes;
+                        
+                        $freeMinutes = max(0, $totalMinutes - $bookedMinutes);
+                        
+                        $weekSchedule[] = [
+                            'date' => $date,
+                            'day_name' => $this->getDayName($dayOfWeek),
+                            'is_working' => true,
+                            'start_time' => Carbon::parse($firstTime)->format('H:i'),
+                            'end_time' => $lastTime->format('H:i'),
+                            'status' => 'working',
+                            'appointments_count' => $appointmentsCount,
+                            'free_hours' => round($freeMinutes / 60, 1),
+                            'source' => 'appointments_only'
+                        ];
+                    }
+                } else {
+                    // НЕТ ЗАПИСЕЙ - проверяем есть ли текущее расписание
+                    $daySchedule = null;
+                    if (isset($currentSchedules[$employee->id])) {
+                        $daySchedule = $currentSchedules[$employee->id]->get($dayOfWeek);
+                    }
+                    
+                    // Проверяем нужно ли показывать рабочий день
+                    $shouldShowWorkingDay = false;
+                    
+                    if ($offset >= -4) {
+                        // Текущая и недавние недели (последний месяц) - показываем по текущему расписанию
+                        $shouldShowWorkingDay = $daySchedule && $daySchedule->is_working;
+                    } else {
+                        // Старые недели (больше месяца назад) - показываем только если есть записи в истории
+                        $hasHistoricalAppointments = $employeesWithHistoricalAppointments[$employee->id] ?? false;
+                        $shouldShowWorkingDay = $daySchedule && $daySchedule->is_working && $hasHistoricalAppointments;
+                    }
+                    
+
+                    
+                    if ($shouldShowWorkingDay) {
+                        $totalMinutes = $this->calculateWorkingMinutes($daySchedule->start_time, $daySchedule->end_time);
+                        
+                        $weekSchedule[] = [
+                            'date' => $date,
+                            'day_name' => $this->getDayName($dayOfWeek),
+                            'is_working' => true,
+                            'start_time' => $daySchedule->start_time_formatted,
+                            'end_time' => $daySchedule->end_time_formatted,
+                            'status' => 'working',
+                            'appointments_count' => $appointmentsCount, // Используем реальное количество записей
+                            'free_hours' => round($totalMinutes / 60, 1),
+                            'source' => $offset >= 0 ? 'schedule' : 'historical'
+                        ];
+                    } else {
+                        // НЕТ ЗАПИСЕЙ = ВЫХОДНОЙ
+                        $weekSchedule[] = [
+                            'date' => $date,
+                            'day_name' => $this->getDayName($dayOfWeek),
+                            'is_working' => false,
+                            'start_time' => null,
+                            'end_time' => null,
+                            'status' => 'day_off',
+                            'appointments_count' => 0,
+                            'free_hours' => 0,
+                            'source' => 'auto' // Автоматически определено
+                        ];
+                    }
+                }
+            }
+            
+            $schedules[] = [
+                'employee' => $employee,
+                'schedule' => $weekSchedule
+            ];
+        }
+        
+        return $schedules;
+    }
+    
+    /**
+     * Получение всех сотрудников проекта, у которых есть расписание
+     */
+    private function getEmployeesWithSchedule($projectId)
+    {
+        // Получаем всех сотрудников проекта
+        $projectEmployees = User::where('project_id', $projectId)
+            ->orderBy('name')
+            ->get();
+            
+        // Фильтруем только тех, у кого есть расписание
+        return $projectEmployees->filter(function($employee) {
+            return UserSchedule::where('user_id', $employee->id)->exists();
+        });
+    }
+    
+    /**
+     * Получение списка отпусков
+     */
+    public function getTimeOffs()
+    {
+        $user = Auth::user();
+        $projectId = $user->project_id;
+        
+        $timeOffs = EmployeeTimeOff::where('project_id', $projectId)
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        
+        return response()->json([
+            'success' => true,
+            'timeOffs' => $timeOffs
+        ]);
+    }
+    
+    /**
+     * Получение конкретного отпуска
+     */
+    public function getTimeOff($id)
+    {
+        $user = Auth::user();
+        $projectId = $user->project_id;
+        
+        $timeOff = EmployeeTimeOff::where('project_id', $projectId)
+            ->where('id', $id)
+            ->with('user')
+            ->first();
+        
+        if (!$timeOff) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Отпуск не найден'
+            ], 404);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'timeOff' => $timeOff
+        ]);
+    }
+    
+    /**
+     * Создание нового отпуска
+     */
+    public function storeTimeOff(Request $request)
+    {
+        $user = Auth::user();
+        $projectId = $user->project_id;
+        
+        $request->validate([
+            'employee_id' => 'required|exists:admin_users,id',
+            'type' => 'required|in:vacation,sick_leave,personal_leave,unpaid_leave',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'reason' => 'nullable|string|max:1000'
+        ]);
+        
+        // Проверяем, что сотрудник принадлежит тому же проекту
+        $employee = User::where('id', $request->employee_id)
+            ->where('project_id', $projectId)
+            ->first();
+            
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Сотрудник не найден в вашем проекте'
+            ], 400);
+        }
+        
+        // Проверяем пересечение с существующими отпусками
+        $existingTimeOff = EmployeeTimeOff::where('admin_user_id', $request->employee_id)
+            ->where('status', '!=', 'cancelled')
+            ->where(function($query) use ($request) {
+                $query->whereBetween('start_date', [$request->start_date, $request->end_date])
+                      ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                      ->orWhere(function($q) use ($request) {
+                          $q->where('start_date', '<=', $request->start_date)
+                            ->where('end_date', '>=', $request->end_date);
+                      });
+            })
+            ->exists();
+            
+        if ($existingTimeOff) {
+            return response()->json([
+                'success' => false,
+                'message' => 'У сотрудника уже есть отпуск на эти даты'
+            ], 400);
+        }
+        
+        $timeOff = EmployeeTimeOff::create([
+            'project_id' => $projectId,
+            'admin_user_id' => $request->employee_id,
+            'type' => $request->type,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'reason' => $request->reason,
+            'status' => 'pending'
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Отпуск успешно добавлен',
+            'timeOff' => $timeOff->load('user')
+        ]);
+    }
+    
+    /**
+     * Обновление отпуска
+     */
+    public function updateTimeOff(Request $request, $id)
+    {
+        $user = Auth::user();
+        $projectId = $user->project_id;
+        
+        $timeOff = EmployeeTimeOff::where('project_id', $projectId)
+            ->where('id', $id)
+            ->first();
+        
+        if (!$timeOff) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Отпуск не найден'
+            ], 404);
+        }
+        
+        $request->validate([
+            'employee_id' => 'required|exists:admin_users,id',
+            'type' => 'required|in:vacation,sick_leave,personal_leave,unpaid_leave',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'reason' => 'nullable|string|max:1000'
+        ]);
+        
+        // Проверяем, что сотрудник принадлежит тому же проекту
+        $employee = User::where('id', $request->employee_id)
+            ->where('project_id', $projectId)
+            ->first();
+            
+        if (!$employee) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Сотрудник не найден в вашем проекте'
+            ], 400);
+        }
+        
+        // Проверяем пересечение с другими отпусками (исключая текущий)
+        $existingTimeOff = EmployeeTimeOff::where('admin_user_id', $request->employee_id)
+            ->where('id', '!=', $id)
+            ->where('status', '!=', 'cancelled')
+            ->where(function($query) use ($request) {
+                $query->whereBetween('start_date', [$request->start_date, $request->end_date])
+                      ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                      ->orWhere(function($q) use ($request) {
+                          $q->where('start_date', '<=', $request->start_date)
+                            ->where('end_date', '>=', $request->end_date);
+                      });
+            })
+            ->exists();
+            
+        if ($existingTimeOff) {
+            return response()->json([
+                'success' => false,
+                'message' => 'У сотрудника уже есть отпуск на эти даты'
+            ], 400);
+        }
+        
+        $timeOff->update([
+            'admin_user_id' => $request->employee_id,
+            'type' => $request->type,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'reason' => $request->reason
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Отпуск успешно обновлен',
+            'timeOff' => $timeOff->load('user')
+        ]);
+    }
+    
+    /**
+     * Удаление отпуска
+     */
+    public function destroyTimeOff($id)
+    {
+        $user = Auth::user();
+        $projectId = $user->project_id;
+        
+        $timeOff = EmployeeTimeOff::where('project_id', $projectId)
+            ->where('id', $id)
+            ->first();
+        
+        if (!$timeOff) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Отпуск не найден'
+            ], 404);
+        }
+        
+        // Проверяем можно ли удалить отпуск
+        if (!$timeOff->canDelete()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Нельзя удалить одобренный отпуск, который уже начался'
+            ], 400);
+        }
+        
+        $timeOff->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Отпуск успешно удален'
+        ]);
+    }
+    
+    /**
+     * Получение предстоящих отпусков (ближайшие 30 дней)
+     */
+    private function getUpcomingTimeOffs($projectId)
+    {
+        $today = Carbon::today();
+        $in30Days = $today->copy()->addDays(30);
+        
+        return EmployeeTimeOff::where('project_id', $projectId)
+            ->where('status', '!=', 'cancelled')
+            ->where('status', '!=', 'rejected')
+            ->where('start_date', '>=', $today)
+            ->where('start_date', '<=', $in30Days)
+            ->with('user')
+            ->orderBy('start_date', 'asc')
+            ->get()
+            ->map(function($timeOff) {
+                // Добавляем текстовые представления
+                $typeNames = [
+                    'vacation' => 'Отпуск',
+                    'sick_leave' => 'Больничный',
+                    'personal_leave' => 'Личный отпуск',
+                    'unpaid_leave' => 'Отпуск без содержания'
+                ];
+                
+                $statusNames = [
+                    'pending' => 'Ожидает',
+                    'approved' => 'Одобрено'
+                ];
+                
+                $timeOff->type_text = $typeNames[$timeOff->type] ?? $timeOff->type;
+                $timeOff->status_text = $statusNames[$timeOff->status] ?? $timeOff->status;
+                
+                return $timeOff;
+            });
     }
 }
