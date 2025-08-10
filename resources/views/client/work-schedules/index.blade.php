@@ -104,6 +104,24 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="text-muted fw-normal mt-0">Предстоящие отпуска</h5>
+                                    <h3 class="mt-3 mb-3">{{ $stats['upcoming_time_offs'] ?? 0 }}</h3>
+                                </div>
+                                <div class="avatar-sm">
+                                    <span class="avatar-title bg-soft-purple rounded">
+                                        <i class="mdi mdi-umbrella-beach font-20 text-purple"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Расписание на текущую неделю -->
@@ -161,7 +179,35 @@
                                     <td>{{ $employeeSchedule['employee']->name }}</td>
                                     @foreach($employeeSchedule['schedule'] as $day)
                                     <td>
-                                        @if($day['is_working'])
+                                        @if($day['status'] === 'time_off')
+                                            @php
+                                                $typeNames = [
+                                                    'vacation' => 'Отпуск',
+                                                    'sick_leave' => 'Больничный',
+                                                    'personal_leave' => 'Личный отпуск',
+                                                    'unpaid_leave' => 'Отпуск без содержания'
+                                                ];
+                                                $statusNames = [
+                                                    'pending' => 'Ожидает',
+                                                    'approved' => 'Одобрено'
+                                                ];
+                                                $typeText = $typeNames[$day['time_off_type']] ?? $day['time_off_type'];
+                                                $statusText = $statusNames[$day['time_off_status']] ?? $day['time_off_status'];
+                                            @endphp
+                                            <span class="schedule-time time-off">
+                                                {{ $typeText }}
+                                            </span>
+                                            <div class="schedule-stats">
+                                                <span class="time-off-status status-{{ $day['time_off_status'] }}">
+                                                    {{ $statusText }}
+                                                </span>
+                                                @if($day['time_off_reason'])
+                                                    <span class="time-off-reason" title="{{ $day['time_off_reason'] }}">
+                                                        💬 {{ Str::limit($day['time_off_reason'], 20) }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        @elseif($day['is_working'])
                                             <span class="schedule-time working">
                                                 {{ $day['start_time'] }}-{{ $day['end_time'] }}
                                             </span>
@@ -603,10 +649,20 @@ function currentWeek() {
 // Обновить отображение текущей недели
 function updateWeekDisplay() {
     const today = new Date();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay() + 1 + (currentWeekOffset * 7)); // Понедельник
+    
+    // Находим начало текущей недели (понедельник)
+    const currentWeekStart = new Date(today);
+    const dayOfWeek = today.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // 0=воскресенье, 1=понедельник
+    currentWeekStart.setDate(today.getDate() - daysToMonday);
+    
+    // Добавляем нужное количество недель
+    const startOfWeek = new Date(currentWeekStart);
+    startOfWeek.setDate(currentWeekStart.getDate() + (currentWeekOffset * 7));
+    
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Воскресенье
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Воскресенье
+
     
     const startStr = startOfWeek.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
     const endStr = endOfWeek.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -616,14 +672,12 @@ function updateWeekDisplay() {
 
 // Загрузить расписание недели
 function loadWeekSchedule() {
-    console.log('Loading week schedule for offset:', currentWeekOffset);
+
     
     fetch(`{{ route('work-schedules.week') }}?offset=${currentWeekOffset}`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-
-                
                 updateOverviewScheduleTable(data.schedules);
                 if (data.warning) {
                     // Показываем предупреждение только раз в месяц
@@ -891,17 +945,58 @@ function declensionAppointments(count) {
 function updateOverviewScheduleTable(schedules) {
     const tbody = document.querySelector('.schedule-overview-table tbody');
     if (!tbody) return;
+
+
     
     tbody.innerHTML = '';
     
     schedules.forEach(employeeSchedule => {
         const row = document.createElement('tr');
         let scheduleCells = '';
-        
-                employeeSchedule.schedule.forEach(day => {
 
-            
-            if (day.is_working) {
+        
+        employeeSchedule.schedule.forEach(day => {
+            if (day.status === 'time_off') {
+                // Отображение отпуска
+                const typeNames = {
+                    'vacation': 'Отпуск',
+                    'sick_leave': 'Больничный',
+                    'personal_leave': 'Личный отпуск',
+                    'unpaid_leave': 'Отпуск без содержания'
+                };
+                const statusNames = {
+                    'pending': 'Ожидает',
+                    'approved': 'Одобрено'
+                };
+                
+                const typeText = typeNames[day.time_off_type] || day.time_off_type;
+                const statusText = statusNames[day.time_off_status] || day.time_off_status;
+                
+                let timeOffHtml = `
+                    <span class="schedule-time time-off">
+                        ${typeText}
+                    </span>
+                    <div class="schedule-stats">
+                        <span class="time-off-status status-${day.time_off_status}">
+                            ${statusText}
+                        </span>
+                `;
+                
+                if (day.time_off_reason) {
+                    const reason = day.time_off_reason.length > 20 ? 
+                        day.time_off_reason.substring(0, 20) + '...' : 
+                        day.time_off_reason;
+                    timeOffHtml += `
+                        <span class="time-off-reason" title="${day.time_off_reason}">
+                            💬 ${reason}
+                        </span>
+                    `;
+                }
+                
+                timeOffHtml += '</div>';
+                
+                scheduleCells += `<td>${timeOffHtml}</td>`;
+            } else if (day.is_working) {
                 let statsHtml = '';
                 if (day.appointments_count !== undefined) {
                     statsHtml += `<span class="appointments-count show-appointments">📅 ${declensionAppointments(day.appointments_count)}</span>`;
@@ -949,23 +1044,40 @@ function updateOverviewScheduleTable(schedules) {
 
 // Функция обновления статистики на вкладке "Обзор"
 function updateOverviewStats(stats) {
-    // Обновляем статистические карточки
-    const totalEmployeesCard = document.querySelector('.card .mt-3.mb-3');
-    if (totalEmployeesCard && stats.total_employees !== undefined) {
-        totalEmployeesCard.textContent = stats.total_employees;
-    }
+    // Обновляем все статистические карточки
+    const statCards = document.querySelectorAll('.card .mt-3.mb-3');
     
-    // Можно добавить обновление других статистических данных
-    const workingTodayCards = document.querySelectorAll('.card .mt-3.mb-3');
-    if (workingTodayCards[1] && stats.working_today !== undefined) {
-        workingTodayCards[1].textContent = stats.working_today;
+    if (statCards.length >= 4) {
+        // Всего сотрудников
+        if (stats.total_employees !== undefined) {
+            statCards[0].textContent = stats.total_employees;
+        }
+        
+        // Работает сегодня
+        if (stats.working_today !== undefined) {
+            statCards[1].textContent = stats.working_today;
+        }
+        
+        // Записей на неделю
+        if (stats.appointments_this_week !== undefined) {
+            statCards[2].textContent = stats.appointments_this_week;
+        }
+        
+        // Часов на неделю
+        if (stats.hours_this_week !== undefined) {
+            statCards[3].textContent = stats.hours_this_week;
+        }
+        
+        // Предстоящие отпуска
+        if (stats.upcoming_time_offs !== undefined) {
+            statCards[4].textContent = stats.upcoming_time_offs;
+        }
     }
 }
 
 // Функции для модальных окон
 function showScheduleModal() {
     // Эта функция уже не используется, заменена на editScheduleDay
-    console.log('showScheduleModal deprecated');
 }
 
 function showTimeOffModal(timeOffId = null) {
@@ -1586,6 +1698,54 @@ function showWarningOncePerMonth(message) {
     background-color: #e2e3e5;
     color: #6c757d;
     border: 1px solid #d6d8db;
+}
+
+/* Стили для отображения отпусков в таблице */
+.schedule-time.time-off {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+    border: 1px solid #bbdefb;
+}
+
+/* Стили для карточки отпусков */
+.bg-soft-purple {
+    background-color: #f3e5f5 !important;
+}
+
+.text-purple {
+    color: #7b1fa2 !important;
+}
+
+.time-off-status {
+    font-size: 11px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 500;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.time-off-status.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.time-off-status.status-approved {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.time-off-reason {
+    font-size: 11px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+    border: 1px solid #e1bee7;
+    display: inline-block;
+    cursor: help;
 }
 </style>
 

@@ -72,14 +72,18 @@ class WorkScheduleController extends Controller
         $hoursThisWeek = $this->calculateWorkedHours($employees, $startOfWeek, $endOfWeek);
         
         // Предстоящие отпуска
-        $upcomingTimeOffs = 0; // TODO: когда создадим таблицу time_offs
+        $upcomingTimeOffsCount = EmployeeTimeOff::where('project_id', $projectId)
+            ->where('status', '!=', 'cancelled')
+            ->where('status', '!=', 'rejected')
+            ->where('start_date', '>=', $today)
+            ->count();
         
         return [
             'total_employees' => $employees->count(),
             'working_today' => $workingToday,
             'appointments_this_week' => $appointmentsThisWeek,
             'hours_this_week' => $hoursThisWeek,
-            'upcoming_time_offs' => $upcomingTimeOffs
+            'upcoming_time_offs' => $upcomingTimeOffsCount
         ];
     }
     
@@ -405,8 +409,15 @@ class WorkScheduleController extends Controller
     private function getWeekSchedulesWithSmartLogic($employees, $offset)
     {
         $schedules = [];
-        $startOfWeek = Carbon::now()->addWeeks($offset)->startOfWeek();
-        $endOfWeek = Carbon::now()->addWeeks($offset)->endOfWeek();
+        // ИСПРАВЛЕНО: Правильный расчет дат для offset с учетом часового пояса
+        $today = Carbon::now()->setTimezone('Europe/Moscow');
+        
+        // Начинаем с текущей недели (offset = 0)
+        $currentWeekStart = $today->copy()->startOfWeek(Carbon::MONDAY);
+        
+        // Добавляем нужное количество недель
+        $startOfWeek = $currentWeekStart->copy()->addWeeks($offset);
+        $endOfWeek = $startOfWeek->copy()->endOfWeek(Carbon::SUNDAY);
         
         // Получаем все записи на эту неделю для всех сотрудников
         $appointmentsRaw = Appointment::whereBetween('date', [$startOfWeek, $endOfWeek])
@@ -415,13 +426,39 @@ class WorkScheduleController extends Controller
             ->orderBy('time')
             ->get();
             
-
-            
         $appointments = $appointmentsRaw->groupBy(['user_id', function($item) {
             return $item->date->format('Y-m-d'); // Приводим дату к формату Y-m-d
         }]);
+        
+        // Получаем отпуска на эту неделю для всех сотрудников
+        // ИСПРАВЛЕНО: Теперь загружаем только отпуска, которые действительно пересекаются с текущей неделей
+        // ИСПРАВЛЕНО: Загружаем ВСЕ отпуска для проекта, а фильтруем потом
+        $rawTimeOffs = EmployeeTimeOff::where('project_id', Auth::user()->project_id)
+            ->where('status', '!=', 'cancelled')
+            ->where('status', '!=', 'rejected')
+            ->with('user')
+            ->get();
+            
+        $timeOffs = $rawTimeOffs->groupBy('admin_user_id');
             
 
+        
+        // ФИЛЬТРУЕМ ОТПУСКА: оставляем только те, что пересекаются с текущей неделей
+        $filteredTimeOffs = collect();
+        foreach ($timeOffs as $employeeId => $employeeTimeOffs) {
+            $filteredEmployeeTimeOffs = collect();
+            foreach ($employeeTimeOffs as $timeOff) {
+                // Отпуск пересекается с неделей если:
+                // - начало отпуска <= конец недели И конец отпуска >= начало недели
+                if ($timeOff->start_date->lte($endOfWeek) && $timeOff->end_date->gte($startOfWeek)) {
+                    $filteredEmployeeTimeOffs->push($timeOff);
+                }
+            }
+            if ($filteredEmployeeTimeOffs->count() > 0) {
+                $filteredTimeOffs[$employeeId] = $filteredEmployeeTimeOffs;
+            }
+        }
+        $timeOffs = $filteredTimeOffs;
         
         // Получаем текущие расписания для сравнения
         $currentSchedules = [];
@@ -449,6 +486,38 @@ class WorkScheduleController extends Controller
                 $date = $startOfWeek->copy()->addDays($i);
                 $dayOfWeek = $date->dayOfWeek; // 0 = воскресенье, 1 = понедельник
                 $dateString = $date->format('Y-m-d');
+                
+                // Проверяем есть ли отпуск на этот день - ИСПРАВЛЕНО: используем тот же подход что и для записей
+                $timeOffForDay = null;
+                $timeOffsForDay = $timeOffs->get($employee->id, collect())->filter(function($timeOff) use ($date) {
+                    // Простая проверка: дата попадает в период отпуска
+                    return $date->gte($timeOff->start_date) && 
+                           $date->lte($timeOff->end_date) && 
+                           in_array($timeOff->status, ['pending', 'approved']);
+                });
+                
+                if ($timeOffsForDay->count() > 0) {
+                    $timeOffForDay = $timeOffsForDay->first();
+                }
+                
+                // Если есть отпуск - показываем его
+                if ($timeOffForDay) {
+                    $weekSchedule[] = [
+                        'date' => $date,
+                        'day_name' => $this->getDayName($dayOfWeek),
+                        'is_working' => false,
+                        'start_time' => null,
+                        'end_time' => null,
+                        'status' => 'time_off',
+                        'time_off_type' => $timeOffForDay->type,
+                        'time_off_reason' => $timeOffForDay->reason,
+                        'time_off_status' => $timeOffForDay->status,
+                        'appointments_count' => 0,
+                        'free_hours' => 0,
+                        'source' => 'time_off'
+                    ];
+                    continue; // Переходим к следующему дню
+                }
                 
                 // Получаем записи на этот день
                 $appointmentsForDay = $appointments->get($employee->id, collect())->get($dateString, collect());
@@ -529,8 +598,6 @@ class WorkScheduleController extends Controller
                         $hasHistoricalAppointments = $employeesWithHistoricalAppointments[$employee->id] ?? false;
                         $shouldShowWorkingDay = $daySchedule && $daySchedule->is_working && $hasHistoricalAppointments;
                     }
-                    
-
                     
                     if ($shouldShowWorkingDay) {
                         $totalMinutes = $this->calculateWorkingMinutes($daySchedule->start_time, $daySchedule->end_time);
