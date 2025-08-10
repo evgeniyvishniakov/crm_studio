@@ -14,7 +14,6 @@ class KnowledgeArticle extends Model
         'title',
         'slug',
         'description',
-        'content',
         'author',
         'featured_image',
         'meta_tags',
@@ -37,5 +36,15 @@ class KnowledgeArticle extends Model
     public function scopeByCategory($query, $category)
     {
         return $query->where('category', $category);
+    }
+
+    public function steps()
+    {
+        return $this->hasMany(KnowledgeArticleStep::class)->orderBy('sort_order');
+    }
+
+    public function tips()
+    {
+        return $this->hasMany(KnowledgeArticleTip::class)->orderBy('sort_order');
     }
 }

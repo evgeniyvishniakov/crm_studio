@@ -118,6 +118,8 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     Route::post('/languages/{language}/toggle-active', [\App\Http\Controllers\Admin\LanguageController::class, 'toggleActive'])->name('languages.toggle-active');
     Route::post('/languages/clear-cache', [\App\Http\Controllers\Admin\LanguageController::class, 'clearCache'])->name('languages.clear-cache');
 
-    // База знаний
+    // Управление базой знаний
     Route::resource('knowledge', \App\Http\Controllers\Admin\KnowledgeController::class);
+    Route::post('/knowledge/{article}/toggle-publish', [\App\Http\Controllers\Admin\KnowledgeController::class, 'togglePublish'])
+        ->name('knowledge.toggle-publish');
 }); 

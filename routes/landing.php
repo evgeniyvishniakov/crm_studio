@@ -54,12 +54,40 @@ Route::get('/terms', function () {
 })->name('beautyflow.terms');
 
 Route::get('/knowledge', function () {
-    return view('landing.pages.knowledge');
+    $articles = \App\Models\KnowledgeArticle::published()
+        ->with(['steps', 'tips'])
+        ->orderBy('sort_order')
+        ->get();
+    
+    $categories = [
+        'getting-started' => 'Начало работы',
+        'features' => 'Функции',
+        'tips' => 'Советы',
+        'troubleshooting' => 'Решение проблем'
+    ];
+    
+    return view('landing.pages.knowledge', compact('articles', 'categories'));
 })->name('beautyflow.knowledge');
 
 Route::get('/knowledge/roles', function () {
     return view('landing.pages.article-roles');
 })->name('beautyflow.knowledge.roles');
+
+Route::get('/knowledge/{slug}', function ($slug) {
+    $article = \App\Models\KnowledgeArticle::published()
+        ->with(['steps', 'tips'])
+        ->where('slug', $slug)
+        ->firstOrFail();
+    
+    $categories = [
+        'getting-started' => 'Начало работы',
+        'features' => 'Функции',
+        'tips' => 'Советы',
+        'troubleshooting' => 'Решение проблем'
+    ];
+    
+    return view('landing.pages.knowledge-article', compact('article', 'categories'));
+})->name('knowledge.show');
 
 Route::post('/register', [RegisterController::class, 'store'])->name('beautyflow.register');
 

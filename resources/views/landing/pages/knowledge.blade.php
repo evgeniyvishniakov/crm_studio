@@ -58,257 +58,60 @@
 <!-- Articles Section -->
 <section class="py-5">
     <div class="container">
+
+        
         <div class="row g-4" id="articlesContainer">
-            <!-- Getting Started Articles -->
-            <div class="col-lg-4 col-md-6 article-item" data-category="getting-started">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-primary me-2">Начало работы</span>
+            @forelse($articles as $article)
+                <div class="col-lg-4 col-md-6 article-item" data-category="{{ $article->category }}">
+                    <div class="card h-100 border-0 shadow-sm">
+                        @if($article->featured_image)
+                            <img src="{{ asset('storage/' . $article->featured_image) }}" 
+                                 class="card-img-top" 
+                                 alt="{{ $article->title }}"
+                                 style="height: 200px; object-fit: cover;">
+                        @endif
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="badge bg-primary me-2">{{ $categories[$article->category] ?? $article->category }}</span>
+                            </div>
+                            <h5 class="card-title fw-bold">{{ $article->title }}</h5>
+                            <p class="card-text text-muted">{{ Str::limit($article->description, 120) }}</p>
+                            
+                            @if($article->steps->count() > 0)
+                                <div class="mb-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-list-ol me-1"></i>
+                                        {{ $article->steps->count() }} {{ trans_choice('шаг|шага|шагов', $article->steps->count()) }}
+                                    </small>
+                                </div>
+                            @endif
+                            
+                            @if($article->tips->count() > 0)
+                                <div class="mb-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-lightbulb me-1"></i>
+                                        {{ $article->tips->count() }} {{ trans_choice('совет|совета|советов', $article->tips->count()) }}
+                                    </small>
+                                </div>
+                            @endif
+                            
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user text-muted me-2"></i>
+                                <small class="text-muted">{{ $article->author }}</small>
+                            </div>
                         </div>
-                        <h5 class="card-title fw-bold">Настройка ролей и доступов</h5>
-                        <p class="card-text text-muted">Пошаговая инструкция по настройке ролей и прав доступа для сотрудников вашего салона.</p>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-user text-muted me-2"></i>
-                            <small class="text-muted">Команда Trimora</small>
+                        <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                            <a href="{{ route('knowledge.show', $article->slug) }}" class="btn btn-outline-primary btn-sm">Читать статью</a>
                         </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="{{ route('beautyflow.knowledge.roles') }}" class="btn btn-outline-primary btn-sm">Читать статью</a>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 article-item" data-category="getting-started">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-primary me-2">Начало работы</span>
-                        </div>
-                                                 <h5 class="card-title fw-bold">Первые шаги в Trimora</h5>
-                         <p class="card-text text-muted">Пошаговое руководство по настройке и первому запуску системы для вашего салона красоты.</p>
-                         <div class="d-flex align-items-center">
-                             <i class="fas fa-user text-muted me-2"></i>
-                             <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
+            @empty
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">Статьи не найдены</h4>
+                    <p class="text-muted">В данный момент в базе знаний нет опубликованных статей.</p>
                 </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 article-item" data-category="getting-started">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-primary me-2">Начало работы</span>
-                        </div>
-                        <h5 class="card-title fw-bold">Настройка профиля салона</h5>
-                        <p class="card-text text-muted">Как правильно настроить профиль вашего салона, добавить услуги и настроить расписание работы.</p>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-user text-muted me-2"></i>
-                            <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 article-item" data-category="getting-started">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-primary me-2">Начало работы</span>
-                        </div>
-                        <h5 class="card-title fw-bold">Добавление сотрудников</h5>
-                        <p class="card-text text-muted">Пошаговая инструкция по добавлению мастеров и настройке их профилей в системе.</p>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-user text-muted me-2"></i>
-                            <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 article-item" data-category="getting-started">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-primary me-2">Начало работы</span>
-                        </div>
-                        <h5 class="card-title fw-bold">Создание услуг и цен</h5>
-                        <p class="card-text text-muted">Как настроить каталог услуг, установить цены и создать пакетные предложения.</p>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-user text-muted me-2"></i>
-                            <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 article-item" data-category="getting-started">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-primary me-2">Начало работы</span>
-                        </div>
-                        <h5 class="card-title fw-bold">Настройка рабочего расписания</h5>
-                        <p class="card-text text-muted">Как настроить график работы салона, выходные дни и время перерывов.</p>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-user text-muted me-2"></i>
-                            <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 article-item" data-category="getting-started">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-primary me-2">Начало работы</span>
-                        </div>
-                        <h5 class="card-title fw-bold">Первая запись клиента</h5>
-                        <p class="card-text text-muted">Пошаговое руководство по созданию первой записи клиента в системе.</p>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-user text-muted me-2"></i>
-                            <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Features Articles -->
-            <div class="col-lg-4 col-md-6 article-item" data-category="features">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-success me-2">Функции</span>
-                        </div>
-                                                 <h5 class="card-title fw-bold">Управление записями клиентов</h5>
-                         <p class="card-text text-muted">Подробный обзор функций для работы с клиентами: создание, редактирование, история посещений.</p>
-                         <div class="d-flex align-items-center">
-                             <i class="fas fa-user text-muted me-2"></i>
-                             <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 article-item" data-category="features">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-success me-2">Функции</span>
-                        </div>
-                        <h5 class="card-title fw-bold">Система онлайн-бронирования</h5>
-                        <p class="card-text text-muted">Как настроить и использовать систему онлайн-записи для ваших клиентов.</p>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-user text-muted me-2"></i>
-                            <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tips Articles -->
-            <div class="col-lg-4 col-md-6 article-item" data-category="tips">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-info me-2">Советы</span>
-                        </div>
-                                                 <h5 class="card-title fw-bold">5 способов увеличить продажи</h5>
-                         <p class="card-text text-muted">Практические советы по использованию Trimora для роста вашего бизнеса.</p>
-                         <div class="d-flex align-items-center">
-                             <i class="fas fa-user text-muted me-2"></i>
-                             <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 article-item" data-category="tips">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-info me-2">Советы</span>
-                        </div>
-                                                 <h5 class="card-title fw-bold">Оптимизация рабочего процесса</h5>
-                         <p class="card-text text-muted">Как организовать эффективную работу персонала с помощью Trimora.</p>
-                         <div class="d-flex align-items-center">
-                             <i class="fas fa-user text-muted me-2"></i>
-                             <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Troubleshooting Articles -->
-            <div class="col-lg-4 col-md-6 article-item" data-category="troubleshooting">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-warning me-2">Решение проблем</span>
-                        </div>
-                                                 <h5 class="card-title fw-bold">Частые вопросы и ответы</h5>
-                         <p class="card-text text-muted">Ответы на самые популярные вопросы пользователей Trimora.</p>
-                         <div class="d-flex align-items-center">
-                             <i class="fas fa-user text-muted me-2"></i>
-                             <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4 col-md-6 article-item" data-category="troubleshooting">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <span class="badge bg-warning me-2">Решение проблем</span>
-                        </div>
-                                                 <h5 class="card-title fw-bold">Восстановление данных</h5>
-                         <p class="card-text text-muted">Пошаговая инструкция по восстановлению данных и настройке резервного копирования.</p>
-                         <div class="d-flex align-items-center">
-                             <i class="fas fa-user text-muted me-2"></i>
-                             <small class="text-muted">Команда Trimora</small>
-                        </div>
-                    </div>
-                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                        <a href="#" class="btn btn-outline-primary btn-sm">Читать статью</a>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 </section>

@@ -22,6 +22,21 @@
                     <a href="{{ route('admin.knowledge.edit', $article->id) }}" class="btn btn-warning">
                         <i class="fas fa-edit me-2"></i>Редактировать
                     </a>
+                    
+                    <!-- Кнопка изменения статуса публикации -->
+                    <form action="{{ route('admin.knowledge.toggle-publish', $article->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @if($article->is_published)
+                            <button type="submit" class="btn btn-secondary" onclick="return confirm('Снять статью с публикации?')">
+                                <i class="fas fa-eye-slash me-2"></i>Снять с публикации
+                            </button>
+                        @else
+                            <button type="submit" class="btn btn-success" onclick="return confirm('Опубликовать статью?')">
+                                <i class="fas fa-eye me-2"></i>Опубликовать
+                            </button>
+                        @endif
+                    </form>
+                    
                     <a href="{{ route('admin.knowledge.index') }}" class="btn btn-outline-secondary">
                         <i class="fas fa-arrow-left me-2"></i>Назад к списку
                     </a>
@@ -73,17 +88,57 @@
                         </div>
                     </div>
 
-                    <!-- Содержание -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Содержание статьи</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="article-content">
-                                {!! $article->content !!}
+                    <!-- Шаги -->
+                    @if($article->steps->count() > 0)
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Шаги</h5>
+                            </div>
+                            <div class="card-body">
+                                @foreach($article->steps as $step)
+                                    <div class="step-item mb-4">
+                                        <h6 class="step-title">
+                                            <span class="step-number">{{ $loop->iteration }}</span>
+                                            {{ $step->title }}
+                                        </h6>
+                                        <div class="step-content">
+                                            {!! $step->content !!}
+                                        </div>
+                                        @if($step->image)
+                                            <div class="step-image mt-3">
+                                                <img src="{{ asset('storage/' . $step->image) }}" 
+                                                     alt="{{ $step->title }}" 
+                                                     class="img-fluid rounded">
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
-                    </div>
+                    @endif
+
+                    <!-- Полезные советы -->
+                    @if($article->tips->count() > 0)
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Полезные советы</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="tips-list">
+                                    @foreach($article->tips as $tip)
+                                        <div class="tip-item mb-3">
+                                            <div class="tip-icon">
+                                                <i class="fas fa-lightbulb text-warning"></i>
+                                            </div>
+                                            <div class="tip-content">
+                                                {!! $tip->content !!}
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="col-md-4">
@@ -212,6 +267,58 @@
     padding: 1rem;
     border-radius: 0.25rem;
     overflow-x: auto;
+}
+
+/* Стили для шагов */
+.step-item {
+    border-left: 4px solid #007bff;
+    padding-left: 1rem;
+}
+
+.step-number {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background: #007bff;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
+    margin-right: 0.5rem;
+    font-weight: bold;
+}
+
+.step-title {
+    color: #007bff;
+    margin-bottom: 1rem;
+}
+
+.step-content {
+    margin-left: 2.5rem;
+}
+
+.step-image {
+    margin-left: 2.5rem;
+}
+
+/* Стили для полезных советов */
+.tips-list {
+    margin-left: 1rem;
+}
+
+.tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.tip-icon {
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+}
+
+.tip-content {
+    flex: 1;
 }
 </style>
 @endpush

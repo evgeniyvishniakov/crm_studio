@@ -115,6 +115,29 @@
                                                    title="Редактировать">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
+                                                
+                                                <!-- Кнопка изменения статуса публикации -->
+                                                <form action="{{ route('admin.knowledge.toggle-publish', $article->id) }}" 
+                                                      method="POST" 
+                                                      class="d-inline">
+                                                    @csrf
+                                                    @if($article->is_published)
+                                                        <button type="submit" 
+                                                                class="btn btn-sm btn-outline-secondary" 
+                                                                title="Снять с публикации"
+                                                                onclick="return confirm('Снять статью с публикации?')">
+                                                            <i class="fas fa-eye-slash"></i>
+                                                        </button>
+                                                    @else
+                                                        <button type="submit" 
+                                                                class="btn btn-sm btn-outline-success" 
+                                                                title="Опубликовать"
+                                                                onclick="return confirm('Опубликовать статью?')">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                    @endif
+                                                </form>
+                                                
                                                 <form action="{{ route('admin.knowledge.destroy', $article->id) }}" 
                                                       method="POST" 
                                                       class="d-inline"
