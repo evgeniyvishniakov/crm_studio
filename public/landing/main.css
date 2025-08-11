@@ -522,7 +522,6 @@ body {
 .hero-section {
 
     overflow: visible; /* Изменяем на visible */
-    min-height: 100vh;
     display: flex;
     align-items: center;
     z-index: 1; /* Добавляем z-index */

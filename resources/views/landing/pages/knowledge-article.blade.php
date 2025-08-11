@@ -246,7 +246,7 @@ function shareArticle() {
     
     .step-text li {
         margin-bottom: 8px;
-        font-size: 16px;
+        font-size: 15px;
         line-height: 1.6;
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
@@ -317,6 +317,12 @@ function shareArticle() {
         font-size: 18px;
         line-height: 1.6;
         color: #6c757d;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    .card-title {
+        font-size: 23px;
+        font-weight: bold;
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     

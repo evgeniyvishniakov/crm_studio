@@ -5,12 +5,13 @@
 
 @section('styles')
 <style>
-    /* Красивые стили для списка статей */
+    /* Красивые стили для списка статей с теми же шрифтами что и в лендинге */
     .article-item .card {
         transition: all 0.3s ease;
         border: none;
         border-radius: 16px;
         overflow: hidden;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .article-item .card:hover {
@@ -36,6 +37,7 @@
         color: #2c3e50;
         line-height: 1.4;
         margin-bottom: 15px;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .article-item .card-text {
@@ -43,6 +45,7 @@
         line-height: 1.6;
         color: #6c757d;
         margin-bottom: 20px;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .article-item .badge {
@@ -50,11 +53,13 @@
         font-weight: 500;
         padding: 6px 12px;
         border-radius: 20px;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .article-item small {
         font-size: 13px;
         color: #6c757d;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .article-item .btn {
@@ -62,6 +67,7 @@
         font-weight: 500;
         padding: 8px 20px;
         transition: all 0.3s ease;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .category-filter {
@@ -70,6 +76,7 @@
         font-weight: 500;
         transition: all 0.3s ease;
         border: 2px solid #e9ecef;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .category-filter:hover {
@@ -102,6 +109,7 @@
         border: none;
         padding: 15px 20px;
         font-size: 16px;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .search-section .form-control:focus {
@@ -113,6 +121,7 @@
         border: none;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         font-weight: 500;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .hero-section {
@@ -143,12 +152,14 @@
         font-weight: 700;
         margin-bottom: 20px;
         text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .hero-section .lead {
         font-size: 20px;
         opacity: 0.9;
         line-height: 1.6;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     /* Адаптивность */
