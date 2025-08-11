@@ -70,6 +70,29 @@
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    h5.card-title {
+        font-size: 23px!important;
+        font-weight: bold!important;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    .card h5.card-title {
+        font-size: 23px!important;
+        font-weight: bold!important;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    .article-item .card .card-body h5.card-title {
+        font-size: 23px!important;
+        font-weight: bold!important;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
     .category-filter {
         border-radius: 25px;
         padding: 10px 20px;
@@ -259,7 +282,7 @@
                             <div class="d-flex align-items-center mb-3">
                                 <span class="badge bg-primary me-2">{{ $categories[$article->category] ?? $article->category }}</span>
                             </div>
-                            <h5 class="card-title">{{ $article->title }}</h5>
+                            <h5 class="card-title" style="font-size: 23px!important; font-weight: bold!important; font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;">{{ $article->title }}</h5>
                             <p class="card-text">{{ Str::limit($article->description, 120) }}</p>
                             
                             @if($article->steps->count() > 0)
