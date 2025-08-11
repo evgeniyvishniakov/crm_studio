@@ -908,7 +908,7 @@ aside.left-panel {
 /* Right panel */
 .right-panel {
   background: #f1f2f7;
-  margin-left: 300px;
+  margin-left: 0;  /* Убираем большой отступ */
   margin-top: 55px; }
   .right-panel .top-left {
     width: 350px;
@@ -952,8 +952,7 @@ aside.left-panel {
   padding: 0 30px;
   height: 55px;
   position: fixed;
-  left: 300px;
-  left: 0;
+  left: 0;  /* Убираем большой отступ */
   right: 0;
   top: 0;
   z-index: 999; }
@@ -976,7 +975,7 @@ aside.left-panel {
     display: none; }
 
 .open .right-panel {
-  margin-left: 83px; }
+  margin-left: 0; }  /* Убираем отступ когда меню открыто */
 .open .let-panel {
   z-index: 999; }
 

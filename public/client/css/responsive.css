@@ -8511,3 +8511,432 @@
         outline: none !important;
     }
 }
+
+/* ===== МОБИЛЬНЫЕ СТИЛИ ДЛЯ ЗАРПЛАТЫ ===== */
+
+/* Правила для десктопных экранов (по умолчанию) */
+.salary-overview-table,
+.salary-settings-table,
+.salary-calculations-table,
+.salary-payments-table,
+.salary-reports-table {
+    display: table;  /* Показываем таблицы на десктопе */
+}
+
+.calculations-cards,
+.payments-cards,
+.salary-settings-cards,
+.salary-calculations-cards,
+.salary-payments-cards {
+    display: none;  /* Скрываем карточки на десктопе */
+}
+
+@media (max-width: 768px) {
+    /* Скрываем таблицы на мобильных */
+    .salary-overview-table,
+    .salary-settings-table,
+    .salary-calculations-table,
+    .salary-payments-table,
+    .salary-reports-table {
+        display: none;
+    }
+    
+    /* Показываем мобильные карточки */
+    .calculations-cards,
+    .payments-cards,
+    .salary-settings-cards,
+    .salary-calculations-cards,
+    .salary-payments-cards {
+        display: block;
+    }
+    
+    /* Общие стили для карточек зарплаты */
+    .calculation-card,
+    .payment-card,
+    .salary-setting-card,
+    .salary-calculation-card,
+    .salary-payment-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+    
+    .calculation-card:hover,
+    .payment-card:hover,
+    .salary-setting-card:hover,
+    .salary-calculation-card:hover,
+    .salary-payment-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    /* Заголовки карточек */
+    .calculation-card-header,
+    .payment-card-header,
+    .salary-setting-card-header,
+    .salary-calculation-card-header,
+    .salary-payment-card-header {
+        margin-bottom: 16px;
+    }
+    
+    .calculation-main-info,
+    .payment-main-info,
+    .salary-setting-main-info,
+    .salary-calculation-main-info,
+    .salary-payment-main-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    
+    /* Информация о сотруднике */
+    .calculation-employee,
+    .payment-employee,
+    .salary-setting-employee,
+    .salary-calculation-employee,
+    .salary-payment-employee {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: #374151;
+    }
+    
+    .calculation-employee i,
+    .payment-employee i,
+    .salary-setting-employee i,
+    .salary-calculation-employee i,
+    .salary-payment-employee i {
+        color: #6b7280;
+        font-size: 16px;
+    }
+    
+    /* Статусы и типы */
+    .calculation-status,
+    .payment-status,
+    .salary-setting-type,
+    .salary-calculation-status,
+    .salary-payment-status {
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Информационные блоки */
+    .calculation-info,
+    .payment-info,
+    .salary-setting-info,
+    .salary-calculation-info,
+    .salary-payment-info {
+        margin-bottom: 16px;
+    }
+    
+    .calculation-info-item,
+    .payment-info-item,
+    .salary-setting-info-item,
+    .salary-calculation-info-item,
+    .salary-payment-info-item {
+        display: flex;
+        flex-direction: column;  /* Располагаем элементы вертикально */
+        align-items: flex-start;  /* Выравниваем по левому краю */
+        padding: 8px 0;
+        border-bottom: 1px solid #f3f4f6;
+        gap: 4px;  /* Отступ между лейблом и значением */
+    }
+    
+    .calculation-info-item:last-child,
+    .payment-info-item:last-child,
+    .salary-setting-info-item:last-child,
+    .salary-calculation-info-item:last-child,
+    .salary-payment-info-item:last-child {
+        border-bottom: none;
+    }
+    
+    /* Лейблы информации */
+    .calculation-info-label,
+    .payment-info-label,
+    .salary-setting-info-label,
+    .salary-calculation-info-label,
+    .salary-payment-info-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 500;  /* Делаем лейблы более заметными */
+    }
+    
+    .calculation-info-label i,
+    .payment-info-label i,
+    .salary-setting-info-label i,
+    .salary-calculation-info-label i,
+    .salary-payment-info-label i {
+        color: #9ca3af;
+        font-size: 14px;
+        width: 16px;
+    }
+    
+    /* Значения информации */
+    .calculation-info-value,
+    .payment-info-value,
+    .salary-setting-info-value,
+    .salary-calculation-info-value,
+    .salary-payment-info-value {
+        font-weight: 600;  /* Делаем значения более заметными */
+        color: #374151;
+        text-align: left;  /* Выравниваем по левому краю */
+        max-width: 100%;  /* Занимаем всю доступную ширину */
+        word-break: break-word;
+        font-size: 15px;  /* Увеличиваем размер шрифта для лучшей читаемости */
+    }
+    
+    /* Действия */
+    .calculation-actions,
+    .payment-actions,
+    .salary-setting-actions,
+    .salary-calculation-actions,
+    .salary-payment-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    
+    .calculation-actions .btn-view,
+    .calculation-actions .btn-edit,
+    .calculation-actions .btn-delete,
+    .payment-actions .btn-view,
+    .payment-actions .btn-edit,
+    .payment-actions .btn-delete,
+    .salary-setting-actions .btn-edit,
+    .salary-setting-actions .btn-delete,
+    .salary-calculation-actions .btn-view,
+    .salary-calculation-actions .btn-edit,
+    .salary-calculation-actions .btn-delete,
+    .salary-payment-actions .btn-view,
+    .salary-payment-actions .btn-edit,
+    .salary-payment-actions .btn-delete {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+    }
+    
+    .calculation-actions .btn-view,
+    .payment-actions .btn-view,
+    .salary-calculation-actions .btn-view,
+    .salary-payment-actions .btn-view {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+    }
+    
+    .calculation-actions .btn-view:hover,
+    .payment-actions .btn-view:hover,
+    .salary-calculation-actions .btn-view:hover,
+    .salary-payment-actions .btn-view:hover {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+    }
+    
+    .calculation-actions .btn-edit,
+    .payment-actions .btn-edit,
+    .salary-setting-actions .btn-edit,
+    .salary-calculation-actions .btn-edit,
+    .salary-payment-actions .btn-edit {
+        background: linear-gradient(135deg, #3b82f6, #60a5fa);
+        color: white;
+    }
+    
+    .calculation-actions .btn-edit:hover,
+    .payment-actions .btn-edit:hover,
+    .salary-setting-actions .btn-edit:hover,
+    .salary-calculation-actions .btn-edit:hover,
+    .salary-payment-actions .btn-edit:hover {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+    }
+    
+    .calculation-actions .btn-delete,
+    .payment-actions .btn-delete,
+    .salary-setting-actions .btn-delete,
+    .salary-calculation-actions .btn-delete,
+    .salary-payment-actions .btn-delete {
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        color: white;
+    }
+    
+    .calculation-actions .btn-delete:hover,
+    .payment-actions .btn-delete:hover,
+    .salary-setting-actions .btn-delete:hover,
+    .salary-calculation-actions .btn-delete:hover,
+    .salary-payment-actions .btn-delete:hover {
+        background: linear-gradient(135deg, #dc2626, #ef4444);
+    }
+    
+    /* Иконки в кнопках */
+    .calculation-actions .icon,
+    .payment-actions .icon,
+    .salary-setting-actions .icon,
+    .salary-calculation-actions .icon,
+    .salary-payment-actions .icon {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .calculation-actions .btn-edit svg,
+    .calculation-actions .btn-delete svg,
+    .payment-actions .btn-edit svg,
+    .payment-actions .btn-delete svg,
+    .salary-setting-actions .btn-edit svg,
+    .salary-setting-actions .btn-delete svg,
+    .salary-calculation-actions .btn-edit svg,
+    .salary-calculation-actions .btn-delete svg,
+    .salary-payment-actions .btn-edit svg,
+    .salary-payment-actions .btn-delete svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    /* Бейджи статусов и типов */
+    .type-badge {
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .type-badge.type-fixed {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+    
+    .type-badge.type-percentage {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+    
+    .type-badge.type-mixed {
+        background: #fef3c7;
+        color: #d97706;
+    }
+    
+    /* Статистические карточки */
+    .stats-grid .col-xl-3 {
+        margin-bottom: 16px;
+    }
+    
+    .stats-grid .card {
+        margin-bottom: 0;
+    }
+    
+    .stats-grid .card-body {
+        padding: 16px;
+    }
+    
+    .stats-grid .card h3 {
+        font-size: 24px;
+    }
+    
+    .stats-grid .card h5 {
+        font-size: 14px;
+    }
+    
+    /* Вкладки на мобильных */
+    .dashboard-tabs {
+        overflow-x: auto;
+        padding-bottom: 8px;
+    }
+    
+    .dashboard-tabs::-webkit-scrollbar {
+        height: 4px;
+    }
+    
+    .dashboard-tabs::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 2px;
+    }
+    
+    .dashboard-tabs::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 2px;
+    }
+    
+    .dashboard-tabs::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Дополнительные стили для очень маленьких экранов */
+    .calculation-card,
+    .payment-card,
+    .salary-setting-card,
+    .salary-calculation-card,
+    .salary-payment-card {
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .calculation-main-info,
+    .payment-main-info,
+    .salary-setting-main-info,
+    .salary-calculation-main-info,
+    .salary-payment-main-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .calculation-info-item,
+    .payment-info-item,
+    .salary-setting-info-item,
+    .salary-calculation-info-item,
+    .salary-payment-info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .calculation-info-value,
+    .payment-info-value,
+    .salary-setting-info-value,
+    .salary-calculation-info-value,
+    .salary-payment-info-value {
+        text-align: left;
+        max-width: 100%;
+    }
+    
+    .calculation-actions,
+    .payment-actions,
+    .salary-setting-actions,
+    .salary-calculation-actions,
+    .salary-payment-actions {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+    
+    .stats-grid .col-xl-3 {
+        width: 100%;
+    }
+    
+    .stats-grid .card h3 {
+        font-size: 20px;
+    }
+    
+    .stats-grid .card h5 {
+        font-size: 13px;
+    }
+}

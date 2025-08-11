@@ -148,6 +148,49 @@
                                 </tbody>
                             </table>
                         </div>
+                        
+                        <!-- Мобильные карточки для расчетов -->
+                        <div class="calculations-cards">
+                            @foreach($recentCalculations ?? [] as $calculation)
+                            <div class="calculation-card">
+                                <div class="calculation-card-header">
+                                    <div class="calculation-main-info">
+                                        <div class="calculation-employee">
+                                            <i class="mdi mdi-account"></i>
+                                            <span>{{ $calculation->user->name }}</span>
+                                        </div>
+                                        <div class="calculation-status">
+                                            <span class="status-badge status-{{ $calculation->status === 'pending' ? 'pending' : ($calculation->status === 'approved' ? 'done' : 'cancel') }}">
+                                                {{ $calculation->status_text }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="calculation-info">
+                                    <div class="calculation-info-item">
+                                        <div class="calculation-info-label">
+                                            <i class="mdi mdi-calendar-range"></i>
+                                            <span>{{ __('messages.period') }}</span>
+                                        </div>
+                                        <div class="calculation-info-value">
+                                            {{ $calculation->period_start->format('d.m.Y') }} - {{ $calculation->period_end->format('d.m.Y') }}
+                                        </div>
+                                    </div>
+                                    <div class="calculation-info-item">
+                                        <div class="calculation-info-label">
+                                            <i class="mdi mdi-cash"></i>
+                                            <span>{{ __('messages.amount') }}</span>
+                                        </div>
+                                        <div class="calculation-info-value">
+                                            <span class="currency-amount" data-amount="{{ $calculation->total_salary }}">
+                                                {{ \App\Helpers\CurrencyHelper::format($calculation->total_salary) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
                     @else
                         <div class="text-center py-4">
                             <i class="mdi mdi-information-outline text-muted" style="font-size: 48px;"></i>
@@ -194,6 +237,49 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                        
+                        <!-- Мобильные карточки для выплат -->
+                        <div class="payments-cards">
+                            @foreach($recentPayments ?? [] as $payment)
+                            <div class="payment-card">
+                                <div class="payment-card-header">
+                                    <div class="payment-main-info">
+                                        <div class="payment-employee">
+                                            <i class="mdi mdi-account"></i>
+                                            <span>{{ $payment->user->name }}</span>
+                                        </div>
+                                        <div class="payment-status">
+                                            <span class="status-badge status-{{ $payment->status === 'pending' ? 'pending' : ($payment->status === 'approved' ? 'done' : 'cancel') }}">
+                                                {{ $payment->status_text }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="payment-info">
+                                    <div class="payment-info-item">
+                                        <div class="payment-info-label">
+                                            <i class="mdi mdi-cash"></i>
+                                            <span>{{ __('messages.amount') }}</span>
+                                        </div>
+                                        <div class="payment-info-value">
+                                            <span class="currency-amount" data-amount="{{ $payment->amount }}">
+                                                {{ \App\Helpers\CurrencyHelper::format($payment->amount) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="payment-info-item">
+                                        <div class="payment-info-label">
+                                            <i class="mdi mdi-calendar"></i>
+                                            <span>{{ __('messages.date') }}</span>
+                                        </div>
+                                        <div class="payment-info-value">
+                                            {{ $payment->payment_date->format('d.m.Y') }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
                     @else
                         <div class="text-center py-4">
@@ -265,6 +351,67 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+            
+            <!-- Мобильные карточки для настроек зарплаты -->
+            <div class="salary-settings-cards">
+                @foreach($salarySettings ?? [] as $setting)
+                <div class="salary-setting-card">
+                    <div class="salary-setting-card-header">
+                        <div class="salary-setting-main-info">
+                            <div class="salary-setting-employee">
+                                <i class="mdi mdi-account"></i>
+                                <span>{{ $setting->user->name }}</span>
+                            </div>
+                            <div class="salary-setting-type">
+                                <span class="type-badge type-{{ $setting->salary_type }}">
+                                    {{ $setting->salary_type_text }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="salary-setting-info">
+                        <div class="salary-setting-info-item">
+                            <div class="salary-setting-info-label">
+                                <i class="mdi mdi-percent"></i>
+                                <span>{{ __('messages.service_percentage') }}</span>
+                            </div>
+                            <div class="salary-setting-info-value">
+                                @if($setting->service_percentage)
+                                    {{ $setting->service_percentage }}%
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="salary-setting-info-item">
+                            <div class="salary-setting-info-label">
+                                <i class="mdi mdi-chart-line"></i>
+                                <span>{{ __('messages.sales_percentage') }}</span>
+                            </div>
+                            <div class="salary-setting-info-value">
+                                @if($setting->sales_percentage)
+                                    {{ $setting->sales_percentage }}%
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="salary-setting-actions">
+                        <button class="btn-edit" onclick="editSalarySetting({{ $setting->id }})" title="Редактировать">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                            </svg>
+                        </button>
+                        <button class="btn-delete" onclick="deleteSalarySetting({{ $setting->id }})" title="Удалить">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                @endforeach
             </div>
 
             @if(($salarySettings ?? collect())->count() == 0)
@@ -348,6 +495,89 @@
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Мобильные карточки для расчетов зарплаты -->
+            <div class="salary-calculations-cards">
+                @foreach($salaryCalculations ?? [] as $calculation)
+                <div class="salary-calculation-card">
+                    <div class="salary-calculation-card-header">
+                        <div class="salary-calculation-main-info">
+                            <div class="salary-calculation-employee">
+                                <i class="mdi mdi-account"></i>
+                                <span>{{ $calculation->user->name }}</span>
+                            </div>
+                            <div class="salary-calculation-status">
+                                <span class="status-badge">
+                                    {{ $calculation->status_text }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="salary-calculation-info">
+                        <div class="salary-calculation-info-item">
+                            <div class="salary-calculation-info-label">
+                                <i class="mdi mdi-calendar-range"></i>
+                                <span>{{ __('messages.period') }}</span>
+                            </div>
+                            <div class="salary-calculation-info-value">
+                                {{ $calculation->period_start->format('d.m.Y') }} - {{ $calculation->period_end->format('d.m.Y') }}
+                            </div>
+                        </div>
+                        <div class="salary-calculation-info-item">
+                            <div class="salary-calculation-info-label">
+                                <i class="mdi mdi-briefcase"></i>
+                                <span>{{ __('messages.services') }}</span>
+                            </div>
+                            <div class="salary-calculation-info-value">
+                                {{ $calculation->services_count }} ({{ \App\Helpers\CurrencyHelper::format($calculation->services_amount) }})
+                            </div>
+                        </div>
+                        <div class="salary-calculation-info-item">
+                            <div class="salary-calculation-info-label">
+                                <i class="mdi mdi-chart-line"></i>
+                                <span>{{ __('messages.sales') }}</span>
+                            </div>
+                            <div class="salary-calculation-info-value">
+                                {{ $calculation->sales_count }} ({{ \App\Helpers\CurrencyHelper::format($calculation->sales_amount) }})
+                            </div>
+                        </div>
+                        <div class="salary-calculation-info-item">
+                            <div class="salary-calculation-info-label">
+                                <i class="mdi mdi-cash"></i>
+                                <span>{{ __('messages.amount') }}</span>
+                            </div>
+                            <div class="salary-calculation-info-value">
+                                <span class="currency-amount" data-amount="{{ $calculation->total_salary }}">
+                                    {{ \App\Helpers\CurrencyHelper::format($calculation->total_salary) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="salary-calculation-actions">
+                        <button class="btn-view" onclick="viewSalaryCalculation({{ $calculation->id }})" title="Просмотр">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        @if($calculation->canApprove())
+                        <button class="btn-edit" onclick="approveSalaryCalculation({{ $calculation->id }})" title="Утвердить">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        @endif
+                        @if($calculation->canDelete())
+                        <button class="btn-delete" onclick="deleteSalaryCalculation({{ $calculation->id }})" title="Удалить">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
 
             @if(($salaryCalculations ?? collect())->count() == 0)
                 <div class="text-center py-5">
@@ -424,6 +654,80 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+            
+            <!-- Мобильные карточки для выплат зарплаты -->
+            <div class="salary-payments-cards">
+                @foreach($salaryPayments ?? [] as $payment)
+                <div class="salary-payment-card">
+                    <div class="salary-payment-card-header">
+                        <div class="salary-payment-main-info">
+                            <div class="salary-payment-employee">
+                                <i class="mdi mdi-account"></i>
+                                <span>{{ $payment->user->name }}</span>
+                            </div>
+                            <div class="salary-payment-status">
+                                <span class="status-badge status-{{ $payment->status === 'pending' ? 'pending' : ($payment->status === 'approved' ? 'done' : 'cancelled') }}">
+                                    {{ $payment->status_text }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="salary-payment-info">
+                        <div class="salary-payment-info-item">
+                            <div class="salary-payment-info-label">
+                                <i class="mdi mdi-cash"></i>
+                                <span>{{ __('messages.amount') }}</span>
+                            </div>
+                            <div class="salary-payment-info-value">
+                                <span class="currency-amount" data-amount="{{ $payment->amount }}">
+                                    {{ \App\Helpers\CurrencyHelper::format($payment->amount) }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="salary-payment-info-item">
+                            <div class="salary-payment-info-label">
+                                <i class="mdi mdi-calendar"></i>
+                                <span>{{ __('messages.date') }}</span>
+                            </div>
+                            <div class="salary-payment-info-value">
+                                {{ $payment->payment_date->format('d.m.Y') }}
+                            </div>
+                        </div>
+                        <div class="salary-payment-info-item">
+                            <div class="salary-payment-info-label">
+                                <i class="mdi mdi-credit-card"></i>
+                                <span>{{ __('messages.payment_method') }}</span>
+                            </div>
+                            <div class="salary-payment-info-value">
+                                {{ $payment->payment_method_text }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="salary-payment-actions">
+                        <button class="btn-view" onclick="viewSalaryPayment({{ $payment->id }})" title="Просмотр">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        @if($payment->canApprove())
+                        <button class="btn-edit" onclick="approveSalaryPayment({{ $payment->id }})" title="Подтвердить выплату">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        @endif
+                        @if($payment->canDelete())
+                        <button class="btn-delete" onclick="deleteSalaryPayment({{ $payment->id }})" title="Удалить">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
             </div>
 
             @if(($salaryPayments ?? collect())->count() == 0)
