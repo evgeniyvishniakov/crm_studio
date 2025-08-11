@@ -122,4 +122,6 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     Route::resource('knowledge', \App\Http\Controllers\Admin\KnowledgeController::class);
     Route::post('/knowledge/{article}/toggle-publish', [\App\Http\Controllers\Admin\KnowledgeController::class, 'togglePublish'])
         ->name('knowledge.toggle-publish');
+    Route::get('/knowledge/{article}/translations/{language}', [\App\Http\Controllers\Admin\KnowledgeController::class, 'getTranslation'])->name('knowledge.get-translation');
+    Route::post('/knowledge/{article}/save-translation', [\App\Http\Controllers\Admin\KnowledgeController::class, 'saveTranslation'])->name('knowledge.save-translation');
 }); 

@@ -371,4 +371,139 @@ class KnowledgeController extends Controller
 
         return redirect()->back()->with('success', $message);
     }
+
+    /**
+     * Получить перевод статьи
+     */
+    public function getTranslation(string $id, string $language)
+    {
+        $article = KnowledgeArticle::with(['translations', 'steps.translations', 'tips.translations'])->findOrFail($id);
+        
+        // Получаем перевод статьи
+        $translation = $article->translations()->where('locale', $language)->first();
+        
+        if (!$translation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Перевод не найден'
+            ]);
+        }
+        
+        // Получаем переводы шагов
+        $stepTranslations = [];
+        foreach ($article->steps as $step) {
+            $stepTranslation = $step->translations()->where('locale', $language)->first();
+            if ($stepTranslation) {
+                $stepTranslations[] = [
+                    'id' => $step->id,
+                    'title' => $stepTranslation->title,
+                    'content' => $stepTranslation->content
+                ];
+            }
+        }
+        
+        // Получаем переводы советов
+        $tipTranslations = [];
+        foreach ($article->tips as $tip) {
+            $tipTranslation = $tip->translations()->where('locale', $language)->first();
+            if ($tipTranslation) {
+                $tipTranslations[] = [
+                    'id' => $tip->id,
+                    'content' => $tipTranslation->content
+                ];
+            }
+        }
+        
+        return response()->json([
+            'success' => true,
+            'translation' => [
+                'title' => $translation->title,
+                'description' => $translation->description
+            ],
+            'step_translations' => $stepTranslations,
+            'tip_translations' => $tipTranslations
+        ]);
+    }
+
+    /**
+     * Сохранить перевод статьи
+     */
+    public function saveTranslation(Request $request, string $id)
+    {
+        $request->validate([
+            'language_code' => 'required|string|max:5',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'step_translations' => 'nullable|array',
+            'step_translations.*.title' => 'required|string|max:255',
+            'step_translations.*.content' => 'required|string',
+            'tip_translations' => 'nullable|array',
+            'tip_translations.*.content' => 'required|string'
+        ]);
+
+        $article = KnowledgeArticle::findOrFail($id);
+        $languageCode = $request->language_code;
+
+        // Обновляем или создаем перевод статьи
+        $translation = $article->translations()->where('locale', $languageCode)->first();
+        if ($translation) {
+            $translation->update([
+                'title' => $request->title,
+                'description' => $request->description
+            ]);
+        } else {
+            $article->translations()->create([
+                'locale' => $languageCode,
+                'title' => $request->title,
+                'description' => $request->description
+            ]);
+        }
+
+        // Обновляем переводы шагов
+        if ($request->has('step_translations')) {
+            foreach ($request->step_translations as $index => $stepData) {
+                $step = $article->steps()->skip($index)->first();
+                if ($step) {
+                    $stepTranslation = $step->translations()->where('locale', $languageCode)->first();
+                    if ($stepTranslation) {
+                        $stepTranslation->update([
+                            'title' => $stepData['title'],
+                            'content' => $stepData['content']
+                        ]);
+                    } else {
+                        $step->translations()->create([
+                            'locale' => $languageCode,
+                            'title' => $stepData['title'],
+                            'content' => $stepData['content']
+                        ]);
+                    }
+                }
+            }
+        }
+
+        // Обновляем переводы советов
+        if ($request->has('tip_translations')) {
+            foreach ($request->tip_translations as $index => $tipData) {
+                $tip = $article->tips()->skip($index)->first();
+                if ($tip) {
+                    $tipTranslation = $tip->translations()->where('locale', $languageCode)->first();
+                    if ($tipTranslation) {
+                        $tipTranslation->update([
+                            'content' => $tipData['content']
+                        ]);
+                    } else {
+                        $tip->translations()->create([
+                            'locale' => $languageCode,
+                            'content' => $tipData['content']
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Перевод успешно сохранен!'
+        ]);
+    }
 }
