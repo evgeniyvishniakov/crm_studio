@@ -3,21 +3,195 @@
 @section('title', 'База знаний - Trimora')
 @section('description', 'Полезные статьи, руководства и советы по использованию Trimora для салонов красоты')
 
+@section('styles')
+<style>
+    /* Красивые стили для списка статей */
+    .article-item .card {
+        transition: all 0.3s ease;
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+    
+    .article-item .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .article-item .card-img-top {
+        transition: transform 0.3s ease;
+    }
+    
+    .article-item .card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    
+    .article-item .card-body {
+        padding: 25px;
+    }
+    
+    .article-item .card-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+        line-height: 1.4;
+        margin-bottom: 15px;
+    }
+    
+    .article-item .card-text {
+        font-size: 15px;
+        line-height: 1.6;
+        color: #6c757d;
+        margin-bottom: 20px;
+    }
+    
+    .article-item .badge {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+    
+    .article-item small {
+        font-size: 13px;
+        color: #6c757d;
+    }
+    
+    .article-item .btn {
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 8px 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .category-filter {
+        border-radius: 25px;
+        padding: 10px 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid #e9ecef;
+    }
+    
+    .category-filter:hover {
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-2px);
+    }
+    
+    .category-filter.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .search-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .search-section .input-group {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .search-section .form-control {
+        border: none;
+        padding: 15px 20px;
+        font-size: 16px;
+    }
+    
+    .search-section .form-control:focus {
+        box-shadow: none;
+    }
+    
+    .search-section .btn {
+        padding: 15px 25px;
+        border: none;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-weight: 500;
+    }
+    
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+    
+    .hero-section .container {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .hero-section h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .hero-section .lead {
+        font-size: 20px;
+        opacity: 0.9;
+        line-height: 1.6;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .hero-section h1 {
+            font-size: 2.5rem;
+        }
+        
+        .hero-section .lead {
+            font-size: 18px;
+        }
+        
+        .search-section {
+            padding: 20px;
+        }
+        
+        .article-item .card-body {
+            padding: 20px;
+        }
+        
+        .category-filter {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+    }
+</style>
+@endsection
+
 @section('content')
 <!-- Hero Section -->
-<section class="bg-light py-5">
+<section class="hero-section py-5">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
                 <h1 class="display-4 fw-bold mb-4">База знаний</h1>
-                <p class="lead text-muted">Полезные статьи, руководства и советы по эффективному использованию Trimora</p>
+                <p class="lead">Полезные статьи, руководства и советы по эффективному использованию Trimora</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Search Section -->
-<section class="py-4">
+<section class="search-section">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-6">
@@ -63,19 +237,19 @@
         <div class="row g-4" id="articlesContainer">
             @forelse($articles as $article)
                 <div class="col-lg-4 col-md-6 article-item" data-category="{{ $article->category }}">
-                    <div class="card h-100 border-0 shadow-sm">
+                    <div class="card h-100">
                         @if($article->featured_image)
                             <img src="{{ asset('storage/' . $article->featured_image) }}" 
                                  class="card-img-top" 
                                  alt="{{ $article->title }}"
                                  style="height: 200px; object-fit: cover;">
                         @endif
-                        <div class="card-body p-4">
+                        <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
                                 <span class="badge bg-primary me-2">{{ $categories[$article->category] ?? $article->category }}</span>
                             </div>
-                            <h5 class="card-title fw-bold">{{ $article->title }}</h5>
-                            <p class="card-text text-muted">{{ Str::limit($article->description, 120) }}</p>
+                            <h5 class="card-title">{{ $article->title }}</h5>
+                            <p class="card-text">{{ Str::limit($article->description, 120) }}</p>
                             
                             @if($article->steps->count() > 0)
                                 <div class="mb-3">
@@ -95,13 +269,12 @@
                                 </div>
                             @endif
                             
-                            <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-center mb-3">
                                 <i class="fas fa-user text-muted me-2"></i>
                                 <small class="text-muted">{{ $article->author }}</small>
                             </div>
-                        </div>
-                        <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                            <a href="{{ route('beautyflow.knowledge.show', $article->slug) }}" class="btn btn-outline-primary btn-sm">Читать статью</a>
+                            
+                            <a href="{{ route('beautyflow.knowledge.show', $article->slug) }}" class="btn btn-primary">Читать статью</a>
                         </div>
                     </div>
                 </div>
@@ -112,6 +285,17 @@
                     <p class="text-muted">В данный момент в базе знаний нет опубликованных статей.</p>
                 </div>
             @endforelse
+        </div>
+        
+        <!-- Empty state for search/filter -->
+        <div class="empty-state text-center py-5" style="display: none;">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">По вашему запросу ничего не найдено</h4>
+            <p class="text-muted">Попробуйте изменить параметры поиска или выбрать другую категорию</p>
+            <button class="btn btn-outline-primary" onclick="clearFilters()">
+                <i class="fas fa-times me-2"></i>
+                Сбросить фильтры
+            </button>
         </div>
     </div>
 </section>
@@ -133,18 +317,6 @@
 </section>
 @endsection
 
-@push('styles')
-<style>
-/* Дополнительные стили для страницы */
-.category-filter.active {
-    background: var(--gradient-primary);
-    color: white;
-    box-shadow: 0 8px 25px rgba(0, 194, 146, 0.3);
-    border-color: transparent;
-}
-</style>
-@endpush
-
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -152,25 +324,39 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchBtn = document.getElementById('searchBtn');
     const categoryFilters = document.querySelectorAll('.category-filter');
     const articles = document.querySelectorAll('.article-item');
+    const emptyState = document.querySelector('.empty-state');
 
     // Search functionality
     function performSearch() {
         const searchTerm = searchInput.value.toLowerCase().trim();
+        const activeCategory = document.querySelector('.category-filter.active').dataset.category;
         
         articles.forEach(article => {
             const title = article.querySelector('.card-title').textContent.toLowerCase();
             const description = article.querySelector('.card-text').textContent.toLowerCase();
-            const category = article.getAttribute('data-category');
+            const category = article.dataset.category;
             
             const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
-            const matchesCategory = article.classList.contains('active-category') || !document.querySelector('.category-filter.active').dataset.category !== 'all';
+            const matchesCategory = activeCategory === 'all' || category === activeCategory;
             
-            if (matchesSearch && (matchesCategory || document.querySelector('.category-filter.active').dataset.category === 'all')) {
+            if (matchesSearch && matchesCategory) {
                 article.style.display = 'block';
+                article.style.animation = 'fadeIn 0.5s ease-in';
             } else {
                 article.style.display = 'none';
             }
         });
+        
+        // Show/hide empty state
+        if (emptyState) {
+            if (Array.from(articles).filter(article => 
+                article.style.display !== 'none'
+            ).length === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
     }
 
     // Search button click
@@ -179,6 +365,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Search on Enter key
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+
+    // Real-time search
+    searchInput.addEventListener('input', function() {
+        if (this.value.length > 2 || this.value.length === 0) {
             performSearch();
         }
     });
@@ -197,6 +390,7 @@ document.addEventListener('DOMContentLoaded', function() {
             articles.forEach(article => {
                 if (category === 'all' || article.dataset.category === category) {
                     article.style.display = 'block';
+                    article.style.animation = 'slideIn 0.5s ease-out';
                 } else {
                     article.style.display = 'none';
                 }
@@ -204,8 +398,57 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Clear search when changing category
             searchInput.value = '';
+            performSearch();
         });
     });
+    
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .article-item {
+            animation: fadeIn 0.5s ease-in;
+        }
+    `;
+    document.head.appendChild(style);
 });
+
+// Function to clear all filters
+function clearFilters() {
+    // Reset category filter to "Все"
+    const allFilter = document.querySelector('.category-filter[data-category="all"]');
+    if (allFilter) {
+        document.querySelectorAll('.category-filter').forEach(f => f.classList.remove('active'));
+        allFilter.classList.add('active');
+    }
+    
+    // Clear search input
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    
+    // Show all articles
+    const articles = document.querySelectorAll('.article-item');
+    articles.forEach(article => {
+        article.style.display = 'block';
+        article.style.animation = 'fadeIn 0.5s ease-in';
+    });
+    
+    // Hide empty state
+    const emptyState = document.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.style.display = 'none';
+    }
+}
 </script>
 @endpush

@@ -98,19 +98,4 @@
         </div>
     </div>
 </section>
-
-<!-- Map Section -->
-<section class="bg-light py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h2 class="fw-bold text-center mb-4">Как нас найти</h2>
-                <div class="ratio ratio-21x9">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2245.371615257803!2d37.6172993!3d55.755826!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTXCsDQ1JzIwLjkiTiAzN8KwMzcnMDIuMyJF!5e0!3m2!1sru!2sru!4v1234567890" 
-                            style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 @endsection 
