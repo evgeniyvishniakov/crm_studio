@@ -267,23 +267,6 @@ Route::middleware('auth:client')->group(function () {
         Route::get('/', [\App\Http\Controllers\Client\SalaryController::class, 'index'])->name('index');
         Route::get('/statistics', [\App\Http\Controllers\Client\SalaryController::class, 'getStatistics'])->name('statistics');
         
-    });
-    
-    // График работы (Персонал)
-    Route::prefix('work-schedules')->name('work-schedules.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Client\WorkScheduleController::class, 'index'])->name('index');
-        Route::get('/employee-schedule', [\App\Http\Controllers\Client\WorkScheduleController::class, 'getEmployeeSchedule'])->name('employee-schedule');
-        Route::post('/employee-schedule', [\App\Http\Controllers\Client\WorkScheduleController::class, 'saveEmployeeSchedule'])->name('save-employee-schedule');
-        Route::get('/refresh-overview', [\App\Http\Controllers\Client\WorkScheduleController::class, 'refreshOverview'])->name('refresh-overview');
-        Route::get('/week', [\App\Http\Controllers\Client\WorkScheduleController::class, 'getWeekSchedule'])->name('week');
-        
-        // Отпуска
-        Route::get('/time-offs', [\App\Http\Controllers\Client\WorkScheduleController::class, 'getTimeOffs'])->name('time-offs.index');
-        Route::post('/time-offs', [\App\Http\Controllers\Client\WorkScheduleController::class, 'storeTimeOff'])->name('time-offs.store');
-        Route::get('/time-offs/{id}', [\App\Http\Controllers\Client\WorkScheduleController::class, 'getTimeOff'])->name('time-offs.show');
-        Route::put('/time-offs/{id}', [\App\Http\Controllers\Client\WorkScheduleController::class, 'updateTimeOff'])->name('time-offs.update');
-        Route::delete('/time-offs/{id}', [\App\Http\Controllers\Client\WorkScheduleController::class, 'destroyTimeOff'])->name('time-offs.destroy');
-        
         // Настройки зарплаты (модальные окна)
         Route::prefix('settings')->name('settings.')->group(function () {
             Route::post('/', [\App\Http\Controllers\Client\SalaryController::class, 'storeSetting'])->name('store');
@@ -312,6 +295,22 @@ Route::middleware('auth:client')->group(function () {
             Route::post('/{id}/approve', [\App\Http\Controllers\Client\SalaryController::class, 'approvePayment'])->name('approve');
             Route::delete('/{id}', [\App\Http\Controllers\Client\SalaryController::class, 'destroyPayment'])->name('destroy');
         });
+    });
+    
+    // График работы (Персонал)
+    Route::prefix('work-schedules')->name('work-schedules.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Client\WorkScheduleController::class, 'index'])->name('index');
+        Route::get('/employee-schedule', [\App\Http\Controllers\Client\WorkScheduleController::class, 'getEmployeeSchedule'])->name('employee-schedule');
+        Route::post('/employee-schedule', [\App\Http\Controllers\Client\WorkScheduleController::class, 'saveEmployeeSchedule'])->name('save-employee-schedule');
+        Route::get('/refresh-overview', [\App\Http\Controllers\Client\WorkScheduleController::class, 'refreshOverview'])->name('refresh-overview');
+        Route::get('/week', [\App\Http\Controllers\Client\WorkScheduleController::class, 'getWeekSchedule'])->name('week');
+        
+        // Отпуска
+        Route::get('/time-offs', [\App\Http\Controllers\Client\WorkScheduleController::class, 'getTimeOffs'])->name('time-offs.index');
+        Route::post('/time-offs', [\App\Http\Controllers\Client\WorkScheduleController::class, 'storeTimeOff'])->name('time-offs.store');
+        Route::get('/time-offs/{id}', [\App\Http\Controllers\Client\WorkScheduleController::class, 'getTimeOff'])->name('time-offs.show');
+        Route::put('/time-offs/{id}', [\App\Http\Controllers\Client\WorkScheduleController::class, 'updateTimeOff'])->name('time-offs.update');
+        Route::delete('/time-offs/{id}', [\App\Http\Controllers\Client\WorkScheduleController::class, 'destroyTimeOff'])->name('time-offs.destroy');
     });
 
     // Аналитика расходов

@@ -190,6 +190,7 @@ class SalaryController extends Controller
     public function updateSetting(Request $request, $id)
     {
         $request->validate([
+            'user_id' => 'required|exists:admin_users,id',
             'salary_type' => 'required|in:fixed,percentage,mixed',
             'fixed_salary' => 'nullable|numeric|min:0',
             'service_percentage' => 'nullable|numeric|min:0|max:100',
@@ -218,8 +219,24 @@ class SalaryController extends Controller
         }
 
         $setting = SalarySetting::findOrFail($id);
+        $user = Auth::guard('client')->user();
+        $project = $user->project;
+
+        // Проверяем, не существует ли уже настройки для этого сотрудника в этом проекте
+        $existingSetting = SalarySetting::where('project_id', $project->id)
+            ->where('user_id', $request->user_id)
+            ->where('id', '!=', $id) // Исключаем текущую настройку
+            ->first();
+
+        if ($existingSetting) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Настройки зарплаты для этого сотрудника уже существуют в проекте'
+            ]);
+        }
         
         $setting->update([
+            'user_id' => $request->user_id,
             'salary_type' => $request->salary_type,
             'fixed_salary' => $request->fixed_salary,
             'service_percentage' => $request->service_percentage,
