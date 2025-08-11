@@ -72,10 +72,8 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Заголовок</th>
                                     <th>Категория</th>
-                                    <th>Автор</th>
                                     <th>Переводы</th>
                                     <th>Статус</th>
                                     <th>Дата создания</th>
@@ -85,26 +83,12 @@
                             <tbody>
                                 @forelse($articles as $article)
                                     <tr data-category="{{ $article->category }}" data-status="{{ $article->is_published ? '1' : '0' }}" data-title="{{ strtolower($article->title) }}" data-languages="{{ $article->translations->pluck('locale')->implode(',') }}">
-                                        <td>{{ $article->id }}</td>
                                         <td>
-                                            <div class="d-flex align-items-center">
-                                                @if($article->featured_image)
-                                                    <img src="{{ asset('storage/' . $article->featured_image) }}" 
-                                                         alt="{{ $article->title }}" 
-                                                         class="rounded me-3" 
-                                                         style="width: 40px; height: 40px; object-fit: cover;">
-                                                @endif
-                                                <div>
-                                                    <strong>{{ $article->title }}</strong>
-                                                    <br>
-                                                    <small class="text-muted">{{ Str::limit($article->description, 60) }}</small>
-                                                </div>
-                                            </div>
+                                            <strong>{{ $article->title }}</strong>
                                         </td>
                                         <td>
                                             <span class="badge bg-primary">{{ $categories[$article->category] ?? $article->category }}</span>
                                         </td>
-                                        <td>{{ $article->author }}</td>
                                         <td>
                                             <div class="d-flex flex-wrap gap-1">
                                                 @foreach(['ru', 'en', 'ua'] as $langCode)
@@ -183,7 +167,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center text-muted py-4">
+                                        <td colspan="6" class="text-center text-muted py-4">
                                             <i class="fas fa-inbox fa-3x mb-3"></i>
                                             <p>Статьи не найдены</p>
                                             <a href="{{ route('admin.knowledge.create') }}" class="btn btn-primary">

@@ -101,11 +101,15 @@ class KnowledgeController extends Controller
         
         // Создаем переводы для статьи на всех языках
         foreach ($languages as $language) {
-            $article->translations()->create([
-                'locale' => $language->code,
-                'title' => $request->title, // Пока используем основной заголовок
-                'description' => $request->description // Пока используем основное описание
-            ]);
+            $translation = $article->translations()->where('locale', $language->code)->first();
+            if (!$translation) {
+                $article->translations()->create([
+                    'locale' => $language->code,
+                    'title' => $request->title, // Пока используем основной заголовок
+                    'description' => $request->description // Пока используем основное описание
+                ]);
+            }
+            // Если перевод уже существует - НЕ ТРОГАЕМ его!
         }
 
         // Добавляем шаги
@@ -132,11 +136,15 @@ class KnowledgeController extends Controller
                     
                     // Создаем переводы для шага на всех языках
                     foreach ($languages as $language) {
-                        $stepModel->translations()->create([
-                            'locale' => $language->code,
-                            'title' => $step['title'], // Пока используем основной заголовок
-                            'content' => $step['content'] // Пока используем основное содержание
-                        ]);
+                        $stepTranslation = $stepModel->translations()->where('locale', $language->code)->first();
+                        if (!$stepTranslation) {
+                            $stepModel->translations()->create([
+                                'locale' => $language->code,
+                                'title' => $step['title'], // Пока используем основной заголовок
+                                'content' => $step['content'] // Пока используем основное содержание
+                            ]);
+                        }
+                        // Если перевод уже существует - НЕ ТРОГАЕМ его!
                     }
                 }
             }
@@ -153,10 +161,14 @@ class KnowledgeController extends Controller
                     
                     // Создаем переводы для совета на всех языках
                     foreach ($languages as $language) {
-                        $tipModel->translations()->create([
-                            'locale' => $language->code,
-                            'content' => $tip['content'] // Пока используем основное содержание
-                        ]);
+                        $tipTranslation = $tipModel->translations()->where('locale', $language->code)->first();
+                        if (!$tipTranslation) {
+                            $tipModel->translations()->create([
+                                'locale' => $language->code,
+                                'content' => $tip['content'] // Пока используем основное содержание
+                            ]);
+                        }
+                        // Если перевод уже существует - НЕ ТРОГАЕМ его!
                     }
                 }
             }
@@ -242,32 +254,26 @@ class KnowledgeController extends Controller
         // Получаем все активные языки
         $languages = Language::getActive();
         
-        // Обновляем или создаем переводы для статьи на всех языках
+        // Создаем переводы ТОЛЬКО если их нет (не перезаписываем существующие!)
         foreach ($languages as $language) {
             $translation = $article->translations()->where('locale', $language->code)->first();
-            if ($translation) {
-                $translation->update([
-                    'title' => $request->title,
-                    'description' => $request->description
-                ]);
-            } else {
+            if (!$translation) {
+                // Создаем перевод только если его нет
                 $article->translations()->create([
                     'locale' => $language->code,
                     'title' => $request->title,
                     'description' => $request->description
                 ]);
             }
+            // Если перевод уже существует - НЕ ТРОГАЕМ его!
         }
 
         // Обновляем шаги
         if ($request->has('steps') && is_array($request->steps)) {
-            // Получаем существующие шаги для сохранения изображений
-            $existingSteps = $article->steps()->get()->keyBy('sort_order');
+            // Получаем существующие шаги для сохранения изображений и переводов
+            $existingSteps = $article->steps()->with('translations')->get()->keyBy('sort_order');
             
-            // Удаляем старые шаги
-            $article->steps()->delete();
-            
-            // Добавляем новые
+            // Обновляем или создаем шаги
             foreach ($request->steps as $index => $step) {
                 if (!empty($step['title']) && !empty($step['content'])) {
                     $stepData = [
@@ -294,42 +300,78 @@ class KnowledgeController extends Controller
                         }
                     }
                     
-                    $stepModel = $article->steps()->create($stepData);
+                    // Проверяем, есть ли уже шаг с таким порядком
+                    $existingStep = $existingSteps->get($index + 1);
+                    if ($existingStep) {
+                        // Обновляем существующий шаг
+                        $existingStep->update($stepData);
+                        $stepModel = $existingStep;
+                    } else {
+                        // Создаем новый шаг
+                        $stepModel = $article->steps()->create($stepData);
+                    }
                     
-                    // Создаем переводы для шага на всех языках
+                    // Создаем переводы для шага ТОЛЬКО если их нет
                     foreach ($languages as $language) {
-                        $stepModel->translations()->create([
-                            'locale' => $language->code,
-                            'title' => $step['title'],
-                            'content' => $step['content']
-                        ]);
+                        $stepTranslation = $stepModel->translations()->where('locale', $language->code)->first();
+                        if (!$stepTranslation) {
+                            $stepModel->translations()->create([
+                                'locale' => $language->code,
+                                'title' => $step['title'],
+                                'content' => $step['content']
+                            ]);
+                        }
+                        // Если перевод уже существует - НЕ ТРОГАЕМ его!
                     }
                 }
             }
+            
+            // Удаляем шаги, которых больше нет в форме
+            $usedStepOrders = collect($request->steps)->keys()->map(function($key) { return $key + 1; });
+            $article->steps()->whereNotIn('sort_order', $usedStepOrders)->delete();
         }
 
         // Обновляем полезные советы
         if ($request->has('tips') && is_array($request->tips)) {
-            // Удаляем старые советы
-            $article->tips()->delete();
+            // Получаем существующие советы для сохранения переводов
+            $existingTips = $article->tips()->with('translations')->get()->keyBy('sort_order');
             
-            // Добавляем новые
+            // Обновляем или создаем советы
             foreach ($request->tips as $index => $tip) {
                 if (!empty($tip['content'])) {
-                    $tipModel = $article->tips()->create([
+                    $tipData = [
                         'content' => $tip['content'],
                         'sort_order' => $index + 1
-                    ]);
+                    ];
                     
-                    // Создаем переводы для совета на всех языках
+                    // Проверяем, есть ли уже совет с таким порядком
+                    $existingTip = $existingTips->get($index + 1);
+                    if ($existingTip) {
+                        // Обновляем существующий совет
+                        $existingTip->update($tipData);
+                        $tipModel = $existingTip;
+                    } else {
+                        // Создаем новый совет
+                        $tipModel = $article->tips()->create($tipData);
+                    }
+                    
+                    // Создаем переводы для совета ТОЛЬКО если их нет
                     foreach ($languages as $language) {
-                        $tipModel->translations()->create([
-                            'locale' => $language->code,
-                            'content' => $tip['content']
-                        ]);
+                        $tipTranslation = $tipModel->translations()->where('locale', $language->code)->first();
+                        if (!$tipTranslation) {
+                            $tipModel->translations()->create([
+                                'locale' => $language->code,
+                                'content' => $tip['content']
+                            ]);
+                        }
+                        // Если перевод уже существует - НЕ ТРОГАЕМ его!
                     }
                 }
             }
+            
+            // Удаляем советы, которых больше нет в форме
+            $usedTipOrders = collect($request->tips)->keys()->map(function($key) { return $key + 1; });
+            $article->tips()->whereNotIn('sort_order', $usedTipOrders)->delete();
         }
 
         return redirect()->route('admin.knowledge.index')

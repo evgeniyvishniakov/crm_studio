@@ -434,50 +434,48 @@ function initTinyMCE(element) {
                 'alignright alignjustify | bullist numlist outdent indent | ' +
                 'removeformat | help',
         content_style: `
-            body { 
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
-                font-size: 14px; 
-            }
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
             
-            /* Стили для подсказок в редакторе */
+            /* Стили для подсказок в TinyMCE */
             .alert {
                 margin: 10px 0;
                 padding: 12px 16px;
                 border-radius: 6px;
                 border: 1px solid transparent;
                 position: relative;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             }
-
+            
             .alert-info {
                 color: #0c5460;
                 background-color: #d1ecf1;
                 border-color: #bee5eb;
             }
-
+            
             .alert-warning {
                 color: #856404;
                 background-color: #fff3cd;
                 border-color: #ffeaa7;
             }
-
+            
             .alert-success {
                 color: #155724;
                 background-color: #d4edda;
                 border-color: #c3e6cb;
             }
-
+            
             .alert-danger {
                 color: #721c24;
                 background-color: #f8d7da;
                 border-color: #f5c6cb;
             }
-
+            
             .alert-primary {
                 color: #004085;
                 background-color: #cce7ff;
                 border-color: #b3d9ff;
             }
-
+            
             .alert .btn-close {
                 position: absolute;
                 top: 8px;
@@ -489,27 +487,38 @@ function initTinyMCE(element) {
                 opacity: 0.7;
                 color: inherit;
             }
-
+            
             .alert .btn-close:hover {
                 opacity: 1;
             }
-
+            
             .alert i {
                 margin-right: 8px;
             }
-
+            
             .alert span[contenteditable="true"] {
                 outline: none;
                 min-height: 20px;
                 display: inline-block;
             }
-
+            
             .alert span[contenteditable="true"]:focus {
                 background-color: rgba(255, 255, 255, 0.3);
                 border-radius: 3px;
                 padding: 2px 4px;
             }
         `,
+        // Настройки для очистки стилей
+        paste_as_text: true,
+        paste_enable_default_filters: true,
+        paste_word_valid_elements: "b,strong,i,em,h1,h2,h3,h4,h5,h6",
+        paste_retain_style_properties: "none",
+        paste_remove_styles_if_webkit: true,
+        paste_remove_styles: true,
+        paste_filter_drop: true,
+        paste_data_images: false,
+        paste_auto_cleanup_on_paste: true,
+        paste_convert_word_fake_lists: true,
         branding: false,
         promotion: false,
         setup: function(editor) {
@@ -653,27 +662,27 @@ function insertTip(type, className) {
     switch(type) {
         case 'info':
             icon = 'fas fa-info-circle';
-            tipContent = 'Введите текст информационной подсказки здесь...';
+            tipContent = 'Полезная информация для пользователя';
             break;
         case 'warning':
             icon = 'fas fa-exclamation-triangle';
-            tipContent = 'Введите текст предупреждения здесь...';
+            tipContent = 'Важное предупреждение';
             break;
         case 'success':
             icon = 'fas fa-check-circle';
-            tipContent = 'Введите текст успешного выполнения здесь...';
+            tipContent = 'Успешное выполнение действия';
             break;
         case 'danger':
             icon = 'fas fa-times-circle';
-            tipContent = 'Введите текст ошибки здесь...';
+            tipContent = 'Ошибка или проблема';
             break;
         case 'primary':
             icon = 'fas fa-lightbulb';
-            tipContent = 'Введите текст совета здесь...';
+            tipContent = 'Полезный совет';
             break;
         default:
             icon = 'fas fa-info-circle';
-            tipContent = 'Введите текст подсказки здесь...';
+            tipContent = 'Дополнительная информация';
     }
     
     const tipHtml = `
