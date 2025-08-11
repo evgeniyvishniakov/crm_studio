@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('knowledge_articles', function (Blueprint $table) {
+            // Удаляем поле content, так как контент теперь хранится в переводах
             $table->dropColumn('content');
         });
     }
@@ -22,7 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('knowledge_articles', function (Blueprint $table) {
-            $table->text('content')->nullable();
+            // Восстанавливаем поле content
+            $table->longText('content')->nullable();
         });
     }
 };

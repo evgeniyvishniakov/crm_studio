@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('knowledge_article_step_translations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('knowledge_article_step_id')->constrained()->onDelete('cascade');
-            $table->foreignId('language_id')->constrained()->onDelete('cascade');
+            $table->string('locale'); // Код языка (ru, en, ua)
             $table->string('title');
             $table->text('content');
             $table->timestamps();
             
             // Уникальный индекс для предотвращения дублирования переводов
-            $table->unique(['knowledge_article_step_id', 'language_id']);
+            $table->unique(['knowledge_article_step_id', 'locale']);
         });
     }
 

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->longText('content');
             $table->string('author')->default('Команда Trimora');
             $table->string('featured_image')->nullable();
             $table->json('meta_tags')->nullable();

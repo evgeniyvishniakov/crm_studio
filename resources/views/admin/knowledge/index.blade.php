@@ -84,7 +84,7 @@
                             </thead>
                             <tbody>
                                 @forelse($articles as $article)
-                                    <tr data-category="{{ $article->category }}" data-status="{{ $article->is_published ? '1' : '0' }}" data-title="{{ strtolower($article->title) }}" data-languages="{{ $article->translations->pluck('language.code')->implode(',') }}">
+                                    <tr data-category="{{ $article->category }}" data-status="{{ $article->is_published ? '1' : '0' }}" data-title="{{ strtolower($article->title) }}" data-languages="{{ $article->translations->pluck('locale')->implode(',') }}">
                                         <td>{{ $article->id }}</td>
                                         <td>
                                             <div class="d-flex align-items-center">
@@ -114,7 +114,10 @@
                                                         $statusText = $translation ? '✓' : '✗';
                                                         $langNames = ['ru' => 'RU', 'en' => 'EN', 'ua' => 'UA'];
                                                     @endphp
-                                                    <span class="badge {{ $statusClass }}" title="{{ $langNames[$langCode] }}: {{ $translation ? 'Есть перевод' : 'Нет перевода' }}">
+                                                    <span class="badge {{ $statusClass }}" 
+                                                          title="{{ $langNames[$langCode] }}: {{ $translation ? 'Есть перевод' : 'Нет перевода' }}"
+                                                          style="cursor: pointer;"
+                                                          onclick="showTranslationStatus('{{ $article->id }}', '{{ $langCode }}', '{{ $langNames[$langCode] }}')">
                                                         {{ $langNames[$langCode] }} {{ $statusText }}
                                                     </span>
                                                 @endforeach
@@ -245,5 +248,33 @@ document.addEventListener('DOMContentLoaded', function() {
     languageFilter.addEventListener('change', filterTable);
     searchInput.addEventListener('input', filterTable);
 });
+
+// Функция для показа статуса переводов
+function showTranslationStatus(articleId, languageCode, languageName) {
+    const langNames = { 'ru': 'Русский', 'en': 'English', 'ua': 'Українська' };
+    const fullLanguageName = langNames[languageCode] || languageCode;
+    
+    // Показываем уведомление с информацией о переводе
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-info alert-dismissible fade show position-fixed';
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        <strong>Статус перевода:</strong><br>
+        <strong>Язык:</strong> ${fullLanguageName} (${languageCode.toUpperCase()})<br>
+        <strong>Статья ID:</strong> ${articleId}<br>
+        <br>
+        <small>Кликните на "Редактировать" для изменения перевода</small>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Автоматически скрываем через 5 секунд
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+}
 </script>
 @endpush

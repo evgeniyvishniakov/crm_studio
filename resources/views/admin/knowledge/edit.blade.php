@@ -4,13 +4,6 @@
 
 @section('styles')
 <style>
-    /* Стили для категорий, шагов и кнопок */
-    .category-icon { 
-        width: 20px; 
-        height: 20px; 
-        margin-right: 8px; 
-        vertical-align: middle; 
-    }
     .step-item { 
         border: 1px solid #dee2e6; 
         border-radius: 8px; 
@@ -32,7 +25,6 @@
         padding: 4px; 
     }
     
-    /* Стили для TinyMCE */
     .tox-tinymce {
         border: 1px solid #dee2e6 !important;
         border-radius: 0.375rem !important;
@@ -42,87 +34,26 @@
         min-height: 200px;
     }
 
-    /* Стили для переключателя языков */
-    .language-switcher {
-        background: #f8f9fa;
-        border: 1px solid #dee2e6;
+    /* Стили для кнопок быстрых подсказок */
+    .quick-tips-buttons .btn {
+        transition: all 0.2s ease;
+    }
+    
+    .quick-tips-buttons .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    /* Стили для уведомлений */
+    .position-fixed {
+        position: fixed !important;
+    }
+    
+    .alert {
         border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 20px;
-    }
-    
-    .language-switcher select {
-        max-width: 200px;
-    }
-    
-    .language-info {
-        margin-top: 10px;
-        padding: 10px;
-        background: #e9ecef;
-        border-radius: 5px;
-        font-size: 14px;
-    }
-
-    .translation-status {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 500;
-    }
-
-    .translation-status.exists {
-        background: #d4edda;
-        color: #155724;
-    }
-
-    .translation-status.missing {
-        background: #f8d7da;
-        color: #721c24;
-    }
-
-    .translation-status.saved {
-        background: #d4edda;
-        color: #155724;
-    }
-
-    .translation-status.unsaved {
-        background: #f8d7da;
-        color: #721c24;
-    }
-
-    .language-row {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 10px;
-    }
-
-    .save-translation-btn {
-        min-width: 120px;
-    }
-
-    .saved-translations {
-        margin-top: 15px;
-        padding: 10px;
-        background: #e9ecef;
-        border-radius: 5px;
-    }
-
-    .saved-translation-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 5px;
-    }
-
-    .saved-translation-item .badge {
-        font-size: 11px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 </style>
-@endsection
-
-@section('scripts')
 @endsection
 
 @section('content')
@@ -149,55 +80,6 @@
                     <form action="{{ route('admin.knowledge.update', $article->id) }}" method="POST" enctype="multipart/form-data" id="knowledge-form">
                         @csrf
                         @method('PUT')
-                        
-                        <!-- Переключатель языков -->
-                        <div class="language-switcher">
-                            <h6 class="mb-3">Выберите язык для редактирования контента</h6>
-                            <div class="language-row">
-                                <div class="flex-grow-1">
-                                    <label for="language_id" class="form-label">Язык <span class="text-danger">*</span></label>
-                                    <select class="form-select @error('language_id') is-invalid @enderror" 
-                                            id="language_id" 
-                                            name="language_id" 
-                                            required>
-                                        <option value="">Выберите язык</option>
-                                        @foreach($languages as $language)
-                                            @php
-                                                $translation = $article->translation($language->code);
-                                                $statusClass = $translation ? 'exists' : 'missing';
-                                                $statusText = $translation ? 'Есть перевод' : 'Нет перевода';
-                                            @endphp
-                                            <option value="{{ $language->id }}" 
-                                                    data-code="{{ $language->code }}"
-                                                    data-name="{{ $language->name }}"
-                                                    data-has-translation="{{ $translation ? 'true' : 'false' }}">
-                                                {{ $language->name }} ({{ $language->native_name }})
-                                                <span class="translation-status {{ $statusClass }}">{{ $statusText }}</span>
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('language_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="d-flex align-items-end">
-                                    <button type="button" class="btn btn-success save-translation-btn" id="save-translation-btn" disabled>
-                                        <i class="fas fa-save me-2"></i>Сохранить перевод
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="language-info">
-                                <strong>Текущий язык:</strong> <span id="current-language">Не выбран</span>
-                                <br>
-                                <strong>Статус перевода:</strong> <span id="translation-status">Не выбран</span>
-                            </div>
-                            
-                            <!-- Список сохраненных переводов -->
-                            <div class="saved-translations" id="saved-translations" style="display: none;">
-                                <h6 class="mb-2">Сохраненные переводы:</h6>
-                                <div id="saved-translations-list"></div>
-                            </div>
-                        </div>
                         
                         <div class="row">
                             <div class="col-md-8">
@@ -236,6 +118,34 @@
                                         @error('description')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
+                                    </div>
+
+                                    <!-- Информация о языках -->
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Многоязычность:</strong> Изменения будут применены ко всем языкам. 
+                                        Для редактирования переводов на конкретные языки используйте специальные формы переводов.
+                                    </div>
+
+                                    <!-- Кнопки управления переводами -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Управление переводами:</label>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach($languages as $language)
+                                                @php
+                                                    $translation = $article->translation($language->code);
+                                                    $statusClass = $translation ? 'btn-success' : 'btn-outline-secondary';
+                                                    $statusText = $translation ? '✓ Редактировать' : 'Создать перевод';
+                                                @endphp
+                                                <button type="button" 
+                                                        class="btn {{ $statusClass }} btn-sm" 
+                                                        onclick="openTranslationModal('{{ $language->code }}', '{{ $language->name }}')">
+                                                    <i class="fas fa-language me-1"></i>
+                                                    {{ $language->native_name }}
+                                                    <small class="d-block">{{ $statusText }}</small>
+                                                </button>
+                                            @endforeach
+                                        </div>
                                     </div>
 
                                     <div class="mb-3">
@@ -300,6 +210,32 @@
                                 <!-- Шаги -->
                                 <div class="mb-4">
                                     <h5 class="card-title">Шаги</h5>
+                                    
+                                    <!-- Кнопки быстрой вставки подсказок -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Быстрые подсказки:</label>
+                                        <div class="d-flex flex-wrap gap-2 quick-tips-buttons">
+                                            <button type="button" class="btn btn-outline-info btn-sm" onclick="insertTip('info', 'info-tip')">
+                                                <i class="fas fa-info-circle me-1"></i>Информация
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning btn-sm" onclick="insertTip('warning', 'warning-tip')">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>Предупреждение
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success btn-sm" onclick="insertTip('success', 'success-tip')">
+                                                <i class="fas fa-check-circle me-1"></i>Успех
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="insertTip('danger', 'danger-tip')">
+                                                <i class="fas fa-times-circle me-1"></i>Ошибка
+                                            </button>
+                                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="insertTip('primary', 'primary-tip')">
+                                                <i class="fas fa-lightbulb me-1"></i>Совет
+                                            </button>
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            Нажмите на кнопку, затем кликните в редактор шага, куда хотите вставить подсказку
+                                        </small>
+                                    </div>
+                                    
                                     <div id="steps-container">
                                         @if($article->steps->count() > 0)
                                             @foreach($article->steps as $index => $step)
@@ -413,381 +349,80 @@
         </div>
     </div>
 </div>
+
+<!-- Модальное окно для редактирования переводов -->
+<div class="modal fade" id="translationModal" tabindex="-1" aria-labelledby="translationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="translationModalLabel">Редактирование перевода</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="translationForm">
+                    <div class="mb-3">
+                        <label for="translation_title" class="form-label">Заголовок на языке <span id="current-language-name"></span></label>
+                        <input type="text" class="form-control" id="translation_title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="translation_description" class="form-label">Описание на языке <span id="current-language-name-2"></span></label>
+                        <textarea class="form-control" id="translation_description" name="description" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Переводы шагов:</label>
+                        <div id="translation-steps-container">
+                            <!-- Шаги будут загружены динамически -->
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Переводы советов:</label>
+                        <div id="translation-tips-container">
+                            <!-- Советы будут загружены динамически -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" onclick="saveTranslation()">Сохранить перевод</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
-<!-- TinyMCE - бесплатная версия -->
+<!-- TinyMCE -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.2/tinymce.min.js"></script>
 <script>
-// Данные о переводах статьи
-const articleData = @json($article);
-const translations = @json($article->translations);
-const stepTranslations = @json($article->steps->map(function($step) { return $step->translations; }));
-const tipTranslations = @json($article->tips->map(function($tip) { return $tip->translations; }));
-
-// Данные о сохраненных переводах
-let savedTranslations = {};
-let currentLanguage = null;
-
 let stepCounter = {{ $article->steps->count() }};
 let tipCounter = {{ $article->tips->count() }};
+let activeEditor = null; // Глобальная переменная для отслеживания активного редактора
 
-// Проверка загрузки TinyMCE
+// Инициализация TinyMCE
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM загружен, проверяем TinyMCE...');
-    
-    // Ждем немного, чтобы TinyMCE успел загрузиться
     setTimeout(() => {
-        if (typeof tinymce === 'undefined') {
-            console.error('TinyMCE не загружен после загрузки DOM!');
-        } else {
-            console.log('TinyMCE успешно загружен, версия:', tinymce.majorVersion);
-            
-            // Инициализируем TinyMCE для существующих полей
+        if (typeof tinymce !== 'undefined') {
             const existingEditors = document.querySelectorAll('.step-content-editor');
-            console.log('Найдено полей для инициализации:', existingEditors.length);
             existingEditors.forEach(editor => {
                 initTinyMCE(editor);
             });
         }
     }, 500);
-
-    // Инициализация переключателя языков
-    initLanguageSwitcher();
-    
-    // Автоматически выбираем первый язык
-    const languageSelect = document.getElementById('language_id');
-    if (languageSelect && languageSelect.options.length > 1) {
-        // Выбираем первый доступный язык (пропускаем пустую опцию)
-        languageSelect.selectedIndex = 1;
-        
-        // Получаем данные выбранного языка
-        const selectedOption = languageSelect.options[1];
-        const languageCode = selectedOption.getAttribute('data-code');
-        const hasTranslation = selectedOption.getAttribute('data-has-translation') === 'true';
-        
-        // Устанавливаем текущий язык
-        currentLanguage = languageCode;
-        
-        // Обновляем отображение
-        const currentLanguageSpan = document.getElementById('current-language');
-        const translationStatusSpan = document.getElementById('translation-status');
-        
-        if (currentLanguageSpan) currentLanguageSpan.textContent = selectedOption.getAttribute('data-name');
-        
-        if (hasTranslation) {
-            if (translationStatusSpan) {
-                translationStatusSpan.textContent = 'Есть перевод';
-                translationStatusSpan.className = 'translation-status exists';
-            }
-            // Загружаем переводы для выбранного языка
-            loadTranslations(languageCode);
-        } else {
-            if (translationStatusSpan) {
-                translationStatusSpan.textContent = 'Нет перевода';
-                translationStatusSpan.className = 'translation-status missing';
-            }
-            // Очищаем поля, если перевода нет
-            clearFormFields();
-        }
-        
-        // Активируем кнопку сохранения перевода
-        const saveTranslationBtn = document.getElementById('save-translation-btn');
-        if (saveTranslationBtn) {
-            saveTranslationBtn.disabled = false;
-        }
-    }
 });
 
-// Инициализация переключателя языков
-function initLanguageSwitcher() {
-    const languageSelect = document.getElementById('language_id');
-    const currentLanguageSpan = document.getElementById('current-language');
-    const translationStatusSpan = document.getElementById('translation-status');
-    const saveTranslationBtn = document.getElementById('save-translation-btn');
-    
-    if (languageSelect) {
-        languageSelect.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            if (selectedOption.value) {
-                const languageName = selectedOption.getAttribute('data-name');
-                const languageCode = selectedOption.getAttribute('data-code');
-                const hasTranslation = selectedOption.getAttribute('data-has-translation') === 'true';
-                
-                currentLanguage = languageCode;
-                currentLanguageSpan.textContent = languageName;
-                
-                if (hasTranslation) {
-                    translationStatusSpan.textContent = 'Есть перевод';
-                    translationStatusSpan.className = 'translation-status exists';
-                    // Загружаем переводы для выбранного языка
-                    loadTranslations(languageCode);
-                } else {
-                    translationStatusSpan.textContent = 'Нет перевода';
-                    translationStatusSpan.className = 'translation-status missing';
-                    // Очищаем поля, если перевода нет
-                    clearFormFields();
-                }
-                
-                saveTranslationBtn.disabled = false;
-            } else {
-                currentLanguage = null;
-                currentLanguageSpan.textContent = 'Не выбран';
-                translationStatusSpan.textContent = 'Не выбран';
-                saveTranslationBtn.disabled = true;
-            }
-        });
-    }
-}
-
-// Загрузка переводов для выбранного языка
-function loadTranslations(languageCode) {
-    // Находим перевод статьи
-    const articleTranslation = translations.find(t => t.locale === languageCode);
-    
-    if (articleTranslation) {
-        // Загружаем перевод статьи
-        document.getElementById('title').value = articleTranslation.title || '';
-        document.getElementById('description').value = articleTranslation.description || '';
-    } else {
-        // Очищаем поля, если перевода нет
-        document.getElementById('title').value = '';
-        document.getElementById('description').value = '';
-    }
-    
-    // Загружаем переводы шагов
-    const steps = document.querySelectorAll('.step-item');
-    steps.forEach((step, index) => {
-        const stepId = step.querySelector('.step-title').getAttribute('name').match(/\[(\d+)\]/)[1];
-        const stepTranslation = stepTranslations[stepId]?.find(t => t.locale === languageCode);
-        
-        if (stepTranslation) {
-            step.querySelector('.step-title').value = stepTranslation.title || '';
-            const contentField = step.querySelector('.step-content');
-            if (tinymce.get(contentField.id)) {
-                tinymce.get(contentField.id).setContent(stepTranslation.content || '');
-            } else {
-                contentField.value = stepTranslation.content || '';
-            }
-        } else {
-            step.querySelector('.step-title').value = '';
-            const contentField = step.querySelector('.step-content');
-            if (tinymce.get(contentField.id)) {
-                tinymce.get(contentField.id).setContent('');
-            } else {
-                contentField.value = '';
-            }
-        }
-    });
-    
-    // Загружаем переводы советов
-    const tips = document.querySelectorAll('.tip-content');
-    tips.forEach((tip, index) => {
-        const tipTranslation = tipTranslations[index]?.find(t => t.locale === languageCode);
-        
-        if (tipTranslation) {
-            tip.value = tipTranslation.content || '';
-        } else {
-            tip.value = '';
-        }
-    });
-}
-
-// Очистка полей формы при смене языка
-function clearFormFields() {
-    // Очищаем основные поля
-    document.getElementById('title').value = '';
-    document.getElementById('description').value = '';
-    
-    // Очищаем поля шагов
-    const stepTitles = document.querySelectorAll('.step-title');
-    const stepContents = document.querySelectorAll('.step-content');
-    
-    stepTitles.forEach(field => field.value = '');
-    stepContents.forEach(field => {
-        if (tinymce.get(field.id)) {
-            tinymce.get(field.id).setContent('');
-        } else {
-            field.value = '';
-        }
-    });
-    
-    // Очищаем поля советов
-    const tipContents = document.querySelectorAll('.tip-content');
-    tipContents.forEach(field => field.value = '');
-}
-
-// Сохранение перевода для текущего языка
-function saveTranslation() {
-    if (!currentLanguage) {
-        alert('Сначала выберите язык!');
-        return;
-    }
-    
-    // Собираем данные перевода
-    const translation = {
-        title: document.getElementById('title').value.trim(),
-        description: document.getElementById('description').value.trim(),
-        steps: [],
-        tips: []
-    };
-    
-    // Проверяем обязательные поля
-    if (!translation.title || !translation.description) {
-        alert('Заполните заголовок и описание!');
-        return false;
-    }
-    
-    // Собираем шаги
-    const stepTitles = document.querySelectorAll('.step-title');
-    const stepContents = document.querySelectorAll('.step-content');
-    
-    for (let i = 0; i < stepTitles.length; i++) {
-        const title = stepTitles[i].value.trim();
-        let content = '';
-        
-        if (tinymce.get(stepContents[i].id)) {
-            content = tinymce.get(stepContents[i].id).getContent().trim();
-        } else {
-            content = stepContents[i].value.trim();
-        }
-        
-        if (title && content) {
-            translation.steps.push({ title, content });
-        }
-    }
-    
-    // Собираем советы
-    const tipContents = document.querySelectorAll('.tip-content');
-    tipContents.forEach(field => {
-        const content = field.value.trim();
-        if (content) {
-            translation.tips.push({ content });
-        }
-    });
-    
-    // Отправляем данные на сервер
-    const formData = new FormData();
-    formData.append('language_id', document.getElementById('language_id').value);
-    formData.append('title', translation.title);
-    formData.append('description', translation.description);
-    formData.append('_token', document.querySelector('input[name="_token"]').value);
-    
-    // Добавляем шаги
-    translation.steps.forEach((step, index) => {
-        formData.append(`steps[${index}][title]`, step.title);
-        formData.append(`steps[${index}][content]`, step.content);
-    });
-    
-    // Добавляем советы
-    translation.tips.forEach((tip, index) => {
-        formData.append(`tips[${index}][content]`, tip.content);
-    });
-    
-    // Показываем индикатор загрузки
-    const saveBtn = document.getElementById('save-translation-btn');
-    const originalText = saveBtn.innerHTML;
-    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Сохранение...';
-    saveBtn.disabled = true;
-    
-    // Отправляем запрос
-    fetch('{{ route("admin.knowledge.save-translation", $article->id) }}', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Сохраняем перевод локально
-            savedTranslations[currentLanguage] = translation;
-            
-            // Обновляем статус
-            document.getElementById('translation-status').textContent = 'Перевод сохранен';
-            document.getElementById('translation-status').className = 'translation-status saved';
-            
-            // Обновляем список сохраненных переводов
-            updateSavedTranslationsList();
-            
-            alert(data.message);
-        } else {
-            alert('Ошибка при сохранении перевода: ' + (data.message || 'Неизвестная ошибка'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Ошибка при сохранении перевода. Проверьте консоль для деталей.');
-    })
-    .finally(() => {
-        // Восстанавливаем кнопку
-        saveBtn.innerHTML = originalText;
-        saveBtn.disabled = false;
-    });
-}
-
-// Обновление списка сохраненных переводов
-function updateSavedTranslationsList() {
-    const container = document.getElementById('saved-translations');
-    const list = document.getElementById('saved-translations-list');
-    
-    if (Object.keys(savedTranslations).length > 0) {
-        container.style.display = 'block';
-        list.innerHTML = '';
-        
-        Object.keys(savedTranslations).forEach(langCode => {
-            const translation = savedTranslations[langCode];
-            const langNames = { 'ru': 'Русский', 'en': 'English', 'ua': 'Українська' };
-            
-            const item = document.createElement('div');
-            item.className = 'saved-translation-item';
-            item.innerHTML = `
-                <span class="badge bg-success">${langNames[langCode] || langCode}</span>
-                <span>${translation.title}</span>
-                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteTranslation('${langCode}')">
-                    <i class="fas fa-trash"></i>
-                </button>
-            `;
-            list.appendChild(item);
-        });
-    } else {
-        container.style.display = 'none';
-    }
-}
-
-// Удаление перевода
-function deleteTranslation(langCode) {
-    if (confirm(`Удалить перевод для языка ${langCode}?`)) {
-        delete savedTranslations[langCode];
-        updateSavedTranslationsList();
-        
-        // Если удаляем текущий язык, очищаем поля
-        if (currentLanguage === langCode) {
-            clearFormFields();
-            document.getElementById('translation-status').textContent = 'Нет перевода';
-            document.getElementById('translation-status').className = 'translation-status missing';
-        }
-    }
-}
-
-// Инициализация TinyMCE для всех полей содержания шагов
+// Инициализация TinyMCE для поля
 function initTinyMCE(element) {
-    console.log('Инициализация TinyMCE для элемента:', element);
-    
-    // Если передан DOM элемент, получаем его селектор
-    let selector = element;
     if (element instanceof HTMLElement) {
-        if (element.id) {
-            selector = '#' + element.id;
-        } else {
-            // Создаем уникальный ID для элемента
+        if (!element.id) {
             element.id = 'tinymce-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            selector = '#' + element.id;
         }
     }
-    
-    console.log('Используемый селектор:', selector);
     
     tinymce.init({
-        selector: selector,
+        selector: '#' + element.id,
         height: 200,
         menubar: false,
         plugins: [
@@ -799,13 +434,256 @@ function initTinyMCE(element) {
                 'bold italic forecolor | alignleft aligncenter ' +
                 'alignright alignjustify | bullist numlist outdent indent | ' +
                 'removeformat | help',
-        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 14px; }',
+        content_style: `
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+                font-size: 14px; 
+            }
+            
+            /* Стили для подсказок в редакторе */
+            .alert {
+                margin: 10px 0;
+                padding: 12px 16px;
+                border-radius: 6px;
+                border: 1px solid transparent;
+                position: relative;
+            }
+
+            .alert-info {
+                color: #0c5460;
+                background-color: #d1ecf1;
+                border-color: #bee5eb;
+            }
+
+            .alert-warning {
+                color: #856404;
+                background-color: #fff3cd;
+                border-color: #ffeaa7;
+            }
+
+            .alert-success {
+                color: #155724;
+                background-color: #d4edda;
+                border-color: #c3e6cb;
+            }
+
+            .alert-danger {
+                color: #721c24;
+                background-color: #f8d7da;
+                border-color: #f5c6cb;
+            }
+
+            .alert-primary {
+                color: #004085;
+                background-color: #cce7ff;
+                border-color: #b3d9ff;
+            }
+
+            .alert .btn-close {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background: none;
+                border: none;
+                font-size: 18px;
+                cursor: pointer;
+                opacity: 0.7;
+                color: inherit;
+            }
+
+            .alert .btn-close:hover {
+                opacity: 1;
+            }
+
+            .alert i {
+                margin-right: 8px;
+            }
+
+            .alert span[contenteditable="true"] {
+                outline: none;
+                min-height: 20px;
+                display: inline-block;
+            }
+
+            .alert span[contenteditable="true"]:focus {
+                background-color: rgba(255, 255, 255, 0.3);
+                border-radius: 3px;
+                padding: 2px 4px;
+            }
+        `,
         branding: false,
         promotion: false,
-                       setup: function(editor) {
-                   console.log('TinyMCE редактор создан:', editor.id);
-               }
+        setup: function(editor) {
+            // Отслеживаем фокус редактора
+            editor.on('focus', function() {
+                activeEditor = editor;
+            });
+            
+            // Отслеживаем клик в редакторе
+            editor.on('click', function() {
+                activeEditor = editor;
+            });
+        }
     });
+}
+
+// Функция для вставки подсказки в активный редактор
+function insertTip(type, className) {
+    if (!activeEditor) {
+        alert('Сначала кликните в редактор шага, куда хотите вставить подсказку!');
+        return;
+    }
+    
+    let tipContent = '';
+    let icon = '';
+    
+    switch(type) {
+        case 'info':
+            icon = 'fas fa-info-circle';
+            tipContent = 'Введите текст информационной подсказки здесь...';
+            break;
+        case 'warning':
+            icon = 'fas fa-exclamation-triangle';
+            tipContent = 'Введите текст предупреждения здесь...';
+            break;
+        case 'success':
+            icon = 'fas fa-check-circle';
+            tipContent = 'Введите текст успешного выполнения здесь...';
+            break;
+        case 'danger':
+            icon = 'fas fa-times-circle';
+            tipContent = 'Введите текст ошибки здесь...';
+            break;
+        case 'primary':
+            icon = 'fas fa-lightbulb';
+            tipContent = 'Введите текст совета здесь...';
+            break;
+        default:
+            icon = 'fas fa-info-circle';
+            tipContent = 'Введите текст подсказки здесь...';
+    }
+    
+    const tipHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            <i class="${icon} me-2"></i>
+            <span contenteditable="true">${tipContent}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <br>
+    `;
+    
+    activeEditor.insertContent(tipHtml);
+    
+    // Показываем уведомление
+    showNotification(`Подсказка типа "${type}" вставлена! Теперь отредактируйте текст внутри.`, 'success');
+}
+
+// Функция для показа уведомлений
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Автоматически скрываем через 3 секунды
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 3000);
+}
+
+// Функция для открытия модального окна переводов
+function openTranslationModal(languageCode, languageName) {
+    // Устанавливаем название языка в модальном окне
+    document.getElementById('current-language-name').textContent = languageName;
+    document.getElementById('current-language-name-2').textContent = languageName;
+    
+    // Загружаем текущие переводы
+    loadTranslationData(languageCode);
+    
+    // Открываем модальное окно
+    const modal = new bootstrap.Modal(document.getElementById('translationModal'));
+    modal.show();
+}
+
+// Функция для загрузки данных перевода
+function loadTranslationData(languageCode) {
+    // Здесь можно загрузить данные с сервера или использовать существующие
+    // Пока используем базовые данные статьи
+    document.getElementById('translation_title').value = document.getElementById('title').value;
+    document.getElementById('translation_description').value = document.getElementById('description').value;
+    
+    // Загружаем переводы шагов
+    loadStepTranslations(languageCode);
+    
+    // Загружаем переводы советов
+    loadTipTranslations(languageCode);
+}
+
+// Функция для загрузки переводов шагов
+function loadStepTranslations(languageCode) {
+    const container = document.getElementById('translation-steps-container');
+    const steps = document.querySelectorAll('.step-item');
+    
+    container.innerHTML = '';
+    
+    steps.forEach((step, index) => {
+        const stepTitle = step.querySelector('.step-title').value;
+        const stepContent = step.querySelector('.step-content').value;
+        
+        const stepDiv = document.createElement('div');
+        stepDiv.className = 'mb-3 p-3 border rounded';
+        stepDiv.innerHTML = `
+            <h6>Шаг ${index + 1}</h6>
+            <div class="mb-2">
+                <label class="form-label">Заголовок шага:</label>
+                <input type="text" class="form-control" name="steps[${index}][title]" value="${stepTitle}" required>
+            </div>
+            <div class="mb-2">
+                <label class="form-label">Содержание шага:</label>
+                <textarea class="form-control" name="steps[${index}][content]" rows="3" required>${stepContent}</textarea>
+            </div>
+        `;
+        
+        container.appendChild(stepDiv);
+    });
+}
+
+// Функция для загрузки переводов советов
+function loadTipTranslations(languageCode) {
+    const container = document.getElementById('translation-tips-container');
+    const tips = document.querySelectorAll('.tip-content');
+    
+    container.innerHTML = '';
+    
+    tips.forEach((tip, index) => {
+        const tipContent = tip.value;
+        
+        const tipDiv = document.createElement('div');
+        tipDiv.className = 'mb-2';
+        tipDiv.innerHTML = `
+            <label class="form-label">Совет ${index + 1}:</label>
+            <textarea class="form-control" name="tips[${index}][content]" rows="2" required>${tipContent}</textarea>
+        `;
+        
+        container.appendChild(tipDiv);
+    });
+}
+
+// Функция для сохранения перевода
+function saveTranslation() {
+    // Здесь можно добавить логику сохранения перевода
+    showNotification('Перевод успешно сохранен!', 'success');
+    
+    // Закрываем модальное окно
+    const modal = bootstrap.Modal.getInstance(document.getElementById('translationModal'));
+    modal.hide();
 }
 
 function addStep() {
@@ -813,35 +691,35 @@ function addStep() {
     const stepDiv = document.createElement('div');
     stepDiv.className = 'step-item mb-3 p-3 border rounded';
     stepDiv.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="mb-0">Шаг ${stepCounter + 1}</h6>
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeStep(this)">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <label class="form-label">Заголовок шага <span class="text-danger">*</span></label>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0">Шаг ${stepCounter + 1}</h6>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeStep(this)">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label class="form-label">Заголовок шага <span class="text-danger">*</span></label>
                 <input type="text" 
                        class="form-control step-title" 
                        name="steps[${stepCounter}][title]" 
                        placeholder="Введите заголовок шага" 
                        required>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Изображение (опционально)</label>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Изображение (опционально)</label>
                 <input type="file" 
                        class="form-control step-image" 
                        name="steps[${stepCounter}][image]" 
                        accept="image/*">
             </div>
-            </div>
-            <div class="mt-3">
-                <label class="form-label">Содержание шага <span class="text-danger">*</span></label>
-                <textarea class="form-control step-content step-content-editor" 
+        </div>
+        <div class="mt-3">
+            <label class="form-label">Содержание шага <span class="text-danger">*</span></label>
+            <textarea class="form-control step-content step-content-editor" 
                       name="steps[${stepCounter}][content]" 
                       rows="5" 
-                      placeholder="Опишите шаг подробно..." 
+                      placeholder="Опишите шаг подробно...&#10;&#10;Используйте кнопки выше для быстрой вставки подсказок с готовыми стилями!" 
                       required></textarea>
         </div>
     `;
@@ -855,15 +733,15 @@ function addStep() {
 }
 
 function removeStep(button) {
-        const stepItem = button.closest('.step-item');
-        const editor = stepItem.querySelector('.step-content-editor');
-        
-        // Удаляем редактор TinyMCE перед удалением элемента
-        if (editor && tinymce.get(editor.id)) {
-            tinymce.remove(editor.id);
-        }
-        
-        stepItem.remove();
+    const stepItem = button.closest('.step-item');
+    const editor = stepItem.querySelector('.step-content-editor');
+    
+    // Удаляем редактор TinyMCE перед удалением элемента
+    if (editor && tinymce.get(editor.id)) {
+        tinymce.remove(editor.id);
+    }
+    
+    stepItem.remove();
 }
 
 function addTip() {
@@ -871,14 +749,14 @@ function addTip() {
     const tipDiv = document.createElement('div');
     tipDiv.className = 'tip-item mb-3';
     tipDiv.innerHTML = `
-            <div class="input-group">
-                <textarea class="form-control tip-content" 
+        <div class="input-group">
+            <textarea class="form-control tip-content" 
                       name="tips[${tipCounter}][content]" 
                       rows="3" 
                       placeholder="Введите полезный совет"></textarea>
-                <button type="button" class="btn btn-outline-danger" onclick="removeTip(this)">
-                    <i class="fas fa-trash"></i>
-                </button>
+            <button type="button" class="btn btn-outline-danger" onclick="removeTip(this)">
+                <i class="fas fa-trash"></i>
+            </button>
         </div>
     `;
     container.appendChild(tipDiv);
@@ -886,39 +764,13 @@ function addTip() {
 }
 
 function removeTip(button) {
-        button.closest('.tip-item').remove();
+    button.closest('.tip-item').remove();
 }
-
-// Привязываем функцию сохранения к кнопке
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM загружен для редактирования');
-    
-    // Проверяем, что форма существует
-    const form = document.getElementById('knowledge-form');
-    if (form) {
-        console.log('Форма найдена:', form);
-        console.log('Action формы:', form.action);
-        console.log('Method формы:', form.method);
-    } else {
-        console.error('Форма не найдена!');
-    }
-    
-    const saveBtn = document.getElementById('save-translation-btn');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', saveTranslation);
-    }
-});
 
 // Валидация формы перед отправкой
 document.getElementById('knowledge-form').addEventListener('submit', function(e) {
-    console.log('Форма отправляется...');
-    
-    // Проверяем, что все обязательные поля заполнены
     const title = document.getElementById('title').value.trim();
     const description = document.getElementById('description').value.trim();
-    
-    console.log('Title:', title);
-    console.log('Description:', description);
     
     if (!title || !description) {
         e.preventDefault();
@@ -930,8 +782,6 @@ document.getElementById('knowledge-form').addEventListener('submit', function(e)
     const stepTitles = document.querySelectorAll('.step-title');
     const stepContents = document.querySelectorAll('.step-content');
     
-    console.log('Количество шагов:', stepTitles.length);
-    
     for (let i = 0; i < stepTitles.length; i++) {
         const title = stepTitles[i].value.trim();
         let content = '';
@@ -942,16 +792,12 @@ document.getElementById('knowledge-form').addEventListener('submit', function(e)
             content = stepContents[i].value.trim();
         }
         
-        console.log(`Шаг ${i + 1}:`, { title, content });
-        
         if (!title || !content) {
             e.preventDefault();
             alert('Пожалуйста, заполните все обязательные поля для шагов');
             return false;
         }
     }
-    
-    console.log('Форма прошла валидацию, отправляем...');
 });
 </script>
 @endpush

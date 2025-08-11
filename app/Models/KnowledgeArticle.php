@@ -99,4 +99,36 @@ class KnowledgeArticle extends Model
     {
         return $this->hasMany(KnowledgeArticleTip::class)->orderBy('sort_order');
     }
+
+    /**
+     * Получить заголовок статьи (с переводом или основной)
+     */
+    public function getTitleAttribute($value)
+    {
+        // Если есть перевод для текущего языка, используем его
+        $locale = app()->getLocale();
+        $translation = $this->translation($locale);
+        
+        if ($translation && $translation->title) {
+            return $translation->title;
+        }
+        
+        return $value;
+    }
+
+    /**
+     * Получить описание статьи (с переводом или основное)
+     */
+    public function getDescriptionAttribute($value)
+    {
+        // Если есть перевод для текущего языка, используем его
+        $locale = app()->getLocale();
+        $translation = $this->translation($locale);
+        
+        if ($translation && $translation->description) {
+            return $translation->description;
+        }
+        
+        return $value;
+    }
 }
