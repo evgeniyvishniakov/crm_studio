@@ -19,7 +19,7 @@ class AdminOnly
     {
         $user = Auth::user();
         if (!$user || empty($user->is_panel_admin)) {
-            return redirect()->route('login')->withErrors('Нет доступа к админке.');
+            return redirect()->route('admin.login')->withErrors('Нет доступа к админке.');
         }
         return $next($request);
     }

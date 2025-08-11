@@ -8,9 +8,6 @@ use App\Models\Language;
 
 class LanguageSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $languages = [
@@ -20,7 +17,7 @@ class LanguageSeeder extends Seeder
                 'native_name' => 'Русский',
                 'flag' => 'ru.png',
                 'is_active' => true,
-                'is_default' => true,
+                'is_default' => true
             ],
             [
                 'code' => 'en',
@@ -28,7 +25,7 @@ class LanguageSeeder extends Seeder
                 'native_name' => 'English',
                 'flag' => 'en.png',
                 'is_active' => true,
-                'is_default' => false,
+                'is_default' => false
             ],
             [
                 'code' => 'ua',
@@ -36,8 +33,8 @@ class LanguageSeeder extends Seeder
                 'native_name' => 'Українська',
                 'flag' => 'ua.png',
                 'is_active' => true,
-                'is_default' => false,
-            ],
+                'is_default' => false
+            ]
         ];
 
         foreach ($languages as $language) {
@@ -46,5 +43,7 @@ class LanguageSeeder extends Seeder
                 $language
             );
         }
+
+        $this->command->info('Языки успешно добавлены!');
     }
 }

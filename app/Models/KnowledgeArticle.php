@@ -28,6 +28,58 @@ class KnowledgeArticle extends Model
         'published_at' => 'datetime',
     ];
 
+    /**
+     * Связь с переводами
+     */
+    public function translations()
+    {
+        return $this->hasMany(KnowledgeArticleTranslation::class);
+    }
+
+    /**
+     * Получить перевод на определенном языке
+     */
+    public function translation($languageCode)
+    {
+        return $this->translations()->where('locale', $languageCode)->first();
+    }
+
+    /**
+     * Получить перевод на языке по умолчанию
+     */
+    public function defaultTranslation()
+    {
+        $defaultLanguage = Language::getDefault();
+        if ($defaultLanguage) {
+            return $this->translation($defaultLanguage->code);
+        }
+        return null;
+    }
+
+    /**
+     * Получить статьи на определенном языке
+     */
+    public function scopeByLanguage($query, $languageCode)
+    {
+        return $query->whereHas('translations', function($q) use ($languageCode) {
+            $q->where('locale', $languageCode);
+        });
+    }
+
+    /**
+     * Получить статьи на языке по умолчанию
+     */
+    public function scopeDefaultLanguage($query)
+    {
+        $defaultLanguage = Language::getDefault();
+        if ($defaultLanguage) {
+            return $query->whereHas('translations', function($q) use ($defaultLanguage) {
+                $q->where('locale', $defaultLanguage->code);
+            });
+        }
+        return $query;
+    }
+
     public function scopePublished($query)
     {
         return $query->where('is_published', true);

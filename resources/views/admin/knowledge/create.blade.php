@@ -41,6 +41,79 @@
     .step-content-editor {
         min-height: 200px;
     }
+
+    /* Стили для переключателя языков */
+    .language-switcher {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .language-switcher select {
+        max-width: 200px;
+    }
+    
+    .language-info {
+        margin-top: 10px;
+        padding: 10px;
+        background: #e9ecef;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .translation-status {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .translation-status.saved {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .translation-status.unsaved {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .translation-status.partial {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .language-row {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+
+    .save-translation-btn {
+        min-width: 120px;
+    }
+
+    .saved-translations {
+        margin-top: 15px;
+        padding: 10px;
+        background: #e9ecef;
+        border-radius: 5px;
+    }
+
+    .saved-translation-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 5px;
+    }
+
+    .saved-translation-item .badge {
+        font-size: 11px;
+    }
 </style>
 @endsection
 
@@ -67,8 +140,50 @@
 
             <div class="card">
                 <div class="card-body">
-                    <form action="{{ route('admin.knowledge.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.knowledge.store') }}" method="POST" enctype="multipart/form-data" id="knowledge-form">
                         @csrf
+                        
+                        <!-- Переключатель языков -->
+                        <div class="language-switcher">
+                            <h6 class="mb-3">Выберите язык для создания контента</h6>
+                            <div class="language-row">
+                                <div class="flex-grow-1">
+                                    <label for="language_id" class="form-label">Язык <span class="text-danger">*</span></label>
+                                    <select class="form-select @error('language_id') is-invalid @enderror" 
+                                            id="language_id" 
+                                            name="language_id" 
+                                            required>
+                                        <option value="">Выберите язык</option>
+                                        @foreach($languages as $language)
+                                            <option value="{{ $language->id }}" 
+                                                    data-code="{{ $language->code }}"
+                                                    data-name="{{ $language->name }}">
+                                                {{ $language->name }} ({{ $language->native_name }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('language_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="d-flex align-items-end">
+                                    <button type="button" class="btn btn-success save-translation-btn" id="save-translation-btn" disabled>
+                                        <i class="fas fa-save me-2"></i>Сохранить перевод
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="language-info">
+                                <strong>Текущий язык:</strong> <span id="current-language">Не выбран</span>
+                                <br>
+                                <strong>Статус:</strong> <span id="translation-status">Не выбран</span>
+                            </div>
+                            
+                            <!-- Список сохраненных переводов -->
+                            <div class="saved-translations" id="saved-translations" style="display: none;">
+                                <h6 class="mb-2">Сохраненные переводы:</h6>
+                                <div id="saved-translations-list"></div>
+                            </div>
+                        </div>
                         
                         <div class="row">
                             <div class="col-md-8">
@@ -259,7 +374,7 @@
                             <a href="{{ route('admin.knowledge.index') }}" class="btn btn-outline-secondary">
                                 Отмена
                             </a>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary" id="create-article-btn">
                                 <i class="fas fa-save me-2"></i>Создать статью
                             </button>
                         </div>
@@ -275,6 +390,10 @@
 <!-- TinyMCE - бесплатная версия -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.2/tinymce.min.js"></script>
 <script>
+// Данные о сохраненных переводах
+let savedTranslations = {};
+let currentLanguage = null;
+
 // Проверка загрузки TinyMCE
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM загружен, проверяем TinyMCE...');
@@ -294,10 +413,309 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }, 500);
+
+    // Инициализация переключателя языков
+    initLanguageSwitcher();
+    
+    // Активируем кнопку создания статьи
+    checkCanCreateArticle();
+    
+    // Автоматически выбираем первый язык
+    const languageSelect = document.getElementById('language_id');
+    if (languageSelect && languageSelect.options.length > 1) {
+        // Выбираем первый доступный язык (пропускаем пустую опцию)
+        languageSelect.selectedIndex = 1;
+        // Вызываем событие change для активации логики
+        languageSelect.dispatchEvent(new Event('change'));
+        
+        // Активируем кнопку сохранения перевода
+        const saveTranslationBtn = document.getElementById('save-translation-btn');
+        if (saveTranslationBtn) {
+            saveTranslationBtn.disabled = false;
+        }
+    }
 });
 
-let stepCounter = 1;
-let tipCounter = 1;
+// Инициализация переключателя языков
+function initLanguageSwitcher() {
+    const languageSelect = document.getElementById('language_id');
+    const currentLanguageSpan = document.getElementById('current-language');
+    const translationStatusSpan = document.getElementById('translation-status');
+    const saveTranslationBtn = document.getElementById('save-translation-btn');
+    
+    if (languageSelect) {
+        languageSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.value) {
+                const languageName = selectedOption.getAttribute('data-name');
+                const languageCode = selectedOption.getAttribute('data-code');
+                
+                currentLanguage = languageCode;
+                currentLanguageSpan.textContent = languageName;
+                
+                // Проверяем, есть ли уже сохраненный перевод для этого языка
+                if (savedTranslations[languageCode]) {
+                    translationStatusSpan.textContent = 'Перевод сохранен';
+                    translationStatusSpan.className = 'translation-status saved';
+                    loadSavedTranslation(languageCode);
+                } else {
+                    translationStatusSpan.textContent = 'Перевод не сохранен';
+                    translationStatusSpan.className = 'translation-status unsaved';
+                    clearFormFields();
+                }
+                
+                saveTranslationBtn.disabled = false;
+            } else {
+                currentLanguage = null;
+                currentLanguageSpan.textContent = 'Не выбран';
+                translationStatusSpan.textContent = 'Не выбран';
+                saveTranslationBtn.disabled = true;
+            }
+        });
+    }
+}
+
+// Загрузка сохраненного перевода
+function loadSavedTranslation(languageCode) {
+    const translation = savedTranslations[languageCode];
+    if (translation) {
+        document.getElementById('title').value = translation.title || '';
+        document.getElementById('description').value = translation.description || '';
+        document.getElementById('author').value = translation.author || 'Команда Trimora';
+        
+        // Загружаем шаги
+        if (translation.steps) {
+            // Удаляем существующие шаги
+            const stepsContainer = document.getElementById('steps-container');
+            stepsContainer.innerHTML = '';
+            
+            // Добавляем сохраненные шаги
+            translation.steps.forEach((step, index) => {
+                addStep();
+                const lastStep = stepsContainer.lastElementChild;
+                lastStep.querySelector('.step-title').value = step.title || '';
+                
+                const contentField = lastStep.querySelector('.step-content');
+                if (tinymce.get(contentField.id)) {
+                    tinymce.get(contentField.id).setContent(step.content || '');
+                } else {
+                    contentField.value = step.content || '';
+                }
+            });
+        }
+        
+        // Загружаем советы
+        if (translation.tips) {
+            // Удаляем существующие советы
+            const tipsContainer = document.getElementById('tips-container');
+            tipsContainer.innerHTML = '';
+            
+            // Добавляем сохраненные советы
+            translation.tips.forEach((tip, index) => {
+                addTip();
+                const lastTip = tipsContainer.lastElementChild;
+                lastTip.querySelector('.tip-content').value = tip.content || '';
+            });
+        }
+    }
+}
+
+// Очистка полей формы при смене языка
+function clearFormFields() {
+    // Очищаем основные поля
+    document.getElementById('title').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('author').value = 'Команда Trimora';
+    
+    // Очищаем поля шагов
+    const stepTitles = document.querySelectorAll('.step-title');
+    const stepContents = document.querySelectorAll('.step-content');
+    
+    stepTitles.forEach(field => field.value = '');
+    stepContents.forEach(field => {
+        if (tinymce.get(field.id)) {
+            tinymce.get(field.id).setContent('');
+        } else {
+            field.value = '';
+        }
+    });
+    
+    // Очищаем поля советов
+    const tipContents = document.querySelectorAll('.tip-content');
+    tipContents.forEach(field => field.value = '');
+}
+
+// Сохранение перевода для текущего языка
+function saveTranslation() {
+    if (!currentLanguage) {
+        alert('Сначала выберите язык!');
+        return;
+    }
+    
+    // Собираем данные перевода
+    const translation = {
+        title: document.getElementById('title').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        author: document.getElementById('author').value.trim(),
+        steps: [],
+        tips: []
+    };
+    
+    // Проверяем обязательные поля
+    if (!translation.title || !translation.description) {
+        alert('Заполните заголовок и описание!');
+        return false;
+    }
+    
+    // Собираем шаги
+    const stepTitles = document.querySelectorAll('.step-title');
+    const stepContents = document.querySelectorAll('.step-content');
+    
+    for (let i = 0; i < stepTitles.length; i++) {
+        const title = stepTitles[i].value.trim();
+        let content = '';
+        
+        if (tinymce.get(stepContents[i].id)) {
+            content = tinymce.get(stepContents[i].id).getContent().trim();
+        } else {
+            content = stepContents[i].value.trim();
+        }
+        
+        if (title && content) {
+            translation.steps.push({ title, content });
+        }
+    }
+    
+    // Собираем советы
+    const tipContents = document.querySelectorAll('.tip-content');
+    tipContents.forEach(field => {
+        const content = field.value.trim();
+        if (content) {
+            translation.tips.push({ content });
+        }
+    });
+    
+    // Отправляем данные на сервер
+    const formData = new FormData();
+    formData.append('language_id', document.getElementById('language_id').value);
+    formData.append('title', translation.title);
+    formData.append('description', translation.description);
+    formData.append('author', translation.author);
+    formData.append('_token', document.querySelector('input[name="_token"]').value);
+    
+    // Добавляем шаги
+    translation.steps.forEach((step, index) => {
+        formData.append(`steps[${index}][title]`, step.title);
+        formData.append(`steps[${index}][content]`, step.content);
+    });
+    
+    // Добавляем советы
+    translation.tips.forEach((tip, index) => {
+        formData.append(`tips[${index}][content]`, tip.content);
+    });
+    
+    // Показываем индикатор загрузки
+    const saveBtn = document.getElementById('save-translation-btn');
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Сохранение...';
+    saveBtn.disabled = true;
+    
+    // Отправляем запрос
+    fetch('{{ route("admin.knowledge.save-translation-draft") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Сохраняем перевод локально
+            savedTranslations[currentLanguage] = translation;
+            
+            // Обновляем статус
+            document.getElementById('translation-status').textContent = 'Перевод сохранен';
+            document.getElementById('translation-status').className = 'translation-status saved';
+            
+            // Обновляем список сохраненных переводов
+            updateSavedTranslationsList();
+            
+            // Проверяем, можно ли активировать кнопку создания статьи
+            checkCanCreateArticle();
+            
+            alert(data.message);
+        } else {
+            alert('Ошибка при сохранении перевода: ' + (data.message || 'Неизвестная ошибка'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ошибка при сохранении перевода. Проверьте консоль для деталей.');
+    })
+    .finally(() => {
+        // Восстанавливаем кнопку
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    });
+}
+
+// Обновление списка сохраненных переводов
+function updateSavedTranslationsList() {
+    const container = document.getElementById('saved-translations');
+    const list = document.getElementById('saved-translations-list');
+    
+    if (Object.keys(savedTranslations).length > 0) {
+        container.style.display = 'block';
+        list.innerHTML = '';
+        
+        Object.keys(savedTranslations).forEach(langCode => {
+            const translation = savedTranslations[langCode];
+            const langNames = { 'ru': 'Русский', 'en': 'English', 'ua': 'Українська' };
+            
+            const item = document.createElement('div');
+            item.className = 'saved-translation-item';
+            item.innerHTML = `
+                <span class="badge bg-success">${langNames[langCode] || langCode}</span>
+                <span>${translation.title}</span>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteTranslation('${langCode}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            list.appendChild(item);
+        });
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+// Удаление перевода
+function deleteTranslation(langCode) {
+    if (confirm(`Удалить перевод для языка ${langCode}?`)) {
+        delete savedTranslations[langCode];
+        updateSavedTranslationsList();
+        checkCanCreateArticle();
+        
+        // Если удаляем текущий язык, очищаем поля
+        if (currentLanguage === langCode) {
+            clearFormFields();
+            document.getElementById('translation-status').textContent = 'Перевод не сохранен';
+            document.getElementById('translation-status').className = 'translation-status unsaved';
+        }
+    }
+}
+
+// Проверка возможности создания статьи
+function checkCanCreateArticle() {
+    const createBtn = document.getElementById('create-article-btn');
+    const savedCount = Object.keys(savedTranslations).length;
+    
+    // Кнопка всегда активна, но показываем информацию о переводах
+    createBtn.disabled = false;
+    
+    if (savedCount >= 1) {
+        createBtn.title = `Можно создать статью (сохранено переводов: ${savedCount})`;
+    } else {
+        createBtn.title = 'Создать статью (переводы не сохранены)';
+    }
+}
 
 // Инициализация TinyMCE для всех полей содержания шагов
 function initTinyMCE(element) {
@@ -420,6 +838,50 @@ function removeTip(button) {
     button.closest('.tip-item').remove();
 }
 
+// Привязываем функцию сохранения к кнопке
+document.addEventListener('DOMContentLoaded', function() {
+    const saveBtn = document.getElementById('save-translation-btn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', saveTranslation);
+    }
+});
+
+// Валидация формы перед отправкой
+document.getElementById('knowledge-form').addEventListener('submit', function(e) {
+    // Проверяем, что все обязательные поля заполнены
+    const title = document.getElementById('title').value.trim();
+    const description = document.getElementById('description').value.trim();
+    
+    if (!title || !description) {
+        e.preventDefault();
+        alert('Пожалуйста, заполните все обязательные поля');
+        return false;
+    }
+    
+    // Проверяем шаги
+    const stepTitles = document.querySelectorAll('.step-title');
+    const stepContents = document.querySelectorAll('.step-content');
+    
+    for (let i = 0; i < stepTitles.length; i++) {
+        const title = stepTitles[i].value.trim();
+        let content = '';
+        
+        if (tinymce.get(stepContents[i].id)) {
+            content = tinymce.get(stepContents[i].id).getContent().trim();
+        } else {
+            content = stepContents[i].value.trim();
+        }
+        
+        if (!title || !content) {
+            e.preventDefault();
+            alert('Пожалуйста, заполните все обязательные поля для шагов');
+            return false;
+        }
+    }
+});
+
+let stepCounter = 1;
+let tipCounter = 1;
 
 </script>
 @endpush

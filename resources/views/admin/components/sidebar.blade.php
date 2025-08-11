@@ -103,7 +103,19 @@
             <li class="nav-item mb-2">
                 <a href="{{ route('admin.knowledge.index') }}" class="nav-link text-white {{ request()->routeIs('admin.knowledge.*') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-book me-2"></i>
-                    База знаний
+                    База знаний (Админ)
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ route('knowledge.index') }}" class="nav-link text-white" target="_blank">
+                    <i class="fas fa-external-link-alt me-2"></i>
+                    База знаний (Публичная)
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ route('home') }}" class="nav-link text-muted" target="_blank">
+                    <i class="fas fa-home me-2"></i>
+                    Главная страница
                 </a>
             </li>
         </ul>

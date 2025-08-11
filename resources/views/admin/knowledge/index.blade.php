@@ -31,7 +31,7 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="category-filter" class="form-label">Категория</label>
                             <select id="category-filter" class="form-select">
                                 <option value="">Все категории</option>
@@ -40,7 +40,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="status-filter" class="form-label">Статус</label>
                             <select id="status-filter" class="form-select">
                                 <option value="">Все статусы</option>
@@ -48,7 +48,16 @@
                                 <option value="0">Черновик</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <label for="language-filter" class="form-label">Язык</label>
+                            <select id="language-filter" class="form-select">
+                                <option value="">Все языки</option>
+                                <option value="ru">Русский</option>
+                                <option value="en">English</option>
+                                <option value="ua">Українська</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <label for="search" class="form-label">Поиск</label>
                             <input type="text" id="search" class="form-control" placeholder="Поиск по названию...">
                         </div>
@@ -67,6 +76,7 @@
                                     <th>Заголовок</th>
                                     <th>Категория</th>
                                     <th>Автор</th>
+                                    <th>Переводы</th>
                                     <th>Статус</th>
                                     <th>Дата создания</th>
                                     <th>Действия</th>
@@ -74,7 +84,7 @@
                             </thead>
                             <tbody>
                                 @forelse($articles as $article)
-                                    <tr data-category="{{ $article->category }}" data-status="{{ $article->is_published ? '1' : '0' }}" data-title="{{ strtolower($article->title) }}">
+                                    <tr data-category="{{ $article->category }}" data-status="{{ $article->is_published ? '1' : '0' }}" data-title="{{ strtolower($article->title) }}" data-languages="{{ $article->translations->pluck('language.code')->implode(',') }}">
                                         <td>{{ $article->id }}</td>
                                         <td>
                                             <div class="d-flex align-items-center">
@@ -95,6 +105,21 @@
                                             <span class="badge bg-primary">{{ $categories[$article->category] ?? $article->category }}</span>
                                         </td>
                                         <td>{{ $article->author }}</td>
+                                        <td>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach(['ru', 'en', 'ua'] as $langCode)
+                                                    @php
+                                                        $translation = $article->translation($langCode);
+                                                        $statusClass = $translation ? 'bg-success' : 'bg-secondary';
+                                                        $statusText = $translation ? '✓' : '✗';
+                                                        $langNames = ['ru' => 'RU', 'en' => 'EN', 'ua' => 'UA'];
+                                                    @endphp
+                                                    <span class="badge {{ $statusClass }}" title="{{ $langNames[$langCode] }}: {{ $translation ? 'Есть перевод' : 'Нет перевода' }}">
+                                                        {{ $langNames[$langCode] }} {{ $statusText }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
+                                        </td>
                                         <td>
                                             @if($article->is_published)
                                                 <span class="badge bg-success">Опубликовано</span>
@@ -155,7 +180,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted py-4">
+                                        <td colspan="8" class="text-center text-muted py-4">
                                             <i class="fas fa-inbox fa-3x mb-3"></i>
                                             <p>Статьи не найдены</p>
                                             <a href="{{ route('admin.knowledge.create') }}" class="btn btn-primary">
@@ -186,24 +211,28 @@
 document.addEventListener('DOMContentLoaded', function() {
     const categoryFilter = document.getElementById('category-filter');
     const statusFilter = document.getElementById('status-filter');
+    const languageFilter = document.getElementById('language-filter');
     const searchInput = document.getElementById('search');
     const tableRows = document.querySelectorAll('tbody tr');
 
     function filterTable() {
         const selectedCategory = categoryFilter.value;
         const selectedStatus = statusFilter.value;
+        const selectedLanguage = languageFilter.value;
         const searchTerm = searchInput.value.toLowerCase();
 
         tableRows.forEach(row => {
             const category = row.dataset.category;
             const status = row.dataset.status;
+            const languages = row.dataset.languages;
             const title = row.dataset.title;
 
             const categoryMatch = !selectedCategory || category === selectedCategory;
             const statusMatch = !selectedStatus || status === selectedStatus;
+            const languageMatch = !selectedLanguage || languages.includes(selectedLanguage);
             const searchMatch = !searchTerm || title.includes(searchTerm);
 
-            if (categoryMatch && statusMatch && searchMatch) {
+            if (categoryMatch && statusMatch && languageMatch && searchMatch) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';
@@ -213,6 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     categoryFilter.addEventListener('change', filterTable);
     statusFilter.addEventListener('change', filterTable);
+    languageFilter.addEventListener('change', filterTable);
     searchInput.addEventListener('input', filterTable);
 });
 </script>
