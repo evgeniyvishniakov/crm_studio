@@ -151,6 +151,8 @@
                     <form action="{{ route('admin.knowledge.update', $article->id) }}" method="POST" enctype="multipart/form-data" id="knowledge-form">
                         @csrf
                         @method('PUT')
+                        <input type="hidden" name="editing_language" value="{{ app()->getLocale() }}">
+                        <input type="hidden" name="is_editing_translation" value="false">
                         
                         <div class="row">
                             <div class="col-md-8">
@@ -649,6 +651,10 @@ function initTinyMCE(element) {
             }
             
             console.log('Инициализируем TinyMCE для элемента:', element.id);
+            console.log('Содержимое элемента перед инициализацией:', element.value);
+            
+            // Сохраняем содержимое перед инициализацией
+            const content = element.value;
             
             tinymce.init({
                 selector: '#' + element.id,
@@ -746,6 +752,11 @@ function initTinyMCE(element) {
                     console.log('TinyMCE редактор создан для:', element.id);
                     editor.on('init', function() {
                         console.log('TinyMCE редактор инициализирован для:', element.id);
+                        // Устанавливаем сохраненное содержимое
+                        if (content) {
+                            console.log('Устанавливаем содержимое в TinyMCE:', content);
+                            editor.setContent(content);
+                        }
                     });
                 }
             });
@@ -1081,11 +1092,21 @@ function openTranslationModal(languageCode, languageName) {
         
         // Загружаем данные для перевода
         function loadTranslationData(languageCode, languageName) {
+            console.log('Загружаем перевод для языка:', languageCode);
+            
+            // ОЧИЩАЕМ ПОЛЕ ОПИСАНИЯ ПЕРЕД ЗАГРУЗКОЙ НОВОГО ПЕРЕВОДА
+            const descriptionField = document.getElementById('translation_description');
+            if (descriptionField.id && tinymce.get(descriptionField.id)) {
+                console.log('Уничтожаем существующий TinyMCE редактор:', descriptionField.id);
+                tinymce.get(descriptionField.id).destroy();
+            }
+            
+            // Очищаем содержимое поля
+            descriptionField.value = '';
+            
             currentLanguage = languageCode;
             document.getElementById('current-language-name').textContent = languageName;
             document.getElementById('current-language-name-2').textContent = languageName;
-            
-            console.log('Загружаем перевод для языка:', languageCode);
             
             // Загружаем переводы с сервера
             fetch(`/panel/knowledge/${articleId}/translations/${languageCode}`)
@@ -1094,15 +1115,37 @@ function openTranslationModal(languageCode, languageName) {
                     console.log('Получены данные с сервера:', data);
                     
                     if (data.success) {
+                        console.log('Перевод найден, заполняем поля:', data.translation);
+                        console.log('Данные с сервера:', {
+                            title: data.translation.title,
+                            description: data.translation.description,
+                            step_translations: data.step_translations,
+                            tip_translations: data.tip_translations
+                        });
+                        
                         // Заполняем поля перевода
-                        document.getElementById('translation_title').value = data.translation.title || '';
-                        document.getElementById('translation_description').value = data.translation.description || '';
+                        const titleField = document.getElementById('translation_title');
+                        const descriptionField = document.getElementById('translation_description');
+                        
+                        console.log('Перед заполнением - заголовок:', titleField.value);
+                        console.log('Перед заполнением - описание:', descriptionField.value);
+                        
+                        titleField.value = data.translation.title || '';
+                        descriptionField.value = data.translation.description || '';
+                        
+                        console.log('После заполнения - заголовок:', titleField.value);
+                        console.log('После заполнения - описание:', descriptionField.value);
+                        
+                        console.log('Поле заголовка заполнено:', titleField.value);
+                        console.log('Поле описания заполнено:', descriptionField.value);
                         
                         // Загружаем переводы шагов
-                        loadStepTranslations(data.step_translations || []);
+                        console.log('Передаем переводы шагов в loadStepTranslations:', data.step_translations);
+                        loadStepTranslations(data.step_translations);
                         
                         // Загружаем переводы советов
-                        loadTipTranslations(data.tip_translations || []);
+                        console.log('Передаем переводы советов в loadTipTranslations:', data.tip_translations);
+                        loadTipTranslations(data.tip_translations);
                     } else {
                         console.log('Перевод не найден, используем данные из основной формы');
                         
@@ -1124,7 +1167,22 @@ function openTranslationModal(languageCode, languageName) {
                     setTimeout(() => {
                         const descriptionEditor = document.getElementById('translation_description');
                         console.log('Инициализируем TinyMCE для описания:', descriptionEditor.id);
+                        console.log('Содержимое поля перед инициализацией TinyMCE:', descriptionEditor.value);
+                        
+                        // УНИЧТОЖАЕМ СТАРЫЙ TINYMCE РЕДАКТОР ЕСЛИ ОН СУЩЕСТВУЕТ
+                        if (descriptionEditor.id && tinymce.get(descriptionEditor.id)) {
+                            console.log('Уничтожаем старый TinyMCE редактор:', descriptionEditor.id);
+                            tinymce.get(descriptionEditor.id).destroy();
+                        }
+                        
                         initTinyMCESimple(descriptionEditor);
+                        
+                        // Проверяем содержимое после инициализации TinyMCE
+                        setTimeout(() => {
+                            if (tinymce.get(descriptionEditor.id)) {
+                                console.log('Содержимое TinyMCE после инициализации:', tinymce.get(descriptionEditor.id).getContent());
+                            }
+                        }, 100);
                     }, 300); // Увеличиваем задержку
                 })
                 .catch(error => {
@@ -1153,20 +1211,24 @@ function openTranslationModal(languageCode, languageName) {
         }
         
         // Загружаем переводы шагов
-        function loadStepTranslations(translations = []) {
+        function loadStepTranslations(translations) {
             const container = document.getElementById('translation-steps-container');
             const steps = document.querySelectorAll('.step-item');
             
             console.log('loadStepTranslations вызвана');
             console.log('Переводы с сервера:', translations);
+            console.log('Тип переводов:', typeof translations);
             console.log('Шаги в основной форме:', steps.length);
             
             container.innerHTML = '';
             
-            if (translations.length > 0) {
+            if (translations && Array.isArray(translations) && translations.length > 0) {
                 // Если есть переводы с сервера, используем их
-                console.log('Используем переводы с сервера');
+                console.log('Используем переводы с сервера для шагов:', translations);
                 translations.forEach((step, index) => {
+                    console.log(`Шаг ${index + 1} перевод:`, step);
+                    console.log(`Шаг ${index + 1} заголовок:`, step.title);
+                    console.log(`Шаг ${index + 1} содержимое:`, step.content);
                     const stepDiv = document.createElement('div');
                     stepDiv.className = 'mb-3 p-3 border rounded';
                     stepDiv.innerHTML = `
@@ -1187,7 +1249,8 @@ function openTranslationModal(languageCode, languageName) {
                 });
             } else {
                 // Если переводов нет, копируем из основной формы
-                console.log('Копируем из основной формы');
+                console.log('Переводов нет, копируем из основной формы');
+                console.log('Копируем шаги из основной формы:', steps);
                 steps.forEach((step, index) => {
                     const stepTitle = step.querySelector('.step-title').value;
                     const stepContent = step.querySelector('.step-content').value;
@@ -1240,14 +1303,19 @@ function openTranslationModal(languageCode, languageName) {
         }
         
         // Загружаем переводы советов
-        function loadTipTranslations(translations = []) {
+        function loadTipTranslations(translations) {
             const container = document.getElementById('translation-tips-container');
             const tips = document.querySelectorAll('.tip-content');
             
+            console.log('loadTipTranslations вызвана');
+            console.log('Переводы с сервера:', translations);
+            console.log('Тип переводов:', typeof translations);
+            
             container.innerHTML = '';
             
-            if (translations.length > 0) {
+            if (translations && Array.isArray(translations) && translations.length > 0) {
                 // Если есть переводы с сервера, используем их
+                console.log('Используем переводы с сервера для советов:', translations);
                 translations.forEach((tip, index) => {
                     const tipDiv = document.createElement('div');
                     tipDiv.className = 'mb-3 p-3 border rounded';

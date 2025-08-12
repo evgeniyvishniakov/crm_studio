@@ -282,22 +282,40 @@ class KnowledgeController extends Controller
         // Получаем все активные языки
         $languages = Language::getActive();
         
-        // Создаем переводы ТОЛЬКО если их нет (не перезаписываем существующие!)
-        foreach ($languages as $language) {
-            $translation = $article->translations()->where('locale', $language->code)->first();
-            if (!$translation) {
-                // Создаем перевод только если его нет
-                $article->translations()->create([
-                    'locale' => $language->code,
-                    'title' => $request->title,
-                    'description' => $request->description
-                ]);
+        // Обновляем или создаем переводы для статьи
+        // Определяем текущий язык редактирования из формы
+        $editingLanguage = $request->input('editing_language', app()->getLocale());
+        
+        // Проверяем, редактируем ли мы перевод или основную статью
+        $isEditingTranslation = $request->input('is_editing_translation', false);
+        
+        if (!$isEditingTranslation) {
+            // Если редактируем основную статью, обновляем переводы
+            foreach ($languages as $language) {
+                $translation = $article->translations()->where('locale', $language->code)->first();
+                if (!$translation) {
+                    // Создаем перевод если его нет
+                    $article->translations()->create([
+                        'locale' => $language->code,
+                        'title' => $request->title,
+                        'description' => $request->description
+                    ]);
+                } else {
+                    // Обновляем ТОЛЬКО перевод на языке редактирования
+                    // Остальные языки НЕ трогаем, чтобы не перезаписать их переводы
+                    if ($language->code === $editingLanguage) {
+                        $translation->update([
+                            'title' => $request->title,
+                            'description' => $request->description
+                        ]);
+                    }
+                }
             }
-            // Если перевод уже существует - НЕ ТРОГАЕМ его!
         }
+        // Если редактируем перевод, НЕ обновляем переводы здесь
 
         // Обновляем шаги
-        if ($request->has('steps') && is_array($request->steps)) {
+        if ($request->has('steps') && is_array($request->steps) && !$isEditingTranslation) {
             // Получаем существующие шаги для сохранения изображений и переводов
             $existingSteps = $article->steps()->with('translations')->get()->keyBy('sort_order');
             
@@ -339,7 +357,7 @@ class KnowledgeController extends Controller
                         $stepModel = $article->steps()->create($stepData);
                     }
                     
-                    // Создаем переводы для шага ТОЛЬКО если их нет
+                    // Обновляем или создаем переводы для шага
                     foreach ($languages as $language) {
                         $stepTranslation = $stepModel->translations()->where('locale', $language->code)->first();
                         if (!$stepTranslation) {
@@ -348,8 +366,16 @@ class KnowledgeController extends Controller
                                 'title' => $step['title'],
                                 'content' => $step['content']
                             ]);
+                        } else {
+                            // Обновляем ТОЛЬКО перевод на языке редактирования
+                            // Остальные языки НЕ трогаем
+                            if ($language->code === $editingLanguage) {
+                                $stepTranslation->update([
+                                    'title' => $step['title'],
+                                    'content' => $step['content']
+                                ]);
+                            }
                         }
-                        // Если перевод уже существует - НЕ ТРОГАЕМ его!
                     }
                 }
             }
@@ -360,7 +386,7 @@ class KnowledgeController extends Controller
         }
 
         // Обновляем полезные советы
-        if ($request->has('tips') && is_array($request->tips)) {
+        if ($request->has('tips') && is_array($request->tips) && !$isEditingTranslation) {
             // Получаем существующие советы для сохранения переводов
             $existingTips = $article->tips()->with('translations')->get()->keyBy('sort_order');
             
@@ -383,7 +409,7 @@ class KnowledgeController extends Controller
                         $tipModel = $article->tips()->create($tipData);
                     }
                     
-                    // Создаем переводы для совета ТОЛЬКО если их нет
+                    // Обновляем или создаем переводы для совета
                     foreach ($languages as $language) {
                         $tipTranslation = $tipModel->translations()->where('locale', $language->code)->first();
                         if (!$tipTranslation) {
@@ -391,8 +417,15 @@ class KnowledgeController extends Controller
                                 'locale' => $language->code,
                                 'content' => $tip['content']
                             ]);
+                        } else {
+                            // Обновляем ТОЛЬКО перевод на языке редактирования
+                            // Остальные языки НЕ трогаем
+                            if ($language->code === $editingLanguage) {
+                                $tipTranslation->update([
+                                    'content' => $tip['content']
+                                ]);
+                            }
                         }
-                        // Если перевод уже существует - НЕ ТРОГАЕМ его!
                     }
                 }
             }
@@ -447,12 +480,22 @@ class KnowledgeController extends Controller
      */
     public function getTranslation(string $id, string $language)
     {
+        \Log::info('getTranslation called', ['article_id' => $id, 'language' => $language]);
+        
         $article = KnowledgeArticle::with(['translations', 'steps.translations', 'tips.translations'])->findOrFail($id);
         
         // Получаем перевод статьи
         $translation = $article->translations()->where('locale', $language)->first();
         
+        \Log::info('Translation search result', [
+            'article_id' => $id,
+            'language' => $language,
+            'translation_found' => $translation ? true : false,
+            'translation_data' => $translation ? $translation->toArray() : null
+        ]);
+        
         if (!$translation) {
+            \Log::warning('Translation not found', ['article_id' => $id, 'language' => $language]);
             return response()->json([
                 'success' => false,
                 'message' => 'Перевод не найден'
@@ -500,6 +543,11 @@ class KnowledgeController extends Controller
      */
     public function saveTranslation(Request $request, string $id)
     {
+        \Log::info('saveTranslation called', [
+            'article_id' => $id,
+            'request_data' => $request->all()
+        ]);
+        
         $request->validate([
             'language_code' => 'required|string|max:5',
             'title' => 'required|string|max:255',
