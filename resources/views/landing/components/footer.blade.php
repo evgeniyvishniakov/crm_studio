@@ -14,14 +14,14 @@
                 <h5>Продукт</h5>
                 <ul class="list-unstyled">
                     <li><a href="{{ route('beautyflow.features') }}" class="text-muted text-decoration-none">Возможности</a></li>
-                    <li><a href="{{ route('beautyflow.integrations') }}" class="text-muted text-decoration-none">Интеграции</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Интеграции</a></li>
                     <li><a href="{{ route('beautyflow.pricing') }}" class="text-muted text-decoration-none">Тарифы</a></li>
                 </ul>
             </div>
             <div class="col-lg-3 col-md-6 mb-4">
                 <h5>Услуги</h5>
                 <ul class="list-unstyled">
-                    <li><a href="{{ route('beautyflow.services') }}" class="text-muted text-decoration-none">Все услуги</a></li>
+                    <li><a href="#" class="text-muted text-decoration-none">Все услуги</a></li>
                     <li><a href="#" class="text-muted text-decoration-none">Управление клиентами</a></li>
                     <li><a href="#" class="text-muted text-decoration-none">Записи и расписание</a></li>
                     <li><a href="#" class="text-muted text-decoration-none">Управление товарами</a></li>

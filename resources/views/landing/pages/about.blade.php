@@ -1,7 +1,7 @@
 @extends('landing.layouts.app')
 
 @section('title', 'О нас - Trimora')
-@section('description', 'Узнайте больше о Trimora и нашей миссии помочь салонам красоты развиваться')
+@section('description', 'Узнайте больше о компании Trimora и нашей миссии')
 
 @section('content')
 <!-- Hero Section -->
@@ -9,8 +9,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-4 fw-bold mb-4">О Trimora</h1>
-                <p class="lead text-muted">Мы помогаем салонам красоты расти и развиваться с помощью современных технологий</p>
+                <h1 class="display-4 fw-bold mb-4">О нас</h1>
+                <p class="lead text-muted">Мы помогаем салонам красоты расти и развиваться</p>
             </div>
         </div>
     </div>
@@ -20,70 +20,45 @@
 <section class="py-5">
     <div class="container">
         <div class="row">
-            <div class="col-lg-6">
-                <h2 class="fw-bold mb-4">Наша миссия</h2>
-                <p class="text-muted mb-4">Мы создаем простые и эффективные решения для управления салонами красоты. Наша цель - помочь владельцам салонов сосредоточиться на том, что они делают лучше всего - создавать красоту и дарить радость клиентам.</p>
-                
-                <h3 class="fw-bold mb-3">Почему Trimora?</h3>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Простой и интуитивно понятный интерфейс</li>
-                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Все необходимые функции в одном месте</li>
-                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Надежная и безопасная система</li>
-                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Поддержка 24/7</li>
-                </ul>
-            </div>
-            <div class="col-lg-6">
-                <img src="{{ asset('images/about-us.jpg') }}" alt="О нас" class="img-fluid rounded shadow" loading="lazy">
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Team Section -->
-<section class="bg-light py-5">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Наша команда</h2>
-            <p class="text-muted">Профессионалы, которые создают лучшие решения для вашего бизнеса</p>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm text-center">
-                    <div class="card-body p-4">
-                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                            <i class="fas fa-user fa-2x"></i>
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-5">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Внимание:</strong> Эта страница находится в разработке. Полная информация о компании будет добавлена в ближайшее время.
                         </div>
-                        <h5 class="card-title">Разработчики</h5>
-                        <p class="card-text text-muted">Создают надежные и современные решения</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm text-center">
-                    <div class="card-body p-4">
-                        <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                            <i class="fas fa-headset fa-2x"></i>
+                        
+                        <h2 class="fw-bold mb-4">Наша миссия</h2>
+                        <p class="text-muted mb-4">
+                            Мы создаем инновационные решения для управления салонами красоты, помогая предпринимателям сосредоточиться на том, что они делают лучше всего.
+                        </p>
+                        
+                        <h3 class="fw-bold mb-3">Что мы предлагаем</h3>
+                        <ul class="text-muted mb-4">
+                            <li>Система управления записями</li>
+                            <li>Управление клиентской базой</li>
+                            <li>Аналитика и отчеты</li>
+                            <li>Интеграция с популярными сервисами</li>
+                        </ul>
+                        
+                        <h3 class="fw-bold mb-3">Наши ценности</h3>
+                        <ul class="text-muted mb-4">
+                            <li>Инновации в каждой детали</li>
+                            <li>Поддержка клиентов 24/7</li>
+                            <li>Безопасность данных</li>
+                            <li>Простота использования</li>
+                        </ul>
+                        
+                        <div class="text-center mt-5">
+                            <a href="{{ route('beautyflow.contact') }}" class="btn btn-primary">
+                                <i class="fas fa-handshake me-2"></i>
+                                Связаться с нами
+                            </a>
                         </div>
-                        <h5 class="card-title">Поддержка</h5>
-                        <p class="card-text text-muted">Всегда готовы помочь и ответить на вопросы</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm text-center">
-                    <div class="card-body p-4">
-                        <div class="rounded-circle bg-info text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                            <i class="fas fa-chart-line fa-2x"></i>
-                        </div>
-                        <h5 class="card-title">Аналитики</h5>
-                        <p class="card-text text-muted">Изучают потребности и улучшают продукт</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-@endsection 
+@endsection
