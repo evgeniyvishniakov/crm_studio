@@ -276,6 +276,7 @@
                                             <div class="mt-3">
                                                 <label class="form-label">Содержание шага <span class="text-danger">*</span></label>
                                                 <textarea class="form-control step-content step-content-editor" 
+                                                          id="tinymce-step-0"
                                                           name="steps[0][content]" 
                                                           rows="5" 
                                                           placeholder="Опишите шаг подробно...&#10;&#10;Используйте кнопки выше для быстрой вставки подсказок с готовыми стилями!&#10;&#10;Пример: В системе уже созданы два системных типа: Постоянный клиент, Новый клиент. Эти типы нельзя редактировать или удалять, так как они используются в аналитике." 
@@ -402,25 +403,112 @@ let activeEditor = null; // Глобальная переменная для о�
 
 // Инициализация TinyMCE
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, starting TinyMCE initialization...');
+    
+    // Даем время странице полностью загрузиться
     setTimeout(() => {
-        if (typeof tinymce !== 'undefined') {
-            const existingEditors = document.querySelectorAll('.step-content-editor');
-            existingEditors.forEach(editor => {
-                initTinyMCE(editor);
-            });
-        }
-    }, 500);
+        console.log('Timeout completed, calling initExistingEditors...');
+        initExistingEditors();
+    }, 1000);
 });
+
+// Функция для инициализации существующих редакторов
+function initExistingEditors() {
+    if (typeof tinymce === 'undefined') {
+        console.log('TinyMCE not loaded yet, retrying...');
+        setTimeout(initExistingEditors, 500);
+        return;
+    }
+    
+    console.log('TinyMCE loaded, waiting for user interaction...');
+    
+    // Вместо автоматической инициализации, ждем взаимодействия пользователя
+    const form = document.getElementById('knowledge-form');
+    if (form) {
+        form.addEventListener('focusin', function(e) {
+            if (e.target.classList.contains('step-content-editor') && !e.target.id) {
+                console.log('User focused on editor, initializing...');
+                e.target.id = 'tinymce-step-' + Date.now();
+                initTinyMCE(e.target);
+            }
+        });
+    }
+    
+    // Также инициализируем первый редактор, если он есть
+    const firstEditor = document.querySelector('.step-content-editor');
+    if (firstEditor && !firstEditor.id) {
+        firstEditor.id = 'tinymce-step-0';
+        // Небольшая задержка для стабилизации
+        setTimeout(() => {
+            initTinyMCE(firstEditor);
+        }, 100);
+    }
+    
+    // Добавляем обработчик для предотвращения ошибок фокусировки
+    document.addEventListener('focusin', function(e) {
+        if (e.target.classList.contains('step-content-editor')) {
+            // Предотвращаем стандартную фокусировку на textarea
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Если редактор еще не инициализирован, инициализируем его
+            if (!e.target.id) {
+                e.target.id = 'tinymce-step-' + Date.now();
+                initTinyMCE(e.target);
+            }
+            
+            // Фокусируемся на TinyMCE редакторе
+            const editor = tinymce.get(e.target.id);
+            if (editor) {
+                editor.focus();
+            }
+        }
+    });
+}
 
 // Инициализация TinyMCE для поля
 function initTinyMCE(element) {
-    if (element instanceof HTMLElement) {
-        if (!element.id) {
-            element.id = 'tinymce-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        }
+    console.log('initTinyMCE called for element:', element);
+    
+    if (!element || !(element instanceof HTMLElement)) {
+        console.error('Invalid element passed to initTinyMCE');
+        return;
     }
     
-    tinymce.init({
+    if (!element.id) {
+        element.id = 'tinymce-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    console.log('Element ID:', element.id);
+    
+    // Проверяем, не инициализирован ли уже редактор
+    if (tinymce.get(element.id)) {
+        console.log('Removing existing editor:', element.id);
+        tinymce.remove(element.id);
+    }
+    
+    // Проверяем, что элемент все еще в DOM
+    if (!document.contains(element)) {
+        console.error('Element is not in DOM');
+        return;
+    }
+    
+    // Проверяем, что элемент видим
+    if (element.offsetParent === null) {
+        console.log('Element is not visible, skipping initialization');
+        return;
+    }
+    
+    // Проверяем, что элемент не пустой
+    if (!element.name || !element.name.includes('steps')) {
+        console.log('Element is not a valid step editor, skipping');
+        return;
+    }
+    
+    console.log('Initializing TinyMCE for element:', element.id);
+    
+    try {
+        tinymce.init({
         selector: '#' + element.id,
         height: 200,
         menubar: false,
@@ -522,17 +610,31 @@ function initTinyMCE(element) {
         branding: false,
         promotion: false,
         setup: function(editor) {
+            console.log('TinyMCE setup for editor:', editor.id);
+            
             // Отслеживаем фокус редактора
             editor.on('focus', function() {
-                activeEditor = editor;
+                if (editor && editor.id) {
+                    activeEditor = editor;
+                    console.log('Active editor set to:', editor.id);
+                }
             });
             
             // Отслеживаем клик в редакторе
             editor.on('click', function() {
-                activeEditor = editor;
+                if (editor && editor.id) {
+                    activeEditor = editor;
+                    console.log('Active editor set to:', editor.id);
+                }
             });
+        },
+        init_instance_callback: function(editor) {
+            console.log('TinyMCE initialized successfully for:', editor.id);
         }
     });
+    } catch (error) {
+        console.error('Error initializing TinyMCE:', error);
+    }
 }
 
 function addStep() {
@@ -576,7 +678,17 @@ function addStep() {
     
     // Инициализируем TinyMCE для нового поля
     const newEditor = stepDiv.querySelector('.step-content-editor');
-    initTinyMCE(newEditor);
+    if (newEditor && !newEditor.id) {
+        newEditor.id = 'tinymce-step-' + stepCounter;
+    }
+    
+    console.log('New step added, editor ID:', newEditor.id);
+    
+    // Небольшая задержка для стабилизации DOM
+    setTimeout(() => {
+        console.log('Initializing new editor after timeout...');
+        initTinyMCE(newEditor);
+    }, 200);
     
     stepCounter++;
 }
@@ -586,7 +698,7 @@ function removeStep(button) {
     const editor = stepItem.querySelector('.step-content-editor');
     
     // Удаляем редактор TinyMCE перед удалением элемента
-    if (editor && tinymce.get(editor.id)) {
+    if (editor && editor.id && tinymce.get(editor.id)) {
         tinymce.remove(editor.id);
     }
     
@@ -635,10 +747,17 @@ document.getElementById('knowledge-form').addEventListener('submit', function(e)
         const title = stepTitles[i].value.trim();
         let content = '';
         
-        if (tinymce.get(stepContents[i].id)) {
-            content = tinymce.get(stepContents[i].id).getContent().trim();
-        } else {
-            content = stepContents[i].value.trim();
+        try {
+            if (stepContents[i] && stepContents[i].id && tinymce.get(stepContents[i].id)) {
+                content = tinymce.get(stepContents[i].id).getContent().trim();
+            } else if (stepContents[i]) {
+                content = stepContents[i].value.trim();
+            }
+        } catch (error) {
+            console.error('Error getting content from editor:', error);
+            if (stepContents[i]) {
+                content = stepContents[i].value.trim();
+            }
         }
         
         if (!title || !content) {
@@ -651,7 +770,7 @@ document.getElementById('knowledge-form').addEventListener('submit', function(e)
 
 // Функция для вставки подсказки в активный редактор
 function insertTip(type, className) {
-    if (!activeEditor) {
+    if (!activeEditor || !activeEditor.id) {
         alert('Сначала кликните в редактор шага, куда хотите вставить подсказку!');
         return;
     }
