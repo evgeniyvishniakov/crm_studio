@@ -66,9 +66,9 @@ class KnowledgeController extends Controller
             'steps.*.title' => 'required_with:steps|string|max:255',
             'steps.*.content' => 'required_with:steps|string',
             'tips' => 'nullable|array',
-            'tips.*.content' => 'required_with:tips|string'
+            'tips.*.content' => 'nullable|string'
         ]);
-
+        
         $data = $request->all();
         $data['slug'] = Str::slug($request->title);
         $data['author'] = $request->author ?: 'Команда Trimora';
@@ -94,7 +94,21 @@ class KnowledgeController extends Controller
         }
 
         // Создаем статью
-        $article = KnowledgeArticle::create($data);
+        try {
+            $article = KnowledgeArticle::create($data);
+            \Log::info('Knowledge Article Created Successfully', [
+                'article_id' => $article->id,
+                'article_data' => $article->toArray()
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error Creating Knowledge Article', [
+                'error' => $e->getMessage(),
+                'data' => $data
+            ]);
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Ошибка создания статьи: ' . $e->getMessage()]);
+        }
 
         // Получаем все активные языки
         $languages = Language::getActive();
@@ -114,7 +128,9 @@ class KnowledgeController extends Controller
 
         // Добавляем шаги
         if ($request->has('steps') && is_array($request->steps)) {
+            \Log::info('Processing steps', ['steps_count' => count($request->steps)]);
             foreach ($request->steps as $index => $step) {
+                \Log::info('Processing step', ['index' => $index, 'step_data' => $step]);
                 if (!empty($step['title']) && !empty($step['content'])) {
                     $stepData = [
                         'title' => $step['title'],
@@ -132,7 +148,12 @@ class KnowledgeController extends Controller
                         }
                     }
                     
-                    $stepModel = $article->steps()->create($stepData);
+                    try {
+                        $stepModel = $article->steps()->create($stepData);
+                        \Log::info('Step created successfully', ['step_id' => $stepModel->id, 'step_data' => $stepData]);
+                    } catch (\Exception $e) {
+                        \Log::error('Error creating step', ['error' => $e->getMessage(), 'step_data' => $stepData]);
+                    }
                     
                     // Создаем переводы для шага на всех языках
                     foreach ($languages as $language) {
@@ -148,32 +169,39 @@ class KnowledgeController extends Controller
                     }
                 }
             }
+        } else {
+            \Log::info('No steps provided or steps is not an array');
         }
 
         // Добавляем полезные советы
         if ($request->has('tips') && is_array($request->tips)) {
-            foreach ($request->tips as $index => $tip) {
-                if (!empty($tip['content'])) {
-                    $tipModel = $article->tips()->create([
-                        'content' => $tip['content'],
-                        'sort_order' => $index + 1
-                    ]);
-                    
-                    // Создаем переводы для совета на всех языках
-                    foreach ($languages as $language) {
-                        $tipTranslation = $tipModel->translations()->where('locale', $language->code)->first();
-                        if (!$tipTranslation) {
-                            $tipModel->translations()->create([
-                                'locale' => $language->code,
-                                'content' => $tip['content'] // Пока используем основное содержание
-                            ]);
-                        }
-                        // Если перевод уже существует - НЕ ТРОГАЕМ его!
+            // Фильтруем только tips с непустым content
+            $validTips = array_filter($request->tips, function($tip) {
+                return !empty($tip['content']);
+            });
+            
+            foreach ($validTips as $index => $tip) {
+                $tipModel = $article->tips()->create([
+                    'content' => $tip['content'],
+                    'sort_order' => $index + 1
+                ]);
+                
+                // Создаем переводы для совета на всех языках
+                foreach ($languages as $language) {
+                    $tipTranslation = $tipModel->translations()->where('locale', $language->code)->first();
+                    if (!$tipTranslation) {
+                        $tipModel->translations()->create([
+                            'locale' => $language->code,
+                            'content' => $tip['content'] // Пока используем основное содержание
+                        ]);
                     }
+                    // Если перевод уже существует - НЕ ТРОГАЕМ его!
                 }
             }
         }
 
+        \Log::info('=== STORE METHOD COMPLETED SUCCESSFULLY ===');
+        
         return redirect()->route('admin.knowledge.index')
             ->with('success', 'Статья успешно создана на всех языках! Теперь вы можете отредактировать переводы для каждого языка.');
     }
@@ -216,7 +244,7 @@ class KnowledgeController extends Controller
             'steps.*.title' => 'required_with:steps|string|max:255',
             'steps.*.content' => 'required_with:steps|string',
             'tips' => 'nullable|array',
-            'tips.*.content' => 'required_with:tips|string'
+            'tips.*.content' => 'nullable|string'
         ]);
 
         $article = KnowledgeArticle::findOrFail($id);
