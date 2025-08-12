@@ -1,23 +1,23 @@
 @extends('client.layouts.app')
 
-@section('title', 'График работы')
+@section('title', __('messages.work_schedule'))
 
 @section('content')
 
 <div class="dashboard-container">
     <div class="settings-header">
-        <h1>График работы</h1>
+        <h1>{{ __('messages.work_schedule') }}</h1>
     </div>
     
     <div class="dashboard-tabs" style="margin-bottom:28px;">
         <button class="tab-button" data-tab="schedule-overview">
-            <i class="fa fa-calendar-week" style="margin-right:8px;"></i>Обзор
+            <i class="fa fa-calendar-week" style="margin-right:8px;"></i>{{ __('messages.schedule_overview') }}
         </button>
         <button class="tab-button" data-tab="weekly-schedule">
-            <i class="fa fa-calendar-alt" style="margin-right:8px;"></i>Расписание
+            <i class="fa fa-calendar-alt" style="margin-right:8px;"></i>{{ __('messages.weekly_schedule') }}
         </button>
         <button class="tab-button" data-tab="time-offs">
-            <i class="fa fa-umbrella-beach" style="margin-right:8px;"></i>Нерабочее время
+            <i class="fa fa-umbrella-beach" style="margin-right:8px;"></i>{{ __('messages.time_offs') }}
         </button>
 
     </div>
@@ -27,14 +27,14 @@
     <div class="settings-content">
         <!-- Вкладка обзора -->
         <div class="settings-pane" id="tab-schedule-overview">
-            <h5>Обзор графика работы</h5>
+            <h5>{{ __('messages.schedule_overview_title') }}</h5>
             
             <!-- Статистика -->
             <div class="stats-container">
                 <div class="stat-card">
                     <div class="stat-content">
                         <div class="stat-text">
-                            <h5>Всего сотрудников</h5>
+                            <h5>{{ __('messages.total_employees') }}</h5>
                             <h3>{{ $stats['total_employees'] ?? 0 }}</h3>
                         </div>
                         <div class="stat-icon">
@@ -46,7 +46,7 @@
                 <div class="stat-card">
                     <div class="stat-content">
                         <div class="stat-text">
-                            <h5>Работает сегодня</h5>
+                            <h5>{{ __('messages.working_today') }}</h5>
                             <h3>{{ $stats['working_today'] ?? 0 }}</h3>
                         </div>
                         <div class="stat-icon">
@@ -58,7 +58,7 @@
                 <div class="stat-card">
                     <div class="stat-content">
                         <div class="stat-text">
-                            <h5>Записей на неделю</h5>
+                            <h5>{{ __('messages.appointments_this_week') }}</h5>
                             <h3>{{ $stats['appointments_this_week'] ?? 0 }}</h3>
                         </div>
                         <div class="stat-icon">
@@ -70,7 +70,7 @@
                 <div class="stat-card">
                     <div class="stat-content">
                                         <div class="stat-text">
-                    <h5>Предстоящие отсутствия</h5>
+                    <h5>{{ __('messages.upcoming_time_offs') }}</h5>
                     <h3>{{ $stats['upcoming_time_offs'] ?? 0 }}</h3>
                 </div>
                         <div class="stat-icon">
@@ -84,13 +84,13 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="header-title">Расписание на неделю</h4>
+                        <h4 class="header-title">{{ __('messages.weekly_schedule_title') }}</h4>
                         <div class="calendar-nav">
-                            <button id="schedulePrevBtn" class="calendar-nav-btn" onclick="previousWeek()" title="Предыдущая неделя">
+                            <button id="schedulePrevBtn" class="calendar-nav-btn" onclick="previousWeek()" title="{{ __('messages.previous_week') }}">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
                             <span id="current-week-dates" class="calendar-month-title"></span>
-                            <button id="scheduleNextBtn" class="calendar-nav-btn" onclick="nextWeek()" title="Следующая неделя">
+                            <button id="scheduleNextBtn" class="calendar-nav-btn" onclick="nextWeek()" title="{{ __('messages.next_week') }}">
                                 <i class="fas fa-chevron-right"></i>
                             </button>
                         </div>
@@ -99,17 +99,17 @@
                     <!-- Панель настроек отображения -->
                     <div class="schedule-display-settings mb-3">
                         <div class="settings-panel">
-                            <span class="settings-title">Показать:</span>
+                            <span class="settings-title">{{ __('messages.show') }}</span>
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input" id="showAppointments" checked>
                                 <label class="custom-control-label" for="showAppointments">
-                                    Количество записей
+                                    {{ __('messages.records_count') }}
                                 </label>
                             </div>
                             <div class="custom-control custom-switch">
                                 <input type="checkbox" class="custom-control-input" id="showFreeHours" checked>
                                 <label class="custom-control-label" for="showFreeHours">
-                                    Свободные часы
+                                    {{ __('messages.free_hours') }}
                                 </label>
                             </div>
                         </div>
@@ -171,31 +171,31 @@
                                                         $lastTwoDigits = $count % 100;
                                                         
                                                         if ($count === 0) {
-                                                            echo 'Без записей';
+                                                            echo __('messages.no_appointments');
                                                         } elseif ($lastTwoDigits >= 11 && $lastTwoDigits <= 14) {
-                                                            echo $count . ' записей';
+                                                            echo $count . ' ' . __('messages.appointments_plural');
                                                         } elseif ($lastDigit === 1) {
-                                                            echo $count . ' запись';
+                                                            echo $count . ' ' . __('messages.appointment');
                                                         } elseif ($lastDigit >= 2 && $lastDigit <= 4) {
-                                                            echo $count . ' записи';
+                                                            echo $count . ' ' . __('messages.appointments');
                                                         } else {
-                                                            echo $count . ' записей';
+                                                            echo $count . ' ' . __('messages.appointments_plural');
                                                         }
                                                     @endphp
                                                 </span>
                                                 @if(($day['free_hours'] ?? 0) > 0)
                                                     <span class="free-time show-free-hours">⏰ 
                                                         @if(($day['appointments_count'] ?? 0) === 0)
-                                                            В ожидании
+                                                            {{ __('messages.waiting') }}
                                                         @else
-                                                            {{ $day['free_hours'] }}ч свободно
+                                                            {{ $day['free_hours'] }}{{ __('messages.hours_free') }}
                                                         @endif
                                                     </span>
                                                 @endif
                                             </div>
                                         @else
                                             <span class="schedule-time day-off">
-                                                Выходной
+                                                {{ __('messages.day_off_text') }}
                                             </span>
                                         @endif
                                     </td>
@@ -212,7 +212,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="header-title">Предстоящие отсутствия</h4>
+                        <h4 class="header-title">{{ __('messages.upcoming_absences_title') }}
                     </div>
 
                     @if($upcomingTimeOffs->count() > 0)
@@ -220,10 +220,10 @@
                             <table class="table-striped schedule-overview-table">
                                 <thead>
                                     <tr>
-                                        <th style="text-align: center;">Сотрудник</th>
-                                        <th style="text-align: center;">Тип</th>
-                                        <th style="text-align: center;">Период</th>
-                                        <th style="text-align: center;">Статус</th>
+                                        <th style="text-align: center;">{{ __('messages.master_employee') }}</th>
+                                        <th style="text-align: center;">{{ __('messages.select_type') }}</th>
+                                        <th style="text-align: center;">{{ __('messages.select_period') }}</th>
+                                        <th style="text-align: center;">{{ __('messages.status') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -248,7 +248,7 @@
                     @else
                         <div class="text-center py-4">
                             <i class="mdi mdi-information-outline text-muted" style="font-size: 48px;"></i>
-                            <p class="text-muted mt-2">Нет предстоящих отсутствий</p>
+                            <p class="text-muted mt-2">{{ __('messages.no_time_offs') }}</p>
                         </div>
                     @endif
                 </div>
@@ -259,12 +259,12 @@
         <div class="settings-pane" id="tab-weekly-schedule" style="display: none;">
             <div class="clients-header">
                 <div class="header-top">
-                    <h1>Настройки расписания</h1>
+                    <h1>{{ __('messages.schedule_management') }}</h1>
                     <div class="header-actions">
                         <div class="form-group mb-3" style="margin-bottom: 0;">
-                            <label for="schedule-user-select" style="margin-bottom: 8px; font-weight: 600; color: #333;">Выберите сотрудника</label>
+                            <label for="schedule-user-select" style="margin-bottom: 8px; font-weight: 600; color: #333;">{{ __('messages.please_select_employee') }}</label>
                             <select class="form-control" id="schedule-user-select" style="min-width: 250px; border-radius: 8px; border: 1px solid #d1d5db; padding: 8px 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.2s ease;">
-                                <option value="">Выберите сотрудника...</option>
+                                <option value="">{{ __('messages.please_select_employee') }}...</option>
                                 @foreach($allEmployees as $employee)
                                     @if($employee)
                                         <option value="{{ $employee->id }}" {{ $loop->first ? 'selected' : '' }}>
@@ -286,11 +286,11 @@
                     <table class="table-striped sale-table" id="scheduleManagementTable" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; border: 1px solid #e5e7eb;">
                         <thead>
                             <tr>
-                                <th style="text-align: center;">День недели</th>
-                                <th style="text-align: center;">Рабочие часы</th>
-                                <th style="text-align: center;">Статус</th>
-                                <th style="text-align: center;">Примечания</th>
-                                <th style="text-align: center;">Действия</th>
+                                <th style="text-align: center;">{{ __('messages.date') }}</th>
+                                <th style="text-align: center;">{{ __('messages.working_hours') }}</th>
+                                <th style="text-align: center;">{{ __('messages.status') }}</th>
+                                <th style="text-align: center;">{{ __('messages.notes') }}</th>
+                                <th style="text-align: center;">{{ __('messages.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody id="schedule-management-tbody">
@@ -308,8 +308,8 @@
             <!-- Сообщение о выборе сотрудника -->
             <div id="select-employee-message" class="text-center py-5" style="margin-top: 40px;">
                 <i class="fas fa-user-clock fa-3x text-muted mb-3"></i>
-                <h5>Выберите сотрудника</h5>
-                <p class="text-muted">Выберите сотрудника из списка выше, чтобы настроить его расписание</p>
+                                  <h5>{{ __('messages.please_select_employee') }}</h5>
+                <p class="text-muted">{{ __('messages.select_employee_to_schedule') }}</p>
             </div>
         </div>
 
@@ -388,15 +388,15 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="edit-schedule-notes">Примечания</label>
-                        <textarea class="form-control" id="edit-schedule-notes" rows="3" placeholder="Дополнительная информация..."></textarea>
+                        <label for="edit-schedule-notes">{{ __('messages.notes') }}</label>
+                        <textarea class="form-control" id="edit-schedule-notes" rows="3" placeholder="{{ __('messages.notes_placeholder') }}"></textarea>
                     </div>
                 </div>
             </form>
         </div>
         <div class="form-actions">
-            <button type="button" class="btn-cancel" onclick="closeScheduleModal()">Отмена</button>
-            <button type="button" class="btn-primary" onclick="saveScheduleDay()">Сохранить</button>
+            <button type="button" class="btn-cancel" onclick="closeScheduleModal()">{{ __('messages.cancel') }}</button>
+            <button type="button" class="btn-primary" onclick="saveScheduleDay()">{{ __('messages.save_schedule') }}</button>
         </div>
     </div>
 </div>
@@ -407,12 +407,12 @@
 
 // Переводы и данные для JavaScript
 window.translations = {
-    working: 'Работает',
-    day_off: 'Выходной',
-    vacation: 'Отпуск',
-    sick_leave: 'Больничный',
-    personal_leave: 'Личный отпуск',
-    unpaid_leave: 'Отпуск без сохранения зарплаты'
+    working: '{{ __("messages.working_hours") }}',
+    day_off: '{{ __("messages.day_off") }}',
+    vacation: '{{ __("messages.vacation") }}',
+    sick_leave: '{{ __("messages.sick_leave") }}',
+    personal_leave: '{{ __("messages.other_time_off") }}',
+    unpaid_leave: '{{ __("messages.other_time_off") }}'
 };
 
 // Функции управления вкладками (используем те же что в salary)
@@ -728,19 +728,19 @@ function renderScheduleManagementTable() {
             </td>
             <td>
                 ${dayData.is_working ? 
-                    '<span class="status-badge working">Рабочий</span>' :
-                    '<span class="status-badge day-off">Выходной</span>'
+                    '<span class="status-badge working">{{ __("messages.working_hours") }}</span>' :
+                    '<span class="status-badge day-off">{{ __("messages.day_off") }}</span>'
                 }
             </td>
             <td>
-                <span class="text-muted">${dayData.notes || 'Нет примечаний'}</span>
+                <span class="text-muted">${dayData.notes || '{{ __("messages.no_notes") }}'}</span>
             </td>
             <td>
-                <button type="button" class="btn-edit" onclick="editScheduleDay(${day.id})" title="Редактировать" style="display: flex; align-items: center; gap: 6px;">
+                <button type="button" class="btn-edit" onclick="editScheduleDay(${day.id})" title="{{ __('messages.edit') }}" style="display: flex; align-items: center; gap: 6px;">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                     </svg>
-                    Редактировать
+                    {{ __('messages.edit') }}
                 </button>
             </td>
         `;
@@ -891,7 +891,7 @@ function refreshOverviewDataCompletely() {
 // Функция склонения слова "запись"
 function declensionAppointments(count) {
     if (count === 0) {
-        return 'Без записей';
+        return '{{ __("messages.no_appointments") }}';
     }
     
     const lastDigit = count % 10;
@@ -899,16 +899,16 @@ function declensionAppointments(count) {
     
     // Исключения для 11-14
     if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
-        return count + ' записей';
+        return count + ' {{ __("messages.appointments_plural") }}';
     }
     
     // Склонения
     if (lastDigit === 1) {
-        return count + ' запись';
+        return count + ' {{ __("messages.appointment") }}';
     } else if (lastDigit >= 2 && lastDigit <= 4) {
-        return count + ' записи';
+        return count + ' {{ __("messages.appointments") }}';
     } else {
-        return count + ' записей';
+        return count + ' {{ __("messages.appointments_plural") }}';
     }
 }
 
@@ -930,14 +930,14 @@ function updateOverviewScheduleTable(schedules) {
             if (day.status === 'time_off') {
                 // Отображение отсутствия
                 const typeNames = {
-                    'vacation': 'Отпуск',
-                    'sick_leave': 'Больничный',
-                    'personal_leave': 'Личный отпуск',
-                    'unpaid_leave': 'Отпуск без содержания'
+                    'vacation': '{{ __("messages.vacation_text") }}',
+                    'sick_leave': '{{ __("messages.sick_leave_text") }}',
+                    'personal_leave': '{{ __("messages.personal_leave_text") }}',
+                    'unpaid_leave': '{{ __("messages.unpaid_leave_text") }}'
                 };
                 const statusNames = {
-                    'pending': 'Ожидает',
-                    'approved': 'Одобрено'
+                    'pending': '{{ __("messages.pending") }}',
+                    'approved': '{{ __("messages.approved") }}'
                 };
                 
                 const typeText = typeNames[day.time_off_type] || day.time_off_type;
@@ -964,9 +964,9 @@ function updateOverviewScheduleTable(schedules) {
                     statsHtml += `<span class="appointments-count show-appointments">📅 ${declensionAppointments(day.appointments_count)}</span>`;
                     if (day.free_hours > 0) {
                         if (day.appointments_count === 0) {
-                            statsHtml += `<span class="free-time show-free-hours">⏰ В ожидании</span>`;
+                            statsHtml += `<span class="free-time show-free-hours">⏰ {{ __("messages.waiting") }}</span>`;
                         } else {
-                            statsHtml += `<span class="free-time show-free-hours">⏰ ${day.free_hours}ч свободно</span>`;
+                            statsHtml += `<span class="free-time show-free-hours">⏰ ${day.free_hours}{{ __("messages.hours_free") }}</span>`;
                         }
                     }
                 }
@@ -1055,12 +1055,12 @@ function showTimeOffModal(timeOffId = null) {
     if (timeOffId) {
         // Режим редактирования
         console.log('Режим редактирования для ID:', timeOffId);
-        title.textContent = 'Редактировать отсутствие';
+        title.textContent = '{{ __('messages.edit_time_off') }}';
         loadTimeOffData(timeOffId);
     } else {
         // Режим создания
         console.log('Режим создания нового отсутствия');
-        title.textContent = 'Добавить отсутствие';
+        title.textContent = '{{ __('messages.add_time_off') }}';
         // Устанавливаем минимальную дату - сегодня
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('timeOffStartDate').min = today;
@@ -1125,12 +1125,12 @@ function saveTimeOff() {
     }
     
     if (!startDate || !endDate) {
-        window.showNotification('error', 'Укажите даты начала и окончания');
+        window.showNotification('error', '{{ __("messages.error_dates_required") }}');
         return;
     }
     
     if (new Date(startDate) > new Date(endDate)) {
-        window.showNotification('error', 'Дата начала не может быть позже даты окончания');
+        window.showNotification('error', '{{ __("messages.error_start_date_after_end") }}');
         return;
     }
     
@@ -1233,12 +1233,12 @@ function renderTimeOffsTable(timeOffs) {
                 </span>
             </td>
             <td style="text-align: center;" class="actions-cell">
-                <button class="btn-edit" onclick="showTimeOffModal(${timeOff.id})" title="Редактировать">
+                <button class="btn-edit" onclick="showTimeOffModal(${timeOff.id})" title="{{ __('messages.edit') }}">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                     </svg>
                 </button>
-                <button class="btn-delete" onclick="deleteTimeOff(${timeOff.id})" title="Удалить">
+                <button class="btn-delete" onclick="deleteTimeOff(${timeOff.id})" title="{{ __('messages.delete') }}">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                     </svg>
@@ -2018,7 +2018,7 @@ function showWarningOncePerMonth(message) {
 <div id="timeOffModal" class="modal">
     <div class="modal-content" style="width: 80%; max-width: 700px;">
         <div class="modal-header">
-            <h2 id="timeOffModalTitle">Добавить отсутствие</h2>
+            <h2 id="timeOffModalTitle">{{ __('messages.add_time_off') }}</h2>
             <span class="close" onclick="closeTimeOffModal()">&times;</span>
         </div>
         <div class="modal-body">
@@ -2027,9 +2027,9 @@ function showWarningOncePerMonth(message) {
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="timeOffEmployee">Сотрудник *</label>
+                        <label for="timeOffEmployee">{{ __('messages.master_employee') }} *</label>
                         <select id="timeOffEmployee" name="employee_id" required class="form-control">
-                            <option value="">Выберите сотрудника</option>
+                            <option value="">{{ __('messages.please_select_employee') }}</option>
                             @foreach($allEmployees as $employee)
                                 <option value="{{ $employee->id }}">
                                     {{ $employee->name }} ({{ config('roles.' . $employee->role, $employee->role) }})
@@ -2038,24 +2038,24 @@ function showWarningOncePerMonth(message) {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="timeOffType">Тип отсутствия *</label>
+                        <label for="timeOffType">{{ __('messages.time_off_reason') }} *</label>
                         <select id="timeOffType" name="type" required class="form-control">
-                            <option value="">Выберите тип</option>
-                            <option value="vacation">Отпуск</option>
-                            <option value="sick_leave">Больничный</option>
-                            <option value="personal_leave">Личный отпуск</option>
-                            <option value="unpaid_leave">Отпуск без содержания</option>
+                            <option value="">{{ __('messages.select_type') }}</option>
+                            <option value="vacation">{{ __('messages.vacation') }}</option>
+                            <option value="sick_leave">{{ __('messages.sick_leave') }}</option>
+                            <option value="personal_leave">{{ __('messages.other_time_off') }}</option>
+                            <option value="unpaid_leave">{{ __('messages.other_time_off') }}</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="timeOffStartDate">Дата начала *</label>
+                        <label for="timeOffStartDate">{{ __('messages.time_off_dates') }} *</label>
                         <input type="date" id="timeOffStartDate" name="start_date" required class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="timeOffEndDate">Дата окончания *</label>
+                        <label for="timeOffEndDate">{{ __('messages.time_off_dates') }} *</label>
                         <input type="date" id="timeOffEndDate" name="end_date" required class="form-control">
                     </div>
                 </div>
@@ -2063,8 +2063,8 @@ function showWarningOncePerMonth(message) {
 
 
                 <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="closeTimeOffModal()">Отмена</button>
-                    <button type="button" class="btn-submit" onclick="saveTimeOff()">Сохранить</button>
+                    <button type="button" class="btn-cancel" onclick="closeTimeOffModal()">{{ __('messages.cancel') }}</button>
+                    <button type="button" class="btn-submit" onclick="saveTimeOff()">{{ __('messages.save_schedule') }}</button>
                 </div>
             </form>
         </div>
@@ -2075,16 +2075,16 @@ function showWarningOncePerMonth(message) {
 <div id="deleteTimeOffModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2>Подтверждение удаления отсутствия</h2>
+            <h2>{{ __('messages.confirm_delete_time_off') }}</h2>
             <span class="close" onclick="closeDeleteTimeOffModal()">&times;</span>
         </div>
         <div class="modal-body">
-            <p>Вы уверены, что хотите удалить это отсутствие?</p>
-            <p><strong>Внимание:</strong> Это действие нельзя отменить.</p>
+            <p>{{ __('messages.confirm_delete_time_off') }}</p>
+            <p><strong>{{ __('messages.warning') }}:</strong> {{ __('messages.action_cannot_be_undone') }}</p>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn-cancel" onclick="closeDeleteTimeOffModal()">Отмена</button>
-            <button type="button" class="btn-delete" id="confirmDeleteTimeOff">Удалить</button>
+            <button type="button" class="btn-cancel" onclick="closeDeleteTimeOffModal()">{{ __('messages.cancel') }}</button>
+            <button type="button" class="btn-delete" id="confirmDeleteTimeOff">{{ __('messages.delete') }}</button>
         </div>
     </div>
 </div>
