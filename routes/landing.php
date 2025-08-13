@@ -21,9 +21,7 @@ Route::get('/contact', function () {
     return view('landing.pages.contact');
 })->name('beautyflow.contact');
 
-Route::get('/pricing', function () {
-    return view('landing.pages.pricing');
-})->name('beautyflow.pricing');
+Route::get('/pricing', [\App\Http\Controllers\Landing\PricingController::class, 'index'])->name('beautyflow.pricing');
 
 Route::get('/features', function () {
     return view('landing.pages.features');

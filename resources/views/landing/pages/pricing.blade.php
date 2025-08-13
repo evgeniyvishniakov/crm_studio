@@ -78,485 +78,180 @@
         <div class="row justify-content-center mb-5">
             <div class="col-lg-8">
                 <ul class="nav nav-pills nav-fill" id="pricingTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="small-tab" data-bs-toggle="pill" data-bs-target="#small" type="button" role="tab">
-                            До 2 сотрудников
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="medium-tab" data-bs-toggle="pill" data-bs-target="#medium" type="button" role="tab">
-                            До 5 сотрудников
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="large-tab" data-bs-toggle="pill" data-bs-target="#large" type="button" role="tab">
-                            Без лимита
-                        </button>
-                    </li>
+                    @foreach($plans as $index => $plan)
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {{ $index === 0 ? 'active' : '' }}" 
+                                    id="{{ $plan->slug }}-tab" 
+                                    data-bs-toggle="pill" 
+                                    data-bs-target="#{{ $plan->slug }}" 
+                                    type="button" 
+                                    role="tab"
+                                    aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
+                                {{ $plan->name }}
+                            </button>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
         </div>
 
         <!-- Tabs Content -->
         <div class="tab-content" id="pricingTabsContent">
-            <!-- Small Business Tab -->
-            <div class="tab-pane fade show active" id="small" role="tabpanel">
-                <div class="row justify-content-center">
-                    <!-- Месяц -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm border-success border-2">
+            @foreach($plans as $index => $plan)
+                <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}" id="{{ $plan->slug }}" role="tabpanel">
+                    <div class="row justify-content-center">
+                        <!-- Месяц -->
+                        <div class="col-lg-3 col-md-6 mb-4">
+                                                    <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] ?? 'border-success' }} border-2">
                             <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-success" style="font-size: 0.7rem;">Базовый</span>
+                                <span class="badge {{ $planColors[$plan->slug]['badge'] ?? 'bg-success' }}" style="font-size: 0.7rem;">Базовый</span>
                             </div>
-                            <div class="card-body p-4" style="padding-top: 3rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">Месяц</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">490₴</span>
-                                        <span class="text-muted">/ месяц</span>
+                                <div class="card-body p-4" style="padding-top: 3rem !important;">
+                                    <div class="text-center mb-4">
+                                        <h3 class="h5 fw-bold text-dark mb-3">Месяц</h3>
+                                        <div class="mb-3">
+                                            <span class="h2 fw-bold text-dark">{{ number_format($plan->price_monthly, 0, ',', ' ') }}₴</span>
+                                            <span class="text-muted">/ месяц</span>
+                                        </div>
                                     </div>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-success bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-users text-success fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-success mb-0">До 2 сотрудников</h6>
+                                    
+                                    <div class="text-center mb-4">
+                                        <div class="{{ $planColors[$plan->slug]['badge'] }} bg-opacity-10 rounded p-3 mb-3">
+                                            <i class="{{ $planColors[$plan->slug]['icon_class'] }} {{ $planColors[$plan->slug]['icon'] }} fa-2x mb-2"></i>
+                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">{{ $plan->name }}</h6>
+                                        </div>
+                                        <p class="text-muted small">{{ $plan->description ?: 'Идеально для вашего бизнеса' }}</p>
                                     </div>
-                                    <p class="text-muted small">Идеально для небольших салонов</p>
+                                    
+                                    <div class="text-center mb-4">
+                                        <p class="{{ $planColors[$plan->slug]['icon'] }} fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                        <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
+                                    </div>
+                                    
+                                    <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                        Выбрать план
+                                    </a>
                                 </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-green btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- 3 месяца -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 position-relative border-success border-3 shadow-lg" style="transform: scale(1.05); z-index: 10;">
-                            <div class="position-absolute top-0 start-0 m-3">
-                                <span class="badge bg-success px-2 py-1" style="font-size: 0.7rem; font-weight: 700;">
-                                    <i class="fas fa-star me-1"></i>ТОП
-                                </span>
-                            </div>
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-success" style="font-size: 0.7rem;">Экономия 10%</span>
-                            </div>
-                            <div class="card-body p-4" style="padding-top: 3.5rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">3 месяца</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">1320₴</span>
-                                        <span class="text-muted">/ 3 месяца</span>
+                        <!-- 3 месяца -->
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card h-100 position-relative {{ $planColors[$plan->slug]['border'] }} border-3 shadow-lg" style="transform: scale(1.05); z-index: 10;">
+                                <div class="position-absolute top-0 start-0 m-3">
+                                    <span class="badge {{ $planColors[$plan->slug]['badge'] }} px-2 py-1" style="font-size: 0.7rem; font-weight: 700;">
+                                        <i class="fas fa-star me-1"></i>ТОП
+                                    </span>
+                                </div>
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <span class="badge {{ $planColors[$plan->slug]['badge'] }}" style="font-size: 0.7rem;">Экономия 10%</span>
+                                </div>
+                                <div class="card-body p-4" style="padding-top: 3.5rem !important;">
+                                    <div class="text-center mb-4">
+                                        <h3 class="h5 fw-bold text-dark mb-3">3 месяца</h3>
+                                        <div class="mb-3">
+                                            <span class="h2 fw-bold text-dark">{{ number_format($plan->getPriceForPeriod('quarterly'), 0, ',', ' ') }}₴</span>
+                                            <span class="text-muted">/ 3 месяца</span>
+                                        </div>
+                                        <p class="text-muted small">{{ number_format($plan->getPriceForPeriod('quarterly') / 3, 0, ',', ' ') }}₴ / месяц</p>
                                     </div>
-                                    <p class="text-muted small">440₴ / месяц</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-success bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-users text-success fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-success mb-0">До 2 сотрудников</h6>
+                                    
+                                    <div class="text-center mb-4">
+                                        <div class="{{ $planColors[$plan->slug]['badge'] }} bg-opacity-10 rounded p-3 mb-3">
+                                            <i class="fas fa-users {{ $planColors[$plan->slug]['icon'] }} fa-2x mb-2"></i>
+                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">{{ $plan->name }}</h6>
+                                        </div>
+                                        <p class="text-muted small">{{ $plan->description ?: 'Идеально для вашего бизнеса' }}</p>
                                     </div>
-                                    <p class="text-muted small">Идеально для небольших салонов</p>
+                                    
+                                    <div class="text-center mb-4">
+                                        <p class="{{ $planColors[$plan->slug]['icon'] }} fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                        <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
+                                    </div>
+                                    
+                                    <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                        Выбрать план
+                                    </a>
                                 </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-green btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- 6 месяцев -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm border-success border-2">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-success" style="font-size: 0.7rem;">Экономия 15%</span>
-                            </div>
-                            <div class="card-body p-4" style="padding-top: 3rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">6 месяцев</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">2500₴</span>
-                                        <span class="text-muted">/ 6 месяцев</span>
+                        <!-- 6 месяцев -->
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] }} border-2">
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <span class="badge {{ $planColors[$plan->slug]['badge'] }}" style="font-size: 0.7rem;">Экономия 15%</span>
+                                </div>
+                                <div class="card-body p-4" style="padding-top: 3rem !important;">
+                                    <div class="text-center mb-4">
+                                        <h3 class="h5 fw-bold text-dark mb-3">6 месяцев</h3>
+                                        <div class="mb-3">
+                                            <span class="h2 fw-bold text-dark">{{ number_format($plan->getPriceForPeriod('semiannual'), 0, ',', ' ') }}₴</span>
+                                            <span class="text-muted">/ 6 месяцев</span>
+                                        </div>
+                                        <p class="text-muted small">{{ number_format($plan->getPriceForPeriod('semiannual') / 6, 0, ',', ' ') }}₴ / месяц</p>
                                     </div>
-                                    <p class="text-muted small">417₴ / месяц</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-success bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-users text-success fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-success mb-0">До 2 сотрудников</h6>
+                                    
+                                    <div class="text-center mb-4">
+                                        <div class="{{ $planColors[$plan->slug]['badge'] }} bg-opacity-10 rounded p-3 mb-3">
+                                            <i class="{{ $planColors[$plan->slug]['icon_class'] }} {{ $planColors[$plan->slug]['icon'] }} fa-2x mb-2"></i>
+                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">{{ $plan->name }}</h6>
+                                        </div>
+                                        <p class="text-muted small">{{ $plan->description ?: 'Идеально для вашего бизнеса' }}</p>
                                     </div>
-                                    <p class="text-muted small">Идеально для небольших салонов</p>
+                                    
+                                    <div class="text-center mb-4">
+                                        <p class="{{ $planColors[$plan->slug]['icon'] }} fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                        <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
+                                    </div>
+                                    
+                                    <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                        Выбрать план
+                                    </a>
                                 </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-green btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Год -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm border-success border-2">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-success" style="font-size: 0.7rem;">Экономия 25%</span>
-                            </div>
-                            <div class="card-body p-4" style="padding-top: 3rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">Год</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">4400₴</span>
-                                        <span class="text-muted">/ год</span>
+                        <!-- Год -->
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] }} border-2">
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <span class="badge {{ $planColors[$plan->slug]['badge'] }}" style="font-size: 0.7rem;">Экономия 25%</span>
+                                </div>
+                                <div class="card-body p-4" style="padding-top: 3rem !important;">
+                                    <div class="text-center mb-4">
+                                        <h3 class="h5 fw-bold text-dark mb-3">Год</h3>
+                                        <div class="mb-3">
+                                            <span class="h2 fw-bold text-dark">{{ number_format($plan->getPriceForPeriod('yearly'), 0, ',', ' ') }}₴</span>
+                                            <span class="text-muted">/ год</span>
+                                        </div>
+                                        <p class="text-muted small">{{ number_format($plan->getPriceForPeriod('yearly') / 12, 0, ',', ' ') }}₴ / месяц</p>
                                     </div>
-                                    <p class="text-muted small">367₴ / месяц</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-success bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-users text-success fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-success mb-0">До 2 сотрудников</h6>
+                                    
+                                    <div class="text-center mb-4">
+                                        <div class="{{ $planColors[$plan->slug]['badge'] }} bg-opacity-10 rounded p-3 mb-3">
+                                            <i class="{{ $planColors[$plan->slug]['icon_class'] }} {{ $planColors[$plan->slug]['icon'] }} fa-2x mb-2"></i>
+                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">{{ $plan->name }}</h6>
+                                        </div>
+                                        <p class="text-muted small">{{ $plan->description ?: 'Идеально для вашего бизнеса' }}</p>
                                     </div>
-                                    <p class="text-muted small">Идеально для небольших салонов</p>
+                                    
+                                    <div class="text-center mb-4">
+                                        <p class="{{ $planColors[$plan->slug]['icon'] }} fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
+                                        <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
+                                    </div>
+                                    
+                                    <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                        Выбрать план
+                                    </a>
                                 </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-success fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-green btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @endforeach
 
-            <!-- Medium Business Tab -->
-            <div class="tab-pane fade" id="medium" role="tabpanel">
-                <div class="row justify-content-center">
-                    <!-- Месяц -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm border-primary border-2">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-primary" style="font-size: 0.7rem;">Базовый</span>
-                            </div>
-                            <div class="card-body p-4" style="padding-top: 3rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">Месяц</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">990₴</span>
-                                        <span class="text-muted">/ месяц</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-primary bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-users text-primary fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-primary mb-0">До 5 сотрудников</h6>
-                                    </div>
-                                    <p class="text-muted small">Отлично для средних салонов</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-primary fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-blue btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- 3 месяца -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 position-relative border-primary border-3 shadow-lg" style="transform: scale(1.05); z-index: 10;">
-                            <div class="position-absolute top-0 start-0 m-3">
-                                <span class="badge bg-primary px-2 py-1" style="font-size: 0.7rem; font-weight: 700;">
-                                    <i class="fas fa-star me-1"></i>ТОП
-                                </span>
-                            </div>
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-primary" style="font-size: 0.7rem;">Экономия 10%</span>
-                            </div>
-                            <div class="card-body p-4" style="padding-top: 3.5rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">3 месяца</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">2670₴</span>
-                                        <span class="text-muted">/ 3 месяца</span>
-                                    </div>
-                                    <p class="text-muted small">890₴ / месяц</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-primary bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-users text-primary fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-primary mb-0">До 5 сотрудников</h6>
-                                    </div>
-                                    <p class="text-muted small">Отлично для средних салонов</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-primary fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-blue btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 6 месяцев -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm border-primary border-2">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-primary" style="font-size: 0.7rem;">Экономия 15%</span>
-                            </div>
-                            <div class="card-body p-4" style="padding-top: 3rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">6 месяцев</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">5050₴</span>
-                                        <span class="text-muted">/ 6 месяцев</span>
-                                    </div>
-                                    <p class="text-muted small">842₴ / месяц</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-primary bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-users text-primary fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-primary mb-0">До 5 сотрудников</h6>
-                                    </div>
-                                    <p class="text-muted small">Отлично для средних салонов</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-primary fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-blue btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Год -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm border-primary border-2">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-primary" style="font-size: 0.7rem;">Экономия 25%</span>
-                            </div>
-                            <div class="card-body p-4" style="padding-top: 3rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">Год</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">8900₴</span>
-                                        <span class="text-muted">/ год</span>
-                                    </div>
-                                    <p class="text-muted small">742₴ / месяц</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-primary bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-users text-primary fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-primary mb-0">До 5 сотрудников</h6>
-                                    </div>
-                                    <p class="text-muted small">Отлично для средних салонов</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-primary fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-blue btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Large Business Tab -->
-            <div class="tab-pane fade" id="large" role="tabpanel">
-                <div class="row justify-content-center">
-                    <!-- Месяц -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm border-warning border-2">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning" style="font-size: 0.7rem;">Базовый</span>
-                            </div>
-                            <div class="card-body p-4" style="padding-top: 3rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">Месяц</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">1990₴</span>
-                                        <span class="text-muted">/ месяц</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-warning bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-infinity text-bright-yellow fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-bright-yellow mb-0">Без лимита сотрудников</h6>
-                                    </div>
-                                    <p class="text-muted small">Для крупных салонов и сетей</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-bright-yellow fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-yellow btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 3 месяца -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 position-relative border-warning border-3 shadow-lg" style="transform: scale(1.05); z-index: 10;">
-                            <div class="position-absolute top-0 start-0 m-3">
-                                <span class="badge bg-warning px-2 py-1" style="font-size: 0.7rem; font-weight: 700;">
-                                    <i class="fas fa-star me-1"></i>ТОП
-                                </span>
-                            </div>
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning" style="font-size: 0.7rem;">Экономия 10%</span>
-                            </div>
-                            <div class="card-body p-4" style="padding-top: 3.5rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">3 месяца</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">5370₴</span>
-                                        <span class="text-muted">/ 3 месяца</span>
-                                    </div>
-                                    <p class="text-muted small">1790₴ / месяц</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-warning bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-infinity text-bright-yellow fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-bright-yellow mb-0">Без лимита сотрудников</h6>
-                                    </div>
-                                    <p class="text-muted small">Для крупных салонов и сетей</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-bright-yellow fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-yellow btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 6 месяцев -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm border-warning border-2">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning" style="font-size: 0.7rem;">Экономия 15%</span>
-                            </div>
-                            <div class="card-body p-4" style="padding-top: 3rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">6 месяцев</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">10150₴</span>
-                                        <span class="text-muted">/ 6 месяцев</span>
-                                    </div>
-                                    <p class="text-muted small">1692₴ / месяц</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-warning bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-infinity text-bright-yellow fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-bright-yellow mb-0">Без лимита сотрудников</h6>
-                                    </div>
-                                    <p class="text-muted small">Для крупных салонов и сетей</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-bright-yellow fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-yellow btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Год -->
-                    <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card h-100 border-0 shadow-sm border-warning border-2">
-                            <div class="position-absolute top-0 end-0 m-3">
-                                <span class="badge bg-warning" style="font-size: 0.7rem;">Экономия 25%</span>
-                            </div>
-                            <div class="card-body p-4" style="padding-top: 3rem !important;">
-                                <div class="text-center mb-4">
-                                    <h3 class="h5 fw-bold text-dark mb-3">Год</h3>
-                                    <div class="mb-3">
-                                        <span class="h2 fw-bold text-dark">17900₴</span>
-                                        <span class="text-muted">/ год</span>
-                                    </div>
-                                    <p class="text-muted small">1492₴ / месяц</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <div class="bg-warning bg-opacity-10 rounded p-3 mb-3">
-                                        <i class="fas fa-infinity text-bright-yellow fa-2x mb-2"></i>
-                                        <h6 class="fw-bold text-bright-yellow mb-0">Без лимита сотрудников</h6>
-                                    </div>
-                                    <p class="text-muted small">Для крупных салонов и сетей</p>
-                                </div>
-                                
-                                <div class="text-center mb-4">
-                                    <p class="text-bright-yellow fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>Все функции включены</p>
-                                    <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
-                                </div>
-                                
-                                <a href="#" class="btn btn-tab-yellow btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                    Выбрать план
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </section>
@@ -570,4 +265,80 @@
 
 @push('scripts')
 <script src="{{ asset('landing/main.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Script loaded');
+    
+    // Получаем все вкладки
+    var tabs = document.querySelectorAll('#pricingTabs .nav-link');
+    console.log('Found tabs:', tabs.length);
+    
+    // Добавляем обработчик клика на каждую вкладку
+    tabs.forEach(function(tab) {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Tab clicked:', this.textContent.trim());
+            
+            // Убираем активный класс со всех вкладок
+            tabs.forEach(function(t) {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            
+            // Убираем активный класс со всех панелей
+            document.querySelectorAll('#pricingTabsContent .tab-pane').forEach(function(pane) {
+                pane.classList.remove('show', 'active');
+            });
+            
+            // Активируем текущую вкладку
+            this.classList.add('active');
+            this.setAttribute('aria-selected', 'true');
+            console.log('Tab activated:', this.textContent.trim());
+            
+            // Показываем соответствующую панель
+            var targetId = this.getAttribute('data-bs-target');
+            var targetPane = document.querySelector(targetId);
+            if (targetPane) {
+                targetPane.classList.add('show', 'active');
+                console.log('Panel shown:', targetId);
+            } else {
+                console.log('Panel not found:', targetId);
+            }
+        });
+    });
+});
+</script>
+
+<style>
+/* Стили для активных вкладок по тарифам */
+#pricingTabs .nav-link.active[data-bs-target="#small"] {
+    background-color: #28a745 !important; /* Зеленый для первого тарифа */
+    color: white !important;
+    border-color: #28a745 !important;
+}
+
+#pricingTabs .nav-link.active[data-bs-target="#medium"] {
+    background-color: #007bff !important; /* Синий для второго тарифа */
+    color: white !important;
+    border-color: #007bff !important;
+}
+
+#pricingTabs .nav-link.active[data-bs-target="#unlimited"] {
+    background-color: #ffc107 !important; /* Желтый для третьего тарифа */
+    color: white !important; /* Белый текст как у всех */
+    border-color: #ffc107 !important;
+}
+
+/* Стили для неактивных вкладок */
+#pricingTabs .nav-link:not(.active) {
+    background-color: transparent !important;
+    color: #6c757d !important;
+    border-color: #dee2e6 !important;
+}
+
+#pricingTabs .nav-link:not(.active):hover {
+    background-color: #e9ecef !important;
+    color: #495057 !important;
+}
+</style>
 @endpush
