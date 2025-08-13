@@ -35,6 +35,9 @@ class PlanController extends Controller
             'slug' => 'required|string|max:255|unique:plans',
             'max_employees' => 'nullable|integer|min:1',
             'price_monthly' => 'required|numeric|min:0',
+            'price_quarterly' => 'nullable|numeric|min:0',
+            'price_six_months' => 'nullable|numeric|min:0',
+            'price_yearly' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
             'features' => 'nullable|array',
             'is_active' => 'boolean',
@@ -77,6 +80,9 @@ class PlanController extends Controller
             'slug' => 'required|string|max:255|unique:plans,slug,' . $id,
             'max_employees' => 'nullable|integer|min:1',
             'price_monthly' => 'required|numeric|min:0',
+            'price_quarterly' => 'nullable|numeric|min:0',
+            'price_six_months' => 'nullable|numeric|min:0',
+            'price_yearly' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
             'features' => 'nullable|array',
             'is_active' => 'boolean',
@@ -87,6 +93,36 @@ class PlanController extends Controller
 
         return redirect()->route('admin.plans.index')
             ->with('success', 'Тариф успешно обновлен');
+    }
+
+    /**
+     * Update prices for a plan
+     */
+    public function updatePrices(Request $request, string $id)
+    {
+        $plan = Plan::findOrFail($id);
+        
+        $request->validate([
+            'prices.quarterly' => 'required|numeric|min:1',
+            'prices.yearly' => 'required|numeric|min:1',
+        ]);
+        
+        $prices = $request->input('prices');
+        
+        // Обновляем цены
+        $plan->update([
+            'price_quarterly' => $prices['quarterly'],
+            'price_yearly' => $prices['yearly'],
+        ]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Цены успешно обновлены',
+            'prices' => [
+                'quarterly' => $prices['quarterly'],
+                'yearly' => $prices['yearly'],
+            ]
+        ]);
     }
 
     /**

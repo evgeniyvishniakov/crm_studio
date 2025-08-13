@@ -83,6 +83,60 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+
+                                <div class="form-group">
+                                    <label for="price_quarterly">Цена за 3 месяца (₴)</label>
+                                    <input type="number" 
+                                           class="form-control @error('price_quarterly') is-invalid @enderror" 
+                                           id="price_quarterly" 
+                                           name="price_quarterly" 
+                                           value="{{ old('price_quarterly') }}" 
+                                           min="0" 
+                                           step="0.01"
+                                           placeholder="Оставьте пустым для автоматического расчета">
+                                    <small class="form-text text-muted">
+                                        Оставьте пустым для автоматического расчета (месячная цена × 3 × 0.9)
+                                    </small>
+                                    @error('price_quarterly')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="price_six_months">Цена за 6 месяцев (₴)</label>
+                                    <input type="number" 
+                                           class="form-control @error('price_six_months') is-invalid @enderror" 
+                                           id="price_six_months" 
+                                           name="price_six_months" 
+                                           value="{{ old('price_six_months') }}" 
+                                           min="0" 
+                                           step="0.01"
+                                           placeholder="Оставьте пустым для автоматического расчета">
+                                    <small class="form-text text-muted">
+                                        Оставьте пустым для автоматического расчета (месячная цена × 6 × 0.85)
+                                    </small>
+                                    @error('price_six_months')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="price_yearly">Цена за год (₴)</label>
+                                    <input type="number" 
+                                           class="form-control @error('price_yearly') is-invalid @enderror" 
+                                           id="price_yearly" 
+                                           name="price_yearly" 
+                                           value="{{ old('price_yearly') }}" 
+                                           min="0" 
+                                           step="0.01"
+                                           placeholder="Оставьте пустым для автоматического расчета">
+                                    <small class="form-text text-muted">
+                                        Оставьте пустым для автоматического расчета (месячная цена × 12 × 0.75)
+                                    </small>
+                                    @error('price_yearly')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
 
                             <div class="col-md-6">
@@ -242,15 +296,18 @@ $(document).ready(function() {
 
     // Обновление предварительного просмотра цен
     function updatePricePreview() {
-        const price = parseFloat($('#price_monthly').val()) || 0;
+        const monthlyPrice = parseFloat($('#price_monthly').val()) || 0;
+        const quarterlyPrice = parseFloat($('#price_quarterly').val()) || (monthlyPrice * 3 * 0.9);
+        const sixMonthsPrice = parseFloat($('#price_six_months').val()) || (monthlyPrice * 6 * 0.85);
+        const yearlyPrice = parseFloat($('#price_yearly').val()) || (monthlyPrice * 12 * 0.75);
         
-        $('#price-monthly').text(price.toFixed(0) + '₴');
-        $('#price-quarterly').text((price * 3 * 0.9).toFixed(0) + '₴');
-        $('#price-semiannual').text((price * 6 * 0.85).toFixed(0) + '₴');
-        $('#price-yearly').text((price * 12 * 0.75).toFixed(0) + '₴');
+        $('#price-monthly').text(monthlyPrice.toFixed(0) + '₴');
+        $('#price-quarterly').text(quarterlyPrice.toFixed(0) + '₴');
+        $('#price-semiannual').text(sixMonthsPrice.toFixed(0) + '₴');
+        $('#price-yearly').text(yearlyPrice.toFixed(0) + '₴');
     }
 
-    $('#price_monthly').on('input', updatePricePreview);
+    $('#price_monthly, #price_quarterly, #price_six_months, #price_yearly').on('input', updatePricePreview);
     updatePricePreview();
 });
 </script>

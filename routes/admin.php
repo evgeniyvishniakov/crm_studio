@@ -96,6 +96,7 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
 
     // Управление тарифами
     Route::resource('plans', \App\Http\Controllers\Admin\PlanController::class);
+    Route::post('/plans/{plan}/update-prices', [\App\Http\Controllers\Admin\PlanController::class, 'updatePrices'])->name('plans.update-prices');
 
     // Управление валютами
     Route::get('/currencies', [\App\Http\Controllers\Admin\CurrencyController::class, 'index'])->name('currencies.index');

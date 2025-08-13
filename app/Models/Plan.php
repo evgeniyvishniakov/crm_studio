@@ -14,6 +14,9 @@ class Plan extends Model
         'slug',
         'max_employees',
         'price_monthly',
+        'price_quarterly',
+        'price_six_months',
+        'price_yearly',
         'description',
         'features',
         'is_active',
@@ -25,6 +28,9 @@ class Plan extends Model
         'is_active' => 'boolean',
         'max_employees' => 'integer',
         'price_monthly' => 'decimal:2',
+        'price_quarterly' => 'decimal:2',
+        'price_six_months' => 'decimal:2',
+        'price_yearly' => 'decimal:2',
         'sort_order' => 'integer'
     ];
 
@@ -37,19 +43,17 @@ class Plan extends Model
     // Методы для расчета цен по периодам
     public function getPriceForPeriod($periodType)
     {
-        $basePrice = $this->price_monthly;
-        
         switch ($periodType) {
             case 'monthly':
-                return $basePrice;
+                return $this->price_monthly;
             case 'quarterly':
-                return $basePrice * 3 * 0.9; // 3 месяца со скидкой 10%
+                return $this->price_quarterly ?? ($this->price_monthly * 3 * 0.9);
             case 'semiannual':
-                return $basePrice * 6 * 0.85; // 6 месяцев со скидкой 15%
+                return $this->price_six_months ?? ($this->price_monthly * 6 * 0.85);
             case 'yearly':
-                return $basePrice * 12 * 0.75; // 12 месяцев со скидкой 25%
+                return $this->price_yearly ?? ($this->price_monthly * 12 * 0.75);
             default:
-                return $basePrice;
+                return $this->price_monthly;
         }
     }
 
