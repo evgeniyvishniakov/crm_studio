@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Admin\Project;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Subscription;
+use App\Models\Admin\User;
 
 class ProjectController extends Controller
 {
@@ -79,7 +81,27 @@ class ProjectController extends Controller
             $validated['social_links'] = array_map('trim', explode(',', $validated['social_links']));
         }
 
-        Project::create($validated);
+        $project = Project::create($validated);
+
+        // Создать пробную подписку для нового проекта
+        // Найдем админа проекта или создадим временного
+        $adminUser = User::where('project_id', $project->id)->where('role', 'admin')->first();
+        
+                    if ($adminUser) {
+                Subscription::create([
+                    'project_id' => $project->id,
+                    'admin_user_id' => $adminUser->id,
+                    'plan_type' => 'trial',
+                    'amount' => 0.00,
+                    'currency' => 'USD',
+                    'paid_at' => now(),
+                    'starts_at' => now(),
+                    'trial_ends_at' => now()->addDays(7), // Пробный период 7 дней
+                    'expires_at' => null, // Для пробной подписки не устанавливаем дату окончания
+                    'status' => 'trial',
+                    'notes' => 'Автоматически создана при создании проекта через админку'
+                ]);
+            }
 
         // Рассылка уведомлений всем админам, кроме создателя
         $currentAdmin = auth()->user();

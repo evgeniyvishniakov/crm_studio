@@ -35,6 +35,12 @@
                 </a>
             </li>
             <li class="nav-item mb-2">
+                <a href="{{ route('admin.subscriptions.index') }}" class="nav-link text-white {{ request()->routeIs('admin.subscriptions.*') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-credit-card me-2"></i>
+                    Подписки
+                </a>
+            </li>
+            <li class="nav-item mb-2">
                 <a href="{{ route('admin.roles.index') }}" class="nav-link text-white {{ request()->routeIs('admin.roles.index') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-user-shield me-2"></i>
                     Роли и права

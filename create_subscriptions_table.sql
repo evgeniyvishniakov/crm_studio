@@ -1,0 +1,22 @@
+CREATE TABLE `subscriptions` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `admin_user_id` bigint(20) unsigned NOT NULL,
+  `plan_type` varchar(255) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `currency` varchar(3) DEFAULT 'USD',
+  `paid_at` timestamp NULL DEFAULT NULL,
+  `starts_at` timestamp NULL DEFAULT NULL,
+  `trial_ends_at` timestamp NULL DEFAULT NULL,
+  `expires_at` timestamp NULL DEFAULT NULL,
+  `status` enum('trial','active','expired','cancelled') DEFAULT 'trial',
+  `notes` text NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `subscriptions_project_id_status_index` (`project_id`, `status`),
+  KEY `subscriptions_status_expires_at_index` (`status`, `expires_at`),
+  KEY `subscriptions_admin_user_id_index` (`admin_user_id`),
+  CONSTRAINT `subscriptions_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `subscriptions_admin_user_id_foreign` FOREIGN KEY (`admin_user_id`) REFERENCES `admin_users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

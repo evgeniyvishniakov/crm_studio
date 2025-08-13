@@ -163,6 +163,40 @@ class Project extends Model
     }
 
     /**
+     * Связь с подписками
+     */
+    public function subscriptions()
+    {
+        return $this->hasMany(\App\Models\Subscription::class);
+    }
+
+    /**
+     * Получить активную подписку
+     */
+    public function activeSubscription()
+    {
+        return $this->hasOne(\App\Models\Subscription::class)
+            ->where('status', 'active')
+            ->where('expires_at', '>', now());
+    }
+
+    /**
+     * Связь с клиентами (через таблицу clients)
+     */
+    public function clients()
+    {
+        return $this->hasMany(\App\Models\Clients\Client::class);
+    }
+
+    /**
+     * Связь с записями (через таблицу appointments)
+     */
+    public function appointments()
+    {
+        return $this->hasMany(\App\Models\Clients\Appointment::class);
+    }
+
+    /**
      * Получить или создать настройки виджета
      */
     public function getOrCreateWidgetSettings()

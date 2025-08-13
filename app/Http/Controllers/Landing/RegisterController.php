@@ -11,6 +11,7 @@ use App\Models\Admin\Project;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use App\Models\Admin\User;
+use App\Models\Subscription;
 
 class RegisterController extends Controller
 {
@@ -62,6 +63,21 @@ class RegisterController extends Controller
                 'role' => 'admin',
                 'status' => 'active',
                 'registered_at' => now(),
+            ]);
+
+            // Создать пробную подписку
+            Subscription::create([
+                'project_id' => $project->id,
+                'admin_user_id' => $admin->id,
+                'plan_type' => 'trial',
+                'amount' => 0.00,
+                'currency' => 'USD',
+                'paid_at' => now(),
+                'starts_at' => now(),
+                'trial_ends_at' => now()->addDays(7), // Пробный период 7 дней
+                'expires_at' => null, // Для пробной подписки не устанавливаем дату окончания
+                'status' => 'trial',
+                'notes' => 'Автоматически создана при регистрации проекта'
             ]);
 
             // Рассылка уведомлений только panel-админам, кроме нового
