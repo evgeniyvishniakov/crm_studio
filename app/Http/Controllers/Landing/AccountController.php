@@ -101,10 +101,8 @@ class AccountController extends Controller
             return redirect()->route('landing.account.login');
         }
 
-        $project = Project::find(session('client_project_id'));
-        $adminUser = $project->adminUsers()->find(session('client_admin_id'));
-
-        return view('landing.account.profile', compact('project', 'adminUser'));
+        // Перенаправляем на главную страницу личного кабинета с активной вкладкой профиля
+        return redirect()->route('landing.account.dashboard') . '#profile';
     }
 
     /**
@@ -128,6 +126,34 @@ class AccountController extends Controller
         ]);
 
         return back()->with('success', 'Профиль успешно обновлен');
+    }
+
+    /**
+     * Обновить пароль
+     */
+    public function updatePassword(Request $request)
+    {
+        if (!session('client_logged_in')) {
+            return redirect()->route('landing.account.login');
+        }
+
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+            'new_password_confirmation' => 'required'
+        ]);
+
+        $adminUser = \App\Models\Admin\User::find(session('client_admin_id'));
+        
+        if (!password_verify($request->current_password, $adminUser->password)) {
+            return back()->withErrors(['current_password' => 'Текущий пароль неверен']);
+        }
+
+        $adminUser->update([
+            'password' => bcrypt($request->new_password)
+        ]);
+
+        return back()->with('success', 'Пароль успешно изменен');
     }
 
     /**
