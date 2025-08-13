@@ -44,12 +44,28 @@
                     </div>
                 </li>
                 
-                <li class="nav-item">
-                    <a class="btn btn-outline-primary me-2" href="{{ route('login') }}" aria-label="Войти в систему">Войти</a>
-                </li>
-                <li class="nav-item">
-                    <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">Попробовать бесплатно</a>
-                </li>
+                @if(session('client_logged_in'))
+                    <li class="nav-item">
+                        <a class="btn btn-outline-primary me-2" href="{{ route('landing.account.dashboard') }}" aria-label="Личный кабинет">
+                            <i class="fas fa-user me-1"></i>Личный кабинет
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <form method="POST" action="{{ route('landing.account.logout') }}" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger" aria-label="Выйти">
+                                <i class="fas fa-sign-out-alt me-1"></i>Выйти
+                            </button>
+                        </form>
+                    </li>
+                @else
+                    <li class="nav-item">
+                        <a class="btn btn-outline-primary me-2" href="#" data-bs-toggle="modal" data-bs-target="#loginModal" aria-label="Открыть форму входа">Войти</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">Попробовать бесплатно</a>
+                    </li>
+                @endif
             </ul>
         </div>
     </div>

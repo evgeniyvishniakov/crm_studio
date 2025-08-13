@@ -81,6 +81,15 @@
             </label>
           </div>
           <div class="form-text fw-semibold mb-3" style="color:#2563eb;"><i class="fas fa-info-circle me-1"></i>После регистрации на указанный email придет письмо с дальнейшими инструкциями.</div>
+          
+          <hr class="my-3">
+          
+          <div class="text-center">
+            <p class="text-muted mb-2">Уже есть проект?</p>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal" class="btn btn-outline-primary btn-sm">
+              <i class="fas fa-sign-in-alt me-1"></i>Войти в личный кабинет
+            </a>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>

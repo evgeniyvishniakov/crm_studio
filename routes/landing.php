@@ -30,7 +30,6 @@ Route::get('/features', function () {
 })->name('beautyflow.features');
 
 
-
 Route::get('/privacy', function () {
     return view('landing.pages.privacy');
 })->name('beautyflow.privacy');
@@ -66,4 +65,16 @@ Route::get('/knowledge/{slug}', function ($slug) {
     return view('landing.pages.knowledge-show', compact('article'));
 })->name('beautyflow.knowledge.show');
 
-Route::post('/register', [RegisterController::class, 'store'])->name('beautyflow.register'); 
+Route::post('/register', [RegisterController::class, 'store'])->name('beautyflow.register');
+
+// Личный кабинет
+Route::get('/account/login', [\App\Http\Controllers\Landing\AccountController::class, 'showLogin'])->name('landing.account.login');
+Route::post('/account/login', [\App\Http\Controllers\Landing\AccountController::class, 'login'])->name('landing.account.login.post');
+
+Route::middleware('landing.auth')->group(function () {
+    Route::get('/account/dashboard', [\App\Http\Controllers\Landing\AccountController::class, 'dashboard'])->name('landing.account.dashboard');
+    Route::get('/account/profile', [\App\Http\Controllers\Landing\AccountController::class, 'profile'])->name('landing.account.profile');
+    Route::post('/account/profile', [\App\Http\Controllers\Landing\AccountController::class, 'updateProfile'])->name('landing.account.profile.update');
+    Route::get('/account/crm', [\App\Http\Controllers\Landing\AccountController::class, 'goToCrm'])->name('landing.account.crm');
+    Route::post('/account/logout', [\App\Http\Controllers\Landing\AccountController::class, 'logout'])->name('landing.account.logout');
+}); 

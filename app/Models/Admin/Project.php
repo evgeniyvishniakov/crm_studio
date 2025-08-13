@@ -197,6 +197,14 @@ class Project extends Model
     }
 
     /**
+     * Связь с администраторами проекта
+     */
+    public function adminUsers()
+    {
+        return $this->hasMany(\App\Models\Admin\User::class, 'project_id');
+    }
+
+    /**
      * Получить или создать настройки виджета
      */
     public function getOrCreateWidgetSettings()

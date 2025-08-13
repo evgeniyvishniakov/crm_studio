@@ -57,5 +57,8 @@
     <script src="{{ asset('landing/main.js') }}"></script>
     
     @stack('scripts')
+    
+    <!-- Модальные окна -->
+    @include('landing.components.login-modal')
 </body>
 </html> 
