@@ -233,6 +233,14 @@ class KnowledgeController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // Логируем начало выполнения метода
+        \Log::info('Knowledge Article Update Method Started', [
+            'method' => 'update',
+            'article_id' => $id,
+            'request_method' => $request->method(),
+            'request_url' => $request->url()
+        ]);
+        
         $request->validate([
             'title' => 'required|string|max:255',
             'category' => 'required|string',
@@ -250,6 +258,14 @@ class KnowledgeController extends Controller
         $article = KnowledgeArticle::findOrFail($id);
         $data = $request->all();
         $data['slug'] = Str::slug($request->title);
+        
+        // Логируем данные для отладки
+        \Log::info('Knowledge Article Update Request', [
+            'article_id' => $id,
+            'request_data' => $request->all(),
+            'description_from_request' => $request->input('description'),
+            'current_description' => $article->description
+        ]);
         
         // Обрабатываем статус публикации
         $data['is_published'] = $request->has('is_published');
@@ -279,6 +295,13 @@ class KnowledgeController extends Controller
 
         $article->update($data);
         
+        // Логируем результат обновления
+        \Log::info('Knowledge Article Update Result', [
+            'article_id' => $id,
+            'updated_description' => $article->fresh()->description,
+            'update_success' => $article->wasChanged('description')
+        ]);
+        
         // Получаем все активные языки
         $languages = Language::getActive();
         
@@ -290,27 +313,9 @@ class KnowledgeController extends Controller
         $isEditingTranslation = $request->input('is_editing_translation', false);
         
         if (!$isEditingTranslation) {
-            // Если редактируем основную статью, обновляем переводы
-            foreach ($languages as $language) {
-                $translation = $article->translations()->where('locale', $language->code)->first();
-                if (!$translation) {
-                    // Создаем перевод если его нет
-                    $article->translations()->create([
-                        'locale' => $language->code,
-                        'title' => $request->title,
-                        'description' => $request->description
-                    ]);
-                } else {
-                    // Обновляем ТОЛЬКО перевод на языке редактирования
-                    // Остальные языки НЕ трогаем, чтобы не перезаписать их переводы
-                    if ($language->code === $editingLanguage) {
-                        $translation->update([
-                            'title' => $request->title,
-                            'description' => $request->description
-                        ]);
-                    }
-                }
-            }
+            // Если редактируем основную статью, НЕ обновляем переводы
+            // Переводы должны редактироваться отдельно через модальные окна
+            // foreach ($languages as $language) { ... } - убираем этот код
         }
         // Если редактируем перевод, НЕ обновляем переводы здесь
 

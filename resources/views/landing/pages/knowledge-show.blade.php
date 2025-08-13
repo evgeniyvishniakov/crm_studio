@@ -54,7 +54,7 @@
 
                 <!-- Article Content -->
                 @if($article->defaultTranslation())
-                    <div class="article-content mb-5">
+                    <div class="article-content">
                         {!! $article->defaultTranslation()->content !!}
                     </div>
                 @endif
@@ -146,7 +146,7 @@
                                         </a>
                                     </h6>
                                     <p class="text-muted small mb-0">
-                                        {{ Str::limit($relatedArticle->description, 80) }}
+                                        {!! Str::limit(strip_tags($relatedArticle->description), 80) !!}
                                     </p>
                                 </div>
                             @empty
@@ -357,6 +357,8 @@ function shareArticle() {
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         line-height: 1.8;
         color: #2c3e50;
+    
+        
     }
     
     .article-content h2 {

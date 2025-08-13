@@ -283,7 +283,7 @@
                                 <span class="badge bg-primary me-2">{{ $categories[$article->category] ?? $article->category }}</span>
                             </div>
                             <h5 class="card-title" style="font-size: 23px!important; font-weight: bold!important; font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;">{{ $article->title }}</h5>
-                            <p class="card-text">{{ Str::limit($article->description, 120) }}</p>
+                            <p class="card-text">{!! Str::limit(strip_tags($article->description), 120) !!}</p>
                             
                             @if($article->steps->count() > 0)
                                 <div class="mb-3">

@@ -163,7 +163,7 @@
                                     <div class="mb-3">
                                         <label for="title" class="form-label">Заголовок статьи <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('title') is-invalid @enderror" 
-                                               id="title" name="title" value="{{ old('title', $article->title) }}" required>
+                                               id="title" name="title" value="{{ old('title', $article->original_title) }}" required>
                                         @error('title')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -174,7 +174,7 @@
                                         <select class="form-select @error('category') is-invalid @enderror" id="category" name="category" required>
                                             <option value="">Выберите категорию</option>
                                             @foreach($categories as $key => $category)
-                                                <option value="{{ $key }}" {{ old('category', $article->category) == $key ? 'selected' : '' }}>
+                                                <option value="{{ $key }}" {{ old('category', $article->getRawOriginal('category')) == $key ? 'selected' : '' }}>
                                                     {{ $category }}
                                                 </option>
                                             @endforeach
@@ -187,7 +187,7 @@
                                     <div class="mb-3">
                                         <label for="description" class="form-label">Краткое описание <span class="text-danger">*</span></label>
                                         <textarea class="form-control @error('description') is-invalid @enderror" 
-                                                  id="description" name="description" rows="3" required>{{ old('description', $article->description) }}</textarea>
+                                                  id="description" name="description" rows="3" required>{{ old('description', $article->original_description) }}</textarea>
                                         @error('description')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -223,9 +223,9 @@
 
                                     <div class="mb-3">
                                         <label for="featured_image" class="form-label">Главное изображение</label>
-                                        @if($article->featured_image)
+                                        @if($article->getRawOriginal('featured_image'))
                                             <div class="mb-2">
-                                                <img src="{{ asset('storage/' . $article->featured_image) }}" alt="Текущее изображение" class="img-thumbnail" style="max-width: 200px;">
+                                                <img src="{{ asset('storage/' . $article->getRawOriginal('featured_image')) }}" alt="Текущее изображение" class="img-thumbnail" style="max-width: 200px;">
                                                 <div class="mt-2">
                                                     <div class="form-check">
                                                         <input type="checkbox" class="form-check-input" 
@@ -248,7 +248,7 @@
                                     <div class="mb-3">
                                         <label for="meta_tags" class="form-label">Мета-теги</label>
                                         <input type="text" class="form-control @error('meta_tags') is-invalid @enderror" 
-                                               id="meta_tags" name="meta_tags" value="{{ old('meta_tags', $article->meta_tags) }}" 
+                                               id="meta_tags" name="meta_tags" value="{{ old('meta_tags', $article->getRawOriginal('meta_tags')) }}" 
                                                placeholder="тег1, тег2, тег3">
                                         @error('meta_tags')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -259,7 +259,7 @@
                                     <div class="mb-3">
                                         <label for="sort_order" class="form-label">Порядок сортировки</label>
                                         <input type="number" class="form-control @error('sort_order') is-invalid @enderror" 
-                                               id="sort_order" name="sort_order" value="{{ old('sort_order', $article->sort_order ?? 0) }}" min="0">
+                                               id="sort_order" name="sort_order" value="{{ old('sort_order', $article->getRawOriginal('sort_order') ?? 0) }}" min="0">
                                         @error('sort_order')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -269,7 +269,7 @@
                                         <div class="form-check">
                                             <input type="checkbox" class="form-check-input @error('is_published') is-invalid @enderror" 
                                                    id="is_published" name="is_published" value="1" 
-                                                   {{ old('is_published', $article->is_published) ? 'checked' : '' }}>
+                                                   {{ old('is_published', $article->getRawOriginal('is_published')) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="is_published">
                                                 Опубликовать статью
                                             </label>
@@ -398,7 +398,7 @@
                                     <div class="mb-3">
                                         <label for="author" class="form-label">Автор</label>
                                         <input type="text" class="form-control @error('author') is-invalid @enderror" 
-                                               id="author" name="author" value="{{ old('author', $article->author) }}">
+                                               id="author" name="author" value="{{ old('author', $article->getRawOriginal('author')) }}">
                                         @error('author')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

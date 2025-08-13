@@ -131,4 +131,20 @@ class KnowledgeArticle extends Model
         
         return $value;
     }
+
+    /**
+     * Получить оригинальный заголовок (без перевода)
+     */
+    public function getOriginalTitleAttribute()
+    {
+        return $this->attributes['title'];
+    }
+
+    /**
+     * Получить оригинальное описание (без перевода)
+     */
+    public function getOriginalDescriptionAttribute()
+    {
+        return $this->attributes['description'];
+    }
 }
