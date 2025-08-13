@@ -61,4 +61,13 @@ Route::get('/knowledge', function () {
     return view('landing.pages.knowledge', compact('articles', 'categories'));
 })->name('beautyflow.knowledge');
 
+Route::get('/knowledge/{slug}', function ($slug) {
+    $article = \App\Models\KnowledgeArticle::published()
+        ->where('slug', $slug)
+        ->with(['steps', 'tips'])
+        ->firstOrFail();
+    
+    return view('landing.pages.knowledge-show', compact('article'));
+})->name('beautyflow.knowledge.show');
+
 Route::post('/register', [RegisterController::class, 'store'])->name('beautyflow.register'); 
