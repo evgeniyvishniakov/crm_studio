@@ -41,6 +41,12 @@
                 </a>
             </li>
             <li class="nav-item mb-2">
+                <a href="{{ route('admin.plans.index') }}" class="nav-link text-white {{ request()->routeIs('admin.plans.*') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-tag me-2"></i>
+                    Тарифы
+                </a>
+            </li>
+            <li class="nav-item mb-2">
                 <a href="{{ route('admin.roles.index') }}" class="nav-link text-white {{ request()->routeIs('admin.roles.index') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-user-shield me-2"></i>
                     Роли и права

@@ -398,11 +398,11 @@
                                         <div class="card-body">
                                             <!-- Сообщение об успехе (изначально скрыто) -->
                                             <div id="password-success-message" class="alert alert-success text-center" style="display: none;">
-                                                <i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>
-                                                <h5 class="mb-2">Ссылка отправлена!</h5>
-                                                <p class="mb-0">Ссылка для сброса пароля отправлена на указанный email.</p>
-                                                <p class="text-muted small mt-2">Проверьте папку "Входящие" или "Спам".</p>
-                                            </div>
+                                                    <i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>
+                                                    <h5 class="mb-2">Ссылка отправлена!</h5>
+                                                    <p class="mb-0">Ссылка для сброса пароля отправлена на указанный email.</p>
+                                                    <p class="text-muted small mt-2">Проверьте папку "Входящие" или "Спам".</p>
+                                                </div>
 
                                             <!-- Форма (изначально показана) -->
                                             <div id="password-form">
@@ -449,46 +449,46 @@
                                             <!-- Форма профиля -->
                                             <div id="profile-form">
                                                 <form id="profile-update-form">
-                                                    @csrf
-                                                    
-                                                    <div class="row">
-                                                        <div class="col-md-6 mb-3">
-                                                            <label for="name" class="form-label">Название проекта <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" id="name" name="name" value="{{ $project->name }}" required>
-                                                        </div>
-
-                                                        <div class="col-md-6 mb-3">
-                                                            <label for="phone" class="form-label">Телефон</label>
-                                                            <input type="text" class="form-control" id="phone" name="phone" value="{{ $project->phone }}">
-                                                        </div>
+                                                @csrf
+                                                
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="name" class="form-label">Название проекта <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" id="name" name="name" value="{{ $project->name }}" required>
                                                     </div>
 
-                                                    <div class="mb-3">
-                                                        <label for="email" class="form-label">Email <span class="text-muted">(неизменяем)</span></label>
-                                                        <input type="email" class="form-control" id="email" value="{{ $project->email }}" disabled>
-                                                        <small class="text-muted">Email не может быть изменен</small>
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="phone" class="form-label">Телефон</label>
+                                                        <input type="text" class="form-control" id="phone" name="phone" value="{{ $project->phone }}">
                                                     </div>
+                                                </div>
 
-                                                    @if($project->website)
-                                                    <div class="mb-3">
-                                                        <label for="website" class="form-label">Сайт</label>
-                                                        <input type="url" class="form-control" id="website" value="{{ $project->website }}" disabled>
-                                                        <small class="text-muted">Сайт не может быть изменен</small>
-                                                    </div>
-                                                    @endif
+                                                <div class="mb-3">
+                                                    <label for="email" class="form-label">Email <span class="text-muted">(неизменяем)</span></label>
+                                                    <input type="email" class="form-control" id="email" value="{{ $project->email }}" disabled>
+                                                    <small class="text-muted">Email не может быть изменен</small>
+                                                </div>
 
-                                                    <div class="mb-3">
-                                                        <label for="address" class="form-label">Адрес</label>
-                                                        <textarea class="form-control" id="address" rows="2" disabled>{{ $project->address ?? 'Не указан' }}</textarea>
-                                                        <small class="text-muted">Адрес не может быть изменен</small>
-                                                    </div>
+                                                @if($project->website)
+                                                <div class="mb-3">
+                                                    <label for="website" class="form-label">Сайт</label>
+                                                    <input type="url" class="form-control" id="website" value="{{ $project->website }}" disabled>
+                                                    <small class="text-muted">Сайт не может быть изменен</small>
+                                                </div>
+                                                @endif
 
-                                                    <div class="d-grid">
+                                                <div class="mb-3">
+                                                    <label for="address" class="form-label">Адрес</label>
+                                                    <textarea class="form-control" id="address" rows="2" disabled>{{ $project->address ?? 'Не указан' }}</textarea>
+                                                    <small class="text-muted">Адрес не может быть изменен</small>
+                                                </div>
+
+                                                <div class="d-grid">
                                                         <button type="submit" class="btn btn-primary" id="profile-submit-btn">
-                                                            <i class="fas fa-save me-2"></i>Сохранить изменения
-                                                        </button>
-                                                    </div>
-                                                </form>
+                                                        <i class="fas fa-save me-2"></i>Сохранить изменения
+                                                    </button>
+                                                </div>
+                                            </form>
                                             </div>
                                         </div>
                                     </div>

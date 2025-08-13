@@ -94,6 +94,9 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     Route::post('/subscriptions/{subscription}/extend', [\App\Http\Controllers\Admin\SubscriptionController::class, 'extend'])->name('subscriptions.extend');
     Route::post('/subscriptions/{subscription}/cancel', [\App\Http\Controllers\Admin\SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
 
+    // Управление тарифами
+    Route::resource('plans', \App\Http\Controllers\Admin\PlanController::class);
+
     // Управление валютами
     Route::get('/currencies', [\App\Http\Controllers\Admin\CurrencyController::class, 'index'])->name('currencies.index');
     Route::get('/currencies/create', [\App\Http\Controllers\Admin\CurrencyController::class, 'create'])->name('currencies.create');
