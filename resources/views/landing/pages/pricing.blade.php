@@ -128,9 +128,15 @@
                                         <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                     </div>
                                     
-                                    <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                        Выбрать план
-                                    </a>
+                                    @if(Auth::guard('client')->check())
+                                        <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} w-100 pricing-btn">
+                                            Выбрать план
+                                        </a>
+                                    @else
+                                        <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} w-100 pricing-btn" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                            Попробовать бесплатно 7 дней
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -169,9 +175,15 @@
                                         <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                     </div>
                                     
-                                    <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                        Выбрать план
-                                    </a>
+                                    @if(Auth::guard('client')->check())
+                                        <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} w-100 pricing-btn">
+                                            Выбрать план
+                                        </a>
+                                    @else
+                                        <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} w-100 pricing-btn" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                            Попробовать бесплатно 7 дней
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -205,9 +217,15 @@
                                         <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                     </div>
                                     
-                                    <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                        Выбрать план
-                                    </a>
+                                    @if(Auth::guard('client')->check())
+                                        <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} w-100 pricing-btn">
+                                            Выбрать план
+                                        </a>
+                                    @else
+                                        <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} w-100 pricing-btn" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                            Попробовать бесплатно 7 дней
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -241,9 +259,15 @@
                                         <p class="text-muted small">Полный доступ ко всем возможностям CRM Studio</p>
                                     </div>
                                     
-                                    <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} btn-lg w-100" data-bs-toggle="modal" data-bs-target="#registerModal">
-                                        Выбрать план
-                                    </a>
+                                    @if(Auth::guard('client')->check())
+                                        <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} w-100 pricing-btn">
+                                            Выбрать план
+                                        </a>
+                                    @else
+                                        <a href="#" class="btn {{ $planColors[$plan->slug]['button'] }} w-100 pricing-btn" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                            Попробовать бесплатно 7 дней
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -261,6 +285,53 @@
 
 
 @include('landing.components.register-modal')
+
+<!-- Модальное окно выбора плана -->
+<div class="modal fade" id="planSelectionModal" tabindex="-1" aria-labelledby="planSelectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="planSelectionModalLabel">Подтверждение выбора плана</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3">Выбранный план:</h6>
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title" id="selectedPlanName"></h5>
+                                <p class="card-text" id="selectedPlanDescription"></p>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <span class="badge bg-primary fs-6 px-3 py-2" id="selectedPlanPeriod"></span>
+                                    <span class="fs-5 fw-bold text-dark" id="selectedPlanPrice"></span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-2" id="selectedPlanSavings" style="display: none;">
+                                    <span class="badge bg-success" id="savingsBadge"></span>
+                                    <span class="text-muted small" id="selectedPlanMonthlyPrice"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold mb-3">Детали подписки:</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Все функции включены</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Полный доступ к CRM Studio</li>
+                            <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Техническая поддержка</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="proceedToPayment">
+                    <i class="fas fa-credit-card me-2"></i>Перейти к оплате
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -306,6 +377,97 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // Обработчики для кнопок "Выбрать план"
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('pricing-btn') && !e.target.hasAttribute('data-bs-toggle')) {
+            e.preventDefault();
+            
+            // Получаем данные о выбранном плане
+            var card = e.target.closest('.card');
+            var planName = card.querySelector('h6').textContent;
+            var planPeriod = card.querySelector('h3').textContent;
+            var planPrice = card.querySelector('.h2').textContent;
+            
+            // Получаем экономию и стоимость в месяц
+            var savings = '';
+            var monthlyPrice = '';
+            
+            // Ищем бейдж с экономией
+            var badges = card.querySelectorAll('.badge');
+            badges.forEach(function(badge) {
+                if (badge.textContent.includes('Экономия')) {
+                    savings = badge.textContent;
+                }
+            });
+            
+            // Ищем стоимость в месяц
+            var smallTexts = card.querySelectorAll('.text-muted.small');
+            smallTexts.forEach(function(text) {
+                if (text.textContent.includes('₴ / месяц')) {
+                    monthlyPrice = text.textContent;
+                }
+            });
+            
+            // Получаем цвет плана из кнопки
+            var button = e.target;
+            var buttonClasses = button.className;
+            var planColor = '';
+            
+            // Определяем цвет плана по классу кнопки
+            if (buttonClasses.includes('btn-tab-green')) {
+                planColor = 'bg-success';
+            } else if (buttonClasses.includes('btn-tab-blue')) {
+                planColor = 'bg-primary';
+            } else if (buttonClasses.includes('btn-tab-yellow')) {
+                planColor = 'bg-warning';
+            } else {
+                planColor = 'bg-primary'; // по умолчанию
+            }
+            
+            // Заполняем модальное окно
+            document.getElementById('selectedPlanName').textContent = planName;
+            document.getElementById('selectedPlanDescription').textContent = 'Идеально для вашего бизнеса';
+            document.getElementById('selectedPlanPeriod').textContent = planPeriod;
+            document.getElementById('selectedPlanPrice').textContent = planPrice;
+            
+            // Показываем экономию если есть
+            var savingsContainer = document.getElementById('selectedPlanSavings');
+            var savingsBadge = document.getElementById('savingsBadge');
+            if (savings && savings.includes('Экономия')) {
+                savingsBadge.textContent = savings;
+                savingsContainer.style.display = 'block';
+                
+                // Применяем цвет плана к бейджу экономии
+                savingsBadge.className = 'badge ' + planColor;
+            } else {
+                savingsContainer.style.display = 'none';
+            }
+            
+            // Показываем стоимость в месяц если есть
+            var monthlyPriceContainer = document.getElementById('selectedPlanMonthlyPrice');
+            if (monthlyPrice) {
+                monthlyPriceContainer.textContent = monthlyPrice;
+            } else {
+                monthlyPriceContainer.textContent = '';
+            }
+            
+            // Применяем цвет плана к бейджу периода
+            var periodBadge = document.getElementById('selectedPlanPeriod');
+            periodBadge.className = 'badge me-3 fs-6 px-3 py-2 ' + planColor;
+            
+            // Показываем модальное окно
+            var modal = new bootstrap.Modal(document.getElementById('planSelectionModal'));
+            modal.show();
+        }
+    });
+    
+    // Обработчик для кнопки "Перейти к оплате"
+    document.getElementById('proceedToPayment').addEventListener('click', function() {
+        // Здесь будет логика перехода к оплате
+        console.log('Переход к оплате...');
+        alert('Здесь будет переход к платежной системе');
+    });
 });
 </script>
 
@@ -339,6 +501,20 @@ document.addEventListener('DOMContentLoaded', function() {
 #pricingTabs .nav-link:not(.active):hover {
     background-color: #e9ecef !important;
     color: #495057 !important;
+}
+
+/* Стили для компактных кнопок тарифов */
+.pricing-btn {
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+}
+
+.pricing-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
 }
 </style>
 @endpush
