@@ -1,3 +1,7 @@
+@php
+    use Illuminate\Support\Facades\Auth;
+@endphp
+
 <header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="{{ route('beautyflow.index') }}">
@@ -44,19 +48,16 @@
                     </div>
                 </li>
                 
-                @if(session('client_logged_in'))
+                @if(Auth::guard('client')->check() && Auth::guard('client')->user()->role === 'admin')
                     <li class="nav-item">
                         <a class="btn btn-outline-primary me-2" href="{{ route('landing.account.dashboard') }}" aria-label="Личный кабинет">
                             <i class="fas fa-user me-1"></i>Личный кабинет
                         </a>
                     </li>
                     <li class="nav-item">
-                        <form method="POST" action="{{ route('landing.account.logout') }}" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-outline-danger" aria-label="Выйти">
-                                <i class="fas fa-sign-out-alt me-1"></i>Выйти
-                            </button>
-                        </form>
+                        <a href="{{ route('landing.account.logout') }}" class="btn btn-outline-danger" aria-label="Выйти">
+                            <i class="fas fa-sign-out-alt me-1"></i>Выйти
+                        </a>
                     </li>
                 @else
                     <li class="nav-item">

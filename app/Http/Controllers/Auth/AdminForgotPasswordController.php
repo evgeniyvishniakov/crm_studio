@@ -18,7 +18,7 @@ class AdminForgotPasswordController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        // Убираем middleware guest, чтобы форма сброса пароля была доступна всем
     }
 
     /**

@@ -13,8 +13,6 @@ class AdminResetPasswordController extends Controller
 {
     use ResetsPasswords;
 
-    protected $redirectTo = '/';
-
     /**
      * Get the post password reset redirect path.
      *
@@ -22,7 +20,7 @@ class AdminResetPasswordController extends Controller
      */
     protected function redirectTo()
     {
-        return '/';
+        return route('dashboard');
     }
 
     /**
@@ -32,7 +30,7 @@ class AdminResetPasswordController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        // Убираем middleware guest, чтобы форма сброса пароля была доступна всем
     }
 
     /**

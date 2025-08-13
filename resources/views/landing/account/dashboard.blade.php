@@ -127,11 +127,9 @@
 <div class="container-fluid py-5">
     <div class="row">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="h2 mb-1">Личный кабинет</h1>
-                    <p class="text-muted mb-0">Добро пожаловать, {{ $project->name }}</p>
-                </div>
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold mb-3">Личный кабинет</h1>
+                <p class="lead text-muted">Добро пожаловать, {{ $project->name }}</p>
             </div>
         </div>
     </div>
@@ -162,14 +160,7 @@
                                 <i class="fas fa-user me-2"></i>Профиль
                             </button>
                         </li>
-                        <li class="nav-item ms-auto" role="presentation">
-                            <form method="POST" action="{{ route('landing.account.logout') }}" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-outline-danger">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Выйти
-                                </button>
-                            </form>
-                        </li>
+
                     </ul>
 
                     <div class="tab-content mt-4" id="accountTabsContent">
@@ -405,31 +396,32 @@
                                             </h5>
                                         </div>
                                         <div class="card-body">
-                                            <form method="POST" action="{{ route('landing.account.password.update') }}">
-                                                @csrf
-                                                
-                                                <div class="mb-3">
-                                                    <label for="current_password" class="form-label">Текущий пароль <span class="text-danger">*</span></label>
-                                                    <input type="password" class="form-control" id="current_password" name="current_password" required>
-                                                </div>
+                                            <!-- Сообщение об успехе (изначально скрыто) -->
+                                            <div id="password-success-message" class="alert alert-success text-center" style="display: none;">
+                                                <i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>
+                                                <h5 class="mb-2">Ссылка отправлена!</h5>
+                                                <p class="mb-0">Ссылка для сброса пароля отправлена на указанный email.</p>
+                                                <p class="text-muted small mt-2">Проверьте папку "Входящие" или "Спам".</p>
+                                            </div>
 
-                                                <div class="mb-3">
-                                                    <label for="new_password" class="form-label">Новый пароль <span class="text-danger">*</span></label>
-                                                    <input type="password" class="form-control" id="new_password" name="new_password" required>
-                                                    <small class="form-text text-muted">Минимум 8 символов</small>
-                                                </div>
+                                            <!-- Форма (изначально показана) -->
+                                            <div id="password-form">
+                                                <form id="password-reset-form">
+                                                    @csrf
+                                                    
+                                                    <div class="mb-3">
+                                                        <label for="password_email" class="form-label">Email руководителя <span class="text-danger">*</span></label>
+                                                        <input type="email" class="form-control" id="password_email" name="email" value="{{ Auth::guard('client')->user()->email }}" required readonly>
+                                                        <small class="form-text text-muted">Ссылка для сброса пароля будет отправлена на этот email</small>
+                                                    </div>
 
-                                                <div class="mb-3">
-                                                    <label for="new_password_confirmation" class="form-label">Подтверждение нового пароля <span class="text-danger">*</span></label>
-                                                    <input type="password" class="form-control" id="new_password_confirmation" name="new_password_confirmation" required>
-                                                </div>
-
-                                                <div class="d-grid">
-                                                    <button type="submit" class="btn btn-primary">
-                                                        <i class="fas fa-save me-2"></i>Изменить пароль
-                                                    </button>
-                                                </div>
-                                            </form>
+                                                    <div class="d-grid">
+                                                        <button type="submit" class="btn btn-primary" id="password-submit-btn">
+                                                            <i class="fas fa-paper-plane me-2"></i>Отправить ссылку для сброса
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -447,47 +439,57 @@
                                             </h5>
                                         </div>
                                         <div class="card-body">
-                                            <form method="POST" action="{{ route('landing.account.profile.update') }}">
-                                                @csrf
-                                                
-                                                <div class="row">
-                                                    <div class="col-md-6 mb-3">
-                                                        <label for="name" class="form-label">Название проекта <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" id="name" name="name" value="{{ $project->name }}" required>
+                                            <!-- Сообщение об успехе (изначально скрыто) -->
+                                            <div id="profile-success-message" class="alert alert-success text-center" style="display: none;">
+                                                <i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>
+                                                <h5 class="mb-2">Профиль обновлен!</h5>
+                                                <p class="mb-0">Изменения успешно сохранены.</p>
+                                            </div>
+
+                                            <!-- Форма профиля -->
+                                            <div id="profile-form">
+                                                <form id="profile-update-form">
+                                                    @csrf
+                                                    
+                                                    <div class="row">
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="name" class="form-label">Название проекта <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" id="name" name="name" value="{{ $project->name }}" required>
+                                                        </div>
+
+                                                        <div class="col-md-6 mb-3">
+                                                            <label for="phone" class="form-label">Телефон</label>
+                                                            <input type="text" class="form-control" id="phone" name="phone" value="{{ $project->phone }}">
+                                                        </div>
                                                     </div>
 
-                                                    <div class="col-md-6 mb-3">
-                                                        <label for="phone" class="form-label">Телефон</label>
-                                                        <input type="text" class="form-control" id="phone" name="phone" value="{{ $project->phone }}">
+                                                    <div class="mb-3">
+                                                        <label for="email" class="form-label">Email <span class="text-muted">(неизменяем)</span></label>
+                                                        <input type="email" class="form-control" id="email" value="{{ $project->email }}" disabled>
+                                                        <small class="text-muted">Email не может быть изменен</small>
                                                     </div>
-                                                </div>
 
-                                                <div class="mb-3">
-                                                    <label for="email" class="form-label">Email <span class="text-muted">(неизменяем)</span></label>
-                                                    <input type="email" class="form-control" id="email" value="{{ $project->email }}" disabled>
-                                                    <small class="text-muted">Email не может быть изменен</small>
-                                                </div>
+                                                    @if($project->website)
+                                                    <div class="mb-3">
+                                                        <label for="website" class="form-label">Сайт</label>
+                                                        <input type="url" class="form-control" id="website" value="{{ $project->website }}" disabled>
+                                                        <small class="text-muted">Сайт не может быть изменен</small>
+                                                    </div>
+                                                    @endif
 
-                                                @if($project->website)
-                                                <div class="mb-3">
-                                                    <label for="website" class="form-label">Сайт</label>
-                                                    <input type="url" class="form-control" id="website" value="{{ $project->website }}" disabled>
-                                                    <small class="text-muted">Сайт не может быть изменен</small>
-                                                </div>
-                                                @endif
+                                                    <div class="mb-3">
+                                                        <label for="address" class="form-label">Адрес</label>
+                                                        <textarea class="form-control" id="address" rows="2" disabled>{{ $project->address ?? 'Не указан' }}</textarea>
+                                                        <small class="text-muted">Адрес не может быть изменен</small>
+                                                    </div>
 
-                                                <div class="mb-3">
-                                                    <label for="address" class="form-label">Адрес</label>
-                                                    <textarea class="form-control" id="address" rows="2" disabled>{{ $project->address ?? 'Не указан' }}</textarea>
-                                                    <small class="text-muted">Адрес не может быть изменен</small>
-                                                </div>
-
-                                                <div class="d-grid">
-                                                    <button type="submit" class="btn btn-primary">
-                                                        <i class="fas fa-save me-2"></i>Сохранить изменения
-                                                    </button>
-                                                </div>
-                                            </form>
+                                                    <div class="d-grid">
+                                                        <button type="submit" class="btn btn-primary" id="profile-submit-btn">
+                                                            <i class="fas fa-save me-2"></i>Сохранить изменения
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -503,32 +505,7 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Инициализация вкладок Bootstrap
-    var triggerTabList = [].slice.call(document.querySelectorAll('#accountTabs button'))
-    triggerTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl)
-        
-        triggerEl.addEventListener('click', function (event) {
-            event.preventDefault()
-            tabTrigger.show()
-        })
-    })
-    
-    // Автоматическое переключение на вкладку по хешу в URL
-    if (window.location.hash) {
-        var hash = window.location.hash.substring(1);
-        var targetTab = document.querySelector('[data-bs-target="#' + hash + '"]');
-        if (targetTab) {
-            var tab = new bootstrap.Tab(targetTab);
-            tab.show();
-        }
-    }
-    
-    // Плавная анимация при переключении вкладок
-    $('#accountTabs button').on('shown.bs.tab', function (e) {
-        var target = $(e.target).attr('data-bs-target');
-        $(target).addClass('fade-in');
-    });
+    // Только обработка форм и уведомлений - НЕ трогаем вкладки Bootstrap!
     
     // Обработка форм
     $('form').on('submit', function() {
@@ -547,7 +524,99 @@ $(document).ready(function() {
         }, 3000);
     });
     
-    // Показываем сообщения об успехе
+    // Специальная обработка формы сброса пароля
+    $('#password-reset-form').on('submit', function(e) {
+        e.preventDefault();
+        
+        var $form = $(this);
+        var $btn = $('#password-submit-btn');
+        var originalText = $btn.html();
+        
+        // Показываем спиннер
+        $btn.html('<span class="spinner-border spinner-border-sm me-2"></span>Отправка...');
+        $btn.prop('disabled', true);
+        
+        // AJAX запрос
+        $.ajax({
+            url: '{{ route("landing.account.password.email") }}',
+            method: 'POST',
+            data: $form.serialize(),
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                // Скрываем форму и показываем сообщение об успехе
+                $('#password-form').hide();
+                $('#password-success-message').show();
+            },
+            error: function(xhr) {
+                // Показываем ошибку
+                var errorMessage = 'Произошла ошибка при отправке. Попробуйте еще раз.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                
+                // Показываем ошибку
+                showAlert('danger', errorMessage);
+                
+                // Восстанавливаем кнопку
+                $btn.html(originalText);
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+
+    // Специальная обработка формы обновления профиля
+    $('#profile-update-form').on('submit', function(e) {
+        e.preventDefault();
+        
+        var $form = $(this);
+        var $btn = $('#profile-submit-btn');
+        var originalText = $btn.html();
+        
+        // Показываем спиннер
+        $btn.html('<span class="spinner-border spinner-border-sm me-2"></span>Сохранение...');
+        $btn.prop('disabled', true);
+        
+        // AJAX запрос
+        $.ajax({
+            url: '{{ route("landing.account.profile.update") }}',
+            method: 'POST',
+            data: $form.serialize(),
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                // Показываем сообщение об успехе
+                $('#profile-success-message').show();
+                
+                // Скрываем сообщение через 3 секунды
+                setTimeout(function() {
+                    $('#profile-success-message').hide();
+                }, 3000);
+                
+                // Восстанавливаем кнопку
+                $btn.html(originalText);
+                $btn.prop('disabled', false);
+            },
+            error: function(xhr) {
+                // Показываем ошибку
+                var errorMessage = 'Произошла ошибка при сохранении. Попробуйте еще раз.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                
+                // Показываем ошибку
+                showAlert('danger', errorMessage);
+                
+                // Восстанавливаем кнопку
+                $btn.html(originalText);
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+    
+    // Показываем сообщения об успехе (только при загрузке страницы)
     @if(session('success'))
         showAlert('success', '{{ session("success") }}');
     @endif
@@ -574,25 +643,6 @@ function showAlert(type, message) {
         $('.alert').fadeOut();
     }, 5000);
 }
-
-// Добавляем CSS для анимации
-$('<style>')
-    .prop('type', 'text/css')
-    .html(`
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .tab-pane {
-            transition: all 0.3s ease;
-        }
-    `)
-    .appendTo('head');
 </script>
 @endpush
 @endsection

@@ -94,4 +94,35 @@ class SecurityController extends Controller
         // Можно авторизовать пользователя или просто показать сообщение
         return redirect('/login')->with('success', 'Email успешно изменён!');
     }
+
+    /**
+     * Сменить пароль пользователя
+     */
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+            'new_password_confirmation' => 'required'
+        ]);
+
+        $user = Auth::user();
+        
+        // Проверяем текущий пароль
+        if (!Hash::check($request->current_password, $user->password)) {
+            if ($request->ajax()) {
+                return response()->json(['errors' => ['current_password' => 'Неверный текущий пароль.']], 422);
+            }
+            return back()->withErrors(['current_password' => 'Неверный текущий пароль.']);
+        }
+
+        // Обновляем пароль
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Пароль успешно изменен.']);
+        }
+        return back()->with('success', 'Пароль успешно изменен.');
+    }
 }

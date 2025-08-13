@@ -25,8 +25,8 @@ class RedirectIfAuthenticated
                 if ($request->is('panel/*') || $request->is('panel')) {
                     return redirect('/panel');
                 }
-                // Если это клиентская часть — редирект на /
-                if ($request->is('login')) {
+                // Если это клиентская часть — редирект на dashboard
+                if ($request->is('login') || $request->is('password/*')) {
                     return redirect('/');
                 }
                 return redirect(RouteServiceProvider::HOME);
