@@ -30,7 +30,7 @@
             <div class="col-lg-3 col-md-6 mb-4">
                 <h5>О нас</h5>
                 <ul class="list-unstyled">
-                    <li><a href="{{ route('beautyflow.about') }}" class="text-muted text-decoration-none">О компании</a></li>
+    
                     <li><a href="#" class="text-muted text-decoration-none">Команда</a></li>
                     <li><a href="#" class="text-muted text-decoration-none">История</a></li>
                     <li><a href="#" class="text-muted text-decoration-none">Отзывы клиентов</a></li>

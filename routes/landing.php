@@ -29,9 +29,7 @@ Route::get('/features', function () {
     return view('landing.pages.features');
 })->name('beautyflow.features');
 
-Route::get('/about', function () {
-    return view('landing.pages.about');
-})->name('beautyflow.about');
+
 
 Route::get('/privacy', function () {
     return view('landing.pages.privacy');
@@ -41,9 +39,7 @@ Route::get('/terms', function () {
     return view('landing.pages.terms');
 })->name('beautyflow.terms');
 
-Route::get('/faq', function () {
-    return view('landing.pages.faq');
-})->name('beautyflow.faq');
+
 
 Route::get('/knowledge', function () {
     $articles = \App\Models\KnowledgeArticle::published()
