@@ -1060,6 +1060,7 @@ return [
     'wholesale' => 'Wholesale',
     'retail' => 'Retail',
     'employees' => 'Employees',
+    'personnel' => 'Personnel',
     'employees_analytics' => 'Employee Analytics',
     'expenses' => 'Expenses',
     

@@ -635,8 +635,8 @@
                         request()->routeIs('client.users.*') || 
                         request()->routeIs('salary.*') || 
                         request()->routeIs('work-schedules.*') ? 'true' : 'false' 
-                    }}" class="dropdown-toggle" title="Персонал">
-                        <i class="menu-icon fa fa-users-cog"></i>Персонал
+                    }}" class="dropdown-toggle" title="{{ __('messages.personnel') }}">
+                        <i class="menu-icon fa fa-users-cog"></i>{{ __('messages.personnel') }}
                     </a>
                     <ul id="personnelMenu" class="sub-menu children collapse {{ 
                         request()->routeIs('client.users.*') || 
@@ -645,37 +645,37 @@
                     }}">
                         <li class="{{ request()->routeIs('client.users.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('client.users', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.users.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="Сотрудники">
+                            <a href="{{ $hasAccess ? route('client.users.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.employees') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-user-tie"></i>
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Сотрудники</span>
+                                <span class="menu-label">{{ __('messages.employees') }}</span>
                                 
                             </a>
                         </li>
                         <li class="{{ request()->routeIs('salary.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('salary', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('salary.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="Зарплата">
+                            <a href="{{ $hasAccess ? route('salary.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.salary') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-money-bill-wave"></i>
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">Зарплата</span>
+                                <span class="menu-label">{{ __('messages.salary') }}</span>
                                 
                             </a>
                         </li>
                         <li class="{{ request()->routeIs('work-schedules.*') ? 'active' : '' }}">
                             @php $hasAccess = $isAdmin || in_array('work-schedules', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('work-schedules.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="График работы">
+                            <a href="{{ $hasAccess ? route('work-schedules.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.work_schedule') }}">
                                 @if($hasAccess)
                                     <i class="fa fa-calendar-alt"></i>
                                 @else
                                     <i class="fas fa-lock"></i>
                                 @endif
-                                <span class="menu-label">График работы</span>
+                                <span class="menu-label">{{ __('messages.work_schedule') }}</span>
                                 
                             </a>
                         </li>

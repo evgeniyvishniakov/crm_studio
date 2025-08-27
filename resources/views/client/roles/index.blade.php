@@ -232,10 +232,10 @@
                     <label>{{ __('messages.permissions') }}</label>
                     <div class="permissions-list">
                         @foreach($permissions as $perm)
-                            <label>
-                                <input type="checkbox" name="permissions[]" value="{{ $perm->name }}">
-                                <span>{{ __('messages.permission_' . str_replace(['-', '.'], '_', $perm->name)) }}</span>
-                            </label>
+                            @php $permId = 'perm_'.str_replace(['-', '.'], '_', $perm->name); @endphp
+                            <div class="mb-2">
+                                <x-switch name="permissions[]" :id="$permId" :value="$perm->name" :include-hidden="false" :label="e(__('messages.permission_' . str_replace(['-', '.'], '_', $perm->name)))" />
+                            </div>
                         @endforeach
                     </div>
                 </div>

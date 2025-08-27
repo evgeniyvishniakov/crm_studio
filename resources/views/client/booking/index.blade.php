@@ -31,13 +31,7 @@
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="booking_enabled" name="booking_enabled" 
-                                       {{ $bookingSettings->booking_enabled ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="booking_enabled">
-                                    <strong>{{ __('messages.enable_web_booking') }}</strong>
-                                </label>
-                            </div>
+                            <x-switch name="booking_enabled" :checked="$bookingSettings->booking_enabled" :id="'booking_enabled'" :label="'<strong>'.e(__('messages.enable_web_booking')).'</strong>'" />
                         </div>
                     </div>
                                          <div class="form-col">
@@ -84,24 +78,12 @@
                 <div class="form-row form-row--2col">
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="allow_same_day_booking" name="allow_same_day_booking" 
-                                       {{ $bookingSettings->allow_same_day_booking ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="allow_same_day_booking">
-                                    {{ __('messages.allow_same_day_booking') }}
-                                </label>
-                            </div>
+                            <x-switch name="allow_same_day_booking" :checked="$bookingSettings->allow_same_day_booking" :id="'allow_same_day_booking'" :label="e(__('messages.allow_same_day_booking'))" />
                         </div>
                     </div>
                     <div class="form-col">
                         <div class="form-group mb-3">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="require_confirmation" name="require_confirmation" 
-                                       {{ $bookingSettings->require_confirmation ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="require_confirmation">
-                                    {{ __('messages.require_confirmation') }}
-                                </label>
-                            </div>
+                            <x-switch name="require_confirmation" :checked="$bookingSettings->require_confirmation" :id="'require_confirmation'" :label="e(__('messages.require_confirmation'))" />
                         </div>
                     </div>
                 </div>
@@ -421,12 +403,7 @@
                 <input type="hidden" id="edit-user-id">
                 
                 <div class="form-group">
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="edit-is-working">
-                        <label class="custom-control-label" for="edit-is-working">
-                            <strong>{{ __('messages.working_day') }}</strong>
-                        </label>
-                    </div>
+                    <x-switch name="edit-is-working" :id="'edit-is-working'" :label="'<strong>'.e(__('messages.working_day')).'</strong>'" />
                 </div>
 
                 <div id="working-hours-fields">
@@ -498,12 +475,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="modal-is-active" name="is_active_for_booking" checked>
-                        <label class="custom-control-label" for="modal-is-active">
-                            {{ __('messages.active_for_web_booking') }}
-                        </label>
-                    </div>
+                    <x-switch name="is_active_for_booking" :id="'modal-is-active'" :checked="true" :label="e(__('messages.active_for_web_booking'))" />
                 </div>
                 
                 <div class="form-group">

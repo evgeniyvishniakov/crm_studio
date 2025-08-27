@@ -1181,6 +1181,7 @@ return [
     'wholesale' => 'Опт',
     'retail' => 'Роздріб',
     'employees' => 'Співробітники',
+    'personnel' => 'Персонал',
     'employees_analytics' => 'Аналітика по співробітниках',
     'expenses' => 'Витрати',
     

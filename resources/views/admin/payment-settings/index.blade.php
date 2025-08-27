@@ -24,9 +24,7 @@
                     <div class="form-check form-switch">
                         <form method="POST" action="{{ route('admin.payment-settings.toggle', 'liqpay') }}" class="d-inline">
                             @csrf
-                            <input class="form-check-input" type="checkbox" 
-                                   onchange="this.form.submit()" 
-                                   {{ $liqpay && $liqpay->is_active ? 'checked' : '' }}>
+                            <x-switch name="is_active" :checked="$liqpay && $liqpay->is_active" :id="'liqpay_is_active'" />
                         </form>
                     </div>
                 </div>
@@ -66,9 +64,7 @@
                     <div class="form-check form-switch">
                         <form method="POST" action="{{ route('admin.payment-settings.toggle', 'stripe') }}" class="d-inline">
                             @csrf
-                            <input class="form-check-input" type="checkbox" 
-                                   onchange="this.form.submit()" 
-                                   {{ $stripe && $stripe->is_active ? 'checked' : '' }}>
+                            <x-switch name="is_active" :checked="$stripe && $stripe->is_active" :id="'stripe_is_active'" />
                         </form>
                     </div>
                 </div>
@@ -90,14 +86,7 @@
                                    placeholder="Введите секретный ключ Stripe">
                         </div>
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="stripe_sandbox" 
-                                       name="stripe_sandbox" 
-                                       {{ $stripe && ($stripe->settings['sandbox'] ?? false) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="stripe_sandbox">
-                                    Тестовый режим (Sandbox)
-                                </label>
-                            </div>
+                            <x-switch name="stripe_sandbox" :checked="$stripe && ($stripe->settings['sandbox'] ?? false)" :id="'stripe_sandbox'" :label="'Тестовый режим (Sandbox)'" />
                         </div>
                         <button type="submit" class="btn btn-success">
                             <i class="fas fa-save me-2"></i>Сохранить настройки Stripe
@@ -120,9 +109,7 @@
                     <div class="form-check form-switch">
                         <form method="POST" action="{{ route('admin.payment-settings.toggle', 'paypal') }}" class="d-inline">
                             @csrf
-                            <input class="form-check-input" type="checkbox" 
-                                   onchange="this.form.submit()" 
-                                   {{ $paypal && $paypal->is_active ? 'checked' : '' }}>
+                            <x-switch name="is_active" :checked="$paypal && $paypal->is_active" :id="'paypal_is_active'" />
                         </form>
                     </div>
                 </div>
@@ -144,14 +131,7 @@
                                    placeholder="Введите Secret PayPal">
                         </div>
                         <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="paypal_sandbox" 
-                                       name="paypal_sandbox" 
-                                       {{ $paypal && ($paypal->settings['sandbox'] ?? false) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="paypal_sandbox">
-                                    Тестовый режим (Sandbox)
-                                </label>
-                            </div>
+                            <x-switch name="paypal_sandbox" :checked="$paypal && ($paypal->settings['sandbox'] ?? false)" :id="'paypal_sandbox'" :label="'Тестовый режим (Sandbox)'" />
                         </div>
                         <button type="submit" class="btn btn-info">
                             <i class="fas fa-save me-2"></i>Сохранить настройки PayPal
