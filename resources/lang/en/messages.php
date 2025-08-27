@@ -1343,6 +1343,10 @@ return [
     'permission_settings_manage' => 'General Settings',
     'permission_support_manage' => 'Support',
     'permission_notifications_manage' => 'Notifications',
+    'permission_booking' => 'Web Booking',
+    'permission_salary' => 'Salary',
+    'permission_work_schedules' => 'Work Schedules',
+    'permission_subscriptions' => 'Subscriptions',
     
     // Role table headers
     'table_name' => 'Name',

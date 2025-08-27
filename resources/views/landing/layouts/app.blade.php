@@ -4,23 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Trimora - Система управления салоном красоты')</title>
-    <meta name="description" content="@yield('description', 'Trimora - профессиональная система управления салоном красоты')">
-    <meta name="keywords" content="Trimora, салон красоты, управление, записи, клиенты, аналитика">
-    <meta name="author" content="Trimora">
-    <meta property="og:title" content="@yield('title', 'Trimora - Система управления салоном красоты')">
-    <meta property="og:description" content="@yield('description', 'Trimora - профессиональная система управления салоном красоты')">
+    <title>@yield('title', \App\Helpers\SystemHelper::getSiteName() . ' - Система управления')</title>
+    <meta name="description" content="@yield('description', \App\Helpers\SystemHelper::getSiteDescription())">
+    <meta name="keywords" content="CRM, управление, клиенты, записи, аналитика">
+    <meta name="author" content="{{\App\Helpers\SystemHelper::getSiteName()}}">
+    <meta property="og:title" content="@yield('title', \App\Helpers\SystemHelper::getSiteName() . ' - Система управления')">
+    <meta property="og:description" content="@yield('description', \App\Helpers\SystemHelper::getSiteDescription())">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request()->url() }}">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('title', 'Trimora - Система управления салоном красоты')">
-    <meta name="twitter:description" content="@yield('description', 'Trimora - профессиональная система управления салоном красоты')">
+    <meta name="twitter:title" content="@yield('title', \App\Helpers\SystemHelper::getSiteName() . ' - Система управления')">
+    <meta name="twitter:description" content="@yield('description', \App\Helpers\SystemHelper::getSiteDescription())">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    @if(\App\Helpers\SystemHelper::hasFavicon())
+        <link rel="icon" type="image/x-icon" href="{{ \App\Helpers\SystemHelper::getFavicon() }}">
+    @else
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    @endif
     
     <!-- Preload critical resources -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">

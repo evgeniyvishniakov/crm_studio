@@ -10,6 +10,19 @@ class Subscription extends Model
 {
     use HasFactory;
 
+    // Статусы подписок
+    const STATUS_TRIAL = 'trial';
+    const STATUS_ACTIVE = 'active';
+    const STATUS_EXPIRED = 'expired';
+    const STATUS_CANCELLED = 'cancelled';
+    const STATUS_PENDING = 'pending';
+
+    // Периоды подписок
+    const PERIOD_MONTH = 'month';
+    const PERIOD_QUARTERLY = 'quarterly';
+    const PERIOD_SEMIANNUAL = 'semiannual';
+    const PERIOD_YEARLY = 'yearly';
+
     protected $fillable = [
         'project_id',
         'admin_user_id',
@@ -44,7 +57,7 @@ class Subscription extends Model
      */
     public function project()
     {
-        return $this->belongsTo(\App\Models\Admin\Project::class);
+        return $this->belongsTo(\App\Models\Admin\Project::class, 'project_id');
     }
 
     /**
@@ -52,7 +65,7 @@ class Subscription extends Model
      */
     public function adminUser()
     {
-        return $this->belongsTo(\App\Models\Admin\AdminUser::class);
+        return $this->belongsTo(\App\Models\Admin\User::class);
     }
 
     /**

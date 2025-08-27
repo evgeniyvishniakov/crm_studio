@@ -5,8 +5,12 @@
 <header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="{{ route('beautyflow.index') }}">
-            <i class="fas fa-spa text-primary"></i>
-            <span class="ms-2 fw-bold">Trimora</span>
+            @if(\App\Helpers\SystemHelper::hasLandingLogo())
+                <img src="{{ \App\Helpers\SystemHelper::getLandingLogo() }}" alt="{{ \App\Helpers\SystemHelper::getSiteName() }}" class="me-2" style="max-height: 40px;">
+            @else
+                <i class="fas fa-spa text-primary"></i>
+            @endif
+            <span class="ms-2 fw-bold">{{ \App\Helpers\SystemHelper::getSiteName() }}</span>
         </a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Переключить навигацию">

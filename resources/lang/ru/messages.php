@@ -1519,6 +1519,10 @@ return [
     'permission_settings_manage' => 'Общие настройки',
     'permission_support_manage' => 'Поддержка',
     'permission_notifications_manage' => 'Уведомления',
+    'permission_booking' => 'Онлайн-запись (интеграция)',
+    'permission_salary' => 'Зарплата',
+    'permission_work_schedules' => 'Графики работы',
+    'permission_subscriptions' => 'Подписки',
     
     // Заголовки таблицы ролей
     'table_name' => 'Название',

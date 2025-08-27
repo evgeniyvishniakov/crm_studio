@@ -49,9 +49,12 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     })->name('roles.index');
     
     // Настройки системы
-    Route::get('/settings', function () {
-        return view('admin.settings.index');
-    })->name('settings.index');
+    Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    Route::delete('/settings/image/{type}', [\App\Http\Controllers\Admin\SettingsController::class, 'removeImage'])->name('settings.remove-image');
+    Route::get('/settings/test', function () {
+        return view('admin.settings.test');
+    })->name('settings.test');
     
     // Email шаблоны
     Route::get('/email-templates', function () {
@@ -97,6 +100,13 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     // Управление тарифами
     Route::resource('plans', \App\Http\Controllers\Admin\PlanController::class);
     Route::post('/plans/{plan}/update-prices', [\App\Http\Controllers\Admin\PlanController::class, 'updatePrices'])->name('plans.update-prices');
+
+    // Настройки платежных систем
+    Route::get('/payment-settings', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'index'])->name('payment-settings.index');
+    Route::post('/payment-settings/liqpay', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'updateLiqPay'])->name('payment-settings.liqpay');
+    Route::post('/payment-settings/stripe', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'updateStripe'])->name('payment-settings.stripe');
+    Route::post('/payment-settings/paypal', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'updatePayPal'])->name('payment-settings.paypal');
+    Route::post('/payment-settings/{method}/toggle', [\App\Http\Controllers\Admin\PaymentSettingController::class, 'toggleActive'])->name('payment-settings.toggle');
 
     // Управление валютами
     Route::get('/currencies', [\App\Http\Controllers\Admin\CurrencyController::class, 'index'])->name('currencies.index');

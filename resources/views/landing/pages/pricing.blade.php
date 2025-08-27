@@ -101,8 +101,8 @@
                 <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}" id="{{ $plan->slug }}" role="tabpanel">
                     <div class="row justify-content-center">
                         <!-- Месяц -->
-                        <div class="col-lg-3 col-md-6 mb-4">
-                                                    <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] ?? 'border-success' }} border-2">
+                                                <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] ?? 'border-success' }} border-2" data-plan-id="{{ $plan->id }}">
                             <div class="position-absolute top-0 end-0 m-3">
                                 <span class="badge {{ $planColors[$plan->slug]['badge'] ?? 'bg-success' }}" style="font-size: 0.7rem;">Базовый</span>
                             </div>
@@ -143,7 +143,7 @@
 
                         <!-- 3 месяца -->
                         <div class="col-lg-3 col-md-6 mb-4">
-                            <div class="card h-100 position-relative {{ $planColors[$plan->slug]['border'] }} border-3 shadow-lg" style="transform: scale(1.05); z-index: 10;">
+                            <div class="card h-100 position-relative {{ $planColors[$plan->slug]['border'] }} border-3 shadow-lg" style="transform: scale(1.05); z-index: 10;" data-plan-id="{{ $plan->id }}">
                                 <div class="position-absolute top-0 start-0 m-3">
                                     <span class="badge {{ $planColors[$plan->slug]['badge'] }} px-2 py-1" style="font-size: 0.7rem; font-weight: 700;">
                                         <i class="fas fa-star me-1"></i>ТОП
@@ -190,7 +190,7 @@
 
                         <!-- 6 месяцев -->
                         <div class="col-lg-3 col-md-6 mb-4">
-                            <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] }} border-2">
+                            <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] }} border-2" data-plan-id="{{ $plan->id }}">
                                 <div class="position-absolute top-0 end-0 m-3">
                                     <span class="badge {{ $planColors[$plan->slug]['badge'] }}" style="font-size: 0.7rem;">Экономия 15%</span>
                                 </div>
@@ -232,7 +232,7 @@
 
                         <!-- Год -->
                         <div class="col-lg-3 col-md-6 mb-4">
-                            <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] }} border-2">
+                            <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] }} border-2" data-plan-id="{{ $plan->id }}">
                                 <div class="position-absolute top-0 end-0 m-3">
                                     <span class="badge {{ $planColors[$plan->slug]['badge'] }}" style="font-size: 0.7rem;">Экономия 25%</span>
                                 </div>
@@ -456,6 +456,31 @@ document.addEventListener('DOMContentLoaded', function() {
             var periodBadge = document.getElementById('selectedPlanPeriod');
             periodBadge.className = 'badge me-3 fs-6 px-3 py-2 ' + planColor;
             
+            // Устанавливаем атрибуты для кнопки "Перейти к оплате"
+            var proceedButton = document.getElementById('proceedToPayment');
+            var cardPlanId = card.getAttribute('data-plan-id');
+            proceedButton.setAttribute('data-plan-id', cardPlanId);
+            
+            // Определяем период по тексту на карточке
+            var periodText = planPeriod.trim();
+            var period = 'month'; // по умолчанию
+            
+            if (periodText.includes('3 месяца') || periodText.includes('3 мес')) {
+                period = 'quarterly';
+            } else if (periodText.includes('6 месяцев') || periodText.includes('6 мес')) {
+                period = 'semiannual';
+            } else if (periodText.includes('год') || periodText.includes('12 месяцев')) {
+                period = 'yearly';
+            }
+            
+            proceedButton.setAttribute('data-period', period);
+            
+            console.log('Modal data set:', { 
+                planId: cardPlanId, 
+                period: period, 
+                periodText: periodText 
+            });
+            
             // Показываем модальное окно
             var modal = new bootstrap.Modal(document.getElementById('planSelectionModal'));
             modal.show();
@@ -464,9 +489,44 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Обработчик для кнопки "Перейти к оплате"
     document.getElementById('proceedToPayment').addEventListener('click', function() {
-        // Здесь будет логика перехода к оплате
-        console.log('Переход к оплате...');
-        alert('Здесь будет переход к платежной системе');
+        var planId = this.getAttribute('data-plan-id');
+        var period = this.getAttribute('data-period');
+        
+        console.log('Payment button clicked:', { planId: planId, period: period });
+        
+        if (planId && period) {
+            // Создаем форму для отправки
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("landing.payment.create") }}';
+            
+            // Добавляем CSRF токен
+            var csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            // Добавляем данные плана
+            var planIdInput = document.createElement('input');
+            planIdInput.type = 'hidden';
+            planIdInput.name = 'plan_id';
+            planIdInput.value = planId;
+            form.appendChild(planIdInput);
+            
+            // Добавляем период
+            var periodInput = document.createElement('input');
+            periodInput.type = 'hidden';
+            periodInput.name = 'period';
+            periodInput.value = period;
+            form.appendChild(periodInput);
+            
+            // Отправляем форму
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            alert('Ошибка: не удалось определить план или период');
+        }
     });
 });
 </script>

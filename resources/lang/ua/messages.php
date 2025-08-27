@@ -1463,6 +1463,10 @@ return [
     'permission_settings_manage' => 'Загальні налаштування',
     'permission_support_manage' => 'Підтримка',
     'permission_notifications_manage' => 'Сповіщення',
+    'permission_booking' => 'Веб-запис',
+    'permission_salary' => 'Заробітна плата',
+    'permission_work_schedules' => 'Графіки роботи',
+    'permission_subscriptions' => 'Підписки',
     
     // Заголовки таблиці ролей
     'table_name' => 'Назва',

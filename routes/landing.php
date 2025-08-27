@@ -79,4 +79,13 @@ Route::middleware('landing.auth')->group(function () {
     Route::post('/account/password', [\App\Http\Controllers\Landing\AccountController::class, 'updatePassword'])->name('landing.account.password.update');
     Route::get('/account/crm', [\App\Http\Controllers\Landing\AccountController::class, 'goToCrm'])->name('landing.account.crm');
     Route::get('/account/logout', [\App\Http\Controllers\Landing\AccountController::class, 'logout'])->name('landing.account.logout');
+});
+
+// Маршруты для платежей
+Route::middleware('landing.auth')->group(function () {
+    Route::get('/payment/form', [\App\Http\Controllers\Landing\PaymentController::class, 'showPaymentForm'])->name('landing.payment.form');
+    Route::post('/payment/create', [\App\Http\Controllers\Landing\PaymentController::class, 'createPayment'])->name('landing.payment.create');
+    Route::get('/payment/success', [\App\Http\Controllers\Landing\PaymentController::class, 'paymentSuccess'])->name('landing.payment.success');
+    Route::get('/payment/failure', [\App\Http\Controllers\Landing\PaymentController::class, 'paymentFailure'])->name('landing.payment.failure');
+    Route::post('/payment/webhook', [\App\Http\Controllers\Landing\PaymentController::class, 'webhook'])->name('landing.payment.webhook');
 }); 

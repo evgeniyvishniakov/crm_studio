@@ -16,24 +16,37 @@
     </div>
     <div class="sidebar-content p-3" style="max-height: calc(100vh - 80px); overflow-y: auto;">
         <ul class="nav flex-column">
+            <!-- Основные разделы -->
             <li class="nav-item mb-2">
                 <a href="{{ route('admin.dashboard') }}" class="nav-link text-white {{ request()->routeIs('admin.dashboard') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-tachometer-alt me-2"></i>
                     Панель управления
                 </a>
             </li>
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.projects.index') }}" class="nav-link text-white {{ request()->routeIs('admin.projects.index') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-building me-2"></i>
-                    Проекты
-                </a>
-            </li>
+            
+            <!-- Управление пользователями -->
             <li class="nav-item mb-2">
                 <a href="{{ route('admin.users.index') }}" class="nav-link text-white {{ request()->routeIs('admin.users.index') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-users me-2"></i>
                     Пользователи
                 </a>
             </li>
+            <li class="nav-item mb-2">
+                <a href="{{ route('admin.roles.index') }}" class="nav-link text-white {{ request()->routeIs('admin.roles.index') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-user-shield me-2"></i>
+                    Роли и права
+                </a>
+            </li>
+            
+            <!-- Управление проектами -->
+            <li class="nav-item mb-2">
+                <a href="{{ route('admin.projects.index') }}" class="nav-link text-white {{ request()->routeIs('admin.projects.index') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-building me-2"></i>
+                    Проекты
+                </a>
+            </li>
+            
+            <!-- Биллинг и подписки -->
             <li class="nav-item mb-2">
                 <a href="{{ route('admin.subscriptions.index') }}" class="nav-link text-white {{ request()->routeIs('admin.subscriptions.*') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-credit-card me-2"></i>
@@ -47,15 +60,9 @@
                 </a>
             </li>
             <li class="nav-item mb-2">
-                <a href="{{ route('admin.roles.index') }}" class="nav-link text-white {{ request()->routeIs('admin.roles.index') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-user-shield me-2"></i>
-                    Роли и права
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.settings.index') }}" class="nav-link text-white {{ request()->routeIs('admin.settings.index') ? 'active bg-primary' : '' }}">
+                <a href="{{ route('admin.payment-settings.index') }}" class="nav-link text-white {{ request()->routeIs('admin.payment-settings.*') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-cog me-2"></i>
-                    Настройки
+                    Настройки платежей
                 </a>
             </li>
             <li class="nav-item mb-2">
@@ -64,10 +71,12 @@
                     Валюты
                 </a>
             </li>
+            
+            <!-- Системные настройки -->
             <li class="nav-item mb-2">
-                <a href="{{ route('admin.backups.index') }}" class="nav-link text-white {{ request()->routeIs('admin.backups.*') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-database me-2"></i>
-                    Резервные копии
+                <a href="{{ route('admin.settings.index') }}" class="nav-link text-white {{ request()->routeIs('admin.settings.index') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-cog me-2"></i>
+                    Настройки
                 </a>
             </li>
             <li class="nav-item mb-2">
@@ -88,12 +97,8 @@
                     Безопасность
                 </a>
             </li>
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.logs.index') }}" class="nav-link text-white {{ request()->routeIs('admin.logs.index') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-file-alt me-2"></i>
-                    Логи системы
-                </a>
-            </li>
+            
+            <!-- Мониторинг и поддержка -->
             <li class="nav-item mb-2">
                 <a href="{{ route('admin.tickets.index') }}" class="nav-link text-white {{ request()->routeIs('admin.tickets.index') ? 'active bg-primary' : '' }}">
                     <i class="fa fa-comments me-2"></i>
@@ -113,6 +118,22 @@
                 </a>
             </li>
             <li class="nav-item mb-2">
+                <a href="{{ route('admin.logs.index') }}" class="nav-link text-white {{ request()->routeIs('admin.logs.index') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-file-alt me-2"></i>
+                    Логи системы
+                </a>
+            </li>
+            
+            <!-- Резервное копирование -->
+            <li class="nav-item mb-2">
+                <a href="{{ route('admin.backups.index') }}" class="nav-link text-white {{ request()->routeIs('admin.backups.*') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-database me-2"></i>
+                    Резервные копии
+                </a>
+            </li>
+            
+            <!-- База знаний -->
+            <li class="nav-item mb-2">
                 <a href="{{ route('admin.knowledge.index') }}" class="nav-link text-white {{ request()->routeIs('admin.knowledge.*') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-book me-2"></i>
                     База знаний (Админ)
@@ -124,6 +145,8 @@
                     База знаний (Публичная)
                 </a>
             </li>
+            
+            <!-- Внешние ссылки -->
             <li class="nav-item mb-2">
                 <a href="{{ route('home') }}" class="nav-link text-muted" target="_blank">
                     <i class="fas fa-home me-2"></i>
@@ -159,5 +182,24 @@
     opacity: 0.7;
 }
 
+/* Стили для группировки меню */
+.nav-item {
+    position: relative;
+}
 
+.nav-item:not(:last-child) {
+    margin-bottom: 0.5rem;
+}
+
+/* Добавляем небольшие отступы между группами */
+.nav-item:nth-child(3),
+.nav-item:nth-child(6),
+.nav-item:nth-child(10),
+.nav-item:nth-child(15),
+.nav-item:nth-child(18),
+.nav-item:nth-child(21) {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
 </style> 
