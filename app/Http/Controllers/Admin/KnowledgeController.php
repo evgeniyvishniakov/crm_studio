@@ -211,8 +211,9 @@ class KnowledgeController extends Controller
      */
     public function show(string $id)
     {
-        $article = KnowledgeArticle::with(['translations.language', 'steps.translations.language', 'tips.translations.language'])->findOrFail($id);
+        $article = KnowledgeArticle::with(['steps', 'tips'])->findOrFail($id);
         $categories = $this->getStandardCategories();
+        
         return view('admin.knowledge.show', compact('article', 'categories'));
     }
 
@@ -310,7 +311,7 @@ class KnowledgeController extends Controller
         $editingLanguage = $request->input('editing_language', app()->getLocale());
         
         // Проверяем, редактируем ли мы перевод или основную статью
-        $isEditingTranslation = $request->input('is_editing_translation', false);
+        $isEditingTranslation = $request->boolean('is_editing_translation', false);
         
         if (!$isEditingTranslation) {
             // Если редактируем основную статью, НЕ обновляем переводы
@@ -395,6 +396,14 @@ class KnowledgeController extends Controller
             // Получаем существующие советы для сохранения переводов
             $existingTips = $article->tips()->with('translations')->get()->keyBy('sort_order');
             
+            // Логируем для отладки
+            \Log::info('Tips Update Debug', [
+                'article_id' => $id,
+                'request_tips' => $request->tips,
+                'existing_tips_count' => $existingTips->count(),
+                'existing_tips' => $existingTips->toArray()
+            ]);
+            
             // Обновляем или создаем советы
             foreach ($request->tips as $index => $tip) {
                 if (!empty($tip['content'])) {
@@ -436,8 +445,34 @@ class KnowledgeController extends Controller
             }
             
             // Удаляем советы, которых больше нет в форме
-            $usedTipOrders = collect($request->tips)->keys()->map(function($key) { return $key + 1; });
-            $article->tips()->whereNotIn('sort_order', $usedTipOrders)->delete();
+            $usedTipOrders = [];
+            if (!empty($request->tips)) {
+                $usedTipOrders = collect($request->tips)->keys()->map(function($key) { return $key + 1; });
+            }
+            
+            // Логируем для отладки
+            \Log::info('Tips Delete Debug', [
+                'article_id' => $id,
+                'used_tip_orders' => $usedTipOrders,
+                'tips_to_delete_count' => $article->tips()->whereNotIn('sort_order', $usedTipOrders)->count()
+            ]);
+            
+            // Удаляем советы, которых нет в форме (включая случай, когда форма пустая)
+            $deletedCount = $article->tips()->whereNotIn('sort_order', $usedTipOrders)->delete();
+            
+            \Log::info('Tips Delete Result', [
+                'article_id' => $id,
+                'deleted_count' => $deletedCount
+            ]);
+        } else {
+            // Логируем, если поле tips отсутствует
+            \Log::info('Tips Field Missing', [
+                'article_id' => $id,
+                'has_tips' => $request->has('tips'),
+                'tips_is_array' => is_array($request->tips),
+                'is_editing_translation' => $isEditingTranslation,
+                'request_all' => $request->all()
+            ]);
         }
 
         return redirect()->route('admin.knowledge.index')
