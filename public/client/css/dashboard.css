@@ -65,6 +65,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    text-align: left;
 }
 
 .stat-icon {
@@ -87,6 +88,7 @@ body {
     margin: 0 0 0.3rem 0;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    text-align: left;
 }
 
 .stat-value {
@@ -101,6 +103,7 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: left;
 }
 
 .stat-value.animated {
@@ -114,6 +117,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.2rem;
+    text-align: left;
 }
 
 .profit-card { --card-color: #10b981; --card-color-light: #34d399; }
