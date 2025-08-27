@@ -173,13 +173,13 @@
                                                         if ($count === 0) {
                                                             echo __('messages.no_appointments');
                                                         } elseif ($lastTwoDigits >= 11 && $lastTwoDigits <= 14) {
-                                                            echo $count . ' ' . __('messages.appointments_plural');
+                                                            echo $count . ' ' . __('messages.appointments_plural_word');
                                                         } elseif ($lastDigit === 1) {
-                                                            echo $count . ' ' . __('messages.appointment');
+                                                            echo $count . ' ' . __('messages.appointment_word');
                                                         } elseif ($lastDigit >= 2 && $lastDigit <= 4) {
-                                                            echo $count . ' ' . __('messages.appointments');
+                                                            echo $count . ' ' . __('messages.appointments_word');
                                                         } else {
-                                                            echo $count . ' ' . __('messages.appointments_plural');
+                                                            echo $count . ' ' . __('messages.appointments_plural_word');
                                                         }
                                                     @endphp
                                                 </span>

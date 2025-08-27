@@ -2272,10 +2272,10 @@ return [
     'error_start_date_after_end' => 'Дата начала не может быть позже даты окончания',
     'warning' => 'Внимание',
     'action_cannot_be_undone' => 'Это действие нельзя отменить.',
-    // Склонения для записей
-    'appointment' => 'запись',
-    'appointments' => 'записи',
-    'appointments_plural' => 'записей',
+    // Склонения для записей (уникальные ключи для избежания конфликта с меню)
+    'appointment_word' => 'запись',
+    'appointments_word' => 'записи',
+    'appointments_plural_word' => 'записей',
     'no_appointments' => 'Без записей',
     'waiting' => 'В ожидании',
     'hours_free' => 'ч свободно',

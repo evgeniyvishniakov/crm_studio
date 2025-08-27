@@ -2246,10 +2246,10 @@ return [
     'records_count' => 'Кількість записів',
     'free_hours' => 'Вільні години',
     
-    // Склонення для записів
-    'appointment' => 'запис',
-    'appointments' => 'записи',
-    'appointments_plural' => 'записів',
+    // Склонення для записів (уникальные ключи)
+    'appointment_word' => 'запис',
+    'appointments_word' => 'записи',
+    'appointments_plural_word' => 'записів',
     'no_appointments' => 'Без записів',
     'waiting' => 'В очікуванні',
     'hours_free' => 'год вільно',
