@@ -406,6 +406,11 @@
     border-collapse: collapse;
 }
 
+/* Скрываем мобильные карточки на десктопе */
+.products-cards-mobile {
+    display: none;
+}
+
 .clients-table thead,
 .products-table thead,
 .warehouse-table thead,

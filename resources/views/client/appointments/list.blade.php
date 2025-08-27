@@ -1768,20 +1768,7 @@
         function renderProductsList(sales) {
             if (!sales || sales.length === 0) return '<p>{{ __('messages.products_not_added') }}</p>';
 
-            return `
-                <table class="products-table">
-                    <thead>
-                        <tr>
-                            <th>{{ __('messages.product') }}</th>
-                            <th>{{ __('messages.quantity') }}</th>
-                            <th>{{ __('messages.retail_price') }}</th>
-                            <th>{{ __('messages.wholesale_price') }}</th>
-                            <th>{{ __('messages.sum') }}</th>
-                            <th>{{ __('messages.actions') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${sales.map((sale, index) => {
+            const tableRows = sales.map((sale, index) => {
                 const total = sale.quantity * sale.price;
                 return `
                             <tr data-index="${index}">
@@ -1799,11 +1786,68 @@
                                         </svg>
                                     </button>
                                 </td>
-                            </tr>
-                            `;
-            }).join('')}
+                            </tr>`;
+            }).join('');
+
+            const mobileCards = sales.map((sale, index) => {
+                const total = sale.quantity * sale.price;
+                return `
+                    <div class="product-card-mobile" data-index="${index}">
+                        <div class="product-header">
+                            <div class="product-name">${escapeHtml(sale.name)}</div>
+                            <div class="product-actions">
+                                <button class="btn-delete btn-delete-product"
+                                        data-product-id="${sale.product_id}"
+                                        title="Удалить">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                            </div>
+                        </div>
+                        <div class="product-details">
+                            <div class="detail-item">
+                                <span class="detail-label">{{ __('messages.quantity') }}</span>
+                                <span class="detail-value">${sale.quantity}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">{{ __('messages.retail_price') }}</span>
+                                <span class="detail-value currency-amount" data-amount="${sale.price}">${formatPrice(sale.price)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">{{ __('messages.wholesale_price') }}</span>
+                                <span class="detail-value currency-amount" data-amount="${sale.purchase_price}">${formatPrice(sale.purchase_price)}</span>
+                            </div>
+                        </div>
+                        <div class="product-total">
+                            <span class="detail-label">{{ __('messages.sum') }}:</span>
+                            <span class="detail-value currency-amount" data-amount="${total}">${formatPrice(total)}</span>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            return `
+                <!-- Десктопная таблица -->
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>{{ __('messages.product') }}</th>
+                            <th>{{ __('messages.quantity') }}</th>
+                            <th>{{ __('messages.retail_price') }}</th>
+                            <th>{{ __('messages.wholesale_price') }}</th>
+                            <th>{{ __('messages.sum') }}</th>
+                            <th>{{ __('messages.actions') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
                     </tbody>
-                </table>`;
+                </table>
+                
+                <!-- Мобильные карточки -->
+                <div class="products-cards-mobile">
+                    ${mobileCards}
+                </div>`;
         }
 
 

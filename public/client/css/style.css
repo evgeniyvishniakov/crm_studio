@@ -346,7 +346,7 @@ Googel Fonts  */
   transition: all 0.3s ease; }
 
 body {
-  display: table;
+  display: block;
   font-family: "Open Sans", sans-serif;
   font-size: 16px;
   width: 100%; }
@@ -2501,11 +2501,33 @@ footer.site-footer {
         -ms-flex: none;
             flex: none; } }
 @media (max-width: 768px) {
+  html {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    height: 100%;
+  }
+  
+  body {
+    display: block !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    height: auto;
+    min-height: 100%;
+    /* Скрываем полоску скролла на мобильных */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  
+  /* Скрываем полоску скролла в WebKit браузерах (Chrome, Safari, iOS) */
+  body::-webkit-scrollbar {
+    display: none;
+  }
   
   .navbar {
     height: auto;
     min-height: auto;
-    overflow: visible; }
+    overflow: visible;
+    -webkit-overflow-scrolling: touch; }
     .navbar .navbar-nav li.menu-item-has-children > a:before {
       display: block !important; }
     .navbar .main-menu {
@@ -2596,10 +2618,11 @@ footer.site-footer {
     margin-top: 0; }
 
   #left-panel {
-    height: auto;
-    min-height: 100vh;
-    max-height: none;
-    overflow: visible;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important;
     display: none !important;
     flex-direction: column;
     position: fixed;
@@ -2628,6 +2651,8 @@ footer.site-footer {
     height: auto;
     max-height: none;
     overflow-y: visible;
+    padding-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
   }
     #left-panel .navbar .navbar-nav li > a {
       max-width: inherit;
@@ -2636,6 +2661,12 @@ footer.site-footer {
         width: 55px;
         text-align: left;
         font-size: 14px; }
+        
+    #left-panel .navbar .navbar-nav {
+        overflow: visible !important;
+        padding-bottom: 20px;
+        height: auto !important;
+    }
     #left-panel .navbar .navbar-nav li.menu-item-has-children.show .sub-menu {
       position: static !important;
       padding-left: 50px;
@@ -2653,6 +2684,41 @@ footer.site-footer {
       overflow: visible !important;
       width: 100% !important;
       float: none !important; }
+
+  /* Стили для модальных окон на мобильных устройствах */
+  .modal {
+    overflow: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .modal-content {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    max-height: 90vh;
+    -webkit-overflow-scrolling: touch;
+    /* Скрываем полоску скролла на мобильных */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  
+  /* Скрываем полоску скролла в WebKit браузерах (Chrome, Safari, iOS) */
+  .modal-content::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .modal-body {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(90vh - 120px);
+    /* Скрываем полоску скролла на мобильных */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  
+  /* Скрываем полоску скролла в WebKit браузерах (Chrome, Safari, iOS) */
+  .modal-body::-webkit-scrollbar {
+    display: none;
+  }
 
   .orders {
     overflow: hidden; }
