@@ -1059,9 +1059,14 @@
     document.addEventListener('DOMContentLoaded', function() {
         if (document.getElementById('dashboardCalendar')) {
             const calendarEl = document.getElementById('dashboardCalendar');
+            const fcLocale = (function(){
+                const l = '{{ app()->getLocale() }}';
+                if (l === 'ua') return 'uk';
+                return l || 'en';
+            })();
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                locale: '{{ app()->getLocale() }}',
+                locale: fcLocale,
                 height: 'auto',
                 firstDay: 1,
                 headerToolbar: false,

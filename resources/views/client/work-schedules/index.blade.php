@@ -625,8 +625,9 @@ function updateWeekDisplay() {
         endOfWeek.setDate(startOfWeek.getDate() + 6); // Воскресенье
 
     
-    const startStr = startOfWeek.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
-    const endStr = endOfWeek.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const localeTag = (function(){ const l='{{ app()->getLocale() }}'; if(l==='ua') return 'uk-UA'; if(l==='en') return 'en-US'; if(l==='ru') return 'ru-RU'; return l; })();
+    const startStr = startOfWeek.toLocaleDateString(localeTag, { day: '2-digit', month: '2-digit' });
+    const endStr = endOfWeek.toLocaleDateString(localeTag, { day: '2-digit', month: '2-digit', year: 'numeric' });
     
     document.getElementById('current-week-dates').textContent = `${startStr} - ${endStr}`;
 }
@@ -1251,7 +1252,8 @@ function renderTimeOffsTable(timeOffs) {
 
 function formatDate(dateString) {
     try {
-        return new Date(dateString).toLocaleDateString('ru-RU');
+        const localeTag = (function(){ const l='{{ app()->getLocale() }}'; if(l==='ua') return 'uk-UA'; if(l==='en') return 'en-US'; if(l==='ru') return 'ru-RU'; return l; })();
+        return new Date(dateString).toLocaleDateString(localeTag);
     } catch (error) {
         console.error('Ошибка форматирования даты:', error, dateString);
         return dateString || 'Неизвестная дата';

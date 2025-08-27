@@ -1840,7 +1840,6 @@ table.salary-payments-table .actions-cell {
     display: flex;
     justify-content: center;
     gap: 6px;
-    margin: 24px 0;
     list-style: none;
     padding: 0;
 }
@@ -6362,8 +6361,6 @@ input[type="date"]:focus {
     justify-content: center;
     align-items: center;
     gap: 8px;
-    margin-top: 20px;
-    padding: 20px 0;
 }
 
 .page-btn {
