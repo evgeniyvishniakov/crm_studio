@@ -219,6 +219,53 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Похожие статьи -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Похожие статьи</h5>
+                        </div>
+                        <div class="card-body">
+                            @php
+                                // Сначала пытаемся получить похожие статьи, выбранные вручную
+                                $relatedArticles = collect();
+                                if ($article->related_articles && is_array($article->related_articles)) {
+                                    $relatedArticles = \App\Models\KnowledgeArticle::whereIn('id', $article->related_articles)->get();
+                                }
+                                
+                                // Если похожих статей нет, показываем статьи из той же категории
+                                if ($relatedArticles->isEmpty()) {
+                                    $relatedArticles = \App\Models\KnowledgeArticle::published()
+                                        ->where('category', $article->category)
+                                        ->where('id', '!=', $article->id)
+                                        ->limit(3)
+                                        ->get();
+                                }
+                            @endphp
+                            
+                            @forelse($relatedArticles as $relatedArticle)
+                                <div class="related-article mb-3">
+                                    <h6 class="mb-2">
+                                        <a href="{{ route('admin.knowledge.show', $relatedArticle->id) }}" 
+                                           class="text-decoration-none text-dark">
+                                            {{ $relatedArticle->defaultTranslation() ? $relatedArticle->defaultTranslation()->title : $relatedArticle->title }}
+                                        </a>
+                                    </h6>
+                                    <p class="text-muted small mb-0">
+                                        {!! Str::limit(strip_tags($relatedArticle->defaultTranslation() ? $relatedArticle->defaultTranslation()->description : $relatedArticle->description), 80) !!}
+                                    </p>
+                                    @if($article->related_articles && in_array($relatedArticle->id, $article->related_articles))
+                                        <span class="badge bg-success">Выбрано вручную</span>
+                                    @endif
+                                </div>
+                            @empty
+                                <p class="text-muted small mb-0">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Похожих статей не найдено
+                                </p>
+                            @endforelse
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

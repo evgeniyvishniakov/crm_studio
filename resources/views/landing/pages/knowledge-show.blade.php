@@ -130,11 +130,24 @@
                         </div>
                         <div class="card-body">
                             @php
-                                $relatedArticles = \App\Models\KnowledgeArticle::published()
-                                    ->where('category', $article->category)
-                                    ->where('id', '!=', $article->id)
-                                    ->limit(3)
-                                    ->get();
+                                // Сначала пытаемся получить похожие статьи, выбранные вручную
+                                $relatedArticles = collect();
+                                if ($article->related_articles && is_array($article->related_articles)) {
+                                    $relatedArticles = \App\Models\KnowledgeArticle::published()
+                                        ->whereIn('id', $article->related_articles)
+                                        ->with('translations.language')
+                                        ->get();
+                                }
+                                
+                                // Если похожих статей нет, показываем статьи из той же категории
+                                if ($relatedArticles->isEmpty()) {
+                                    $relatedArticles = \App\Models\KnowledgeArticle::published()
+                                        ->where('category', $article->category)
+                                        ->where('id', '!=', $article->id)
+                                        ->with('translations.language')
+                                        ->limit(3)
+                                        ->get();
+                                }
                             @endphp
                             
                             @forelse($relatedArticles as $relatedArticle)
@@ -142,11 +155,11 @@
                                     <h6 class="mb-2">
                                         <a href="{{ route('beautyflow.knowledge.show', $relatedArticle->slug) }}" 
                                            class="text-decoration-none text-dark">
-                                            {{ $relatedArticle->title }}
+                                            {{ $relatedArticle->defaultTranslation() ? $relatedArticle->defaultTranslation()->title : $relatedArticle->title }}
                                         </a>
                                     </h6>
                                     <p class="text-muted small mb-0">
-                                        {!! Str::limit(strip_tags($relatedArticle->description), 80) !!}
+                                        {!! Str::limit(strip_tags($relatedArticle->defaultTranslation() ? $relatedArticle->defaultTranslation()->description : $relatedArticle->description), 80) !!}
                                     </p>
                                 </div>
                             @empty

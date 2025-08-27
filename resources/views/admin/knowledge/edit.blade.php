@@ -403,6 +403,26 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="related_articles" class="form-label">Похожие статьи</label>
+                                        <select class="form-select @error('related_articles') is-invalid @enderror" 
+                                                id="related_articles" name="related_articles[]" multiple size="5">
+                                            @foreach(\App\Models\KnowledgeArticle::where('id', '!=', $article->id)->with('translations.language')->get() as $relatedArticle)
+                                                <option value="{{ $relatedArticle->id }}" 
+                                                        {{ in_array($relatedArticle->id, old('related_articles', $article->related_articles ?? [])) ? 'selected' : '' }}>
+                                                    {{ $relatedArticle->defaultTranslation() ? $relatedArticle->defaultTranslation()->title : $relatedArticle->title }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <div class="form-text">
+                                            Выберите статьи, которые логически связаны с текущей. 
+                                            Удерживайте Ctrl (Cmd на Mac) для выбора нескольких статей.
+                                        </div>
+                                        @error('related_articles')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
                         </div>

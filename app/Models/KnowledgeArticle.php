@@ -19,13 +19,15 @@ class KnowledgeArticle extends Model
         'meta_tags',
         'sort_order',
         'is_published',
-        'published_at'
+        'published_at',
+        'related_articles'
     ];
 
     protected $casts = [
         'is_published' => 'boolean',
         'meta_tags' => 'array',
         'published_at' => 'datetime',
+        'related_articles' => 'array',
     ];
 
     /**
@@ -98,6 +100,20 @@ class KnowledgeArticle extends Model
     public function tips()
     {
         return $this->hasMany(KnowledgeArticleTip::class)->orderBy('sort_order');
+    }
+    
+    /**
+     * Получить похожие статьи
+     */
+    public function relatedArticles()
+    {
+        if (!$this->related_articles) {
+            return collect();
+        }
+        
+        return static::whereIn('id', $this->related_articles)
+            ->with('translations.language')
+            ->get();
     }
 
     /**

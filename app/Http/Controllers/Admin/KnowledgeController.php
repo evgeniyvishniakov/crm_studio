@@ -249,6 +249,8 @@ class KnowledgeController extends Controller
             'author' => 'nullable|string|max:255',
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_published' => 'boolean',
+            'related_articles' => 'nullable|array',
+            'related_articles.*' => 'integer|exists:knowledge_articles,id',
             'steps' => 'nullable|array',
             'steps.*.title' => 'required_with:steps|string|max:255',
             'steps.*.content' => 'required_with:steps|string',
