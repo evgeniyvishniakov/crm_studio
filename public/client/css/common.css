@@ -1640,6 +1640,7 @@ table.salary-payments-table .actions-cell {
 
     .services-section, .products-section {
         margin: 20px 0;
+        position: relative;
     }
 
     .service-item, .product-item {
@@ -1664,6 +1665,16 @@ table.salary-payments-table .actions-cell {
         padding: 15px;
         background: #f5f5f5;
         border-radius: 4px;
+    }
+    
+    /* Позиционирование кнопки добавления товара справа */
+    .products-section .btn-add-appointment.btn-add-product {
+        align-self: flex-end;
+        display: inline-block;
+        width: auto;
+        min-width: 120px;
+        margin-bottom: 15px;
+        flex-shrink: 0;
     }
 
     #addProductForm select, #addProductForm input {

@@ -1276,6 +1276,13 @@
         box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
     }
     
+    /* Мобильная версия кнопки добавления товара */
+    .products-section .btn-add-appointment.btn-add-product {
+        position: static;
+        width: 100%;
+        margin-top: 15px;
+    }
+    
         /* Скрываем таблицу на мобильных */
     .appointments-list.table-wrapper {
         display: none;
