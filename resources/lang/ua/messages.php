@@ -97,6 +97,22 @@ return [
     'changes_successfully_saved' => 'Зміни успішно збережено',
     'error_saving' => 'Помилка збереження',
     'appointment_successfully_created' => 'Запис успішно створено',
+    
+    // Сторінка 404
+    'page_not_found' => 'Сторінку не знайдено',
+    'page_not_found_description' => 'На жаль, запитувана сторінка не існує або була переміщена.',
+    'return_to_home' => 'Повернутися на головну',
+    'go_back' => 'Назад',
+    'what_can_you_do' => 'Що можна зробити:',
+    'check_url' => 'Перевірити правильність URL адреси',
+    'use_navigation' => 'Використовувати навігаційне меню',
+    'contact_admin' => 'Звернутися до адміністратора',
+    
+    // Видалені об'єкти
+    'deleted_user' => 'Видалений користувач',
+    'deleted_service' => 'Видалена послуга',
+    'deleted_client' => 'Видалений клієнт',
+    'deleted_product' => 'Видалений товар',
     'client_work' => 'Робота з клієнтами',
     
     // Переклади часу

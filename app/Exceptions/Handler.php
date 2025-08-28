@@ -28,6 +28,33 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+        
+        // Обработка 404 ошибок
+        $this->renderable(function (NotFoundHttpException $e, $request) {
+            if ($request->is('admin/*')) {
+                // Для админской части используем стандартную страницу 404
+                return response()->view('errors.404', [], 404);
+            } elseif ($request->is('book/*') || $request->is('knowledge/*')) {
+                // Для публичных страниц используем стандартную страницу 404
+                return response()->view('errors.404', [], 404);
+            } else {
+                // Для клиентской части используем нашу красивую страницу 404
+                return response()->view('client.errors.404', [], 404);
+            }
+        });
+        
+        // Обработка ошибок "Call to a member function on null"
+        $this->renderable(function (Throwable $e, $request) {
+            if (str_contains($e->getMessage(), 'Call to a member function') && str_contains($e->getMessage(), 'on null')) {
+                if ($request->is('admin/*')) {
+                    return response()->view('errors.404', [], 404);
+                } elseif ($request->is('book/*') || $request->is('knowledge/*')) {
+                    return response()->view('errors.404', [], 404);
+                } else {
+                    return response()->view('client.errors.404', [], 404);
+                }
+            }
+        });
     }
 
     // Удаляю глобальное логирование NotFoundHttpException (404)

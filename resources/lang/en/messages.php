@@ -98,6 +98,22 @@ return [
     'changes_successfully_saved' => 'Changes successfully saved',
     'error_saving' => 'Error saving',
     'appointment_successfully_created' => 'Appointment successfully created',
+    
+    // 404 Page
+    'page_not_found' => 'Page Not Found',
+    'page_not_found_description' => 'Unfortunately, the requested page does not exist or has been moved.',
+    'return_to_home' => 'Return to Home',
+    'go_back' => 'Go Back',
+    'what_can_you_do' => 'What you can do:',
+    'check_url' => 'Check the URL address',
+    'use_navigation' => 'Use the navigation menu',
+    'contact_admin' => 'Contact administrator',
+    
+    // Deleted objects
+    'deleted_user' => 'Deleted user',
+    'deleted_service' => 'Deleted service',
+    'deleted_client' => 'Deleted client',
+    'deleted_product' => 'Deleted product',
     'client_work' => 'Client Work',
     
     // Time translations

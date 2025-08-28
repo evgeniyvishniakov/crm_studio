@@ -44,6 +44,8 @@ Route::middleware('auth:client')->group(function () {
     // Главная страница клиентской части
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
+    
+    
     // Тестовая страница валют
     
     

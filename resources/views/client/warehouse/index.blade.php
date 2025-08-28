@@ -100,7 +100,7 @@
                             <select id="productSelect" name="product_id" class="form-control product-select" style="display: none;" required>
                                 <option value="">{{ __('messages.select_product') }}</option>
                                 @foreach($products as $product)
-                                    <option value="{{ $product->id }}" data-purchase="{{ $product->purchase_price }}" data-retail="{{ $product->retail_price }}">{{ $product->name }}</option>
+                                    <option value="{{ $product->id }}" data-purchase="{{ $product->purchase_price }}" data-retail="{{ $product->retail_price }}">{{ $product->name ?? __('messages.deleted_product') }}</option>
                                 @endforeach
                             </select>
                         </div>

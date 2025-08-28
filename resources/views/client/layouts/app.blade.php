@@ -298,7 +298,7 @@
     </style>
 </head>
 
-<body data-page="{{ request()->route()->getName() }}">
+<body data-page="{{ request()->route() ? request()->route()->getName() : 'not_found' }}">
 
 <!-- Контейнер для уведомлений -->
 <div id="notification-container"></div>

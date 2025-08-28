@@ -1440,7 +1440,7 @@
                                 <option value="{{ $service->id }}" 
                                         data-price="{{ $service->price }}"
                                         data-duration="{{ $service->duration }}">
-                                    {{ $service->name }}
+                                    {{ $service->name ?? __('messages.deleted_service') }}
                                 </option>
                                 @endforeach
                             </select>
@@ -1453,7 +1453,7 @@
                             <select name="user_id" class="form-control" required>
                                 <option value="">{{ __('messages.select_employee') }}</option>
                                 @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                <option value="{{ $user->id }}">{{ $user->name ?? __('messages.deleted_user') }}</option>
                                 @endforeach
                             </select>
                         </div>

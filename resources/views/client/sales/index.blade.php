@@ -100,7 +100,7 @@
                                     <option value="">{{ __('messages.select_client') }}</option>
                                     @foreach($clients as $client)
                                         <option value="{{ $client->id }}">
-                                            {{ $client->name }}
+                                            {{ $client->name ?? __('messages.deleted_client') }}
                                             @if($client->instagram) (@{{ $client->instagram }}) @endif
                                             @if($client->phone) - {{ $client->phone }} @endif
                                         </option>
@@ -124,7 +124,7 @@
                             <select name="employee_id" class="form-control" required>
                                 <option value="">{{ __('messages.select_employee') }}</option>
                                 @foreach($employees as $employee)
-                                    <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                                    <option value="{{ $employee->id }}">{{ $employee->name ?? __('messages.deleted_user') }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -156,7 +156,7 @@
                                                         data-wholesale="{{ $product->wholesale_price }}"
                                                         data-retail="{{ $product->retail_price }}"
                                                         data-quantity="{{ $product->available_quantity }}">
-                                                    {{ $product->name }}
+                                                    {{ $product->name ?? __('messages.deleted_product') }}
                                                 </option>
                                             @endforeach
                                         </select>
