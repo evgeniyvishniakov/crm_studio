@@ -5,12 +5,7 @@
 <header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="{{ route('beautyflow.index') }}">
-            @if(\App\Helpers\SystemHelper::hasLandingLogo())
-                <img src="{{ \App\Helpers\SystemHelper::getLandingLogo() }}" alt="{{ \App\Helpers\SystemHelper::getSiteName() }}" class="me-2" style="max-height: 40px;">
-            @else
-                <i class="fas fa-spa text-primary"></i>
-            @endif
-            <span class="ms-2 fw-bold">{{ \App\Helpers\SystemHelper::getSiteName() }}</span>
+            <span class="fw-bold logo-text">Trimora</span>
         </a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Переключить навигацию">
@@ -20,10 +15,11 @@
         <div class="collapse navbar-collapse" id="navbarNav" role="navigation" aria-label="Главная навигация">
             <ul class="navbar-nav me-auto" role="menubar">
                 <li class="nav-item" role="none">
-                    <a class="nav-link {{ request()->routeIs('beautyflow.index') ? 'active' : '' }}" href="{{ route('beautyflow.index') }}" role="menuitem">Продукт</a>
+                    <a class="nav-link" href="#features-grid" role="menuitem">Возможности</a>
                 </li>
-
-
+                <li class="nav-item" role="none">
+                    <a class="nav-link" href="#niches-section" role="menuitem">Сферы применения</a>
+                </li>
                 <li class="nav-item" role="none">
                     <a class="nav-link {{ request()->routeIs('beautyflow.pricing') ? 'active' : '' }}" href="{{ route('beautyflow.pricing') }}" role="menuitem">Тарифы</a>
                 </li>
@@ -115,5 +111,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Плавный скролл к секциям
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
 });
 </script>
