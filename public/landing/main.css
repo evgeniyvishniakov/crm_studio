@@ -4474,6 +4474,8 @@ footer a:hover {
     font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     font-weight: 500;
     font-size: 0.95rem;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
     padding: 1rem 1rem !important;
     border-radius: 12px;
     margin: 0 0.25rem;
