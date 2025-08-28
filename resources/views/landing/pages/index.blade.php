@@ -1,5 +1,9 @@
 @extends('landing.layouts.app')
 
+@php
+    use Illuminate\Support\Facades\Auth;
+@endphp
+
 @section('title', 'Trimora - Система управления салоном красоты')
 @section('description', 'Профессиональная система Trimora для управления салоном красоты с веб-записью, Telegram уведомлениями и виджетом для сайта')
 
@@ -13,9 +17,15 @@
                 <h1 class="display-4 fw-bold mb-4 text-dark gradient-text">Автоматизируйте записи клиентов</h1>
                 <p class="lead mb-4 text-muted">Trimora - современная система с веб-записью, Telegram уведомлениями и виджетом для сайта. Увеличьте количество клиентов и упростите работу салона.</p>
                 <div class="d-flex gap-3">
-                    <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
-                        <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
-                    </a>
+                    @if(Auth::guard('client')->check())
+                        <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg animate-pulse" aria-label="Войти в систему">
+                            <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>Войти в систему
+                        </a>
+                    @else
+                        <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
+                            <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
+                        </a>
+                    @endif
                     <a href="#features-grid" class="btn btn-outline-primary btn-lg">
                         <i class="fas fa-play me-2"></i>Смотреть функции
                     </a>
@@ -849,9 +859,15 @@
                 <h2 class="display-5 fw-bold mb-4">Попробуйте Trimora бесплатно</h2>
                 <p class="lead mb-4">7 дней полного доступа ко всем функциям без ограничений</p>
                 <div class="d-flex gap-3 justify-content-center">
-                    <a href="#" class="btn btn-light btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
-                        <i class="fas fa-rocket me-2"></i>Попробовать бесплатно 7 дней
-                    </a>
+                    @if(Auth::guard('client')->check())
+                        <a href="{{ route('dashboard') }}" class="btn btn-light btn-lg animate-pulse">
+                            <i class="fas fa-sign-in-alt me-2"></i>Войти в систему
+                        </a>
+                    @else
+                        <a href="#" class="btn btn-light btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
+                            <i class="fas fa-rocket me-2"></i>Попробовать бесплатно 7 дней
+                        </a>
+                    @endif
                     <a href="#features-grid" class="btn btn-outline-light btn-lg">
                         <i class="fas fa-list me-2"></i>Посмотреть функции
                     </a>
@@ -1051,9 +1067,15 @@
         <div class="text-center mt-5">
             <h3 class="fw-bold mb-3">Понравились функции? Попробуйте прямо сейчас!</h3>
                             <p class="lead text-muted mb-4">7 дней бесплатного тестирования всех возможностей Trimora</p>
-            <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
-                <i class="fas fa-rocket me-2"></i>Попробовать бесплатно 7 дней
-            </a>
+            @if(Auth::guard('client')->check())
+                <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg animate-pulse">
+                    <i class="fas fa-sign-in-alt me-2"></i>Войти в систему
+                </a>
+            @else
+                <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
+                    <i class="fas fa-rocket me-2"></i>Попробовать бесплатно 7 дней
+                </a>
+            @endif
         </div>
     </div>
 </section>

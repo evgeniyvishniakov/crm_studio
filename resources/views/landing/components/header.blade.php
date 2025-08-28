@@ -52,17 +52,30 @@
                     </div>
                 </li>
                 
-                @if(Auth::guard('client')->check() && Auth::guard('client')->user()->role === 'admin')
-                    <li class="nav-item">
-                        <a class="btn btn-outline-primary me-2" href="{{ route('landing.account.dashboard') }}" aria-label="Личный кабинет">
-                            <i class="fas fa-user me-1"></i>Личный кабинет
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('landing.account.logout') }}" class="btn btn-outline-danger" aria-label="Выйти">
-                            <i class="fas fa-sign-out-alt me-1"></i>Выйти
-                        </a>
-                    </li>
+                @if(Auth::guard('client')->check())
+                    @if(Auth::guard('client')->user()->role === 'admin')
+                        <li class="nav-item">
+                            <a class="btn btn-outline-primary me-2" href="{{ route('landing.account.dashboard') }}" aria-label="Личный кабинет">
+                                <i class="fas fa-user me-1"></i>Личный кабинет
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('landing.account.logout') }}" class="btn btn-outline-danger" aria-label="Выйти">
+                                <i class="fas fa-sign-out-alt me-1"></i>Выйти
+                            </a>
+                        </li>
+                    @else
+                        <li class="nav-item">
+                            <a class="btn btn-primary" href="{{ route('dashboard') }}" aria-label="Войти в систему">
+                                <i class="fas fa-sign-in-alt me-1"></i>Войти в систему
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('landing.account.logout') }}" class="btn btn-outline-danger" aria-label="Выйти">
+                                <i class="fas fa-sign-out-alt me-1"></i>Выйти
+                            </a>
+                        </li>
+                    @endif
                 @else
                     <li class="nav-item">
                         <a class="btn btn-outline-primary me-2" href="#" data-bs-toggle="modal" data-bs-target="#loginModal" aria-label="Открыть форму входа">Войти</a>
