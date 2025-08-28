@@ -3655,7 +3655,10 @@
                                 </svg>
                                 {{ __('messages.client') }}
                             </div>
-                            <div class="appointment-info-value">${appointment.client ? escapeHtml(appointment.client.name) : '{{ __('messages.client_deleted') }}'}</div>
+                            <div class="appointment-info-value">
+                                ${appointment.client ? escapeHtml(appointment.client.name) : '{{ __('messages.client_deleted') }}'}
+                                ${instagramHtml}
+                            </div>
                         </div>
                         
                         <div class="appointment-info-item">
@@ -3677,8 +3680,6 @@
                             </div>
                             <div class="appointment-info-value">${appointment.user ? escapeHtml(appointment.user.name) : '{{ __('messages.not_assigned') }}'}</div>
                         </div>
-                        
-                        ${instagramHtml}
                         
                         <div class="appointment-cost">
                             <div class="appointment-cost-label">{{ __('messages.cost') }}</div>
