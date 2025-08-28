@@ -1188,9 +1188,7 @@ table.salary-payments-table .actions-cell {
         margin: 0 auto;
     }
 
-    .actions-cell {
-        white-space: nowrap;
-    }
+
 
     .btn-edit, .btn-delete {
         padding: 6px 12px;
@@ -4422,11 +4420,7 @@ input[type="date"]:focus {
         vertical-align: middle;
         padding: 40px !important;
     }
-    .sale-table .actions-cell {
-        text-align: center;
-        vertical-align: middle;
-        padding: 50px 10px !important;
-    }
+   
 
 /* ===== СТИЛИ ДЛЯ РАЗДЕЛА "ПРОДАЖИ" ===== */
 
@@ -4439,9 +4433,10 @@ input[type="date"]:focus {
 
 .sales-header .header-top {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 20px;
+    gap: 30px;
 }
 
 .sales-header h1 {
@@ -4449,12 +4444,14 @@ input[type="date"]:focus {
     font-weight: 700;
     color: #1f2937;
     margin: 0;
+    flex-shrink: 0;
 }
 
 .sales-header .header-actions {
     display: flex;
     gap: 15px;
     align-items: center;
+    margin-left: auto;
 }
 
 
@@ -4688,9 +4685,6 @@ input[type="date"]:focus {
     max-width: 50px;
 }
 
-.sale-table td {
-    padding: 25px 15px !important;
-}
 
 /* Стили для мобильных лейблов в модальных окнах */
 .desktop-label {
@@ -7173,9 +7167,7 @@ body {
     background-color: #5a6268;
     border-color: #545b62;
 }
- #schedule-container .actions-cell{
-    padding: 25px 10px !important;
- }
+
 /* Стили для форм */
 .form-group {
     margin-bottom: 1rem;
@@ -7360,9 +7352,7 @@ label {
 .master-info, .service-info {
     flex: 1;
 }
-#user-services-tbody .actions-cell{
-    padding: 30px 0 !important;
-}
+
 
 .master-name, .service-name {
     color: #374151;
@@ -8716,13 +8706,7 @@ label {
     width: 100%;
 }
 
-/* Ячейка действий */
-.actions-cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 91px;
-}
+
 
 /* ===== СТИЛИ ДЛЯ ПОДСКАЗОК В БАЗЕ ЗНАНИЙ ===== */
 
