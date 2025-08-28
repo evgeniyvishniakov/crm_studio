@@ -67,25 +67,23 @@ class PaymentController extends Controller
         Log::info('Creating subscription for plan: ' . $plan->name . ', period: ' . $period);
         
         // Создаем подписку
-        $subscription = Subscription::create([
-            'project_id' => $user->project_id ?? 1, // Временно используем ID 1
-            'admin_user_id' => $user->id,
-            'plan_id' => $plan->id,
-            'plan_type' => $plan->slug,
-            'status' => Subscription::STATUS_PENDING,
-            'period_type' => $period,
-            'amount' => $plan->getPriceForPeriod($period),
-            'currency' => 'UAH',
-            'paid_at' => now(),
-            'starts_at' => now(),
-            'expires_at' => $this->calculateEndDate($period),
-            'current_period_start' => now(),
-            'current_period_end' => $this->calculateEndDate($period)
+        // НЕ создаем подписку заранее - она будет создана только после успешной оплаты
+        // Временно сохраняем данные о выбранном плане в сессии
+        session([
+            'selected_plan' => [
+                'plan_id' => $plan->id,
+                'plan_type' => $plan->slug,
+                'period_type' => $period,
+                'amount' => $plan->getPriceForPeriod($period),
+                'currency' => 'UAH'
+            ]
         ]);
 
-        // Создаем платеж
+        // Создаем временный платеж без привязки к подписке
         $payment = Payment::create([
-            'subscription_id' => $subscription->id,
+            'subscription_id' => null, // Подписка будет создана после успешной оплаты
+            'project_id' => $user->project_id ?? 1,
+            'user_id' => $user->id,
             'amount' => $plan->getPriceForPeriod($period),
             'currency' => 'UAH',
             'status' => 'pending',
@@ -194,11 +192,40 @@ class PaymentController extends Controller
         
         if ($payment) {
             $payment->update(['status' => 'completed']);
-            $payment->subscription->update(['status' => Subscription::STATUS_ACTIVE]);
             
-            // Перенаправляем в личный кабинет на вкладку подписок
-            return redirect()->route('landing.account.dashboard')
-                ->with('success', 'Оплата прошла успешно! Ваша подписка активирована.');
+            // Получаем данные о выбранном плане из сессии
+            $selectedPlan = session('selected_plan');
+            
+            if ($selectedPlan) {
+                // Создаем подписку только после успешной оплаты
+                $subscription = Subscription::create([
+                    'project_id' => $payment->project_id,
+                    'admin_user_id' => $payment->user_id,
+                    'plan_id' => $selectedPlan['plan_id'],
+                    'plan_type' => $selectedPlan['plan_type'],
+                    'status' => Subscription::STATUS_ACTIVE,
+                    'period_type' => $selectedPlan['period_type'],
+                    'amount' => $selectedPlan['amount'],
+                    'currency' => $selectedPlan['currency'],
+                    'paid_at' => now(),
+                    'starts_at' => now(),
+                    'expires_at' => $this->calculateEndDate($selectedPlan['period_type']),
+                    'current_period_start' => now(),
+                    'current_period_end' => $this->calculateEndDate($selectedPlan['period_type']),
+                    'payment_status' => 'paid',
+                    'notes' => 'Создана после успешной оплаты через LiqPay'
+                ]);
+                
+                // Привязываем платеж к подписке
+                $payment->update(['subscription_id' => $subscription->id]);
+                
+                // Очищаем сессию
+                session()->forget('selected_plan');
+                
+                // Перенаправляем в личный кабинет на вкладку подписок
+                return redirect()->route('landing.account.dashboard')
+                    ->with('success', 'Оплата прошла успешно! Ваша подписка активирована.');
+            }
         }
         
         return redirect()->route('landing.account.dashboard')
@@ -220,7 +247,7 @@ class PaymentController extends Controller
     private function calculateEndDate($period)
     {
         switch ($period) {
-            case 'month':
+            case 'monthly':
                 return now()->addMonth();
             case 'quarterly':
                 return now()->addMonths(3);
@@ -239,7 +266,7 @@ class PaymentController extends Controller
     private function generateLiqPayData($payment, $plan, $period)
     {
         $periodNames = [
-            'month' => 'месяц',
+            'monthly' => 'месяц',
             'quarterly' => '3 месяца',
             'semiannual' => '6 месяцев',
             'yearly' => 'год'

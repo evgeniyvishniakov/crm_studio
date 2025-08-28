@@ -473,7 +473,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Определяем период по тексту на карточке
             var periodText = planPeriod.trim();
-            var period = 'month'; // по умолчанию
+            var period = 'monthly'; // по умолчанию
             
             if (periodText.includes('3 месяца') || periodText.includes('3 мес')) {
                 period = 'quarterly';

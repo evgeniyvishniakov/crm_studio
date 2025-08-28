@@ -11,6 +11,8 @@ class Payment extends Model
 
     protected $fillable = [
         'subscription_id',
+        'project_id',
+        'user_id',
         'amount',
         'currency',
         'status',
@@ -30,6 +32,16 @@ class Payment extends Model
     public function subscription()
     {
         return $this->belongsTo(Subscription::class);
+    }
+    
+    public function project()
+    {
+        return $this->belongsTo(\App\Models\Admin\Project::class);
+    }
+    
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\Admin\User::class);
     }
 
     // Статусы платежей

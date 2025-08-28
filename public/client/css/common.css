@@ -2724,6 +2724,26 @@ input[type="date"]:focus {
     color: #d97706;
 }
 
+.status-badge.active {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.status-badge.trial {
+    background: #f0f9ff;
+    color: #0284c7;
+}
+
+.status-badge.no-subscription {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.status-badge.cancelled {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
 /* Детали подписки */
 .subscription-details {
     display: flex;

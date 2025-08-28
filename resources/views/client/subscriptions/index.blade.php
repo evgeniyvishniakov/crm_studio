@@ -17,12 +17,18 @@
             <div class="subscription-card">
                 <div class="subscription-header">
                     <h2>{{ __('messages.current_subscription') }}</h2>
-                    @if($subscription['status'] === 'active')
+                    @if($subscriptionData['status'] === 'active')
                         <span class="status-badge active">{{ __('messages.active') }}</span>
-                    @elseif($subscription['status'] === 'expired')
+                    @elseif($subscriptionData['status'] === 'expired')
                         <span class="status-badge expired">{{ __('messages.expired') }}</span>
-                    @else
+                    @elseif($subscriptionData['status'] === 'pending')
                         <span class="status-badge pending">{{ __('messages.pending') }}</span>
+                    @elseif($subscriptionData['status'] === 'trial')
+                        <span class="status-badge trial">{{ __('messages.trial') }}</span>
+                    @elseif($subscriptionData['status'] === 'no_subscription')
+                        <span class="status-badge no-subscription">{{ __('messages.no_subscription') }}</span>
+                    @else
+                        <span class="status-badge {{ $subscriptionData['status'] }}">{{ $subscriptionData['status'] }}</span>
                     @endif
                 </div>
                 
@@ -30,52 +36,106 @@
                     <div class="subscription-info">
                         <div class="info-item">
                             <span class="label">{{ __('messages.plan') }}:</span>
-                            <span class="value">{{ $subscription['plan'] }}</span>
+                            <span class="value">{{ $subscriptionData['plan'] }}</span>
                         </div>
+                        @if($subscriptionData['starts_at'] !== 'Не указана' && $subscriptionData['status'] !== 'trial')
+                        <div class="info-item">
+                            <span class="label">Дата начала:</span>
+                            <span class="value">{{ $subscriptionData['starts_at'] }}</span>
+                        </div>
+                        @endif
+                        @if($subscriptionData['end_date'] !== 'Не указана')
                         <div class="info-item">
                             <span class="label">{{ __('messages.end_date') }}:</span>
-                            <span class="value">{{ $subscription['end_date'] }}</span>
+                            <span class="value">{{ $subscriptionData['end_date'] }}</span>
+                        </div>
+                        @endif
+                        @if($subscriptionData['trial_ends_at'] && $subscriptionData['status'] === 'trial')
+                        <div class="info-item">
+                            <span class="label">Пробный период до:</span>
+                            <span class="value">{{ $subscriptionData['trial_ends_at'] }}</span>
                         </div>
                         <div class="info-item">
-                            <span class="label">{{ __('messages.days_left') }}:</span>
-                            <span class="value {{ $subscription['days_left'] <= 7 ? 'warning' : '' }}">
-                                {{ $subscription['days_left'] }} {{ __('messages.days') }}
+                            <span class="label">Осталось дней пробного периода:</span>
+                            <span class="value {{ $subscriptionData['trial_days_left'] <= 3 ? 'warning' : '' }}">
+                                {{ $subscriptionData['trial_days_left'] }} {{ __('messages.days') }}
                             </span>
                         </div>
+                        @endif
+                        @if($subscriptionData['days_left'] > 0)
+                        <div class="info-item">
+                            <span class="label">{{ __('messages.days_left') }}:</span>
+                            <span class="value {{ $subscriptionData['days_left'] <= 7 ? 'warning' : '' }}">
+                                {{ $subscriptionData['days_left'] }} {{ __('messages.days') }}
+                            </span>
+                        </div>
+                        @endif
+                        @if($subscriptionData['status'] === 'trial')
                         <div class="info-item">
                             <span class="label">{{ __('messages.price') }}:</span>
-                            <span class="value">{{ $subscription['price'] }} {{ $subscription['currency'] }}</span>
+                            <span class="value text-success">Бесплатно (пробный период)</span>
                         </div>
+                        @elseif($subscriptionData['price'] > 0)
+                        <div class="info-item">
+                            <span class="label">{{ __('messages.price') }}:</span>
+                            <span class="value">{{ $subscriptionData['price'] }} {{ $subscriptionData['currency'] }}</span>
+                        </div>
+                        @endif
+                        @if($subscriptionData['status'] !== 'trial')
+                        <div class="info-item">
+                            <span class="label">Статус оплаты:</span>
+                            <span class="value">
+                                @if($subscriptionData['payment_status'] === 'paid')
+                                    <i class="fa fa-check text-success"></i> Оплачено
+                                @elseif($subscriptionData['payment_status'] === 'pending')
+                                    <i class="fa fa-clock text-warning"></i> Ожидает оплаты
+                                @elseif($subscriptionData['payment_status'] === 'failed')
+                                    <i class="fa fa-times text-danger"></i> Ошибка оплаты
+                                @else
+                                    <i class="fa fa-question text-muted"></i> {{ $subscriptionData['payment_status'] }}
+                                @endif
+                            </span>
+                        </div>
+                        @endif
+                        @if($subscriptionData['status'] !== 'trial')
                         <div class="info-item">
                             <span class="label">{{ __('messages.auto_renewal') }}:</span>
                             <span class="value">
-                                @if($subscription['auto_renewal'])
+                                @if($subscriptionData['auto_renewal'])
                                     <i class="fa fa-check text-success"></i> {{ __('messages.enabled') }}
                                 @else
                                     <i class="fa fa-times text-danger"></i> {{ __('messages.disabled') }}
                                 @endif
                             </span>
                         </div>
+                        @endif
                     </div>
                     
-                    <div class="subscription-actions">
-                        @if($subscription['status'] === 'active')
-                            @if($subscription['days_left'] <= 7)
-                                <button class="btn btn-warning" onclick="renewSubscription()">
-                                    <i class="fa fa-refresh"></i> {{ __('messages.renew_subscription') }}
-                                </button>
-                            @endif
+                                        <div class="subscription-actions">
+                        @if($subscriptionData['status'] === 'active')
+                            <button class="btn btn-success" onclick="renewSubscription()">
+                                <i class="fa fa-refresh"></i> Продлить подписку
+                            </button>
                             <button class="btn btn-primary" onclick="changePlan()">
                                 <i class="fa fa-exchange"></i> {{ __('messages.change_plan') }}
                             </button>
-                            @if($subscription['auto_renewal'])
+                            @if($subscriptionData['auto_renewal'])
                                 <button class="btn btn-outline-danger" onclick="cancelAutoRenewal()">
                                     <i class="fa fa-stop"></i> {{ __('messages.cancel_auto_renewal') }}
                                 </button>
                             @endif
-                        @elseif($subscription['status'] === 'expired')
+                        @elseif($subscriptionData['status'] === 'expired')
                             <button class="btn btn-success" onclick="renewSubscription()">
                                 <i class="fa fa-refresh"></i> {{ __('messages.renew_subscription') }}
+                            </button>
+
+                        @elseif($subscriptionData['status'] === 'trial')
+                            <button class="btn btn-success" onclick="changePlan()">
+                                <i class="fa fa-credit-card"></i> Выбрать платный план
+                            </button>
+                        @elseif($subscriptionData['status'] === 'no_subscription')
+                            <button class="btn btn-success" onclick="changePlan()">
+                                <i class="fa fa-credit-card"></i> Выбрать план
                             </button>
                         @endif
                     </div>
@@ -83,19 +143,25 @@
             </div>
 
             <!-- Уведомления -->
-            @if($subscription['status'] === 'active' && $subscription['days_left'] <= 7)
+            @if($subscriptionData['status'] === 'active' && $subscriptionData['days_left'] <= 7)
                 <div class="alert alert-warning subscription-alert">
                     <i class="fa fa-exclamation-triangle"></i>
-                    @if($subscription['days_left'] <= 3)
-                        {{ __('messages.subscription_expires_soon') }}: {{ $subscription['days_left'] }} {{ __('messages.days') }}
+                    @if($subscriptionData['days_left'] <= 3)
+                        {{ __('messages.subscription_expires_soon') }}: {{ $subscriptionData['days_left'] }} {{ __('messages.days') }}
                     @else
-                        {{ __('messages.subscription_expires_in') }}: {{ $subscription['days_left'] }} {{ __('messages.days') }}
+                        {{ __('messages.subscription_expires_in') }}: {{ $subscriptionData['days_left'] }} {{ __('messages.days') }}
                     @endif
                 </div>
-            @elseif($subscription['status'] === 'expired')
+            @elseif($subscriptionData['status'] === 'expired')
                 <div class="alert alert-danger subscription-alert">
                     <i class="fa fa-times-circle"></i>
                     {{ __('messages.subscription_expired') }}
+                </div>
+
+            @elseif($subscriptionData['status'] === 'trial')
+                <div class="alert alert-success subscription-alert">
+                    <i class="fa fa-gift"></i>
+                    У вас активен пробный период. Выберите платный план для продолжения работы.
                 </div>
             @endif
 

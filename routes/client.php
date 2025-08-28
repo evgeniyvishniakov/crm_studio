@@ -412,6 +412,8 @@ Route::get('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, '
         Route::get('/renew', [\App\Http\Controllers\Client\SubscriptionsController::class, 'renew'])->name('renew');
         Route::post('/change-plan', [\App\Http\Controllers\Client\SubscriptionsController::class, 'changePlan'])->name('change-plan');
         Route::get('/cancel', [\App\Http\Controllers\Client\SubscriptionsController::class, 'cancel'])->name('cancel');
+        Route::post('/activate', [\App\Http\Controllers\Client\SubscriptionsController::class, 'activateSubscription'])->name('activate');
+        Route::post('/payment-failed', [\App\Http\Controllers\Client\SubscriptionsController::class, 'handleFailedPayment'])->name('payment-failed');
     });
 
     // Настройки

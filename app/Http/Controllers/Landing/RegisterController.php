@@ -72,11 +72,12 @@ class RegisterController extends Controller
                 'plan_type' => 'trial',
                 'amount' => 0.00,
                 'currency' => 'USD',
-                'paid_at' => now(),
-                'starts_at' => now(),
+                'paid_at' => null, // Для пробной подписки нет оплаты
+                'starts_at' => null, // Дата начала устанавливается только после оплаты
                 'trial_ends_at' => now()->addDays(7), // Пробный период 7 дней
                 'expires_at' => null, // Для пробной подписки не устанавливаем дату окончания
                 'status' => 'trial',
+                'payment_status' => 'no_payment', // Статус оплаты для пробной подписки
                 'notes' => 'Автоматически создана при регистрации проекта'
             ]);
 
