@@ -126,6 +126,16 @@
     </div>
 
 @push('scripts')
+<script>
+    // Переводы для JavaScript
+    window.translations = {
+        edit: '{{ __("messages.edit") }}',
+        edit_short: '{{ __("messages.edit_short") }}',
+        delete: '{{ __("messages.delete") }}',
+        confirm_delete: '{{ __("messages.confirm_delete") }}',
+        confirm_delete_expense: '{{ __("messages.confirm_delete_expense") }}'
+    };
+</script>
 <script src="{{ asset('client/js/expenses.js') }}"></script>
 @endpush
 @endsection 

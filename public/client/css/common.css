@@ -3039,12 +3039,7 @@ input[type="date"]:focus {
 
 /* ===== СТИЛИ ДЛЯ СТРАНИЦЫ УСЛУГ ===== */
 
-/* Контейнер услуг */
-.services-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    font-family: 'Inter', Arial, sans-serif !important;
-}
+
 
 /* Заголовок страницы услуг */
 .services-header {
@@ -4338,7 +4333,6 @@ input[type="date"]:focus {
     height: 50px;
     border-radius: 8px;
     object-fit: cover;
-    border: 2px solid #e0e0e0;
     cursor: pointer;
 }
 
@@ -6706,6 +6700,41 @@ input[type="date"]:focus {
     display: flex;
     gap: 8px;
     align-items: center;
+}
+
+/* Компактные кнопки для десктопной версии затрат */
+.expenses-table .expense-actions .btn-edit,
+.expenses-table .expense-actions .btn-delete {
+    padding: 6px 8px;
+    font-size: 12px;
+    min-width: auto;
+    white-space: nowrap;
+}
+
+.expenses-table .expense-actions .btn-edit {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.expenses-table .expense-actions .btn-edit:hover {
+    background-color: #0056b3;
+}
+
+.expenses-table .expense-actions .btn-delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.expenses-table .expense-actions .btn-delete:hover {
+    background-color: #c82333;
 }
 
 .expenses-cards {

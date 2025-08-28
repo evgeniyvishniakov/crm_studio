@@ -10,6 +10,7 @@ return [
     'save' => 'Save',
     'cancel' => 'Cancel',
     'edit' => 'Edit',
+    'edit_short' => 'Edit',
     'delete' => 'Delete',
     'create' => 'Create',
     'update' => 'Update',
