@@ -183,11 +183,11 @@
         }
         
         /* Уменьшаем ширину левой панели */
-        aside.left-panel {
+        body:not(.open) aside.left-panel {
             width: 250px !important; /* Было 300px */
         }
         
-        #left-panel {
+        body:not(.open) #left-panel {
             width: 250px !important;
             max-width: 250px !important;
         }
@@ -223,7 +223,7 @@
         
         /* Исправляем позиционирование стрелочек после уменьшения ширины */
         .navbar .navbar-nav li.menu-item-has-children a:before {
-            right: 15px !important; /* Корректируем позицию стрелочки */
+            right: 5px !important; /* Корректируем позицию стрелочки */
             top: 50% !important;
             margin-top: -4px !important;
         }
@@ -246,10 +246,22 @@
             transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.6s ease !important;
             transform-origin: center center !important;
             position: absolute !important;
-            right: 15px !important;
+            right: 8px !important;
             top: 50% !important;
             margin-top: -4px !important;
             transform: rotate(45deg) !important; /* Базовое состояние - вправо */
+            border-color: #607d8b #607d8b transparent transparent !important;
+        }
+        
+        /* Стили для свернутого меню на десктопе */
+        body.open .navbar .navbar-nav li.menu-item-has-children a:before {
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.6s ease !important;
+            transform-origin: center center !important;
+            position: absolute !important;
+            right: -6px !important;
+            top: 37% !important;
+            margin-top: -4px !important;
+            transform: rotate(45deg) !important;
             border-color: #607d8b #607d8b transparent transparent !important;
         }
         
@@ -270,6 +282,58 @@
         .navbar-nav {
             transition: margin-left 0.3s ease, padding 0.3s ease !important;
         }
+        
+        /* Стили для свернутого меню */
+        body.open #left-panel .main-menu, 
+        body.open #left-panel .navbar-nav, 
+        body.open .navbar-nav, 
+        body.open .main-menu, 
+        body.open aside.left-panel, 
+        body.open .sidebar-menu {
+            padding-right: 0px !important;
+            margin-left: 0px !important;
+            padding-bottom: 30px;
+        }
+        
+        /* Стили для элементов списка в свернутом меню */
+        .open aside.left-panel .navbar .navbar-nav li {
+            position: relative;
+            padding: 0 15px 0 18px;
+        }
+        
+        /* Стили для стрелочек в свернутом меню при раскрытом подменю */
+        body.open .navbar .navbar-nav li.menu-item-has-children.show a:before, 
+        body.open .navbar .navbar-nav li.menu-item-has-children a[aria-expanded="true"]:before, 
+        body.open .navbar .navbar-nav li.menu-item-has-children .dropdown-toggle[aria-expanded="true"]:before {
+            transform: rotate(135deg) !important;
+            border-color: #03a9f3 #03a9f3 transparent transparent !important;
+            right: -6px !important;
+            top: 32% !important;
+            margin-top: -4px !important;
+        }
+        
+        /* Стили для мобильного меню */
+        @media (max-width: 575px) {
+            #left-panel .navbar .sub-menu.children.show {
+                display: block;
+                margin-left: 20px;
+            }
+            
+            .navbar.navbar-expand-sm.navbar-default {
+                padding: 60px 0 !important;
+                min-height: auto !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            #left-panel .navbar .navbar-nav li > a .menu-icon {
+                width: 40px;
+                text-align: left;
+                font-size: 14px;
+            }
+        }
+        
+
         
         /* Анимация для подменю */
         .sub-menu.children {

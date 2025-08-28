@@ -108,9 +108,7 @@ function createMobileCards(services = null) {
                         </div>
                         <div class="service-info-item">
                             <span class="service-info-label">
-                                <svg viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 12l2 2 4-4m6 2 0 11-18 0 9 9 0 0118 0z" clip-rule="evenodd" />
-                                </svg>
+                                <i class="fas fa-circle ${status.includes('Активная') ? 'active' : 'inactive'}"></i>
                                 Статус:
                             </span>
                             <span class="service-info-value">
@@ -187,9 +185,7 @@ function createMobileCards(services = null) {
                         </div>
                         <div class="service-info-item">
                             <span class="service-info-label">
-                                <svg viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 12l2 2 4-4m6 2 0 11-18 0 9 9 0 0118 0z" clip-rule="evenodd" />
-                                </svg>
+                                <i class="fas fa-circle ${service.status ? 'active' : 'inactive'}"></i>
                                 Статус:
                             </span>
                             <span class="service-info-value">

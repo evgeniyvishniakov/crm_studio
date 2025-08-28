@@ -5052,6 +5052,20 @@
     color: white;
 }
 
+/* Стили для иконки статуса в мобильных карточках услуг */
+.service-info-label .fas.fa-circle {
+    font-size: 8px;
+    color: #9ca3af;
+}
+
+.service-info-label .fas.fa-circle.active {
+    color: #10b981;
+}
+
+.service-info-label .fas.fa-circle.inactive {
+    color: #6b7280;
+}
+
 .user-service-info {
     margin-bottom: 16px;
 }
@@ -9093,5 +9107,101 @@
     
     .stats-grid .card h5 {
         font-size: 13px;
+    }
+}
+
+/* Мобильные стили для дашборда */
+@media (max-width: 768px) {
+    /* Кнопка "Добавить новую" в разделе "Записи" */
+    .appointments-widget .tab-button {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.8rem !important;
+        min-width: auto !important;
+        width: auto !important;
+    }
+    
+    .appointments-widget .widget-header-modern {
+        flex-direction: row;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .appointments-widget .widget-title-container {
+        flex: 1;
+    }
+    
+    .appointments-widget .tab-button {
+        flex-shrink: 0;
+    }
+    
+    /* Адаптивная таблица записей */
+    .appointments-widget .appointments-table-block {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .appointments-widget .appointments-table {
+        min-width: 500px;
+    }
+    
+    .appointments-widget .appointments-table th,
+    .appointments-widget .appointments-table td {
+        padding: 0.6rem 0.5rem;
+    }
+    
+    /* Основной контент дашборда */
+    .dashboard-main-content {
+        padding: 0 0.5rem !important;
+        margin: 20px auto;
+    }
+    
+    /* Сетка статистики */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Кнопка "Добавить новую" в разделе "Записи" */
+    .appointments-widget .tab-button {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.75rem !important;
+        border-radius: 8px !important;
+    }
+    
+    /* Адаптивная таблица записей */
+    .appointments-widget .appointments-table-block {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .appointments-widget .appointments-table {
+        min-width: 600px;
+        font-size: 0.85rem;
+    }
+    
+    .appointments-widget .appointments-table th,
+    .appointments-widget .appointments-table td {
+        padding: 0.5rem 0.4rem;
+        white-space: nowrap;
+    }
+    
+    .appointments-widget .appointments-table th:first-child,
+    .appointments-widget .appointments-table td:first-child {
+        z-index: 1;
+    }
+    
+    /* Контейнер дашборда */
+    .dashboard-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 15px 0 !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
     }
 }
