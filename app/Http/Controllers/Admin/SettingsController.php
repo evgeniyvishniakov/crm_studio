@@ -64,7 +64,7 @@ class SettingsController extends Controller
             try {
                 // Удаляем старый логотип, если он существует
                 if ($settings->landing_logo) {
-                    $this->deleteImageFile($settings->landing_logo);
+                    $this->deleteImage($settings->landing_logo);
                 }
                 
                 $logoPath = $request->file('landing_logo')->store('public/logos');
@@ -79,7 +79,7 @@ class SettingsController extends Controller
             try {
                 // Удаляем старый фавикон, если он существует
                 if ($settings->favicon) {
-                    $this->deleteImageFile($settings->favicon);
+                    $this->deleteImage($settings->favicon);
                 }
                 
                 $faviconPath = $request->file('favicon')->store('public/favicons');
@@ -100,31 +100,60 @@ class SettingsController extends Controller
     /**
      * Удалить изображение
      */
-    public function removeImage(Request $request, $type)
+    public function removeImage(Request $request, $type = null)
     {
+        \Log::info('Попытка удаления изображения', [
+            'type' => $type,
+            'request_method' => $request->method(),
+            'request_url' => $request->url()
+        ]);
+        
         $settings = SystemSetting::getSettings();
+        
+        // Если тип не указан, пытаемся определить по URL или другим параметрам
+        if (!$type) {
+            // Проверяем, есть ли параметр type в запросе
+            $type = $request->get('type');
+            
+            // Если все еще нет типа, проверяем, какое изображение можно удалить
+            if (!$type) {
+                if ($settings->landing_logo) {
+                    $type = 'logo';
+                } elseif ($settings->favicon) {
+                    $type = 'favicon';
+                } else {
+                    \Log::warning('Тип изображения не указан и нет изображений для удаления');
+                    return back()->withErrors(['general' => 'Тип изображения не указан']);
+                }
+            }
+        }
         
         if ($type === 'logo' && $settings->landing_logo) {
             try {
-                $this->deleteImageFile($settings->landing_logo);
+                \Log::info('Удаление логотипа', ['logo_url' => $settings->landing_logo]);
+                $this->deleteImage($settings->landing_logo);
                 $settings->update(['landing_logo' => null]);
                 return back()->with('success', 'Логотип успешно удален!');
             } catch (\Exception $e) {
+                \Log::error('Ошибка при удалении логотипа: ' . $e->getMessage());
                 return back()->withErrors(['general' => 'Ошибка при удалении логотипа: ' . $e->getMessage()]);
             }
         }
         
         if ($type === 'favicon' && $settings->favicon) {
             try {
-                $this->deleteImageFile($settings->favicon);
+                \Log::info('Удаление фавикона', ['favicon_url' => $settings->favicon]);
+                $this->deleteImage($settings->favicon);
                 $settings->update(['favicon' => null]);
                 return back()->with('success', 'Фавикон успешно удален!');
             } catch (\Exception $e) {
+                \Log::error('Ошибка при удалении фавикона: ' . $e->getMessage());
                 return back()->withErrors(['general' => 'Ошибка при удалении фавикона: ' . $e->getMessage()]);
             }
         }
         
-        return back()->withErrors(['general' => 'Изображение не найдено']);
+        \Log::warning('Неверный тип изображения или изображение не найдено', ['type' => $type]);
+        return back()->withErrors(['general' => 'Неверный тип изображения или изображение не найдено']);
     }
 
     /**
@@ -136,11 +165,26 @@ class SettingsController extends Controller
             return;
         }
         
-        // Извлекаем путь к файлу из URL
-        $path = str_replace('/storage/', 'public/', $imageUrl);
-        
-        if (Storage::exists($path)) {
-            Storage::delete($path);
+        try {
+            // Извлекаем путь к файлу из URL
+            $path = str_replace('/storage/', 'public/', $imageUrl);
+            
+            if (Storage::exists($path)) {
+                Storage::delete($path);
+            }
+            
+            // Также попробуем удалить по полному пути, если файл не найден
+            if (!Storage::exists($path)) {
+                $fullPath = str_replace('/storage/', '', $imageUrl);
+                if (Storage::exists($fullPath)) {
+                    Storage::delete($fullPath);
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::error('Ошибка при удалении файла изображения: ' . $e->getMessage(), [
+                'imageUrl' => $imageUrl,
+                'path' => $path ?? null
+            ]);
         }
     }
 }

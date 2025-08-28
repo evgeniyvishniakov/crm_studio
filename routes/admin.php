@@ -49,12 +49,13 @@ Route::middleware(['admin.only'])->name('admin.')->group(function () {
     })->name('roles.index');
     
     // Настройки системы
-    Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
-    Route::post('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
     Route::delete('/settings/image/{type}', [\App\Http\Controllers\Admin\SettingsController::class, 'removeImage'])->name('settings.remove-image');
+    Route::delete('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'removeImage'])->name('settings.remove-image-general');
     Route::get('/settings/test', function () {
         return view('admin.settings.test');
     })->name('settings.test');
+    Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
     
     // Email шаблоны
     Route::get('/email-templates', function () {
