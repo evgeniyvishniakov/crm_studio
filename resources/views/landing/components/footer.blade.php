@@ -13,9 +13,11 @@
             <div class="col-lg-3 col-md-6 mb-4">
                 <h5>Продукт</h5>
                 <ul class="list-unstyled">
-                    <li><a href="{{ route('beautyflow.features') }}" class="text-muted text-decoration-none">Возможности</a></li>
-                    <li><a href="#" class="text-muted text-decoration-none">Интеграции</a></li>
+                    <li><a href="#features-grid" class="text-muted text-decoration-none">Возможности</a></li>
+                    <li><a href="#niches-section" class="text-muted text-decoration-none">Сферы применения</a></li>
                     <li><a href="{{ route('beautyflow.pricing') }}" class="text-muted text-decoration-none">Тарифы</a></li>
+                    <li><a href="{{ route('beautyflow.knowledge') }}" class="text-muted text-decoration-none">База знаний</a></li>
+                    <li><a href="{{ route('beautyflow.contact') }}" class="text-muted text-decoration-none">Контакты</a></li>
                 </ul>
             </div>
             <div class="col-lg-3 col-md-6 mb-4">
@@ -28,15 +30,6 @@
                 </ul>
             </div>
             <div class="col-lg-3 col-md-6 mb-4">
-                <h5>О нас</h5>
-                <ul class="list-unstyled">
-    
-                    <li><a href="#" class="text-muted text-decoration-none">Команда</a></li>
-                    <li><a href="#" class="text-muted text-decoration-none">История</a></li>
-                    <li><a href="#" class="text-muted text-decoration-none">Отзывы клиентов</a></li>
-                </ul>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
                 <h5>Контакты</h5>
                 <ul class="list-unstyled">
                     <li><a href="{{ route('beautyflow.contact') }}" class="text-muted text-decoration-none">Связаться с нами</a></li>
@@ -45,6 +38,7 @@
                     <li><i class="fas fa-map-marker-alt me-2"></i>Москва, ул. Примерная, 123</li>
                 </ul>
             </div>
+
         </div>
         <hr class="my-4">
         <div class="row">
