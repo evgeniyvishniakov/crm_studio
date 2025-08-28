@@ -474,9 +474,6 @@ body {
     transition: width 0.3s ease;
 }
 
-.navbar-brand:hover::after {
-    width: 100%;
-}
 
 .navbar-nav .nav-link {
     color: var(--text-dark) !important;
@@ -4455,10 +4452,6 @@ footer a:hover {
 }
 
 /* Ховер эффект для логотипа */
-.logo-text:hover {
-    transform: scale(1.05) !important;
-    filter: brightness(1.1) !important;
-}
 
 /* Анимация появления логотипа */
 .logo-text {
