@@ -9110,7 +9110,7 @@
     }
 }
 
-/* Мобильные стили для дашборда */
+/* Стили для планшетов (до 768px) */
 @media (max-width: 768px) {
     /* Кнопка "Добавить новую" в разделе "Записи" */
     .appointments-widget .tab-button {
@@ -9163,6 +9163,14 @@
         margin-bottom: 1rem;
         padding: 0 10px;
     }
+    
+    /* Исправление позиционирования для свернутого меню */
+    body.open .dashboard-container {
+        z-index: 1;
+        margin-left: 83px !important;
+        width: calc(100% - 83px) !important;
+        max-width: calc(100% - 83px) !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -9203,5 +9211,13 @@
         margin: 15px 0 !important;
         box-sizing: border-box !important;
         overflow-x: hidden !important;
+    }
+    
+    /* Исправление позиционирования для свернутого меню на мобильных */
+    body.open .dashboard-container {
+        z-index: 1;
+        margin-left: 83px !important;
+        width: calc(100% - 83px) !important;
+        max-width: calc(100% - 83px) !important;
     }
 }

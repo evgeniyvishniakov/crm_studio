@@ -926,7 +926,6 @@ aside.left-panel {
   padding-top: 7px; }
 .right-panel .navbar-header {
   width: 100%;
-  background-color: #fff;
   padding: 0 1.25em 0 0; }
   .right-panel .navbar-header > a {
     display: inline-block; }
@@ -938,7 +937,8 @@ aside.left-panel {
     display: none; }
 
 .open .right-panel {
-  margin-left: 0; }  /* Убираем отступ когда меню открыто */
+  margin-left: 83px !important;  /* Правильный отступ для свернутого меню */
+}
 .open .let-panel {
   z-index: 999; }
 
@@ -2722,12 +2722,7 @@ footer.site-footer {
 
 /*# sourceMappingURL=style.css.map */
 
-/* Dashboard Statistics Cards */
-.dashboard-container {
-    padding: 10px;
-    background: #f8f9fa;
-    
-}
+
 
 .dashboard-title {
     font-size: 2rem;
@@ -3152,18 +3147,7 @@ footer.site-footer {
 
 /* Existing styles... */
 
-/* Dashboard Container Styles */
-.dashboard-container {
-    padding: 24px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-  
-    margin: 32px auto;
-    width: 95%;
-    max-width: 1600px;
-    box-sizing: border-box;
-}
+
 
 /* Стили для карточек внутри контейнера (если нужно) */
 .dashboard-container .card {
@@ -3531,6 +3515,23 @@ footer.site-footer {
 
 .inventories-table > tbody > tr.inventory-summary-row:hover {
     cursor: pointer;
+}
+
+
+
+
+/* ===== СТИЛИ ДЛЯ СВЕРНУТОГО МЕНЮ ===== */
+
+/* Простое исправление для dashboard-container при свернутом меню */
+html body.open .dashboard-container {
+    margin-left: 0px !important;
+    max-width: calc(100%) !important;
+    overflow-x: hidden !important;
+}
+
+/* Убираем горизонтальную прокрутку в свернутом меню */
+html body.open .navbar-nav {
+    overflow-x: hidden !important;
 }
 
 
