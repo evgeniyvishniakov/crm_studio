@@ -742,6 +742,26 @@
     </style>
 
     <script>
+        // Функция для скрытия/показа пагинации в зависимости от размера экрана
+        function togglePaginationVisibility() {
+            const desktopPagination = document.getElementById('clientsPagination');
+            const mobilePagination = document.getElementById('mobileClientsPagination');
+            
+            if (window.innerWidth <= 768) {
+                // Мобильная версия
+                if (desktopPagination) desktopPagination.style.display = 'none';
+                if (mobilePagination) mobilePagination.style.display = 'block';
+            } else {
+                // Десктопная версия
+                if (desktopPagination) desktopPagination.style.display = 'block';
+                if (mobilePagination) mobilePagination.style.display = 'none';
+            }
+        }
+
+        // Переключаем видимость пагинации только при изменении размера окна
+        // НЕ вызываем при загрузке, так как пагинация еще не создана
+        window.addEventListener('resize', togglePaginationVisibility);
+
         // Функции для работы с модальным окном
         function openModal() {
             document.getElementById('addClientModal').style.display = 'block';
@@ -2105,6 +2125,10 @@
         }
 
         function renderPagination(meta) {
+            // Принудительно удаляем все существующие элементы пагинации
+            const allPaginationElements = document.querySelectorAll('#clientsPagination, #mobileClientsPagination');
+            allPaginationElements.forEach(el => el.remove());
+            
             let paginationHtml = '';
             if (meta.last_page > 1) {
                 paginationHtml += '<div class="pagination">';
@@ -2142,22 +2166,35 @@
             }
             
             // Пагинация для десктопа (в таблице)
-            let pagContainer = document.getElementById('clientsPagination');
-            if (!pagContainer) {
-                pagContainer = document.createElement('div');
-                pagContainer.id = 'clientsPagination';
-                // Добавляем пагинацию после table-wrapper, а не внутрь
-                document.querySelector('.table-wrapper').after(pagContainer);
+            // Сначала удаляем все существующие элементы пагинации
+            const existingDesktopPagination = document.getElementById('clientsPagination');
+            if (existingDesktopPagination) {
+                existingDesktopPagination.remove();
             }
+            
+            // Создаем новый элемент пагинации
+            let pagContainer = document.createElement('div');
+            pagContainer.id = 'clientsPagination';
+            pagContainer.className = 'pagination';
+            pagContainer.style.cssText = 'justify-content: center; margin-top: 20px;';
+            // Добавляем пагинацию после table-wrapper
+            document.querySelector('.table-wrapper').after(pagContainer);
             pagContainer.innerHTML = paginationHtml;
             
             // Пагинация для мобильных устройств (в карточках)
-            let mobilePagContainer = document.getElementById('mobileClientsPagination');
-            if (!mobilePagContainer) {
-                mobilePagContainer = document.createElement('div');
-                mobilePagContainer.id = 'mobileClientsPagination';
-                document.querySelector('.clients-cards').appendChild(mobilePagContainer);
+            // Сначала удаляем все существующие элементы мобильной пагинации
+            const existingMobilePagination = document.getElementById('mobileClientsPagination');
+            if (existingMobilePagination) {
+                existingMobilePagination.remove();
             }
+            
+            // Создаем новый элемент мобильной пагинации
+            let mobilePagContainer = document.createElement('div');
+            mobilePagContainer.id = 'mobileClientsPagination';
+            mobilePagContainer.className = 'pagination';
+            mobilePagContainer.style.cssText = 'justify-content: center; margin-top: 20px;';
+            // Добавляем мобильную пагинацию после контейнера с карточками
+            document.querySelector('.clients-cards').after(mobilePagContainer);
             mobilePagContainer.innerHTML = paginationHtml;
 
             // Навешиваем обработчики для всех кнопок пагинации
@@ -2169,6 +2206,9 @@
                     }
                 });
             });
+            
+            // Теперь, когда пагинация создана, вызываем функцию переключения видимости
+            togglePaginationVisibility();
         }
 
         function loadClients(page = 1, search = '') {

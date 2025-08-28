@@ -179,7 +179,8 @@
             </div>
         </div>
     </div>
-
+</div>
+    @endsection
     @push('scripts')
     <script>
         // Инициализация глобальных переменных
@@ -197,5 +198,5 @@
     </script>
     <script src="{{ asset('client/js/warehouse.js') }}"></script>
     @endpush
-@endsection
+
             

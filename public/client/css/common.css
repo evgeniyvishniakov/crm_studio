@@ -1167,10 +1167,7 @@ table.salary-payments-table .actions-cell {
 .chart-container{
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
-    /* public/css/app.css */
-    .warehouse-container {
-        padding: 20px;
-    }
+
 
     .product-photo {
         width: 50px;
@@ -4262,13 +4259,7 @@ input[type="date"]:focus {
     height: 14px;
 }
 
-/* Стили для склада */
-.warehouse-container {
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+
 
 .warehouse-header {
     display: flex;
