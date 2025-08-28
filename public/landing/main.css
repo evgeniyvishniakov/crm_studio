@@ -411,6 +411,8 @@ body {
     background: var(--white);
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
     padding: 1rem 0;
+    position: relative;
+    z-index: 99999;
 }
 
 /* Улучшенная видимость навигации на больших экранах */
@@ -433,7 +435,7 @@ body {
         background-color: rgba(0, 194, 146, 0.1);
     }
     
-    .navbar-nav .nav-link.active {
+    .navbar-nav .nav-link{
         border-color: var(--primary-color);
         background-color: rgba(0, 194, 146, 0.15);
     }
@@ -495,6 +497,7 @@ body {
     display: flex;
     align-items: center;
     height: 100%;
+    z-index: 99999;
 }
 
 /* Override any Bootstrap or other styles */
@@ -533,7 +536,7 @@ body {
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 0.75rem 1.5rem;
-    z-index: 9999;
+    z-index: 99999;
     opacity: 0;
     visibility: hidden;
     transition: all 0.2s ease;
@@ -644,6 +647,7 @@ body {
 .btn-primary:hover {
     transform: translateY(-3px);
     box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4);
+    transition: all 0.3s ease;
 }
 
 .btn-outline-primary {
@@ -657,6 +661,286 @@ body {
     border-color: transparent;
     color: white;
     transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+/* Просто копируем рабочие стили для кнопок в слайдере */
+.hero-buttons .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4);
+    transition: all 0.3s ease;
+}
+
+.hero-buttons .btn-outline-primary:hover {
+    background: var(--gradient-primary);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+.hero-buttons .btn-lg.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4);
+    transition: all 0.3s ease;
+}
+
+.hero-buttons .btn-lg.btn-outline-primary:hover {
+    background: var(--gradient-primary);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+/* Простые стили для всех слайдов */
+.slide .hero-buttons .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4);
+    transition: all 0.3s ease;
+}
+
+.slide .hero-buttons .btn-outline-primary:hover {
+    background: var(--gradient-primary);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+[data-slide] .hero-buttons .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4);
+    transition: all 0.3s ease;
+}
+
+[data-slide] .hero-buttons .btn-outline-primary:hover {
+    background: var(--gradient-primary);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+/* Простые стили для кнопок в слайдере */
+.hero-section .hero-buttons .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4);
+    transition: all 0.3s ease;
+}
+
+.hero-section .hero-buttons .btn-outline-primary:hover {
+    background: var(--gradient-primary);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+/* Простые стили для кнопок в слайдере */
+.hero-buttons .btn {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.hero-buttons .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+    z-index: -1;
+}
+
+.hero-buttons .btn:hover::before {
+    left: 100%;
+}
+
+/* Простые стили для всех кнопок в слайдере */
+.hero-slider .hero-buttons .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4);
+    transition: all 0.3s ease;
+}
+
+.hero-slider .hero-buttons .btn-outline-primary:hover {
+    background: var(--gradient-primary);
+    border-color: transparent;
+    color: white;
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+
+/* Анимация для кнопок в слайдере */
+.hero-buttons .btn {
+    animation: fadeInUp 0.8s ease-out;
+    animation-fill-mode: both;
+}
+
+.hero-buttons .btn:nth-child(1) {
+    animation-delay: 0.3s;
+}
+
+.hero-buttons .btn:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+/* Принудительные стили для всех кнопок в слайдере - финальная попытка */
+.hero-slider-container .hero-buttons .btn.btn-primary:hover,
+.hero-slider .hero-buttons .btn.btn-primary:hover,
+.slide .hero-buttons .btn.btn-primary:hover,
+[data-slide] .hero-buttons .btn.btn-primary:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4) !important;
+    transition: all 0.3s ease !important;
+}
+
+.hero-slider-container .hero-buttons .btn.btn-outline-primary:hover,
+.hero-slider .hero-buttons .btn.btn-outline-primary:hover,
+.slide .hero-buttons .btn.btn-outline-primary:hover,
+[data-slide] .hero-buttons .btn.btn-outline-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    transform: translateY(-3px) !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.3) !important;
+}
+
+/* Стили для всех размеров кнопок в слайдере */
+.hero-slider-container .hero-buttons .btn.btn-lg.btn-primary:hover,
+.hero-slider .hero-buttons .btn.btn-lg.btn-primary:hover,
+.slide .hero-buttons .btn.btn-lg.btn-primary:hover,
+[data-slide] .hero-buttons .btn.btn-lg.btn-primary:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4) !important;
+    transition: all 0.3s ease !important;
+}
+
+.hero-slider-container .hero-buttons .btn.btn-lg.btn-outline-primary:hover,
+.hero-slider .hero-buttons .btn.btn-lg.btn-outline-primary:hover,
+.slide .hero-buttons .btn.btn-lg.btn-outline-primary:hover,
+[data-slide] .hero-buttons .btn.btn-lg.btn-outline-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    transform: translateY(-3px) !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.3) !important;
+}
+
+/* Финальные стили для всех кнопок в слайдере - максимальный приоритет */
+.hero-section .hero-slider-container .hero-buttons .btn.btn-lg.btn-primary:hover,
+.hero-section .hero-slider .hero-buttons .btn.btn-lg.btn-primary:hover,
+.hero-section .slide .hero-buttons .btn.btn-lg.btn-primary:hover,
+.hero-section [data-slide] .hero-buttons .btn.btn-lg.btn-primary:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4) !important;
+    transition: all 0.3s ease !important;
+}
+
+.hero-section .hero-slider-container .hero-buttons .btn.btn-lg.btn-outline-primary:hover,
+.hero-section .hero-slider .hero-buttons .btn.btn-lg.btn-outline-primary:hover,
+.hero-section .slide .hero-buttons .btn.btn-lg.btn-outline-primary:hover,
+.hero-section [data-slide] .hero-buttons .btn.btn-lg.btn-outline-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    transform: translateY(-3px) !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.3) !important;
+}
+
+/* Универсальные стили для всех кнопок в слайдере - последняя попытка */
+.hero-section .hero-buttons .btn:hover,
+.hero-section .hero-slider .hero-buttons .btn:hover,
+.hero-section .slide .hero-buttons .btn:hover,
+.hero-section [data-slide] .hero-buttons .btn:hover {
+    transform: translateY(-3px) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Стили для всех кнопок в слайдере - максимальная специфичность */
+.hero-section .hero-buttons .btn.btn-primary:hover,
+.hero-section .hero-slider .hero-buttons .btn.btn-primary:hover,
+.hero-section .slide .hero-buttons .btn.btn-primary:hover,
+.hero-section [data-slide] .hero-buttons .btn.btn-primary:hover {
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4) !important;
+}
+
+.hero-section .hero-buttons .btn.btn-outline-primary:hover,
+.hero-section .hero-slider .hero-buttons .btn.btn-outline-primary:hover,
+.hero-section .slide .hero-buttons .btn.btn-outline-primary:hover,
+.hero-section [data-slide] .hero-buttons .btn.btn-outline-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.3) !important;
+}
+
+/* Финальные стили для всех кнопок в слайдере - абсолютный приоритет */
+.hero-section .hero-buttons .btn.btn-lg.btn-primary:hover,
+.hero-section .hero-slider .hero-buttons .btn.btn-lg.btn-primary:hover,
+.hero-section .slide .hero-buttons .btn.btn-lg.btn-primary:hover,
+.hero-section [data-slide] .hero-buttons .btn.btn-lg.btn-primary:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4) !important;
+    transition: all 0.3s ease !important;
+}
+
+.hero-section .hero-buttons .btn.btn-lg.btn-outline-primary:hover,
+.hero-section .hero-slider .hero-buttons .btn.btn-lg.btn-outline-primary:hover,
+.hero-section .slide .hero-buttons .btn.btn-lg.btn-outline-primary:hover,
+.hero-section [data-slide] .hero-buttons .btn.btn-lg.btn-outline-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    transform: translateY(-3px) !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.3) !important;
+}
+
+/* Стили для всех кнопок в слайдере - максимальная специфичность с !important */
+.hero-section .hero-buttons .btn.btn-primary:hover,
+.hero-section .hero-slider .hero-buttons .btn.btn-primary:hover,
+.hero-section .slide .hero-buttons .btn.btn-primary:hover,
+.hero-section [data-slide] .hero-buttons .btn.btn-primary:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4) !important;
+    transition: all 0.3s ease !important;
+}
+
+.hero-section .hero-buttons .btn.btn-outline-primary:hover,
+.hero-section .hero-slider .hero-buttons .btn.btn-outline-primary:hover,
+.hero-section .slide .hero-buttons .btn.btn-outline-primary:hover,
+.hero-section [data-slide] .hero-buttons .btn.btn-outline-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    transform: translateY(-3px) !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.3) !important;
+}
+
+/* Стили для всех кнопок в слайдере */
+.slide .hero-buttons .btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide .hero-buttons .btn:hover {
+    transform: translateY(-3px) scale(1.02);
+}
+
+.slide .hero-buttons .btn-primary:hover {
+    box-shadow: 0 20px 50px rgba(0, 194, 146, 0.5);
+}
+
+.slide .hero-buttons .btn-outline-primary:hover {
+    box-shadow: 0 20px 50px rgba(0, 194, 146, 0.4);
 }
 
 .btn-lg {
@@ -1021,6 +1305,20 @@ footer a:hover {
     .btn {
         padding: 0.75rem 1.5rem;
         font-size: 0.9rem;
+    }
+    
+    /* Стили для кнопок на очень маленьких экранах */
+    .hero-buttons .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .hero-buttons .btn:hover {
+        transform: translateY(-1px);
+    }
+    
+    .slide .hero-buttons .btn:hover {
+        transform: translateY(-1px) scale(1.005);
     }
 }
 
@@ -1881,6 +2179,15 @@ footer a:hover {
     .dynamic-island {
         width: 100px;
         height: 30px;
+    }
+    
+    /* Мобильные стили для кнопок в слайдере */
+    .hero-buttons .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .slide .hero-buttons .btn:hover {
+        transform: translateY(-2px) scale(1.01);
     }
 }
 
@@ -3712,3 +4019,415 @@ footer a:hover {
         height: 4px;
     }
 }
+
+/* Hero Slider для главной страницы */
+.hero-slider-container {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.hero-slider {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    z-index: 1;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: all 0.6s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slide.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.slide-content {
+    text-align: center;
+    max-width: 100%;
+    width: 100%;
+}
+
+.slide-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 2rem;
+    line-height: 1.1;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.slide-description {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-buttons {
+    margin-bottom: 3rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.slide-features {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+    max-width: 900px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.1rem;
+    color: var(--text-dark);
+    font-weight: 600;
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.feature-item i {
+    font-size: 1.5rem;
+    width: 30px;
+    text-align: center;
+}
+
+
+
+/* Анимации */
+.hero-slider {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Блок "Для каких ниш подходит" */
+.niches-section {
+    background: white;
+}
+
+.niche-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.niche-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+}
+
+.niche-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, rgba(0, 194, 146, 0.1) 0%, rgba(171, 140, 228, 0.1) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.niche-card:hover .niche-icon {
+    background: linear-gradient(135deg, rgba(0, 194, 146, 0.2) 0%, rgba(171, 140, 228, 0.2) 100%);
+    transform: scale(1.1);
+}
+
+.niche-icon i {
+    font-size: 2rem;
+}
+
+.niche-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+}
+
+.niche-description {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 0;
+    flex-grow: 1;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .hero-slider {
+        height: 100vh;
+        min-height: 500px;
+        padding: 2rem 1rem;
+    }
+    
+    .slide-title {
+        font-size: 2.25rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .slide-description {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .hero-buttons {
+        margin-bottom: 2rem;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-buttons .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .slide-features {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .feature-item {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .slider-controls {
+        bottom: 2rem;
+    }
+    
+    .niche-card {
+        padding: 1.5rem 1rem;
+    }
+    
+    .niche-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 1rem;
+    }
+    
+    .niche-icon i {
+        font-size: 1.5rem;
+    }
+    
+    .niche-title {
+        font-size: 1.1rem;
+    }
+    
+    .niche-description {
+        font-size: 0.9rem;
+    }
+}
+
+/* ===== ПРОСТЫЕ СТИЛИ ХОВЕРА ДЛЯ ВСЕХ КНОПОК ===== */
+
+/* Убираем все сложные стили и оставляем только простые */
+.btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2) !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4) !important;
+}
+
+.btn-outline-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.3) !important;
+}
+
+.btn-lg:hover {
+    transform: translateY(-3px) !important;
+}
+
+/* ===== ХОВЕР РАБОТАЕТ ЧЕРЕЗ JAVASCRIPT ===== */
+
+/* ===== ПРОСТЫЕ CSS СТИЛИ ХОВЕРА ДЛЯ ВСЕХ КНОПОК ===== */
+
+/* Ховер для всех кнопок в слайдере */
+.slide .hero-buttons .btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Ховер для primary кнопок */
+.slide .hero-buttons .btn-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4) !important;
+}
+
+/* Ховер для outline кнопок */
+.slide .hero-buttons .btn-outline-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.3) !important;
+}
+
+/* Ховер для всех кнопок */
+.slide .hero-buttons .btn:hover {
+    transform: translateY(-3px) !important;
+}
+
+/* Убираем все возможные конфликты */
+.hero-section .slide .hero-buttons .btn:hover {
+    transform: translateY(-3px) !important;
+    transition: all 0.3s ease !important;
+}
+
+.hero-section .slide .hero-buttons .btn.btn-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.4) !important;
+}
+
+.hero-section .slide .hero-buttons .btn.btn-outline-primary:hover {
+    background: var(--gradient-primary) !important;
+    border-color: transparent !important;
+    color: white !important;
+    box-shadow: 0 15px 40px rgba(0, 194, 146, 0.3) !important;
+}
+
+/* ===== ЦЕНТРИРОВАНИЕ КОНТЕНТА СЛАЙДЕРА ===== */
+
+/* Контейнер слайдера */
+.hero-slider-container {
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Слайдер */
+.hero-slider {
+    width: 100%;
+    position: relative;
+}
+
+/* Отдельный слайд */
+.slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+/* Контент слайда */
+.slide-content {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Заголовок слайда */
+.slide-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+/* Описание слайда */
+.slide-description {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    color: var(--text-secondary);
+}
+
+/* Кнопки слайда */
+.hero-buttons {
+    margin-bottom: 2rem;
+}
+
+/* Особенности слайда */
+.slide-features {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.feature-item i {
+    font-size: 1.25rem;
+}
+

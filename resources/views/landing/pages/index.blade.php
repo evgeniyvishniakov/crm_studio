@@ -10,88 +10,116 @@
 @section('content')
 
 <!-- Hero Section -->
-<section class="hero-section py-5 bg-light">
+    <section class="hero-section bg-light">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 animate-fade-in-left">
-                <h1 class="display-4 fw-bold mb-4 text-dark gradient-text">Автоматизируйте записи клиентов</h1>
-                <p class="lead mb-4 text-muted">Trimora - современная система с веб-записью, Telegram уведомлениями и виджетом для сайта. Увеличьте количество клиентов и упростите работу салона.</p>
-                <div class="d-flex gap-3">
-                    @if(Auth::guard('client')->check())
-                        <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg animate-pulse" aria-label="Войти в систему">
-                            <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>Войти в систему
-                        </a>
-                    @else
-                        <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
-                            <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
-                        </a>
-                    @endif
-                    <a href="#features-grid" class="btn btn-outline-primary btn-lg">
-                        <i class="fas fa-play me-2"></i>Смотреть функции
-                    </a>
-                </div>
-            </div>
-            <div class="col-lg-6 animate-fade-in-right">
-                <div class="device-showcase">
-                    <div class="laptop-mockup">
-                        <div class="laptop-screen">
-                            <div class="dashboard-preview">
-                                <div class="dashboard-header bg-gradient-primary text-white p-3">
-                                    <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>Панель управления</h6>
+        <div class="hero-slider-container">
+            <div class="hero-slider">
+                <div class="slide active" data-slide="1">
+                    <div class="slide-content">
+                        <h1 class="slide-title">Управляйте своим салоном красоты с помощью Trimora</h1>
+                        <p class="slide-description">Современная система управления салоном красоты с веб-записью, Telegram уведомлениями и виджетом для сайта. Увеличьте количество клиентов и упростите работу салона.</p>
+                        <div class="hero-buttons">
+                            @if(Auth::guard('client')->check())
+                                <a href="{{ route('dashboard') }}" class="btn btn-primary me-3 animate-pulse" aria-label="Войти в систему">
+                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>Войти в систему
+                                </a>
+                            @else
+                                <a href="#" class="btn btn-primary me-3 animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
+                                    <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
+                                </a>
+                            @endif
+                            <a href="#features-grid" class="btn btn-outline-primary">
+                                <i class="fas fa-play me-2"></i>Смотреть функции
+                            </a>
                         </div>
-                                <div class="dashboard-content p-3">
-                                    <div class="row g-2">
-                                <div class="col-6">
-                                            <div class="stat-mini bg-success-light p-2 rounded">
-                                                <small class="text-muted">Прибыль</small>
-                                                <div class="fw-bold">₴125,400</div>
-                                        </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="stat-mini bg-info-light p-2 rounded">
-                                                <small class="text-muted">Клиенты</small>
-                                                <div class="fw-bold">1,247</div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                            <div class="stat-mini bg-warning-light p-2 rounded">
-                                                <small class="text-muted">Записи</small>
-                                                <div class="fw-bold">89</div>
-                                        </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="stat-mini bg-primary-light p-2 rounded">
-                                                <small class="text-muted">Продажи</small>
-                                                <div class="fw-bold">₴45,200</div>
-                                    </div>
-                                </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                        </div>
-                    <div class="phone-mockup">
-                        <div class="phone-screen">
-                            <div class="mobile-preview">
-                                <div class="mobile-header bg-gradient-primary text-white p-2">
-                                    <small><i class="fas fa-calendar me-1"></i>Записи</small>
-                                        </div>
-                                <div class="mobile-content p-2">
-                                    <div class="appointment-item bg-light p-2 rounded mb-1">
-                                        <small class="text-muted">14:00</small>
-                                        <div class="fw-bold">Маникюр</div>
-                                        <small>Анна П.</small>
-                                    </div>
-                                    <div class="appointment-item bg-light p-2 rounded mb-1">
-                                        <small class="text-muted">15:30</small>
-                                        <div class="fw-bold">Стрижка</div>
-                                        <small>Мария К.</small>
-                    </div>
-                </div>
-            </div>
+                        <div class="slide-features">
+                            <div class="feature-item">
+                                <i class="fas fa-calendar-check text-primary"></i>
+                                <span>Онлайн-запись 24/7</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-bell text-success"></i>
+                                <span>Автоматические уведомления</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-chart-line text-warning"></i>
+                                <span>Аналитика и отчеты</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+                
+                <div class="slide" data-slide="2">
+                    <div class="slide-content">
+                        <h1 class="slide-title">Автоматизируйте записи клиентов</h1>
+                        <p class="slide-description">Trimora - современная система с веб-записью, Telegram уведомлениями и виджетом для сайта. Увеличьте количество клиентов и упростите работу салона.</p>
+                        <div class="hero-buttons">
+                            @if(Auth::guard('client')->check())
+                                <a href="{{ route('dashboard') }}" class="btn btn-primary me-3 animate-pulse" aria-label="Войти в систему">
+                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>Войти в систему
+                                </a>
+                            @else
+                                <a href="#" class="btn btn-primary me-3 animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
+                                    <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
+                                </a>
+                            @endif
+                            <a href="#" class="btn btn-outline-primary">
+                                <i class="fas fa-play me-2"></i>Смотреть функции
+                            </a>
+                        </div>
+                        <div class="slide-features">
+                            <div class="feature-item">
+                                <i class="fas fa-users text-info"></i>
+                                <span>База клиентов</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-wallet text-primary"></i>
+                                <span>Финансовый учет</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-cog text-success"></i>
+                                <span>Гибкие настройки</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slide" data-slide="3">
+                    <div class="slide-content">
+                        <h1 class="slide-title">Универсальная CRM для любой ниши</h1>
+                        <p class="slide-description">Trimora подходит для салонов красоты, медицинских клиник, автосервисов, образовательных центров и многих других сфер бизнеса.</p>
+                        <div class="hero-buttons">
+                            @if(Auth::guard('client')->check())
+                                <a href="{{ route('dashboard') }}" class="btn btn-primary me-3 animate-pulse" aria-label="Войти в систему">
+                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>Войти в систему
+                                </a>
+                            @else
+                                <a href="#" class="btn btn-primary me-3 animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
+                                    <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
+                                </a>
+                            @endif
+                            <a href="#niches-section" class="btn btn-outline-primary">
+                                <i class="fas fa-briefcase me-2"></i>Смотреть ниши
+                            </a>
+                        </div>
+                        <div class="slide-features">
+                            <div class="feature-item">
+                                <i class="fas fa-cut text-primary"></i>
+                                <span>Красота и уход</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-heartbeat text-danger"></i>
+                                <span>Медицинские услуги</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-car text-info"></i>
+                                <span>Автосервисы</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
             </div>
         </div>
     </div>
@@ -1080,6 +1108,110 @@
     </div>
 </section>
 
+<!-- Секция "Для каких ниш подходит" -->
+<section id="niches-section" class="niches-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-4">🎯 Для каких ниш подходит Trimora?</h2>
+            <p class="lead">Универсальная CRM для сервисного бизнеса любого масштаба</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Красота и уход -->
+            <div class="col-lg-3 col-md-6">
+                <div class="niche-card">
+                    <div class="niche-icon">
+                        <i class="fas fa-cut text-primary"></i>
+                    </div>
+                    <h4 class="niche-title">Красота и уход</h4>
+                    <p class="niche-description">Салоны красоты, парикмахерские, маникюрные салоны, СПА-центры, массажные салоны</p>
+                </div>
+            </div>
+            
+            <!-- Медицинские услуги -->
+            <div class="col-lg-3 col-md-6">
+                <div class="niche-card">
+                    <div class="niche-icon">
+                        <i class="fas fa-heartbeat text-danger"></i>
+                    </div>
+                    <h4 class="niche-title">Медицинские услуги</h4>
+                    <p class="niche-description">Стоматологические клиники, клиники эстетической медицины, физиотерапевтические центры</p>
+                </div>
+            </div>
+            
+            <!-- Творческие услуги -->
+            <div class="col-lg-3 col-md-6">
+                <div class="niche-card">
+                    <div class="niche-icon">
+                        <i class="fas fa-palette text-warning"></i>
+                    </div>
+                    <h4 class="niche-title">Творческие услуги</h4>
+                    <p class="niche-description">Фотостудии, студии звукозаписи, художественные мастерские, музыкальные школы</p>
+                </div>
+            </div>
+            
+            <!-- Автосервисы -->
+            <div class="col-lg-3 col-md-6">
+                <div class="niche-card">
+                    <div class="niche-icon">
+                        <i class="fas fa-car text-info"></i>
+                    </div>
+                    <h4 class="niche-title">Автосервисы</h4>
+                    <p class="niche-description">Автомойки, автосервисы, шиномонтажи, автодетейлинг</p>
+                </div>
+            </div>
+            
+            <!-- Бытовые услуги -->
+            <div class="col-lg-3 col-md-6">
+                <div class="niche-card">
+                    <div class="niche-icon">
+                        <i class="fas fa-tools text-secondary"></i>
+                    </div>
+                    <h4 class="niche-title">Бытовые услуги</h4>
+                    <p class="niche-description">Клининговые компании, ремонтные бригады, электрики, мастера по ремонту</p>
+                </div>
+            </div>
+            
+            <!-- Образование -->
+            <div class="col-lg-3 col-md-6">
+                <div class="niche-card">
+                    <div class="niche-icon">
+                        <i class="fas fa-graduation-cap text-success"></i>
+                    </div>
+                    <h4 class="niche-title">Образование</h4>
+                    <p class="niche-description">Частные репетиторы, языковые школы, курсы повышения квалификации</p>
+                </div>
+            </div>
+            
+            <!-- Ресторанный бизнес -->
+            <div class="col-lg-3 col-md-6">
+                <div class="niche-card">
+                    <div class="niche-icon">
+                        <i class="fas fa-utensils text-warning"></i>
+                    </div>
+                    <h4 class="niche-title">Ресторанный бизнес</h4>
+                    <p class="niche-description">Рестораны с предзаказом, кафе с доставкой, кейтеринг-услуги</p>
+                </div>
+            </div>
+            
+            <!-- Консалтинговые услуги -->
+            <div class="col-lg-3 col-md-6">
+                <div class="niche-card">
+                    <div class="niche-icon">
+                        <i class="fas fa-briefcase text-dark"></i>
+                    </div>
+                    <h4 class="niche-title">Консалтинговые услуги</h4>
+                    <p class="niche-description">Юридические консультации, бухгалтерские услуги, бизнес-консультанты</p>
+                </div>
+            </div>
+        </div>
+        
+                        <div class="text-center mt-5">
+                    <p class="text-muted">Не нашли свою нишу? Trimora легко адаптируется под любой сервисный бизнес!</p>
+                </div>
+    </div>
+</section>
+
 
 
 @include('landing.components.register-modal')
@@ -1087,105 +1219,46 @@
 
 @push('scripts')
 <script>
-// Автоматический слайдер для демонстрации формы записи
 document.addEventListener('DOMContentLoaded', function() {
-    const steps = ['demo-step1', 'demo-step2', 'demo-step3', 'demo-step4'];
-    const dots = document.querySelectorAll('.progress-dot');
-    let currentStep = 0;
+    console.log('=== СЛАЙДЕР ЗАГРУЖЕН ===');
     
-    function showStep(stepIndex) {
-        // Скрываем все шаги
-        steps.forEach((stepId, index) => {
-            const step = document.getElementById(stepId);
-            if (step) {
-                step.classList.remove('active');
-            }
-            if (dots[index]) {
-                dots[index].classList.remove('active');
+    const slides = document.querySelectorAll('.slide');
+    const heroButtons = document.querySelectorAll('.hero-buttons .btn');
+    
+    console.log(`Найдено слайдов: ${slides.length}`);
+    console.log(`Найдено кнопок: ${heroButtons.length}`);
+    
+    let currentSlide = 0;
+    
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            if (i === index) {
+                slide.style.display = 'block';
+                slide.classList.add('active');
+            } else {
+                slide.style.display = 'none';
+                slide.classList.remove('active');
             }
         });
-        
-        // Показываем текущий шаг
-        const currentStepElement = document.getElementById(steps[stepIndex]);
-        if (currentStepElement) {
-            currentStepElement.classList.add('active');
-        }
-        if (dots[stepIndex]) {
-            dots[stepIndex].classList.add('active');
-        }
+        currentSlide = index;
     }
     
-    function nextStep() {
-        currentStep = (currentStep + 1) % steps.length;
-        showStep(currentStep);
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
     }
     
-    // Автоматическое переключение каждые 3 секунды
-    setInterval(nextStep, 3000);
+    // Показываем первый слайд
+    showSlide(0);
     
-    // Показываем первый шаг при загрузке
-    showStep(0);
+    // Автоматическое переключение каждые 5 секунд
+    setInterval(nextSlide, 5000);
     
-    // Добавляем интерактивность для точек
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            currentStep = index;
-            showStep(currentStep);
-        });
-    });
-       });
-       
-       // Автоматический слайдер для графиков аналитики
-       document.addEventListener('DOMContentLoaded', function() {
-           const chartSteps = ['chart-step1', 'chart-step2', 'chart-step3', 'chart-step4'];
-           const chartDots = document.querySelectorAll('.chart-dot');
-           let currentChartStep = 0;
-           
-           function showChartStep(stepIndex) {
-               // Скрываем все шаги
-               chartSteps.forEach((stepId, index) => {
-                   const step = document.getElementById(stepId);
-                   if (step) {
-                       step.classList.remove('active');
-                   }
-                   if (chartDots[index]) {
-                       chartDots[index].classList.remove('active');
-                   }
-               });
-               
-               // Показываем текущий шаг
-               const currentStepElement = document.getElementById(chartSteps[stepIndex]);
-               if (currentStepElement) {
-                   currentStepElement.classList.add('active');
-               }
-               if (chartDots[stepIndex]) {
-                   chartDots[stepIndex].classList.add('active');
-               }
-           }
-           
-           function nextChartStep() {
-               currentChartStep = (currentChartStep + 1) % chartSteps.length;
-               showChartStep(currentChartStep);
-           }
-           
-           // Автоматическое переключение каждые 4 секунды
-           setInterval(nextChartStep, 4000);
-           
-           // Показываем первый шаг при загрузке
-           showChartStep(0);
-           
-           // Добавляем интерактивность для точек
-           chartDots.forEach((dot, index) => {
-               dot.addEventListener('click', () => {
-                   currentChartStep = index;
-                   showChartStep(currentChartStep);
-               });
-           });
-           
-
-       });
-       </script>
-       @endpush
+    console.log('=== СЛАЙДЕР ГОТОВ ===');
+    console.log('ХОВЕР РАБОТАЕТ ЧЕРЕЗ CSS СТИЛИ');
+});
+</script>
+@endpush
 
 @push('styles')
 <style>
