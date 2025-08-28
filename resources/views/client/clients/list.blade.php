@@ -2146,7 +2146,8 @@
             if (!pagContainer) {
                 pagContainer = document.createElement('div');
                 pagContainer.id = 'clientsPagination';
-                document.querySelector('.table-wrapper').appendChild(pagContainer);
+                // Добавляем пагинацию после table-wrapper, а не внутрь
+                document.querySelector('.table-wrapper').after(pagContainer);
             }
             pagContainer.innerHTML = paginationHtml;
             

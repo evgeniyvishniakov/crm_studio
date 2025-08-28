@@ -1,25 +1,4 @@
-    /* Общие стили для контейнеров */
-.clients-container,
-.products-container,
-.warehouse-container,
-.sales-container,
-.services-container,
-.appointments-container,
-.expenses-container,
-.inventories-container,
-.subscriptions-container,
-.settings-container{
-    max-width: 1200px;
-    margin: 0 auto;
-    font-family: 'Inter', Arial, sans-serif !important;
-}
 
-/* Контейнер закупок с увеличенной шириной */
-.purchases-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    font-family: 'Inter', Arial, sans-serif !important;
-}
 
 /* Стили для брендов товаров */
 .brands-cards {

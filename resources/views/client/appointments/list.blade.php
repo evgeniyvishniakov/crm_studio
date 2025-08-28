@@ -945,8 +945,10 @@
                 @endforeach
                 </tbody>
             </table>
-            <div class="pagination" id="appointmentsPagination" style="justify-content: center; margin-top: 20px;"></div>
         </div>
+        
+        <!-- Пагинация для десктопной таблицы -->
+        <div class="pagination" id="appointmentsPagination" style="justify-content: center; margin-top: 20px;"></div>
         
         <!-- Пагинация для мобильных карточек -->
         <div class="pagination" id="mobileAppointmentsPagination" style="justify-content: center; margin-top: 20px;"></div>
