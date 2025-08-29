@@ -2,12 +2,40 @@
 
 @php
     use Illuminate\Support\Facades\Auth;
+    use Illuminate\Support\Facades\App;
 @endphp
 
 @section('title', 'Тарифы - Trimora')
 @section('description', 'Выберите подходящий тариф для вашего салона красоты. Начните с бесплатного пробного периода на 7 дней.')
 
 @section('content')
+<!-- Отладочная информация о мультивалютности -->
+<div class="container mt-3">
+    <div class="alert alert-info">
+        <h6>🧪 Тест мультивалютности:</h6>
+        <p><strong>Текущий язык:</strong> {{ App::getLocale() }}</p>
+        <p><strong>Доступные валюты:</strong> 
+            @foreach($currencies as $currency)
+                {{ $currency->code }} ({{ $currency->symbol }})@if(!$loop->last), @endif
+            @endforeach
+        </p>
+        <p><strong>Валюты по языкам:</strong> 
+            @foreach($defaultCurrencies as $lang => $curr)
+                {{ $lang }} → {{ $curr }}@if(!$loop->last), @endif
+            @endforeach
+        </p>
+        
+        @if($plans->count() > 0)
+            @php $plan = $plans->first(); @endphp
+            <p><strong>Тест плана "{{ $plan->name }}":</strong></p>
+            <ul>
+                <li>Месяц: {{ $plan->getPriceForLanguage('ua', 'monthly') }}₴ / {{ $plan->getPriceForLanguage('en', 'monthly') }}$</li>
+                <li>3 месяца: {{ $plan->getPriceForLanguage('ua', 'quarterly') }}₴ / {{ $plan->getPriceForLanguage('en', 'quarterly') }}$</li>
+            </ul>
+        @endif
+    </div>
+</div>
+
 <!-- Hero Section -->
 <section class="py-5 bg-light">
     <div class="container">

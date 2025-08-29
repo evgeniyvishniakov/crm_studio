@@ -21,13 +21,13 @@
                     <a class="nav-link" href="#niches-section" role="menuitem">{{ __('landing.niches') }}</a>
                 </li>
                 <li class="nav-item" role="none">
-                    <a class="nav-link {{ request()->routeIs('beautyflow.pricing') ? 'active' : '' }}" href="{{ route('beautyflow.pricing') }}" role="menuitem">{{ __('landing.pricing') }}</a>
+                    <a class="nav-link {{ request()->routeIs('beautyflow.pricing') ? 'active' : '' }}" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.pricing')) }}" role="menuitem">{{ __('landing.pricing') }}</a>
                 </li>
                 <li class="nav-item" role="none">
-                    <a class="nav-link {{ request()->routeIs('beautyflow.knowledge') ? 'active' : '' }}" href="{{ route('beautyflow.knowledge') }}" role="menuitem">{{ __('landing.knowledge_base') }}</a>
+                    <a class="nav-link {{ request()->routeIs('beautyflow.knowledge') ? 'active' : '' }}" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.knowledge')) }}" role="menuitem">{{ __('landing.knowledge_base') }}</a>
                 </li>
                 <li class="nav-item" role="none">
-                    <a class="nav-link {{ request()->routeIs('beautyflow.contact') ? 'active' : '' }}" href="{{ route('beautyflow.contact') }}" role="menuitem">{{ __('landing.contacts') }}</a>
+                    <a class="nav-link {{ request()->routeIs('beautyflow.contact') ? 'active' : '' }}" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.contact')) }}" role="menuitem">{{ __('landing.contacts') }}</a>
                 </li>
             </ul>
             <ul class="navbar-nav">

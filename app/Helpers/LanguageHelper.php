@@ -9,33 +9,31 @@ use Illuminate\Support\Facades\App;
 class LanguageHelper
 {
     /**
-     * Получить текущий язык из сессии, проекта или по умолчанию
+     * Добавляет текущий язык к URL
+     */
+    public static function addLanguageToUrl($url, $language = null)
+    {
+        if (!$language) {
+            $language = session('language', 'ua');
+        }
+        
+        // Если URL уже содержит параметр lang, заменяем его
+        if (strpos($url, '?') !== false) {
+            $url = preg_replace('/[?&]lang=[^&]*/', '', $url);
+            $url .= '&lang=' . $language;
+        } else {
+            $url .= '?lang=' . $language;
+        }
+        
+        return $url;
+    }
+    
+    /**
+     * Получает текущий язык из сессии или по умолчанию
      */
     public static function getCurrentLanguage()
     {
-        // Сначала проверяем язык проекта (если пользователь авторизован)
-        if (auth('client')->check()) {
-            $user = auth('client')->user();
-            if ($user && $user->project_id) {
-                $project = \App\Models\Admin\Project::with('language')->find($user->project_id);
-                if ($project && $project->language) {
-                    $language = $project->language;
-                    if ($language && $language->is_active) {
-                        return $language->code;
-                    }
-                }
-            }
-        }
-
-        // Затем проверяем сессию
-        $sessionLanguage = Session::get('language');
-        if ($sessionLanguage) {
-            return $sessionLanguage;
-        }
-
-        // Наконец, возвращаем язык по умолчанию
-        $default = Language::getDefault();
-        return $default ? $default->code : 'ru';
+        return session('language', 'ua');
     }
 
     /**

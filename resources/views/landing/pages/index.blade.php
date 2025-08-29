@@ -2,10 +2,11 @@
 
 @php
     use Illuminate\Support\Facades\Auth;
+    use Illuminate\Support\Facades\App;
 @endphp
 
-@section('title', __('landing.page_title'))
-@section('description', __('landing.page_description'))
+@section('title', __('landing.hero_title_1'))
+@section('description', __('landing.hero_description_1'))
 @section('keywords', __('landing.page_keywords'))
 @section('author', 'Trimora')
 @section('robots', 'index, follow')
@@ -19,6 +20,8 @@
 @section('twitter:card', 'summary_large_image')
 @section('twitter:title', __('landing.page_title'))
 @section('twitter:description', __('landing.page_description'))
+
+
 
 @section('content')
 

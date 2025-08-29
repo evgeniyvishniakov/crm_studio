@@ -46,8 +46,8 @@
                 <p class="text-muted mb-0">&copy; 2024 Trimora. {{ __('landing.all_rights_reserved') }}.</p>
             </div>
             <div class="col-md-6 text-end">
-                <a href="{{ route('beautyflow.privacy') }}" class="text-muted text-decoration-none me-3">{{ __('landing.privacy_policy') }}</a>
-                <a href="{{ route('beautyflow.terms') }}" class="text-muted text-decoration-none">{{ __('landing.terms_of_use') }}</a>
+                <a href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.privacy')) }}" class="text-muted text-decoration-none me-3">{{ __('landing.privacy_policy') }}</a>
+                <a href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.terms')) }}" class="text-muted text-decoration-none">{{ __('landing.terms_of_use') }}</a>
             </div>
         </div>
     </div>

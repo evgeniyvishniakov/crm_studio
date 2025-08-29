@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Landing;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Plan;
+use App\Models\Currency;
 
 class PricingController extends Controller
 {
@@ -43,8 +44,17 @@ class PricingController extends Controller
             ]
         ];
 
+        // Получаем все активные валюты
+        $currencies = Currency::where('is_active', true)->get();
 
+        // Определяем валюту по умолчанию для каждого языка
+        $defaultCurrencies = [
+            'ua' => 'UAH',
+            'ru' => 'UAH', 
+            'en' => 'USD',
+            'pl' => 'PLN'
+        ];
 
-        return view('landing.pages.pricing', compact('plans', 'plansBySlug', 'planColors'));
+        return view('landing.pages.pricing', compact('plans', 'plansBySlug', 'planColors', 'currencies', 'defaultCurrencies'));
     }
 }

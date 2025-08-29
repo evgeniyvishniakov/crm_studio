@@ -138,6 +138,76 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+
+                                <!-- Цены в долларах (USD) -->
+                                <div class="card bg-light mb-3">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">💵 Цены в долларах ($)</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label for="price_monthly_usd">Цена за месяц ($)</label>
+                                            <input type="number" 
+                                                   class="form-control @error('price_monthly_usd') is-invalid @enderror" 
+                                                   id="price_monthly_usd" 
+                                                   name="price_monthly_usd" 
+                                                   value="{{ old('price_monthly_usd', $plan->price_monthly_usd) }}" 
+                                                   min="0" 
+                                                   step="0.01"
+                                                   placeholder="45.00">
+                                            @error('price_monthly_usd')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="price_quarterly_usd">Цена за 3 месяца ($)</label>
+                                            <input type="number" 
+                                                   class="form-control @error('price_quarterly_usd') is-invalid @enderror" 
+                                                   id="price_quarterly_usd" 
+                                                   name="price_quarterly_usd" 
+                                                   value="{{ old('price_quarterly_usd', $plan->price_quarterly_usd) }}" 
+                                                   min="0" 
+                                                   step="0.01"
+                                                   placeholder="Оставьте пустым для автоматического расчета">
+                                            @error('price_quarterly_usd')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="price_six_months_usd">Цена за 6 месяцев ($)</label>
+                                            <input type="number" 
+                                                   class="form-control @error('price_six_months_usd') is-invalid @enderror" 
+                                                   id="price_six_months_usd" 
+                                                   name="price_six_months_usd" 
+                                                   value="{{ old('price_six_months_usd', $plan->price_six_months_usd) }}" 
+                                                   min="0" 
+                                                   step="0.01"
+                                                   placeholder="Оставьте пустым для автоматического расчета">
+                                            @error('price_six_months_usd')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="price_yearly_usd">Цена за год ($)</label>
+                                            <input type="number" 
+                                                   class="form-control @error('price_yearly_usd') is-invalid @enderror" 
+                                                   id="price_yearly_usd" 
+                                                   name="price_yearly_usd" 
+                                                   value="{{ old('price_yearly_usd', $plan->price_yearly_usd) }}" 
+                                                   min="0" 
+                                                   step="0.01"
+                                                   placeholder="Оставьте пустым для автоматического расчета">
+                                            @error('price_yearly_usd')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+
                             </div>
 
                             <div class="col-md-6">
