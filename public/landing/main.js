@@ -74,8 +74,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Интерактивные элементы
     function initInteractiveElements() {
-        // Эффект свечения для кнопок
-        document.querySelectorAll('.btn').forEach(btn => {
+        // Эффект свечения для кнопок (исключаем кнопки в слайдере)
+        document.querySelectorAll('.btn:not(.hero-buttons .btn)').forEach(btn => {
             btn.addEventListener('mouseenter', function() {
                 this.style.transform = 'translateY(-3px) scale(1.02)';
             });
@@ -116,8 +116,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Эффект волны для кнопок
-        document.querySelectorAll('.btn').forEach(btn => {
+        // Эффект волны для кнопок (исключаем кнопки в слайдере)
+        document.querySelectorAll('.btn:not(.hero-buttons .btn)').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 const ripple = document.createElement('span');
                 const rect = this.getBoundingClientRect();
