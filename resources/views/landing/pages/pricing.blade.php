@@ -207,14 +207,14 @@
                                     
                                     <div class="text-center mb-4">
                                         <div class="{{ $planColors[$plan->slug]['badge'] }} bg-opacity-10 rounded p-3 mb-3">
-                                            <i class="fas fa-users {{ $planColors[$plan->slug]['icon'] }} fa-2x mb-2"></i>
+                                            <i class="{{ $planColors[$plan->slug]['icon_class'] }} {{ $planColors[$plan->slug]['icon'] }} fa-2x mb-2"></i>
                                             <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">
                                                 @if($index === 0)
-                                                    {{ __('landing.plan_small_description') }}
+                                                    {{ __('landing.plan_small_name') }}
                                                 @elseif($index === 1)
-                                                    {{ __('landing.plan_medium_description') }}
+                                                    {{ __('landing.plan_medium_name') }}
                                                 @else
-                                                    {{ __('landing.plan_unlimited_description') }}
+                                                    {{ __('landing.plan_unlimited_name') }}
                                                 @endif
                                             </h6>
                                         </div>
