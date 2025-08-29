@@ -112,7 +112,7 @@ class Plan extends Model
                 return $this->price_monthly;
             case 'quarterly':
                 return $this->price_quarterly ?? ($this->price_monthly * 3 * 0.9);
-            case 'semiannual':
+            case 'six_months':
                 return $this->price_six_months ?? ($this->price_monthly * 6 * 0.85);
             case 'yearly':
                 return $this->price_yearly ?? ($this->price_monthly * 12 * 0.75);
@@ -128,7 +128,7 @@ class Plan extends Model
                 return 0;
             case 'quarterly':
                 return 10;
-            case 'semiannual':
+            case 'six_months':
                 return 15;
             case 'yearly':
                 return 25;

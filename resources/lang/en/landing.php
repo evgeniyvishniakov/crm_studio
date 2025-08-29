@@ -412,4 +412,65 @@ return [
     'terms_contacts_text' => 'For service operation questions, contact us:',
     'support_email' => '📧 Email:',
     'support_email_address' => 'support@trimora.com',
+    
+    // Plan names and descriptions
+    'plan_small_name' => 'Up to 2 employees',
+    'plan_small_description' => 'Basic plan for small salons',
+    'plan_medium_name' => 'Up to 5 employees', 
+    'plan_medium_description' => 'Standard plan for medium salons',
+    'plan_unlimited_name' => 'Unlimited employees',
+    'plan_unlimited_description' => 'Premium plan for large networks',
+    
+    // Generic plan text
+    'plan_features_included' => 'All features included',
+    'plan_full_access' => 'Full access to CRM Studio',
+    
+    // Pricing page
+    'pricing_title' => 'Pricing',
+    'pricing_subtitle' => 'Choose a plan based on the number of employees in your salon',
+    'pricing_description' => 'All plans include the full set of Trimora features',
+    'pricing_features_title' => 'All plans include the full set of features',
+    'pricing_features_subtitle' => 'Price depends only on the number of employees in your salon',
+    
+    // Plan features
+    'pricing_feature_clients' => 'Client Management',
+    'pricing_feature_clients_desc' => 'Client database, visit history, preferences',
+    'pricing_feature_booking' => 'Bookings & Calendar',
+    'pricing_feature_booking_desc' => 'Online booking, master schedule, notifications',
+    'pricing_feature_analytics' => 'Analytics & Reports',
+    'pricing_feature_analytics_desc' => 'Detailed statistics, financial reports, analytics',
+    'pricing_feature_support' => '24/7 Support',
+    'pricing_feature_support_desc' => 'Technical support, training, consultations',
+    
+    // Subscription periods
+    'pricing_period_month' => 'Month',
+    'pricing_period_quarter' => '3 Months',
+    'pricing_period_semiannual' => '6 Months',
+    'pricing_period_year' => 'Year',
+    'pricing_period_monthly' => '/ month',
+    'pricing_period_quarterly' => '/ 3 months',
+    'pricing_period_semiannual_full' => '/ 6 months',
+    'pricing_period_yearly' => '/ year',
+    
+    // Savings
+    'pricing_savings_top' => 'TOP',
+    'pricing_savings_10' => 'Save 10%',
+    'pricing_savings_15' => 'Save 15%',
+    'pricing_savings_25' => 'Save 25%',
+    
+    // Buttons
+    'pricing_try_free' => 'Try Free for 7 Days',
+    'pricing_choose_plan' => 'Choose Plan',
+    'pricing_login' => 'Login to System',
+    
+    // Modal
+    'pricing_modal_title' => 'Plan Details',
+    'pricing_modal_perfect' => 'Perfect for your business',
+    'pricing_modal_all_features' => 'All features included',
+    'pricing_modal_full_access' => 'Full access to CRM Studio',
+    'pricing_modal_support' => 'Technical support',
+    'pricing_modal_proceed' => 'Proceed to Payment',
+    
+    // Common
+    'cancel' => 'Cancel',
 ];

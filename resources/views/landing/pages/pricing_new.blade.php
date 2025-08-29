@@ -9,8 +9,6 @@
 @section('description', __('landing.pricing_description'))
 
 @section('content')
-
-
 <!-- Hero Section -->
 <section class="py-5 bg-light">
     <div class="container">
@@ -100,13 +98,7 @@
                                     type="button" 
                                     role="tab"
                                     aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
-                                @if($index === 0)
-                                    {{ __('landing.plan_small_name') }}
-                                @elseif($index === 1)
-                                    {{ __('landing.plan_medium_name') }}
-                                @else
-                                    {{ __('landing.plan_unlimited_name') }}
-                                @endif
+                                {{ $plan->name }}
                             </button>
                         </li>
                     @endforeach
@@ -142,30 +134,14 @@
                                     <div class="text-center mb-4">
                                         <div class="{{ $planColors[$plan->slug]['badge'] }} bg-opacity-10 rounded p-3 mb-3">
                                             <i class="{{ $planColors[$plan->slug]['icon_class'] }} {{ $planColors[$plan->slug]['icon'] }} fa-2x mb-2"></i>
-                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">
-                                                @if($index === 0)
-                                                    {{ __('landing.plan_small_name') }}
-                                                @elseif($index === 1)
-                                                    {{ __('landing.plan_medium_name') }}
-                                                @else
-                                                    {{ __('landing.plan_unlimited_name') }}
-                                                @endif
-                                            </h6>
+                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">{{ $plan->name }}</h6>
                                         </div>
-                                        <p class="text-muted small">
-                                            @php
-                                                // Всегда используем переводы, игнорируем данные из базы
-                                                $planDescription = $index === 0 ? __('landing.plan_small_description') : 
-                                                    ($index === 1 ? __('landing.plan_medium_description') : 
-                                                    __('landing.plan_unlimited_description'));
-                                            @endphp
-                                            {{ $planDescription }}
-                                        </p>
+                                        <p class="text-muted small">{{ $plan->description ?: __('landing.pricing_modal_perfect') }}</p>
                                     </div>
                                     
                                     <div class="text-center mb-4">
-                                        <p class="fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>{{ __('landing.plan_features_included') }}</p>
-                                        <p class="text-muted small">{{ __('landing.plan_full_access') }}</p>
+                                        <p class="{{ $planColors[$plan->slug]['icon'] }} fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>{{ __('landing.pricing_modal_all_features') }}</p>
+                                        <p class="text-muted small">{{ __('landing.pricing_modal_full_access') }}</p>
                                     </div>
                                     
                                     @if(Auth::guard('client')->check())
@@ -208,30 +184,14 @@
                                     <div class="text-center mb-4">
                                         <div class="{{ $planColors[$plan->slug]['badge'] }} bg-opacity-10 rounded p-3 mb-3">
                                             <i class="fas fa-users {{ $planColors[$plan->slug]['icon'] }} fa-2x mb-2"></i>
-                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">
-                                                @if($index === 0)
-                                                    {{ __('landing.plan_small_description') }}
-                                                @elseif($index === 1)
-                                                    {{ __('landing.plan_medium_description') }}
-                                                @else
-                                                    {{ __('landing.plan_unlimited_description') }}
-                                                @endif
-                                            </h6>
+                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">{{ $plan->name }}</h6>
                                         </div>
-                                        <p class="text-muted small">
-                                            @php
-                                                // Всегда используем переводы, игнорируем данные из базы
-                                                $planDescription = $index === 0 ? __('landing.plan_small_description') : 
-                                                    ($index === 1 ? __('landing.plan_medium_description') : 
-                                                    __('landing.plan_unlimited_description'));
-                                            @endphp
-                                            {{ $planDescription }}
-                                        </p>
+                                        <p class="text-muted small">{{ $plan->description ?: __('landing.pricing_modal_perfect') }}</p>
                                     </div>
                                     
                                     <div class="text-center mb-4">
-                                        <p class="{{ $planColors[$plan->slug]['icon'] }} fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>{{ __('landing.plan_features_included') }}</p>
-                                        <p class="text-muted small">{{ __('landing.plan_full_access') }}</p>
+                                        <p class="{{ $planColors[$plan->slug]['icon'] }} fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>{{ __('landing.pricing_modal_all_features') }}</p>
+                                        <p class="text-muted small">{{ __('landing.pricing_modal_full_access') }}</p>
                                     </div>
                                     
                                     @if(Auth::guard('client')->check())
@@ -258,7 +218,7 @@
                                         <h3 class="h5 fw-bold text-dark mb-3">{{ __('landing.pricing_period_semiannual') }}</h3>
                                         <div class="mb-3">
                                             @php
-                                                $semiannualPrice = $plan->getPriceForLanguage($currentLang, 'six_months');
+                                                $semiannualPrice = $plan->getPriceForLanguage($currentLang, 'semiannual');
                                             @endphp
                                             <span class="h2 fw-bold text-dark">{{ number_format($semiannualPrice, 0, ',', ' ') }}{{ $currency }}</span>
                                             <span class="text-muted">{{ __('landing.pricing_period_semiannual_full') }}</span>
@@ -269,30 +229,14 @@
                                     <div class="text-center mb-4">
                                         <div class="{{ $planColors[$plan->slug]['badge'] }} bg-opacity-10 rounded p-3 mb-3">
                                             <i class="{{ $planColors[$plan->slug]['icon_class'] }} {{ $planColors[$plan->slug]['icon'] }} fa-2x mb-2"></i>
-                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">
-                                                @if($index === 0)
-                                                    {{ __('landing.plan_small_name') }}
-                                                @elseif($index === 1)
-                                                    {{ __('landing.plan_medium_name') }}
-                                                @else
-                                                    {{ __('landing.plan_unlimited_name') }}
-                                                @endif
-                                            </h6>
+                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">{{ $plan->name }}</h6>
                                         </div>
-                                        <p class="text-muted small">
-                                            @php
-                                                // Всегда используем переводы, игнорируем данные из базы
-                                                $planDescription = $index === 0 ? __('landing.plan_small_description') : 
-                                                    ($index === 1 ? __('landing.plan_medium_description') : 
-                                                    __('landing.plan_unlimited_description'));
-                                            @endphp
-                                            {{ $planDescription }}
-                                        </p>
+                                        <p class="text-muted small">{{ $plan->description ?: __('landing.pricing_modal_perfect') }}</p>
                                     </div>
                                     
                                     <div class="text-center mb-4">
-                                        <p class="{{ $planColors[$plan->slug]['icon'] }} fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>{{ __('landing.plan_features_included') }}</p>
-                                        <p class="text-muted small">{{ __('landing.plan_full_access') }}</p>
+                                        <p class="{{ $planColors[$plan->slug]['icon'] }} fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>{{ __('landing.pricing_modal_all_features') }}</p>
+                                        <p class="text-muted small">{{ __('landing.pricing_modal_full_access') }}</p>
                                     </div>
                                     
                                     @if(Auth::guard('client')->check())
@@ -330,30 +274,14 @@
                                     <div class="text-center mb-4">
                                         <div class="{{ $planColors[$plan->slug]['badge'] }} bg-opacity-10 rounded p-3 mb-3">
                                             <i class="{{ $planColors[$plan->slug]['icon_class'] }} {{ $planColors[$plan->slug]['icon'] }} fa-2x mb-2"></i>
-                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">
-                                                @if($index === 0)
-                                                    {{ __('landing.plan_small_name') }}
-                                                @elseif($index === 1)
-                                                    {{ __('landing.plan_medium_name') }}
-                                                @else
-                                                    {{ __('landing.plan_unlimited_name') }}
-                                                @endif
-                                            </h6>
+                                            <h6 class="fw-bold {{ $planColors[$plan->slug]['icon'] }} mb-0">{{ $plan->name }}</h6>
                                         </div>
-                                        <p class="text-muted small">
-                                            @php
-                                                // Всегда используем переводы, игнорируем данные из базы
-                                                $planDescription = $index === 0 ? __('landing.plan_small_description') : 
-                                                    ($index === 1 ? __('landing.plan_medium_description') : 
-                                                    __('landing.plan_unlimited_description'));
-                                            @endphp
-                                            {{ $planDescription }}
-                                        </p>
+                                        <p class="text-muted small">{{ $plan->description ?: __('landing.pricing_modal_perfect') }}</p>
                                     </div>
                                     
                                     <div class="text-center mb-4">
-                                        <p class="{{ $planColors[$plan->slug]['icon'] }} fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>{{ __('landing.plan_features_included') }}</p>
-                                        <p class="text-muted small">{{ __('landing.plan_full_access') }}</p>
+                                        <p class="{{ $planColors[$plan->slug]['icon'] }} fw-bold mb-2"><i class="fas fa-check-circle me-2"></i>{{ __('landing.pricing_modal_all_features') }}</p>
+                                        <p class="text-muted small">{{ __('landing.pricing_modal_full_access') }}</p>
                                     </div>
                                     
                                     @if(Auth::guard('client')->check())
@@ -371,8 +299,6 @@
                     </div>
                 </div>
             @endforeach
-
-
         </div>
     </div>
 </section>
@@ -390,8 +316,7 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <h6 class="fw-bold mb-3">{{ __('landing.pricing_modal_title') }}:</h6>
-                        <div class="card border-0 bg-light">
+                        <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title" id="selectedPlanName"></h5>
                                 <p class="card-text" id="selectedPlanDescription"></p>
@@ -417,7 +342,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('landing.cancel') }}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                 <button type="button" class="btn btn-primary" id="proceedToPayment">{{ __('landing.pricing_modal_proceed') }}</button>
             </div>
         </div>
@@ -426,94 +351,35 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('landing/main.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Script loaded');
-    
-    // Получаем все вкладки
-    var tabs = document.querySelectorAll('#pricingTabs .nav-link');
-    console.log('Found tabs:', tabs.length);
-    
-    // Добавляем обработчик клика на каждую вкладку
-    tabs.forEach(function(tab) {
-        tab.addEventListener('click', function(e) {
+    // Обработчик клика по карточке тарифа
+    document.querySelectorAll('.pricing-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Tab clicked:', this.textContent.trim());
             
-            // Убираем активный класс со всех вкладок
-            tabs.forEach(function(t) {
-                t.classList.remove('active');
-                t.setAttribute('aria-selected', 'false');
-            });
+            const card = this.closest('.card');
+            const planName = card.querySelector('h6').textContent;
+            const planPeriod = card.querySelector('h3').textContent;
+            const planPrice = card.querySelector('.h2').textContent;
             
-            // Убираем активный класс со всех панелей
-            document.querySelectorAll('#pricingTabsContent .tab-pane').forEach(function(pane) {
-                pane.classList.remove('show', 'active');
-            });
-            
-            // Активируем текущую вкладку
-            this.classList.add('active');
-            this.setAttribute('aria-selected', 'true');
-            console.log('Tab activated:', this.textContent.trim());
-            
-            // Показываем соответствующую панель
-            var targetId = this.getAttribute('data-bs-target');
-            var targetPane = document.querySelector(targetId);
-            if (targetPane) {
-                targetPane.classList.add('show', 'active');
-                console.log('Panel shown:', targetId);
-            } else {
-                console.log('Panel not found:', targetId);
+            // Получаем цену в месяц если есть
+            const monthlyPriceElement = card.querySelector('.text-muted.small');
+            let monthlyPrice = '';
+            if (monthlyPriceElement && monthlyPriceElement.textContent.includes('/')) {
+                monthlyPrice = monthlyPriceElement.textContent;
             }
-        });
-    });
-    
-    // Обработчики для кнопок "Выбрать план"
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('pricing-btn') && !e.target.hasAttribute('data-bs-toggle')) {
-            e.preventDefault();
-            
-            // Получаем данные о выбранном плане
-            var card = e.target.closest('.card');
-            var planName = card.querySelector('h6').textContent;
-            var planPeriod = card.querySelector('h3').textContent;
-            var planPrice = card.querySelector('.h2').textContent;
-            
-            // Получаем экономию и стоимость в месяц
-            var savings = '';
-            var monthlyPrice = '';
-            
-            // Ищем бейдж с экономией
-            var badges = card.querySelectorAll('.badge');
-            badges.forEach(function(badge) {
-                if (badge.textContent.includes('Экономия')) {
-                    savings = badge.textContent;
-                }
-            });
-            
-            // Ищем стоимость в месяц
-            var smallTexts = card.querySelectorAll('.text-muted.small');
-            smallTexts.forEach(function(text) {
-                if (text.textContent.includes('₴ / месяц')) {
-                    monthlyPrice = text.textContent;
-                }
-            });
             
             // Получаем цвет плана из кнопки
-            var button = e.target;
-            var buttonClasses = button.className;
-            var planColor = '';
+            const buttonClasses = this.className;
+            let planColor = 'bg-primary'; // по умолчанию
             
-            // Определяем цвет плана по классу кнопки
             if (buttonClasses.includes('btn-tab-green')) {
                 planColor = 'bg-success';
             } else if (buttonClasses.includes('btn-tab-blue')) {
                 planColor = 'bg-primary';
             } else if (buttonClasses.includes('btn-tab-yellow')) {
                 planColor = 'bg-warning';
-            } else {
-                planColor = 'bg-primary'; // по умолчанию
             }
             
             // Заполняем модальное окно
@@ -523,8 +389,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('selectedPlanPrice').textContent = planPrice;
             
             // Показываем экономию если есть
-            var savingsContainer = document.getElementById('selectedPlanSavings');
-            var savingsBadge = document.getElementById('savingsBadge');
+            const savingsContainer = document.getElementById('selectedPlanSavings');
+            const savingsBadge = document.getElementById('savingsBadge');
+            
             if (planPeriod.includes('3 месяца') || planPeriod.includes('3 Months')) {
                 savingsBadge.textContent = '{{ __("landing.pricing_savings_10") }}';
                 savingsContainer.style.display = 'flex';
@@ -539,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Показываем стоимость в месяц если есть
-            var monthlyPriceContainer = document.getElementById('selectedPlanMonthlyPrice');
+            const monthlyPriceContainer = document.getElementById('selectedPlanMonthlyPrice');
             if (monthlyPrice) {
                 monthlyPriceContainer.textContent = monthlyPrice;
             } else {
@@ -547,128 +414,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Применяем цвет плана к бейджу периода
-            var periodBadge = document.getElementById('selectedPlanPeriod');
+            const periodBadge = document.getElementById('selectedPlanPeriod');
             periodBadge.className = 'badge me-3 fs-6 px-3 py-2 ' + planColor;
             
             // Устанавливаем атрибуты для кнопки "Перейти к оплате"
-            var proceedButton = document.getElementById('proceedToPayment');
-            var cardPlanId = card.getAttribute('data-plan-id');
+            const proceedButton = document.getElementById('proceedToPayment');
+            const cardPlanId = card.getAttribute('data-plan-id');
             proceedButton.setAttribute('data-plan-id', cardPlanId);
             
-            // Определяем период по тексту на карточке
-            var periodText = planPeriod.trim();
-            var period = 'monthly'; // по умолчанию
-            
-            if (periodText.includes('3 месяца') || periodText.includes('3 мес')) {
-                period = 'quarterly';
-            } else if (periodText.includes('6 месяцев') || periodText.includes('6 мес')) {
-                period = 'six_months';
-            } else if (periodText.includes('год') || periodText.includes('12 месяцев')) {
-                period = 'yearly';
-            }
-            
-            proceedButton.setAttribute('data-period', period);
-            
-            console.log('Modal data set:', { 
-                planId: cardPlanId, 
-                period: period, 
-                periodText: periodText 
-            });
-            
             // Показываем модальное окно
-            var modal = new bootstrap.Modal(document.getElementById('planSelectionModal'));
+            const modal = new bootstrap.Modal(document.getElementById('planSelectionModal'));
             modal.show();
-        }
-    });
-    
-    // Обработчик для кнопки "Перейти к оплате"
-    document.getElementById('proceedToPayment').addEventListener('click', function() {
-        var planId = this.getAttribute('data-plan-id');
-        var period = this.getAttribute('data-period');
-        
-        console.log('Payment button clicked:', { planId: planId, period: period });
-        
-        if (planId && period) {
-            // Создаем форму для отправки
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("landing.payment.create") }}';
-            
-            // Добавляем CSRF токен
-            var csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
-            
-            // Добавляем данные плана
-            var planIdInput = document.createElement('input');
-            planIdInput.type = 'hidden';
-            planIdInput.name = 'plan_id';
-            planIdInput.value = planId;
-            form.appendChild(planIdInput);
-            
-            // Добавляем период
-            var periodInput = document.createElement('input');
-            periodInput.type = 'hidden';
-            periodInput.name = 'period';
-            periodInput.value = period;
-            form.appendChild(periodInput);
-            
-            // Отправляем форму
-            document.body.appendChild(form);
-            form.submit();
-        } else {
-            alert('Ошибка: не удалось определить план или период');
-        }
+        });
     });
 });
 </script>
-
-<style>
-/* Стили для активных вкладок по тарифам */
-#pricingTabs .nav-link.active[data-bs-target="#small"] {
-    background-color: #28a745 !important; /* Зеленый для первого тарифа */
-    color: white !important;
-    border-color: #28a745 !important;
-}
-
-#pricingTabs .nav-link.active[data-bs-target="#medium"] {
-    background-color: #007bff !important; /* Синий для второго тарифа */
-    color: white !important;
-    border-color: #007bff !important;
-}
-
-#pricingTabs .nav-link.active[data-bs-target="#unlimited"] {
-    background-color: #ffc107 !important; /* Желтый для третьего тарифа */
-    color: white !important; /* Белый текст как у всех */
-    border-color: #ffc107 !important;
-}
-
-/* Стили для неактивных вкладок */
-#pricingTabs .nav-link:not(.active) {
-    background-color: transparent !important;
-    color: #6c757d !important;
-    border-color: #dee2e6 !important;
-}
-
-#pricingTabs .nav-link:not(.active):hover {
-    background-color: #e9ecef !important;
-    color: #495057 !important;
-}
-
-/* Стили для компактных кнопок тарифов */
-.pricing-btn {
-    padding: 8px 16px !important;
-    font-size: 14px !important;
-    font-weight: 600 !important;
-    border-radius: 6px !important;
-    transition: all 0.3s ease !important;
-}
-
-.pricing-btn:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-}
-</style>
 @endpush
