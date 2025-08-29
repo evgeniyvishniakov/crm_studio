@@ -19,6 +19,26 @@ class SetLanguage
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Сначала проверяем параметр lang из URL (для лендинга)
+        if ($request->has('lang')) {
+            $langCode = $request->get('lang');
+            $language = Language::where('code', $langCode)->where('is_active', true)->first();
+            if ($language) {
+                App::setLocale($language->code);
+                return $next($request);
+            }
+        }
+        
+        // Затем проверяем язык из сессии
+        if (session()->has('language')) {
+            $langCode = session('language');
+            $language = Language::where('code', $langCode)->where('is_active', true)->first();
+            if ($language) {
+                App::setLocale($language->code);
+                return $next($request);
+            }
+        }
+        
         // Получаем язык из проекта пользователя
         if (Auth::check()) {
             $user = Auth::user();

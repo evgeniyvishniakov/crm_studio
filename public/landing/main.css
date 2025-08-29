@@ -4635,3 +4635,226 @@ footer .text-muted {
     }
 }
 
+/* ===== СЛАЙДЕР ВЕБ-ЗАПИСИ ===== */
+
+/* Контейнер формы */
+.booking-form-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.form-body {
+    position: relative;
+    min-height: 400px;
+}
+
+/* Шаги формы */
+.form-step {
+    display: none !important;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+}
+
+.form-step.active,
+.form-step.show {
+    display: block !important;
+    opacity: 1;
+    transform: translateX(0);
+    position: relative;
+    z-index: 2;
+}
+
+/* Скрываем все шаги по умолчанию */
+.form-step:not(.active):not(.show) {
+    display: none !important;
+    visibility: hidden;
+}
+
+/* Анимация появления */
+.form-step.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Анимация скрытия */
+.form-step.hide {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+/* Индикатор прогресса */
+.demo-progress {
+    margin-top: 1.5rem;
+}
+
+.progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.progress-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.progress-dot.active {
+    background-color: var(--primary-color);
+    transform: scale(1.2);
+    box-shadow: 0 0 0 4px rgba(0, 192, 146, 0.2);
+}
+
+.progress-dot:hover {
+    background-color: var(--secondary-color);
+    transform: scale(1.1);
+}
+
+/* Кнопки навигации */
+.slider-nav {
+    margin-top: 1rem;
+    padding: 0.5rem 0;
+}
+
+.slider-nav .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.slider-nav .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Анимация перехода между шагами */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+}
+
+@keyframes slideOutLeft {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+}
+
+/* Применение анимаций */
+.form-step.slide-in-right {
+    animation: slideInRight 0.5s ease forwards;
+}
+
+.form-step.slide-in-left {
+    animation: slideInLeft 0.5s ease forwards;
+}
+
+.form-step.slide-out-right {
+    animation: slideOutRight 0.5s ease forwards;
+}
+
+.form-step.slide-out-left {
+    animation: slideOutLeft 0.5s ease forwards;
+}
+
+/* Улучшенные стили для элементов формы */
+.service-option, .master-option {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.service-option:hover, .master-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.service-option.selected, .master-option.selected {
+    border-color: var(--primary-color);
+    background-color: rgba(0, 192, 146, 0.05);
+}
+
+/* Календарь */
+.calendar-day-demo {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.calendar-day-demo:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+}
+
+.calendar-day-demo.selected {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+}
+
+.calendar-day-demo.today {
+    border: 2px solid var(--primary-color);
+    font-weight: bold;
+}
+
+/* Временные слоты */
+.time-slot-demo {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.time-slot-demo:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: scale(1.05);
+}
+
+.time-slot-demo.selected {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+}
+

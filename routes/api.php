@@ -23,4 +23,11 @@ Route::prefix('widget')->name('widget.')->group(function () {
     Route::get('/config/{slug}', [\App\Http\Controllers\Api\WidgetController::class, 'getConfig'])->name('config');
 });
 
+// API для смены языка на лендинге
+Route::prefix('languages')->name('languages.')->group(function () {
+    Route::post('/set/{code}', [\App\Http\Controllers\Api\LanguageController::class, 'setLanguage'])->name('set');
+    Route::get('/', [\App\Http\Controllers\Api\LanguageController::class, 'index'])->name('index');
+    Route::get('/current', [\App\Http\Controllers\Api\LanguageController::class, 'current'])->name('current');
+});
+
 

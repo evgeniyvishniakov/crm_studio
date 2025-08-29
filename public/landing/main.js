@@ -328,3 +328,137 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Убираем проблемный код с additionalStyles 
+
+// Слайдер для веб-записи
+document.addEventListener('DOMContentLoaded', function() {
+    initWebBookingSlider();
+});
+
+function initWebBookingSlider() {
+    const steps = document.querySelectorAll('.form-step');
+    const progressDots = document.querySelectorAll('.progress-dot');
+    let currentStep = 0;
+    
+    if (steps.length === 0) {
+        console.log('Web booking steps not found');
+        return;
+    }
+    
+    console.log('Web booking slider initialized with', steps.length, 'steps');
+    console.log('Steps found:', steps);
+    console.log('Progress dots found:', progressDots);
+    
+    // Показываем первый шаг
+    showStep(0);
+    
+    // Добавляем отладочную информацию
+    console.log('Initial step setup complete');
+    console.log('Step 1:', document.getElementById('demo-step1'));
+    console.log('Step 2:', document.getElementById('demo-step2'));
+    console.log('Step 3:', document.getElementById('demo-step3'));
+    console.log('Step 4:', document.getElementById('demo-step4'));
+    
+    // Автоматическое переключение каждые 3 секунды
+    setInterval(() => {
+        nextStep();
+    }, 3000);
+    
+    // Функция показа шага
+    function showStep(stepIndex) {
+        console.log('Showing step:', stepIndex);
+        
+        // Скрываем все шаги
+        steps.forEach((step, index) => {
+            if (index === stepIndex) {
+                // Показываем текущий шаг
+                step.style.display = 'block';
+                step.style.visibility = 'visible';
+                step.style.opacity = '0';
+                step.style.transform = 'translateX(20px)';
+                step.classList.add('active', 'show');
+                step.classList.remove('hide');
+                
+                // Анимация появления
+                setTimeout(() => {
+                    step.style.transition = 'all 0.5s ease';
+                    step.style.opacity = '1';
+                    step.style.transform = 'translateX(0)';
+                }, 50);
+            } else {
+                // Скрываем остальные шаги
+                step.style.display = 'none';
+                step.style.visibility = 'hidden';
+                step.style.opacity = '0';
+                step.style.transform = 'translateX(-20px)';
+                step.classList.remove('active', 'show');
+                step.classList.add('hide');
+            }
+        });
+        
+        // Обновляем индикатор прогресса
+        progressDots.forEach((dot, index) => {
+            if (index === stepIndex) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+        
+        currentStep = stepIndex;
+        console.log('Current step set to:', currentStep);
+        
+        // Принудительно обновляем DOM
+        steps.forEach(step => step.offsetHeight);
+        
+        // Логируем состояние всех шагов
+        steps.forEach((step, index) => {
+            console.log(`Step ${index + 1}:`, {
+                display: step.style.display,
+                visibility: step.style.visibility,
+                opacity: step.style.opacity,
+                classes: step.className,
+                isVisible: step.offsetParent !== null
+            });
+        });
+    }
+    
+    // Следующий шаг
+    function nextStep() {
+        const nextStepIndex = (currentStep + 1) % steps.length;
+        console.log('Next step:', nextStepIndex, 'from current:', currentStep);
+        showStep(nextStepIndex);
+    }
+    
+    // Предыдущий шаг
+    function prevStep() {
+        const prevStepIndex = currentStep === 0 ? steps.length - 1 : currentStep - 1;
+        console.log('Previous step:', prevStepIndex, 'from current:', currentStep);
+        showStep(prevStepIndex);
+    }
+    
+    // Добавляем кнопки навигации если их нет
+    addNavigationButtons();
+    
+    function addNavigationButtons() {
+        const formBody = document.querySelector('.form-body');
+        if (!formBody || formBody.querySelector('.slider-nav')) return;
+        
+        const navDiv = document.createElement('div');
+        navDiv.className = 'slider-nav d-flex justify-content-between mt-3';
+        navDiv.innerHTML = `
+            <button class="btn btn-sm btn-outline-secondary" id="prevStep">
+                <i class="fas fa-chevron-left"></i> Назад
+            </button>
+            <button class="btn btn-sm btn-primary" id="nextStep">
+                Далі <i class="fas fa-chevron-right"></i>
+            </button>
+            <span class="text-muted small">Шаг ${currentStep + 1} из ${steps.length}</span>
+        `;
+        
+        formBody.appendChild(navDiv);
+        
+        // Обработчики кнопок
+        document.getElementById('prevStep').addEventListener('click', prevStep);
+        document.getElementById('nextStep').addEventListener('click', nextStep);
+    }
+} 

@@ -8,30 +8,30 @@
             <span class="fw-bold logo-text">Trimora</span>
         </a>
         
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Переключить навигацию">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="{{ __('landing.toggle_navigation') }}">
             <span class="navbar-toggler-icon"></span>
         </button>
         
-        <div class="collapse navbar-collapse" id="navbarNav" role="navigation" aria-label="Главная навигация">
+        <div class="collapse navbar-collapse" id="navbarNav" role="navigation" aria-label="{{ __('landing.main_navigation') }}">
             <ul class="navbar-nav me-auto" role="menubar">
                 <li class="nav-item" role="none">
-                    <a class="nav-link" href="#features-grid" role="menuitem">Возможности</a>
+                    <a class="nav-link" href="#features-grid" role="menuitem">{{ __('landing.features') }}</a>
                 </li>
                 <li class="nav-item" role="none">
-                    <a class="nav-link" href="#niches-section" role="menuitem">Сферы применения</a>
+                    <a class="nav-link" href="#niches-section" role="menuitem">{{ __('landing.niches') }}</a>
                 </li>
                 <li class="nav-item" role="none">
-                    <a class="nav-link {{ request()->routeIs('beautyflow.pricing') ? 'active' : '' }}" href="{{ route('beautyflow.pricing') }}" role="menuitem">Тарифы</a>
+                    <a class="nav-link {{ request()->routeIs('beautyflow.pricing') ? 'active' : '' }}" href="{{ route('beautyflow.pricing') }}" role="menuitem">{{ __('landing.pricing') }}</a>
                 </li>
                 <li class="nav-item" role="none">
-                    <a class="nav-link {{ request()->routeIs('beautyflow.knowledge') ? 'active' : '' }}" href="{{ route('beautyflow.knowledge') }}" role="menuitem">База знаний</a>
+                    <a class="nav-link {{ request()->routeIs('beautyflow.knowledge') ? 'active' : '' }}" href="{{ route('beautyflow.knowledge') }}" role="menuitem">{{ __('landing.knowledge_base') }}</a>
                 </li>
                 <li class="nav-item" role="none">
-                    <a class="nav-link {{ request()->routeIs('beautyflow.contact') ? 'active' : '' }}" href="{{ route('beautyflow.contact') }}" role="menuitem">Контакты</a>
+                    <a class="nav-link {{ request()->routeIs('beautyflow.contact') ? 'active' : '' }}" href="{{ route('beautyflow.contact') }}" role="menuitem">{{ __('landing.contacts') }}</a>
                 </li>
             </ul>
             <ul class="navbar-nav">
-                <!-- Language Selector - Alteg Style -->
+                <!-- Language Selector - Простая смена через перезагрузку -->
                 <li class="nav-item me-3">
                     <div class="alteg-lang-dropdown">
                         <button class="alteg-lang-btn" id="altegLangBtn">
@@ -51,33 +51,33 @@
                 @if(Auth::guard('client')->check())
                     @if(Auth::guard('client')->user()->role === 'admin')
                         <li class="nav-item">
-                            <a class="btn btn-outline-primary me-2" href="{{ route('landing.account.dashboard') }}" aria-label="Личный кабинет">
-                                <i class="fas fa-user me-1"></i>Личный кабинет
+                            <a class="btn btn-outline-primary me-2" href="{{ route('landing.account.dashboard') }}" aria-label="{{ __('landing.personal_account') }}">
+                                <i class="fas fa-user me-1"></i>{{ __('landing.personal_account') }}
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('landing.account.logout') }}" class="btn btn-outline-danger" aria-label="Выйти">
-                                <i class="fas fa-sign-out-alt me-1"></i>Выйти
+                            <a href="{{ route('landing.account.logout') }}" class="btn btn-outline-danger" aria-label="{{ __('landing.logout') }}">
+                                <i class="fas fa-sign-out-alt me-1"></i>{{ __('landing.logout') }}
                             </a>
                         </li>
                     @else
                         <li class="nav-item">
-                            <a class="btn btn-primary" href="{{ route('dashboard') }}" aria-label="Войти в систему">
-                                <i class="fas fa-sign-in-alt me-1"></i>Войти в систему
+                            <a class="btn btn-primary" href="{{ route('dashboard') }}" aria-label="{{ __('landing.enter_system') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>{{ __('landing.enter_system') }}
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('landing.account.logout') }}" class="btn btn-outline-danger" aria-label="Выйти">
-                                <i class="fas fa-sign-out-alt me-1"></i>Выйти
+                            <a href="{{ route('landing.account.logout') }}" class="btn btn-outline-danger" aria-label="{{ __('landing.logout') }}">
+                                <i class="fas fa-sign-out-alt me-1"></i>{{ __('landing.logout') }}
                             </a>
                         </li>
                     @endif
                 @else
                     <li class="nav-item">
-                        <a class="btn btn-outline-primary me-2" href="#" data-bs-toggle="modal" data-bs-target="#loginModal" aria-label="Открыть форму входа">Войти</a>
+                        <a class="btn btn-outline-primary me-2" href="#" data-bs-toggle="modal" data-bs-target="#loginModal" aria-label="{{ __('landing.login') }}">{{ __('landing.login') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">Попробовать бесплатно</a>
+                        <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="{{ __('landing.try_free') }}">{{ __('landing.try_free') }}</a>
                     </li>
                 @endif
             </ul>

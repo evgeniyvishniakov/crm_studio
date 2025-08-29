@@ -20,5 +20,6 @@ class VerifyCsrfToken extends Middleware
         '/products/import/preview',
         '/products/import',
         '/products/analyze-name',
+        'api/languages/set/*',
     ];
 }

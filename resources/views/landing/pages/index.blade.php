@@ -4,8 +4,21 @@
     use Illuminate\Support\Facades\Auth;
 @endphp
 
-@section('title', 'Trimora - Система управления салоном красоты')
-@section('description', 'Профессиональная система Trimora для управления салоном красоты с веб-записью, Telegram уведомлениями и виджетом для сайта')
+@section('title', __('landing.page_title'))
+@section('description', __('landing.page_description'))
+@section('keywords', __('landing.page_keywords'))
+@section('author', 'Trimora')
+@section('robots', 'index, follow')
+@section('canonical', url()->current())
+@section('og:title', __('landing.page_title'))
+@section('og:description', __('landing.page_description'))
+@section('og:type', 'website')
+@section('og:url', url()->current())
+@section('og:locale', app()->getLocale())
+@section('og:locale:alternate', implode(',', ['ru', 'en', 'ua']))
+@section('twitter:card', 'summary_large_image')
+@section('twitter:title', __('landing.page_title'))
+@section('twitter:description', __('landing.page_description'))
 
 @section('content')
 
@@ -16,34 +29,34 @@
             <div class="hero-slider">
                 <div class="slide active" data-slide="1">
                     <div class="slide-content">
-                        <h1 class="slide-title">Управляйте своим салоном красоты с помощью Trimora</h1>
-                        <p class="slide-description">Современная система управления салоном красоты с веб-записью, Telegram уведомлениями и виджетом для сайта. Увеличьте количество клиентов и упростите работу салона.</p>
+                                        <h1 class="slide-title">{{ __('landing.hero_title_1') }}</h1>
+                <p class="slide-description">{{ __('landing.hero_description_1') }}</p>
                         <div class="hero-buttons">
                             @if(Auth::guard('client')->check())
-                                <a href="{{ route('dashboard') }}" class="btn btn-primary me-3 animate-pulse" aria-label="Войти в систему">
-                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>Войти в систему
+                                <a href="{{ route('dashboard') }}" class="btn btn-primary me-3 animate-pulse" aria-label="{{ __('landing.enter_system') }}">
+                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>{{ __('landing.enter_system') }}
                                 </a>
                             @else
-                                <a href="#" class="btn btn-primary me-3 animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
-                                    <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
+                                <a href="#" class="btn btn-primary me-3 animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="{{ __('landing.try_free_7_days') }}">
+                                    <i class="fas fa-rocket me-2" aria-hidden="true"></i>{{ __('landing.try_free_7_days') }}
                                 </a>
                             @endif
                             <a href="#features-grid" class="btn btn-outline-primary">
-                                <i class="fas fa-play me-2"></i>Смотреть функции
+                                <i class="fas fa-play me-2"></i>{{ __('landing.view_functions') }}
                             </a>
                         </div>
                         <div class="slide-features">
                             <div class="feature-item">
                                 <i class="fas fa-calendar-check text-primary"></i>
-                                <span>Онлайн-запись 24/7</span>
+                                <span>{{ __('landing.online_booking_24_7') }}</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-bell text-success"></i>
-                                <span>Автоматические уведомления</span>
+                                <span>{{ __('landing.automatic_notifications') }}</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-chart-line text-warning"></i>
-                                <span>Аналитика и отчеты</span>
+                                <span>{{ __('landing.analytics_reports') }}</span>
                             </div>
                         </div>
                     </div>
@@ -51,34 +64,34 @@
                 
                 <div class="slide" data-slide="2">
                     <div class="slide-content">
-                        <h1 class="slide-title">Автоматизируйте записи клиентов</h1>
-                        <p class="slide-description">Trimora - современная система с веб-записью, Telegram уведомлениями и виджетом для сайта. Увеличьте количество клиентов и упростите работу салона.</p>
+                        <h1 class="slide-title">{{ __('landing.hero_title_2') }}</h1>
+                        <p class="slide-description">{{ __('landing.hero_description_2') }}</p>
                         <div class="hero-buttons">
                             @if(Auth::guard('client')->check())
-                                <a href="{{ route('dashboard') }}" class="btn btn-primary me-3 animate-pulse" aria-label="Войти в систему">
-                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>Войти в систему
+                                <a href="{{ route('dashboard') }}" class="btn btn-primary me-3 animate-pulse" aria-label="{{ __('landing.enter_system') }}">
+                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>{{ __('landing.enter_system') }}
                                 </a>
                             @else
-                                <a href="#" class="btn btn-primary me-3 animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
-                                    <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
+                                <a href="#" class="btn btn-primary me-3 animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="{{ __('landing.try_free_7_days') }}">
+                                    <i class="fas fa-rocket me-2" aria-hidden="true"></i>{{ __('landing.try_free_7_days') }}
                                 </a>
                             @endif
                             <a href="#" class="btn btn-outline-primary">
-                                <i class="fas fa-play me-2"></i>Смотреть функции
+                                <i class="fas fa-play me-2"></i>{{ __('landing.view_functions') }}
                             </a>
                         </div>
                         <div class="slide-features">
                             <div class="feature-item">
                                 <i class="fas fa-users text-info"></i>
-                                <span>База клиентов</span>
+                                <span>{{ __('landing.client_database') }}</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-wallet text-primary"></i>
-                                <span>Финансовый учет</span>
+                                <span>{{ __('landing.financial_accounting') }}</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-cog text-success"></i>
-                                <span>Гибкие настройки</span>
+                                <span>{{ __('landing.flexible_settings') }}</span>
                             </div>
                         </div>
                     </div>
@@ -86,34 +99,34 @@
                 
                 <div class="slide" data-slide="3">
                     <div class="slide-content">
-                        <h1 class="slide-title">Универсальная CRM для любой ниши</h1>
-                        <p class="slide-description">Trimora подходит для салонов красоты, медицинских клиник, автосервисов, образовательных центров и многих других сфер бизнеса.</p>
+                        <h1 class="slide-title">{{ __('landing.hero_title_3') }}</h1>
+                        <p class="slide-description">{{ __('landing.hero_description_3') }}</p>
                         <div class="hero-buttons">
                             @if(Auth::guard('client')->check())
-                                <a href="{{ route('dashboard') }}" class="btn btn-primary me-3 animate-pulse" aria-label="Войти в систему">
-                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>Войти в систему
+                                <a href="{{ route('dashboard') }}" class="btn btn-primary me-3 animate-pulse" aria-label="{{ __('landing.enter_system') }}">
+                                    <i class="fas fa-sign-in-alt me-2" aria-hidden="true"></i>{{ __('landing.enter_system') }}
                                 </a>
                             @else
-                                <a href="#" class="btn btn-primary me-3 animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="Открыть форму регистрации">
-                                    <i class="fas fa-rocket me-2" aria-hidden="true"></i>Попробовать бесплатно 7 дней
+                                <a href="#" class="btn btn-primary me-3 animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal" aria-label="{{ __('landing.try_free_7_days') }}">
+                                    <i class="fas fa-rocket me-2" aria-hidden="true"></i>{{ __('landing.try_free_7_days') }}
                                 </a>
                             @endif
                             <a href="#niches-section" class="btn btn-outline-primary">
-                                <i class="fas fa-briefcase me-2"></i>Смотреть ниши
+                                <i class="fas fa-briefcase me-2"></i>{{ __('landing.view_niches') }}
                             </a>
                         </div>
                         <div class="slide-features">
                             <div class="feature-item">
                                 <i class="fas fa-cut text-primary"></i>
-                                <span>Красота и уход</span>
+                                <span>{{ __('landing.beauty_care') }}</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-heartbeat text-danger"></i>
-                                <span>Медицинские услуги</span>
+                                <span>{{ __('landing.medical_services') }}</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-car text-info"></i>
-                                <span>Автосервисы</span>
+                                <span>{{ __('landing.auto_services') }}</span>
                             </div>
                         </div>
                     </div>
@@ -132,25 +145,25 @@
             <div class="col-lg-6">
                 <div class="feature-content">
 
-                    <h2 class="display-5 fw-bold mb-4">🔗 Веб-запись через ссылки</h2>
-                    <p class="lead mb-4">Клиенты могут записываться на услуги через ссылки в Instagram, Facebook и других социальных сетях. Простая интеграция в любой профиль.</p>
+                    <h2 class="display-5 fw-bold mb-4">{{ __('landing.web_booking_title') }}</h2>
+                    <p class="lead mb-4">{{ __('landing.web_booking_description') }}</p>
                     <div class="feature-benefits">
-                        <div class="benefit-item mb-3">
+                                                <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Ссылка для Instagram в био</span>
+                            <span>{{ __('landing.web_booking_benefits.instagram_bio_link') }}</span>
                         </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Запись за пару кликов</span>
-                    </div>
+                            <span>{{ __('landing.web_booking_benefits.booking_few_clicks') }}</span>
+                        </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Выбор услуг и мастеров в реальном времени</span>
-                </div>
+                            <span>{{ __('landing.web_booking_benefits.real_time_selection') }}</span>
+                        </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Автоматические уведомления о записях</span>
-            </div>
+                            <span>{{ __('landing.web_booking_benefits.automatic_notifications') }}</span>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -159,45 +172,45 @@
                     <div class="booking-form-preview">
                         <div class="booking-form-container">
                             <div class="form-header bg-gradient-primary text-white p-3 rounded-top">
-                                <h6 class="mb-0"><i class="fas fa-calendar-plus me-2"></i>Онлайн запись</h6>
+                                <h6 class="mb-0"><i class="fas fa-calendar-plus me-2"></i>{{ __('landing.online_booking') }}</h6>
             </div>
                             <div class="form-body p-3 bg-white rounded-bottom">
                                 <!-- Шаг 1: Выбор услуги -->
                                 <div class="form-step active" id="demo-step1">
-                                    <h6 class="mb-3">Выберите услугу</h6>
+                                    <h6 class="mb-3">{{ __('landing.select_service') }}</h6>
                                     <div class="service-options">
-                                        <div class="service-option selected">
+                                                                                <div class="service-option selected">
                                             <div class="service-info">
-                                                <h5 class="mb-1">Маникюр</h5>
-                                                <p>от 1500 ₴ • 60 мин</p>
-                        </div>
-                    </div>
+                                                <h5 class="mb-1">{{ __('landing.manicure') }}</h5>
+                                                <p>від 1500 ₴ • 60 хв</p>
+                                            </div>
+                                        </div>
                                         <div class="service-option">
                                             <div class="service-info">
-                                                <h5 class="mb-1">Стрижка</h5>
-                                                <p>от 2000 ₴ • 45 мин</p>
-                </div>
-            </div>
+                                                <h5 class="mb-1">{{ __('landing.haircut') }}</h5>
+                                                <p>від 2000 ₴ • 45 хв</p>
+                                            </div>
+                                        </div>
                                         <div class="service-option">
                                             <div class="service-info">
-                                                <h5 class="mb-1">Массаж</h5>
-                                                <p>от 3000 ₴ • 90 мин</p>
-                        </div>
-                    </div>
+                                                <h5 class="mb-1">{{ __('landing.massage') }}</h5>
+                                                <p>від 3000 ₴ • 90 хв</p>
+                                            </div>
+                                        </div>
                 </div>
             </div>
             
                                 <!-- Шаг 2: Выбор мастера -->
                                 <div class="form-step" id="demo-step2">
-                                    <h6 class="mb-3">Выберите мастера</h6>
+                                    <h6 class="mb-3">{{ __('landing.select_master') }}</h6>
                                     <div class="master-options">
                                         <div class="master-option selected">
                                             <div class="master-avatar">
                                                 <div class="avatar-placeholder">А</div>
                         </div>
                                             <div class="master-info">
-                                                <h5 class="mb-1">Анна</h5>
-                                                <p>Мастер маникюра</p>
+                                                <h5 class="mb-1">{{ __('landing.anna') }}</h5>
+                                                <p>{{ __('landing.manicure_master') }}</p>
                     </div>
                 </div>
                                         <div class="master-option">
@@ -205,8 +218,8 @@
                                                 <div class="avatar-placeholder">Е</div>
             </div>
                                             <div class="master-info">
-                                                <h5 class="mb-1">Елена</h5>
-                                                <p>Парикмахер</p>
+                                                <h5 class="mb-1">{{ __('landing.elena') }}</h5>
+                                                <p>{{ __('landing.hairdresser') }}</p>
                         </div>
                     </div>
                                         <div class="master-option">
@@ -214,8 +227,8 @@
                                                 <div class="avatar-placeholder">К</div>
                 </div>
                                             <div class="master-info">
-                                                <h5 class="mb-1">Катерина</h5>
-                                                <p>Массажист</p>
+                                                <h5 class="mb-1">{{ __('landing.katerina') }}</h5>
+                                                <p>{{ __('landing.masseur') }}</p>
             </div>
         </div>
     </div>
@@ -223,37 +236,37 @@
                                     
                                 <!-- Шаг 3: Выбор даты и времени -->
                                 <div class="form-step" id="demo-step3">
-                                    <h6 class="mb-3">Выберите дату и время</h6>
+                                    <h6 class="mb-3">{{ __('landing.select_date_time') }}</h6>
                                     <div class="calendar-demo">
                                         <div class="calendar-header">
                                             <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-left"></i></button>
-                                            <h5 class="mb-0">Январь 2025</h5>
+                                            <h5 class="mb-0">{{ __('landing.january_2025') }}</h5>
                                             <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-right"></i></button>
                                         </div>
                                         
                                         <!-- Дни недели -->
                                         <div class="calendar-weekdays">
-                                            <div class="weekday">Пн</div>
-                                            <div class="weekday">Вт</div>
-                                            <div class="weekday">Ср</div>
-                                            <div class="weekday">Чт</div>
-                                            <div class="weekday">Пт</div>
-                                            <div class="weekday">Сб</div>
-                                            <div class="weekday">Вс</div>
+                                            <div class="weekday">{{ __('landing.monday') }}</div>
+                                            <div class="weekday">{{ __('landing.tuesday') }}</div>
+                                            <div class="weekday">{{ __('landing.wednesday') }}</div>
+                                            <div class="weekday">{{ __('landing.thursday') }}</div>
+                                            <div class="weekday">{{ __('landing.friday') }}</div>
+                                            <div class="weekday">{{ __('landing.saturday') }}</div>
+                                            <div class="weekday">{{ __('landing.sunday') }}</div>
                                         </div>
                                         
                                         <div class="calendar-grid-demo">
                                             <!-- Предыдущий месяц -->
-                                            <div class="calendar-day-demo other-month">30</div>
-                                            <div class="calendar-day-demo other-month">31</div>
+                                            <div class="calendar-day-demo other-month" title="{{ __('landing.other_month') }}">30</div>
+                                            <div class="calendar-day-demo other-month" title="{{ __('landing.other_month') }}">31</div>
                                             
                                             <!-- Текущий месяц -->
-                                            <div class="calendar-day-demo disabled">1</div>
-                                            <div class="calendar-day-demo disabled">2</div>
+                                            <div class="calendar-day-demo disabled" title="{{ __('landing.disabled') }}">1</div>
+                                            <div class="calendar-day-demo disabled" title="{{ __('landing.disabled') }}">2</div>
                                             <div class="calendar-day-demo">3</div>
                                             <div class="calendar-day-demo">4</div>
-                                            <div class="calendar-day-demo today">5</div>
-                                            <div class="calendar-day-demo selected">6</div>
+                                            <div class="calendar-day-demo today" title="{{ __('landing.today') }}">5</div>
+                                            <div class="calendar-day-demo selected" title="{{ __('landing.selected') }}">6</div>
                                             <div class="calendar-day-demo">7</div>
                                             <div class="calendar-day-demo">8</div>
                                             <div class="calendar-day-demo">9</div>
@@ -285,8 +298,9 @@
                                             <div class="calendar-day-demo other-month">2</div>
                                 </div>
                                         </div>
+                                    
                                     <div class="time-slots-demo mt-3">
-                                        <h6 class="mb-2">Доступное время</h6>
+                                        <h6 class="mb-2">{{ __('landing.available_time') }}</h6>
                                                                                 <div class="time-slots-grid-demo">
                                             <div class="time-slot-demo">10:00</div>
                                             <div class="time-slot-demo">11:00</div>
@@ -302,20 +316,20 @@
                                     
                                 <!-- Шаг 4: Данные клиента -->
                                 <div class="form-step" id="demo-step4">
-                                    <h6 class="mb-3">Ваши данные</h6>
+                                    <h6 class="mb-3">{{ __('landing.client_data') }}</h6>
                                     <div class="form-fields">
                                         <div class="form-group mb-2">
-                                            <input type="text" class="form-control form-control-sm" placeholder="Ваше имя" value="Анна Петрова">
+                                            <input type="text" class="form-control form-control-sm" placeholder="{{ __('landing.your_name') }}" value="Анна Петрова">
                                             </div>
                                         <div class="form-group mb-2">
-                                            <input type="tel" class="form-control form-control-sm" placeholder="Телефон" value="+380 99 123 45 67">
+                                            <input type="tel" class="form-control form-control-sm" placeholder="{{ __('landing.phone') }}" value="+380 99 123 45 67">
                                         </div>
                                         <div class="form-group mb-3">
-                                            <textarea class="form-control form-control-sm" rows="2" placeholder="Комментарий (необязательно)"></textarea>
+                                            <textarea class="form-control form-control-sm" rows="2" placeholder="{{ __('landing.comment_optional') }}"></textarea>
                                         </div>
                                     </div>
                                     <div class="form-actions">
-                                        <button class="btn btn-success btn-sm w-100">Записаться <i class="fas fa-check ms-1"></i></button>
+                                        <button class="btn btn-success btn-sm w-100">{{ __('landing.book_appointment') }} <i class="fas fa-check ms-1"></i></button>
                                     </div>
                                         </div>
                                         
@@ -343,24 +357,24 @@
         <div class="row align-items-center">
             <div class="col-lg-6 order-lg-2">
                 <div class="feature-content">
-                    <h2 class="display-5 fw-bold mb-4">📱 Telegram уведомления</h2>
-                    <p class="lead mb-4">Получайте мгновенные уведомления о новых записях, отменах и изменениях в Telegram. Быстрая связь с клиентами.</p>
+                    <h2 class="display-5 fw-bold mb-4">{{ __('landing.telegram_notifications_title') }}</h2>
+                    <p class="lead mb-4">{{ __('landing.telegram_notifications_description') }}</p>
                     <div class="feature-benefits">
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Мгновенные уведомления о новых записях</span>
+                            <span>{{ __('landing.instant_notifications') }}</span>
                                                 </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Уведомления об отменах и переносах</span>
+                            <span>{{ __('landing.notifications_cancellations_reschedules') }}</span>
                                             </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Напоминание о завтрашних записях</span>
+                            <span>{{ __('landing.reminders_tomorrow_appointments') }}</span>
                                                 </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Статистика и отчеты прямо в чате</span>
+                            <span>{{ __('landing.statistics_reports_chat') }}</span>
                                             </div>
                                             </div>
                                         </div>
@@ -370,30 +384,30 @@
                     <div class="telegram-preview">
                         <div class="telegram-chat">
                             <div class="chat-header bg-primary text-white p-2 rounded-top">
-                                <i class="fab fa-telegram me-2"></i>Trimora Bot
+                                <i class="fab fa-telegram me-2"></i>{{ __('landing.trimora_bot') }}
                                                 </div>
                             <div class="chat-messages p-3 bg-white rounded-bottom">
                                 <div class="message bot-message mb-2">
                                     <div class="message-content bg-light p-2 rounded">
-                                        <small class="text-muted">Новая запись!</small>
-                                        <div>Клиент: Анна Петрова</div>
-                                        <div>Услуга: Маникюр</div>
-                                        <div>Дата: 15.01.2025, 14:00</div>
+                                        <small class="text-muted">{{ __('landing.new_appointment') }}</small>
+                                        <div>{{ __('landing.client') }}: {{ __('landing.anna_petrova') }}</div>
+                                        <div>{{ __('landing.service') }}: {{ __('landing.manicure') }}</div>
+                                        <div>{{ __('landing.date') }}: {{ __('landing.january_15_2025') }}, {{ __('landing.time') }}: {{ __('landing.14_00') }}</div>
                                             </div>
                                             </div>
                                 <div class="message bot-message mb-2">
                                     <div class="message-content bg-light p-2 rounded">
-                                        <small class="text-muted">Напоминание</small>
-                                        <div>Завтра в 10:00 - Массаж</div>
-                                        <div>Клиент: Мария Козлова</div>
+                                        <small class="text-muted">{{ __('landing.reminder') }}</small>
+                                        <div>{{ __('landing.tomorrow_at_10_00') }}: {{ __('landing.massage') }}</div>
+                                        <div>{{ __('landing.client') }}: {{ __('landing.maria_kozlova') }}</div>
                                             </div>
                                         </div>
                                 <div class="message bot-message">
                                     <div class="message-content bg-light p-2 rounded">
-                                        <small class="text-muted">Статистика за сегодня</small>
-                                        <div>✅ Записей: 8</div>
-                                        <div>📦 Товаров продано: 5</div>
-                                        <div>💰 Выручка: ₴12,500</div>
+                                        <small class="text-muted">{{ __('landing.statistics_today') }}</small>
+                                        <div>{{ __('landing.appointments') }}: 8</div>
+                                        <div>{{ __('landing.products_sold') }}: 5</div>
+                                        <div>{{ __('landing.revenue') }}: ₴{{ __('landing.12_500') }}</div>
                                             </div>
                                             </div>
                                             </div>
@@ -411,24 +425,24 @@
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <div class="feature-content">
-                    <h2 class="display-5 fw-bold mb-4">📧 Email рассылки</h2>
-                    <p class="lead mb-4">Автоматические email уведомления для клиентов. Напоминания о записях, поздравления с днями рождения, акции и спецпредложения.</p>
+                    <h2 class="display-5 fw-bold mb-4">{{ __('landing.email_marketing_title') }}</h2>
+                    <p class="lead mb-4">{{ __('landing.email_marketing_description') }}</p>
                     <div class="feature-benefits">
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Автоматические напоминания о записях</span>
+                            <span>{{ __('landing.automatic_reminders') }}</span>
                                             </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Подтверждение записи клиенту</span>
+                            <span>{{ __('landing.appointment_confirmation') }}</span>
                                             </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Напоминание о завтрашних записях</span>
+                            <span>{{ __('landing.reminders_tomorrow_appointments') }}</span>
                                             </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Уведомления об отменах и переносах</span>
+                            <span>{{ __('landing.notifications_cancellations_reschedules') }}</span>
                                         </div>
                                         </div>
                                                 </div>
@@ -438,19 +452,19 @@
                     <div class="email-preview">
                         <div class="email-template">
                             <div class="email-header bg-gradient-primary text-white p-3 rounded-top">
-                                <h6 class="mb-0"><i class="fas fa-envelope me-2"></i>Напоминание о записи</h6>
+                                <h6 class="mb-0"><i class="fas fa-envelope me-2"></i>{{ __('landing.appointment_reminder') }}</h6>
                                                 </div>
                             <div class="email-body p-3 bg-white rounded-bottom">
                                 <div class="email-content">
-                                    <h6>Здравствуйте, Анна!</h6>
-                                    <p>Напоминаем о записи на завтра:</p>
+                                    <h6>{{ __('landing.hello_anna') }}</h6>
+                                    <p>{{ __('landing.appointment_reminder_description') }}</p>
                                     <div class="appointment-details bg-light p-3 rounded mb-3">
-                                        <div><strong>Услуга:</strong> Маникюр</div>
-                                        <div><strong>Дата:</strong> 15 января 2025</div>
-                                        <div><strong>Время:</strong> 14:00</div>
-                                        <div><strong>Мастер:</strong> Елена</div>
+                                        <div><strong>{{ __('landing.service') }}:</strong> {{ __('landing.manicure') }}</div>
+                                        <div><strong>{{ __('landing.date') }}:</strong> {{ __('landing.january_15_2025') }}</div>
+                                        <div><strong>{{ __('landing.time') }}:</strong> {{ __('landing.14_00') }}</div>
+                                        <div><strong>{{ __('landing.master') }}:</strong> {{ __('landing.elena') }}</div>
                                             </div>
-                                    <p>Ждем вас в салоне!</p>
+                                    <p>{{ __('landing.we_await_you') }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -467,24 +481,24 @@
         <div class="row align-items-center">
             <div class="col-lg-6 order-lg-2">
                 <div class="feature-content">
-                    <h2 class="display-5 fw-bold mb-4">🌐 Виджет для сайта</h2>
-                    <p class="lead mb-4">Красивый и функциональный виджет для вашего сайта. Простая интеграция одной строкой кода.</p>
+                    <h2 class="display-5 fw-bold mb-4">{{ __('landing.website_widget_title') }}</h2>
+                    <p class="lead mb-4">{{ __('landing.website_widget_description') }}</p>
                     <div class="feature-benefits">
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Простая интеграция одной строкой кода</span>
+                            <span>{{ __('landing.simple_one_line_code_integration') }}</span>
                                             </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Адаптивный дизайн для всех устройств</span>
+                            <span>{{ __('landing.responsive_design_for_all_devices') }}</span>
                                             </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Настройка кнопки под дизайн вашего сайта</span>
+                            <span>{{ __('landing.website_widget_settings') }}</span>
                                             </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Быстрая установка виджета</span>
+                            <span>{{ __('landing.quick_widget_installation') }}</span>
                                             </div>
                                             </div>
                                             </div>
@@ -493,7 +507,7 @@
                 <div class="feature-demo">
                     <div class="code-preview">
                         <div class="code-header bg-dark text-white p-2 rounded-top">
-                            <small><i class="fas fa-code me-2"></i>Код для вставки</small>
+                            <small><i class="fas fa-code me-2"></i>{{ __('landing.code_for_insertion') }}</small>
                         </div>
                         <div class="code-body bg-dark text-light p-3 rounded-bottom">
                             <pre class="mb-0"><code>&lt;script src="https://crmstudio.com/widget.js"&gt;&lt;/script&gt;
@@ -518,24 +532,24 @@
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <div class="feature-content">
-                    <h2 class="display-5 fw-bold mb-4">🔒 Система ролей и прав</h2>
-                    <p class="lead mb-4">Гибкая система ролей для разных сотрудников. Администратор, менеджер, мастер - каждый видит только нужную информацию.</p>
+                    <h2 class="display-5 fw-bold mb-4">{{ __('landing.roles_system_title') }}</h2>
+                    <p class="lead mb-4">{{ __('landing.roles_system_description') }}</p>
                     <div class="feature-benefits">
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Роли: Администратор, Менеджер, Мастер</span>
+                            <span>{{ __('landing.roles') }}: {{ __('landing.administrator') }}, {{ __('landing.manager') }}, {{ __('landing.master') }}</span>
                                             </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Гибкие права доступа к функциям</span>
+                            <span>{{ __('landing.flexible_access_rights') }}</span>
                                         </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Безопасность данных и конфиденциальность</span>
+                            <span>{{ __('landing.data_security_and_confidentiality') }}</span>
                                     </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Аудит действий пользователей</span>
+                            <span>{{ __('landing.audit_of_user_actions') }}</span>
                         </div>
                     </div>
                 </div>
@@ -547,13 +561,13 @@
                             <div class="role-card mb-3">
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-primary text-white">
-                                        <h6 class="mb-0"><i class="fas fa-crown me-2"></i>Администратор</h6>
+                                        <h6 class="mb-0"><i class="fas fa-crown me-2"></i>{{ __('landing.administrator') }}</h6>
                                     </div>
                                     <div class="card-body">
                                         <ul class="list-unstyled mb-0">
-                                            <li><i class="fas fa-check text-success me-2"></i>Полный доступ ко всем функциям</li>
-                                            <li><i class="fas fa-check text-success me-2"></i>Управление пользователями</li>
-                                            <li><i class="fas fa-check text-success me-2"></i>Финансовая отчетность</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>{{ __('landing.full_access_to_all_functions') }}</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>{{ __('landing.user_management') }}</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>{{ __('landing.financial_reporting') }}</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -561,13 +575,13 @@
                             <div class="role-card mb-3">
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-info text-white">
-                                        <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Менеджер</h6>
+                                        <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>{{ __('landing.manager') }}</h6>
                                     </div>
                                     <div class="card-body">
                                         <ul class="list-unstyled mb-0">
-                                            <li><i class="fas fa-check text-success me-2"></i>Управление записями</li>
-                                            <li><i class="fas fa-check text-success me-2"></i>Работа с клиентами</li>
-                                            <li><i class="fas fa-check text-success me-2"></i>Базовая аналитика</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>{{ __('landing.appointment_management') }}</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>{{ __('landing.work_with_clients') }}</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>{{ __('landing.basic_analytics') }}</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -575,13 +589,13 @@
                             <div class="role-card">
                                 <div class="card border-0 shadow-sm">
                                     <div class="card-header bg-success text-white">
-                                        <h6 class="mb-0"><i class="fas fa-user me-2"></i>Мастер</h6>
+                                        <h6 class="mb-0"><i class="fas fa-user me-2"></i>{{ __('landing.master') }}</h6>
                         </div>
                                     <div class="card-body">
                                         <ul class="list-unstyled mb-0">
-                                            <li><i class="fas fa-check text-success me-2"></i>Просмотр своих записей</li>
-                                            <li><i class="fas fa-check text-success me-2"></i>Расписание работы</li>
-                                            <li><i class="fas fa-check text-success me-2"></i>Личная статистика</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>{{ __('landing.view_your_appointments') }}</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>{{ __('landing.work_schedule') }}</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>{{ __('landing.personal_statistics') }}</li>
                                         </ul>
                                 </div>
                                 </div>
@@ -600,24 +614,24 @@
         <div class="row align-items-center">
             <div class="col-lg-6 order-lg-2">
                 <div class="feature-content">
-                    <h2 class="display-5 fw-bold mb-4">📊 Подробная аналитика</h2>
-                    <p class="lead mb-4">Полная картина вашего бизнеса с детальными отчетами и графиками. Отслеживайте прибыль, клиентов, популярные услуги и эффективность сотрудников.</p>
+                    <h2 class="display-5 fw-bold mb-4">{{ __('landing.detailed_analytics_title') }}</h2>
+                    <p class="lead mb-4">{{ __('landing.detailed_analytics_description') }}</p>
                     <div class="feature-benefits">
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Аналитика по клиентам и записям</span>
+                            <span>{{ __('landing.analytics_clients_appointments') }}</span>
                         </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Отчеты по товарообороту и прибыли</span>
+                            <span>{{ __('landing.income_reports_and_profit') }}</span>
                         </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Популярность услуг и мастеров</span>
+                            <span>{{ __('landing.popularity_services_masters') }}</span>
                         </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
-                            <span>Интерактивные графики и диаграммы</span>
+                            <span>{{ __('landing.interactive_charts_and_diagrams') }}</span>
                         </div>
                     </div>
                 </div>
@@ -627,19 +641,19 @@
                     <div class="analytics-preview">
                         <div class="analytics-dashboard">
                             <div class="dashboard-header bg-gradient-primary text-white p-3 rounded-top">
-                                <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Аналитика салона</h6>
+                                <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>{{ __('landing.salon_analytics') }}</h6>
                             </div>
                             <div class="dashboard-content p-3 bg-white rounded-bottom">
                                 <div class="row g-3 mb-4">
                                     <div class="col-6">
                                         <div class="stat-mini-large bg-success-light p-3 rounded">
-                                            <small class="text-muted d-block mb-1">Прибыль</small>
-                                            <div class="fw-bold fs-5">₴125,400</div>
+                                            <small class="text-muted d-block mb-1">{{ __('landing.profit') }}</small>
+                                            <div class="fw-bold fs-5">₴{{ __('landing.125_400') }}</div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="stat-mini-large bg-info-light p-3 rounded">
-                                            <small class="text-muted d-block mb-1">Клиенты</small>
+                                            <small class="text-muted d-block mb-1">{{ __('landing.clients') }}</small>
                                             <div class="fw-bold fs-5">1,247</div>
                                         </div>
                                     </div>
@@ -657,7 +671,7 @@
                                             <div class="chart-bar" style="height: 85%; background: linear-gradient(135deg, #667eea, #764ba2);"></div>
                                             <div class="chart-bar" style="height: 55%; background: linear-gradient(135deg, #667eea, #764ba2);"></div>
                                         </div>
-                                        <small class="text-muted d-block text-center mt-2">Динамика продаж за неделю</small>
+                                        <small class="text-muted d-block text-center mt-2">{{ __('landing.sales_dynamics_week') }}</small>
                                     </div>
                                 </div>
                                 
@@ -666,28 +680,28 @@
                                     <div class="chart-preview bg-light p-3 rounded">
                                         <div class="horizontal-bars-large">
                                             <div class="horizontal-bar-large">
-                                                <span class="bar-label-large">Маникюр</span>
+                                                <span class="bar-label-large">{{ __('landing.manicure') }}</span>
                                                 <div class="bar-container-large">
                                                     <div class="bar-fill-large" style="width: 85%;"></div>
                             </div>
                                                 <span class="bar-value-large">85%</span>
                                             </div>
                                             <div class="horizontal-bar-large">
-                                                <span class="bar-label-large">Стрижка</span>
+                                                <span class="bar-label-large">{{ __('landing.haircut') }}</span>
                                                 <div class="bar-container-large">
                                                     <div class="bar-fill-large" style="width: 65%;"></div>
                                                 </div>
                                                 <span class="bar-value-large">65%</span>
                                             </div>
                                             <div class="horizontal-bar-large">
-                                                <span class="bar-label-large">Массаж</span>
+                                                <span class="bar-label-large">{{ __('landing.massage') }}</span>
                                                 <div class="bar-container-large">
                                                     <div class="bar-fill-large" style="width: 45%;"></div>
                                                 </div>
                                                 <span class="bar-value-large">45%</span>
                                             </div>
                                         </div>
-                                        <small class="text-muted d-block text-center mt-2">Популярность услуг</small>
+                                        <small class="text-muted d-block text-center mt-2">{{ __('landing.service_popularity') }}</small>
                         </div>
                     </div>
                     
@@ -699,21 +713,21 @@
                                                 <div class="pie-segment-large"></div>
                                                 <div class="pie-center-large">
                                                     <div class="pie-value-large">₴125K</div>
-                                                    <div class="pie-label-large">Прибыль</div>
+                                                    <div class="pie-label-large">{{ __('landing.profit') }}</div>
                         </div>
                     </div>
                                             <div class="pie-legend-large">
                                                 <div class="legend-item-large">
                                                     <span class="legend-color-large" style="background: #667eea;"></span>
-                                                    <span class="legend-text-large">Услуги (33%)</span>
+                                                    <span class="legend-text-large">{{ __('landing.services') }} (33%)</span>
                         </div>
                                                 <div class="legend-item-large">
                                                     <span class="legend-color-large" style="background: #e5e7eb;"></span>
-                                                    <span class="legend-text-large">Товары (67%)</span>
+                                                    <span class="legend-text-large">{{ __('landing.products') }} (67%)</span>
                     </div>
                                             </div>
                                         </div>
-                                        <small class="text-muted d-block text-center mt-2">Структура доходов</small>
+                                        <small class="text-muted d-block text-center mt-2">{{ __('landing.income_structure') }}</small>
                 </div>
             </div>
             
@@ -741,14 +755,14 @@
                                                 <text x="5" y="101" font-size="10" fill="#6b7280">120</text>
                                                 
                                                 <!-- Подписи осей X -->
-                                                <text x="20" y="115" font-size="10" fill="#6b7280" text-anchor="middle">Янв</text>
-                                                <text x="60" y="115" font-size="10" fill="#6b7280" text-anchor="middle">Фев</text>
-                                                <text x="100" y="115" font-size="10" fill="#6b7280" text-anchor="middle">Мар</text>
-                                                <text x="140" y="115" font-size="10" fill="#6b7280" text-anchor="middle">Апр</text>
-                                                <text x="180" y="115" font-size="10" fill="#6b7280" text-anchor="middle">Май</text>
-                                                <text x="220" y="115" font-size="10" fill="#6b7280" text-anchor="middle">Июн</text>
-                                                <text x="260" y="115" font-size="10" fill="#6b7280" text-anchor="middle">Июл</text>
-                                                <text x="280" y="115" font-size="10" fill="#6b7280" text-anchor="middle">Авг</text>
+                                                <text x="20" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.january') }}</text>
+                                                <text x="60" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.february') }}</text>
+                                                <text x="100" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.march') }}</text>
+                                                <text x="140" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.april') }}</text>
+                                                <text x="180" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.may') }}</text>
+                                                <text x="220" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.june') }}</text>
+                                                <text x="260" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.july') }}</text>
+                                                <text x="280" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.august') }}</text>
                                                 
                                                 <!-- Линия графика -->
                                                 <path d="M 20 96 L 60 72 L 100 48 L 140 32 L 180 24 L 220 40 L 260 16 L 280 8" 
@@ -769,7 +783,7 @@
                                                       fill="url(#lineGradient)"/>
                                             </svg>
                                 </div>
-                                        <small class="text-muted d-block text-center mt-2">Рост клиентской базы</small>
+                                        <small class="text-muted d-block text-center mt-2">{{ __('landing.client_base_growth') }}</small>
                             </div>
                         </div>
                         
@@ -798,8 +812,8 @@
     <div class="container">
         <div class="row text-center mb-5">
             <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold mb-4 section-title">Отзывы наших клиентов</h2>
-                <p class="lead text-muted">Что говорят владельцы салонов красоты о Trimora</p>
+                <h2 class="display-5 fw-bold mb-4 section-title">{{ __('landing.testimonials_title') }}</h2>
+                <p class="lead text-muted">{{ __('landing.testimonials_description') }}</p>
             </div>
         </div>
         
@@ -812,8 +826,8 @@
                                 <i class="fas fa-user text-white"></i>
                             </div>
                             <div>
-                                <h5 class="mb-1">Анна Петрова</h5>
-                                <small class="text-muted">Салон "Красота"</small>
+                                <h5 class="mb-1">{{ __('landing.anna_petrova') }}</h5>
+                                <small class="text-muted">{{ __('landing.salon_beauty') }}</small>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -823,7 +837,7 @@
                             <i class="fas fa-star text-warning"></i>
                             <i class="fas fa-star text-warning"></i>
                         </div>
-                        <p class="card-text">"Веб-запись через виджет увеличила количество клиентов на 40%! Клиенты записываются в любое время, даже ночью. Telegram уведомления помогают не пропустить ни одной записи."</p>
+                        <p class="card-text">"{{ __('landing.web_booking_testimonial_1') }}"</p>
                     </div>
                 </div>
             </div>
@@ -836,8 +850,8 @@
                                 <i class="fas fa-user text-white"></i>
                             </div>
                             <div>
-                                <h5 class="mb-1">Михаил Сидоров</h5>
-                                <small class="text-muted">Студия "Элегант"</small>
+                                <h5 class="mb-1">{{ __('landing.mikhail_sidorov') }}</h5>
+                                <small class="text-muted">{{ __('landing.elegant_studio') }}</small>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -847,7 +861,7 @@
                             <i class="fas fa-star text-warning"></i>
                             <i class="fas fa-star text-warning"></i>
                         </div>
-                        <p class="card-text">"Система ролей и прав очень удобна. Каждый мастер видит только свои записи, администратор контролирует все процессы. Email рассылки помогают удерживать клиентов."</p>
+                        <p class="card-text">"{{ __('landing.roles_system_testimonial_1') }}"</p>
                     </div>
                 </div>
             </div>
@@ -860,8 +874,8 @@
                                 <i class="fas fa-user text-white"></i>
                             </div>
                             <div>
-                                <h5 class="mb-1">Елена Козлова</h5>
-                                <small class="text-muted">Салон "Грация"</small>
+                                <h5 class="mb-1">{{ __('landing.elena_kozlova') }}</h5>
+                                <small class="text-muted">{{ __('landing.gracia_salon') }}</small>
                             </div>
                         </div>
                         <div class="mb-3">
@@ -871,7 +885,7 @@
                             <i class="fas fa-star text-warning"></i>
                             <i class="fas fa-star text-warning"></i>
                         </div>
-                        <p class="card-text">"Аналитика и отчеты показывают реальную картину бизнеса. Видим, какие услуги популярны, какие мастера эффективнее работают. Прибыль выросла на 25% за полгода."</p>
+                        <p class="card-text">"{{ __('landing.analytics_testimonial_1') }}"</p>
                     </div>
                 </div>
             </div>
@@ -884,20 +898,20 @@
     <div class="container">
         <div class="row text-center">
             <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold mb-4">Попробуйте Trimora бесплатно</h2>
-                <p class="lead mb-4">7 дней полного доступа ко всем функциям без ограничений</p>
+                <h2 class="display-5 fw-bold mb-4">{{ __('landing.try_trimora_free_cta_title') }}</h2>
+                <p class="lead mb-4">{{ __('landing.try_trimora_free_cta_description') }}</p>
                 <div class="d-flex gap-3 justify-content-center">
                     @if(Auth::guard('client')->check())
                         <a href="{{ route('dashboard') }}" class="btn btn-light btn-lg animate-pulse">
-                            <i class="fas fa-sign-in-alt me-2"></i>Войти в систему
+                            <i class="fas fa-sign-in-alt me-2"></i>{{ __('landing.enter_system') }}
                         </a>
                     @else
                         <a href="#" class="btn btn-light btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
-                            <i class="fas fa-rocket me-2"></i>Попробовать бесплатно 7 дней
+                            <i class="fas fa-rocket me-2"></i>{{ __('landing.try_free_7_days') }}
                         </a>
                     @endif
                     <a href="#features-grid" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-list me-2"></i>Посмотреть функции
+                        <i class="fas fa-list me-2"></i>{{ __('landing.view_functions') }}
                     </a>
                 </div>
             </div>
@@ -909,8 +923,8 @@
 <section id="features-grid" class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-4">🚀 Полный функционал CRM</h2>
-            <p class="lead">Все необходимые инструменты для управления вашим бизнесом в одном месте</p>
+            <h2 class="display-5 fw-bold mb-4">{{ __('landing.full_crm_functional_title') }}</h2>
+            <p class="lead">{{ __('landing.full_crm_functional_description') }}</p>
         </div>
         
         <div class="row g-4">
@@ -920,8 +934,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-calendar-plus"></i>
                     </div>
-                    <h5>Онлайн-запись</h5>
-                    <p>Дайте вашим клиентам возможность записываться 24/7 через ссылки в соцсетях</p>
+                    <h5>{{ __('landing.online_booking') }}</h5>
+                    <p>{{ __('landing.online_booking_description') }}</p>
                 </div>
             </div>
             
@@ -931,8 +945,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-calendar-alt"></i>
                     </div>
-                    <h5>Электронный журнал</h5>
-                    <p>Составляйте и обрабатывайте расписание для каждого сотрудника</p>
+                    <h5>{{ __('landing.electronic_journal') }}</h5>
+                    <p>{{ __('landing.electronic_journal_description') }}</p>
                 </div>
             </div>
             
@@ -942,8 +956,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <h5>Клиентская база</h5>
-                    <p>Управляйте всей информацией о своих клиентах в одном месте</p>
+                    <h5>{{ __('landing.client_database') }}</h5>
+                    <p>{{ __('landing.client_database_description') }}</p>
                 </div>
             </div>
             
@@ -953,8 +967,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-bell"></i>
                     </div>
-                    <h5>Уведомления</h5>
-                    <p>Различные автоматизированные SMS, WhatsApp и Email уведомления</p>
+                    <h5>{{ __('landing.notifications') }}</h5>
+                    <p>{{ __('landing.notifications_description') }}</p>
                 </div>
             </div>
             
@@ -964,8 +978,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-shopping-cart"></i>
                     </div>
-                    <h5>Управление товарами</h5>
-                    <p>Полный контроль над товарами, категориями, брендами и поставщиками</p>
+                    <h5>{{ __('landing.product_management') }}</h5>
+                    <p>{{ __('landing.product_management_description') }}</p>
                 </div>
             </div>
             
@@ -975,8 +989,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-boxes"></i>
                     </div>
-                    <h5>Инвентаризация</h5>
-                    <p>Управляйте инвентарями и автоматически рассчитывайте расходы</p>
+                    <h5>{{ __('landing.inventory') }}</h5>
+                    <p>{{ __('landing.inventory_description') }}</p>
                 </div>
             </div>
             
@@ -986,8 +1000,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h5>Финансовая отчетность</h5>
-                    <p>Подробные отчеты о доходах, расходах и остатках</p>
+                    <h5>{{ __('landing.financial_reporting') }}</h5>
+                    <p>{{ __('landing.financial_reporting_description') }}</p>
                 </div>
             </div>
             
@@ -997,8 +1011,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-chart-bar"></i>
                     </div>
-                    <h5>Аналитика и статистика</h5>
-                    <p>Подробные данные и графики, необходимые для роста и расширения бизнеса</p>
+                    <h5>{{ __('landing.analytics_statistics') }}</h5>
+                    <p>{{ __('landing.analytics_statistics_description') }}</p>
                 </div>
             </div>
             
@@ -1008,8 +1022,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-gift"></i>
                     </div>
-                    <h5>Программы Лояльности</h5>
-                    <p>Создавайте программы лояльности для ваших клиентов</p>
+                    <h5>{{ __('landing.loyalty_programs') }}</h5>
+                    <p>{{ __('landing.loyalty_programs_description') }}</p>
                 </div>
             </div>
             
@@ -1019,8 +1033,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-exchange-alt"></i>
                     </div>
-                    <h5>Закупки и продажи</h5>
-                    <p>Управление закупками товаров и продажами с полной аналитикой</p>
+                                            <h5>{{ __('landing.purchases_sales') }}</h5>
+                        <p>{{ __('landing.purchases_sales_description') }}</p>
                 </div>
             </div>
             
@@ -1030,8 +1044,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-user-shield"></i>
                     </div>
-                    <h5>Система ролей</h5>
-                    <p>Гибкая система ролей для администраторов, менеджеров и мастеров</p>
+                                            <h5>{{ __('landing.roles_system') }}</h5>
+                        <p>{{ __('landing.roles_system_description') }}</p>
                 </div>
             </div>
             
@@ -1041,8 +1055,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-money-bill-wave"></i>
                     </div>
-                    <h5>Зарплата</h5>
-                    <p>Автоматический расчёт зарплаты сотрудников с поддержкой бонусов и процентов</p>
+                    <h5>{{ __('landing.salary') }}</h5>
+                    <p>{{ __('landing.salary_description') }}</p>
                 </div>
             </div>
             
@@ -1052,8 +1066,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-calendar-check"></i>
                     </div>
-                    <h5>Управление записями</h5>
-                    <p>Полный контроль над записями клиентов и расписанием мастеров</p>
+                    <h5>{{ __('landing.appointment_management') }}</h5>
+                    <p>{{ __('landing.appointment_management_description') }}</p>
                 </div>
             </div>
             
@@ -1063,8 +1077,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-chart-pie"></i>
                     </div>
-                    <h5>Аналитика по клиентам</h5>
-                    <p>Детальная аналитика клиентской базы и динамики записей</p>
+                    <h5>{{ __('landing.client_analytics') }}</h5>
+                    <p>{{ __('landing.client_analytics_description') }}</p>
                 </div>
             </div>
             
@@ -1074,8 +1088,8 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h5>Аналитика товарооборота</h5>
-                    <p>Подробные отчеты по продажам, закупкам и товарообороту</p>
+                    <h5>{{ __('landing.product_sales_analytics') }}</h5>
+                    <p>{{ __('landing.product_sales_analytics_description') }}</p>
                 </div>
             </div>
             
@@ -1085,23 +1099,23 @@
                     <div class="feature-grid-icon">
                         <i class="fas fa-link"></i>
                     </div>
-                    <h5>Виджет и Ссылки</h5>
-                    <p>Генерируйте ссылки и виджеты для вашего бизнеса</p>
+                    <h5>{{ __('landing.widget_links') }}</h5>
+                    <p>{{ __('landing.widget_links_description') }}</p>
                 </div>
             </div>
         </div>
         
         <!-- CTA после функций -->
         <div class="text-center mt-5">
-            <h3 class="fw-bold mb-3">Понравились функции? Попробуйте прямо сейчас!</h3>
-                            <p class="lead text-muted mb-4">7 дней бесплатного тестирования всех возможностей Trimora</p>
+            <h3 class="fw-bold mb-3">{{ __('landing.try_now_cta_title') }}</h3>
+                            <p class="lead text-muted mb-4">{{ __('landing.try_7_days_test_description') }}</p>
             @if(Auth::guard('client')->check())
                 <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg animate-pulse">
-                    <i class="fas fa-sign-in-alt me-2"></i>Войти в систему
+                    <i class="fas fa-sign-in-alt me-2"></i>{{ __('landing.enter_system') }}
                 </a>
             @else
                 <a href="#" class="btn btn-primary btn-lg animate-pulse" data-bs-toggle="modal" data-bs-target="#registerModal">
-                    <i class="fas fa-rocket me-2"></i>Попробовать бесплатно 7 дней
+                    <i class="fas fa-rocket me-2"></i>{{ __('landing.try_free_7_days') }}
                 </a>
             @endif
         </div>
@@ -1112,8 +1126,8 @@
 <section id="niches-section" class="niches-section py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-4">🎯 Для каких ниш подходит Trimora?</h2>
-            <p class="lead">Универсальная CRM для сервисного бизнеса любого масштаба</p>
+            <h2 class="display-5 fw-bold mb-4">{{ __('landing.niches_title') }}</h2>
+            <p class="lead">{{ __('landing.niches_description') }}</p>
         </div>
         
         <div class="row g-4">
@@ -1123,8 +1137,8 @@
                     <div class="niche-icon">
                         <i class="fas fa-cut text-primary"></i>
                     </div>
-                    <h4 class="niche-title">Красота и уход</h4>
-                    <p class="niche-description">Салоны красоты, парикмахерские, маникюрные салоны, СПА-центры, массажные салоны</p>
+                    <h4 class="niche-title">{{ __('landing.beauty_care') }}</h4>
+                    <p class="niche-description">{{ __('landing.beauty_care_description') }}</p>
                 </div>
             </div>
             
@@ -1134,8 +1148,8 @@
                     <div class="niche-icon">
                         <i class="fas fa-heartbeat text-danger"></i>
                     </div>
-                    <h4 class="niche-title">Медицинские услуги</h4>
-                    <p class="niche-description">Стоматологические клиники, клиники эстетической медицины, физиотерапевтические центры</p>
+                    <h4 class="niche-title">{{ __('landing.medical_services') }}</h4>
+                    <p class="niche-description">{{ __('landing.medical_services_description') }}</p>
                 </div>
             </div>
             
@@ -1145,8 +1159,8 @@
                     <div class="niche-icon">
                         <i class="fas fa-palette text-warning"></i>
                     </div>
-                    <h4 class="niche-title">Творческие услуги</h4>
-                    <p class="niche-description">Фотостудии, студии звукозаписи, художественные мастерские, музыкальные школы</p>
+                    <h4 class="niche-title">{{ __('landing.creative_services') }}</h4>
+                    <p class="niche-description">{{ __('landing.creative_services_description') }}</p>
                 </div>
             </div>
             
@@ -1156,8 +1170,8 @@
                     <div class="niche-icon">
                         <i class="fas fa-car text-info"></i>
                     </div>
-                    <h4 class="niche-title">Автосервисы</h4>
-                    <p class="niche-description">Автомойки, автосервисы, шиномонтажи, автодетейлинг</p>
+                    <h4 class="niche-title">{{ __('landing.auto_services') }}</h4>
+                    <p class="niche-description">{{ __('landing.auto_services_description') }}</p>
                 </div>
             </div>
             
@@ -1167,8 +1181,8 @@
                     <div class="niche-icon">
                         <i class="fas fa-tools text-secondary"></i>
                     </div>
-                    <h4 class="niche-title">Бытовые услуги</h4>
-                    <p class="niche-description">Клининговые компании, ремонтные бригады, электрики, мастера по ремонту</p>
+                    <h4 class="niche-title">{{ __('landing.household_services') }}</h4>
+                    <p class="niche-description">{{ __('landing.household_services_description') }}</p>
                 </div>
             </div>
             
@@ -1178,8 +1192,8 @@
                     <div class="niche-icon">
                         <i class="fas fa-graduation-cap text-success"></i>
                     </div>
-                    <h4 class="niche-title">Образование</h4>
-                    <p class="niche-description">Частные репетиторы, языковые школы, курсы повышения квалификации</p>
+                    <h4 class="niche-title">{{ __('landing.education') }}</h4>
+                    <p class="niche-description">{{ __('landing.education_description') }}</p>
                 </div>
             </div>
             
@@ -1189,8 +1203,8 @@
                     <div class="niche-icon">
                         <i class="fas fa-utensils text-warning"></i>
                     </div>
-                    <h4 class="niche-title">Ресторанный бизнес</h4>
-                    <p class="niche-description">Рестораны с предзаказом, кафе с доставкой, кейтеринг-услуги</p>
+                    <h4 class="niche-title">{{ __('landing.restaurant_business') }}</h4>
+                    <p class="niche-description">{{ __('landing.restaurant_business_description') }}</p>
                 </div>
             </div>
             
@@ -1200,14 +1214,14 @@
                     <div class="niche-icon">
                         <i class="fas fa-briefcase text-dark"></i>
                     </div>
-                    <h4 class="niche-title">Консалтинговые услуги</h4>
-                    <p class="niche-description">Юридические консультации, бухгалтерские услуги, бизнес-консультанты</p>
+                    <h4 class="niche-title">{{ __('landing.consulting_services') }}</h4>
+                    <p class="niche-description">{{ __('landing.consulting_services_description') }}</p>
                 </div>
             </div>
         </div>
         
                         <div class="text-center mt-5">
-                    <p class="text-muted">Не нашли свою нишу? Trimora легко адаптируется под любой сервисный бизнес!</p>
+                    <p class="text-muted">{{ __('landing.niches_not_found_description') }}</p>
                 </div>
     </div>
 </section>

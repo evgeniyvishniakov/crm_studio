@@ -135,12 +135,17 @@ class LanguageController extends Controller
     public function translations(): JsonResponse
     {
         $currentLanguage = LanguageHelper::getCurrentLanguage();
-        $translations = trans('messages');
+        
+        // Получаем переводы для лендинга
+        $landingTranslations = trans('landing');
+        
+        // Получаем общие переводы
+        $messagesTranslations = trans('messages');
 
         return response()->json([
             'success' => true,
             'language' => $currentLanguage,
-            'translations' => $translations
+            'translations' => array_merge($landingTranslations, $messagesTranslations)
         ]);
     }
 } 

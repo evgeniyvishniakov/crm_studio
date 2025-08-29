@@ -4,9 +4,10 @@
     <div class="modal-content">
       <form method="POST" action="{{ route('beautyflow.register') }}" id="registerForm" autocomplete="off" @if(session('success')) style="display:none;" @endif>
         @csrf
+        <input type="hidden" name="language" id="registerLanguage" value="{{ app()->getLocale() }}">
         <div class="modal-header">
           <h5 class="modal-title">
-            <i class="fas fa-user-plus me-2 text-primary"></i> Регистрация
+            <i class="fas fa-user-plus me-2 text-primary"></i> {{ __('landing.registration') }}
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
         </div>
@@ -25,19 +26,19 @@
               @if (session('success'))
                 <div class="alert alert-success text-center" id="register-success-message">
                   <i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>
-                  <h5 class="mb-2">Регистрация успешно отправлена!</h5>
-                  <p class="mb-0">Вам на почту отправлено письмо с ссылкой на создание пароля.</p>
-                  <p class="text-muted small mt-2">Проверьте папку "Входящие" или "Спам".</p>
-                  <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">Ок</button>
+                  <h5 class="mb-2">{{ __('landing.registration_success_title') }}</h5>
+                  <p class="mb-0">{{ __('landing.registration_success_message') }}</p>
+                  <p class="text-muted small mt-2">{{ __('landing.check_inbox_spam') }}</p>
+                  <button type="button" class="btn btn-primary mt-3" data-bs-dismiss="modal">{{ __('landing.ok') }}</button>
                 </div>
               @endif
             </div>
           @endif
           <div class="mb-3">
-            <label for="reg-fullname" class="form-label">Имя <span class="text-danger">*</span></label>
+            <label for="reg-fullname" class="form-label">{{ __('landing.full_name') }} <span class="text-danger">*</span></label>
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-user" style="color:#a21caf;"></i></span>
-              <input type="text" class="form-control @error('fullname') is-invalid @enderror" id="reg-fullname" name="fullname" placeholder="Ваше имя" required>
+              <input type="text" class="form-control @error('fullname') is-invalid @enderror" id="reg-fullname" name="fullname" placeholder="{{ __('landing.full_name') }}" required>
               @error('fullname')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
@@ -65,10 +66,10 @@
             </div>
           </div>
           <div class="mb-3">
-            <label for="reg-salon" class="form-label">Название салона или Имя Фамилия <span class="text-danger">*</span></label>
+            <label for="reg-salon" class="form-label">{{ __('landing.salon_name') }} <span class="text-danger">*</span></label>
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-store" style="color:#a21caf;"></i></span>
-              <input type="text" class="form-control @error('salon') is-invalid @enderror" id="reg-salon" name="salon" placeholder="Beauty Studio или Дмитрий Андреев" required>
+              <input type="text" class="form-control @error('salon') is-invalid @enderror" id="reg-salon" name="salon" placeholder="{{ __('landing.salon_placeholder') }}" required>
               @error('salon')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
@@ -77,25 +78,25 @@
           <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" id="privacy" required>
             <label class="form-check-label" for="privacy">
-              Я согласен с <a href="{{ route('beautyflow.privacy') }}" target="_blank">политикой обработки данных</a>
+              {!! __('landing.privacy_agreement', ['privacy_policy' => '<a href="' . route('beautyflow.privacy') . '" target="_blank">' . __('landing.privacy_policy') . '</a>']) !!}
             </label>
           </div>
-          <div class="form-text fw-semibold mb-3" style="color:#2563eb;"><i class="fas fa-info-circle me-1"></i>После регистрации на указанный email придет письмо с дальнейшими инструкциями.</div>
+          <div class="form-text fw-semibold mb-3" style="color:#2563eb;"><i class="fas fa-info-circle me-1"></i>{{ __('landing.registration_help') }}</div>
           
           <hr class="my-3">
           
           <div class="text-center">
-            <p class="text-muted mb-2">Уже есть проект?</p>
+            <p class="text-muted mb-2">{{ __('landing.already_have_project') }}</p>
             <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal" class="btn btn-outline-primary btn-sm">
-              <i class="fas fa-sign-in-alt me-1"></i>Войти в личный кабинет
+              <i class="fas fa-sign-in-alt me-1"></i>{{ __('landing.enter_personal_account') }}
             </a>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('landing.cancel') }}</button>
           <button type="submit" class="btn btn-primary" id="registerBtn">
             <span class="spinner-border spinner-border-sm d-none" id="regSpinner"></span>
-            Зарегистрироваться
+            {{ __('landing.register') }}
           </button>
         </div>
       </form>
@@ -103,96 +104,24 @@
   </div>
 </div>
 
-@push('scripts')
 <script>
-$(function() {
-  $('#reg-phone').mask('+000000000000000', {placeholder: '+380991234567'});
-
-  $('#registerForm').on('submit', function(e) {
-    e.preventDefault();
-    var $form = $(this);
-    var $btn = $('#registerBtn');
-    var $spinner = $('#regSpinner');
-    var $modalBody = $('.modal-body');
+document.addEventListener('DOMContentLoaded', function() {
+    const registerForm = document.getElementById('registerForm');
+    const registerBtn = document.getElementById('registerBtn');
+    const regSpinner = document.getElementById('regSpinner');
     
-    // Очищаем предыдущие ошибки
-    $('.is-invalid').removeClass('is-invalid');
-    $('.invalid-feedback').remove();
-    $('.alert-danger').remove();
+    if (registerForm) {
+        registerForm.addEventListener('submit', function() {
+            // Показываем спиннер
+            registerBtn.disabled = true;
+            regSpinner.classList.remove('d-none');
+            registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Регистрация...';
+        });
+    }
     
-    $btn.attr('disabled', true);
-    $spinner.removeClass('d-none');
-
-    $.ajax({
-      url: $form.attr('action'),
-      method: 'POST',
-      data: $form.serialize(),
-      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-      success: function(response) {
-        $('#register-success-message').remove();
-        // Скрываем все элементы формы и футера
-        $form.find('.modal-body > *:not(#register-success-message)').hide();
-        $form.closest('.modal-content').find('.modal-footer').hide();
-        $modalBody.prepend(
-          '<div class="alert alert-success text-center" id="register-success-message" style="min-height:200px;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:2;position:relative;">' +
-            '<i class="fas fa-check-circle text-success mb-2" style="font-size: 2rem;"></i>' +
-            '<h5 class="mb-2">Регистрация успешно отправлена!</h5>' +
-            '<p class="mb-0">Вам на почту отправлено письмо с ссылкой на создание пароля.</p>' +
-            '<p class="text-muted small mt-2">Проверьте папку \"Входящие\" или \"Спам\".</p>' +
-          '</div>'
-        );
-      },
-      error: function(xhr) {
-        if (xhr.status === 422) {
-          var errors = xhr.responseJSON.errors;
-          $.each(errors, function(field, messages) {
-            var $input = $form.find('[name=' + field + ']');
-            $input.addClass('is-invalid');
-            $input.after('<div class="invalid-feedback">' + messages[0] + '</div>');
-          });
-        } else {
-          // Показываем общую ошибку
-          $modalBody.prepend(
-            '<div class="alert alert-danger">' +
-              '<i class="fas fa-exclamation-triangle me-2"></i>' +
-              'Произошла ошибка при регистрации. Попробуйте позже или обратитесь в поддержку.' +
-            '</div>'
-          );
-        }
-      },
-      complete: function() {
-        $btn.attr('disabled', false);
-        $spinner.addClass('d-none');
-      }
-    });
-  });
-
-  $('#registerModal').on('hidden.bs.modal', function () {
-    // Показываем форму и футер обратно
-    $('#registerForm').show();
-    $('.modal-footer').show();
-    // Удаляем сообщения
-    $('#register-success-message').remove();
-    $('.alert-danger').remove();
-    // Сбрасываем форму
-    $('#registerForm')[0].reset();
-    $('#registerBtn').attr('disabled', false);
-    $('#regSpinner').addClass('d-none');
-    $('.is-invalid').removeClass('is-invalid');
-    $('.invalid-feedback').remove();
-    // Удаляем backdrop и сбрасываем классы, если вдруг остались
-    $('.modal-backdrop').remove();
-    $('body').removeClass('modal-open');
-    $('body').css('padding-right', '');
-  });
+    // Маска для телефона
+    if (typeof $.fn.mask !== 'undefined') {
+        $('#reg-phone').mask('+380999999999');
+    }
 });
 </script>
-@if ($errors->any() || session('success'))
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var modal = new bootstrap.Modal(document.getElementById('registerModal'));
-    modal.show();
-  });
-</script>
-@endif
-@endpush

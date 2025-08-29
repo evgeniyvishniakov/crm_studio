@@ -30,6 +30,7 @@ class RegisterController extends Controller
                 'max:32',
             ],
             'salon' => 'required|string|max:255',
+            'language' => 'nullable|string|in:ru,en,ua',
             // password убран
         ]);
 
@@ -44,6 +45,10 @@ class RegisterController extends Controller
 
         // Создание проекта и пользователя-админа в транзакции
         DB::transaction(function () use ($validated) {
+            // Определяем язык для проекта
+            $languageCode = $validated['language'] ?? 'ru';
+            $language = \App\Models\Language::where('code', $languageCode)->first();
+            
             $project = Project::create([
                 'name' => $validated['fullname'],
                 'project_name' => $validated['salon'],
@@ -51,7 +56,8 @@ class RegisterController extends Controller
                 'phone' => $validated['phone'] ?? null,
                 'registered_at' => now(),
                 'status' => 'active',
-                'language' => 'ru',
+                'language_id' => $language ? $language->id : null,
+                'booking_language_id' => $language ? $language->id : null,
             ]);
 
             // Создать пользователя-админа
