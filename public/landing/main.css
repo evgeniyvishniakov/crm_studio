@@ -4858,3 +4858,14 @@ footer .text-muted {
     font-weight: bold;
 }
 
+/* Первый шаг должен быть видимым по умолчанию */
+.form-step:first-child {
+    opacity: 1;
+    visibility: visible;
+    position: relative;
+    transform: translateX(0);
+    display: block;
+}
+
+/* Анимации для переключения шагов */
+

@@ -9,6 +9,7 @@ use App\Models\Admin\Project;
 use App\Models\Language;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 class SetLanguage
 {
@@ -24,6 +25,8 @@ class SetLanguage
             $langCode = $request->get('lang');
             $language = Language::where('code', $langCode)->where('is_active', true)->first();
             if ($language) {
+                // Сохраняем выбранный язык в сессию
+                session(['language' => $language->code]);
                 App::setLocale($language->code);
                 return $next($request);
             }
@@ -62,6 +65,11 @@ class SetLanguage
             // Для неавторизованных пользователей
             App::setLocale('ua');
         }
+
+        Log::info('Language set to default', [
+            'final_locale' => App::getLocale(),
+            'session_language' => session('language')
+        ]);
 
         return $next($request);
     }

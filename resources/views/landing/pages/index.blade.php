@@ -148,22 +148,22 @@
                     <h2 class="display-5 fw-bold mb-4">{{ __('landing.web_booking_title') }}</h2>
                     <p class="lead mb-4">{{ __('landing.web_booking_description') }}</p>
                     <div class="feature-benefits">
-                                                <div class="benefit-item mb-3">
+                        <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
                             <span>{{ __('landing.web_booking_benefits.instagram_bio_link') }}</span>
                         </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
                             <span>{{ __('landing.web_booking_benefits.booking_few_clicks') }}</span>
-                        </div>
+                    </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
                             <span>{{ __('landing.web_booking_benefits.real_time_selection') }}</span>
-                        </div>
+                </div>
                         <div class="benefit-item mb-3">
                             <i class="fas fa-check-circle text-success me-3"></i>
                             <span>{{ __('landing.web_booking_benefits.automatic_notifications') }}</span>
-                        </div>
+            </div>
                         </div>
                     </div>
                 </div>
@@ -179,24 +179,24 @@
                                 <div class="form-step active" id="demo-step1">
                                     <h6 class="mb-3">{{ __('landing.select_service') }}</h6>
                                     <div class="service-options">
-                                                                                <div class="service-option selected">
+                                        <div class="service-option selected">
                                             <div class="service-info">
                                                 <h5 class="mb-1">{{ __('landing.manicure') }}</h5>
                                                 <p>від 1500 ₴ • 60 хв</p>
-                                            </div>
-                                        </div>
+                        </div>
+                    </div>
                                         <div class="service-option">
                                             <div class="service-info">
                                                 <h5 class="mb-1">{{ __('landing.haircut') }}</h5>
                                                 <p>від 2000 ₴ • 45 хв</p>
-                                            </div>
-                                        </div>
+                </div>
+            </div>
                                         <div class="service-option">
                                             <div class="service-info">
                                                 <h5 class="mb-1">{{ __('landing.massage') }}</h5>
                                                 <p>від 3000 ₴ • 90 хв</p>
-                                            </div>
-                                        </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -1234,13 +1234,8 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('=== СЛАЙДЕР ЗАГРУЖЕН ===');
-    
     const slides = document.querySelectorAll('.slide');
     const heroButtons = document.querySelectorAll('.hero-buttons .btn');
-    
-    console.log(`Найдено слайдов: ${slides.length}`);
-    console.log(`Найдено кнопок: ${heroButtons.length}`);
     
     let currentSlide = 0;
     
@@ -1267,9 +1262,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Автоматическое переключение каждые 5 секунд
     setInterval(nextSlide, 5000);
-    
-    console.log('=== СЛАЙДЕР ГОТОВ ===');
-    console.log('ХОВЕР РАБОТАЕТ ЧЕРЕЗ CSS СТИЛИ');
 });
 </script>
 @endpush

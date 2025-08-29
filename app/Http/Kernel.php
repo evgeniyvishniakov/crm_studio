@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         'admin.only' => \App\Http\Middleware\AdminOnly::class,
         'landing.auth' => \App\Http\Middleware\LandingAuth::class,
         'rate.limit' => \App\Http\Middleware\RateLimitMiddleware::class,
+        'set.language' => \App\Http\Middleware\SetLanguage::class,
     ];
 }

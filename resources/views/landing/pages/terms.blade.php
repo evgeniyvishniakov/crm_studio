@@ -1,80 +1,80 @@
 @extends('landing.layouts.app')
 
-@section('title', 'Умови використання - Trimora')
-@section('description', 'Умови використання системи Trimora')
+@section('title', __('landing.terms_of_use_title'))
+@section('description', __('landing.terms_of_use_description'))
 
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <h1 class="text-center mb-5">Умови використання</h1>
+            <h1 class="text-center mb-5">{{ __('landing.terms_of_use_heading') }}</h1>
             
             <div class="card shadow-sm">
                 <div class="card-body p-4">
-                    <h2>Загальні положення</h2>
-                    <p>Ці Умови регулюють використання системи Trimora. Використовуючи наш сервіс, ви підтверджуєте, що ознайомились і погоджуєтесь з ними. Якщо ви не згодні — припиніть користування системою.</p>
+                    <h2>{{ __('landing.general_provisions_terms') }}</h2>
+                    <p>{{ __('landing.general_provisions_terms_text') }}</p>
                     
-                    <h2>Послуги</h2>
-                    <p>Trimora надає інструменти для керування салоном:</p>
+                    <h2>{{ __('landing.services') }}</h2>
+                    <p>{{ __('landing.services_text') }}</p>
                     <ul>
-                        <li>база клієнтів і записів</li>
-                        <li>онлайн-запис та розклад</li>
-                        <li>управління послугами й товарами</li>
-                        <li>аналітика та звіти</li>
-                        <li>інтеграція з Telegram</li>
-                        <li>віджет для сайту</li>
+                        <li>{{ __('landing.clients_appointments_base') }}</li>
+                        <li>{{ __('landing.online_booking_schedule') }}</li>
+                        <li>{{ __('landing.services_products_management') }}</li>
+                        <li>{{ __('landing.analytics_reports') }}</li>
+                        <li>{{ __('landing.telegram_integration') }}</li>
+                        <li>{{ __('landing.website_widget') }}</li>
                     </ul>
                     
-                    <h2>Реєстрація та акаунт</h2>
-                    <p>Для роботи з системою потрібно:</p>
+                    <h2>{{ __('landing.registration_account') }}</h2>
+                    <p>{{ __('landing.registration_account_text') }}</p>
                     <ul>
-                        <li>створити акаунт з правдивими даними</li>
-                        <li>зберігати дані входу в безпеці</li>
-                        <li>не передавати доступ третім особам</li>
-                        <li>оновлювати контактну інформацію при змінах</li>
+                        <li>{{ __('landing.create_account_real_data') }}</li>
+                        <li>{{ __('landing.keep_login_data_safe') }}</li>
+                        <li>{{ __('landing.not_share_access') }}</li>
+                        <li>{{ __('landing.update_contact_info') }}</li>
                     </ul>
                     
-                    <h2>Правила користування</h2>
-                    <p>Забороняється:</p>
+                    <h2>{{ __('landing.usage_rules') }}</h2>
+                    <p>{{ __('landing.usage_rules_text') }}</p>
                     <ul>
-                        <li>використовувати систему для незаконних цілей</li>
-                        <li>втручатися у роботу сервісу чи здійснювати спроби злому</li>
-                        <li>розповсюджувати шкідливий код</li>
-                        <li>займатись спамом чи небажаною розсилкою</li>
+                        <li>{{ __('landing.illegal_purposes') }}</li>
+                        <li>{{ __('landing.interfere_service_hacking') }}</li>
+                        <li>{{ __('landing.distribute_malicious_code') }}</li>
+                        <li>{{ __('landing.spam_unwanted_mailing') }}</li>
                     </ul>
                     
-                    <h2>Оплата і тарифи</h2>
+                    <h2>{{ __('landing.payment_tariffs') }}</h2>
                     <ul>
-                        <li>7 днів безкоштовного пробного періоду</li>
-                        <li>щомісячна або річна підписка</li>
-                        <li>повернення коштів можливе протягом 14 днів після оплати</li>
+                        <li>{{ __('landing.free_trial_7_days') }}</li>
+                        <li>{{ __('landing.monthly_yearly_subscription') }}</li>
+                        <li>{{ __('landing.refund_14_days') }}</li>
                     </ul>
                     
-                    <h2>Відповідальність</h2>
-                    <p>Ми докладаємо зусиль для стабільної роботи сервісу, але не несемо відповідальності за:</p>
+                    <h2>{{ __('landing.liability') }}</h2>
+                    <p>{{ __('landing.liability_text') }}</p>
                     <ul>
-                        <li>втрату даних з вини користувача</li>
-                        <li>технічні проблеми, що не залежать від нас</li>
-                        <li>дії третіх сторін</li>
+                        <li>{{ __('landing.data_loss_user_fault') }}</li>
+                        <li>{{ __('landing.technical_issues_not_our_fault') }}</li>
+                        <li>{{ __('landing.third_party_actions') }}</li>
                     </ul>
-                    <p>Максимальна відповідальність сервісу обмежується сумою останнього платежу за підписку.</p>
+                    <p>{{ __('landing.max_liability_text') }}</p>
                     
-                    <h2>Технічна підтримка</h2>
-                    <p>Ми надаємо:</p>
+                    <h2>{{ __('landing.technical_support') }}</h2>
+                    <p>{{ __('landing.technical_support_text') }}</p>
                     <ul>
-                        <li>підтримку через email</li>
-                        <li>базу знань та інструкції</li>
-                        <li>оновлення системи</li>
+                        <li>{{ __('landing.email_support') }}</li>
+                        <li>{{ __('landing.knowledge_base_instructions') }}</li>
+                        <li>{{ __('landing.system_updates') }}</li>
                     </ul>
                     
-                    <h2>Зміни умов</h2>
-                    <p>Ми можемо оновлювати ці Умови. Актуальна версія завжди доступна на сайті.</p>
+                    <h2>{{ __('landing.terms_changes') }}</h2>
+                    <p>{{ __('landing.terms_changes_text') }}</p>
                     
-                    <h2>Контакти</h2>
-                    <p>З питань роботи сервісу звертайтесь:</p>
-                    <p><strong>📧 Email:</strong> support@trimora.com</p>
+                    <h2>{{ __('landing.terms_contacts') }}</h2>
+                    <p>{{ __('landing.terms_contacts_text') }}</p>
+                    <p><strong>{{ __('landing.support_email') }}</strong> {{ __('landing.support_email_address') }}</p>
                     
-                    <p class="text-muted mt-4"><small>Останнє оновлення: {{ date('d.m.Y') }}</small></p>
+                    <p class="text-muted mt-4"><small>{{ __('landing.last_updated') }} {{ date('d.m.Y') }}</small></p>
                 </div>
             </div>
         </div>
