@@ -379,7 +379,7 @@ function loadCategories(page = 1, search = '') {
         renderPagination(data.meta);
     })
     .catch(error => {
-        console.error('Ошибка при загрузке категорий:', error);
+        // Ошибка при загрузке категорий
         window.showNotification('error', 'Ошибка при загрузке категорий');
     });
 }

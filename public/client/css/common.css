@@ -5985,7 +5985,7 @@ input[type="date"]:focus {
 /* Контейнер настроек */
 .settings-container {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0px 15px;
     font-family: 'Inter', Arial, sans-serif !important;
 }
 

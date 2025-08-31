@@ -105,7 +105,6 @@ function initProfileForm() {
             }
         })
         .catch(function(error) {
-            console.error('Error:', error);
             if (error.errors) {
                 // Показываем ошибки валидации
                 Object.entries(error.errors).forEach(([field, messages]) => {
@@ -242,7 +241,6 @@ function autoSaveLanguageCurrency(fieldName, value) {
         }
     })
     .catch(function(error) {
-        console.error('Error:', error);
         window.showNotification('error', 'Ошибка сохранения');
     });
 }

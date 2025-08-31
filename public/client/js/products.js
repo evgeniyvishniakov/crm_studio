@@ -255,7 +255,7 @@ function loadTrashedProducts() {
             }
         })
         .catch(error => {
-            console.error('Ошибка при загрузке:', error);
+            // Ошибка при загрузке
             container.innerHTML = '<p class="error">Ошибка загрузки удаленных товаров: ' + error.message + '</p>';
         });
 }
@@ -694,7 +694,7 @@ function loadPage(page, search = '') {
         }
     })
     .catch(error => {
-        console.error('Error loading data:', error);
+        // Error loading data
         window.showNotification('error', 'Ошибка загрузки данных');
     });
 }
@@ -994,7 +994,7 @@ function checkDeletedProducts() {
         }
     })
     .catch(error => {
-        console.error('Ошибка при проверке удаленных товаров:', error);
+        // Ошибка при проверке удаленных товаров
         const deletedProductsBtn = document.getElementById('deletedProductsBtn');
         const deletedProductsBtnMobile = document.getElementById('deletedProductsBtnMobile');
         if (deletedProductsBtn) deletedProductsBtn.style.display = 'none';

@@ -133,7 +133,7 @@ function deleteClientType(rowOrId, clientTypeId) {
             }
         })
         .catch(error => {
-            console.error('Ошибка при удалении:', error);
+            // Ошибка при удалении
             if (row) row.classList.remove('row-deleting');
             if (card) card.classList.remove('row-deleting');
             if (error.status === 403 && error.message) {
@@ -226,7 +226,7 @@ function loadClientTypes() {
             renderPagination(data.meta);
         })
         .catch(error => {
-            console.error('Ошибка загрузки типов клиентов:', error);
+            // Ошибка загрузки типов клиентов
         });
 }
 
@@ -437,7 +437,7 @@ function loadPage(page, search = '') {
             renderPagination(data.meta);
         })
         .catch(error => {
-            console.error('Ошибка загрузки данных:', error);
+            // Ошибка загрузки данных
         });
 }
 
@@ -682,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
                 deleteClientType(currentDeleteId);
             } else {
-                console.error('currentDeleteId не установлен!');
+                // currentDeleteId не установлен!
             }
             document.getElementById('confirmationModal').style.display = 'none';
             currentDeleteRow = null;

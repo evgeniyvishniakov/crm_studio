@@ -834,7 +834,7 @@ function loadPurchases(page = 1, search = '') {
         }, 100);
     })
     .catch(error => {
-        console.error('Error loading purchases:', error);
+        // Error loading purchases
         window.showNotification('error', 'Ошибка загрузки данных');
     });
 }

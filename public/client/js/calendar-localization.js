@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Проверяем, загружен ли flatpickr
     if (typeof flatpickr === 'undefined') {
-        console.error('Flatpickr не загружен!');
+        // Flatpickr не загружен!
         return;
     }
     

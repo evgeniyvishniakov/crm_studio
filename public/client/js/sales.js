@@ -64,7 +64,7 @@ function setTodayDateInSales() {
 
         }
     } catch (error) {
-        console.error('Ошибка в setTodayDateInSales():', error);
+        // Ошибка в setTodayDateInSales()
     }
     
 
@@ -535,7 +535,7 @@ function openEditSaleModal(id) {
             }
         })
         .catch(error => {
-            console.error('Ошибка загрузки:', error);
+            // Ошибка загрузки
             window.showNotification('error', 'Ошибка загрузки данных продажи');
         });
 }
@@ -739,7 +739,7 @@ function submitSaleForm(event) {
         }
     })
     .catch(error => {
-        console.error('Ошибка при добавлении:', error);
+        // Ошибка при добавлении
         window.showNotification('error', 'Ошибка при добавлении продажи');
     })
     .finally(() => {
@@ -807,7 +807,7 @@ function submitEditSaleForm(event) {
         }
     })
     .catch(error => {
-        console.error('Ошибка при обновлении:', error);
+        // Ошибка при обновлении
         window.showNotification('error', 'Ошибка при обновлении продажи');
     })
     .finally(() => {
@@ -883,7 +883,7 @@ function deleteSale() {
         }
     })
     .catch(error => {
-        console.error('Ошибка при удалении:', error);
+        // Ошибка при удалении
         window.showNotification('error', 'Ошибка при удалении продажи');
     })
     .finally(() => {
@@ -900,7 +900,7 @@ function renderSales(sales) {
     const cardsContainer = document.getElementById('salesCards');
     
     if (!tableBody || !cardsContainer) {
-        console.error('Не найдены элементы таблицы или карточек');
+        // Не найдены элементы таблицы или карточки
         return;
     }
 
@@ -1191,7 +1191,7 @@ function loadSales(page = 1, search = '') {
         }, 100);
     })
     .catch(error => {
-        console.error('Ошибка при загрузке данных:', error);
+        // Ошибка при загрузке данных
     });
 }
 

@@ -66,7 +66,7 @@ function loadPage(page, type = '', status = '') {
         updateTypeFilter(data.types);
     })
     .catch(error => {
-        console.error('Ошибка загрузки уведомлений:', error);
+        // Ошибка загрузки уведомлений
     });
 }
 
@@ -418,7 +418,7 @@ function performMarkAllAsRead() {
         }
     })
     .catch(error => {
-        console.error('Ошибка при отметке всех как прочитанных:', error);
+        // Ошибка при отметке всех как прочитанных
     });
 }
 
@@ -440,7 +440,7 @@ function performDeleteNotification() {
         }
     })
     .catch(error => {
-        console.error('Ошибка при удалении уведомления:', error);
+        // Ошибка при удалении уведомления
     });
 }
 

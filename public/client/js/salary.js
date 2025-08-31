@@ -78,7 +78,6 @@ function showSalarySettingModal(id = null) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 window.showNotification('error', 'Ошибка при загрузке данных');
             });
     } else {
@@ -178,7 +177,6 @@ function viewSalaryCalculation(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             window.showNotification('error', 'Ошибка при загрузке деталей расчета');
             closeSalaryCalculationDetailsModal();
         });
@@ -333,7 +331,6 @@ function approveSalaryCalculation(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
         window.showNotification('error', 'Ошибка при утверждении расчета');
         });
 }
@@ -407,7 +404,6 @@ function loadCalculationsForUser(userId) {
             }
         })
         .catch(error => {
-            console.error('Ошибка запроса:', error);
             calculationSelect.innerHTML = '<option value="">Ошибка загрузки расчетов</option>';
         });
 }
@@ -454,7 +450,6 @@ function viewSalaryPayment(id) {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         window.showNotification('error', 'Ошибка при загрузке данных выплаты');
     });
 }
@@ -492,7 +487,6 @@ function approveSalaryPayment(id) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
         window.showNotification('error', 'Ошибка при подтверждении выплаты');
         });
 }
@@ -653,10 +647,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.showNotification('error', data.message || 'Ошибка при сохранении');
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                window.showNotification('error', 'Ошибка при сохранении настроек');
-            });
+                    .catch(error => {
+            window.showNotification('error', 'Ошибка при сохранении настроек');
+        });
         });
     }
     
@@ -691,7 +684,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 window.showNotification('error', 'Ошибка при создании расчета');
             });
         });
@@ -731,7 +723,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 window.showNotification('error', 'Ошибка при создании выплаты');
             });
         });
@@ -919,7 +910,6 @@ function executeAction() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         window.showNotification('error', errorMessage);
     })
     .finally(() => {
@@ -1255,7 +1245,7 @@ function updateSalaryStatistics() {
             }
         })
         .catch(error => {
-            console.error('Error updating statistics:', error);
+            // Error updating statistics
         });
 }
 

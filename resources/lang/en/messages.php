@@ -2214,4 +2214,15 @@ return [
     // Language synchronization between landing and CRM
     'language_changed' => 'Language changed',
     'language_synced_from_landing' => 'Language synchronized from landing. Now the same language is used in CRM and on the landing page.',
+    
+    // Additional salary translations
+    'create_salary_calculation' => 'Create a salary calculation for your employees',
+    'salary_calculation' => 'Salary Calculation',
+    'select_calculation_optional' => 'Select calculation (optional)',
+    
+    // Work schedule translations
+    'add_absence' => 'Add Absence',
+    'start_of_work' => 'Start of Work',
+    'end_of_work' => 'End of Work',
+    'booking_interval' => 'Booking Interval (minutes)',
 ]; 
