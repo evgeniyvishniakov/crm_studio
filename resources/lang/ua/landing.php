@@ -459,7 +459,7 @@ return [
     
     // Кнопки
     'pricing_try_free' => 'Спробувати безкоштовно 7 днів',
-    'pricing_choose_plan' => 'Вибрати план',
+            'pricing_choose_plan' => 'Обрати план',
     'pricing_login' => 'Увійти в систему',
     
     // Модальне вікно

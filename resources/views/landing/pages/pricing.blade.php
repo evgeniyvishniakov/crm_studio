@@ -33,61 +33,12 @@
     </div>
 </section>
 
-<!-- Features Overview Section -->
-<section class="py-5 bg-white">
-    <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="h3 fw-bold mb-4 text-dark">{{ __('landing.pricing_features_title') }}</h2>
-                <p class="text-muted">{{ __('landing.pricing_features_subtitle') }}</p>
-            </div>
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
-                <div class="text-center">
-                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                        <i class="fas fa-users text-primary fa-lg"></i>
-                    </div>
-                    <h5 class="fw-bold">{{ __('landing.pricing_feature_clients') }}</h5>
-                    <p class="text-muted small">{{ __('landing.pricing_feature_clients_desc') }}</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="text-center">
-                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                        <i class="fas fa-calendar-alt text-success fa-lg"></i>
-                    </div>
-                    <h5 class="fw-bold">{{ __('landing.pricing_feature_booking') }}</h5>
-                    <p class="text-muted small">{{ __('landing.pricing_feature_booking_desc') }}</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="text-center">
-                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                        <i class="fas fa-chart-line text-bright-yellow fa-lg"></i>
-                    </div>
-                    <h5 class="fw-bold">{{ __('landing.pricing_feature_analytics') }}</h5>
-                    <p class="text-muted small">{{ __('landing.pricing_feature_analytics_desc') }}</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="text-center">
-                    <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
-                        <i class="fas fa-headset text-info fa-lg"></i>
-                    </div>
-                    <h5 class="fw-bold">{{ __('landing.pricing_feature_support') }}</h5>
-                    <p class="text-muted small">{{ __('landing.pricing_feature_support_desc') }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 <!-- Pricing Section -->
 <section id="pricing" class="py-5 bg-light">
     <div class="container">
-        <!-- Tabs Navigation -->
+        <!-- Navigation -->
         <div class="row justify-content-center mb-5">
             <div class="col-lg-8">
                 <ul class="nav nav-pills nav-fill" id="pricingTabs" role="tablist">
@@ -114,12 +65,12 @@
             </div>
         </div>
 
-        <!-- Tabs Content -->
+        <!-- Content -->
         <div class="tab-content" id="pricingTabsContent">
             @foreach($plans as $index => $plan)
                 <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}" id="{{ $plan->slug }}" role="tabpanel">
                     <div class="row justify-content-center">
-                        <!-- Месяц -->
+                        <!-- Monthly -->
                         <div class="col-lg-3 col-md-6 mb-4">
                             <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] ?? 'border-success' }} border-2" data-plan-id="{{ $plan->id }}">
                                 <div class="position-absolute top-0 end-0 m-3">
@@ -181,7 +132,7 @@
                             </div>
                         </div>
 
-                        <!-- 3 месяца -->
+                        <!-- 3 Months -->
                         <div class="col-lg-3 col-md-6 mb-4">
                             <div class="card h-100 position-relative {{ $planColors[$plan->slug]['border'] }} border-3 shadow-lg" style="transform: scale(1.05); z-index: 10;" data-plan-id="{{ $plan->id }}">
                                 <div class="position-absolute top-0 start-0 m-3">
@@ -247,7 +198,7 @@
                             </div>
                         </div>
 
-                        <!-- 6 месяцев -->
+                        <!-- 6 Months -->
                         <div class="col-lg-3 col-md-6 mb-4">
                             <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] }} border-2" data-plan-id="{{ $plan->id }}">
                                 <div class="position-absolute top-0 end-0 m-3">
@@ -308,7 +259,7 @@
                             </div>
                         </div>
 
-                        <!-- Год -->
+                        <!-- Year -->
                         <div class="col-lg-3 col-md-6 mb-4">
                             <div class="card h-100 border-0 shadow-sm {{ $planColors[$plan->slug]['border'] }} border-2" data-plan-id="{{ $plan->id }}">
                                 <div class="position-absolute top-0 end-0 m-3">
@@ -379,7 +330,7 @@
 
 @include('landing.components.register-modal')
 
-<!-- Модальное окно для выбора тарифа -->
+<!-- Plan Selection Modal -->
 <div class="modal fade" id="planSelectionModal" tabindex="-1" aria-labelledby="planSelectionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -423,68 +374,111 @@
         </div>
     </div>
 </div>
+
+<!-- Features Overview Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="h3 fw-bold mb-4 text-dark">{{ __('landing.pricing_features_title') }}</h2>
+                <p class="text-muted">{{ __('landing.pricing_features_subtitle') }}</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-users text-primary fa-lg"></i>
+                    </div>
+                    <h5 class="fw-bold">{{ __('landing.pricing_feature_clients') }}</h5>
+                    <p class="text-muted small">{{ __('landing.pricing_feature_clients_desc') }}</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-calendar-alt text-success fa-lg"></i>
+                    </div>
+                    <h5 class="fw-bold">{{ __('landing.pricing_feature_booking') }}</h5>
+                    <p class="text-muted small">{{ __('landing.pricing_feature_booking_desc') }}</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-chart-line text-warning fa-lg"></i>
+                    </div>
+                    <h5 class="fw-bold">{{ __('landing.pricing_feature_analytics') }}</h5>
+                    <p class="text-muted small">{{ __('landing.pricing_feature_analytics_desc') }}</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="text-center">
+                    <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-headset text-info fa-lg"></i>
+                    </div>
+                    <h5 class="fw-bold">{{ __('landing.pricing_feature_support') }}</h5>
+                    <p class="text-muted small">{{ __('landing.pricing_feature_support_desc') }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Button -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <a href="{{ route('beautyflow.contact') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-envelope me-2"></i>
+                    {{ __('landing.contact_us') }}
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
 @endsection
 
 @push('scripts')
 <script src="{{ asset('landing/main.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Script loaded');
-    
-    // Получаем все вкладки
     var tabs = document.querySelectorAll('#pricingTabs .nav-link');
-    console.log('Found tabs:', tabs.length);
-    
-    // Добавляем обработчик клика на каждую вкладку
     tabs.forEach(function(tab) {
         tab.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Tab clicked:', this.textContent.trim());
             
-            // Убираем активный класс со всех вкладок
             tabs.forEach(function(t) {
                 t.classList.remove('active');
                 t.setAttribute('aria-selected', 'false');
             });
             
-            // Убираем активный класс со всех панелей
             document.querySelectorAll('#pricingTabsContent .tab-pane').forEach(function(pane) {
                 pane.classList.remove('show', 'active');
             });
             
-            // Активируем текущую вкладку
             this.classList.add('active');
             this.setAttribute('aria-selected', 'true');
-            console.log('Tab activated:', this.textContent.trim());
             
-            // Показываем соответствующую панель
             var targetId = this.getAttribute('data-bs-target');
             var targetPane = document.querySelector(targetId);
             if (targetPane) {
                 targetPane.classList.add('show', 'active');
-                console.log('Panel shown:', targetId);
-            } else {
-                console.log('Panel not found:', targetId);
             }
         });
     });
     
-    // Обработчики для кнопок "Выбрать план"
     document.addEventListener('click', function(e) {
         if (e.target.classList.contains('pricing-btn') && !e.target.hasAttribute('data-bs-toggle')) {
             e.preventDefault();
             
-            // Получаем данные о выбранном плане
             var card = e.target.closest('.card');
             var planName = card.querySelector('h6').textContent;
             var planPeriod = card.querySelector('h3').textContent;
             var planPrice = card.querySelector('.h2').textContent;
             
-            // Получаем экономию и стоимость в месяц
             var savings = '';
             var monthlyPrice = '';
             
-            // Ищем бейдж с экономией
             var badges = card.querySelectorAll('.badge');
             badges.forEach(function(badge) {
                 if (badge.textContent.includes('Экономия')) {
@@ -492,7 +486,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Ищем стоимость в месяц
             var smallTexts = card.querySelectorAll('.text-muted.small');
             smallTexts.forEach(function(text) {
                 if (text.textContent.includes('₴ / месяц')) {
@@ -500,12 +493,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Получаем цвет плана из кнопки
             var button = e.target;
             var buttonClasses = button.className;
             var planColor = '';
             
-            // Определяем цвет плана по классу кнопки
             if (buttonClasses.includes('btn-tab-green')) {
                 planColor = 'bg-success';
             } else if (buttonClasses.includes('btn-tab-blue')) {
@@ -513,16 +504,14 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (buttonClasses.includes('btn-tab-yellow')) {
                 planColor = 'bg-warning';
             } else {
-                planColor = 'bg-primary'; // по умолчанию
+                planColor = 'bg-primary';
             }
             
-            // Заполняем модальное окно
             document.getElementById('selectedPlanName').textContent = planName;
             document.getElementById('selectedPlanDescription').textContent = '{{ __("landing.pricing_modal_perfect") }}';
             document.getElementById('selectedPlanPeriod').textContent = planPeriod;
             document.getElementById('selectedPlanPrice').textContent = planPrice;
             
-            // Показываем экономию если есть
             var savingsContainer = document.getElementById('selectedPlanSavings');
             var savingsBadge = document.getElementById('savingsBadge');
             if (planPeriod.includes('3 месяца') || planPeriod.includes('3 Months')) {
@@ -538,7 +527,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 savingsContainer.style.display = 'none';
             }
             
-            // Показываем стоимость в месяц если есть
             var monthlyPriceContainer = document.getElementById('selectedPlanMonthlyPrice');
             if (monthlyPrice) {
                 monthlyPriceContainer.textContent = monthlyPrice;
@@ -546,80 +534,60 @@ document.addEventListener('DOMContentLoaded', function() {
                 monthlyPriceContainer.textContent = '';
             }
             
-            // Применяем цвет плана к бейджу периода
             var periodBadge = document.getElementById('selectedPlanPeriod');
             periodBadge.className = 'badge me-3 fs-6 px-3 py-2 ' + planColor;
             
-            // Устанавливаем атрибуты для кнопки "Перейти к оплате"
             var proceedButton = document.getElementById('proceedToPayment');
             var cardPlanId = card.getAttribute('data-plan-id');
             proceedButton.setAttribute('data-plan-id', cardPlanId);
             
-            // Определяем период по тексту на карточке
             var periodText = planPeriod.trim();
-            var period = 'monthly'; // по умолчанию
+            var period = 'monthly';
             
             if (periodText.includes('3 месяца') || periodText.includes('3 мес')) {
                 period = 'quarterly';
             } else if (periodText.includes('6 месяцев') || periodText.includes('6 мес')) {
-                period = 'six_months';
+                period = 'yearly';
             } else if (periodText.includes('год') || periodText.includes('12 месяцев')) {
                 period = 'yearly';
             }
             
             proceedButton.setAttribute('data-period', period);
             
-            console.log('Modal data set:', { 
-                planId: cardPlanId, 
-                period: period, 
-                periodText: periodText 
-            });
-            
-            // Показываем модальное окно
             var modal = new bootstrap.Modal(document.getElementById('planSelectionModal'));
             modal.show();
         }
     });
     
-    // Обработчик для кнопки "Перейти к оплате"
     document.getElementById('proceedToPayment').addEventListener('click', function() {
         var planId = this.getAttribute('data-plan-id');
         var period = this.getAttribute('data-period');
         
-        console.log('Payment button clicked:', { planId: planId, period: period });
-        
         if (planId && period) {
-            // Создаем форму для отправки
             var form = document.createElement('form');
             form.method = 'POST';
             form.action = '{{ route("landing.payment.create") }}';
             
-            // Добавляем CSRF токен
             var csrfToken = document.createElement('input');
             csrfToken.type = 'hidden';
             csrfToken.name = '_token';
             csrfToken.value = '{{ csrf_token() }}';
             form.appendChild(csrfToken);
             
-            // Добавляем данные плана
             var planIdInput = document.createElement('input');
             planIdInput.type = 'hidden';
             planIdInput.name = 'plan_id';
             planIdInput.value = planId;
             form.appendChild(planIdInput);
             
-            // Добавляем период
             var periodInput = document.createElement('input');
             periodInput.type = 'hidden';
             periodInput.name = 'period';
             periodInput.value = period;
             form.appendChild(periodInput);
             
-            // Отправляем форму
             document.body.appendChild(form);
             form.submit();
-        } else {
-            alert('Ошибка: не удалось определить план или период');
         }
     });
 });

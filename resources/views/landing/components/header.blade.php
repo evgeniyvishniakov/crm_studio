@@ -97,14 +97,12 @@ document.addEventListener('DOMContentLoaded', function() {
             altegLangDropdown.classList.toggle('open');
         });
         
-        // Close on click outside
         document.addEventListener('click', function(e) {
             if (!altegLangDropdown.contains(e.target)) {
                 altegLangDropdown.classList.remove('open');
             }
         });
         
-        // Close on escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 altegLangDropdown.classList.remove('open');
@@ -112,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Плавный скролл к секциям
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();

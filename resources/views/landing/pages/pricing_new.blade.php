@@ -353,7 +353,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Обработчик клика по карточке тарифа
     document.querySelectorAll('.pricing-btn').forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
@@ -363,16 +362,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const planPeriod = card.querySelector('h3').textContent;
             const planPrice = card.querySelector('.h2').textContent;
             
-            // Получаем цену в месяц если есть
             const monthlyPriceElement = card.querySelector('.text-muted.small');
             let monthlyPrice = '';
             if (monthlyPriceElement && monthlyPriceElement.textContent.includes('/')) {
                 monthlyPrice = monthlyPriceElement.textContent;
             }
             
-            // Получаем цвет плана из кнопки
             const buttonClasses = this.className;
-            let planColor = 'bg-primary'; // по умолчанию
+            let planColor = 'bg-primary';
             
             if (buttonClasses.includes('btn-tab-green')) {
                 planColor = 'bg-success';
@@ -382,13 +379,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 planColor = 'bg-warning';
             }
             
-            // Заполняем модальное окно
             document.getElementById('selectedPlanName').textContent = planName;
             document.getElementById('selectedPlanDescription').textContent = '{{ __("landing.pricing_modal_perfect") }}';
             document.getElementById('selectedPlanPeriod').textContent = planPeriod;
             document.getElementById('selectedPlanPrice').textContent = planPrice;
             
-            // Показываем экономию если есть
             const savingsContainer = document.getElementById('selectedPlanSavings');
             const savingsBadge = document.getElementById('savingsBadge');
             
@@ -405,7 +400,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 savingsContainer.style.display = 'none';
             }
             
-            // Показываем стоимость в месяц если есть
             const monthlyPriceContainer = document.getElementById('selectedPlanMonthlyPrice');
             if (monthlyPrice) {
                 monthlyPriceContainer.textContent = monthlyPrice;
@@ -413,16 +407,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 monthlyPriceContainer.textContent = '';
             }
             
-            // Применяем цвет плана к бейджу периода
             const periodBadge = document.getElementById('selectedPlanPeriod');
             periodBadge.className = 'badge me-3 fs-6 px-3 py-2 ' + planColor;
             
-            // Устанавливаем атрибуты для кнопки "Перейти к оплате"
             const proceedButton = document.getElementById('proceedToPayment');
             const cardPlanId = card.getAttribute('data-plan-id');
             proceedButton.setAttribute('data-plan-id', cardPlanId);
             
-            // Показываем модальное окно
             const modal = new bootstrap.Modal(document.getElementById('planSelectionModal'));
             modal.show();
         });

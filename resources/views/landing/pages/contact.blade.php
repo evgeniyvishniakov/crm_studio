@@ -4,7 +4,7 @@
 @section('description', 'Свяжитесь с нами для получения поддержки или консультации по Trimora')
 
 @section('content')
-<!-- Hero Section -->
+<!-- Hero -->
 <section class="bg-light py-5">
     <div class="container">
         <div class="row">
@@ -16,7 +16,7 @@
     </div>
 </section>
 
-<!-- Contact Content -->
+<!-- Content -->
 <section class="py-5">
     <div class="container">
         <div class="row">

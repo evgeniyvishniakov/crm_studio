@@ -227,7 +227,14 @@
     align-items: center;
     gap: 12px;
 }
-
+#warehousePagination{
+    margin-top: 20px;
+}
+.dashboard-container{
+  margin: 30px 10px;
+  background-color: white;
+  padding: 15px;
+}
 .services-header-actions .search-box {
     flex: 1;
 }
@@ -1020,12 +1027,14 @@ table.salary-payments-table .actions-cell {
 
 .confirmation-content {
     background-color: #fff;
-    margin: 15% auto;
+    margin: 5% auto;
     padding: 20px;
     border-radius: 8px;
     width: 400px;
     max-width: 80%;
+    max-height: 80vh;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
 }
 
 .confirmation-buttons {
@@ -5096,6 +5105,7 @@ input[type="date"]:focus {
         width: 90%;
         max-width: 400px;
         padding: 20px;
+        max-height: 85vh;
     }
     
     .confirmation-modal .confirmation-buttons {
@@ -7856,6 +7866,8 @@ label {
     border-radius: 12px;
     padding: 25px;
     margin-top: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
 }
 
 .instruction-section {

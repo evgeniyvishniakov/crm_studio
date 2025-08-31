@@ -1,4 +1,4 @@
-<!-- Модальное окно входа в личный кабинет -->
+<!-- Login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -84,7 +84,6 @@ $(function() {
     var $spinner = $('#loginSpinner');
     var $modalBody = $('.modal-body');
     
-    // Очищаем предыдущие ошибки
     $('.is-invalid').removeClass('is-invalid');
     $('.invalid-feedback').remove();
     $('.alert-danger').remove();
@@ -98,7 +97,6 @@ $(function() {
       data: $form.serialize(),
       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
       success: function(response) {
-        // Успешный вход - перенаправляем на личный кабинет
         window.location.href = '{{ route("landing.account.dashboard") }}';
       },
       error: function(xhr) {
@@ -110,7 +108,6 @@ $(function() {
             $input.after('<div class="invalid-feedback">' + messages[0] + '</div>');
           });
         } else {
-          // Показываем общую ошибку
           $modalBody.prepend(
             '<div class="alert alert-danger">' +
               '<i class="fas fa-exclamation-triangle me-2"></i>' +
@@ -127,14 +124,12 @@ $(function() {
   });
 
   $('#loginModal').on('hidden.bs.modal', function () {
-    // Сбрасываем форму
     $('#loginForm')[0].reset();
     $('#loginBtn').attr('disabled', false);
     $('#loginSpinner').addClass('d-none');
     $('.is-invalid').removeClass('is-invalid');
     $('.invalid-feedback').remove();
     $('.alert-danger').remove();
-    // Удаляем backdrop и сбрасываем классы, если вдруг остались
     $('.modal-backdrop').remove();
     $('body').removeClass('modal-open');
     $('body').css('padding-right', '');

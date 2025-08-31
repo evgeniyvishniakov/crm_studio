@@ -305,7 +305,7 @@
                                             </div>
                                             
                                                                                         <div class="d-flex justify-content-center">
-                                                <a href="{{ route('landing.account.crm') }}" class="btn btn-primary btn-lg">
+                                                <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg">
                                                     <i class="fas fa-external-link-alt me-2"></i>{{ __('landing.account_go_to_crm') }}
                                                 </a>
                                             </div>
@@ -502,26 +502,21 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Только обработка форм и уведомлений - НЕ трогаем вкладки Bootstrap!
-    
-    // Обработка форм
     $('form').on('submit', function() {
         var $form = $(this);
         var $btn = $form.find('button[type="submit"]');
         var originalText = $btn.html();
         
-        // Показываем спиннер
         $btn.html('<span class="spinner-border spinner-border-sm me-2"></span>Обработка...');
         $btn.prop('disabled', true);
         
-        // Восстанавливаем кнопку через 3 секунды (на случай ошибки)
         setTimeout(function() {
             $btn.html(originalText);
             $btn.prop('disabled', false);
         }, 3000);
     });
     
-    // Специальная обработка формы сброса пароля
+    $('#password-reset-form').on('submit', function(e) {
     $('#password-reset-form').on('submit', function(e) {
         e.preventDefault();
         
@@ -529,11 +524,9 @@ $(document).ready(function() {
         var $btn = $('#password-submit-btn');
         var originalText = $btn.html();
         
-        // Показываем спиннер
         $btn.html('<span class="spinner-border spinner-border-sm me-2"></span>Отправка...');
         $btn.prop('disabled', true);
         
-        // AJAX запрос
         $.ajax({
             url: '{{ route("landing.account.password.email") }}',
             method: 'POST',
@@ -542,28 +535,23 @@ $(document).ready(function() {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
-                // Скрываем форму и показываем сообщение об успехе
                 $('#password-form').hide();
                 $('#password-success-message').show();
             },
             error: function(xhr) {
-                // Показываем ошибку
                 var errorMessage = 'Произошла ошибка при отправке. Попробуйте еще раз.';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
                 }
                 
-                // Показываем ошибку
                 showAlert('danger', errorMessage);
                 
-                // Восстанавливаем кнопку
                 $btn.html(originalText);
                 $btn.prop('disabled', false);
             }
         });
     });
 
-    // Специальная обработка формы обновления профиля
     $('#profile-update-form').on('submit', function(e) {
         e.preventDefault();
         
@@ -571,11 +559,9 @@ $(document).ready(function() {
         var $btn = $('#profile-submit-btn');
         var originalText = $btn.html();
         
-        // Показываем спиннер
         $btn.html('<span class="spinner-border spinner-border-sm me-2"></span>Сохранение...');
         $btn.prop('disabled', true);
         
-        // AJAX запрос
         $.ajax({
             url: '{{ route("landing.account.profile.update") }}',
             method: 'POST',
@@ -584,36 +570,29 @@ $(document).ready(function() {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(response) {
-                // Показываем сообщение об успехе
                 $('#profile-success-message').show();
                 
-                // Скрываем сообщение через 3 секунды
                 setTimeout(function() {
                     $('#profile-success-message').hide();
                 }, 3000);
                 
-                // Восстанавливаем кнопку
                 $btn.html(originalText);
                 $btn.prop('disabled', false);
             },
             error: function(xhr) {
-                // Показываем ошибку
                 var errorMessage = 'Произошла ошибка при сохранении. Попробуйте еще раз.';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMessage = xhr.responseJSON.message;
                 }
                 
-                // Показываем ошибку
                 showAlert('danger', errorMessage);
                 
-                // Восстанавливаем кнопку
                 $btn.html(originalText);
                 $btn.prop('disabled', false);
             }
         });
     });
     
-    // Показываем сообщения об успехе (только при загрузке страницы)
     @if(session('success'))
         showAlert('success', '{{ session("success") }}');
     @endif
@@ -623,7 +602,6 @@ $(document).ready(function() {
     @endif
 });
 
-// Функция для показа уведомлений
 function showAlert(type, message) {
     var alertHtml = `
         <div class="alert alert-${type} alert-dismissible fade show" role="alert">
@@ -632,10 +610,8 @@ function showAlert(type, message) {
         </div>
     `;
     
-    // Вставляем уведомление в начало контента
     $('.tab-content').prepend(alertHtml);
     
-    // Автоматически скрываем через 5 секунд
     setTimeout(function() {
         $('.alert').fadeOut();
     }, 5000);

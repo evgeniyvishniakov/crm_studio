@@ -212,7 +212,7 @@
 @endsection
 
 @section('content')
-<!-- Hero Section -->
+<!-- Hero -->
 <section class="hero-section py-5">
     <div class="container">
         <div class="row">
@@ -224,7 +224,7 @@
     </div>
 </section>
 
-<!-- Search Section -->
+<!-- Search -->
 <section class="search-section">
     <div class="container">
         <div class="row justify-content-center">
@@ -240,7 +240,7 @@
     </div>
 </section>
 
-<!-- Categories Section -->
+<!-- Categories -->
 <section class="py-4">
     <div class="container">
         <div class="row g-3 justify-content-center">
@@ -263,7 +263,7 @@
     </div>
 </section>
 
-<!-- Articles Section -->
+<!-- Articles -->
 <section class="py-5">
     <div class="container">
 
@@ -325,8 +325,8 @@
             @endforelse
         </div>
         
-        <!-- Empty state for search/filter -->
-                        <div class="empty-state text-center py-5" style="display: none;">
+                <!-- Empty State -->
+        <div class="empty-state text-center py-5" style="display: none;">
                     <i class="fas fa-search fa-3x text-muted mb-3"></i>
                     <h4 class="text-muted">{{ __('landing.knowledge_search_no_results') }}</h4>
                     <p class="text-muted">{{ __('landing.knowledge_search_no_results_text') }}</p>
@@ -364,7 +364,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const articles = document.querySelectorAll('.article-item');
     const emptyState = document.querySelector('.empty-state');
 
-    // Search functionality
     function performSearch() {
         const searchTerm = searchInput.value.toLowerCase().trim();
         const activeCategory = document.querySelector('.category-filter.active').dataset.category;
@@ -385,7 +384,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Show/hide empty state
         if (emptyState) {
             if (Array.from(articles).filter(article => 
                 article.style.display !== 'none'
@@ -397,30 +395,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Search button click
     searchBtn.addEventListener('click', performSearch);
     
-    // Search on Enter key
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             performSearch();
         }
     });
 
-    // Real-time search
     searchInput.addEventListener('input', function() {
         if (this.value.length > 2 || this.value.length === 0) {
             performSearch();
         }
     });
 
-    // Category filtering
     categoryFilters.forEach(filter => {
         filter.addEventListener('click', function() {
-            // Remove active class from all filters
             categoryFilters.forEach(f => f.classList.remove('active'));
             
-            // Add active class to clicked filter
             this.classList.add('active');
             
             const category = this.dataset.category;
@@ -434,13 +426,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Clear search when changing category
             searchInput.value = '';
             performSearch();
         });
     });
     
-    // Add CSS animations
     const style = document.createElement('style');
     style.textContent = `
         @keyframes fadeIn {

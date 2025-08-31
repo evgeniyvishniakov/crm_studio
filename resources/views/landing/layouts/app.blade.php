@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <!-- Hreflang tags for multilingual SEO -->
+    <!-- Hreflang Tags -->
     <link rel="alternate" hreflang="ru" href="{{ url('?lang=ru') }}">
     <link rel="alternate" hreflang="en" href="{{ url('?lang=en') }}">
     <link rel="alternate" hreflang="ua" href="{{ url('?lang=ua') }}">
@@ -41,7 +41,7 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     @endif
     
-    <!-- Preload critical resources -->
+    <!-- Preload Resources -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap"></noscript>
     
@@ -77,7 +77,7 @@
     
     @stack('scripts')
     
-    <!-- Модальные окна -->
+    <!-- Modals -->
     @include('landing.components.login-modal')
 </body>
 </html> 

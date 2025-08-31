@@ -257,7 +257,7 @@ function formatCurrency(amount) {
     const symbol = window.currencyData && window.currencyData.symbol ? window.currencyData.symbol : '₴';
     
     if (num % 1 === 0) {
-        return `${num.toLocaleString('ru-RU')} ${symbol}`;
+        return `${num.toLocaleString('uk-UA')} ${symbol}`;
     } else {
         return `${num.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${symbol}`;
     }
@@ -526,7 +526,7 @@ function closeSalaryPaymentDetailsModal() {
 function fillPaymentDetails(payment) {
     // Основная информация
     document.getElementById('paymentDetailEmployee').textContent = payment.user_name;
-    document.getElementById('paymentDetailDate').textContent = new Date(payment.payment_date).toLocaleDateString('ru-RU');
+    document.getElementById('paymentDetailDate').textContent = new Date(payment.payment_date).toLocaleDateString('uk-UA');
     document.getElementById('paymentDetailAmount').textContent = formatCurrency(payment.amount);
     document.getElementById('paymentDetailAmount').setAttribute('data-amount', payment.amount);
     
@@ -534,13 +534,13 @@ function fillPaymentDetails(payment) {
     let paymentMethodText = '';
     switch(payment.payment_method) {
         case 'cash':
-            paymentMethodText = 'Наличные';
+            paymentMethodText = window.translations.cash || 'Готівка';
             break;
         case 'bank':
-            paymentMethodText = 'Банковский перевод';
+            paymentMethodText = window.translations.bank_transfer || 'Банківський переказ';
             break;
         case 'card':
-            paymentMethodText = 'Карта';
+            paymentMethodText = window.translations.card || 'Карта';
             break;
         default:
             paymentMethodText = payment.payment_method || '-';
@@ -551,21 +551,21 @@ function fillPaymentDetails(payment) {
     let statusText = '';
     switch(payment.status) {
         case 'pending':
-            statusText = 'Ожидает';
+            statusText = window.translations.pending || 'Очікує';
             break;
         case 'approved':
-            statusText = 'Выплачено';
+            statusText = window.translations.paid || 'Виплачено';
             break;
         case 'cancelled':
-            statusText = 'Отменено';
+            statusText = window.translations.cancelled || 'Скасовано';
             break;
         default:
-            statusText = 'Неизвестно';
+            statusText = window.translations.unknown || 'Невідомо';
     }
     document.getElementById('paymentDetailStatus').innerHTML = `<span class="status-badge">${statusText}</span>`;
     
     // Дата создания
-    document.getElementById('paymentDetailCreatedAt').textContent = new Date(payment.created_at).toLocaleDateString('ru-RU');
+    document.getElementById('paymentDetailCreatedAt').textContent = new Date(payment.created_at).toLocaleDateString('uk-UA');
     
     // Дополнительная информация
     const referenceNumberRow = document.getElementById('referenceNumberRow');
@@ -578,8 +578,8 @@ function fillPaymentDetails(payment) {
     
     const approvalSection = document.getElementById('paymentApprovalSection');
     if (payment.approved_by && payment.approved_at) {
-        document.getElementById('paymentDetailApprovedBy').textContent = payment.approved_by_name || 'Неизвестно';
-        document.getElementById('paymentDetailApprovedAt').textContent = new Date(payment.approved_at).toLocaleDateString('ru-RU');
+        document.getElementById('paymentDetailApprovedBy').textContent = payment.approved_by_name || window.translations.unknown || 'Невідомо';
+        document.getElementById('paymentDetailApprovedAt').textContent = new Date(payment.approved_at).toLocaleDateString('uk-UA');
         approvalSection.style.display = 'block';
     } else {
         approvalSection.style.display = 'none';

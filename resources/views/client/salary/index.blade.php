@@ -28,11 +28,11 @@
     </div>
     
     <div class="settings-content">
-        <!-- Вкладка обзора -->
+        <!-- Overview tab -->
         <div class="settings-pane" id="tab-salary-overview">
             <h5>{{ __('messages.salary_overview') }}</h5>
             
-            <!-- Статистика -->
+            <!-- Statistics -->
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card">
@@ -107,7 +107,7 @@
                 </div>
             </div>
 
-            <!-- Последние расчеты -->
+            <!-- Recent calculations -->
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -149,7 +149,7 @@
                             </table>
                         </div>
                         
-                        <!-- Мобильные карточки для расчетов -->
+                        <!-- Mobile cards for calculations -->
                         <div class="calculations-cards">
                             @foreach($recentCalculations ?? [] as $calculation)
                             <div class="calculation-card">
@@ -200,7 +200,7 @@
                 </div>
             </div>
 
-            <!-- Последние выплаты -->
+            <!-- Recent payments -->
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -340,7 +340,7 @@
                                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                                         </svg>
                                     </button>
-                                    <button class="btn-delete" onclick="deleteSalarySetting({{ $setting->id }})" title="Удалить">
+                                    <button class="btn-delete" onclick="deleteSalarySetting({{ $setting->id }})" title="{{ __('messages.delete') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                         </svg>
@@ -404,7 +404,7 @@
                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                             </svg>
                         </button>
-                        <button class="btn-delete" onclick="deleteSalarySetting({{ $setting->id }})" title="Удалить">
+                                                            <button class="btn-delete" onclick="deleteSalarySetting({{ $setting->id }})" title="{{ __('messages.delete') }}">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                             </svg>
@@ -468,7 +468,7 @@
                             </td>
                             <td>
                                 <div class="actions-cell">
-                                    <button class="btn-view" onclick="viewSalaryCalculation({{ $calculation->id }})" title="Просмотр">
+                                    <button class="btn-view" onclick="viewSalaryCalculation({{ $calculation->id }})" title="{{ __('messages.view') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                                             <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
@@ -482,7 +482,7 @@
                                     </button>
                                     @endif
                                     @if($calculation->canDelete())
-                                    <button class="btn-delete" onclick="deleteSalaryCalculation({{ $calculation->id }})" title="Удалить">
+                                    <button class="btn-delete" onclick="deleteSalaryCalculation({{ $calculation->id }})" title="{{ __('messages.delete') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                         </svg>
@@ -554,7 +554,7 @@
                         </div>
                     </div>
                     <div class="salary-calculation-actions">
-                        <button class="btn-view" onclick="viewSalaryCalculation({{ $calculation->id }})" title="Просмотр">
+                                                            <button class="btn-view" onclick="viewSalaryCalculation({{ $calculation->id }})" title="{{ __('messages.view') }}">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                                 <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
@@ -568,7 +568,7 @@
                         </button>
                         @endif
                         @if($calculation->canDelete())
-                        <button class="btn-delete" onclick="deleteSalaryCalculation({{ $calculation->id }})" title="Удалить">
+                                                            <button class="btn-delete" onclick="deleteSalaryCalculation({{ $calculation->id }})" title="{{ __('messages.delete') }}">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                             </svg>
@@ -583,12 +583,12 @@
                 <div class="text-center py-5">
                     <i class="fas fa-calculator fa-3x text-muted mb-3"></i>
                     <h5>{{ __('messages.no_calculations_found') }}</h5>
-                    <p class="text-muted">Создайте расчет зарплаты для ваших сотрудников</p>
+                    <p class="text-muted">{{ __('messages.create_salary_calculation') }}</p>
                 </div>
             @endif
         </div>
 
-        <!-- Вкладка выплат -->
+        <!-- Payments tab -->
         <div class="settings-pane" id="tab-salary-payments" style="display: none;">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5>{{ __('messages.salary_payments_title') }}</h5>
@@ -597,7 +597,7 @@
                 </button>
             </div>
 
-            <!-- Таблица выплат -->
+            <!-- Payments table -->
             <div class="table-wrapper">
                 <table class="table-striped salary-payments-table" id="salaryPaymentsTable">
                     <thead>
@@ -628,21 +628,21 @@
                             </td>
                             <td>
                                 <div class="actions-cell">
-                                    <button class="btn-view" onclick="viewSalaryPayment({{ $payment->id }})" title="Просмотр">
+                                    <button class="btn-view" onclick="viewSalaryPayment({{ $payment->id }})" title="{{ __('messages.view') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                                             <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                                         </svg>
                                     </button>
                                     @if($payment->canApprove())
-                                    <button class="btn-edit" onclick="approveSalaryPayment({{ $payment->id }})" title="Подтвердить выплату">
+                                    <button class="btn-edit" onclick="approveSalaryPayment({{ $payment->id }})" title="{{ __('messages.approve_payment') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                         </svg>
                                     </button>
                                     @endif
                                     @if($payment->canDelete())
-                                    <button class="btn-delete" onclick="deleteSalaryPayment({{ $payment->id }})" title="Удалить">
+                                    <button class="btn-delete" onclick="deleteSalaryPayment({{ $payment->id }})" title="{{ __('messages.delete') }}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                         </svg>
@@ -656,7 +656,7 @@
                 </table>
             </div>
             
-            <!-- Мобильные карточки для выплат зарплаты -->
+            <!-- Mobile cards for salary payments -->
             <div class="salary-payments-cards">
                 @foreach($salaryPayments ?? [] as $payment)
                 <div class="salary-payment-card">
@@ -712,14 +712,14 @@
                             </svg>
                         </button>
                         @if($payment->canApprove())
-                        <button class="btn-edit" onclick="approveSalaryPayment({{ $payment->id }})" title="Подтвердить выплату">
+                                                            <button class="btn-edit" onclick="approveSalaryPayment({{ $payment->id }})" title="{{ __('messages.approve_payment') }}">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                             </svg>
                         </button>
                         @endif
                         @if($payment->canDelete())
-                        <button class="btn-delete" onclick="deleteSalaryPayment({{ $payment->id }})" title="Удалить">
+                                                            <button class="btn-delete" onclick="deleteSalaryPayment({{ $payment->id }})" title="{{ __('messages.delete') }}">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                             </svg>
@@ -828,9 +828,9 @@
     </div>
 </div>
 
-<!-- Модальные окна для настроек зарплаты -->
+<!-- Salary settings modals -->
 
-<!-- Модальное окно добавления/редактирования настроек зарплаты -->
+<!-- Add/Edit salary settings modal -->
 <div id="salarySettingModal" class="modal">
     <div class="modal-content" style="width: 80%; max-width: 900px;">
         <div class="modal-header">
@@ -891,7 +891,7 @@
     </div>
 </div>
 
-<!-- Модальное окно расчета зарплаты -->
+<!-- Salary calculation modal -->
 <div id="salaryCalculationModal" class="modal">
     <div class="modal-content" style="width: 80%; max-width: 900px;">
         <div class="modal-header">
@@ -950,15 +950,15 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="closeSalaryCalculationModal()">Отмена</button>
-                    <button type="submit" class="btn-submit">Рассчитать</button>
+                    <button type="button" class="btn-cancel" onclick="closeSalaryCalculationModal()">{{ __('messages.cancel') }}</button>
+                    <button type="submit" class="btn-submit">{{ __('messages.calculate') }}</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Модальное окно создания выплаты -->
+<!-- Create payment modal -->
 <div id="salaryPaymentModal" class="modal">
     <div class="modal-content" style="width: 80%; max-width: 900px;">
         <div class="modal-header">
@@ -979,9 +979,9 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Расчет зарплаты</label>
+                        <label>{{ __('messages.salary_calculation') }}</label>
                         <select name="calculation_id" class="form-control" id="paymentCalculationId">
-                            <option value="">Выберите расчет (необязательно)</option>
+                            <option value="">{{ __('messages.select_calculation_optional') }}</option>
                         </select>
                     </div>
                 </div>
@@ -1027,7 +1027,7 @@
     </div>
 </div>
 
-<!-- Модальное окно просмотра расчета зарплаты -->
+<!-- Salary calculation details modal -->
 <div id="salaryCalculationDetailsModal" class="modal">
     <div class="modal-content" style="width: 90%; max-width: 1000px;">
         <div class="modal-header">
@@ -1116,7 +1116,7 @@
     </div>
 </div>
 
-<!-- Модальное окно просмотра выплаты -->
+<!-- Payment details modal -->
 <div id="salaryPaymentDetailsModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -1143,7 +1143,7 @@
                         <table class="table-striped">
                             <tbody>
                                 <tr id="referenceNumberRow" style="display: none;">
-                                    <td><strong>Номер референса:</strong></td>
+                                    <td><strong>{{ __('messages.reference_number') }}:</strong></td>
                                     <td><span id="paymentDetailReference"></span></td>
                                 </tr>
                             </tbody>
@@ -1160,17 +1160,17 @@
                         </div>
                         <div class="approval-details">
                             <div class="approval-person">
-                                <strong>Подтвердил:</strong> <span id="paymentDetailApprovedBy"></span>
+                                <strong>{{ __('messages.approved_by') }}:</strong> <span id="paymentDetailApprovedBy"></span>
                             </div>
                             <div class="approval-date">
-                                <strong>Дата:</strong> <span id="paymentDetailApprovedAt"></span>
+                                <strong>{{ __('messages.approval_date') }}:</strong> <span id="paymentDetailApprovedAt"></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="payment-notes" id="paymentNotesSection" style="display: none;">
-                    <h4>Примечания:</h4>
+                    <h4>{{ __('messages.notes_label') }}:</h4>
                     <p id="paymentDetailNotes"></p>
                 </div>
             </div>
@@ -1181,7 +1181,7 @@
     </div>
 </div>
 
-<!-- Модальное окно подтверждения удаления -->
+<!-- Delete confirmation modal -->
 <div id="confirmationModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -1200,10 +1200,10 @@
 
 @push('scripts')
 <script>
-// Данные о валюте для JavaScript
+// Currency data for JavaScript
 window.currencyData = @json($currencyData);
 
-// Переводы для JavaScript
+// Translations for JavaScript
 window.translations = {
     approved: '{{ __("messages.approved") }}',
     paid: '{{ __("messages.paid") }}',
@@ -1211,11 +1211,11 @@ window.translations = {
     calculated: '{{ __("messages.calculated") }}',
     cancelled: '{{ __("messages.cancelled") }}',
     unknown: '{{ __("messages.unknown") }}',
-    // Переводы для типов зарплаты
+    // Salary type translations
     fixed_salary: '{{ __("messages.fixed_salary") }}',
     percentage_salary: '{{ __("messages.percentage_salary") }}',
     mixed_salary: '{{ __("messages.mixed_salary") }}',
-    // Переводы для модального окна удаления
+    // Delete modal translations
     confirm_delete_calculation: '{{ __("messages.confirm_delete_calculation") }}',
     confirm_delete_payment: '{{ __("messages.confirm_delete_payment") }}',
     confirm_delete_setting: '{{ __("messages.confirm_delete_setting") }}',

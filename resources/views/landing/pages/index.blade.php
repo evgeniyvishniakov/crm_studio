@@ -141,7 +141,7 @@
     </div>
 </section>
 
-<!-- Веб-запись Section -->
+<!-- Web Booking -->
 <section id="web-booking" class="py-5">
     <div class="container">
         <div class="row align-items-center">
@@ -178,7 +178,7 @@
                                 <h6 class="mb-0"><i class="fas fa-calendar-plus me-2"></i>{{ __('landing.online_booking') }}</h6>
             </div>
                             <div class="form-body p-3 bg-white rounded-bottom">
-                                <!-- Шаг 1: Выбор услуги -->
+                                <!-- Step 1: Service Selection -->
                                 <div class="form-step active" id="demo-step1">
                                     <h6 class="mb-3">{{ __('landing.select_service') }}</h6>
                                     <div class="service-options">
@@ -203,7 +203,7 @@
                 </div>
             </div>
             
-                                <!-- Шаг 2: Выбор мастера -->
+                                <!-- Step 2: Master Selection -->
                                 <div class="form-step" id="demo-step2">
                                     <h6 class="mb-3">{{ __('landing.select_master') }}</h6>
                                     <div class="master-options">
@@ -237,7 +237,7 @@
     </div>
                                     </div>
                                     
-                                <!-- Шаг 3: Выбор даты и времени -->
+                                <!-- Step 3: Date & Time Selection -->
                                 <div class="form-step" id="demo-step3">
                                     <h6 class="mb-3">{{ __('landing.select_date_time') }}</h6>
                                     <div class="calendar-demo">
@@ -247,7 +247,7 @@
                                             <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-right"></i></button>
                                         </div>
                                         
-                                        <!-- Дни недели -->
+                                        <!-- Weekdays -->
                                         <div class="calendar-weekdays">
                                             <div class="weekday">{{ __('landing.monday') }}</div>
                                             <div class="weekday">{{ __('landing.tuesday') }}</div>
@@ -259,11 +259,11 @@
                                         </div>
                                         
                                         <div class="calendar-grid-demo">
-                                            <!-- Предыдущий месяц -->
+                                            <!-- Previous Month -->
                                             <div class="calendar-day-demo other-month" title="{{ __('landing.other_month') }}">30</div>
                                             <div class="calendar-day-demo other-month" title="{{ __('landing.other_month') }}">31</div>
                                             
-                                            <!-- Текущий месяц -->
+                                            <!-- Current Month -->
                                             <div class="calendar-day-demo disabled" title="{{ __('landing.disabled') }}">1</div>
                                             <div class="calendar-day-demo disabled" title="{{ __('landing.disabled') }}">2</div>
                                             <div class="calendar-day-demo">3</div>
@@ -296,7 +296,7 @@
                                             <div class="calendar-day-demo">30</div>
                                             <div class="calendar-day-demo">31</div>
                                             
-                                            <!-- Следующий месяц -->
+                                            <!-- Next Month -->
                                             <div class="calendar-day-demo other-month">1</div>
                                             <div class="calendar-day-demo other-month">2</div>
                                 </div>
@@ -317,7 +317,7 @@
                                         </div>
                                     </div>
                                     
-                                <!-- Шаг 4: Данные клиента -->
+                                <!-- Step 4: Client Data -->
                                 <div class="form-step" id="demo-step4">
                                     <h6 class="mb-3">{{ __('landing.client_data') }}</h6>
                                     <div class="form-fields">
@@ -336,7 +336,7 @@
                                     </div>
                                         </div>
                                         
-                                <!-- Индикатор прогресса -->
+                                <!-- Progress Indicator -->
                                 <div class="demo-progress mt-3">
                                     <div class="progress-dots">
                                         <div class="progress-dot active"></div>
@@ -354,7 +354,7 @@
     </div>
 </section>
 
-<!-- Telegram уведомления Section -->
+<!-- Telegram Notifications -->
 <section id="telegram-notifications" class="py-5 bg-light">
     <div class="container">
         <div class="row align-items-center">
@@ -422,7 +422,7 @@
                                         </div>
 </section>
 
-<!-- Email рассылки Section -->
+<!-- Email Marketing -->
 <section id="email-marketing" class="py-5">
     <div class="container">
         <div class="row align-items-center">
@@ -478,7 +478,7 @@
     </div>
 </section>
 
-<!-- Виджет для сайта Section -->
+<!-- Website Widget -->
 <section id="website-widget" class="py-5 bg-light">
     <div class="container">
         <div class="row align-items-center">
@@ -529,7 +529,7 @@
     </div>
 </section>
 
-<!-- Система ролей Section -->
+<!-- Roles System -->
 <section id="roles-system" class="py-5">
     <div class="container">
         <div class="row align-items-center">
@@ -611,7 +611,7 @@
     </div>
 </section>
 
-<!-- Аналитика Section -->
+<!-- Analytics -->
 <section id="analytics" class="py-5 bg-light">
     <div class="container">
         <div class="row align-items-center">
@@ -662,7 +662,7 @@
                                     </div>
                                 </div>
                                 
-                                <!-- График 1: Вертикальные столбики -->
+                                <!-- Chart 1: Vertical Bars -->
                                 <div class="chart-step active" id="chart-step1">
                                     <div class="chart-preview bg-light p-2 rounded">
                                         <div class="chart-bars">
@@ -678,7 +678,7 @@
                                     </div>
                                 </div>
                                 
-                                <!-- График 2: Горизонтальные столбики -->
+                                <!-- Chart 2: Horizontal Bars -->
                                 <div class="chart-step" id="chart-step2">
                                     <div class="chart-preview bg-light p-3 rounded">
                                         <div class="horizontal-bars-large">
@@ -708,7 +708,7 @@
                         </div>
                     </div>
                     
-                                <!-- График 3: Круговая диаграмма -->
+                                <!-- Chart 3: Pie Chart -->
                                 <div class="chart-step" id="chart-step3">
                                     <div class="chart-preview bg-light p-3 rounded">
                                         <div class="pie-chart-large-container">
@@ -734,7 +734,7 @@
                 </div>
             </div>
             
-                                <!-- График 4: Линейный график -->
+                                <!-- Chart 4: Line Chart -->
                                 <div class="chart-step" id="chart-step4">
                                     <div class="chart-preview bg-light p-3 rounded">
                                         <div class="line-chart-large-container">
@@ -745,19 +745,19 @@
                                                         <stop offset="100%" style="stop-color:#667eea;stop-opacity:0.1" />
                                                     </linearGradient>
                                                 </defs>
-                                                <!-- Сетка -->
+                                                <!-- Grid -->
                                                 <line x1="0" y1="24" x2="300" y2="24" stroke="#e5e7eb" stroke-width="1"/>
                                                 <line x1="0" y1="48" x2="300" y2="48" stroke="#e5e7eb" stroke-width="1"/>
                                                 <line x1="0" y1="72" x2="300" y2="72" stroke="#e5e7eb" stroke-width="1"/>
                                                 <line x1="0" y1="96" x2="300" y2="96" stroke="#e5e7eb" stroke-width="1"/>
                                                 
-                                                <!-- Подписи осей Y -->
+                                                <!-- Y-axis Labels -->
                                                 <text x="5" y="29" font-size="10" fill="#6b7280">350</text>
                                                 <text x="5" y="53" font-size="10" fill="#6b7280">280</text>
                                                 <text x="5" y="77" font-size="10" fill="#6b7280">180</text>
                                                 <text x="5" y="101" font-size="10" fill="#6b7280">120</text>
                                                 
-                                                <!-- Подписи осей X -->
+                                                <!-- X-axis Labels -->
                                                 <text x="20" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.january') }}</text>
                                                 <text x="60" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.february') }}</text>
                                                 <text x="100" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.march') }}</text>
@@ -767,11 +767,11 @@
                                                 <text x="260" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.july') }}</text>
                                                 <text x="280" y="115" font-size="10" fill="#6b7280" text-anchor="middle">{{ __('landing.august') }}</text>
                                                 
-                                                <!-- Линия графика -->
+                                                <!-- Chart Line -->
                                                 <path d="M 20 96 L 60 72 L 100 48 L 140 32 L 180 24 L 220 40 L 260 16 L 280 8" 
                                                       stroke="#667eea" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
                                                 
-                                                <!-- Точки на графике -->
+                                                <!-- Chart Points -->
                                                 <circle cx="20" cy="96" r="4" fill="#667eea"/>
                                                 <circle cx="60" cy="72" r="4" fill="#667eea"/>
                                                 <circle cx="100" cy="48" r="4" fill="#667eea"/>
@@ -781,7 +781,7 @@
                                                 <circle cx="260" cy="16" r="4" fill="#667eea"/>
                                                 <circle cx="280" cy="8" r="4" fill="#667eea"/>
                                                 
-                                                <!-- Заливка под линией -->
+                                                <!-- Area Fill -->
                                                 <path d="M 20 96 L 60 72 L 100 48 L 140 32 L 180 24 L 220 40 L 260 16 L 280 8 L 280 120 L 20 120 Z" 
                                                       fill="url(#lineGradient)"/>
                                             </svg>
@@ -790,7 +790,7 @@
                             </div>
                         </div>
                         
-                                <!-- Индикатор прогресса для графиков -->
+                                <!-- Chart Progress -->
                                 <div class="chart-progress mt-3">
                                     <div class="chart-dots">
                                         <div class="chart-dot active"></div>
@@ -810,7 +810,7 @@
 
 
 
-<!-- Testimonials Section -->
+<!-- Testimonials -->
 <section class="py-5">
     <div class="container">
         <div class="row text-center mb-5">
@@ -896,7 +896,7 @@
     </div>
 </section>
 
-<!-- CTA Middle Section -->
+<!-- CTA Middle -->
 <section class="py-5 bg-gradient-primary text-white">
     <div class="container">
         <div class="row text-center">
@@ -922,7 +922,7 @@
     </div>
 </section>
 
-<!-- Функционал Section -->
+<!-- Features -->
 <section id="features-grid" class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
@@ -931,7 +931,7 @@
         </div>
         
         <div class="row g-4">
-            <!-- Онлайн-запись -->
+            <!-- Online Booking -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -942,7 +942,7 @@
                 </div>
             </div>
             
-            <!-- Электронный журнал -->
+            <!-- Electronic Journal -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -953,7 +953,7 @@
                 </div>
             </div>
             
-            <!-- Клиентская база -->
+            <!-- Client Database -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -964,7 +964,7 @@
                 </div>
             </div>
             
-            <!-- Уведомления -->
+            <!-- Notifications -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -975,7 +975,7 @@
                 </div>
             </div>
             
-            <!-- Управление товарами -->
+            <!-- Product Management -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -986,7 +986,7 @@
                 </div>
             </div>
             
-            <!-- Инвентаризация -->
+            <!-- Inventory -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -997,7 +997,7 @@
                 </div>
             </div>
             
-            <!-- Финансовая отчетность -->
+            <!-- Financial Reporting -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -1008,7 +1008,7 @@
                 </div>
             </div>
             
-            <!-- Аналитика и статистика -->
+            <!-- Analytics & Statistics -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -1019,7 +1019,7 @@
                 </div>
             </div>
             
-            <!-- Программы Лояльности -->
+            <!-- Loyalty Programs -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -1030,7 +1030,7 @@
                 </div>
             </div>
             
-            <!-- Закупки и продажи -->
+            <!-- Purchases & Sales -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -1041,7 +1041,7 @@
                 </div>
             </div>
             
-            <!-- Система ролей -->
+            <!-- Roles System -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -1052,7 +1052,7 @@
                 </div>
             </div>
             
-            <!-- Резервные копии -->
+            <!-- Salary -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -1063,7 +1063,7 @@
                 </div>
             </div>
             
-            <!-- Управление записями -->
+            <!-- Appointment Management -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -1074,7 +1074,7 @@
                 </div>
             </div>
             
-            <!-- Аналитика по клиентам -->
+            <!-- Client Analytics -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -1085,7 +1085,7 @@
                 </div>
             </div>
             
-            <!-- Аналитика товарооборота -->
+            <!-- Product Sales Analytics -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -1096,7 +1096,7 @@
                 </div>
             </div>
             
-            <!-- Виджет и Ссылки -->
+            <!-- Widget & Links -->
             <div class="col-lg-3 col-md-6">
                 <div class="feature-grid-card">
                     <div class="feature-grid-icon">
@@ -1108,7 +1108,7 @@
             </div>
         </div>
         
-        <!-- CTA после функций -->
+        <!-- CTA After Features -->
         <div class="text-center mt-5">
             <h3 class="fw-bold mb-3">{{ __('landing.try_now_cta_title') }}</h3>
                             <p class="lead text-muted mb-4">{{ __('landing.try_7_days_test_description') }}</p>
@@ -1125,7 +1125,7 @@
     </div>
 </section>
 
-<!-- Секция "Для каких ниш подходит" -->
+<!-- Suitable Niches -->
 <section id="niches-section" class="niches-section py-5">
     <div class="container">
         <div class="text-center mb-5">
@@ -1134,7 +1134,7 @@
         </div>
         
         <div class="row g-4">
-            <!-- Красота и уход -->
+            <!-- Beauty & Care -->
             <div class="col-lg-3 col-md-6">
                 <div class="niche-card">
                     <div class="niche-icon">
@@ -1145,7 +1145,7 @@
                 </div>
             </div>
             
-            <!-- Медицинские услуги -->
+            <!-- Medical Services -->
             <div class="col-lg-3 col-md-6">
                 <div class="niche-card">
                     <div class="niche-icon">
@@ -1156,7 +1156,7 @@
                 </div>
             </div>
             
-            <!-- Творческие услуги -->
+            <!-- Creative Services -->
             <div class="col-lg-3 col-md-6">
                 <div class="niche-card">
                     <div class="niche-icon">
@@ -1167,7 +1167,7 @@
                 </div>
             </div>
             
-            <!-- Автосервисы -->
+            <!-- Auto Services -->
             <div class="col-lg-3 col-md-6">
                 <div class="niche-card">
                     <div class="niche-icon">
@@ -1178,7 +1178,7 @@
                 </div>
             </div>
             
-            <!-- Бытовые услуги -->
+            <!-- Household Services -->
             <div class="col-lg-3 col-md-6">
                 <div class="niche-card">
                     <div class="niche-icon">
@@ -1189,7 +1189,7 @@
                 </div>
             </div>
             
-            <!-- Образование -->
+            <!-- Education -->
             <div class="col-lg-3 col-md-6">
                 <div class="niche-card">
                     <div class="niche-icon">
@@ -1200,7 +1200,7 @@
                 </div>
             </div>
             
-            <!-- Ресторанный бизнес -->
+            <!-- Restaurant Business -->
             <div class="col-lg-3 col-md-6">
                 <div class="niche-card">
                     <div class="niche-icon">
@@ -1211,7 +1211,7 @@
                 </div>
             </div>
             
-            <!-- Консалтинговые услуги -->
+            <!-- Consulting Services -->
             <div class="col-lg-3 col-md-6">
                 <div class="niche-card">
                     <div class="niche-icon">
@@ -1260,10 +1260,8 @@ document.addEventListener('DOMContentLoaded', function() {
         showSlide(currentSlide);
     }
     
-    // Показываем первый слайд
     showSlide(0);
     
-    // Автоматическое переключение каждые 5 секунд
     setInterval(nextSlide, 5000);
 });
 </script>

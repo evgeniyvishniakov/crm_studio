@@ -119,14 +119,14 @@
                         <table class="table-striped schedule-overview-table">
                             <thead>
                                 <tr>
-                                    <th>Сотрудник</th>
-                                    <th>ПН</th>
-                                    <th>ВТ</th>
-                                    <th>СР</th>
-                                    <th>ЧТ</th>
-                                    <th>ПТ</th>
-                                    <th>СБ</th>
-                                    <th>ВС</th>
+                                    <th>{{ __('messages.employee') }}</th>
+                                    <th>{{ __('messages.mon') }}</th>
+                                    <th>{{ __('messages.tue') }}</th>
+                                    <th>{{ __('messages.wed') }}</th>
+                                    <th>{{ __('messages.thu') }}</th>
+                                    <th>{{ __('messages.fri') }}</th>
+                                    <th>{{ __('messages.sat') }}</th>
+                                    <th>{{ __('messages.sun') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -138,14 +138,14 @@
                                         @if($day['status'] === 'time_off')
                                             @php
                                                 $typeNames = [
-                                                    'vacation' => 'Отпуск',
-                                                    'sick_leave' => 'Больничный',
-                                                    'personal_leave' => 'Личный отпуск',
-                                                    'unpaid_leave' => 'Отпуск без содержания'
+                                                    'vacation' => __('messages.vacation_text'),
+                                                    'sick_leave' => __('messages.sick_leave_text'),
+                                                    'personal_leave' => __('messages.personal_leave_text'),
+                                                    'unpaid_leave' => __('messages.unpaid_leave_text')
                                                 ];
                                                 $statusNames = [
-                                                    'pending' => 'Ожидает',
-                                                    'approved' => 'Одобрено'
+                                                    'pending' => __('messages.pending'),
+                                                    'approved' => __('messages.approved')
                                                 ];
                                                 $typeText = $typeNames[$day['time_off_type']] ?? $day['time_off_type'];
                                                 $statusText = $statusNames[$day['time_off_status']] ?? $day['time_off_status'];
@@ -255,7 +255,7 @@
             </div>
         </div>
 
-        <!-- Вкладка расписания -->
+        <!-- Schedule tab -->
         <div class="settings-pane" id="tab-weekly-schedule" style="display: none;">
             <div class="clients-header">
                 <div class="header-top">
@@ -268,7 +268,7 @@
                                 @foreach($allEmployees as $employee)
                                     @if($employee)
                                         <option value="{{ $employee->id }}" {{ $loop->first ? 'selected' : '' }}>
-                                            {{ $employee->name ?? 'Удаленный пользователь' }} 
+                                            {{ $employee->name ?? __('messages.deleted_user') }} 
                                             ({{ config('roles.' . $employee->role, $employee->role) }})
                                         </option>
                                     @endif
@@ -305,7 +305,7 @@
                     </div>
                 </div>
 
-            <!-- Сообщение о выборе сотрудника -->
+                            <!-- Employee selection message -->
             <div id="select-employee-message" class="text-center py-5" style="margin-top: 40px;">
                 <i class="fas fa-user-clock fa-3x text-muted mb-3"></i>
                                   <h5>{{ __('messages.please_select_employee') }}</h5>
@@ -313,12 +313,12 @@
             </div>
         </div>
 
-        <!-- Вкладка отпусков -->
+        <!-- Time offs tab -->
         <div class="settings-pane" id="tab-time-offs" style="display: none;">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5>Управление нерабочим временем</h5>
+                <h5>{{ __('messages.time_offs_management') }}</h5>
                 <button class="btn btn-primary" onclick="showTimeOffModal()">
-                    <i class="fa fa-plus"></i> Добавить отсутствие
+                    <i class="fa fa-plus"></i> {{ __('messages.add_absence') }}
                 </button>
             </div>
 
@@ -327,18 +327,18 @@
                 <table class="table-striped schedule-overview-table" id="timeOffsTable" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; border: 1px solid #e5e7eb;">
                     <thead>
                         <tr>
-                            <th style="text-align: center;">Сотрудник</th>
-                            <th style="text-align: center;">Тип</th>
-                            <th style="text-align: center;">Период</th>
-                            <th style="text-align: center;">Статус</th>
-                            <th style="text-align: center;">Действия</th>
+                            <th style="text-align: center;">{{ __('messages.employee') }}</th>
+                            <th style="text-align: center;">{{ __('messages.type') }}</th>
+                            <th style="text-align: center;">{{ __('messages.period') }}</th>
+                            <th style="text-align: center;">{{ __('messages.status') }}</th>
+                            <th style="text-align: center;">{{ __('messages.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody id="time-offs-tbody">
                         <!-- Данные будут загружены через AJAX -->
                         <tr>
                             <td colspan="5" class="text-center py-4">
-                                <i class="fas fa-spinner fa-spin"></i> Загрузка...
+                                <i class="fas fa-spinner fa-spin"></i> {{ __('messages.loading') }}
                             </td>
                         </tr>
                     </tbody>
@@ -354,7 +354,7 @@
 <div id="editScheduleModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
     <div style="background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 5px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h5 style="margin: 0;">Настройка расписания</h5>
+            <h5 style="margin: 0;">{{ __('messages.schedule_settings') }}</h5>
             <span style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;" onclick="closeScheduleModal()">&times;</span>
         </div>
         <div>
@@ -366,7 +366,7 @@
                     <div class="custom-control custom-switch">
                         <input type="checkbox" class="custom-control-input" id="edit-schedule-is-working">
                         <label class="custom-control-label" for="edit-schedule-is-working">
-                            <strong>Рабочий день</strong>
+                            <strong>{{ __('messages.working_day') }}</strong>
                         </label>
                     </div>
                 </div>
@@ -374,15 +374,15 @@
                 <div id="schedule-working-hours-fields">
                     <div class="form-group" style="display: flex; gap: 15px; align-items: end;">
                         <div style="flex: 1;">
-                            <label for="edit-schedule-start-time">Начало работы</label>
+                            <label for="edit-schedule-start-time">{{ __('messages.start_of_work') }}</label>
                             <input type="time" class="form-control" id="edit-schedule-start-time">
                         </div>
                         <div style="flex: 1;">
-                            <label for="edit-schedule-end-time">Конец работы</label>
+                            <label for="edit-schedule-end-time">{{ __('messages.end_of_work') }}</label>
                             <input type="time" class="form-control" id="edit-schedule-end-time">
                         </div>
                         <div style="flex: 1;">
-                            <label for="edit-schedule-booking-interval">Интервал записи (минуты)</label>
+                            <label for="edit-schedule-booking-interval">{{ __('messages.booking_interval') }}</label>
                             <input type="number" class="form-control" id="edit-schedule-booking-interval" min="15" max="120" step="15" value="30" placeholder="30">
                         </div>
                     </div>
@@ -403,9 +403,9 @@
 
 @push('scripts')
 <script>
-// Используем общую функцию showNotification из notifications.js
+// Use common showNotification function from notifications.js
 
-// Переводы и данные для JavaScript
+// Translations and data for JavaScript
 window.translations = {
     working: '{{ __("messages.working_hours") }}',
     day_off: '{{ __("messages.day_off") }}',
@@ -415,21 +415,21 @@ window.translations = {
     unpaid_leave: '{{ __("messages.other_time_off") }}'
 };
 
-// Функции управления вкладками (используем те же что в salary)
+// Tab management functions (use the same as in salary)
 document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация вкладок
+    // Initialize tabs
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabPanes = document.querySelectorAll('.settings-pane');
 
-    // Функция переключения вкладки
+    // Tab switching function
     function switchTab(tabId) {
-            // Убираем активный класс со всех кнопок
+            // Remove active class from all buttons
             tabButtons.forEach(btn => btn.classList.remove('active'));
             
-            // Скрываем все панели
+            // Hide all panes
             tabPanes.forEach(pane => pane.style.display = 'none');
             
-            // Активируем текущую кнопку и панель
+            // Activate current button and pane
         const activeButton = document.querySelector(`[data-tab="${tabId}"]`);
         const activePane = document.getElementById('tab-' + tabId);
         
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', function() {
             activePane.style.display = 'block';
         }
         
-        // Сохраняем активную вкладку в localStorage
+        // Save active tab in localStorage
         localStorage.setItem('workSchedules_activeTab', tabId);
     }
 
@@ -447,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const tabId = this.getAttribute('data-tab');
             switchTab(tabId);
             
-            // Загружаем данные при переходе на вкладку отпусков
+            // Load data when switching to time offs tab
             if (tabId === 'time-offs') {
                 loadTimeOffsData();
             }
@@ -497,7 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Инициализируем настройки отображения статистики
     initDisplaySettings();
     
-    // Обработчик для выбора сотрудника в управлении расписанием
+                    // Employee selection handler for schedule management
     const scheduleUserSelect = document.getElementById('schedule-user-select');
     if (scheduleUserSelect) {
         scheduleUserSelect.addEventListener('change', function() {
@@ -505,7 +505,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (employeeId) {
                 currentScheduleUserId = employeeId;
                 loadEmployeeScheduleForManagement(employeeId);
-                // Сохраняем выбранного сотрудника
+                                    // Save selected employee
                 localStorage.setItem('workSchedules_selectedEmployee', employeeId);
             } else {
                 hideScheduleManagement();
@@ -513,14 +513,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Восстанавливаем выбранного сотрудника
+                        // Restore selected employee
         const savedEmployee = localStorage.getItem('workSchedules_selectedEmployee');
         if (savedEmployee) {
             scheduleUserSelect.value = savedEmployee;
             currentScheduleUserId = savedEmployee;
             loadEmployeeScheduleForManagement(savedEmployee);
         } else if (scheduleUserSelect.value) {
-            // Если есть выбранный по умолчанию сотрудник, загружаем его расписание
+                            // If there's a default selected employee, load their schedule
             currentScheduleUserId = scheduleUserSelect.value;
             loadEmployeeScheduleForManagement(scheduleUserSelect.value);
         }
@@ -622,7 +622,7 @@ function updateWeekDisplay() {
     startOfWeek.setDate(currentWeekStart.getDate() + (currentWeekOffset * 7));
     
     const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6); // Воскресенье
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
 
     
     const localeTag = (function(){ const l='{{ app()->getLocale() }}'; if(l==='ua') return 'uk-UA'; if(l==='en') return 'en-US'; if(l==='ru') return 'ru-RU'; return l; })();
@@ -662,7 +662,7 @@ function loadWeekSchedule() {
 let currentScheduleUserId = null;
 let scheduleManagementData = {};
 
-// Функция загрузки расписания сотрудника для управления
+        // Function to load employee schedule for management
 function loadEmployeeScheduleForManagement(employeeId) {
     fetch(`{{ route("work-schedules.employee-schedule") }}?employee_id=${employeeId}`)
         .then(response => response.json())
@@ -700,13 +700,13 @@ function renderScheduleManagementTable() {
     tbody.innerHTML = '';
     
     const days = [
-        { id: 1, name: 'Понедельник' },
-        { id: 2, name: 'Вторник' },
-        { id: 3, name: 'Среда' },
-        { id: 4, name: 'Четверг' },
-        { id: 5, name: 'Пятница' },
-        { id: 6, name: 'Суббота' },
-        { id: 0, name: 'Воскресенье' }
+        { id: 1, name: '{{ __("messages.monday") }}' },
+        { id: 2, name: '{{ __("messages.tuesday") }}' },
+        { id: 3, name: '{{ __("messages.wednesday") }}' },
+        { id: 4, name: '{{ __("messages.thursday") }}' },
+        { id: 5, name: '{{ __("messages.friday") }}' },
+        { id: 6, name: '{{ __("messages.saturday") }}' },
+        { id: 0, name: '{{ __("messages.sunday") }}' }
     ];
     
     days.forEach(day => {
@@ -724,7 +724,7 @@ function renderScheduleManagementTable() {
             <td>
                 ${dayData.is_working ? 
                     `${dayData.start_time} - ${dayData.end_time}` : 
-                    '<span class="text-muted">Выходной</span>'
+                    '<span class="text-muted">{{ __("messages.day_off_text") }}</span>'
                 }
             </td>
             <td>
@@ -808,17 +808,17 @@ function saveScheduleDay() {
     const notes = document.getElementById('edit-schedule-notes').value;
     const bookingInterval = document.getElementById('edit-schedule-booking-interval').value;
     
-    // Валидация
-    if (isWorking && (!startTime || !endTime)) {
-        console.error('Не указано время работы');
-        window.showNotification('error', 'Укажите время начала и окончания работы');
-        return;
-    }
-    
-    if (isWorking && startTime >= endTime) {
-        console.error('Неправильное время работы');
-        window.showNotification('error', 'Время окончания должно быть позже времени начала');
-        return;
+            // Validation
+        if (isWorking && (!startTime || !endTime)) {
+            console.error('Work time not specified');
+            window.showNotification('error', '{{ __("messages.please_specify_work_time") }}');
+            return;
+        }
+        
+        if (isWorking && startTime >= endTime) {
+            console.error('Invalid work time');
+                    window.showNotification('error', '{{ __("messages.end_time_must_be_later") }}');
+            return;
     }
     
     // Обновляем данные
@@ -929,7 +929,7 @@ function updateOverviewScheduleTable(schedules) {
         
         employeeSchedule.schedule.forEach(day => {
             if (day.status === 'time_off') {
-                // Отображение отсутствия
+                // Display absence
                 const typeNames = {
                     'vacation': '{{ __("messages.vacation_text") }}',
                     'sick_leave': '{{ __("messages.sick_leave_text") }}',
@@ -984,7 +984,7 @@ function updateOverviewScheduleTable(schedules) {
                 scheduleCells += `
                     <td>
                         <span class="schedule-time day-off">
-                            Выходной
+                            {{ __('messages.day_off_text') }}
                         </span>
                     </td>
                 `;
@@ -1011,27 +1011,27 @@ function updateOverviewStats(stats) {
     const statCards = document.querySelectorAll('.card .mt-3.mb-3');
     
     if (statCards.length >= 4) {
-        // Всего сотрудников
+                        // Total employees
         if (stats.total_employees !== undefined) {
             statCards[0].textContent = stats.total_employees;
         }
         
-        // Работает сегодня
+        // Working today
         if (stats.working_today !== undefined) {
             statCards[1].textContent = stats.working_today;
         }
         
-        // Записей на неделю
+        // Appointments this week
         if (stats.appointments_this_week !== undefined) {
             statCards[2].textContent = stats.appointments_this_week;
         }
         
-        // Часов на неделю
+        // Hours this week
         if (stats.hours_this_week !== undefined) {
             statCards[3].textContent = stats.hours_this_week;
         }
         
-        // Предстоящие отсутствия
+        // Upcoming time offs
         if (stats.upcoming_time_offs !== undefined) {
             statCards[4].textContent = stats.upcoming_time_offs;
         }
@@ -1087,7 +1087,7 @@ function loadTimeOffData(timeOffId) {
                 document.getElementById('timeOffEmployee').value = timeOff.admin_user_id;
                 document.getElementById('timeOffType').value = timeOff.type;
                 
-                // Форматируем даты для input type="date"
+                // Format dates for input type="date"
                 const startDate = new Date(timeOff.start_date).toISOString().split('T')[0];
                 const endDate = new Date(timeOff.end_date).toISOString().split('T')[0];
                 
@@ -1116,12 +1116,12 @@ function saveTimeOff() {
     const endDate = document.getElementById('timeOffEndDate').value;
     
     if (!employeeId) {
-        window.showNotification('error', 'Выберите сотрудника');
+                        window.showNotification('error', '{{ __("messages.please_select_employee") }}');
         return;
     }
     
     if (!type) {
-                    window.showNotification('error', 'Выберите тип отсутствия');
+                    window.showNotification('error', '{{ __("messages.please_select_absence_type") }}');
         return;
     }
     
@@ -1198,33 +1198,33 @@ function loadTimeOffsData() {
 }
 
 function renderTimeOffsTable(timeOffs) {
-    console.log('Рендерим таблицу отпусков:', timeOffs);
+    console.log('Rendering time offs table:', timeOffs);
     const tbody = document.getElementById('time-offs-tbody');
     
     if (timeOffs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4" style="color: #6c757d; font-style: italic;">Нет данных об отсутствиях</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4" style="color: #6c757d; font-style: italic;">{{ __("messages.no_absence_data") }}</td></tr>';
         return;
     }
     
     const typeNames = {
-        vacation: 'Отпуск',
-        sick_leave: 'Больничный', 
-        personal_leave: 'Личный отпуск',
-        unpaid_leave: 'Отпуск без содержания'
+        vacation: '{{ __("messages.vacation_text") }}',
+        sick_leave: '{{ __("messages.sick_leave_text") }}', 
+        personal_leave: '{{ __("messages.personal_leave_text") }}',
+        unpaid_leave: '{{ __("messages.unpaid_leave_text") }}'
     };
     
     const statusNames = {
-        pending: 'Ожидает',
-        approved: 'Одобрено',
-        rejected: 'Отклонено',
-        cancelled: 'Отменено'
+        pending: '{{ __("messages.pending") }}',
+        approved: '{{ __("messages.approved") }}',
+        rejected: '{{ __("messages.rejected") }}',
+        cancelled: '{{ __("messages.cancelled") }}'
     };
     
     tbody.innerHTML = timeOffs.map(timeOff => {
-        console.log('Обрабатываем отпуск:', timeOff);
+        console.log('Processing time off:', timeOff);
         return `
         <tr>
-            <td style="text-align: center;">${timeOff.user ? timeOff.user.name : 'Удаленный пользователь'}</td>
+            <td style="text-align: center;">${timeOff.user ? timeOff.user.name : '{{ __("messages.deleted_user") }}'}</td>
             <td style="text-align: center;">${typeNames[timeOff.type] || timeOff.type}</td>
             <td style="text-align: center;">${formatDate(timeOff.start_date)} - ${formatDate(timeOff.end_date)}</td>
             
@@ -1255,13 +1255,13 @@ function formatDate(dateString) {
         const localeTag = (function(){ const l='{{ app()->getLocale() }}'; if(l==='ua') return 'uk-UA'; if(l==='en') return 'en-US'; if(l==='ru') return 'ru-RU'; return l; })();
         return new Date(dateString).toLocaleDateString(localeTag);
     } catch (error) {
-        console.error('Ошибка форматирования даты:', error, dateString);
-        return dateString || 'Неизвестная дата';
+        console.error('Date formatting error:', error, dateString);
+        return dateString || '{{ __("messages.unknown_date") }}';
     }
 }
 
 function deleteTimeOff(timeOffId) {
-    // Показываем модальное окно подтверждения
+    // Show confirmation modal
     showDeleteTimeOffModal(timeOffId);
 }
 
@@ -1269,7 +1269,7 @@ function showDeleteTimeOffModal(timeOffId) {
     const modal = document.getElementById('deleteTimeOffModal');
     const confirmBtn = document.getElementById('confirmDeleteTimeOff');
     
-            // Сохраняем ID отсутствия для удаления
+            // Save absence ID for deletion
     confirmBtn.onclick = function() {
         performDeleteTimeOff(timeOffId);
     };
@@ -1294,11 +1294,11 @@ function performDeleteTimeOff(timeOffId) {
     .then(data => {
         if (data.success) {
             window.showNotification('success', data.message);
-            loadTimeOffsData(); // Обновляем таблицу отпусков
-            refreshOverviewDataCompletely(); // Обновляем данные на вкладке "Обзор"
-            closeDeleteTimeOffModal(); // Закрываем модальное окно
+            loadTimeOffsData(); // Update time offs table
+            refreshOverviewDataCompletely(); // Update data on "Overview" tab
+            closeDeleteTimeOffModal(); // Close modal
         } else {
-            window.showNotification('error', data.message || 'Ошибка при удалении');
+            window.showNotification('error', data.message || '{{ __("messages.error_deleting_time_off") }}');
         }
     })
     .catch(error => {
@@ -1730,13 +1730,13 @@ function showWarningOncePerMonth(message) {
     word-wrap: break-word;
 }
 
-#timeOffsTable th:nth-child(1) { width: 25%; } /* Сотрудник */
-#timeOffsTable th:nth-child(2) { width: 20%; } /* Тип */
-#timeOffsTable th:nth-child(3) { width: 25%; } /* Период */
-#timeOffsTable th:nth-child(4) { width: 15%; } /* Статус */
-#timeOffsTable th:nth-child(5) { width: 15%; } /* Действия */
+#timeOffsTable th:nth-child(1) { width: 25%; } /* Employee */
+#timeOffsTable th:nth-child(2) { width: 20%; } /* Type */
+#timeOffsTable th:nth-child(3) { width: 25%; } /* Period */
+#timeOffsTable th:nth-child(4) { width: 15%; } /* Status */
+#timeOffsTable th:nth-child(5) { width: 15%; } /* Actions */
 
-/* Стили для статусов отпусков в таблице расписания (как было) */
+/* Styles for vacation statuses in schedule table (as before) */
 .time-off-status {
     font-size: 11px;
     padding: 1px 4px;

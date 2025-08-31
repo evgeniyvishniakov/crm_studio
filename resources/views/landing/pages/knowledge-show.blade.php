@@ -8,7 +8,7 @@
 @section('description', $article->description)
 
 @section('content')
-<!-- Hero Section -->
+<!-- Hero -->
 <section class="bg-light py-5">
     <div class="container">
         <div class="row">
@@ -57,7 +57,7 @@
                     </div>
                 @endif
 
-                <!-- Article Content -->
+                <!-- Content -->
                 @if($article->content)
                     <div class="article-content">
                         {!! $article->content !!}
@@ -135,7 +135,6 @@
                         </div>
                         <div class="card-body">
                             @php
-                                // Сначала пытаемся получить похожие статьи, выбранные вручную
                                 $relatedArticles = collect();
                                 if ($article->related_articles && is_array($article->related_articles)) {
                                     $relatedArticles = \App\Models\KnowledgeArticle::published()
@@ -144,7 +143,6 @@
                                         ->get();
                                 }
                                 
-                                // Если похожих статей нет, показываем статьи из той же категории
                                 if ($relatedArticles->isEmpty()) {
                                     $relatedArticles = \App\Models\KnowledgeArticle::published()
                                         ->where('category', $article->category)
@@ -225,9 +223,7 @@ function shareArticle() {
             url: window.location.href
         });
     } else {
-        // Fallback для браузеров без поддержки Web Share API
         navigator.clipboard.writeText(window.location.href).then(function() {
-            alert('Ссылка скопирована в буфер обмена!');
         });
     }
 }

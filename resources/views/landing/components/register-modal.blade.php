@@ -112,14 +112,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (registerForm) {
         registerForm.addEventListener('submit', function() {
-            // Показываем спиннер
             registerBtn.disabled = true;
             regSpinner.classList.remove('d-none');
             registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Регистрация...';
         });
     }
     
-    // Маска для телефона
     if (typeof $.fn.mask !== 'undefined') {
         $('#reg-phone').mask('+380999999999');
     }
