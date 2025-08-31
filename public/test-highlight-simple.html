@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Простой тест подсветки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-item {
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+        
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        /* Стили для подсветки */
+        @keyframes highlightPulse {
+            0% {
+                background-color: #fff3cd;
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+            }
+            50% {
+                background-color: #ffeaa7;
+                box-shadow: 0 0 0 10px rgba(255, 193, 7, 0.3);
+            }
+            100% {
+                background-color: #fff3cd;
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+            }
+        }
+
+        .booking-highlight {
+            animation: highlightPulse 1s ease-in-out infinite;
+            border: 2px solid #ffc107 !important;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .booking-highlight::before {
+            content: attr(data-notification-text);
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffc107;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+
+        .booking-highlight::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Простой тест подсветки</h1>
+        
+        <p>Эта страница тестирует базовую функциональность подсветки.</p>
+        
+        <div class="test-controls">
+            <button class="test-button" onclick="testHighlight('item1')">Подсветить элемент 1</button>
+            <button class="test-button" onclick="testHighlight('item2')">Подсветить элемент 2</button>
+            <button class="test-button" onclick="testHighlight('item3')">Подсветить элемент 3</button>
+        </div>
+        
+        <div class="test-item" id="item1" data-appointment-id="141">
+            <h3>Элемент 1 - Запись #141</h3>
+            <p>Это тестовый элемент для проверки подсветки.</p>
+        </div>
+        
+        <div class="test-item" id="item2" data-appointment-id="142">
+            <h3>Элемент 2 - Запись #142</h3>
+            <p>Это тестовый элемент для проверки подсветки.</p>
+        </div>
+        
+        <div class="test-item" id="item3" data-appointment-id="143">
+            <h3>Элемент 3 - Запись #143</h3>
+            <p>Это тестовый элемент для проверки подсветки.</p>
+        </div>
+        
+        <div class="test-item">
+            <h3>Инструкции:</h3>
+            <ol>
+                <li>Нажмите любую кнопку "Подсветить элемент X"</li>
+                <li>Элемент должен подсветиться желтым цветом с анимацией</li>
+                <li>Над элементом должен появиться текст "🔔 Новая запись"</li>
+                <li>Подсветка должна исчезнуть через 5 секунд</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function testHighlight(elementId) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                console.log('🧪 Тестируем подсветку элемента:', elementId);
+                highlightElement(element);
+            }
+        }
+        
+        function highlightElement(element) {
+            console.log('✨ Добавляем подсветку к элементу:', element);
+            
+            // Добавляем класс подсветки и текст уведомления
+            element.classList.add('booking-highlight');
+            element.setAttribute('data-notification-text', '🔔 Новая запись');
+            console.log('✅ Класс и атрибут добавлены');
+            
+            // Прокручиваем к элементу
+            element.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+            console.log('📜 Прокрутка к элементу выполнена');
+            
+            // Убираем подсветку через 5 секунд
+            setTimeout(() => {
+                console.log('⏰ Убираем подсветку...');
+                element.classList.remove('booking-highlight');
+                element.removeAttribute('data-notification-text');
+                console.log('✅ Подсветка убрана');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

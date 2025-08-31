@@ -72,6 +72,38 @@ class NotificationController extends Controller
         
         $notification->is_read = true;
         $notification->save();
+        
+        // Если это уведомление о веб-записи, добавляем параметр для подсветки
+        if ($notification->type === 'web_booking' && $notification->url) {
+            \Log::info('🔍 Обрабатываем уведомление о веб-записи', [
+                'notification_id' => $notification->id,
+                'type' => $notification->type,
+                'url' => $notification->url,
+                'appointment_id' => $notification->appointment_id ?? 'null'
+            ]);
+            
+            $url = $notification->url;
+            $separator = strpos($url, '?') !== false ? '&' : '?';
+            
+            // Если есть appointment_id, используем его для точной подсветки
+            if ($notification->appointment_id) {
+                $url .= $separator . 'highlight_appointment=' . $notification->appointment_id;
+                \Log::info('✅ Добавляем параметр highlight_appointment', [
+                    'final_url' => $url,
+                    'appointment_id' => $notification->appointment_id
+                ]);
+            } else {
+                // Fallback на старый способ
+                $url .= $separator . 'highlight_booking=' . $notification->id;
+                \Log::info('⚠️ Используем fallback highlight_booking', [
+                    'final_url' => $url,
+                    'notification_id' => $notification->id
+                ]);
+            }
+            
+            return redirect($url);
+        }
+        
         return $notification->url ? redirect($notification->url) : back();
     }
 

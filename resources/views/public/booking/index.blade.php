@@ -583,12 +583,17 @@
              box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
          }
          
-         .calendar-header {
-             display: flex;
-             justify-content: space-between;
-             align-items: center;
-             margin-bottom: 20px;
-         }
+                 .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        
+        .calendar-header button {
+            flex-shrink: 0;
+        }
          
          .calendar-header h5 {
              font-weight: 600;
@@ -850,15 +855,18 @@
                  
                  <!-- Календарь -->
                  <div class="calendar-container mb-4">
-                     <div class="calendar-header">
-                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="previousMonth()">
-                             <i class="fas fa-chevron-left"></i>
-                         </button>
-                         <h5 id="current-month" class="mb-0">Июль 2025</h5>
-                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="nextMonth()">
-                             <i class="fas fa-chevron-right"></i>
-                         </button>
-                     </div>
+                                     <div class="calendar-header">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="previousMonth()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h5 id="current-month" class="mb-0">Июль 2025</h5>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="nextMonth()">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="resetCalendarToCurrentMonth()" title="Сбросить к текущему месяцу">
+                        <i class="fas fa-home"></i>
+                    </button>
+                </div>
                      
                      <div class="calendar-grid" id="calendar-grid">
                          <!-- Календарь будет загружен через JavaScript -->
@@ -946,6 +954,15 @@
         let selectedDate = null;
         let selectedTime = null;
         let currentMonth = new Date();
+        // Устанавливаем текущий месяц правильно
+        currentMonth.setDate(1); // Устанавливаем 1-е число месяца
+        
+        // Функция для сброса календаря к текущему месяцу
+        function resetCalendarToCurrentMonth() {
+            currentMonth = new Date();
+            currentMonth.setDate(1);
+            renderCalendar();
+        }
         let masterSchedule = null; // Расписание выбранного мастера
         let unavailableDates = []; // Недоступные даты (отпуска, больничные и т.д.)
         
@@ -1061,17 +1078,20 @@
         }
         
                  // Функции календаря
-         function renderCalendar() {
-             const grid = document.getElementById('calendar-grid');
-             const monthYear = document.getElementById('current-month');
-             
-             const year = currentMonth.getFullYear();
-             const month = currentMonth.getMonth();
-             
-             monthYear.textContent = new Date(year, month).toLocaleDateString('{{ app()->getLocale() }}', { 
-                 month: 'long', 
-                 year: 'numeric' 
-             });
+                 function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const monthYear = document.getElementById('current-month');
+            
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            
+
+            
+            // Используем currentMonth напрямую для отображения заголовка
+            monthYear.textContent = currentMonth.toLocaleDateString('{{ app()->getLocale() }}', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
              
              const firstDay = new Date(year, month, 1);
              const lastDay = new Date(year, month + 1, 0);
@@ -1295,21 +1315,34 @@
             }
         }
          
-                   function previousMonth() {
-              currentMonth.setMonth(currentMonth.getMonth() - 1);
-              renderCalendar();
-              if (selectedService && selectedMaster && masterSchedule) {
-                  setTimeout(checkMonthAvailability, 100);
-              }
-          }
-          
-          function nextMonth() {
-              currentMonth.setMonth(currentMonth.getMonth() + 1);
-              renderCalendar();
-              if (selectedService && selectedMaster && masterSchedule) {
-                  setTimeout(checkMonthAvailability, 100);
-              }
-          }
+                           function previousMonth() {
+
+            
+            // Правильный переход на предыдущий месяц
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            currentMonth.setDate(1); // Устанавливаем 1-е число месяца
+            
+
+            
+            renderCalendar();
+            if (selectedService && selectedMaster && masterSchedule) {
+                setTimeout(checkMonthAvailability, 100);
+            }
+        }
+        
+        function nextMonth() {
+            
+            // Правильный переход на следующий месяц
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            currentMonth.setDate(1); // Устанавливаем 1-е число месяца
+            
+
+            
+            renderCalendar();
+            if (selectedService && selectedMaster && masterSchedule) {
+                setTimeout(checkMonthAvailability, 100);
+            }
+        }
          
                  function loadTimeSlots() {
             // Проверяем, что все необходимые данные выбраны
@@ -1719,8 +1752,6 @@
                          function showSuccess(booking) {
             // Сбрасываем флаг отправки при успехе
             isSubmitting = false;
-            
-            console.log('Данные о записи:', booking);
             
             document.getElementById('step4').classList.remove('active');
             document.getElementById('success').classList.add('active');

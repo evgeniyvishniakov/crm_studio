@@ -607,12 +607,12 @@ function removeTip(button) {
 
 // Валидация формы перед отправкой
 document.getElementById('knowledge-form').addEventListener('submit', function(e) {
-    console.log('Form submission started...');
+    
     
     const title = document.getElementById('title').value.trim();
     const description = document.getElementById('description').value.trim();
     
-    console.log('Form data:', { title, description });
+    
     
     if (!title || !description) {
         e.preventDefault();
@@ -624,7 +624,7 @@ document.getElementById('knowledge-form').addEventListener('submit', function(e)
     const stepTitles = document.querySelectorAll('.step-title');
     const stepEditors = document.querySelectorAll('.step-content-editor');
     
-    console.log('Steps found:', stepTitles.length);
+    
     
     for (let i = 0; i < stepTitles.length; i++) {
         const title = stepTitles[i].value.trim();
@@ -637,7 +637,7 @@ document.getElementById('knowledge-form').addEventListener('submit', function(e)
             content = stepEditors[i].value.trim();
         }
         
-        console.log(`Step ${i + 1}:`, { title, content });
+        
         
         if (!title || !content) {
             e.preventDefault();
@@ -646,7 +646,7 @@ document.getElementById('knowledge-form').addEventListener('submit', function(e)
         }
     }
     
-    console.log('Form validation passed, submitting...');
+    
 });
 
 // Функция для вставки подсказки в активный редактор

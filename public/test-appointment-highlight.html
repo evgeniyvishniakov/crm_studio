@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест подсветки записей</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .appointment-item {
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        
+        .test-button:hover {
+            background: #0056b3;
+        }
+        
+        .url-test {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        
+        /* Стили для подсветки */
+        @keyframes highlightPulse {
+            0% {
+                background-color: #fff3cd;
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+            }
+            50% {
+                background-color: #ffeaa7;
+                box-shadow: 0 0 0 10px rgba(255, 193, 7, 0.3);
+            }
+            100% {
+                background-color: #fff3cd;
+                box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+            }
+        }
+
+        .booking-highlight {
+            animation: highlightPulse 1s ease-in-out infinite;
+            border: 2px solid #ffc107 !important;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .booking-highlight::before {
+            content: attr(data-notification-text);
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffc107;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+            z-index: 1000;
+        }
+
+        .booking-highlight::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Тест подсветки записей</h1>
+        
+        <p>Эта страница предназначена для тестирования системы подсветки конкретных записей по ID.</p>
+        
+        <div class="url-test">
+            <h3>🔗 Тестирование URL параметров:</h3>
+            <p>Добавьте в URL один из параметров для автоматической подсветки:</p>
+            <ul>
+                <li><code>?highlight_appointment=141</code> - подсветить запись с ID 141</li>
+                <li><code>?highlight_appointment=142</code> - подсветить запись с ID 142</li>
+                <li><code>?highlight_booking=11</code> - fallback для уведомления ID 11</li>
+            </ul>
+        </div>
+        
+        <div class="test-controls">
+            <h3>🎮 Управление тестом:</h3>
+            <button class="test-button" onclick="testHighlight('appointment-141')">Подсветить запись 141</button>
+            <button class="test-button" onclick="testHighlight('appointment-142')">Подсветить запись 142</button>
+            <button class="test-button" onclick="testHighlight('appointment-143')">Подсветить запись 143</button>
+            <button class="test-button" onclick="testURLParams()">Проверить URL параметры</button>
+        </div>
+        
+        <div class="appointment-item" id="appointment-141" data-appointment-id="141">
+            <h3>📅 Запись #141 - Манікюр</h3>
+            <p><strong>Клиент:</strong> запси</p>
+            <p><strong>Услуга:</strong> Манікюр</p>
+            <p><strong>Дата:</strong> 13.08.2025</p>
+            <p><strong>Время:</strong> 09:00</p>
+            <p><strong>Статус:</strong> pending</p>
+            <p><em>Это реальная запись из базы данных, которая связана с уведомлением ID 11</em></p>
+        </div>
+        
+        <div class="appointment-item" id="appointment-142" data-appointment-id="142">
+            <h3>📅 Запись #142 - Стрижка</h3>
+            <p><strong>Клиент:</strong> Тестовый клиент</p>
+            <p><strong>Услуга:</strong> Стрижка</p>
+            <p><strong>Дата:</strong> 14.08.2025</p>
+            <p><strong>Время:</strong> 10:00</p>
+            <p><strong>Статус:</strong> pending</p>
+            <p><em>Тестовая запись для проверки</em></p>
+        </div>
+        
+        <div class="appointment-item" id="appointment-143" data-appointment-id="143">
+            <h3>📅 Запись #143 - Массаж</h3>
+            <p><strong>Клиент:</strong> Другой клиент</p>
+            <p><strong>Услуга:</strong> Массаж</p>
+            <p><strong>Дата:</strong> 15.08.2025</p>
+            <p><strong>Время:</strong> 11:00</p>
+            <p><strong>Статус:</strong> pending</p>
+            <p><em>Еще одна тестовая запись</em></p>
+        </div>
+        
+        <div class="appointment-item">
+            <h3>📋 Инструкции по тестированию:</h3>
+            <ol>
+                <li><strong>Ручное тестирование:</strong> Нажмите любую кнопку "Подсветить запись X"</li>
+                <li><strong>Автоматическое тестирование:</strong> Добавьте в URL параметр <code>?highlight_appointment=141</code></li>
+                <li><strong>Fallback тестирование:</strong> Добавьте в URL параметр <code>?highlight_booking=11</code></li>
+                <li><strong>Отладка:</strong> Откройте консоль браузера (F12) для просмотра логов</li>
+                <li><strong>Реальная запись:</strong> Запись #141 - это реальная запись из базы данных</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Функция для тестирования подсветки
+        function testHighlight(appointmentId) {
+            const element = document.getElementById(appointmentId);
+            if (element) {
+                console.log('🧪 Тестируем подсветку записи:', appointmentId);
+                highlightElement(element);
+            }
+        }
+        
+        // Функция подсветки элемента
+        function highlightElement(element) {
+            console.log('✨ Добавляем подсветку к элементу:', element);
+            
+            // Добавляем класс подсветки и текст уведомления
+            element.classList.add('booking-highlight');
+            element.setAttribute('data-notification-text', '🔔 Новая запись');
+            console.log('✅ Класс и атрибут добавлены');
+            
+            // Прокручиваем к элементу
+            element.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+            console.log('📜 Прокрутка к элементу выполнена');
+            
+            // Убираем подсветку через 5 секунд
+            setTimeout(() => {
+                console.log('⏰ Убираем подсветку...');
+                element.classList.remove('booking-highlight');
+                element.removeAttribute('data-notification-text');
+                console.log('✅ Подсветка убрана');
+            }, 5000);
+        }
+        
+        // Функция для проверки URL параметров
+        function testURLParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            console.log('🔍 URL параметры:', window.location.search);
+            console.log('🎯 highlight_appointment:', urlParams.get('highlight_appointment'));
+            console.log('🎯 highlight_booking:', urlParams.get('highlight_booking'));
+        }
+        
+        // Функция для автоматической подсветки при загрузке страницы
+        function highlightFromURL() {
+            console.log('🔍 Проверяем параметры URL для подсветки...');
+            const urlParams = new URLSearchParams(window.location.search);
+            const highlightAppointmentId = urlParams.get('highlight_appointment');
+            const highlightBookingId = urlParams.get('highlight_booking');
+            
+            console.log('📋 URL параметры:', window.location.search);
+            console.log('🎯 ID записи для подсветки:', highlightAppointmentId);
+            console.log('🎯 ID уведомления для подсветки (fallback):', highlightBookingId);
+            
+            if (highlightAppointmentId) {
+                console.log('✅ Найден параметр записи для подсветки, начинаем процесс...');
+                // Убираем параметр из URL без перезагрузки страницы
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+                console.log('🔗 URL очищен от параметров');
+                
+                // Ждем загрузки данных и затем подсвечиваем
+                setTimeout(() => {
+                    console.log('⏰ Таймер сработал, вызываем подсветку записи...');
+                    const element = document.querySelector(`[data-appointment-id="${highlightAppointmentId}"]`);
+                    if (element) {
+                        highlightElement(element);
+                    } else {
+                        console.log('❌ Элемент с ID записи не найден');
+                    }
+                }, 1000);
+            } else if (highlightBookingId) {
+                console.log('✅ Найден fallback параметр для подсветки, начинаем процесс...');
+                // Убираем параметр из URL без перезагрузки страницы
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+                console.log('🔗 URL очищен от параметров');
+                
+                // Ждем загрузки данных и затем подсвечиваем
+                setTimeout(() => {
+                    console.log('⏰ Таймер сработал, вызываем подсветку...');
+                    // Подсвечиваем первый элемент как fallback
+                    const firstElement = document.querySelector('.appointment-item');
+                    if (firstElement) {
+                        highlightElement(firstElement);
+                    }
+                }, 1000);
+            } else {
+                console.log('❌ Параметры для подсветки не найдены');
+            }
+        }
+        
+        // Запускаем подсветку при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Страница загружена, проверяем параметры URL...');
+            highlightFromURL();
+        });
+        
+        // Также запускаем при загрузке через AJAX (если данные загружаются динамически)
+        if (typeof window.addEventListener === 'function') {
+            window.addEventListener('load', function() {
+                console.log('🔄 Страница полностью загружена, проверяем параметры URL...');
+                highlightFromURL();
+            });
+        }
+    </script>
+</body>
+</html>

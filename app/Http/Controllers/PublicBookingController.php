@@ -489,7 +489,15 @@ class PublicBookingController extends Controller
                             'body' => $notificationBody,
                             'url' => route('appointments.index'),
                             'is_read' => false,
-                            'project_id' => $project->id
+                            'project_id' => $project->id,
+                            'appointment_id' => $appointment->id
+                        ]);
+                        
+                        \Log::info('🔔 Уведомление создано с appointment_id', [
+                            'notification_id' => $notification->id,
+                            'appointment_id' => $notification->appointment_id,
+                            'url' => $notification->url,
+                            'type' => $notification->type
                         ]);
                         
                         // Устанавливаем кэш на 10 минут, чтобы предотвратить создание дублирующихся уведомлений

@@ -309,8 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('thousands_separator').value = currency.thousands_separator;
                 
                 // Отладочная информация
-                console.log('Загруженные данные валюты:', currency);
-                console.log('Установленное значение decimal_places:', document.getElementById('decimal_places').value);
+                
                 document.getElementById('is_active').checked = currency.is_active;
                 document.getElementById('is_default').checked = currency.is_default;
                 
@@ -419,23 +418,7 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('is_active', isActiveCheckbox.checked ? '1' : '0');
         formData.append('is_default', isDefaultCheckbox.checked ? '1' : '0');
         
-        // Отладочная информация
-        console.log('Отправляемые данные:');
-        for (let [key, value] of formData.entries()) {
-            console.log(key + ': ' + value);
-        }
-        
-        // Дополнительная отладка - проверяем значения полей напрямую
-        console.log('Значения полей напрямую:');
-        console.log('code:', document.getElementById('code').value);
-        console.log('name:', document.getElementById('name').value);
-        console.log('symbol:', document.getElementById('symbol').value);
-        console.log('symbol_position:', document.getElementById('symbol_position').value);
-        console.log('decimal_places:', document.getElementById('decimal_places').value);
-        console.log('decimal_separator:', document.getElementById('decimal_separator').value);
-        console.log('thousands_separator:', document.getElementById('thousands_separator').value);
-        console.log('is_active:', isActiveCheckbox.checked);
-        console.log('is_default:', isDefaultCheckbox.checked);
+
     
     const url = isEditMode 
             ? `/panel/currencies/${document.getElementById('currencyId').value}`

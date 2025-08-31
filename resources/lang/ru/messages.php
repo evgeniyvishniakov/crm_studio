@@ -2397,4 +2397,5 @@ return [
     'start_of_work' => 'Начало работы',
     'end_of_work' => 'Конец работы',
     'booking_interval' => 'Интервал записи (минуты)',
+    'new_booking_notification' => 'Новая запись',
 ]; 

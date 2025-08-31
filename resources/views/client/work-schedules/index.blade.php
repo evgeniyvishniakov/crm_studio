@@ -4,6 +4,15 @@
 
 @section('content')
 
+<!-- Стили для подсветки записи -->
+<style>
+
+
+.booking-highlight {
+    background: #9bf2b578 !important;
+}
+</style>
+
 <div class="dashboard-container">
     <div class="settings-header">
         <h1>{{ __('messages.work_schedule') }}</h1>
@@ -1064,7 +1073,6 @@ function showScheduleModal() {
 }
 
 function showTimeOffModal(timeOffId = null) {
-    console.log('showTimeOffModal вызвана с ID:', timeOffId);
     const modal = document.getElementById('timeOffModal');
     const title = document.getElementById('timeOffModalTitle');
     const form = document.getElementById('timeOffForm');
@@ -1075,12 +1083,10 @@ function showTimeOffModal(timeOffId = null) {
     
     if (timeOffId) {
         // Режим редактирования
-        console.log('Режим редактирования для ID:', timeOffId);
         title.textContent = '{{ __('messages.edit_time_off') }}';
         loadTimeOffData(timeOffId);
     } else {
         // Режим создания
-        console.log('Режим создания нового отсутствия');
         title.textContent = '{{ __('messages.add_time_off') }}';
         // Устанавливаем минимальную дату - сегодня
         const today = new Date().toISOString().split('T')[0];
@@ -1115,12 +1121,10 @@ function loadTimeOffData(timeOffId) {
                 document.getElementById('timeOffEndDate').value = endDate;
         
             } else {
-                console.error('Ошибка в данных:', data.message);
                 window.showNotification('error', 'Ошибка загрузки данных отсутствия');
             }
         })
         .catch(error => {
-            console.error('Ошибка загрузки отпуска:', error);
             window.showNotification('error', 'Произошла ошибка при загрузке');
         });
 }
@@ -1218,7 +1222,6 @@ function loadTimeOffsData() {
 }
 
 function renderTimeOffsTable(timeOffs) {
-    console.log('Rendering time offs table:', timeOffs);
     const tbody = document.getElementById('time-offs-tbody');
     
     if (timeOffs.length === 0) {
@@ -1241,7 +1244,6 @@ function renderTimeOffsTable(timeOffs) {
     };
     
     tbody.innerHTML = timeOffs.map(timeOff => {
-        console.log('Processing time off:', timeOff);
         return `
         <tr>
             <td style="text-align: center;">${timeOff.user ? timeOff.user.name : '{{ __("messages.deleted_user") }}'}</td>
@@ -1275,7 +1277,6 @@ function formatDate(dateString) {
         const localeTag = (function(){ const l='{{ app()->getLocale() }}'; if(l==='ua') return 'uk-UA'; if(l==='en') return 'en-US'; if(l==='ru') return 'ru-RU'; return l; })();
         return new Date(dateString).toLocaleDateString(localeTag);
     } catch (error) {
-        console.error('Date formatting error:', error, dateString);
         return dateString || '{{ __("messages.unknown_date") }}';
     }
 }
@@ -2112,4 +2113,98 @@ function showWarningOncePerMonth(message) {
 </div>
 
 @endpush
+
+<script>
+// Передаем переводы в JavaScript
+const scheduleTranslations = {
+    new_booking_notification: '{{ __("messages.new_booking_notification") }}'
+};
+
+    // Функция для подсветки записи при переходе по уведомлению
+    function highlightBookingFromNotification() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const highlightAppointmentId = urlParams.get('highlight_appointment');
+        const highlightBookingId = urlParams.get('highlight_booking'); // Fallback
+        
+        if (highlightAppointmentId) {
+            // Убираем параметр из URL без перезагрузки страницы
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+            
+            // Ждем загрузки данных и затем подсвечиваем
+            setTimeout(() => {
+                highlightSchedule(highlightAppointmentId, 'appointment');
+            }, 1000);
+        } else if (highlightBookingId) {
+            // Убираем параметр из URL без перезагрузки страницы
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+            
+            // Ждем загрузки данных и затем подсвечиваем
+            setTimeout(() => {
+                highlightSchedule(highlightBookingId, 'notification');
+            }, 1000);
+        }
+    }
+
+// Функция подсветки конкретной записи
+function highlightSchedule(id, type = 'notification') {
+    if (type === 'appointment') {
+        // Попробуем найти элемент с конкретным ID записи
+        const specificElement = document.querySelector(`[data-appointment-id="${id}"]`);
+        if (specificElement) {
+            highlightElement(specificElement);
+            return;
+        }
+    }
+    
+    // Ищем все записи на странице (элементы расписания)
+    const scheduleElements = document.querySelectorAll('.schedule-day, .schedule-row, .time-off-item');
+    
+    if (scheduleElements.length > 0) {
+        // Подсвечиваем первую найденную запись
+        const elementToHighlight = scheduleElements[0];
+        highlightElement(elementToHighlight);
+    } else {
+        // Попробуем найти другие элементы
+        const alternativeElements = document.querySelectorAll('.card, .form-group, .tab-content');
+        
+        if (alternativeElements.length > 0) {
+            const elementToHighlight = alternativeElements[0];
+            highlightElement(elementToHighlight);
+        }
+    }
+}
+
+// Вспомогательная функция для подсветки элемента
+function highlightElement(element) {
+    // Добавляем класс подсветки и текст уведомления
+    element.classList.add('booking-highlight');
+    element.setAttribute('data-notification-text', '🔔 ' + scheduleTranslations.new_booking_notification);
+    
+    // Прокручиваем к элементу
+    element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+    });
+    
+    // Убираем подсветку через 5 секунд
+    setTimeout(() => {
+        element.classList.remove('booking-highlight');
+        element.removeAttribute('data-notification-text');
+    }, 5000);
+}
+
+// Запускаем подсветку при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    highlightBookingFromNotification();
+});
+
+// Также запускаем при загрузке через AJAX (если данные загружаются динамически)
+if (typeof window.addEventListener === 'function') {
+    window.addEventListener('load', function() {
+        highlightBookingFromNotification();
+    });
+}
+</script>
 @endsection

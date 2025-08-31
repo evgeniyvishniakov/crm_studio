@@ -2418,4 +2418,5 @@ return [
     
     // Додаткові переклади для зарплати
     'select_calculation_optional' => 'Оберіть розрахунок (необов\'язково)',
+    'new_booking_notification' => 'Новий запис',
 ]; 

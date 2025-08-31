@@ -2,6 +2,14 @@
 
 @section('content')
 
+<!-- Стили для подсветки записи -->
+<style>
+/* Простой класс подсветки без анимаций */
+.booking-highlight {
+    background: #9bf2b578 !important;
+}
+</style>
+
 <div class="dashboard-container">
     <style>
 /* Цвет текста событий в Неделя и День — белый */
@@ -3828,9 +3836,16 @@
                     renderAppointmentsPagination(meta); // обновляет пагинацию!
                     renderAppointmentsCards(appointments); // обновляет мобильные карточки
                     renderMobileAppointmentsPagination(meta); // обновляет мобильную пагинацию
+                    
+                    // После рендеринга карточек проверяем, нужно ли подсветить запись
+                    if (window.pendingHighlight) {
+                        setTimeout(() => {
+                            highlightAppointment(window.pendingHighlight, 'appointment');
+                            window.pendingHighlight = null;
+                        }, 1000);
+                    }
                 })
                 .catch(error => {
-                    console.error('Ошибка при загрузке записей:', error);
                     // Показываем пустые данные в случае ошибки
                     renderAppointmentsTable([]);
                     renderAppointmentsCards([]);
@@ -3999,6 +4014,181 @@
                     });
                 });
         }
+    </script>
+
+    <script>
+    // Передаем переводы в JavaScript
+    const appointmentTranslations = {
+        new_booking_notification: '{{ __("messages.new_booking_notification") }}'
+    };
+
+            // Флаг для предотвращения повторной подсветки
+        let highlightExecuted = false;
+        
+        // Функция для подсветки записи при переходе по уведомлению
+        function highlightBookingFromNotification() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const highlightAppointmentId = urlParams.get('highlight_appointment');
+            const highlightBookingId = urlParams.get('highlight_booking'); // Fallback
+        
+        if (highlightAppointmentId) {
+            // Сохраняем ID для отложенной подсветки после загрузки карточек
+            window.pendingHighlight = highlightAppointmentId;
+            
+            // Также пробуем подсветить сразу (на случай, если карточки уже загружены)
+            setTimeout(() => {
+                highlightAppointment(highlightAppointmentId, 'appointment');
+            }, 1000);
+        } else if (highlightBookingId) {
+            // Ждем загрузки данных и затем подсвечиваем
+            setTimeout(() => {
+                highlightAppointment(highlightBookingId, 'notification');
+            }, 1000);
+        }
+    }
+
+    // Функция подсветки конкретной записи
+    function highlightAppointment(id, type = 'notification') {
+        if (type === 'appointment') {
+            let specificElement = null;
+            
+            // Проверяем, что видимо на экране
+            const tableWrapper = document.querySelector('.table-wrapper');
+            const appointmentsCards = document.getElementById('appointmentsCards');
+            
+            const isTableVisible = tableWrapper && tableWrapper.style.display !== 'none';
+            const isCardsVisible = appointmentsCards && appointmentsCards.style.display !== 'none';
+            
+            // Ищем в зависимости от того, что видимо
+            if (isTableVisible) {
+                // Ищем в таблице (десктоп) - сначала строку, потом кнопку
+                specificElement = document.querySelector(`#appointmentsList tr[data-appointment-id="${id}"]`);
+                
+                if (!specificElement) {
+                    // Если строка не найдена, ищем кнопку
+                    const button = document.querySelector(`#appointmentsList [data-appointment-id="${id}"]`);
+                    if (button) {
+                        const tableRow = button.closest('tr');
+                        if (tableRow) {
+                            specificElement = tableRow;
+                        }
+                    }
+                }
+            }
+            
+            if (!specificElement && isCardsVisible) {
+                // Ищем в карточках (мобильная)
+                specificElement = document.querySelector(`#appointmentsCards [data-appointment-id="${id}"]`);
+            }
+            
+            if (!specificElement) {
+                // Fallback: ищем везде
+                specificElement = document.querySelector(`[data-appointment-id="${id}"]`);
+                
+                if (specificElement) {
+                    // Определяем, что это: таблица или карточка
+                    const tableRow = specificElement.closest('tr');
+                    if (tableRow) {
+                        specificElement = tableRow;
+                    }
+                }
+            }
+            
+            if (specificElement) {
+                highlightElement(specificElement);
+                return;
+            }
+        }
+        
+        // Ищем все карточки записей на странице
+        const appointmentElements = document.querySelectorAll('.appointment-card, .card, [data-appointment-id]');
+        
+        if (appointmentElements.length > 0) {
+            // Подсвечиваем первую найденную запись
+            const elementToHighlight = appointmentElements[0];
+            highlightElement(elementToHighlight);
+        } else {
+            // Попробуем найти другие элементы
+            const alternativeElements = document.querySelectorAll('.card, .form-group, .tab-content');
+            
+            if (alternativeElements.length > 0) {
+                const elementToHighlight = alternativeElements[0];
+                highlightElement(elementToHighlight);
+            }
+        }
+    }
+
+    // Вспомогательная функция для подсветки элемента
+    function highlightElement(element) {
+        // Добавляем класс подсветки и текст уведомления
+        element.classList.add('booking-highlight');
+        element.setAttribute('data-notification-text', '🔔 ' + appointmentTranslations.new_booking_notification);
+        
+        // Принудительно применяем только простой фон для подсветки
+        element.style.background = '#9bf2b578';
+        
+        // Прокручиваем к элементу
+        element.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+        });
+        
+        // Устанавливаем флаг, что подсветка была выполнена
+        highlightExecuted = true;
+        
+        // Очищаем URL от параметров подсветки
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        
+        // Убираем подсветку через 5 секунд
+        setTimeout(() => {
+            element.classList.remove('booking-highlight');
+            element.removeAttribute('data-notification-text');
+            
+            // Убираем только фон
+            element.style.background = '';
+        }, 5000);
+    }
+
+        // Запускаем подсветку при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Откладываем подсветку до загрузки календаря
+            setTimeout(() => {
+                if (!highlightExecuted) {
+                    highlightBookingFromNotification();
+                }
+            }, 2000); // Ждем 2 секунды для загрузки календаря
+        });
+        
+        // Убираем дублирующие вызовы - оставляем только основной
+        // Альтернативный способ - проверяем каждые 2 секунды, пока не найдем элементы
+        let highlightAttempts = 0;
+        const maxAttempts = 5; // Максимум 5 попыток (10 секунд)
+        
+        function tryHighlightWithRetry() {
+            // Проверяем, не была ли уже выполнена подсветка
+            if (highlightExecuted) {
+                return;
+            }
+            
+            if (highlightAttempts >= maxAttempts) {
+                return;
+            }
+            
+            highlightAttempts++;
+            
+            // Проверяем, есть ли карточки записей
+            const appointmentCards = document.querySelectorAll('.appointment-card');
+            if (appointmentCards.length > 0) {
+                highlightAttempts = 0; // Сбрасываем счетчик
+                highlightBookingFromNotification();
+            } else {
+                setTimeout(tryHighlightWithRetry, 2000);
+            }
+        }
+        
+        // Запускаем повторные попытки
+        setTimeout(tryHighlightWithRetry, 2000);
     </script>
 </div>
 @endsection

@@ -141,7 +141,7 @@
 <script>
 // Добавляем переводы к существующим
 if (window.translations) {
-    console.log('Debug translations before:', window.translations);
+    
     
     const newTranslations = {
         monday: '{{ __("messages.monday") }}',
@@ -161,12 +161,12 @@ if (window.translations) {
         notes: '{{ __("messages.notes") }}'
     };
     
-    console.log('Debug new translations:', newTranslations);
-    console.log('Debug interval_minutes value:', '{{ __("messages.interval_minutes") }}');
+
+
     
     Object.assign(window.translations, newTranslations);
     
-    console.log('Debug translations after:', window.translations);
+
 }
 </script>
 <script src="{{ asset('client/js/booking.js') }}"></script>

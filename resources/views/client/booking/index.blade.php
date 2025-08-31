@@ -520,10 +520,111 @@
 
 <!-- Уведомления создаются динамически глобальной функцией -->
 
+<!-- Стили для подсветки записи -->
+<style>
 
+
+.booking-highlight {
+    background: #9bf2b578 !important;
+}
+</style>
 
 @push('scripts')
 <script src="{{ asset('client/js/booking.js') }}"></script>
 <script src="{{ asset('client/js/booking-services.js') }}"></script>
+
+<script>
+// Передаем переводы в JavaScript
+const bookingTranslations = {
+    new_booking_notification: '{{ __("messages.new_booking_notification") }}'
+};
+
+// Функция для подсветки записи при переходе по уведомлению
+function highlightBookingFromNotification() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const highlightAppointmentId = urlParams.get('highlight_appointment');
+    const highlightBookingId = urlParams.get('highlight_booking'); // Fallback
+    
+    if (highlightAppointmentId) {
+        // Убираем параметр из URL без перезагрузки страницы
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        
+        // Ждем загрузки данных и затем подсвечиваем
+        setTimeout(() => {
+            highlightBooking(highlightAppointmentId, 'appointment');
+        }, 1000);
+    } else if (highlightBookingId) {
+        // Убираем параметр из URL без перезагрузки страницы
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        
+        // Ждем загрузки данных и затем подсвечиваем
+        setTimeout(() => {
+            highlightBooking(highlightBookingId, 'notification');
+        }, 1000);
+    }
+}
+
+// Функция подсветки конкретной записи
+function highlightBooking(id, type = 'notification') {
+    if (type === 'appointment') {
+        // Попробуем найти элемент с конкретным ID записи
+        const specificElement = document.querySelector(`[data-appointment-id="${id}"]`);
+        if (specificElement) {
+            highlightElement(specificElement);
+            return;
+        }
+    }
+    
+    // Ищем все записи на странице
+    const bookingElements = document.querySelectorAll('.booking-item, .schedule-day, .user-service-item');
+    
+    if (bookingElements.length > 0) {
+        // Подсвечиваем первую найденную запись
+        const elementToHighlight = bookingElements[0];
+        highlightElement(elementToHighlight);
+    } else {
+        // Попробуем найти другие элементы
+        const alternativeElements = document.querySelectorAll('.form-group, .card, .tab-content');
+        
+        if (alternativeElements.length > 0) {
+            const elementToHighlight = alternativeElements[0];
+            highlightElement(elementToHighlight);
+        }
+    }
+}
+
+// Вспомогательная функция для подсветки элемента
+function highlightElement(element) {
+    // Добавляем класс подсветки и текст уведомления
+    element.classList.add('booking-highlight');
+    element.setAttribute('data-notification-text', '🔔 ' + bookingTranslations.new_booking_notification);
+    
+    // Прокручиваем к элементу
+    element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+    });
+    
+    // Убираем подсветку через 5 секунд
+    setTimeout(() => {
+        element.classList.remove('booking-highlight');
+        element.removeAttribute('data-notification-text');
+    }, 5000);
+}
+
+// Запускаем подсветку при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    highlightBookingFromNotification();
+});
+
+// Также запускаем при загрузке через AJAX (если данные загружаются динамически)
+if (typeof window.addEventListener === 'function') {
+    window.addEventListener('load', function() {
+        highlightBookingFromNotification();
+    });
+}
+</script>
 @endpush
 @endsection

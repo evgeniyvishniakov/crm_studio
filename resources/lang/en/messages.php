@@ -2225,4 +2225,5 @@ return [
     'start_of_work' => 'Start of Work',
     'end_of_work' => 'End of Work',
     'booking_interval' => 'Booking Interval (minutes)',
+    'new_booking_notification' => 'New Booking',
 ]; 

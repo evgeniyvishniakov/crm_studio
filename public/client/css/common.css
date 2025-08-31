@@ -9093,4 +9093,9 @@ label {
     line-height: inherit !important;
 }
 
+/* ===== СТИЛИ ПОДСВЕТКИ ЗАПИСЕЙ ===== */
 
+/* Простой класс подсветки без анимаций */
+.booking-highlight {
+    background: #9bf2b578 !important;  
+}
