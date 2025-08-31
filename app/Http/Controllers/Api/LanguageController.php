@@ -112,6 +112,10 @@ class LanguageController extends Controller
                     $language = Language::getByCode($code);
                     if ($language) {
                         $project->update(['language_id' => $language->id]);
+                        
+                        // Дополнительно убеждаемся, что язык установлен в сессии
+                        session(['language' => $language->code]);
+                        App::setLocale($language->code);
                     }
                 }
             }
@@ -125,6 +129,14 @@ class LanguageController extends Controller
                 'name' => $language->name,
                 'native_name' => $language->native_name,
                 'flag' => $language->flag_url,
+            ],
+            'landing_urls' => [
+                'index' => route('beautyflow.index') . '?lang=' . $language->code,
+                'contact' => route('beautyflow.contact') . '?lang=' . $language->code,
+                'pricing' => route('beautyflow.pricing') . '?lang=' . $language->code,
+                'privacy' => route('beautyflow.privacy') . '?lang=' . $language->code,
+                'terms' => route('beautyflow.terms') . '?lang=' . $language->code,
+                'knowledge' => route('beautyflow.knowledge') . '?lang=' . $language->code,
             ]
         ]);
     }

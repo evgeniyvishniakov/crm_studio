@@ -39,11 +39,11 @@
                             <i class="fas fa-chevron-up ms-1"></i>
                         </button>
                         <div class="alteg-lang-menu" id="altegLangMenu">
-                            <a href="?lang=en" class="alteg-lang-item {{ app()->getLocale() === 'en' ? 'active' : '' }}">English</a>
+                            <a href="#" data-lang="en" class="alteg-lang-item {{ app()->getLocale() === 'en' ? 'active' : '' }}">English</a>
                             <span class="alteg-divider">|</span>
-                            <a href="?lang=ru" class="alteg-lang-item {{ app()->getLocale() === 'ru' ? 'active' : '' }}">Русский</a>
+                            <a href="#" data-lang="ru" class="alteg-lang-item {{ app()->getLocale() === 'ru' ? 'active' : '' }}">Русский</a>
                             <span class="alteg-divider">|</span>
-                            <a href="?lang=ua" class="alteg-lang-item {{ app()->getLocale() === 'ua' ? 'active' : '' }}">Українська</a>
+                            <a href="#" data-lang="ua" class="alteg-lang-item {{ app()->getLocale() === 'ua' ? 'active' : '' }}">Українська</a>
                         </div>
                     </div>
                 </li>
@@ -86,6 +86,8 @@
 </header>
 
 <script>
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const altegLangBtn = document.getElementById('altegLangBtn');
     const altegLangMenu = document.getElementById('altegLangMenu');
@@ -124,5 +126,53 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Обработка смены языка
+    document.querySelectorAll('[data-lang]').forEach(langLink => {
+        langLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            const langCode = this.getAttribute('data-lang');
+            
+            // Сразу перезагружаем страницу с новым языком
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('lang', langCode);
+            window.location.href = currentUrl.toString();
+        });
+    });
+    
+    // Функция показа уведомления о смене языка
+    function showLanguageChangeNotification(langCode) {
+        const languageNames = {
+            'en': 'English',
+            'ru': 'Русский',
+            'ua': 'Українська'
+        };
+        
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-success alert-dismissible fade show';
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '9999';
+        notification.style.maxWidth = '400px';
+        
+        notification.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <strong>${languageNames[langCode] || langCode}</strong><br>
+            <small>${languageMessages[langCode]?.language_synced || languageMessages['ua'].language_synced}</small>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Автоматически скрываем через 3 секунды
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 3000);
+    }
 });
 </script>

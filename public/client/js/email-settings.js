@@ -98,23 +98,50 @@ function showEmailInstructions() {
     const modal = document.getElementById('emailInstructionsModal');
     const content = document.getElementById('emailInstructionsContent');
     
+    if (!modal || !content) {
+        // Modal elements not found
+        return;
+    }
+    
+
     content.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
     modal.style.display = 'block';
 
-    fetch('/client/email-settings/instructions')
-        .then(response => response.json())
-        .then(data => {
+    const url = 'email-settings/instructions';
+    
+
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+
+        
+        if (data.instructions && Object.keys(data.instructions).length > 0) {
             let html = '<div class="email-instructions-list">';
             Object.values(data.instructions).forEach((instruction, index) => {
                 html += `<div class="instruction-item">${instruction}</div>`;
             });
             html += '</div>';
             content.innerHTML = html;
-        })
-        .catch(error => {
-            content.innerHTML = '<div class="alert alert-danger">Ошибка при загрузке инструкций</div>';
-            console.error('Error:', error);
-        });
+        } else {
+            content.innerHTML = '<div class="alert alert-warning">Инструкции не найдены</div>';
+        }
+    })
+    .catch(error => {
+        // Error loading instructions
+        content.innerHTML = '<div class="alert alert-danger">Ошибка при загрузке инструкций: ' + error.message + '</div>';
+    });
 }
 
 // Функция закрытия модального окна инструкций

@@ -567,4 +567,8 @@ return [
     'knowledge_clear_filters' => 'Clear Filters',
     'knowledge_base' => 'Knowledge Base',
     'knowledge_read_article' => 'Read Article',
+    
+    // Language switching
+    'language_changed' => 'Language changed',
+    'language_synced_with_crm' => 'Language synchronized with CRM. Now the same language is used on the landing page and in CRM.',
 ];

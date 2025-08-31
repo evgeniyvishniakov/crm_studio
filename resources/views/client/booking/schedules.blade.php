@@ -138,7 +138,38 @@
 
 
 @push('scripts')
-<script src="{{ asset('client/js/booking-schedules.js') }}"></script>
-@endpush 
+<script>
+// Добавляем переводы к существующим
+if (window.translations) {
+    console.log('Debug translations before:', window.translations);
+    
+    const newTranslations = {
+        monday: '{{ __("messages.monday") }}',
+        tuesday: '{{ __("messages.tuesday") }}',
+        wednesday: '{{ __("messages.wednesday") }}',
+        thursday: '{{ __("messages.thursday") }}',
+        friday: '{{ __("messages.friday") }}',
+        saturday: '{{ __("messages.saturday") }}',
+        sunday: '{{ __("messages.sunday") }}',
+        working: '{{ __("messages.working_day_status") }}',
+        day_off: '{{ __("messages.day_off") }}',
+        no_notes: '{{ __("messages.no_notes") }}',
+        edit: '{{ __("messages.edit_schedule") }}',
+        interval: '{{ __("messages.interval") }}',
+        interval_minutes: '{{ __("messages.interval_minutes") }}',
+        working_hours: '{{ __("messages.working_hours") }}',
+        notes: '{{ __("messages.notes") }}'
+    };
+    
+    console.log('Debug new translations:', newTranslations);
+    console.log('Debug interval_minutes value:', '{{ __("messages.interval_minutes") }}');
+    
+    Object.assign(window.translations, newTranslations);
+    
+    console.log('Debug translations after:', window.translations);
+}
+</script>
+<script src="{{ asset('client/js/booking.js') }}"></script>
+@endpush
 
 @endsection

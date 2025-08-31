@@ -365,7 +365,7 @@ class CurrencyManager {
             }
             
         } catch (error) {
-            console.error('Ошибка сохранения настроек:', error);
+            // Ошибка сохранения настроек
             
             // Показываем уведомление об ошибке
             const notification = document.getElementById('language-currency-notification');

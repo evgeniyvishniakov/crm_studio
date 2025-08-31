@@ -3,6 +3,7 @@
 @section('title', __('messages.email_settings'))
 
 @section('content')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="dashboard-container">
     <div class="settings-header email-settings-header">
         <h1>{{ __('messages.email_settings') }}</h1>
@@ -162,4 +163,8 @@
 
 
 
-@endsection 
+@endsection
+
+@push('scripts')
+<script src="{{ asset('client/js/email-settings.js') }}"></script>
+@endpush 

@@ -567,4 +567,8 @@ return [
     'knowledge_clear_filters' => 'Сбросить фильтры',
     'knowledge_base' => 'База знаний',
     'knowledge_read_article' => 'Читать статью',
+    
+    // Смена языка
+    'language_changed' => 'Язык изменен',
+    'language_synced_with_crm' => 'Язык синхронизирован с CRM. Теперь на лендинге и в CRM используется один язык.',
 ];

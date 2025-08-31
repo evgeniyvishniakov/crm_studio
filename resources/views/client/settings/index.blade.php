@@ -254,8 +254,10 @@
                                         ]);
                                     }
                                     
-                                    // Определяем выбранный язык
-                                    $selectedLanguageId = $project->language_id ?? 1;
+                                    // Определяем выбранный язык: приоритет сессии > проект > по умолчанию
+                                    $currentLanguageCode = session('language', 'ua');
+                                    $currentLanguage = Language::where('code', $currentLanguageCode)->first();
+                                    $selectedLanguageId = $currentLanguage ? $currentLanguage->id : ($project->language_id ?? 1);
                                     
 
                                 @endphp

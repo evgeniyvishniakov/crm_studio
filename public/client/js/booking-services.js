@@ -75,7 +75,7 @@ function editUserService(userServiceId) {
         }
     })
     .catch(error => {
-        console.error('Ошибка при загрузке данных:', error);
+        // Ошибка при загрузке данных
         window.showNotification('error', error.message || translations.error_loading_data);
     });
 }
@@ -93,7 +93,7 @@ function deleteUserService(userServiceId) {
     
     // Проверяем, что элементы существуют
     if (!row && !card) {
-        console.error('Элементы для удаления не найдены:', userServiceId);
+        // Элементы для удаления не найдены
         window.showNotification('error', 'Элемент не найден');
         return;
     }
@@ -139,7 +139,7 @@ function confirmDeleteUserService() {
         
         if (!response.ok) {
             return response.json().then(errorData => {
-                console.error('Error response data:', errorData);
+                // Error response data
                 throw new Error(errorData.message || 'Ошибка при удалении');
             });
         }
@@ -187,7 +187,7 @@ function confirmDeleteUserService() {
         }
     })
     .catch(error => {
-        console.error('Ошибка при удалении:', error);
+        // Ошибка при удалении
         window.showNotification('error', error.message || translations.error_deleting || 'Произошла ошибка при удалении');
         
         // Убираем класс анимации при ошибке
@@ -266,7 +266,7 @@ function saveUserService() {
 
                     addUserServiceToTable(data.userService);
                 } else {
-                    console.error('userService не найден в ответе сервера');
+                    // userService не найден в ответе сервера
                 }
             } else {
                 // Если это редактирование, обновляем существующую строку
@@ -285,7 +285,7 @@ function saveUserService() {
         }
     })
     .catch(error => {
-        console.error('Ошибка при сохранении:', error);
+        // Ошибка при сохранении
         window.showNotification('error', error.message || translations.error_saving);
     });
 }
@@ -299,7 +299,7 @@ function closeUserServiceModal() {
 function updateUserServiceInTable(userService) {
     // Проверяем, что userService и его свойства существуют
     if (!userService || !userService.id) {
-        console.error('updateUserServiceInTable: userService или userService.id не определены', userService);
+        // updateUserServiceInTable: userService или userService.id не определены
         return;
     }
     
@@ -429,7 +429,7 @@ function updateUserServiceInTable(userService) {
 function addUserServiceToTable(userService) {
     // Проверяем, что userService и его свойства существуют
     if (!userService || !userService.id) {
-        console.error('addUserServiceToTable: userService или userService.id не определены', userService);
+        // addUserServiceToTable: userService или userService.id не определены
         return;
     }
     

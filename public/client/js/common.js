@@ -220,7 +220,7 @@ function submitForm(formId, url, method = 'POST', successCallback = null, errorC
     .catch(error => {
         // Не выводим в консоль ошибки валидации
         if (!error.errors || Object.keys(error.errors).length === 0) {
-            console.error('Ошибка:', error);
+            // Ошибка
         }
         if (error && error.errors && typeof error.errors === 'object') {
             showErrors(error.errors, formId);

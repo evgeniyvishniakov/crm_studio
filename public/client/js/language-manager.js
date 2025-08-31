@@ -6,6 +6,12 @@ class LanguageManager {
         this.isLoaded = false;
         this.loadingPromise = null;
         
+        // Проверяем localStorage для восстановления выбранного языка
+        const savedLanguage = localStorage.getItem('selectedLanguage');
+        if (savedLanguage) {
+            this.currentLanguage = savedLanguage;
+        }
+        
         // Инициализация
         this.init();
     }
@@ -19,7 +25,7 @@ class LanguageManager {
             this.setupEventListeners();
             this.updateAllLanguageDisplays();
         } catch (error) {
-            console.error('Ошибка инициализации LanguageManager:', error);
+            // Ошибка инициализации LanguageManager
         }
     }
 
@@ -36,8 +42,9 @@ class LanguageManager {
             .then(data => {
                 if (data.success) {
                     this.languages = data.languages;
-                    // Приоритет: текущий язык (уже определен на сервере) > язык по умолчанию
-                    this.currentLanguage = data.current || data.default;
+                    // Приоритет: сохраненный язык > текущий язык сервера > язык по умолчанию
+                    const savedLanguage = localStorage.getItem('selectedLanguage');
+                    this.currentLanguage = savedLanguage || data.current || data.default;
                     this.defaultLanguage = data.default;
                     this.isLoaded = true;
                     
@@ -51,12 +58,16 @@ class LanguageManager {
 
                     // Обновляем все отображения языков на странице
                     this.updateAllLanguageDisplays();
+                    
+                    // Принудительно обновляем селекторы языка на странице настроек
+                    if (window.location.pathname.includes('/settings')) {
+                        this.updateLanguageSelectors();
+                    }
                 } else {
                     throw new Error('Не удалось загрузить языки');
                 }
             })
             .catch(error => {
-                console.error('Ошибка загрузки языков:', error);
                 // Пробуем загрузить из кэша
                 this.loadFromCache();
                 throw error;
@@ -131,10 +142,28 @@ class LanguageManager {
      * Обновить селекторы языков
      */
     updateLanguageSelectors() {
+        // Обновляем селекторы с data-language-selector атрибутом
         const selectors = document.querySelectorAll('[data-language-selector]');
+        
         selectors.forEach(selector => {
-            if (selector.value !== this.currentLanguage) {
-                selector.value = this.currentLanguage;
+            // Находим опцию с соответствующим кодом языка
+            const options = Array.from(selector.options);
+            const targetOption = options.find(option => {
+                const optionText = option.text.toLowerCase();
+                const currentLang = this.currentLanguage.toLowerCase();
+                
+                // Проверяем соответствие по коду языка
+                if (currentLang === 'en' && optionText.includes('english')) return true;
+                if (currentLang === 'ru' && optionText.includes('русский')) return true;
+                if (currentLang === 'ua' && optionText.includes('українська')) return true;
+                
+                return false;
+            });
+            
+            if (targetOption) {
+                if (selector.value !== targetOption.value) {
+                    selector.value = targetOption.value;
+                }
             }
         });
     }
@@ -189,9 +218,30 @@ class LanguageManager {
                         element.textContent = data.translations[key];
                     }
                 });
+                
+                // Обновляем window.translations для JavaScript функций
+                if (window.translations) {
+                    Object.assign(window.translations, data.translations);
+                }
+                
+                // Обновляем переводы для функций форматирования длительности
+                this.updateDurationTranslations();
             }
         } catch (error) {
-            console.error('Ошибка обновления переводов:', error);
+            // Ошибка обновления переводов
+        }
+    }
+    
+    /**
+     * Обновить переводы для функций форматирования длительности
+     */
+    updateDurationTranslations() {
+        // Проверяем, что все необходимые переводы загружены
+        const requiredTranslations = ['minute', 'hour', 'hours', 'hours_many', 'duration_prefix'];
+        const missingTranslations = requiredTranslations.filter(key => !window.translations?.[key]);
+        
+        if (missingTranslations.length > 0) {
+            // Отсутствуют переводы для длительности
         }
     }
 
@@ -236,9 +286,32 @@ class LanguageManager {
             
             if (data.success) {
                 this.currentLanguage = code;
+                
+                // Сначала обновляем переводы на текущей странице
+                await this.updatePageTranslations();
                 this.updateAllLanguageDisplays();
                 
-                // НЕ показываем уведомление - оно будет показано в форме настроек
+                // Принудительно обновляем селекторы языка перед перезагрузкой
+                this.updateLanguageSelectors();
+                
+                // Генерируем событие о смене языка для других компонентов
+                document.dispatchEvent(new CustomEvent('languageChanged', {
+                    detail: { languageCode: code }
+                }));
+                
+                // Сохраняем выбранный язык в localStorage для надежности
+                localStorage.setItem('selectedLanguage', code);
+                
+                // Если мы находимся в CRM и есть URL лендинга, предлагаем перейти туда
+                if (data.landing_urls && window.location.pathname.includes('/')) {
+                    // Показываем уведомление с предложением перейти на лендинг
+                    this.showLandingRedirectNotification(data.landing_urls.index, code);
+                }
+                
+                // Небольшая задержка перед перезагрузкой для применения изменений
+                setTimeout(() => {
+                    window.location.reload();
+                }, 100);
                 
                 return true;
             } else {
@@ -285,8 +358,6 @@ class LanguageManager {
             }
             
         } catch (error) {
-            console.error('Ошибка сохранения настроек:', error);
-            
             // Показываем уведомление об ошибке
             const notification = document.getElementById('language-currency-notification');
             if (notification) {
@@ -327,6 +398,44 @@ class LanguageManager {
         localStorage.removeItem('languages');
         await this.loadLanguages();
         this.updateAllLanguageDisplays();
+    }
+
+    /**
+     * Показать уведомление о переходе на лендинг
+     */
+    showLandingRedirectNotification(landingUrl, languageCode) {
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-info alert-dismissible fade show';
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '9999';
+        notification.style.maxWidth = '400px';
+        
+        const languageNames = {
+            'en': 'English',
+            'ru': 'Русский',
+            'ua': 'Українська'
+        };
+        
+        notification.innerHTML = `
+            <strong>Язык изменен на ${languageNames[languageCode] || languageCode}</strong><br>
+            <small>Хотите перейти на лендинг с новым языком?</small>
+            <div class="mt-2">
+                <a href="${landingUrl}" class="btn btn-sm btn-primary">Перейти на лендинг</a>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="this.parentElement.parentElement.remove()">Остаться в CRM</button>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Автоматически скрываем через 10 секунд
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 10000);
     }
 }
 

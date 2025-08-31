@@ -200,6 +200,18 @@ class SettingsController extends Controller
                 }
             }
 
+            // Устанавливаем язык в сессию
+            if (isset($validated['language_id'])) {
+                $language = \App\Models\Language::find($validated['language_id']);
+                if ($language) {
+                    // Используем LanguageHelper для установки языка
+                    \App\Helpers\LanguageHelper::setLanguage($language);
+                    // Также устанавливаем в сессию напрямую для надежности
+                    session(['language' => $language->code]);
+                    \Illuminate\Support\Facades\App::setLocale($language->code);
+                }
+            }
+
             // Перезагружаем проект с обновленными данными
             $project->refresh();
             $project->load(['currency', 'language']);

@@ -793,7 +793,7 @@
                                         {{ __('messages.price_from') }} {{ number_format($minPrice, 0, ',', ' ') }} ₽
                                     @endif
                                     @if($maxDuration)
-                                        • {{ __('messages.duration') }}: {{ \App\Helpers\TimeHelper::formatDuration($maxDuration) }}
+                                        • {{ __('messages.duration_web') }}: {{ \App\Helpers\TimeHelper::formatDuration($maxDuration) }}
                                     @endif
                                 </p>
                             </div>
@@ -907,7 +907,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="client-notes" class="form-label">{{ __('messages.client_notes') }}</label>
-                        <textarea class="form-control" id="client-notes" rows="3" placeholder="{{ __('messages.client_notes') }}"></textarea>
+                        <textarea class="form-control" id="client-notes" rows="3" placeholder="{{ __('messages.client_notes_placeholder') }}"></textarea>
                     </div>
                 </form>
                 <div class="mt-3">
@@ -1068,7 +1068,7 @@
              const year = currentMonth.getFullYear();
              const month = currentMonth.getMonth();
              
-             monthYear.textContent = new Date(year, month).toLocaleDateString('ru-RU', { 
+             monthYear.textContent = new Date(year, month).toLocaleDateString('{{ app()->getLocale() }}', { 
                  month: 'long', 
                  year: 'numeric' 
              });
@@ -1084,7 +1084,7 @@
              grid.innerHTML = '';
              
              // Дни недели
-             const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+             const daysOfWeek = ['{{ __("messages.monday_short") }}', '{{ __("messages.tuesday_short") }}', '{{ __("messages.wednesday_short") }}', '{{ __("messages.thursday_short") }}', '{{ __("messages.friday_short") }}', '{{ __("messages.saturday_short") }}', '{{ __("messages.sunday_short") }}'];
              daysOfWeek.forEach(day => {
                  const dayHeader = document.createElement('div');
                  dayHeader.className = 'calendar-day';
@@ -1176,22 +1176,22 @@
                                                  
                                                  // Устанавливаем подсказку в зависимости от причины недоступности
                                                  if (isPast) {
-                                                     dayElement.title = 'Прошедшая дата';
+                                                     dayElement.title = '{{ __("messages.date_in_past_web") }}';
                                                  } else if (isTooFarInFuture) {
-                                                     dayElement.title = `Запись доступна только на ${bookingSettings.advance_booking_days} дней вперед`;
+                                                     dayElement.title = '{{ __("messages.date_too_far_web", ["days" => "___DAYS___"]) }}'.replace('___DAYS___', bookingSettings.advance_booking_days);
                                                  } else if (isSameDay && !canBookSameDay) {
-                                                     dayElement.title = 'Запись в тот же день недоступна';
+                                                     dayElement.title = '{{ __("messages.same_day_booking_disabled_web") }}';
                                                  } else if (!isWorkingDay) {
                                                      const dayOfWeek = currentDate.getDay();
                                                      const ourDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
                                                      const schedule = masterSchedule ? masterSchedule[ourDayOfWeek] : null;
                                                      if (!schedule) {
-                                                         dayElement.title = 'Мастер не работает в этот день';
+                                                         dayElement.title = '{{ __("messages.master_not_working_web") }}';
                                                      } else {
-                                                         dayElement.title = 'Выходной день мастера';
+                                                         dayElement.title = '{{ __("messages.master_not_working_web") }}';
                                                      }
                                                  } else if (isTimeOffDay) {
-                                                     dayElement.title = `Отпуск: ${timeOffReason}`;
+                                                     dayElement.title = '{{ __("messages.master_on_leave_web", ["reason" => "___REASON___"]) }}'.replace('___REASON___', timeOffReason);
                                                  }
                                              }
                   } else {
@@ -1220,17 +1220,17 @@
             const isTooFarInFuture = date > maxBookingDate;
             
             if (isPast) {
-                alert('Нельзя выбрать прошедшую дату!');
+                alert('{{ __("messages.date_in_past_web") }}');
                 return;
             }
             
             if (isTooFarInFuture) {
-                alert(`Запись доступна только на ${bookingSettings.advance_booking_days} дней вперед!`);
+                alert('{{ __("messages.date_too_far_web", ["days" => "___DAYS___"]) }}'.replace('___DAYS___', bookingSettings.advance_booking_days));
                 return;
             }
             
             if (isToday && !bookingSettings.allow_same_day_booking) {
-                alert('Запись в тот же день недоступна!');
+                alert('{{ __("messages.same_day_booking_disabled_web") }}');
                 return;
             }
             
@@ -1241,7 +1241,7 @@
                 const schedule = masterSchedule[ourDayOfWeek];
     
                 if (!schedule || !schedule.is_working) {
-                    alert('Мастер не работает в этот день!');
+                    alert('{{ __("messages.master_not_working_web") }}');
                     // Убираем выделение с дня, если он не рабочий
                     const clickedDayElement = document.querySelector(`.calendar-day[data-date="${dateString}"]`);
                     if (clickedDayElement) {
@@ -1255,7 +1255,7 @@
             if (unavailableDates && unavailableDates.length > 0) {
                 const timeOff = unavailableDates.find(item => item.date === dateString);
                 if (timeOff) {
-                    alert(`В этот день мастер в отпуске: ${timeOff.type_text}!`);
+                    alert('{{ __("messages.master_on_leave_web", ["reason" => "___REASON___"]) }}'.replace('___REASON___', timeOff.type_text));
                     // Убираем выделение с дня, если он в отпуске
                     const clickedDayElement = document.querySelector(`.calendar-day[data-date="${dateString}"]`);
                     if (clickedDayElement) {
@@ -1280,12 +1280,12 @@
             
             // Показываем сообщение о выбранной дате на шагах 1 и 2
             if (currentStep === 1 || currentStep === 2) {
-                const dateStr = new Date(date).toLocaleDateString('ru-RU', {
+                const dateStr = new Date(date).toLocaleDateString('{{ app()->getLocale() }}', {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric'
                 });
-                alert(`Выбрана дата: ${dateStr}\n\nПерейдите к следующему шагу для выбора времени.`);
+                alert('{{ __("messages.selected_date_info", ["date" => "___DATE___"]) }}'.replace('___DATE___', dateStr));
                 return; // Выходим из функции, не загружая временные слоты
             }
             
@@ -1325,10 +1325,10 @@
             // Проверяем, не является ли выбранная дата отпуском
             if (unavailableDates && unavailableDates.length > 0) {
                 const timeOff = unavailableDates.find(item => item.date === selectedDate);
-                if (timeOff) {
-                    alert(`В этот день мастер в отпуске: ${timeOff.type_text}!`);
-                    return;
-                }
+                            if (timeOff) {
+                alert('{{ __("messages.master_on_leave_web", ["reason" => "___REASON___"]) }}'.replace('___REASON___', timeOff.type_text));
+                return;
+            }
             }
             
             const timeSlotsContainer = document.getElementById('time-slots-container');
@@ -1342,7 +1342,7 @@
             }
             
             timeSlotsContainer.style.display = 'block';
-            slotsDiv.innerHTML = '<div class="loading">Загрузка доступного времени...</div>';
+            slotsDiv.innerHTML = '<div class="loading">{{ __("messages.loading_time_slots") }}</div>';
             
             fetch('{{ route("public.booking.slots", $project->slug) }}', {
                 method: 'POST',
@@ -1392,7 +1392,7 @@
             .catch(error => {
                 console.error('Error:', error);
                 if (slotsDiv) {
-                    slotsDiv.innerHTML = '<div class="alert alert-danger">Ошибка загрузки времени: ' + error.message + '</div>';
+                    slotsDiv.innerHTML = '<div class="alert alert-danger">{{ __("messages.error_loading_time", ["error" => "___ERROR___"]) }}'.replace('___ERROR___', error.message) + '</div>';
                 }
             });
         }
@@ -1730,11 +1730,12 @@
             
             details.innerHTML = `
                 <div class="alert alert-info">
-                    <strong>{{ __('messages.appointment_details') }}:</strong><br>
-                    {{ __('messages.service') }}: ${booking.service_name}<br>
-                    {{ __('messages.master') }}: ${booking.master_name}<br>
-                    {{ __('messages.date') }}: ${booking.date}<br>
-                    {{ __('messages.time') }}: ${booking.time}
+                                            <strong>{{ __('messages.appointment_details') }}:</strong><br>
+                        {{ __('messages.service') }}: ${booking.service_name}<br>
+                        {{ __('messages.master') }}: ${booking.master_name}<br>
+                        {{ __('messages.date') }}: ${booking.date}<br>
+                        {{ __('messages.time') }}: ${booking.time}<br>
+                        {{ __('messages.status_web') }}: {{ __('messages.status_pending_web') }}
                 </div>
             `;
         }

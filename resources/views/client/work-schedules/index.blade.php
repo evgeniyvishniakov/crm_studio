@@ -288,6 +288,7 @@
                             <tr>
                                 <th style="text-align: center;">{{ __('messages.date') }}</th>
                                 <th style="text-align: center;">{{ __('messages.working_hours') }}</th>
+                                <th style="text-align: center;">{{ __('messages.interval') }}</th>
                                 <th style="text-align: center;">{{ __('messages.status') }}</th>
                                 <th style="text-align: center;">{{ __('messages.notes') }}</th>
                                 <th style="text-align: center;">{{ __('messages.actions') }}</th>
@@ -412,7 +413,20 @@ window.translations = {
     vacation: '{{ __("messages.vacation") }}',
     sick_leave: '{{ __("messages.sick_leave") }}',
     personal_leave: '{{ __("messages.other_time_off") }}',
-    unpaid_leave: '{{ __("messages.other_time_off") }}'
+    unpaid_leave: '{{ __("messages.other_time_off") }}',
+    interval: '{{ __("messages.interval") }}',
+    interval_minutes: '{{ __("messages.interval_minutes") }}',
+    working_day_status: '{{ __("messages.working_day_status") }}',
+    no_notes: '{{ __("messages.no_notes") }}',
+    day_off_text: '{{ __("messages.day_off_text") }}',
+    edit_schedule: '{{ __("messages.edit_schedule") }}',
+    monday: '{{ __("messages.monday") }}',
+    tuesday: '{{ __("messages.tuesday") }}',
+    wednesday: '{{ __("messages.wednesday") }}',
+    thursday: '{{ __("messages.thursday") }}',
+    friday: '{{ __("messages.friday") }}',
+    saturday: '{{ __("messages.saturday") }}',
+    sunday: '{{ __("messages.sunday") }}'
 };
 
 // Tab management functions (use the same as in salary)
@@ -700,13 +714,13 @@ function renderScheduleManagementTable() {
     tbody.innerHTML = '';
     
     const days = [
-        { id: 1, name: '{{ __("messages.monday") }}' },
-        { id: 2, name: '{{ __("messages.tuesday") }}' },
-        { id: 3, name: '{{ __("messages.wednesday") }}' },
-        { id: 4, name: '{{ __("messages.thursday") }}' },
-        { id: 5, name: '{{ __("messages.friday") }}' },
-        { id: 6, name: '{{ __("messages.saturday") }}' },
-        { id: 0, name: '{{ __("messages.sunday") }}' }
+        { id: 1, name: window.translations.monday },
+        { id: 2, name: window.translations.tuesday },
+        { id: 3, name: window.translations.wednesday },
+        { id: 4, name: window.translations.thursday },
+        { id: 5, name: window.translations.friday },
+        { id: 6, name: window.translations.saturday },
+        { id: 0, name: window.translations.sunday }
     ];
     
     days.forEach(day => {
@@ -724,24 +738,30 @@ function renderScheduleManagementTable() {
             <td>
                 ${dayData.is_working ? 
                     `${dayData.start_time} - ${dayData.end_time}` : 
-                    '<span class="text-muted">{{ __("messages.day_off_text") }}</span>'
+                    '<span class="text-muted">' + window.translations.day_off_text + '</span>'
                 }
             </td>
             <td>
                 ${dayData.is_working ? 
-                    '<span class="status-badge working">{{ __("messages.working_hours") }}</span>' :
-                    '<span class="status-badge day-off">{{ __("messages.day_off") }}</span>'
+                    window.translations.interval + ': ${dayData.booking_interval || 30} ' + window.translations.interval_minutes :
+                    '<span class="text-muted">-</span>'
                 }
             </td>
             <td>
-                <span class="text-muted">${dayData.notes || '{{ __("messages.no_notes") }}'}</span>
+                ${dayData.is_working ? 
+                    '<span class="status-badge working">' + window.translations.working_day_status + '</span>' :
+                    '<span class="status-badge day-off">' + window.translations.day_off + '</span>'
+                }
             </td>
             <td>
-                <button type="button" class="btn-edit" onclick="editScheduleDay(${day.id})" title="{{ __('messages.edit') }}" style="display: flex; align-items: center; gap: 6px;">
+                <span class="text-muted">${dayData.notes || window.translations.no_notes}</span>
+            </td>
+            <td>
+                <button type="button" class="btn-edit" onclick="editScheduleDay(${day.id})" title="${window.translations.edit_schedule}" style="display: flex; align-items: center; gap: 6px;">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                     </svg>
-                    {{ __('messages.edit') }}
+                    ${window.translations.edit_schedule}
                 </button>
             </td>
         `;

@@ -389,8 +389,20 @@ Route::get('/roles/{id}', [\App\Http\Controllers\Client\RoleController::class, '
         ->name('client.email-settings.update');
     Route::post('/email-settings/test', [\App\Http\Controllers\Client\EmailSettingsController::class, 'testConnection'])
         ->name('client.email-settings.test');
-    Route::get('/email-settings/instructions', [\App\Http\Controllers\Client\EmailSettingsController::class, 'getInstructions'])
-        ->name('client.email-settings.instructions');
+    Route::get('/email-settings/instructions', function() {
+        return response()->json([
+            'instructions' => [
+                'step1' => __('messages.email_instructions_step1'),
+                'step2' => __('messages.email_instructions_step2'),
+                'step3' => __('messages.email_instructions_step3'),
+                'step4' => __('messages.email_instructions_step4'),
+                'step5' => __('messages.email_instructions_step5'),
+                'step6' => __('messages.email_instructions_step6'),
+                'step7' => __('messages.email_instructions_step7'),
+                'step8' => __('messages.email_instructions_step8'),
+            ]
+        ]);
+    })->name('client.email-settings.instructions');
 
     // Настройки виджета для сайта
     Route::get('/widget-settings', [\App\Http\Controllers\Client\WidgetSettingsController::class, 'index'])

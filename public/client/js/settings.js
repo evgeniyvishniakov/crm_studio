@@ -220,6 +220,16 @@ function autoSaveLanguageCurrency(fieldName, value) {
             
             if (fieldName === 'language_id' && data.language) {
                 message = 'Язык изменен на: ' + data.language.name + '. Перезагрузите страницу для применения.';
+                
+                // Обновляем localStorage с новым языком
+                localStorage.setItem('selectedLanguage', data.language.code);
+                
+                // Обновляем LanguageManager
+                if (window.LanguageManager) {
+                    window.LanguageManager.currentLanguage = data.language.code;
+                    window.LanguageManager.updateLanguageSelectors();
+                }
+                
             } else if (fieldName === 'booking_language_id' && data.booking_language) {
                 message = 'Язык веб-записи изменен на: ' + data.booking_language.name + '. Перезагрузите страницу для применения.';
             } else if (fieldName === 'currency_id' && data.currency) {
@@ -249,6 +259,16 @@ function initLanguageCurrencySelectors() {
         languageSelect.addEventListener('change', function() {
             autoSaveLanguageCurrency('language_id', this.value);
         });
+        
+        // Синхронизируем селектор с текущим языком из сессии
+        syncLanguageSelectorWithSession(languageSelect);
+        
+        // Добавляем слушатель для обновления селектора при смене языка
+        document.addEventListener('languageChanged', function(e) {
+            if (e.detail && e.detail.languageCode) {
+                syncLanguageSelectorWithSession(languageSelect);
+            }
+        });
     }
     
     if (bookingLanguageSelect) {
@@ -261,6 +281,36 @@ function initLanguageCurrencySelectors() {
         currencySelect.addEventListener('change', function() {
             autoSaveLanguageCurrency('currency_id', this.value);
         });
+    }
+}
+
+/**
+ * Синхронизация селектора языка с текущим языком из сессии
+ */
+function syncLanguageSelectorWithSession(languageSelect) {
+    if (!languageSelect) return;
+    
+    // Получаем текущий язык из localStorage (если есть)
+    const savedLanguage = localStorage.getItem('selectedLanguage');
+    
+    if (savedLanguage) {
+        // Находим опцию с соответствующим кодом языка
+        const options = Array.from(languageSelect.options);
+        const targetOption = options.find(option => {
+            const optionText = option.text.toLowerCase();
+            const savedLang = savedLanguage.toLowerCase();
+            
+            // Проверяем соответствие по коду языка
+            if (savedLang === 'en' && optionText.includes('english')) return true;
+            if (savedLang === 'ru' && optionText.includes('русский')) return true;
+            if (savedLang === 'ua' && optionText.includes('українська')) return true;
+            
+            return false;
+        });
+        
+        if (targetOption) {
+            languageSelect.value = targetOption.value;
+        }
     }
 }
 
@@ -479,4 +529,32 @@ function initSettings() {
 // Запуск инициализации при загрузке DOM
 document.addEventListener('DOMContentLoaded', function() {
     initSettings();
+    
+    // Синхронизируем селектор языка с текущим языком из сессии
+    setTimeout(() => {
+        syncLanguageSelectorWithSession(document.querySelector('select[name="language_id"]'));
+        
+        // Также принудительно обновляем селекторы через LanguageManager
+        if (window.LanguageManager && window.LanguageManager.isLanguagesLoaded()) {
+            window.LanguageManager.updateLanguageSelectors();
+        }
+    }, 100);
+    
+    // Дополнительная проверка через 500мс на случай, если LanguageManager загрузился позже
+    setTimeout(() => {
+        if (window.LanguageManager && window.LanguageManager.isLanguagesLoaded()) {
+            window.LanguageManager.updateLanguageSelectors();
+        } else {
+            // Если LanguageManager еще не загружен, ждем его загрузки
+            const checkInterval = setInterval(() => {
+                if (window.LanguageManager && window.LanguageManager.isLanguagesLoaded()) {
+                    window.LanguageManager.updateLanguageSelectors();
+                    clearInterval(checkInterval);
+                }
+            }, 100);
+            
+            // Останавливаем проверку через 5 секунд
+            setTimeout(() => clearInterval(checkInterval), 5000);
+        }
+    }, 500);
 }); 

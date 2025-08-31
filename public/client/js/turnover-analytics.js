@@ -604,7 +604,7 @@ function updateTopsAnalytics(params = '') {
             }
         })
         .catch(error => {
-            console.error('Ошибка при загрузке данных для топов:', error);
+            // Ошибка при загрузке данных для топов
         });
 } 
 

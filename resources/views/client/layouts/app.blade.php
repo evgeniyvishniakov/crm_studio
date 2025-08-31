@@ -19,6 +19,7 @@
             hour: '{{ __("messages.hour") }}',
             hours: '{{ __("messages.hours") }}',
             hours_many: '{{ __("messages.hours_many") }}',
+            duration_prefix: '{{ __("messages.duration_prefix") }}',
             base_duration: '{{ __("messages.base_duration") }}',
             edit: '{{ __("messages.edit") }}',
             delete: '{{ __("messages.delete") }}',
@@ -36,7 +37,23 @@
             supplier_contact_person: '{{ __("messages.supplier_contact_person") }}',
             phone: '{{ __("messages.phone") }}',
             email: '{{ __("messages.email") }}',
-            employee_not_specified: '{{ __("messages.employee_not_specified") }}'
+            employee_not_specified: '{{ __("messages.employee_not_specified") }}',
+            // Дни недели
+            monday: '{{ __("messages.monday") }}',
+            tuesday: '{{ __("messages.tuesday") }}',
+            wednesday: '{{ __("messages.wednesday") }}',
+            thursday: '{{ __("messages.thursday") }}',
+            friday: '{{ __("messages.friday") }}',
+            saturday: '{{ __("messages.saturday") }}',
+            sunday: '{{ __("messages.sunday") }}',
+            // Статусы и интервал
+            working: '{{ __("messages.working_day_status") }}',
+            day_off: '{{ __("messages.day_off") }}',
+            no_notes: '{{ __("messages.no_notes") }}',
+            interval: '{{ __("messages.interval") }}',
+            interval_minutes: '{{ __("messages.interval_minutes") }}',
+            working_hours: '{{ __("messages.working_hours") }}',
+            notes: '{{ __("messages.notes") }}'
         };
     </script>
 
@@ -961,6 +978,22 @@
         </div>
     </header>
     <!-- /#header -->
+    
+    <!-- Уведомление о смене языка с лендинга -->
+    @if(session('language_changed_from_landing'))
+        <div class="alert alert-info alert-dismissible fade show" style="margin: 20px; margin-top: 10px;" id="language-changed-notification">
+            <i class="fa fa-info-circle"></i>
+            <strong>{{ __('messages.language_changed') }}</strong>
+            <p class="mb-0">{{ __('messages.language_synced_from_landing') }}</p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        @php
+            session()->forget('language_changed_from_landing');
+        @endphp
+    @endif
+    
     <!-- Content -->
     <div class="content">
         @yield('content')

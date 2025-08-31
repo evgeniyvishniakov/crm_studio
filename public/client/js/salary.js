@@ -372,20 +372,19 @@ function loadCalculationsForUser(userId) {
     // Показываем индикатор загрузки
     calculationSelect.innerHTML = '<option value="">Загрузка...</option>';
     
-    console.log('Загружаем расчеты для пользователя:', userId);
+    
     
     fetch(`/salary/calculations/by-user/${userId}`)
         .then(response => {
-            console.log('Response status:', response.status);
-            console.log('Response URL:', response.url);
+
             return response.json();
         })
         .then(data => {
-            console.log('Response data:', data);
+
             if (data.success) {
                 let options = '<option value="">Выберите расчет (необязательно)</option>';
                 
-                console.log('Количество расчетов:', data.calculations.length);
+
                 
                 data.calculations.forEach(calculation => {
                     const periodStart = new Date(calculation.period_start).toLocaleDateString('ru-RU');
@@ -403,7 +402,7 @@ function loadCalculationsForUser(userId) {
                 
                 calculationSelect.innerHTML = options;
             } else {
-                console.log('API вернул ошибку:', data.message);
+    
                 calculationSelect.innerHTML = '<option value="">Нет доступных расчетов</option>';
             }
         })
@@ -707,9 +706,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(this);
             
             // Отладочная информация
-            console.log('Form data payment_method:', formData.get('payment_method'));
-            console.log('Form data user_id:', formData.get('user_id'));
-            console.log('Form data amount:', formData.get('amount'));
+            
             
             fetch('/salary/payments', {
                 method: 'POST',
@@ -1055,10 +1052,7 @@ function addPaymentToTable(payment) {
     let paymentMethodText = '-';
     
     // Отладочная информация
-    console.log('Payment object:', payment);
-    console.log('Payment method:', payment.payment_method);
-    console.log('Payment method type:', typeof payment.payment_method);
-    console.log('Window translations:', window.translations);
+    
     
     // Проверяем, что payment_method определен и не является строкой "undefined"
     if (payment.payment_method && 
@@ -1098,7 +1092,7 @@ function addPaymentToTable(payment) {
         }
     }
     
-    console.log('Final payment method text:', paymentMethodText);
+    
     
     const newRow = `
         <tr data-payment-id="${payment.id}">

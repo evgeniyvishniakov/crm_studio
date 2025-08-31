@@ -566,4 +566,8 @@ return [
     'knowledge_clear_filters' => 'Скинути фільтри',
     'knowledge_base' => 'База знань',
     'knowledge_read_article' => 'Читати статтю',
+    
+    // Смена языка
+    'language_changed' => 'Мову змінено',
+    'language_synced_with_crm' => 'Мову синхронізовано з CRM. Тепер на лендингу та в CRM використовується одна мова.',
 ];

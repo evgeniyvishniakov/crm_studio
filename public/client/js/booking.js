@@ -14,7 +14,14 @@ const translations = {
     'error_saving': 'Ошибка сохранения',
     'error_loading_schedule': 'Ошибка загрузки расписания',
     'error_deleting': 'Ошибка удаления',
-    'saving': 'Сохранение...'
+    'saving': 'Сохранение...',
+    'working': 'Рабочий',
+    'day_off': 'Выходной',
+    'no_notes': 'Нет заметок',
+    'edit': 'Редактировать',
+    'interval': 'Интервал',
+    'working_hours': 'Рабочие часы',
+    'notes': 'Заметки'
 };
 
 // Функция для форматирования длительности (аналог PHP TimeHelper::formatDuration)
@@ -38,17 +45,17 @@ function formatDuration(minutes, isBaseDuration = false) {
     }
     
     if (!minutes || minutes < 60) {
-        result = '~' + getMinuteText(minutes);
+        result = (window.translations?.duration_prefix || '~') + getMinuteText(minutes);
     } else {
         const hours = Math.floor(minutes / 60);
         const remainingMinutes = minutes % 60;
         
         if (remainingMinutes == 0) {
-            result = '~' + getHourText(hours);
+            result = (window.translations?.duration_prefix || '~') + getHourText(hours);
         } else {
             const hourText = getHourText(hours);
             const minuteText = getMinuteText(remainingMinutes);
-            result = '~' + hourText + ' ' + minuteText;
+            result = (window.translations?.duration_prefix || '~') + hourText + ' ' + minuteText;
         }
     }
     
@@ -303,12 +310,12 @@ function loadUserSchedule(userId) {
                 showSchedule();
                 renderScheduleTable();
             } else {
-                console.error('Ошибка загрузки расписания:', data.message);
+                // Ошибка загрузки расписания
                 window.showNotification('error', 'Ошибка загрузки расписания: ' + data.message);
             }
         })
         .catch(error => {
-            console.error('Ошибка при загрузке расписания:', error);
+            // Ошибка при загрузке расписания
             window.showNotification('error', translations.error_loading_schedule);
         });
 }
@@ -353,14 +360,16 @@ function renderScheduleTable() {
         return;
     }
     
+
+    
     const days = [
-        { id: 1, name: 'Понедельник' },
-        { id: 2, name: 'Вторник' },
-        { id: 3, name: 'Среда' },
-        { id: 4, name: 'Четверг' },
-        { id: 5, name: 'Пятница' },
-        { id: 6, name: 'Суббота' },
-        { id: 0, name: 'Воскресенье' }
+        { id: 1, name: window.translations?.monday || 'Понедельник' },
+        { id: 2, name: window.translations?.tuesday || 'Вторник' },
+        { id: 3, name: window.translations?.wednesday || 'Среда' },
+        { id: 4, name: window.translations?.thursday || 'Четверг' },
+        { id: 5, name: window.translations?.friday || 'Пятница' },
+        { id: 6, name: window.translations?.saturday || 'Суббота' },
+        { id: 0, name: window.translations?.sunday || 'Воскресенье' }
     ];
     
     days.forEach(day => {
@@ -379,23 +388,25 @@ function renderScheduleTable() {
             <td>
                 ${dayData.is_working ? 
                     `${dayData.start_time} - ${dayData.end_time}` : 
-                    '<span style="color: #6b7280;">Выходной</span>'
+                    '<span style="color: #6b7280;">' + (window.translations?.day_off || 'Выходной') + '</span>'
                 }
                 ${dayData.is_working && dayData.booking_interval ? 
-                    `<br><small style="color: #3b82f6;">Интервал: ${dayData.booking_interval} мин</small>` : 
+                    (() => {
+                        return `<br><small style="color: #3b82f6;">${window.translations?.interval || 'Интервал'}: ${dayData.booking_interval} ${window.translations?.interval_minutes || 'мин'}</small>`;
+                    })() : 
                     ''
                 }
             </td>
             <td>
                 ${dayData.is_working ? 
-                                    '<span class="status-badge working">Рабочий</span>' :
-                '<span class="status-badge day-off">Выходной</span>'
+                                    '<span class="status-badge working">' + (window.translations?.working || 'Рабочий') + '</span>' :
+                '<span class="status-badge day-off">' + (window.translations?.day_off || 'Выходной') + '</span>'
                 }
             </td>
             <td>
                 ${dayData.notes ? 
                     `<span style="color: #6b7280; font-size: 13px;">${dayData.notes}</span>` : 
-                    '<span style="color: #9ca3af; font-style: italic;">Нет заметок</span>'
+                    '<span style="color: #9ca3af; font-style: italic;">' + (window.translations?.no_notes || 'Нет заметок') + '</span>'
                 }
             </td>
             <td class="actions-cell">
@@ -403,7 +414,7 @@ function renderScheduleTable() {
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                     </svg>
-                    Редактировать
+                    ${window.translations?.edit || 'Редактировать'}
                 </button>
             </td>
         `;
@@ -419,8 +430,8 @@ function renderScheduleTable() {
                     <h3 class="schedule-day-name">${day.name}</h3>
                     <div class="schedule-status">
                         ${dayData.is_working ? 
-                            '<span class="status-badge working">Рабочий</span>' : 
-                            '<span class="status-badge day-off">Выходной</span>'
+                            '<span class="status-badge working">' + (window.translations?.working || 'Рабочий') + '</span>' : 
+                            '<span class="status-badge day-off">' + (window.translations?.day_off || 'Выходной') + '</span>'
                         }
                     </div>
                 </div>
@@ -431,12 +442,12 @@ function renderScheduleTable() {
                         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                         </svg>
-                        Рабочие часы
+                        ${window.translations?.working_hours || 'Рабочие часы'}
                     </div>
                     <div class="schedule-info-value">
                         ${dayData.is_working ? 
                             `${dayData.start_time} - ${dayData.end_time}` : 
-                            'Выходной'
+                            (window.translations?.day_off || 'Выходной')
                         }
                     </div>
                 </div>
@@ -446,10 +457,10 @@ function renderScheduleTable() {
                         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                         </svg>
-                        Интервал
+                        ${window.translations?.interval || 'Интервал'}
                     </div>
                     <div class="schedule-info-value">
-                        ${dayData.booking_interval} мин
+                        ${dayData.booking_interval} ${window.translations?.interval_minutes || 'мин'}
                     </div>
                 </div>
                 ` : ''}
@@ -459,7 +470,7 @@ function renderScheduleTable() {
                         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
                         </svg>
-                        Заметки
+                        ${window.translations?.notes || 'Заметки'}
                     </div>
                     <div class="schedule-info-value">
                         ${dayData.notes}
@@ -472,7 +483,7 @@ function renderScheduleTable() {
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                     </svg>
-                    Редактировать
+                    ${window.translations?.edit || 'Редактировать'}
                 </button>
             </div>
         `;
@@ -529,20 +540,20 @@ function saveDaySchedule() {
     
     // Валидация
     if (isWorking && (!startTime || !endTime)) {
-        console.error('Не указано время работы');
+        // Не указано время работы
         window.showNotification('error', 'Укажите время начала и окончания работы');
         return;
     }
     
     if (isWorking && startTime >= endTime) {
-        console.error('Неправильное время работы');
+        // Неправильное время работы
         window.showNotification('error', 'Время окончания должно быть позже времени начала');
         return;
     }
     
     // Валидация интервала
     if (!bookingInterval || bookingInterval < 15 || bookingInterval > 120) {
-        console.error('Неправильный интервал');
+        // Неправильный интервал
         window.showNotification('error', 'Интервал должен быть от 15 до 120 минут');
         return;
     }
@@ -580,12 +591,12 @@ function saveDaySchedule() {
         if (data.success) {
             window.showNotification('success', 'Расписание успешно сохранено');
         } else {
-            console.error('Ошибка сохранения:', data.message);
+            // Ошибка сохранения
             window.showNotification('error', 'Ошибка: ' + data.message);
         }
     })
     .catch(error => {
-        console.error('Ошибка при сохранении:', error);
+        // Ошибка при сохранении
         window.showNotification('error', translations.error_saving);
     });
 }

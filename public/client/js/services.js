@@ -17,8 +17,8 @@ function formatDuration(duration) {
     const hours = Math.floor(duration / 60);
     const minutes = duration % 60;
     let result = '';
-    if (hours > 0) result += hours + ' ч ';
-    if (minutes > 0) result += minutes + ' мин';
+    if (hours > 0) result += hours + ' ' + (window.translations?.hours_many || 'годин') + ' ';
+    if (minutes > 0) result += minutes + ' ' + (window.translations?.minute || 'хв');
     return result.trim();
 }
 
@@ -375,15 +375,7 @@ function renderServices(services) {
         
         // Форматируем длительность
         const duration = service.duration || 0;
-        const hours = Math.floor(duration / 60);
-        const minutes = duration % 60;
-        let durationText = '';
-        if (duration > 0) {
-            if (hours > 0) durationText += hours + ' ч ';
-            if (minutes > 0) durationText += minutes + ' мин';
-        } else {
-            durationText = '—';
-        }
+        const durationText = duration > 0 ? formatDuration(duration) : '—';
         
                 // Форматируем статус
         const statusText = service.status ? 'Активная' : 'Неактивная';
@@ -506,7 +498,7 @@ function loadServices(page = 1, search = '') {
         renderPagination(data.meta);
     })
     .catch(error => {
-        console.error('Ошибка при загрузке услуг:', error);
+        // Ошибка при загрузке услуг
         window.showNotification('error', 'Ошибка при загрузке услуг');
     });
 }

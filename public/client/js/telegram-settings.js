@@ -46,7 +46,6 @@ function initializeTelegramSettings() {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             if (error.errors) {
                 // Показываем ошибки валидации
                 Object.entries(error.errors).forEach(([field, messages]) => {
@@ -89,7 +88,7 @@ function testConnection() {
     resultDiv.innerHTML = '<div class="alert alert-info">Тестирование подключения...</div>';
     resultDiv.style.display = 'block';
 
-    fetch('/client/telegram-settings/test', {
+    fetch('telegram-settings/test', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -106,7 +105,6 @@ function testConnection() {
     })
     .catch(error => {
         resultDiv.innerHTML = '<div class="alert alert-danger">Ошибка при тестировании подключения</div>';
-        console.error('Error:', error);
     });
 }
 
@@ -118,7 +116,7 @@ function showInstructions() {
     content.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
     modal.style.display = 'block';
 
-    fetch('/client/telegram-settings/instructions')
+    fetch('telegram-settings/instructions')
         .then(response => response.json())
         .then(data => {
             let html = '<div class="telegram-instructions-list">';
@@ -130,7 +128,6 @@ function showInstructions() {
         })
         .catch(error => {
             content.innerHTML = '<div class="alert alert-danger">Ошибка при загрузке инструкций</div>';
-            console.error('Error:', error);
         });
 }
 

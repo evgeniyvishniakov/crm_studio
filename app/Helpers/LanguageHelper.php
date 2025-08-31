@@ -61,11 +61,23 @@ class LanguageHelper
             if ($languageModel) {
                 Session::put('language', $language);
                 App::setLocale($language);
+                
+                // Очищаем кэш переводов
+                if (function_exists('cache')) {
+                    cache()->forget('translations.' . $language);
+                }
+                
                 return true;
             }
         } elseif ($language instanceof Language) {
             Session::put('language', $language->code);
             App::setLocale($language->code);
+            
+            // Очищаем кэш переводов
+            if (function_exists('cache')) {
+                cache()->forget('translations.' . $language->code);
+            }
+            
             return true;
         }
         
@@ -108,6 +120,33 @@ class LanguageHelper
     {
         $code = self::getCurrentLanguage();
         return Language::getByCode($code);
+    }
+
+    /**
+     * Синхронизировать язык между лендингом и CRM
+     */
+    public static function syncLanguage($languageCode)
+    {
+        $language = self::getByCode($languageCode);
+        if ($language) {
+            // Устанавливаем язык в сессию
+            self::setLanguage($language);
+            
+            // Если пользователь авторизован в CRM, обновляем язык в проекте
+            if (auth('client')->check()) {
+                $user = auth('client')->user();
+                if ($user && $user->project_id) {
+                    $project = \App\Models\Admin\Project::find($user->project_id);
+                    if ($project) {
+                        $project->update(['language_id' => $language->id]);
+                    }
+                }
+            }
+            
+            return true;
+        }
+        
+        return false;
     }
 
     /**

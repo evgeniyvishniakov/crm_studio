@@ -27,7 +27,10 @@ class SetLanguage
             'lang_param' => $request->get('lang'),
             'session_language' => session('language'),
             'current_locale' => App::getLocale(),
-            'session_id' => session()->getId()
+            'session_id' => session()->getId(),
+            'user_agent' => $request->userAgent(),
+            'is_landing' => str_contains($request->url(), '/beautyflow'),
+            'is_crm' => str_contains($request->url(), '/') && !str_contains($request->url(), '/beautyflow')
         ]);
 
         // Сначала проверяем параметр lang из URL (для лендинга)
@@ -47,6 +50,25 @@ class SetLanguage
                 // Сохраняем выбранный язык в сессию
                 session(['language' => $language->code]);
                 App::setLocale($language->code);
+                
+                // Если пользователь авторизован в CRM, обновляем язык в проекте
+                if (Auth::guard('client')->check()) {
+                    $user = Auth::guard('client')->user();
+                    if ($user && $user->project_id) {
+                        $project = Project::find($user->project_id);
+                        if ($project) {
+                            $project->update(['language_id' => $language->id]);
+                            Log::info('Project language updated from landing', [
+                                'project_id' => $project->id,
+                                'language_id' => $language->id,
+                                'language_code' => $language->code
+                            ]);
+                            
+                            // Добавляем флаг в сессию для показа уведомления
+                            session(['language_changed_from_landing' => true]);
+                        }
+                    }
+                }
                 
                 Log::info('Language set from URL parameter', [
                     'lang_code' => $language->code,
@@ -72,17 +94,20 @@ class SetLanguage
                 
                 Log::info('Language set from session', [
                     'lang_code' => $language->code,
-                    'app_locale' => App::getLocale()
+                    'app_locale' => App::getLocale(),
+                    'session_id' => session()->getId()
                 ]);
                 
                 return $next($request);
             } else {
                 Log::warning('Session language not found or not active', ['session_lang' => $langCode]);
+                // Удаляем неактивный язык из сессии
+                session()->forget('language');
             }
         }
         
-        // Получаем язык из проекта пользователя
-        if (Auth::check()) {
+        // Получаем язык из проекта пользователя (только если язык не установлен в сессии)
+        if (!session()->has('language') && Auth::check()) {
             $user = Auth::user();
             $project = Project::where('id', $user->project_id ?? null)->first();
             
@@ -90,25 +115,32 @@ class SetLanguage
                 // Получаем язык по ID
                 $language = Language::find($project->language_id);
                 if ($language && $language->is_active) {
-                    // Устанавливаем локаль приложения
+                    // Устанавливаем локаль приложения и сохраняем в сессию
                     App::setLocale($language->code);
+                    session(['language' => $language->code]);
                 } else {
                     // По умолчанию украинский
                     App::setLocale('ua');
+                    session(['language' => 'ua']);
                 }
             } else {
                 // По умолчанию украинский
                 App::setLocale('ua');
+                session(['language' => 'ua']);
             }
-        } else {
-            // Для неавторизованных пользователей
+        } elseif (!session()->has('language')) {
+            // Для неавторизованных пользователей без языка в сессии
             App::setLocale('ua');
+            session(['language' => 'ua']);
         }
 
         Log::info('Language set to default', [
             'final_locale' => App::getLocale(),
             'session_language' => session('language'),
-            'url' => $request->url()
+            'url' => $request->url(),
+            'auth_check' => Auth::check(),
+            'user_project_id' => Auth::check() ? Auth::user()->project_id : null,
+            'session_id' => session()->getId()
         ]);
 
         return $next($request);

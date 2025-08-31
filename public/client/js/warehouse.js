@@ -162,7 +162,6 @@ function openEditModal(id) {
             modal.style.display = 'block';
         })
         .catch(error => {
-            console.error('Ошибка при загрузке данных:', error);
             window.showNotification('error', 'Ошибка при загрузке данных');
         });
 }
@@ -210,7 +209,6 @@ function deleteItem() {
         }
     })
     .catch(error => {
-        console.error('Ошибка при удалении:', error);
         window.showNotification('error', 'Ошибка при удалении товара');
     })
     .finally(() => {
@@ -259,7 +257,6 @@ function submitAddForm(event) {
         }
     })
     .catch(error => {
-        console.error('Ошибка при добавлении:', error);
         window.showNotification('error', 'Ошибка при добавлении товара');
     })
     .finally(() => {
@@ -333,7 +330,6 @@ function submitEditForm(event) {
         }
     })
     .catch(error => {
-        console.error('Ошибка при сохранении:', error);
         window.showNotification('error', 'Ошибка при сохранении изменений');
     })
     .finally(() => {
@@ -625,7 +621,7 @@ function loadWarehouseItems(page = 1, search = '') {
         }, 100);
     })
     .catch(error => {
-        console.error('Ошибка при загрузке данных:', error);
+        // Ошибка при загрузке данных
     });
 }
 

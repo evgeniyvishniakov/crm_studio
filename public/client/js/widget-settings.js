@@ -91,7 +91,6 @@ function initializeFormSubmission() {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
             if (error.errors) {
                 Object.entries(error.errors).forEach(([field, messages]) => {
                     const input = document.querySelector(`[name="${field}"]`);
@@ -153,7 +152,6 @@ function generateWidgetCode() {
     })
     .catch(error => {
         window.showNotification('error', 'Ошибка при генерации кода');
-        console.error('Error:', error);
     });
 }
 

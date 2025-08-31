@@ -1,5 +1,11 @@
 // ===== СКРИПТЫ ДЛЯ BOOKING SCHEDULES =====
 
+// Функция получения переводов
+function getTranslation(key) {
+    const element = document.getElementById(key);
+    return element ? element.textContent : key;
+}
+
 // Глобальные переменные
 let currentUserId = null;
 let scheduleData = {};
@@ -14,12 +20,12 @@ function loadUserSchedule(userId) {
                 showSchedule();
                 renderScheduleTable();
             } else {
-                console.error('Ошибка загрузки расписания:', data.message);
+                // Ошибка загрузки расписания
                 showNotification('Ошибка загрузки расписания: ' + data.message, 'error');
             }
         })
         .catch(error => {
-            console.error('Ошибка при загрузке расписания:', error);
+            // Ошибка при загрузке расписания
             showNotification('Произошла ошибка при загрузке расписания', 'error');
         });
 }
@@ -42,13 +48,13 @@ function renderScheduleTable() {
     tbody.innerHTML = '';
     
     const days = [
-        { id: 1, name: 'Понедельник' },
-        { id: 2, name: 'Вторник' },
-        { id: 3, name: 'Среда' },
-        { id: 4, name: 'Четверг' },
-        { id: 5, name: 'Пятница' },
-        { id: 6, name: 'Суббота' },
-        { id: 0, name: 'Воскресенье' }
+        { id: 1, name: getTranslation('monday') },
+        { id: 2, name: getTranslation('tuesday') },
+        { id: 3, name: getTranslation('wednesday') },
+        { id: 4, name: getTranslation('thursday') },
+        { id: 5, name: getTranslation('friday') },
+        { id: 6, name: getTranslation('saturday') },
+        { id: 0, name: getTranslation('sunday') }
     ];
     
     days.forEach(day => {
@@ -65,18 +71,18 @@ function renderScheduleTable() {
             <td>
                 ${dayData.is_working ? 
                     `${dayData.start_time} - ${dayData.end_time}` : 
-                    '<span class="text-muted">Выходной</span>'
+                    '<span class="text-muted">' + getTranslation('day-off-text') + '</span>'
                 }
             </td>
             <td>
                 ${dayData.is_working ? 
-                                    '<span class="status-badge working">Рабочий</span>' :
-                '<span class="status-badge day-off">Выходной</span>'
+                    '<span class="status-badge working">' + getTranslation('working-day') + '</span>' :
+                    '<span class="status-badge day-off">' + getTranslation('day-off') + '</span>'
                 }
             </td>
             <td>
                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="editDay(${day.id})">
-                    <i class="fas fa-edit"></i> Изменить
+                    <i class="fas fa-edit"></i> ${getTranslation('edit')}
                 </button>
             </td>
         `;
@@ -129,13 +135,13 @@ function saveDaySchedule() {
     
     // Валидация
     if (isWorking && (!startTime || !endTime)) {
-        console.error('Не указано время работы');
+        // Не указано время работы
         showNotification('Укажите время начала и окончания работы', 'error');
         return;
     }
     
     if (isWorking && startTime >= endTime) {
-        console.error('Неправильное время работы');
+        // Неправильное время работы
         showNotification('Время окончания должно быть позже времени начала', 'error');
         return;
     }
@@ -186,12 +192,12 @@ function saveSchedule() {
         if (data.success) {
             showNotification(data.message);
         } else {
-            console.error('Ошибка сохранения:', data.message);
+            // Ошибка сохранения
             showNotification('Ошибка: ' + data.message, 'error');
         }
     })
     .catch(error => {
-        console.error('Ошибка при сохранении:', error);
+        // Ошибка при сохранении
         showNotification('Произошла ошибка при сохранении', 'error');
     })
     .finally(() => {
@@ -206,13 +212,13 @@ function showNotification(message, type = 'success') {
     const notificationText = document.getElementById('notification-text');
     
     if (!notification || !notificationText) {
-        console.error('Notification elements not found');
+        // Notification elements not found
         return;
     }
     
     const alert = notification.querySelector('.alert');
     if (!alert) {
-        console.error('Alert element not found');
+        // Alert element not found
         return;
     }
     
