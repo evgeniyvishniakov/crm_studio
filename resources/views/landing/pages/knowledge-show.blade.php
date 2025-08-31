@@ -1,5 +1,9 @@
 @extends('landing.layouts.app')
 
+@php
+    $currentLanguage = \App\Helpers\LanguageHelper::getCurrentLanguage();
+@endphp
+
 @section('title', $article->title . ' - База знаний - Trimora')
 @section('description', $article->description)
 
@@ -12,8 +16,8 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-3">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('beautyflow.knowledge') }}" class="text-decoration-none">
-                                <i class="fas fa-arrow-left me-2"></i>База знаний
+                            <a href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.knowledge')) }}" class="text-decoration-none">
+                                <i class="fas fa-arrow-left me-2"></i>{{ __('landing.knowledge_base') }}
                             </a>
                         </li>
                         <li class="breadcrumb-item">
@@ -22,6 +26,7 @@
                     </ol>
                 </nav>
                 
+
                 <h1 class="display-5 fw-bold mb-3">{{ $article->title }}</h1>
                 <p class="lead text-muted mb-4">{!! $article->description !!}</p>
                 
@@ -53,16 +58,16 @@
                 @endif
 
                 <!-- Article Content -->
-                @if($article->defaultTranslation())
+                @if($article->content)
                     <div class="article-content">
-                        {!! $article->defaultTranslation()->content !!}
+                        {!! $article->content !!}
                     </div>
                 @endif
 
                 <!-- Steps -->
                 @if($article->steps->count() > 0)
                     <div class="mb-5">
-                        <h2 class="h3 fw-bold mb-4 text-primary">Пошаговая инструкция</h2>
+                        <h2 class="h3 fw-bold mb-4 text-primary">{{ __('landing.knowledge_steps_instruction') }}</h2>
                         
                         @foreach($article->steps as $step)
                             <div class="step-item mb-4">
@@ -71,10 +76,10 @@
                                         {{ $loop->iteration }}
                                     </div>
                                     <div class="step-content flex-grow-1">
-                                        @if($step->defaultTranslation())
-                                            <h4 class="h5 fw-bold mb-3">{{ $step->defaultTranslation()->title }}</h4>
+                                        @if($step->title || $step->content)
+                                            <h4 class="h5 fw-bold mb-3">{{ $step->title }}</h4>
                                             <div class="step-text">
-                                                {!! $step->defaultTranslation()->content !!}
+                                                {!! $step->content !!}
                                             </div>
                                         @endif
                                         
@@ -95,7 +100,7 @@
                 <!-- Tips -->
                 @if($article->tips->count() > 0)
                     <div class="mb-5">
-                        <h2 class="h3 fw-bold mb-4">Полезные советы</h2>
+                        <h2 class="h3 fw-bold mb-4">{{ __('landing.knowledge_useful_tips') }}</h2>
                         
                         <div class="tips-list">
                             @foreach($article->tips as $tip)
@@ -105,8 +110,8 @@
                                             <i class="fas fa-lightbulb text-warning fa-lg"></i>
                                         </div>
                                         <div class="tip-content">
-                                            @if($tip->defaultTranslation())
-                                                {!! $tip->defaultTranslation()->content !!}
+                                            @if($tip->content)
+                                                {!! $tip->content !!}
                                             @endif
                                         </div>
                                     </div>
@@ -125,7 +130,7 @@
                         <div class="card-header bg-primary text-white">
                             <h5 class="mb-0">
                                 <i class="fas fa-book-open me-2"></i>
-                                Похожие статьи
+                                {{ __('landing.knowledge_similar_articles') }}
                             </h5>
                         </div>
                         <div class="card-body">
@@ -135,7 +140,7 @@
                                 if ($article->related_articles && is_array($article->related_articles)) {
                                     $relatedArticles = \App\Models\KnowledgeArticle::published()
                                         ->whereIn('id', $article->related_articles)
-                                        ->with('translations.language')
+                                        ->with('translations')
                                         ->get();
                                 }
                                 
@@ -144,29 +149,37 @@
                                     $relatedArticles = \App\Models\KnowledgeArticle::published()
                                         ->where('category', $article->category)
                                         ->where('id', '!=', $article->id)
-                                        ->with('translations.language')
+                                        ->with('translations')
                                         ->limit(3)
                                         ->get();
                                 }
                             @endphp
                             
                             @forelse($relatedArticles as $relatedArticle)
-                                <div class="related-article mb-3">
-                                    <h6 class="mb-2">
-                                        <a href="{{ route('beautyflow.knowledge.show', $relatedArticle->slug) }}" 
-                                           class="text-decoration-none text-dark">
-                                            {{ $relatedArticle->defaultTranslation() ? $relatedArticle->defaultTranslation()->title : $relatedArticle->title }}
-                                        </a>
-                                    </h6>
-                                    <p class="text-muted small mb-0">
-                                        {!! Str::limit(strip_tags($relatedArticle->defaultTranslation() ? $relatedArticle->defaultTranslation()->description : $relatedArticle->description), 80) !!}
-                                    </p>
+                                <div class="related-article-card mb-3">
+                                    <a href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.knowledge.show', $relatedArticle->slug)) }}" 
+                                       class="related-article-link">
+                                        <div class="related-article-icon">
+                                            <i class="fas fa-file-alt text-primary"></i>
+                                        </div>
+                                        <div class="related-article-content">
+                                            <h6 class="related-article-title mb-2">
+                                                {{ $relatedArticle->title }}
+                                            </h6>
+                                            <p class="related-article-description mb-0">
+                                                {!! Str::limit(strip_tags($relatedArticle->description), 80) !!}
+                                            </p>
+                                        </div>
+                                        <div class="related-article-arrow">
+                                            <i class="fas fa-arrow-right text-muted"></i>
+                                        </div>
+                                    </a>
                                 </div>
                             @empty
-                                <p class="text-muted small mb-0">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Похожих статей не найдено
-                                </p>
+                                <div class="related-article-empty">
+                                    <i class="fas fa-info-circle text-muted me-2"></i>
+                                    <span class="text-muted">{{ __('landing.knowledge_no_similar_articles') }}</span>
+                                </div>
                             @endforelse
                         </div>
                     </div>
@@ -182,19 +195,19 @@
         <div class="row">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
-                    <a href="{{ route('beautyflow.knowledge') }}" class="btn btn-outline-primary">
+                    <a href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.knowledge')) }}" class="btn btn-outline-primary">
                         <i class="fas fa-arrow-left me-2"></i>
-                        Назад к базе знаний
+                        {{ __('landing.knowledge_back_to_knowledge') }}
                     </a>
                     
                     <div class="d-flex gap-2">
                         <button class="btn btn-outline-secondary" onclick="window.print()">
                             <i class="fas fa-print me-2"></i>
-                            Печать
+                            {{ __('landing.knowledge_print') }}
                         </button>
                         <button class="btn btn-outline-secondary" onclick="shareArticle()">
                             <i class="fas fa-share-alt me-2"></i>
-                            Поделиться
+                            {{ __('landing.knowledge_share') }}
                         </button>
                     </div>
                 </div>
@@ -406,17 +419,111 @@ function shareArticle() {
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
-    .related-article {
-        padding: 15px;
-        border-bottom: 1px solid #e9ecef;
+    /* Стили для похожих статей */
+    .related-article-card {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
     
-    .related-article:last-child {
-        border-bottom: none;
+    .related-article-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        border-color: #667eea;
     }
     
-    .related-article h6 a:hover {
-        color: #667eea !important;
+    .related-article-link {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+    }
+    
+    .related-article-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    .related-article-icon {
+        flex-shrink: 0;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .related-article-icon i {
+        color: #667eea;
+        font-size: 20px;
+    }
+    
+    .related-article-card:hover .related-article-icon i {
+        color: #764ba2;
+        transform: scale(1.1);
+    }
+    
+    .related-article-content {
+        flex-grow: 1;
+        min-width: 0;
+    }
+    
+    .related-article-title {
+        color: #2c3e50;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 1.4;
+        margin-bottom: 8px;
+        transition: color 0.3s ease;
+    }
+    
+    .related-article-card:hover .related-article-title {
+        color: #667eea;
+    }
+    
+    .related-article-description {
+        color: #6c757d;
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+    }
+    
+    .related-article-arrow {
+        flex-shrink: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .related-article-arrow i {
+        color: #6c757d;
+        font-size: 14px;
+    }
+    
+    .related-article-card:hover .related-article-arrow i {
+        color: #667eea;
+    }
+    
+    .related-article-card:hover .related-article-arrow {
+        transform: translateX(3px);
+    }
+    
+    .related-article-empty {
+        text-align: center;
+        padding: 30px 20px;
+        color: #6c757d;
+        font-size: 14px;
     }
     
     /* Адаптивность для мобильных устройств */
@@ -446,6 +553,35 @@ function shareArticle() {
         
         .lead {
             font-size: 16px;
+        }
+        
+        /* Адаптивность для похожих статей */
+        .related-article-link {
+            padding: 15px;
+        }
+        
+        .related-article-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 12px;
+        }
+        
+        .related-article-icon i {
+            font-size: 16px;
+        }
+        
+        .related-article-title {
+            font-size: 15px;
+        }
+        
+        .related-article-description {
+            font-size: 13px;
+        }
+        
+        .related-article-arrow {
+            width: 25px;
+            height: 25px;
+            margin-left: 10px;
         }
     }
 </style>

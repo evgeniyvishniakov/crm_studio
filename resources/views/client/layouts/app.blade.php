@@ -387,7 +387,7 @@
 <aside id="left-panel" class="left-panel">
     <!-- Mobile close button -->
     <div class="mobile-close-btn">
-        <button type="button" class="btn-close" title="Закрыть меню">
+        <button type="button" class="btn-close" title="{{ __('messages.close_menu') }}">
             <i class="fa fa-times"></i>
         </button>
     </div>
@@ -852,10 +852,10 @@
         <div class="top-left">
             <div class="navbar-header">
                 <a class="navbar-brand" href="{{ route('dashboard') }}">
-                    <img src="{{ $project && $project->logo ? $project->logo : asset('client/img/avatar-default.png') }}" alt="Logo" style="height:48px;max-width:48px;object-fit:cover;border-radius:50%;">
+                    <img src="{{ $project && $project->logo ? $project->logo : asset('client/img/avatar-default.png') }}" alt="{{ __('messages.logo') }}" style="height:48px;max-width:48px;object-fit:cover;border-radius:50%;">
                 </a>
                 <a class="navbar-brand hidden" href="{{ route('dashboard') }}">
-                    <img src="{{ $project && $project->logo ? $project->logo : asset('client/img/avatar-default.png') }}" alt="Logo" style="height:48px;max-width:160px;object-fit:contain;">
+                    <img src="{{ $project && $project->logo ? $project->logo : asset('client/img/avatar-default.png') }}" alt="{{ __('messages.logo') }}" style="height:48px;max-width:160px;object-fit:contain;">
                 </a>
                 <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
             </div>
@@ -972,7 +972,7 @@
         <div class="footer-inner bg-white">
             <div class="row">
                 <div class="col-sm-6">
-                    Copyright &copy; 2018 Ela Admin
+                    {{ __('messages.copyright_text') }}
                 </div>
                 
             </div>

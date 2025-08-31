@@ -49,4 +49,36 @@ class KnowledgeArticleStep extends Model
     {
         return $this->belongsTo(KnowledgeArticle::class, 'knowledge_article_id');
     }
+    
+    /**
+     * Получить заголовок шага (с переводом или основной)
+     */
+    public function getTitleAttribute($value)
+    {
+        // Если есть перевод для текущего языка, используем его
+        $locale = app()->getLocale();
+        $translation = $this->translation($locale);
+        
+        if ($translation && $translation->title) {
+            return $translation->title;
+        }
+        
+        return $value;
+    }
+    
+    /**
+     * Получить содержимое шага (с переводом или основное)
+     */
+    public function getContentAttribute($value)
+    {
+        // Если есть перевод для текущего языка, используем его
+        $locale = app()->getLocale();
+        $translation = $this->translation($locale);
+        
+        if ($translation && $translation->content) {
+            return $translation->content;
+        }
+        
+        return $value;
+    }
 }

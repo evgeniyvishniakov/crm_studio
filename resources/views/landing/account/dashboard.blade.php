@@ -1,6 +1,6 @@
 @extends('landing.layouts.app')
 
-@section('title', 'Личный кабинет')
+@section('title', __('landing.account_dashboard'))
 
 @section('styles')
 <style>
@@ -128,8 +128,8 @@
     <div class="row">
         <div class="col-12">
             <div class="text-center mb-5">
-                <h1 class="display-4 fw-bold mb-3">Личный кабинет</h1>
-                <p class="lead text-muted">Добро пожаловать, {{ $project->name }}</p>
+                <h1 class="display-4 fw-bold mb-3">{{ __('landing.account_dashboard') }}</h1>
+                <p class="lead text-muted">{{ __('landing.account_welcome') }}, {{ $project->name }}</p>
             </div>
         </div>
     </div>
@@ -142,22 +142,22 @@
                     <ul class="nav nav-tabs nav-bordered" id="accountTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
-                                <i class="fas fa-tachometer-alt me-2"></i>Обзор
+                                <i class="fas fa-tachometer-alt me-2"></i>{{ __('landing.account_overview') }}
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="subscriptions-tab" data-bs-toggle="tab" data-bs-target="#subscriptions" type="button" role="tab">
-                                <i class="fas fa-credit-card me-2"></i>Подписки
+                                <i class="fas fa-credit-card me-2"></i>{{ __('landing.account_subscriptions') }}
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password" type="button" role="tab">
-                                <i class="fas fa-key me-2"></i>Смена пароля
+                                <i class="fas fa-key me-2"></i>{{ __('landing.account_change_password') }}
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">
-                                <i class="fas fa-user me-2"></i>Профиль
+                                <i class="fas fa-user me-2"></i>{{ __('landing.account_profile') }}
                             </button>
                         </li>
 
@@ -172,35 +172,35 @@
                                     <div class="card h-100">
                                         <div class="card-header">
                                             <h5 class="card-title mb-0">
-                                                <i class="fas fa-building me-2"></i>Информация о проекте
+                                                <i class="fas fa-building me-2"></i>{{ __('landing.account_project_info') }}
                                             </h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="mb-3">
-                                                <strong>Название:</strong>
+                                                <strong>{{ __('landing.account_name') }}:</strong>
                                                 <p class="mb-0">{{ $project->name }}</p>
                                             </div>
                                             <div class="mb-3">
-                                                <strong>Email:</strong>
+                                                <strong>{{ __('landing.account_email') }}:</strong>
                                                 <p class="mb-0">{{ $project->email }}</p>
                                             </div>
                                             @if($project->phone)
                                             <div class="mb-3">
-                                                <strong>Телефон:</strong>
+                                                <strong>{{ __('landing.account_phone') }}:</strong>
                                                 <p class="mb-0">{{ $project->phone }}</p>
                                             </div>
                                             @endif
                                             @if($project->website)
                                             <div class="mb-3">
-                                                <strong>Сайт:</strong>
+                                                <strong>{{ __('landing.account_website') }}:</strong>
                                                 <p class="mb-0">
                                                     <a href="{{ $project->website }}" target="_blank">{{ $project->website }}</a>
                                                 </p>
                                             </div>
                                             @endif
                                             <div class="mb-3">
-                                                <strong>Дата регистрации:</strong>
-                                                <p class="mb-0">{{ $project->registered_at ? $project->registered_at->format('d.m.Y') : 'Не указано' }}</p>
+                                                <strong>{{ __('landing.account_registration_date') }}:</strong>
+                                                <p class="mb-0">{{ $project->registered_at ? $project->registered_at->format('d.m.Y') : __('landing.account_not_specified') }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -211,7 +211,7 @@
                                     <div class="card h-100">
                                         <div class="card-header">
                                             <h5 class="card-title mb-0">
-                                                <i class="fas fa-chart-bar me-2"></i>Статистика
+                                                <i class="fas fa-chart-bar me-2"></i>{{ __('landing.account_statistics') }}
                                             </h5>
                                         </div>
                                         <div class="card-body">
@@ -221,14 +221,14 @@
                                                         <i class="fas fa-users text-primary"></i>
                                                     </div>
                                                     <h4 class="mb-1">{{ $project->clients->count() }}</h4>
-                                                    <small class="text-muted">Клиентов</small>
+                                                    <small class="text-muted">{{ __('landing.account_clients') }}</small>
                                                 </div>
                                                 <div class="col-6 mb-3">
                                                     <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
                                                         <i class="fas fa-calendar-check text-success"></i>
                                                     </div>
                                                     <h4 class="mb-1">{{ $project->appointments->count() }}</h4>
-                                                    <small class="text-muted">Записей</small>
+                                                    <small class="text-muted">{{ __('landing.account_appointments') }}</small>
                                                 </div>
                                             </div>
                                         </div>
@@ -240,17 +240,17 @@
                                     <div class="card h-100">
                                         <div class="card-header">
                                             <h5 class="card-title mb-0">
-                                                <i class="fas fa-credit-card me-2"></i>Подписка
+                                                <i class="fas fa-credit-card me-2"></i>{{ __('landing.account_subscription') }}
                                             </h5>
                                         </div>
                                         <div class="card-body">
                                             @if($activeSubscription)
                                                 <div class="mb-3">
-                                                    <strong>Статус:</strong>
+                                                    <strong>{{ __('landing.account_status') }}:</strong>
                                                     @if($activeSubscription->status === 'trial')
-                                                        <span class="badge bg-warning">Пробный период</span>
+                                                        <span class="badge bg-warning">{{ __('landing.account_trial_period') }}</span>
                                                     @elseif($activeSubscription->status === 'active')
-                                                        <span class="badge bg-success">Активная</span>
+                                                        <span class="badge bg-success">{{ __('landing.account_active') }}</span>
                                                     @else
                                                         <span class="badge bg-secondary">{{ $activeSubscription->status }}</span>
                                                     @endif
@@ -258,35 +258,35 @@
                                                 
                                                 @if($activeSubscription->status === 'trial' && $activeSubscription->trial_ends_at)
                                                     <div class="mb-3">
-                                                        <strong>Пробный период до:</strong>
+                                                        <strong>{{ __('landing.account_trial_ends_at') }}:</strong>
                                                         <p class="mb-0">{{ $activeSubscription->trial_ends_at->format('d.m.Y') }}</p>
                                                         @php
                                                             $daysLeft = $activeSubscription->getDaysUntilTrialEnd();
                                                         @endphp
                                                         @if($daysLeft > 0)
-                                                            <small class="text-warning">{{ $daysLeft }} дней осталось</small>
+                                                            <small class="text-warning">{{ $daysLeft }} {{ __('landing.account_days_left') }}</small>
                                                         @else
-                                                            <small class="text-danger">Пробный период истек</small>
+                                                            <small class="text-danger">{{ __('landing.account_trial_expired') }}</small>
                                                         @endif
                                                     </div>
                                                 @endif
                                                 
                                                 @if($activeSubscription->status === 'active' && $activeSubscription->expires_at)
                                                     <div class="mb-3">
-                                                        <strong>Подписка до:</strong>
+                                                        <strong>{{ __('landing.account_subscription_until') }}:</strong>
                                                         <p class="mb-0">{{ $activeSubscription->expires_at->format('d.m.Y') }}</p>
                                                         @php
                                                             $daysLeft = $activeSubscription->getDaysUntilExpiration();
                                                         @endphp
                                                         @if($daysLeft > 0)
-                                                            <small class="text-success">{{ $daysLeft }} дней осталось</small>
+                                                            <small class="text-success">{{ $daysLeft }} {{ __('landing.account_days_left') }}</small>
                                                         @else
-                                                            <small class="text-danger">Подписка истекла</small>
+                                                            <small class="text-danger">{{ __('landing.account_subscription_expired') }}</small>
                                                         @endif
                                                     </div>
                                                 @endif
                                             @else
-                                                <p class="text-muted mb-0">Подписка не найдена</p>
+                                                <p class="text-muted mb-0">{{ __('landing.account_subscription_not_found') }}</p>
                                             @endif
                                         </div>
                                     </div>
@@ -300,16 +300,13 @@
                                         <div class="card-body text-center py-5">
                                             <div class="mb-4">
                                                 <i class="fas fa-rocket fa-3x text-primary mb-3"></i>
-                                                <h3>Готовы работать с CRM Studio?</h3>
-                                                <p class="text-muted">Перейдите в вашу CRM систему для управления бизнесом</p>
+                                                <h3>{{ __('landing.account_ready_to_work') }}</h3>
+                                                <p class="text-muted">{{ __('landing.account_go_to_crm_text') }}</p>
                                             </div>
                                             
-                                            <div class="d-flex justify-content-center gap-3">
+                                                                                        <div class="d-flex justify-content-center">
                                                 <a href="{{ route('landing.account.crm') }}" class="btn btn-primary btn-lg">
-                                                    <i class="fas fa-external-link-alt me-2"></i>Перейти в CRM
-                                                </a>
-                                                <a href="{{ route('beautyflow.features') }}" class="btn btn-outline-primary btn-lg">
-                                                    <i class="fas fa-info-circle me-2"></i>Узнать больше
+                                                    <i class="fas fa-external-link-alt me-2"></i>{{ __('landing.account_go_to_crm') }}
                                                 </a>
                                             </div>
                                         </div>
@@ -325,7 +322,7 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5 class="card-title mb-0">
-                                                <i class="fas fa-credit-card me-2"></i>История подписок
+                                                <i class="fas fa-credit-card me-2"></i>{{ __('landing.account_subscription_history') }}
                                             </h5>
                                         </div>
                                         <div class="card-body">
@@ -334,11 +331,11 @@
                                                     <table class="table table-hover">
                                                         <thead>
                                                             <tr>
-                                                                <th>Период</th>
-                                                                <th>Статус</th>
-                                                                <th>Дата начала</th>
-                                                                <th>Дата окончания</th>
-                                                                <th>Стоимость</th>
+                                                                <th>{{ __('landing.account_period') }}</th>
+                                                                <th>{{ __('landing.account_status') }}</th>
+                                                                <th>{{ __('landing.account_start_date') }}</th>
+                                                                <th>{{ __('landing.account_end_date') }}</th>
+                                                                <th>{{ __('landing.account_cost') }}</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -346,24 +343,24 @@
                                                             <tr>
                                                                 <td>
                                                                     @if($subscription->status === 'trial')
-                                                                        <span class="badge bg-warning">Пробный</span>
+                                                                        <span class="badge bg-warning">{{ __('landing.account_trial') }}</span>
                                                                     @elseif($subscription->status === 'active')
-                                                                        <span class="badge bg-success">Активная</span>
+                                                                        <span class="badge bg-success">{{ __('landing.account_active') }}</span>
                                                                     @elseif($subscription->status === 'expired')
-                                                                        <span class="badge bg-danger">Истекла</span>
+                                                                        <span class="badge bg-danger">{{ __('landing.account_expired') }}</span>
                                                                     @else
                                                                         <span class="badge bg-secondary">{{ $subscription->status }}</span>
                                                                     @endif
                                                                 </td>
-                                                                <td>{{ $subscription->plan_type ?? 'Не указан' }}</td>
-                                                                <td>{{ $subscription->starts_at ? $subscription->starts_at->format('d.m.Y') : 'Не указано' }}</td>
+                                                                <td>{{ $subscription->plan_type ?? __('landing.account_plan_type') }}</td>
+                                                                <td>{{ $subscription->starts_at ? $subscription->starts_at->format('d.m.Y') : __('landing.account_not_specified') }}</td>
                                                                 <td>
                                                                     @if($subscription->status === 'trial' && $subscription->trial_ends_at)
                                                                         {{ $subscription->trial_ends_at->format('d.m.Y') }}
                                                                     @elseif($subscription->expires_at)
                                                                         {{ $subscription->expires_at->format('d.m.Y') }}
                                                                     @else
-                                                                        Не указано
+                                                                        {{ __('landing.account_not_specified') }}
                                                                     @endif
                                                                 </td>
                                                                 <td>{{ $subscription->amount ?? 0 }} {{ $subscription->currency ?? 'USD' }}</td>
@@ -375,8 +372,8 @@
                                             @else
                                                 <div class="text-center py-5">
                                                     <i class="fas fa-credit-card fa-3x text-muted mb-3"></i>
-                                                    <h5 class="text-muted">История подписок пуста</h5>
-                                                    <p class="text-muted">У вас пока нет активных подписок</p>
+                                                    <h5 class="text-muted">{{ __('landing.account_subscription_history_empty') }}</h5>
+                                                    <p class="text-muted">{{ __('landing.account_no_active_subscriptions') }}</p>
                                                 </div>
                                             @endif
                                         </div>
@@ -392,7 +389,7 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5 class="card-title mb-0">
-                                                <i class="fas fa-key me-2"></i>Смена пароля
+                                                <i class="fas fa-key me-2"></i>{{ __('landing.account_change_password') }}
                                             </h5>
                                         </div>
                                         <div class="card-body">

@@ -3,6 +3,11 @@
 return [
     // Общие
     'welcome' => 'Добро пожаловать',
+    'logo' => 'Логотип',
+    'close_menu' => 'Закрыть меню',
+    'copyright_text' => 'Авторские права &copy; 2024 CRM Studio',
+    'language' => 'Язык',
+    'select_language' => 'Выберите язык',
     'dashboard' => 'Панель управления',
     'settings' => 'Настройки',
     'profile' => 'Профиль',

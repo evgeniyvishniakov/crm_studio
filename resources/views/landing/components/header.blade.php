@@ -13,7 +13,7 @@
         </button>
         
         <div class="collapse navbar-collapse" id="navbarNav" role="navigation" aria-label="{{ __('landing.main_navigation') }}">
-            <ul class="navbar-nav me-auto" role="menubar">
+                        <ul class="navbar-nav me-auto" role="menubar">
                 <li class="nav-item" role="none">
                     <a class="nav-link" href="#features-grid" role="menuitem">{{ __('landing.features') }}</a>
                 </li>

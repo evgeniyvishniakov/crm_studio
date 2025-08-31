@@ -70,6 +70,11 @@
             text-decoration: none;
         }
         
+        .back-button[style*="background: transparent"]:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+        }
+        
         @media (max-width: 480px) {
             .error-container {
                 padding: 30px 20px;
@@ -92,7 +97,24 @@
         <div class="error-description">
             К сожалению, запрашиваемая страница не существует или была перемещена.
         </div>
-        <a href="javascript:history.back()" class="back-button">Вернуться назад</a>
+        
+
+        @if(Auth::guard('client')->check() || Auth::guard('web')->check())
+            <!-- Для зарегистрированных пользователей -->
+            <div style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                <a href="{{ route('dashboard') }}" class="back-button" style="margin-bottom: 10px;">
+                    Перейти в систему
+                </a>
+                <a href="{{ route('landing.account.dashboard') }}" class="back-button" style="background: transparent; color: #667eea; border: 2px solid #667eea;">
+                    Перейти в личный кабинет
+                </a>
+            </div>
+        @else
+            <!-- Для незарегистрированных пользователей -->
+            <a href="{{ route('beautyflow.index') }}" class="back-button">
+                Перейти на головну
+            </a>
+        @endif
     </div>
 </body>
 </html>

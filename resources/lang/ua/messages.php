@@ -3,6 +3,9 @@
 return [
     // Загальні
     'welcome' => 'Ласкаво просимо',
+    'logo' => 'Логотип',
+    'close_menu' => 'Закрити меню',
+    'copyright_text' => 'Авторські права &copy; 2024 CRM Studio',
     'dashboard' => 'Панель керування',
     'settings' => 'Налаштування',
     'profile' => 'Профіль',

@@ -3,6 +3,11 @@
 return [
     // General
     'welcome' => 'Welcome',
+    'logo' => 'Logo',
+    'close_menu' => 'Close Menu',
+    'copyright_text' => 'Copyright &copy; 2024 CRM Studio',
+    'language' => 'Language',
+    'select_language' => 'Select Language',
     'dashboard' => 'Dashboard',
     'settings' => 'Settings',
     'profile' => 'Profile',

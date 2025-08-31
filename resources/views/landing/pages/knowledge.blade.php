@@ -1,7 +1,7 @@
 @extends('landing.layouts.app')
 
-@section('title', 'База знаний - Trimora')
-@section('description', 'Полезные статьи, руководства и советы по использованию Trimora для салонов красоты')
+@section('title', __('landing.knowledge_page_title') . ' - Trimora')
+@section('description', __('landing.knowledge_page_description'))
 
 @section('styles')
 <style>
@@ -217,8 +217,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-4 fw-bold mb-4">База знаний</h1>
-                <p class="lead">Полезные статьи, руководства и советы по эффективному использованию Trimora</p>
+                <h1 class="display-4 fw-bold mb-4">{{ __('landing.knowledge_page_title') }}</h1>
+                <p class="lead">{{ __('landing.knowledge_page_description') }}</p>
             </div>
         </div>
     </div>
@@ -230,7 +230,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-6">
                 <div class="input-group">
-                    <input type="text" class="form-control" id="searchInput" placeholder="Поиск по статьям..." aria-label="Поиск по статьям">
+                    <input type="text" class="form-control" id="searchInput" placeholder="{{ __('landing.knowledge_search_placeholder') }}" aria-label="{{ __('landing.knowledge_search_placeholder') }}">
                     <button class="btn btn-primary" type="button" id="searchBtn">
                         <i class="fas fa-search"></i>
                     </button>
@@ -247,7 +247,7 @@
             <div class="col-auto">
                 <button class="btn btn-outline-primary category-filter active" data-category="all">Все</button>
             </div>
-            <div class="col-auto">
+                        <div class="col-auto">
                 <button class="btn btn-outline-primary category-filter" data-category="getting-started">Начало работы</button>
             </div>
             <div class="col-auto">
@@ -282,14 +282,18 @@
                             <div class="d-flex align-items-center mb-3">
                                 <span class="badge bg-primary me-2">{{ $categories[$article->category] ?? $article->category }}</span>
                             </div>
-                            <h5 class="card-title" style="font-size: 23px!important; font-weight: bold!important; font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;">{{ $article->title }}</h5>
-                            <p class="card-text">{!! Str::limit(strip_tags($article->description), 120) !!}</p>
+                            <h5 class="card-title" style="font-size: 23px!important; font-weight: bold!important; font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;">
+                                {{ $article->title }}
+                            </h5>
+                            <p class="card-text">
+                                {!! Str::limit(strip_tags($article->description), 120) !!}
+                            </p>
                             
                             @if($article->steps->count() > 0)
                                 <div class="mb-3">
                                     <small class="text-muted">
                                         <i class="fas fa-list-ol me-1"></i>
-                                        {{ $article->steps->count() }} {{ trans_choice('шаг|шага|шагов', $article->steps->count()) }}
+                                        {{ $article->steps->count() }} {{ trans_choice(__('landing.knowledge_steps_count'), $article->steps->count()) }}
                                     </small>
                                 </div>
                             @endif
@@ -298,7 +302,7 @@
                                 <div class="mb-3">
                                     <small class="text-muted">
                                         <i class="fas fa-lightbulb me-1"></i>
-                                        {{ $article->tips->count() }} {{ trans_choice('совет|совета|советов', $article->tips->count()) }}
+                                        {{ $article->tips->count() }} {{ trans_choice(__('landing.knowledge_tips_count'), $article->tips->count()) }}
                                     </small>
                                 </div>
                             @endif
@@ -308,29 +312,29 @@
                                 <small class="text-muted">{{ $article->author }}</small>
                             </div>
                             
-                            <a href="{{ route('beautyflow.knowledge.show', $article->slug) }}" class="btn btn-primary">Читать статью</a>
+                            <a href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.knowledge.show', $article->slug)) }}" class="btn btn-primary">{{ __('landing.knowledge_read_article') }}</a>
                         </div>
                     </div>
                 </div>
             @empty
                 <div class="col-12 text-center py-5">
                     <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">Статьи не найдены</h4>
-                    <p class="text-muted">В данный момент в базе знаний нет опубликованных статей.</p>
+                    <h4 class="text-muted">{{ __('landing.knowledge_no_articles') }}</h4>
+                    <p class="text-muted">{{ __('landing.knowledge_no_articles_text') }}</p>
                 </div>
             @endforelse
         </div>
         
         <!-- Empty state for search/filter -->
-        <div class="empty-state text-center py-5" style="display: none;">
-            <i class="fas fa-search fa-3x text-muted mb-3"></i>
-            <h4 class="text-muted">По вашему запросу ничего не найдено</h4>
-            <p class="text-muted">Попробуйте изменить параметры поиска или выбрать другую категорию</p>
-            <button class="btn btn-outline-primary" onclick="clearFilters()">
-                <i class="fas fa-times me-2"></i>
-                Сбросить фильтры
-            </button>
-        </div>
+                        <div class="empty-state text-center py-5" style="display: none;">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">{{ __('landing.knowledge_search_no_results') }}</h4>
+                    <p class="text-muted">{{ __('landing.knowledge_search_no_results_text') }}</p>
+                    <button class="btn btn-outline-primary" onclick="clearFilters()">
+                        <i class="fas fa-times me-2"></i>
+                        {{ __('landing.knowledge_clear_filters') }}
+                    </button>
+                </div>
     </div>
 </section>
 
@@ -339,11 +343,11 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center">
-                <h3 class="fw-bold mb-3">Не нашли ответ на свой вопрос?</h3>
-                                 <p class="text-muted mb-4">Наша команда поддержки готова помочь вам с любыми вопросами по использованию Trimora</p>
+                <h3 class="fw-bold mb-3">{{ __('landing.knowledge_contact_support_title') }}</h3>
+                <p class="text-muted mb-4">{{ __('landing.knowledge_contact_support_text') }}</p>
                 <div class="d-flex justify-content-center gap-3">
-                    <a href="{{ route('beautyflow.contact') }}" class="btn btn-primary">Связаться с поддержкой</a>
-                    <a href="#" class="btn btn-outline-primary">Задать вопрос в чате</a>
+                    <a href="{{ route('beautyflow.contact') }}" class="btn btn-primary">{{ __('landing.knowledge_contact_support') }}</a>
+                    <a href="#" class="btn btn-outline-primary">{{ __('landing.knowledge_ask_chat') }}</a>
                 </div>
             </div>
         </div>

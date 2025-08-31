@@ -12,7 +12,7 @@
             </div>
             <div class="col-lg-3 col-md-6 mb-4">
                 <h5>{{ __('landing.product') }}</h5>
-                <ul class="list-unstyled">
+                                <ul class="list-unstyled">
                     <li><a href="#features-grid" class="text-muted text-decoration-none">{{ __('landing.features') }}</a></li>
                     <li><a href="#niches-section" class="text-muted text-decoration-none">{{ __('landing.niches') }}</a></li>
                     <li><a href="{{ route('beautyflow.pricing') }}" class="text-muted text-decoration-none">{{ __('landing.pricing') }}</a></li>

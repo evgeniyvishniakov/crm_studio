@@ -14,6 +14,7 @@ class KnowledgeArticle extends Model
         'title',
         'slug',
         'description',
+        'content',
         'author',
         'featured_image',
         'meta_tags',
@@ -162,5 +163,29 @@ class KnowledgeArticle extends Model
     public function getOriginalDescriptionAttribute()
     {
         return $this->attributes['description'];
+    }
+    
+    /**
+     * Получить содержимое статьи (с переводом или основное)
+     */
+    public function getContentAttribute($value)
+    {
+        // Если есть перевод для текущего языка, используем его
+        $locale = app()->getLocale();
+        $translation = $this->translation($locale);
+        
+        if ($translation && $translation->content) {
+            return $translation->content;
+        }
+        
+        return $value;
+    }
+    
+    /**
+     * Получить оригинальное содержимое (без перевода)
+     */
+    public function getOriginalContentAttribute()
+    {
+        return $this->attributes['content'];
     }
 }

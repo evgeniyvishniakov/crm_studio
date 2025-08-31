@@ -105,6 +105,24 @@
             text-decoration: none;
         }
         
+        .btn-outline-primary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-outline-primary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            text-decoration: none;
+        }
+        
+        .gap-3 {
+            gap: 1rem;
+        }
+        
 
         
 
@@ -182,11 +200,28 @@
                 {{ __('messages.page_not_found_description') }}
             </p>
             
+
+            
             <div class="error-actions">
-                <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-home mr-2"></i>
-                    {{ __('messages.return_to_home') }}
-                </a>
+                @if(Auth::guard('client')->check() || Auth::guard('web')->check())
+                    <!-- Для зарегистрированных пользователей -->
+                    <div class="d-flex flex-column gap-3">
+                        <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Перейти в систему
+                        </a>
+                        <a href="{{ route('landing.account.dashboard') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-user me-2"></i>
+                            Перейти в личный кабинет
+                        </a>
+                    </div>
+                @else
+                    <!-- Для незарегистрированных пользователей -->
+                    <a href="{{ route('beautyflow.index') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-home me-2"></i>
+                        Перейти на головну
+                    </a>
+                @endif
             </div>
             
 
