@@ -473,4 +473,19 @@ return [
     
     // Common
     'cancel' => 'Cancel',
+    
+    // Contact page
+    'contact_title' => 'Contact Us',
+    'contact_subtitle' => 'We are always ready to help and answer your questions',
+    'contact_write_us' => 'Write to Us',
+    'contact_contact_info' => 'Contact Information',
+    'contact_name' => 'Name',
+    'contact_email' => 'Email',
+    'contact_subject' => 'Subject',
+    'contact_message' => 'Message',
+    'contact_send_message' => 'Send Message',
+    'contact_phone' => 'Phone',
+    'contact_address' => 'Address',
+    'contact_working_hours' => 'Working Hours',
+    'contact_support_24_7' => 'Support: 24/7',
 ];

@@ -473,4 +473,19 @@ return [
     
     // Общее
     'cancel' => 'Отмена',
+    
+    // Страница контактов
+    'contact_title' => 'Свяжитесь с нами',
+    'contact_subtitle' => 'Мы всегда готовы помочь и ответить на ваши вопросы',
+    'contact_write_us' => 'Напишите нам',
+    'contact_contact_info' => 'Контактная информация',
+    'contact_name' => 'Имя',
+    'contact_email' => 'Email',
+    'contact_subject' => 'Тема',
+    'contact_message' => 'Сообщение',
+    'contact_send_message' => 'Отправить сообщение',
+    'contact_phone' => 'Телефон',
+    'contact_address' => 'Адрес',
+    'contact_working_hours' => 'Время работы',
+    'contact_support_24_7' => 'Поддержка: 24/7',
 ];

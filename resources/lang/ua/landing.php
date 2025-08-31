@@ -471,4 +471,19 @@ return [
     
     // Загальне
     'cancel' => 'Скасувати',
+    
+    // Сторінка контактів
+    'contact_title' => 'Зв\'яжіться з нами',
+    'contact_subtitle' => 'Ми завжди готові допомогти та відповісти на ваші запитання',
+    'contact_write_us' => 'Напишіть нам',
+    'contact_contact_info' => 'Контактна інформація',
+    'contact_name' => 'Ім\'я',
+    'contact_email' => 'Email',
+    'contact_subject' => 'Тема',
+    'contact_message' => 'Повідомлення',
+    'contact_send_message' => 'Надіслати повідомлення',
+    'contact_phone' => 'Телефон',
+    'contact_address' => 'Адреса',
+    'contact_working_hours' => 'Час роботи',
+    'contact_support_24_7' => 'Підтримка: 24/7',
 ];
