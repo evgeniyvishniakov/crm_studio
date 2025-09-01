@@ -18,7 +18,7 @@ class AdminOnly
     public function handle(Request $request, Closure $next)
     {
         $user = Auth::user();
-        if (!$user || empty($user->is_panel_admin)) {
+        if (!$user || $user->role !== 'admin') {
             return redirect()->route('admin.login')->withErrors('Нет доступа к админке.');
         }
         return $next($request);

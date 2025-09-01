@@ -28,6 +28,7 @@ Route::get('/pricing', [\App\Http\Controllers\Landing\PricingController::class, 
 
 Route::get('/privacy', function () {
     return view('landing.pages.privacy');
+
 })->name('beautyflow.privacy');
 
 Route::get('/terms', function () {

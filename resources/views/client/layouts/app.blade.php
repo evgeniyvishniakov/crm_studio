@@ -199,6 +199,22 @@
             min-height: auto !important;
         }
         
+        /* Стили для кружочка с уведомлениями в меню */
+        .notification-badge {
+            display: inline-block;
+            min-width: 18px;
+            height: 18px;
+            line-height: 18px;
+            text-align: center;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+        
         /* Уменьшаем ширину левой панели */
         body:not(.open) aside.left-panel {
             width: 250px !important; /* Было 300px */
@@ -832,30 +848,36 @@
                                 <span class="menu-label">{{ __('messages.support') }}</span>
                             </a>
                         </li>
-                        <li class="{{ request()->routeIs('client.notifications.*') ? 'active' : '' }}">
-                            @php $hasAccess = $isAdmin || in_array('notifications', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.notifications.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.notifications') }}">
-                                @if($hasAccess)
-                                    <i class="fa fa-bell"></i>
-                                @else
-                                    <i class="fas fa-lock"></i>
-                                @endif
-                                <span class="menu-label">{{ __('messages.notifications') }}</span>
-                            </a>
-                        </li>
-                        <li class="{{ request()->routeIs('client.subscriptions.*') ? 'active' : '' }}">
-                            @php $hasAccess = $isAdmin || in_array('subscriptions', $userPermissions); @endphp
-                            <a href="{{ $hasAccess ? route('client.subscriptions.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.subscriptions') }}">
-                                @if($hasAccess)
-                                    <i class="fa fa-credit-card"></i>
-                                @else
-                                    <i class="fas fa-lock"></i>
-                                @endif
-                                <span class="menu-label">{{ __('messages.subscriptions') }}</span>
-                            </a>
-                        </li>
-
                     </ul>
+                </li>
+                
+                <!-- Уведомления -->
+                <li class="{{ request()->routeIs('client.notifications.*') ? 'active' : '' }}">
+                    @php $hasAccess = $isAdmin || in_array('notifications', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('client.notifications.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.notifications') }}">
+                        @if($hasAccess)
+                            <i class="menu-icon fa fa-bell"></i>
+                        @else
+                            <i class="menu-icon fas fa-lock"></i>
+                        @endif
+                        {{ __('messages.notifications') }}
+                        @if($hasAccess && $unreadCount > 0)
+                            <span class="notification-badge">{{ $unreadCount }}</span>
+                        @endif
+                    </a>
+                </li>
+                
+                <!-- Подписки -->
+                <li class="{{ request()->routeIs('client.subscriptions.*') ? 'active' : '' }}">
+                    @php $hasAccess = $isAdmin || in_array('subscriptions', $userPermissions); @endphp
+                    <a href="{{ $hasAccess ? route('client.subscriptions.index') : '#' }}" class="{{ !$hasAccess ? 'disabled-link' : '' }}" title="{{ __('messages.subscriptions') }}">
+                        @if($hasAccess)
+                            <i class="menu-icon fa fa-credit-card"></i>
+                        @else
+                            <i class="menu-icon fas fa-lock"></i>
+                        @endif
+                        {{ __('messages.subscriptions') }}
+                    </a>
                 </li>
             </ul>
         </div><!-- /.navbar-collapse -->

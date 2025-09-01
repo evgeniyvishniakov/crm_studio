@@ -8,6 +8,11 @@ use App\Models\Admin\Project;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Subscription;
 use App\Models\Admin\User;
+use App\Mail\RegistrationWelcomeMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Log;
+use App\Models\Language;
 
 class ProjectController extends Controller
 {
@@ -81,27 +86,58 @@ class ProjectController extends Controller
             $validated['social_links'] = array_map('trim', explode(',', $validated['social_links']));
         }
 
+        // Найти language_id по коду языка
+        $language = Language::where('code', $validated['language'])->first();
+        if ($language) {
+            $validated['language_id'] = $language->id;
+            $validated['booking_language_id'] = $language->id;
+        }
+        unset($validated['language']); // Убираем поле language, оставляем только language_id
+
         $project = Project::create($validated);
 
+        // Создать пользователя-админа для проекта
+        $adminUser = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => null,
+            'project_id' => $project->id,
+            'role' => 'admin',
+            'status' => 'active',
+            'registered_at' => now(),
+        ]);
+
         // Создать пробную подписку для нового проекта
-        // Найдем админа проекта или создадим временного
-        $adminUser = User::where('project_id', $project->id)->where('role', 'admin')->first();
-        
-                    if ($adminUser) {
-                Subscription::create([
-                    'project_id' => $project->id,
-                    'admin_user_id' => $adminUser->id,
-                    'plan_type' => 'trial',
-                    'amount' => 0.00,
-                    'currency' => 'USD',
-                    'paid_at' => now(),
-                    'starts_at' => now(),
-                    'trial_ends_at' => now()->addDays(7), // Пробный период 7 дней
-                    'expires_at' => null, // Для пробной подписки не устанавливаем дату окончания
-                    'status' => 'trial',
-                    'notes' => 'Автоматически создана при создании проекта через админку'
-                ]);
-            }
+        Subscription::create([
+            'project_id' => $project->id,
+            'admin_user_id' => $adminUser->id,
+            'plan_type' => 'trial',
+            'amount' => 0.00,
+            'currency' => 'USD',
+            'paid_at' => now(),
+            'starts_at' => now(),
+            'trial_ends_at' => now()->addDays(7), // Пробный период 7 дней
+            'expires_at' => null, // Для пробной подписки не устанавливаем дату окончания
+            'status' => 'trial',
+            'notes' => 'Автоматически создана при создании проекта через админку'
+        ]);
+
+        // Генерируем токен для создания пароля
+        $token = Password::broker('admin_users')->createToken($adminUser);
+
+        // Отправка письма с ссылкой на создание пароля
+        Log::info('Attempting to send registration email to: ' . $validated['email']);
+        try {
+            Mail::to($validated['email'])->send(new RegistrationWelcomeMail(
+                $validated['email'],
+                $validated['project_name'],
+                $validated['phone'] ?? null,
+                $token
+            ));
+            Log::info('Registration email sent successfully to: ' . $validated['email']);
+        } catch (\Exception $e) {
+            Log::error('Failed to send registration email: ' . $e->getMessage());
+        }
 
         // Рассылка уведомлений всем админам, кроме создателя
         $currentAdmin = auth()->user();
@@ -179,6 +215,14 @@ class ProjectController extends Controller
         if (!empty($validated['social_links'])) {
             $validated['social_links'] = array_map('trim', explode(',', $validated['social_links']));
         }
+
+        // Найти language_id по коду языка
+        $language = Language::where('code', $validated['language'])->first();
+        if ($language) {
+            $validated['language_id'] = $language->id;
+            $validated['booking_language_id'] = $language->id;
+        }
+        unset($validated['language']); // Убираем поле language, оставляем только language_id
 
         $project->update($validated);
 

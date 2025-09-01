@@ -43,7 +43,7 @@ class LoginController extends Controller
     public function showLoginForm()
     {
         // Если пользователь уже авторизован и это админ — редирект на /panel
-        if (auth()->check() && !empty(auth()->user()->is_panel_admin)) {
+        if (auth()->check() && auth()->user()->role === 'admin') {
             return redirect('/panel');
         }
         // Для админки возвращаем отдельный шаблон
@@ -55,7 +55,7 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
         if (auth()->attempt($credentials)) {
             $user = auth()->user();
-            if (empty($user->is_panel_admin)) {
+            if ($user->role !== 'admin') {
                 auth()->logout();
                 return back()->withErrors(['email' => 'Нет доступа к админке.']);
             }

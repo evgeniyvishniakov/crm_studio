@@ -17,6 +17,9 @@ class RegisterController extends Controller
 {
     public function store(Request $request)
     {
+        \Log::info('=== REGISTRATION START ===');
+        \Log::info('Request data: ' . json_encode($request->all()));
+        
         $validated = $request->validate([
             'fullname' => 'required|string|max:255',
             'email' => [
@@ -87,9 +90,8 @@ class RegisterController extends Controller
                 'notes' => 'Автоматически создана при регистрации проекта'
             ]);
 
-            // Рассылка уведомлений только panel-админам, кроме нового
+            // Рассылка уведомлений всем админам, кроме нового
             $adminUsers = User::where('role', 'admin')
-                ->where('is_panel_admin', 1)
                 ->where('id', '!=', $admin->id)
                 ->get();
             foreach ($adminUsers as $adminUser) {
@@ -112,12 +114,18 @@ class RegisterController extends Controller
         $token = $GLOBALS['reset_token'] ?? null;
 
         // Отправка письма с ссылкой на создание пароля
-        Mail::to($validated['email'])->send(new RegistrationWelcomeMail(
-            $validated['email'],
-            $validated['salon'],
-            $validated['phone'] ?? null,
-            $token
-        ));
+        \Log::info('Attempting to send registration email to: ' . $validated['email']);
+        try {
+            Mail::to($validated['email'])->send(new RegistrationWelcomeMail(
+                $validated['email'],
+                $validated['salon'],
+                $validated['phone'] ?? null,
+                $token
+            ));
+            \Log::info('Registration email sent successfully to: ' . $validated['email']);
+        } catch (\Exception $e) {
+            \Log::error('Failed to send registration email: ' . $e->getMessage());
+        }
 
         // Возврат JSON-ответа для AJAX
         if ($request->ajax()) {

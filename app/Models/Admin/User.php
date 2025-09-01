@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Auth\Passwords\CanResetPassword;
 
 class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, CanResetPassword;
 
     protected $table = 'admin_users';
 
@@ -134,5 +135,13 @@ class User extends Authenticatable implements \Illuminate\Contracts\Auth\MustVer
     public function appointments()
     {
         return $this->hasMany(\App\Models\Clients\Appointment::class, 'user_id');
+    }
+
+    /**
+     * Получить email для сброса пароля
+     */
+    public function getEmailForPasswordReset()
+    {
+        return $this->email;
     }
 }

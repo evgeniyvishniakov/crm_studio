@@ -47,12 +47,7 @@
             </li>
             
             <!-- Биллинг и подписки -->
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.subscriptions.index') }}" class="nav-link text-white {{ request()->routeIs('admin.subscriptions.*') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-credit-card me-2"></i>
-                    Подписки
-                </a>
-            </li>
+            {{-- Подписки перемещены вниз --}}
             <li class="nav-item mb-2">
                 <a href="{{ route('admin.plans.index') }}" class="nav-link text-white {{ request()->routeIs('admin.plans.*') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-tag me-2"></i>
@@ -108,15 +103,7 @@
                     @endif
                 </a>
             </li>
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.notifications.index') }}" class="nav-link text-white {{ request()->routeIs('admin.notifications.index') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-bell me-2"></i>
-                    Уведомления
-                    @if($unreadNotificationsCount > 0)
-                        <span class="badge bg-danger ms-1">{{ $unreadNotificationsCount }}</span>
-                    @endif
-                </a>
-            </li>
+            {{-- Уведомления перемещены вниз --}}
             <li class="nav-item mb-2">
                 <a href="{{ route('admin.logs.index') }}" class="nav-link text-white {{ request()->routeIs('admin.logs.index') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-file-alt me-2"></i>
@@ -143,6 +130,23 @@
                 <a href="{{ route('knowledge.index') }}" class="nav-link text-white" target="_blank">
                     <i class="fas fa-external-link-alt me-2"></i>
                     База знаний (Публичная)
+                </a>
+            </li>
+            
+            <!-- Подписки и уведомления -->
+            <li class="nav-item mb-2">
+                <a href="{{ route('admin.subscriptions.index') }}" class="nav-link text-white {{ request()->routeIs('admin.subscriptions.*') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-credit-card me-2"></i>
+                    Подписки
+                </a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{{ route('admin.notifications.index') }}" class="nav-link text-white {{ request()->routeIs('admin.notifications.index') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-bell me-2"></i>
+                    Уведомления
+                    @if($unreadNotificationsCount > 0)
+                        <span class="badge bg-danger ms-1">{{ $unreadNotificationsCount }}</span>
+                    @endif
                 </a>
             </li>
             
