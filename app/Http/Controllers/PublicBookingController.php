@@ -289,8 +289,8 @@ class PublicBookingController extends Controller
                 'user_id' => 'required|exists:admin_users,id',
                 'date' => 'required|date|after_or_equal:today',
                 'time' => 'required|date_format:H:i',
-                'client_name' => 'required|string|max:255|regex:/^[а-яёa-zA-Z\s\-\.\']+$/u',
-                'client_phone' => 'required|string|max:20|regex:/^[\+\d\s\-\(\)]+$/',
+                'client_name' => 'required|string|max:255',
+                'client_phone' => 'required|string|max:20',
                 'client_email' => 'nullable|email|max:255',
             ]);
             

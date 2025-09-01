@@ -17,15 +17,13 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/login', [\App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('admin.login');
-Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'login']);
-Route::post('/logout', function () {
-    auth()->logout();
-    return redirect('/panel/login');
-})->name('admin.logout');
+// Авторизация в админку
+Route::get('/login', [\App\Http\Controllers\Auth\AdminLoginController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/login', [\App\Http\Controllers\Auth\AdminLoginController::class, 'login'])->name('admin.login.post');
+Route::post('/logout', [\App\Http\Controllers\Auth\AdminLoginController::class, 'logout'])->name('admin.logout');
 
-// Все остальные маршруты админки защищены middleware 'admin.only'
-Route::middleware(['admin.only'])->name('admin.')->group(function () {
+// Все маршруты админки защищены авторизацией через guard 'panel'
+Route::middleware(['auth:panel'])->name('admin.')->group(function () {
     Route::get('/', function () {
         return view('admin.dashboard.index');
     })->name('dashboard');

@@ -1,12 +1,12 @@
 @php
-    $user = auth()->user();
+    $user = auth('panel')->user();
     $openTicketsCount = \App\Models\Clients\SupportTicket::where('status', 'open')->count();
     $pendingTicketsCount = \App\Models\Clients\SupportTicket::where('status', 'pending')->count();
     $unreadNotificationsCount = ($user && $user->id) ? \App\Models\Notification::where(function($q) use ($user) {
         $q->whereNull('user_id')->orWhere('user_id', $user->id);
     })->where('is_read', false)->count() : 0;
 @endphp
-@if($user && !empty($user->is_panel_admin))
+@if($user)
 <nav class="sidebar bg-dark text-white" style="width: 250px; min-height: 100vh;">
     <div class="sidebar-header p-3 border-bottom border-secondary">
         <div class="d-flex align-items-center">

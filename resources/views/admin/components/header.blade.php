@@ -1,5 +1,5 @@
 @php
-    $user = auth()->user();
+    $user = auth('panel')->user();
     $openTicketsCount = \App\Models\Clients\SupportTicket::where('status', 'open')->count();
     $pendingTicketsCount = \App\Models\Clients\SupportTicket::where('status', 'pending')->count();
     $newTicketsCount = $openTicketsCount + $pendingTicketsCount;
@@ -20,7 +20,7 @@
         ->get();
     $criticalCount = $criticalErrors->count();
 @endphp
-@if($user && !empty($user->is_panel_admin))
+@if($user)
 <header class="bg-white border-bottom shadow-sm p-3">
     <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
