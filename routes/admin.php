@@ -91,6 +91,7 @@ Route::middleware(['auth:panel'])->name('admin.')->group(function () {
         ->middleware('rate.limit:notifications'); // Максимум 60 отметок "прочитано" в минуту
     Route::delete('/notifications/{notification}', [\App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('notifications.destroy');
     Route::delete('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'destroyAll'])->name('notifications.destroy-all');
+    Route::post('/notifications/check-subscriptions', [\App\Http\Controllers\Admin\NotificationController::class, 'checkSubscriptionNotifications'])->name('notifications.check-subscriptions');
 
     // Управление подписками
     Route::get('/subscriptions', [\App\Http\Controllers\Admin\SubscriptionController::class, 'index'])->name('subscriptions.index');

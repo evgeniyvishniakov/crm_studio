@@ -38,13 +38,13 @@
                             <span class="label">{{ __('messages.plan') }}:</span>
                             <span class="value">{{ $subscriptionData['plan'] }}</span>
                         </div>
-                        @if($subscriptionData['starts_at'] !== 'Не указана' && $subscriptionData['status'] !== 'trial')
+                        @if($subscriptionData['starts_at'] !== __('messages.not_specified') && $subscriptionData['status'] !== 'trial')
                         <div class="info-item">
-                            <span class="label">Дата начала:</span>
+                            <span class="label">{{ __('messages.start_date') }}:</span>
                             <span class="value">{{ $subscriptionData['starts_at'] }}</span>
                         </div>
                         @endif
-                        @if($subscriptionData['end_date'] !== 'Не указана')
+                        @if($subscriptionData['end_date'] !== __('messages.not_specified'))
                         <div class="info-item">
                             <span class="label">{{ __('messages.end_date') }}:</span>
                             <span class="value">{{ $subscriptionData['end_date'] }}</span>
@@ -52,11 +52,11 @@
                         @endif
                         @if($subscriptionData['trial_ends_at'] && $subscriptionData['status'] === 'trial')
                         <div class="info-item">
-                            <span class="label">Пробный период до:</span>
+                            <span class="label">{{ __('messages.trial_period_until') }}:</span>
                             <span class="value">{{ $subscriptionData['trial_ends_at'] }}</span>
                         </div>
                         <div class="info-item">
-                            <span class="label">Осталось дней пробного периода:</span>
+                            <span class="label">{{ __('messages.trial_days_left') }}:</span>
                             <span class="value {{ $subscriptionData['trial_days_left'] <= 3 ? 'warning' : '' }}">
                                 {{ $subscriptionData['trial_days_left'] }} {{ __('messages.days') }}
                             </span>
@@ -73,7 +73,7 @@
                         @if($subscriptionData['status'] === 'trial')
                         <div class="info-item">
                             <span class="label">{{ __('messages.price') }}:</span>
-                            <span class="value text-success">Бесплатно (пробный период)</span>
+                            <span class="value text-success">{{ __('messages.free_trial') }}</span>
                         </div>
                         @elseif($subscriptionData['price'] > 0)
                         <div class="info-item">
@@ -83,14 +83,14 @@
                         @endif
                         @if($subscriptionData['status'] !== 'trial')
                         <div class="info-item">
-                            <span class="label">Статус оплаты:</span>
+                            <span class="label">{{ __('messages.payment_status') }}:</span>
                             <span class="value">
                                 @if($subscriptionData['payment_status'] === 'paid')
-                                    <i class="fa fa-check text-success"></i> Оплачено
+                                    <i class="fa fa-check text-success"></i> {{ __('messages.paid') }}
                                 @elseif($subscriptionData['payment_status'] === 'pending')
-                                    <i class="fa fa-clock text-warning"></i> Ожидает оплаты
+                                    <i class="fa fa-clock text-warning"></i> {{ __('messages.payment_pending') }}
                                 @elseif($subscriptionData['payment_status'] === 'failed')
-                                    <i class="fa fa-times text-danger"></i> Ошибка оплаты
+                                    <i class="fa fa-times text-danger"></i> {{ __('messages.payment_failed') }}
                                 @else
                                     <i class="fa fa-question text-muted"></i> {{ $subscriptionData['payment_status'] }}
                                 @endif
@@ -114,11 +114,11 @@
                                         <div class="subscription-actions">
                         @if($subscriptionData['status'] === 'active')
                             <button class="btn btn-success" onclick="renewSubscription()">
-                                <i class="fa fa-refresh"></i> Продлить подписку
+                                <i class="fa fa-refresh"></i> {{ __('messages.renew_subscription_btn') }}
                             </button>
-                            <button class="btn btn-primary" onclick="changePlan()">
-                                <i class="fa fa-exchange"></i> {{ __('messages.change_plan') }}
-                            </button>
+                            <a href="{{ route('beautyflow.pricing') }}" class="btn btn-primary">
+                                <i class="fa fa-exchange"></i> {{ __('messages.change_plan_btn') }}
+                            </a>
                             @if($subscriptionData['auto_renewal'])
                                 <button class="btn btn-outline-danger" onclick="cancelAutoRenewal()">
                                     <i class="fa fa-stop"></i> {{ __('messages.cancel_auto_renewal') }}
@@ -130,13 +130,13 @@
                             </button>
 
                         @elseif($subscriptionData['status'] === 'trial')
-                            <button class="btn btn-success" onclick="changePlan()">
-                                <i class="fa fa-credit-card"></i> Выбрать платный план
-                            </button>
+                            <a href="{{ route('beautyflow.pricing') }}" class="btn btn-success">
+                                <i class="fa fa-credit-card"></i> {{ __('messages.select_paid_plan') }}
+                            </a>
                         @elseif($subscriptionData['status'] === 'no_subscription')
-                            <button class="btn btn-success" onclick="changePlan()">
-                                <i class="fa fa-credit-card"></i> Выбрать план
-                            </button>
+                            <a href="{{ route('beautyflow.pricing') }}" class="btn btn-success">
+                                <i class="fa fa-credit-card"></i> {{ __('messages.select_plan_btn') }}
+                            </a>
                         @endif
                     </div>
                 </div>
@@ -161,7 +161,7 @@
             @elseif($subscriptionData['status'] === 'trial')
                 <div class="alert alert-success subscription-alert">
                     <i class="fa fa-gift"></i>
-                    У вас активен пробный период. Выберите платный план для продолжения работы.
+                    {{ __('messages.trial_period_active') }}
                 </div>
             @endif
 
@@ -200,36 +200,7 @@
                 </div>
             </div>
 
-            <!-- Доступные планы -->
-            <div class="available-plans-card">
-                <h2>{{ __('messages.available_plans') }}</h2>
-                <div class="plans-grid">
-                    @foreach($availablePlans as $plan)
-                    <div class="plan-card">
-                        <div class="plan-header">
-                            <h3>{{ $plan['name'] }}</h3>
-                            <div class="plan-price">
-                                <span class="price">{{ $plan['price'] }}</span>
-                                <span class="currency">{{ $plan['currency'] }}</span>
-                                <span class="period">/{{ __('messages.month') }}</span>
-                            </div>
-                        </div>
-                        <div class="plan-features">
-                            <ul>
-                                @foreach($plan['features'] as $feature)
-                                <li><i class="fa fa-check"></i> {{ $feature }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        <div class="plan-actions">
-                            <button class="btn btn-outline-primary" onclick="selectPlan('{{ $plan['id'] }}')">
-                                {{ __('messages.select_plan') }}
-                            </button>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
+
         </div>
     </div>
 </div>
@@ -238,10 +209,8 @@
 <script>
 // Переменные для функций подписок
 const confirmRenewSubscriptionMessage = '{{ __("messages.confirm_renew_subscription") }}';
-const confirmChangePlanMessage = '{{ __("messages.confirm_change_plan") }}';
 const confirmCancelAutoRenewalMessage = '{{ __("messages.confirm_cancel_auto_renewal") }}';
 const renewSubscriptionUrl = '{{ route("client.subscriptions.renew") }}';
-const changePlanUrl = '{{ route("client.subscriptions.change-plan") }}';
 const cancelSubscriptionUrl = '{{ route("client.subscriptions.cancel") }}';
 const csrfTokenValue = '{{ csrf_token() }}';
 </script>

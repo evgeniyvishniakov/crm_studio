@@ -23,6 +23,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('appointments:send-reminders')
             ->dailyAt('09:00')
             ->appendOutputTo(storage_path('logs/appointment-reminders.log'));
+            
+        // Проверка уведомлений о подписках каждый день в 10:00
+        $schedule->command('subscriptions:check-notifications')
+            ->dailyAt('10:00')
+            ->appendOutputTo(storage_path('logs/subscription-notifications.log'));
     }
 
     /**

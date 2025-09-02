@@ -24,6 +24,12 @@
             </form>
         </div>
         <div class="col-auto">
+            <form method="POST" action="{{ route('admin.notifications.check-subscriptions') }}" style="display: inline;">
+                @csrf
+                <button type="submit" class="btn btn-info me-2">
+                    <i class="fas fa-bell"></i> Проверить подписки
+                </button>
+            </form>
             @if($notifications->count() > 0)
                 <button type="button" class="btn btn-danger" onclick="deleteAllNotifications()">
                     <i class="fas fa-trash"></i> Удалить все

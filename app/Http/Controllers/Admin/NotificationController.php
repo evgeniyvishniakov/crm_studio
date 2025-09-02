@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Notification;
+use App\Http\Controllers\Client\SubscriptionsController;
 
 class NotificationController extends Controller
 {
@@ -58,5 +59,17 @@ class NotificationController extends Controller
         })->delete();
         
         return back()->with('success', "Удалено уведомлений: {$deletedCount}");
+    }
+    
+    public function checkSubscriptionNotifications()
+    {
+        try {
+            $controller = new SubscriptionsController();
+            $controller->createSubscriptionNotifications();
+            
+            return back()->with('success', 'Уведомления о подписках проверены и созданы');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Ошибка при проверке уведомлений: ' . $e->getMessage());
+        }
     }
 } 
