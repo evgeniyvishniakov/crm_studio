@@ -352,7 +352,13 @@
                                                                         <span class="badge bg-secondary">{{ $subscription->status }}</span>
                                                                     @endif
                                                                 </td>
-                                                                <td>{{ $subscription->plan_type ?? __('landing.account_plan_type') }}</td>
+                                                                <td>
+                                                                    @if($subscription->status === 'trial')
+                                                                        {{ __('landing.account_trial') }}
+                                                                    @else
+                                                                        {{ $subscription->plan_type ?? __('landing.account_plan_type') }}
+                                                                    @endif
+                                                                </td>
                                                                 <td>{{ $subscription->starts_at ? $subscription->starts_at->format('d.m.Y') : __('landing.account_not_specified') }}</td>
                                                                 <td>
                                                                     @if($subscription->status === 'trial' && $subscription->trial_ends_at)

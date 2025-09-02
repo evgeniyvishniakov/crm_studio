@@ -116,7 +116,7 @@
                             <button class="btn btn-success" onclick="renewSubscription()">
                                 <i class="fa fa-refresh"></i> {{ __('messages.renew_subscription_btn') }}
                             </button>
-                            <a href="{{ route('beautyflow.pricing') }}" class="btn btn-primary">
+                            <a href="{{ \App\Helpers\DomainHelper::url('landing', 'pricing') }}" class="btn btn-primary">
                                 <i class="fa fa-exchange"></i> {{ __('messages.change_plan_btn') }}
                             </a>
                             @if($subscriptionData['auto_renewal'])
@@ -130,11 +130,11 @@
                             </button>
 
                         @elseif($subscriptionData['status'] === 'trial')
-                            <a href="{{ route('beautyflow.pricing') }}" class="btn btn-success">
+                            <a href="{{ \App\Helpers\DomainHelper::url('landing', 'pricing') }}" class="btn btn-success">
                                 <i class="fa fa-credit-card"></i> {{ __('messages.select_paid_plan') }}
                             </a>
                         @elseif($subscriptionData['status'] === 'no_subscription')
-                            <a href="{{ route('beautyflow.pricing') }}" class="btn btn-success">
+                            <a href="{{ \App\Helpers\DomainHelper::url('landing', 'pricing') }}" class="btn btn-success">
                                 <i class="fa fa-credit-card"></i> {{ __('messages.select_plan_btn') }}
                             </a>
                         @endif

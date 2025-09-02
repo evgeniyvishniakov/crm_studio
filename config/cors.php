@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
-    'allowed_origins' => ['*'], // В продакшене лучше указать конкретные домены
+    'allowed_origins' => \App\Helpers\DomainHelper::getAllowedOrigins(),
 
     'allowed_origins_patterns' => [],
 
