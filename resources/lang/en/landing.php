@@ -278,6 +278,12 @@ return [
     'check_inbox_spam' => 'Check the "Inbox" or "Spam" folder.',
     'ok' => 'Ok',
     
+    // Success Modal
+    'success_modal_title' => 'Registration completed successfully!',
+    'success_modal_message' => 'An email with instructions for creating a password has been sent to your email.',
+    'success_modal_instruction' => 'Check your email (including the "Spam" folder) and follow the link to complete registration.',
+    'success_modal_button' => 'Got it',
+    
     // Error Messages
     'registration_error' => 'An error occurred during registration. Try later or contact support.',
     

@@ -35,4 +35,28 @@ class NotificationController extends Controller
         // Если есть url — редиректим на него, иначе назад
         return $notification->url ? redirect($notification->url) : back();
     }
+
+    public function destroy($id)
+    {
+        $user = auth()->user();
+        $notification = Notification::where('id', $id)
+            ->where(function($q) use ($user) {
+                $q->whereNull('user_id')->orWhere('user_id', $user->id);
+            })
+            ->firstOrFail();
+        
+        $notification->delete();
+        
+        return back()->with('success', 'Уведомление удалено');
+    }
+
+    public function destroyAll()
+    {
+        $user = auth()->user();
+        $deletedCount = Notification::where(function($q) use ($user) {
+            $q->whereNull('user_id')->orWhere('user_id', $user->id);
+        })->delete();
+        
+        return back()->with('success', "Удалено уведомлений: {$deletedCount}");
+    }
 } 

@@ -111,15 +111,124 @@ document.addEventListener('DOMContentLoaded', function() {
     const regSpinner = document.getElementById('regSpinner');
     
     if (registerForm) {
-        registerForm.addEventListener('submit', function() {
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
             registerBtn.disabled = true;
             regSpinner.classList.remove('d-none');
             registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Регистрация...';
+            
+            // Отправляем AJAX-запрос
+            const formData = new FormData(registerForm);
+            
+            fetch(registerForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Показываем сообщение об успехе
+                    showSuccessMessage();
+                } else {
+                    // Показываем ошибки
+                    showErrors(data.errors || {});
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                showErrors({general: ['Произошла ошибка при регистрации. Попробуйте еще раз.']});
+            })
+            .finally(() => {
+                // Восстанавливаем кнопку
+                registerBtn.disabled = false;
+                regSpinner.classList.add('d-none');
+                registerBtn.innerHTML = '{{ __("landing.register") }}';
+                
+                // Убеждаемся, что форма видна
+                registerForm.style.display = 'block';
+            });
         });
     }
     
     if (typeof $.fn.mask !== 'undefined') {
         $('#reg-phone').mask('+380999999999');
+    }
+    
+    function showSuccessMessage() {
+        // Закрываем текущее модальное окно
+        const currentModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+        if (currentModal) {
+            currentModal.hide();
+        }
+        
+        // Создаем новое модальное окно для успеха
+        const successModalHtml = `
+            <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body text-center py-4">
+                            <div class="mb-3">
+                                <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                            </div>
+                            <h4 class="text-success mb-3">{{ __('landing.success_modal_title') }}</h4>
+                            <p class="mb-3">{{ __('landing.success_modal_message') }}</p>
+                            <p class="text-muted small mb-4">{{ __('landing.success_modal_instruction') }}</p>
+                            <button type="button" class="btn btn-primary btn-lg" onclick="closeSuccessModal()">{{ __('landing.success_modal_button') }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Добавляем модальное окно в body
+        document.body.insertAdjacentHTML('beforeend', successModalHtml);
+        
+        // Показываем новое модальное окно
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+        
+        // Удаляем модальное окно после закрытия
+        document.getElementById('successModal').addEventListener('hidden.bs.modal', function() {
+            this.remove();
+        });
+    }
+    
+    // Функция для закрытия модального окна успеха
+    window.closeSuccessModal = function() {
+        const successModal = bootstrap.Modal.getInstance(document.getElementById('successModal'));
+        if (successModal) {
+            successModal.hide();
+        }
+    }
+    
+    function showErrors(errors) {
+        // Показываем ошибки валидации
+        let errorHtml = '<div class="alert alert-danger"><ul class="mb-0">';
+        
+        for (const field in errors) {
+            if (Array.isArray(errors[field])) {
+                errors[field].forEach(error => {
+                    errorHtml += `<li>${error}</li>`;
+                });
+            } else {
+                errorHtml += `<li>${errors[field]}</li>`;
+            }
+        }
+        
+        errorHtml += '</ul></div>';
+        
+        // Вставляем ошибки в начало формы
+        const modalBody = document.querySelector('#registerModal .modal-body');
+        const existingAlert = modalBody.querySelector('.alert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+        modalBody.insertAdjacentHTML('afterbegin', errorHtml);
     }
 });
 </script>

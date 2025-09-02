@@ -20,28 +20,44 @@ class RegisterController extends Controller
         \Log::info('=== REGISTRATION START ===');
         \Log::info('Request data: ' . json_encode($request->all()));
         
-        $validated = $request->validate([
-            'fullname' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'email',
-                'max:255',
-                Rule::unique('projects', 'email'),
-            ],
-            'phone' => [
-                'nullable',
-                'max:32',
-            ],
-            'salon' => 'required|string|max:255',
-            'language' => 'nullable|string|in:ru,en,ua',
-            // password убран
-        ]);
+        try {
+            $validated = $request->validate([
+                'fullname' => 'required|string|max:255',
+                'email' => [
+                    'required',
+                    'email',
+                    'max:255',
+                    Rule::unique('projects', 'email'),
+                ],
+                'phone' => [
+                    'nullable',
+                    'max:32',
+                ],
+                'salon' => 'required|string|max:255',
+                'language' => 'nullable|string|in:ru,en,ua',
+                // password убран
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $e->errors()
+                ], 422);
+            }
+            throw $e;
+        }
 
         // Ручная проверка на дубль телефона только в projects
         if (!empty($validated['phone'])) {
             $phoneExists = 
                 \App\Models\Admin\Project::where('phone', $validated['phone'])->exists();
             if ($phoneExists) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'errors' => ['phone' => ['Пользователь с таким телефоном уже зарегистрирован']]
+                    ], 422);
+                }
                 return back()->withErrors(['phone' => 'Пользователь с таким телефоном уже зарегистрирован'])->withInput();
             }
         }

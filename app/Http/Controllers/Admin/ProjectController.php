@@ -234,6 +234,41 @@ class ProjectController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $project = Project::findOrFail($id);
+            
+            // Удаляем логотип проекта, если он есть
+            if ($project->logo) {
+                Storage::disk('public')->delete($project->logo);
+            }
+            
+            // Удаляем связанные данные в правильном порядке
+            // 1. Удаляем подписки
+            $project->subscriptions()->delete();
+            
+            // 2. Удаляем администраторов проекта
+            $project->adminUsers()->delete();
+            
+            // 3. Удаляем клиентов проекта
+            $project->clients()->delete();
+            
+            // 4. Удаляем записи проекта
+            $project->appointments()->delete();
+            
+            // 5. Удаляем настройки проекта
+            $project->bookingSettings()->delete();
+            $project->widgetSettings()->delete();
+            $project->emailSettings()->delete();
+            $project->telegramSettings()->delete();
+            
+            // 6. Удаляем сам проект
+            $project->delete();
+            
+            return response()->json(['success' => true, 'message' => 'Проект успешно удален']);
+            
+        } catch (\Exception $e) {
+            Log::error('Ошибка при удалении проекта: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Ошибка при удалении проекта'], 500);
+        }
     }
 }
