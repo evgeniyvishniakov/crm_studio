@@ -776,10 +776,21 @@ table.salary-payments-table .actions-cell {
 
 .btn-edit svg,
 .btn-delete svg,
+.btn-avatar svg,
 .btn-view svg,
 .btn-pdf svg {
     width: 16px;
     height: 16px;
+}
+
+.btn-avatar {
+    background: linear-gradient(135deg, #10b981, #34d399);
+    color: white;
+}
+
+.btn-avatar:hover {
+    background: linear-gradient(135deg, #059669, #10b981);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 

@@ -89,6 +89,12 @@
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
                             </button>
+                            @else
+                            <button class="btn-avatar" title="{{ __('messages.change_avatar') }}" onclick="openAdminAvatarModal({{ $user->id }})">
+                                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
                             @endif
                         </td>
                     </tr>
@@ -159,6 +165,15 @@
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
                             {{ __('messages.delete') }}
+                        </button>
+                    </div>
+                    @else
+                    <div class="user-actions">
+                        <button class="btn-avatar" title="{{ __('messages.change_avatar') }}" onclick="openAdminAvatarModal({{ $user->id }})">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                            </svg>
+                            {{ __('messages.change_avatar') }}
                         </button>
                     </div>
                     @endif
@@ -322,10 +337,64 @@
     </div>
 </div>
 
+<!-- Модальное окно для загрузки аватарки администратора -->
+<div id="adminAvatarModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>{{ __('messages.change_avatar') }}</h2>
+            <span class="close" onclick="closeAdminAvatarModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div id="adminAvatarErrors" class="modal-errors" style="display:none;color:#d32f2f;margin-bottom:10px;"></div>
+            <form id="adminAvatarForm">
+                @csrf
+                <input type="hidden" id="adminUserId" name="user_id">
+                
+                <!-- Область предварительного просмотра -->
+                <div class="avatar-preview-container" style="text-align: center; margin-bottom: 20px;">
+                    <div id="currentAvatarPreview" style="display: none;">
+                        <h4 style="margin-bottom: 10px; color: #666;">{{ __('messages.current_avatar') }}</h4>
+                        <img id="currentAvatarImg" src="" alt="Current Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #ddd; margin-bottom: 10px;">
+                    </div>
+                    <div id="newAvatarPreview" style="display: none;">
+                        <h4 style="margin-bottom: 10px; color: #666;">{{ __('messages.new_avatar') }}</h4>
+                        <img id="newAvatarImg" src="" alt="New Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #10b981; margin-bottom: 10px;">
+                    </div>
+                    <div id="noAvatarPreview" style="display: block;">
+                        <div style="width: 120px; height: 120px; border-radius: 50%; background: #f3f4f6; border: 3px solid #ddd; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" style="color: #9ca3af;">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </div>
+                        <p style="color: #666; margin: 0;">{{ __('messages.no_avatar_selected') }}</p>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="adminAvatar">{{ __('messages.avatar') }}</label>
+                    <input type="file" id="adminAvatar" name="avatar" accept="image/*" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                    <small class="form-text text-muted">{{ __('messages.avatar_hint') }}</small>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeAdminAvatarModal()">{{ __('messages.cancel') }}</button>
+                    <button type="submit" class="btn-submit" id="uploadAvatarBtn">{{ __('messages.upload') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
     window.roles = @json($roles);
-    </script>
+    window.translations = {
+        current_avatar: '{{ __("messages.current_avatar") }}',
+        new_avatar: '{{ __("messages.new_avatar") }}',
+        no_avatar_selected: '{{ __("messages.no_avatar_selected") }}',
+        upload: '{{ __("messages.upload") }}',
+        uploading: '{{ __("messages.uploading") }}'
+    };
+</script>
     <script src="{{ asset('client/js/users.js') }}"></script>
 @endpush
 

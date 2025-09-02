@@ -18,10 +18,18 @@ class ClientUserController extends Controller
         $users = User::where('project_id', $projectId)->orderBy('id', 'asc')->get();
         
         // Получаем роли из базы данных (которые вы создали на странице ролей)
-        $roles = DB::table('roles')
+        $customRoles = DB::table('roles')
             ->where('project_id', $projectId)
             ->pluck('label', 'name')
             ->toArray();
+        
+        // Добавляем только системную роль admin
+        $systemRoles = [
+            'admin' => __('messages.role_admin'),
+        ];
+        
+        // Объединяем системные и пользовательские роли
+        $roles = array_merge($systemRoles, $customRoles);
         
         return view('client.users.list', compact('users', 'roles'));
     }
@@ -168,7 +176,23 @@ class ClientUserController extends Controller
     {
         $projectId = auth('client')->user()->project_id;
         $user = User::where('project_id', $projectId)->findOrFail($id);
-        return response()->json($user);
+        
+        // Получаем роли для формы редактирования
+        $customRoles = DB::table('roles')
+            ->where('project_id', $projectId)
+            ->pluck('label', 'name')
+            ->toArray();
+        
+        $systemRoles = [
+            'admin' => __('messages.role_admin'),
+        ];
+        
+        $roles = array_merge($systemRoles, $customRoles);
+        
+        return response()->json([
+            'user' => $user,
+            'roles' => $roles
+        ]);
     }
 
     public function check($id)

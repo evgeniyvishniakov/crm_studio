@@ -36,8 +36,9 @@ function openEditUserModalFromCard(userId) {
         }
     })
     .then(res => res.json())
-    .then(user => {
-        openEditUserModal(user);
+    .then(data => {
+        console.log('Server response:', data); // Отладочная информация
+        openEditUserModal(data.user);
     })
     .catch(() => window.showNotification('error', 'Ошибка при загрузке данных пользователя'));
 }
@@ -452,12 +453,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Открытие/закрытие модального окна редактирования
 function openEditUserModal(user) {
-    document.getElementById('editUserId').value = user.id;
-    document.getElementById('editUserName').value = user.name;
-    document.getElementById('editUserUsername').value = user.username;
+    console.log('User data received:', user); // Отладочная информация
+    
+    document.getElementById('editUserId').value = user.id || '';
+    document.getElementById('editUserName').value = user.name || '';
+    document.getElementById('editUserUsername').value = user.username || '';
     document.getElementById('editUserEmail').value = user.email || '';
-    document.getElementById('editUserRole').value = user.role;
-    document.getElementById('editUserStatus').value = user.status;
+    document.getElementById('editUserRole').value = user.role || '';
+    document.getElementById('editUserStatus').value = user.status || '';
     document.getElementById('editUserPassword').value = ''; // Очищаем поле пароля
 
     // Отображение текущей аватарки
@@ -541,8 +544,9 @@ document.addEventListener('click', function(e) {
                 }
             })
             .then(res => res.json())
-            .then(user => {
-                openEditUserModal(user);
+            .then(data => {
+                console.log('Server response:', data); // Отладочная информация
+                openEditUserModal(data.user);
             })
             .catch(() => window.showNotification('error', 'Ошибка при загрузке данных пользователя'));
         }
@@ -699,4 +703,327 @@ function formatDateTime(dateString) {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${day}.${month}.${year} ${hours}:${minutes}`;
+}
+
+// ===== ФУНКЦИИ ДЛЯ ЗАГРУЗКИ АВАТАРКИ АДМИНИСТРАТОРА =====
+
+// Открытие модального окна для загрузки аватарки администратора
+function openAdminAvatarModal(userId) {
+    document.getElementById('adminUserId').value = userId;
+    
+    // Получаем текущую аватарку пользователя
+    const userRow = document.getElementById(`user-${userId}`);
+    const userCard = document.getElementById(`user-card-${userId}`);
+    let currentAvatarSrc = null;
+    
+    if (userRow) {
+        // Ищем аватарку в таблице
+        const avatarContainer = userRow.querySelector('.client-avatar');
+        
+        if (avatarContainer) {
+            const avatarImg = avatarContainer.querySelector('.user-avatar');
+            
+            if (avatarImg && avatarImg.tagName === 'IMG' && avatarImg.src) {
+                currentAvatarSrc = avatarImg.src;
+            }
+        }
+    } else if (userCard) {
+        // Ищем аватарку в мобильной карточке
+        const avatarContainer = userCard.querySelector('.user-avatar');
+        
+        if (avatarContainer) {
+            const avatarImg = avatarContainer.querySelector('.user-avatar-img');
+            
+            if (avatarImg && avatarImg.src) {
+                currentAvatarSrc = avatarImg.src;
+            }
+        }
+    }
+    
+    // Показываем текущую аватарку если она есть
+    if (currentAvatarSrc && !currentAvatarSrc.includes('data:image/svg') && !currentAvatarSrc.includes('placeholder')) {
+        const currentAvatarImg = document.getElementById('currentAvatarImg');
+        const currentAvatarPreview = document.getElementById('currentAvatarPreview');
+        const noAvatarPreview = document.getElementById('noAvatarPreview');
+        
+        if (currentAvatarImg) {
+            currentAvatarImg.src = currentAvatarSrc;
+            
+            // Проверяем через небольшую задержку, не сбросился ли src
+            setTimeout(() => {
+                if (currentAvatarImg.src !== currentAvatarSrc) {
+                    currentAvatarImg.src = currentAvatarSrc;
+                }
+            }, 50);
+        }
+        
+        if (currentAvatarPreview) {
+            currentAvatarPreview.style.display = 'block';
+            currentAvatarPreview.style.visibility = 'visible';
+        }
+        
+        if (noAvatarPreview) {
+            noAvatarPreview.style.display = 'none';
+            noAvatarPreview.style.visibility = 'hidden';
+        }
+    } else {
+        const currentAvatarPreview = document.getElementById('currentAvatarPreview');
+        const noAvatarPreview = document.getElementById('noAvatarPreview');
+        
+        if (currentAvatarPreview) {
+            currentAvatarPreview.style.display = 'none';
+        }
+        
+        if (noAvatarPreview) {
+            noAvatarPreview.style.display = 'block';
+        }
+    }
+    
+    // Скрываем предварительный просмотр новой аватарки
+    document.getElementById('newAvatarPreview').style.display = 'none';
+    
+    toggleModal('adminAvatarModal', true);
+    
+    // Принудительно обновляем отображение после открытия модального окна
+    setTimeout(() => {
+        if (currentAvatarSrc && !currentAvatarSrc.includes('data:image/svg') && !currentAvatarSrc.includes('placeholder')) {
+            const currentAvatarPreview = document.getElementById('currentAvatarPreview');
+            const noAvatarPreview = document.getElementById('noAvatarPreview');
+            const currentAvatarImg = document.getElementById('currentAvatarImg');
+            
+            if (currentAvatarPreview) {
+                currentAvatarPreview.style.display = 'block';
+                currentAvatarPreview.style.visibility = 'visible';
+                currentAvatarPreview.style.opacity = '1';
+                currentAvatarPreview.style.height = 'auto';
+                currentAvatarPreview.style.width = 'auto';
+            }
+            
+            if (currentAvatarImg) {
+                currentAvatarImg.style.display = 'block';
+                currentAvatarImg.style.visibility = 'visible';
+                currentAvatarImg.style.opacity = '1';
+                
+                // Попробуем создать новый элемент изображения
+                const newImg = document.createElement('img');
+                newImg.src = currentAvatarSrc;
+                newImg.alt = 'Current Avatar';
+                newImg.style.width = '120px';
+                newImg.style.height = '120px';
+                newImg.style.borderRadius = '50%';
+                newImg.style.objectFit = 'cover';
+                newImg.style.border = '3px solid #ddd';
+                newImg.style.marginBottom = '10px';
+                
+                // Очищаем контейнер и добавляем новое изображение
+                const title = window.translations ? window.translations.current_avatar : 'Текущая аватарка';
+                currentAvatarPreview.innerHTML = '<h4 style="margin-bottom: 10px; color: #666;">' + title + '</h4>';
+                currentAvatarPreview.appendChild(newImg);
+            }
+            
+            if (noAvatarPreview) {
+                noAvatarPreview.style.display = 'none';
+                noAvatarPreview.style.visibility = 'hidden';
+                noAvatarPreview.style.opacity = '0';
+            }
+        }
+    }, 100);
+}
+
+// Закрытие модального окна для загрузки аватарки администратора
+function closeAdminAvatarModal() {
+    toggleModal('adminAvatarModal', false);
+    document.getElementById('adminAvatarForm').reset();
+    document.getElementById('adminAvatarErrors').style.display = 'none';
+    
+    // Сбрасываем предварительный просмотр
+    document.getElementById('currentAvatarPreview').style.display = 'none';
+    document.getElementById('newAvatarPreview').style.display = 'none';
+    document.getElementById('noAvatarPreview').style.display = 'block';
+    document.getElementById('newAvatarImg').src = '';
+    
+    // Восстанавливаем исходную структуру currentAvatarPreview
+    const currentAvatarPreview = document.getElementById('currentAvatarPreview');
+    if (currentAvatarPreview) {
+        const title = window.translations ? window.translations.current_avatar : 'Текущая аватарка';
+        currentAvatarPreview.innerHTML = '<h4 style="margin-bottom: 10px; color: #666;">' + title + '</h4><img id="currentAvatarImg" src="" alt="Current Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #ddd; margin-bottom: 10px;">';
+    }
+}
+
+// Обработка отправки формы загрузки аватарки администратора
+document.getElementById('adminAvatarForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const userId = formData.get('user_id');
+    const uploadBtn = document.getElementById('uploadAvatarBtn');
+    
+    // Показываем индикатор загрузки
+    uploadBtn.disabled = true;
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Загрузка...';
+    
+    fetch(`/users/${userId}/avatar`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.showNotification('success', 'Аватарка успешно загружена');
+            closeAdminAvatarModal();
+            // Обновляем аватарку в таблице
+            // Извлекаем путь из URL
+            const avatarUrl = data.avatar_url;
+            let avatarPath = null;
+            if (avatarUrl) {
+                // Извлекаем только путь после /storage/
+                const match = avatarUrl.match(/\/storage\/(.+)$/);
+                avatarPath = match ? match[1] : null;
+            }
+            updateUserAvatar(userId, avatarPath);
+        } else {
+            showAdminAvatarErrors(data.errors || {});
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        window.showNotification('error', 'Ошибка при загрузке аватарки');
+    })
+    .finally(() => {
+        // Восстанавливаем кнопку
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = 'Загрузить';
+    });
+});
+
+// Обработчик для предварительного просмотра выбранного файла
+document.getElementById('adminAvatar').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        // Проверяем тип файла
+        if (!file.type.startsWith('image/')) {
+            window.showNotification('error', 'Пожалуйста, выберите изображение');
+            this.value = '';
+            return;
+        }
+        
+        // Проверяем размер файла (максимум 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            window.showNotification('error', 'Размер файла не должен превышать 5MB');
+            this.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('newAvatarImg').src = e.target.result;
+            document.getElementById('newAvatarPreview').style.display = 'block';
+            document.getElementById('noAvatarPreview').style.display = 'none';
+            
+            // Если есть текущая аватарка, скрываем её
+            if (document.getElementById('currentAvatarPreview').style.display === 'block') {
+                document.getElementById('currentAvatarPreview').style.display = 'none';
+            }
+        };
+        reader.readAsDataURL(file);
+    } else {
+        // Если файл не выбран, возвращаем к исходному состоянию
+        document.getElementById('newAvatarPreview').style.display = 'none';
+        document.getElementById('newAvatarImg').src = '';
+        
+        // Показываем текущую аватарку или заглушку
+        const currentAvatarSrc = document.getElementById('currentAvatarImg').src;
+        if (currentAvatarSrc && !currentAvatarSrc.includes('data:image/svg')) {
+            document.getElementById('currentAvatarPreview').style.display = 'block';
+        } else {
+            document.getElementById('noAvatarPreview').style.display = 'block';
+        }
+    }
+});
+
+// Показать ошибки валидации для формы аватарки
+function showAdminAvatarErrors(errors) {
+    const errorsDiv = document.getElementById('adminAvatarErrors');
+    let errorHtml = '';
+    
+    for (const field in errors) {
+        errorHtml += errors[field].join('<br>') + '<br>';
+    }
+    
+    errorsDiv.innerHTML = errorHtml;
+    errorsDiv.style.display = 'block';
+}
+
+// Обновить аватарку пользователя в таблице
+function updateUserAvatar(userId, avatarPath) {
+    const avatarUrl = avatarPath ? `/storage/${avatarPath}` : null;
+    
+    // Обновляем в десктопной таблице
+    const userRow = document.getElementById(`user-${userId}`);
+    if (userRow) {
+        const avatarContainer = userRow.querySelector('.client-avatar');
+        
+        if (avatarContainer) {
+            // Очищаем контейнер
+            avatarContainer.innerHTML = '';
+            
+            if (avatarUrl) {
+                // Создаем новое изображение
+                const newImg = document.createElement('img');
+                newImg.src = avatarUrl;
+                newImg.alt = 'User Avatar';
+                newImg.className = 'user-avatar';
+                newImg.style.width = '40px';
+                newImg.style.height = '40px';
+                newImg.style.borderRadius = '50%';
+                newImg.style.objectFit = 'cover';
+                avatarContainer.appendChild(newImg);
+            } else {
+                // Создаем placeholder
+                const placeholder = document.createElement('div');
+                placeholder.className = 'user-avatar-placeholder';
+                // Получаем первую букву имени из таблицы
+                const userNameElement = userRow.querySelector('.client-name');
+                const firstLetter = userNameElement ? userNameElement.textContent.charAt(0).toUpperCase() : '?';
+                placeholder.textContent = firstLetter;
+                avatarContainer.appendChild(placeholder);
+            }
+        }
+    }
+    
+    // Обновляем в мобильных карточках
+    const userCard = document.getElementById(`user-card-${userId}`);
+    if (userCard) {
+        const avatarContainer = userCard.querySelector('.user-avatar');
+        
+        if (avatarContainer) {
+            // Очищаем контейнер
+            avatarContainer.innerHTML = '';
+            
+            if (avatarUrl) {
+                // Создаем новое изображение
+                const newImg = document.createElement('img');
+                newImg.src = avatarUrl;
+                newImg.alt = 'User Avatar';
+                newImg.className = 'user-avatar-img';
+                newImg.style.width = '60px';
+                newImg.style.height = '60px';
+                newImg.style.borderRadius = '50%';
+                newImg.style.objectFit = 'cover';
+                avatarContainer.appendChild(newImg);
+            } else {
+                // Создаем placeholder
+                const placeholder = document.createElement('div');
+                placeholder.className = 'user-avatar-placeholder';
+                // Получаем первую букву имени из мобильной карточки
+                const userNameElement = userCard.querySelector('.user-name');
+                const firstLetter = userNameElement ? userNameElement.textContent.charAt(0).toUpperCase() : '?';
+                placeholder.textContent = firstLetter;
+                avatarContainer.appendChild(placeholder);
+            }
+        }
+    }
 } 

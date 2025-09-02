@@ -427,6 +427,18 @@ return [
     'trial_expires_1_day_body' => 'Your trial period expires tomorrow! Choose a paid plan to keep access to all features.',
     'trial_expired_title' => 'Trial period expired',
     'trial_expired_body' => 'Your trial period has expired. Choose a paid plan to continue working with the system.',
+    
+    // Roles
+    'role_admin' => 'Administrator',
+    
+    // Avatar
+    'change_avatar' => 'Change Avatar',
+    'upload' => 'Upload',
+    'avatar' => 'Avatar',
+    'avatar_hint' => 'Recommended image size 200x200 pixels',
+    'current_avatar' => 'Current Avatar',
+    'new_avatar' => 'New Avatar',
+    'no_avatar_selected' => 'No avatar selected',
     'completed' => 'Completed',
     'pending' => 'Pending',
     'failed' => 'Failed',
