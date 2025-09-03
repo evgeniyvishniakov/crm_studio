@@ -183,7 +183,7 @@ function updateClientTypeRow(clientType) {
         const statusBadge = cells[3].querySelector('.status-badge');
         if (statusBadge) {
             statusBadge.className = `status-badge ${clientType.status ? 'active' : 'inactive'}`;
-            statusBadge.textContent = clientType.status ? 'Активный' : 'Неактивный';
+            statusBadge.textContent = clientType.status ? (window.translations?.active || 'Активный') : (window.translations?.inactive || 'Неактивный');
         }
     }
     
@@ -200,7 +200,7 @@ function updateClientTypeRow(clientType) {
         const statusBadge = card.querySelector('.status-badge');
         if (statusBadge) {
             statusBadge.className = `status-badge ${clientType.status ? 'active' : 'inactive'}`;
-            statusBadge.textContent = clientType.status ? 'Активный' : 'Неактивный';
+            statusBadge.textContent = clientType.status ? (window.translations?.active || 'Активный') : (window.translations?.inactive || 'Неактивный');
         }
         
         // Обновляем описание
@@ -254,7 +254,7 @@ function updateTable(clientTypes) {
             <td>${discountText}</td>
             <td>
                 <span class="status-badge ${clientType.status ? 'active' : 'inactive'}">
-                    ${clientType.status ? 'Активный' : 'Неактивный'}
+                    ${clientType.status ? (window.translations?.active || 'Активный') : (window.translations?.inactive || 'Неактивный')}
                 </span>
             </td>
             <td class="actions-cell">
@@ -263,13 +263,13 @@ function updateTable(clientTypes) {
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                         </svg>
-                        Ред.
+                        ${window.translations?.edit_short || 'Ред.'}
                     </button>
                     <button class="btn-delete" onclick="showDeleteConfirmation(${clientType.id})">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
-                        Удалить
+                        ${window.translations?.delete || 'Удалить'}
                     </button>
                 ` : `
                     <span class="text-muted">Системный</span>
@@ -288,7 +288,7 @@ function updateTable(clientTypes) {
                 <div class="client-type-main-info">
                     <h3 class="client-type-name">${getTranslatedClientTypeName(clientType.name)}</h3>
                     <span class="status-badge ${clientType.status ? 'active' : 'inactive'}">
-                        ${clientType.status ? 'Активный' : 'Неактивный'}
+                        ${clientType.status ? (window.translations?.active || 'Активный') : (window.translations?.inactive || 'Неактивный')}
                     </span>
                 </div>
             </div>
@@ -314,17 +314,17 @@ function updateTable(clientTypes) {
             </div>
             ${!clientType.is_global ? `
                 <div class="client-type-actions">
-                    <button class="btn-edit" title="Редактировать" onclick="openEditModal(${clientType.id})">
+                    <button class="btn-edit" title="${window.translations?.edit || 'Редактировать'}" onclick="openEditModal(${clientType.id})">
                         <svg viewBox="0 0 20 20" fill="currentColor">
                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                         </svg>
-                        Редактировать
+                        ${window.translations?.edit || 'Редактировать'}
                     </button>
-                    <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${clientType.id})">
+                    <button class="btn-delete" title="${window.translations?.delete || 'Удалить'}" onclick="showDeleteConfirmation(${clientType.id})">
                         <svg viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
-                        Удалить
+                        ${window.translations?.delete || 'Удалить'}
                     </button>
                 </div>
             ` : ''}
@@ -502,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </td>
                             <td>
                                 <span class="status-badge ${data.clientType.status ? 'active' : 'inactive'}">
-                                    ${data.clientType.status ? 'Активный' : 'Неактивный'}
+                                    ${data.clientType.status ? (window.translations?.active || 'Активный') : (window.translations?.inactive || 'Неактивный')}
                                 </span>
                             </td>
                             <td class="actions-cell">
@@ -510,13 +510,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
-                                    Ред.
+                                    ${window.translations?.edit_short || 'Ред.'}
                                 </button>
                                 <button class="btn-delete" onclick="showDeleteConfirmation(${data.clientType.id})">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                     </svg>
-                                    Удалить
+                                    ${window.translations?.delete || 'Удалить'}
                                 </button>
                             </td>
                         `;
@@ -540,7 +540,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="client-type-main-info">
                                     <h3 class="client-type-name">${getTranslatedClientTypeName(data.clientType.name)}</h3>
                                     <span class="status-badge ${data.clientType.status ? 'active' : 'inactive'}">
-                                        ${data.clientType.status ? 'Активный' : 'Неактивный'}
+                                        ${data.clientType.status ? (window.translations?.active || 'Активный') : (window.translations?.inactive || 'Неактивный')}
                                     </span>
                                 </div>
                             </div>
@@ -565,17 +565,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                             <div class="client-type-actions">
-                                <button class="btn-edit" title="Редактировать" onclick="openEditModal(${data.clientType.id})">
+                                <button class="btn-edit" title="${window.translations?.edit || 'Редактировать'}" onclick="openEditModal(${data.clientType.id})">
                                     <svg viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
-                                    Редактировать
+                                    ${window.translations?.edit || 'Редактировать'}
                                 </button>
-                                <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${data.clientType.id})">
+                                <button class="btn-delete" title="${window.translations?.delete || 'Удалить'}" onclick="showDeleteConfirmation(${data.clientType.id})">
                                     <svg viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                     </svg>
-                                    Удалить
+                                    ${window.translations?.delete || 'Удалить'}
                                 </button>
                             </div>
                         `;

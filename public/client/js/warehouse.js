@@ -162,7 +162,7 @@ function openEditModal(id) {
             modal.style.display = 'block';
         })
         .catch(error => {
-            window.showNotification('error', 'Ошибка при загрузке данных');
+            window.showNotification('error', window.translations?.error_loading_data || 'Ошибка при загрузке данных');
         });
 }
 
@@ -187,7 +187,7 @@ function deleteItem() {
 
     const deleteBtn = document.getElementById('confirmDeleteBtn');
     const originalText = deleteBtn.innerHTML;
-    deleteBtn.innerHTML = 'Удаление...';
+    deleteBtn.innerHTML = window.translations?.deleting || 'Удаление...';
     deleteBtn.disabled = true;
 
     fetch(`/warehouses/${currentDeleteId}`, {
@@ -202,14 +202,14 @@ function deleteItem() {
     .then(data => {
         if (data.success) {
             closeConfirmationModal();
-            window.showNotification('success', 'Товар успешно удален со склада');
+            window.showNotification('success', window.translations?.product_successfully_deleted_from_warehouse || 'Товар успешно удален со склада');
             loadWarehouseItems(currentPage);
         } else {
-            window.showNotification('error', data.message || 'Ошибка при удалении товара');
+            window.showNotification('error', data.message || window.translations?.error_deleting_item || 'Ошибка при удалении товара');
         }
     })
     .catch(error => {
-        window.showNotification('error', 'Ошибка при удалении товара');
+        window.showNotification('error', window.translations?.error_deleting_item || 'Ошибка при удалении товара');
     })
     .finally(() => {
         deleteBtn.innerHTML = originalText;
@@ -234,7 +234,7 @@ function submitAddForm(event) {
         return;
     }
     
-    submitBtn.innerHTML = 'Добавление...';
+    submitBtn.innerHTML = window.translations?.adding || 'Добавление...';
     submitBtn.disabled = true;
 
     fetch('/warehouses', {
@@ -248,16 +248,16 @@ function submitAddForm(event) {
     .then(data => {
         if (data.success) {
             closeModal();
-            window.showNotification('success', 'Товар успешно добавлен на склад');
+            window.showNotification('success', window.translations?.product_successfully_added_to_warehouse || 'Товар успешно добавлен на склад');
             loadWarehouseItems(1);
         } else if (data.errors) {
             showErrors(data.errors);
         } else {
-            window.showNotification('error', data.message || 'Ошибка при добавлении товара');
+            window.showNotification('error', data.message || window.translations?.error_adding_item || 'Ошибка при добавлении товара');
         }
     })
     .catch(error => {
-        window.showNotification('error', 'Ошибка при добавлении товара');
+        window.showNotification('error', window.translations?.error_adding_item || 'Ошибка при добавлении товара');
     })
     .finally(() => {
         submitBtn.innerHTML = originalText;
@@ -274,7 +274,7 @@ function submitEditForm(event) {
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     
-    submitBtn.innerHTML = 'Сохранение...';
+    submitBtn.innerHTML = window.translations?.saving || 'Сохранение...';
     submitBtn.disabled = true;
 
     fetch(`/warehouses/${id}`, {
@@ -322,15 +322,15 @@ function submitEditForm(event) {
             }
 
             closeEditModal();
-            window.showNotification('success', 'Изменения успешно сохранены');
+            window.showNotification('success', window.translations?.changes_successfully_saved || 'Изменения успешно сохранены');
         } else if (data.errors) {
             showErrors(data.errors, 'editForm');
         } else {
-            window.showNotification('error', data.message || 'Ошибка при сохранении изменений');
+            window.showNotification('error', data.message || window.translations?.error_saving_changes || 'Ошибка при сохранении изменений');
         }
     })
     .catch(error => {
-        window.showNotification('error', 'Ошибка при сохранении изменений');
+        window.showNotification('error', window.translations?.error_saving_changes || 'Ошибка при сохранении изменений');
     })
     .finally(() => {
         submitBtn.innerHTML = originalText;
@@ -403,7 +403,7 @@ function renderWarehouseItems(items) {
                         ${photoHtml}
                     </div>
                 </td>
-                <td class="product-name">${escapeHtml(item.product ? item.product.name : 'Товар не найден')}</td>
+                <td class="product-name">${escapeHtml(item.product ? item.product.name : window.translations?.product_not_found || 'Товар не найден')}</td>
                 <td class="purchase-price currency-amount" data-amount="${item.purchase_price}">${formatPrice(item.purchase_price)}</td>
                 <td class="retail-price currency-amount" data-amount="${item.retail_price}">${formatPrice(item.retail_price)}</td>
                 <td class="quantity">${item.quantity} ${window.messages?.pieces || 'pcs'}</td>
@@ -435,7 +435,7 @@ function renderWarehouseItems(items) {
                     <div class="product-photo">
                         ${photoHtml}
                     </div>
-                    <div class="card-title">${escapeHtml(item.product ? item.product.name : 'Товар не найден')}</div>
+                    <div class="card-title">${escapeHtml(item.product ? item.product.name : window.translations?.product_not_found || 'Товар не найден')}</div>
                 </div>
                 <div class="warehouse-card-body">
                     <div class="warehouse-info-item">
@@ -471,13 +471,13 @@ function renderWarehouseItems(items) {
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                         </svg>
-                        <span class="btn-text">Редактировать</span>
+                        <span class="btn-text">${window.translations?.edit || 'Редактировать'}</span>
                     </button>
                     <button class="btn-delete" onclick="confirmDelete(${item.id})">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                         </svg>
-                        <span class="btn-text">Удалить</span>
+                        <span class="btn-text">${window.translations?.delete || 'Удалить'}</span>
                     </button>
                 </div>
             </div>

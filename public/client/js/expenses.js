@@ -13,6 +13,63 @@ function formatCurrency(value) {
     }
 }
 
+// Функция для перевода категорий расходов
+function translateExpenseCategory(category) {
+    if (!category) return 'Не указано';
+    
+    // Маппинг категорий на ключи переводов
+    const categoryMap = {
+        'rent_and_utilities': 'rent_and_utilities',
+        'salary': 'salary',
+        'materials': 'materials',
+        'advertising': 'advertising',
+        'taxes': 'taxes',
+        'other': 'other',
+        // Обратная совместимость для старых записей
+        'Аренда и коммуналка': 'rent_and_utilities',
+        'Зарплата': 'salary',
+        'Материалы': 'materials',
+        'Реклама': 'advertising',
+        'Налоги': 'taxes',
+        'Прочее': 'other'
+    };
+    
+    const translationKey = categoryMap[category] || category;
+    return window.translations?.[translationKey] || category;
+}
+
+// Функция для получения ключа категории из перевода (для форм)
+function getCategoryKeyFromTranslation(translatedCategory) {
+    if (!translatedCategory || translatedCategory === 'Не указано') return '';
+    
+    // Обратный маппинг переводов на ключи
+    const reverseCategoryMap = {
+        'rent_and_utilities': 'rent_and_utilities',
+        'salary': 'salary',
+        'materials': 'materials',
+        'advertising': 'advertising',
+        'taxes': 'taxes',
+        'other': 'other',
+        // Обратная совместимость для старых записей
+        'Аренда и коммуналка': 'rent_and_utilities',
+        'Зарплата': 'salary',
+        'Материалы': 'materials',
+        'Реклама': 'advertising',
+        'Налоги': 'taxes',
+        'Прочее': 'other'
+    };
+    
+    // Ищем по переведенному значению
+    for (const [key, translation] of Object.entries(window.translations || {})) {
+        if (translation === translatedCategory && reverseCategoryMap[key]) {
+            return reverseCategoryMap[key];
+        }
+    }
+    
+    // Если не найдено, возвращаем как есть
+    return translatedCategory;
+}
+
 // Функции для работы с модальными окнами
 function openExpenseModal() {
     document.getElementById('modalTitle').textContent = 'Добавить расход';
@@ -77,7 +134,7 @@ function editExpense(event, id) {
     }
 
     // Открываем модальное окно
-    document.getElementById('modalTitle').textContent = 'Редактировать расход';
+    document.getElementById('modalTitle').textContent = window.translations?.edit_expense || 'Редактировать расход';
     document.getElementById('expenseId').value = id;
     document.getElementById('expenseModal').style.display = 'block';
     
@@ -88,7 +145,9 @@ function editExpense(event, id) {
     const amountInput = document.querySelector('#expenseForm [name="amount"]');
 
     dateInput.value = dateValue;
-    categoryInput.value = category === 'Не указано' ? '' : category;
+    // Преобразуем переведенную категорию обратно в ключ для формы
+    const categoryKey = getCategoryKeyFromTranslation(category);
+    categoryInput.value = categoryKey === 'Не указано' ? '' : categoryKey;
     commentInput.value = comment;
     amountInput.value = amount;
 
@@ -215,7 +274,7 @@ function renderExpenses(expenses) {
         const amount = parseFloat(expense.amount);
         row.innerHTML = `
             <td>${expense.date ? new Date(expense.date).toLocaleDateString('ru-RU') : '—'}</td>
-            <td>${escapeHtml(expense.category || 'Не указано')}</td>
+            <td>${escapeHtml(translateExpenseCategory(expense.category))}</td>
             <td>${escapeHtml(expense.comment || '')}</td>
             <td class="currency-amount" data-amount="${Number.isInteger(parseFloat(expense.amount)) ? parseInt(expense.amount) : parseFloat(expense.amount)}">${formatCurrency(expense.amount)}</td>
             <td>
@@ -255,7 +314,7 @@ function updateMobileCards(expenses) {
         card.innerHTML = `
             <div class="expense-card-header">
                 <div class="expense-main-info">
-                    <div class="expense-category">${escapeHtml(expense.category || 'Не указано')}</div>
+                    <div class="expense-category">${escapeHtml(translateExpenseCategory(expense.category))}</div>
                     <div class="expense-amount">${formatCurrency(expense.amount)}</div>
                 </div>
             </div>

@@ -173,7 +173,7 @@ function deleteProduct(rowOrId, id) {
             setTimeout(() => {
                 if (row) row.remove();
                 if (card) card.remove();
-                window.showNotification('success', data.message || 'Товар успешно удален');
+                window.showNotification('success', data.message || window.translations?.product_successfully_deleted || 'Товар успешно удален');
                 checkDeletedProducts(); // Проверяем наличие удаленных товаров после удаления
             }, 300);
         }
@@ -242,7 +242,7 @@ function loadTrashedProducts() {
                                     Восстановить
                                 </button>
                                 <button onclick="showForceDeleteConfirmation(${product.id})" class="btn-force-delete">
-                                    Удалить навсегда
+                                    ${window.translations?.delete_permanently || 'Удалить навсегда'}
                                 </button>
                             </div>
                         </div>
@@ -275,16 +275,16 @@ function restoreProduct(productId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            window.showNotification('success', 'Товар успешно восстановлен');
+            window.showNotification('success', window.translations?.product_successfully_restored || 'Товар успешно восстановлен');
             loadTrashedProducts(); // Перезагружаем список удаленных товаров
             loadPage(currentPage, searchQuery); // Обновляем основную таблицу товаров
             checkDeletedProducts(); // Проверяем наличие удаленных товаров после восстановления
         } else {
-            window.showNotification('error', data.message || 'Ошибка восстановления товара');
+            window.showNotification('error', data.message || window.translations?.error_restoring_product || 'Ошибка восстановления товара');
         }
     })
     .catch(error => {
-        window.showNotification('error', 'Ошибка восстановления товара');
+        window.showNotification('error', window.translations?.error_restoring_product || 'Ошибка восстановления товара');
     });
 }
 
@@ -345,11 +345,11 @@ function forceDeleteAllProducts() {
             loadTrashedProducts(); // Перезагружаем список удаленных товаров
             checkDeletedProducts(); // Проверяем наличие удаленных товаров после удаления всех
         } else {
-            window.showNotification('error', data.message || 'Ошибка удаления всех товаров');
+            window.showNotification('error', data.message || window.translations?.error_deleting_all_products || 'Ошибка удаления всех товаров');
         }
     })
     .catch(error => {
-        window.showNotification('error', 'Ошибка удаления всех товаров');
+        window.showNotification('error', window.translations?.error_deleting_all_products || 'Ошибка удаления всех товаров');
     });
 }
 
@@ -400,11 +400,11 @@ function editProduct(id) {
 
                 document.getElementById('editProductModal').style.display = 'block';
             } else {
-                window.showNotification('error', data.message || 'Ошибка загрузки данных товара');
+                window.showNotification('error', data.message || window.translations?.error_loading_product_data || 'Ошибка загрузки данных товара');
             }
         })
         .catch(error => {
-            window.showNotification('error', 'Ошибка загрузки данных товара');
+            window.showNotification('error', window.translations?.error_loading_product_data || 'Ошибка загрузки данных товара');
         });
 }
 
@@ -498,11 +498,11 @@ document.getElementById('editProductForm').addEventListener('submit', function(e
                 }
             }
         } else {
-            window.showNotification('error', data.message || 'Ошибка обновления товара');
+            window.showNotification('error', data.message || window.translations?.error_updating_product || 'Ошибка обновления товара');
         }
     })
     .catch(error => {
-        window.showNotification('error', 'Ошибка обновления товара');
+        window.showNotification('error', window.translations?.error_updating_product || 'Ошибка обновления товара');
     });
 });
 
@@ -695,7 +695,7 @@ function loadPage(page, search = '') {
     })
     .catch(error => {
         // Error loading data
-        window.showNotification('error', 'Ошибка загрузки данных');
+        window.showNotification('error', window.translations?.error_loading_data || 'Ошибка загрузки данных');
     });
 }
 
@@ -755,12 +755,12 @@ function updateTable(products) {
         const actionsCell = document.createElement('td');
         actionsCell.className = 'actions-cell';
         actionsCell.innerHTML = `
-            <button class="btn-edit" title="Редактировать">
+            <button class="btn-edit" title="${window.translations?.edit || 'Редактировать'}">
                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                 </svg>
             </button>
-            <button class="btn-delete" title="Удалить">
+            <button class="btn-delete" title="${window.translations?.delete || 'Удалить'}">
                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                 </svg>
@@ -839,17 +839,17 @@ function updateTable(products) {
                 </div>
             </div>
             <div class="product-actions">
-                <button class="btn-edit" title="Редактировать" onclick="editProduct(${product.id})">
+                <button class="btn-edit" title="${window.translations?.edit || 'Редактировать'}" onclick="editProduct(${product.id})">
                     <svg viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
-                    Редактировать
+                    ${window.translations?.edit || 'Редактировать'}
                 </button>
-                <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${product.id})">
+                <button class="btn-delete" title="${window.translations?.delete || 'Удалить'}" onclick="showDeleteConfirmation(${product.id})">
                     <svg viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
-                    Удалить
+                    ${window.translations?.delete || 'Удалить'}
                 </button>
             </div>
         `;
@@ -955,15 +955,15 @@ document.getElementById('addProductForm').addEventListener('submit', function(e)
             // Обновляем таблицу после добавления
             loadPage(currentPage, searchQuery);
             
-            window.showNotification('success', 'Товар успешно добавлен');
+            window.showNotification('success', window.translations?.product_successfully_added || 'Товар успешно добавлен');
             closeModal();
             this.reset();
         } else {
-            window.showNotification('error', data.message || 'Ошибка добавления товара');
+            window.showNotification('error', data.message || window.translations?.error_adding_product || 'Ошибка добавления товара');
         }
     })
     .catch(error => {
-        window.showNotification('error', 'Ошибка добавления товара');
+        window.showNotification('error', window.translations?.error_adding_product || 'Ошибка добавления товара');
     });
 });
 

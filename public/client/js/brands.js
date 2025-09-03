@@ -116,7 +116,7 @@ function deleteBrand(brandId) {
             setTimeout(() => {
                 if (row) row.remove();
                 if (card) card.remove();
-                window.showNotification('success', 'Бренд успешно удален');
+                window.showNotification('success', window.translations?.brand_successfully_deleted || 'Бренд успешно удален');
                 
                 // Сдвигающая пагинация - обновляем текущую страницу
                 const pag = document.querySelector('.pagination .page-btn.active');
@@ -158,7 +158,7 @@ function openEditModal(brandId) {
             }
         })
         .catch(error => {
-            window.showNotification('error', 'Ошибка при загрузке данных бренда');
+            window.showNotification('error', window.translations?.error_loading_brand_data || 'Ошибка при загрузке данных бренда');
         });
 }
 
@@ -183,7 +183,7 @@ function updateBrandRow(brand) {
         const statusBadge = cells[3].querySelector('.status-badge');
         if (statusBadge) {
             statusBadge.className = `status-badge ${brand.status ? 'active' : 'inactive'}`;
-            statusBadge.textContent = brand.status ? 'Активен' : 'Неактивен';
+            statusBadge.textContent = brand.status ? (window.translations?.brand_active || 'Активен') : (window.translations?.brand_inactive || 'Неактивен');
         }
     }
     
@@ -200,7 +200,7 @@ function updateBrandRow(brand) {
         const statusBadge = card.querySelector('.status-badge');
         if (statusBadge) {
             statusBadge.className = `status-badge ${brand.status ? 'active' : 'inactive'}`;
-            statusBadge.textContent = brand.status ? 'Активен' : 'Неактивен';
+            statusBadge.textContent = brand.status ? (window.translations?.brand_active || 'Активен') : (window.translations?.brand_inactive || 'Неактивен');
         }
         
         // Обновляем страну
@@ -322,13 +322,13 @@ function renderBrands(brands) {
                 </div>
             </div>
             <div class="brand-actions">
-                <button class="btn-edit" title="Редактировать" onclick="openEditModal(${brand.id})">
+                <button class="btn-edit" title="${window.translations?.edit || 'Редактировать'}" onclick="openEditModal(${brand.id})">
                     <svg viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
                     ${window.translations?.edit || 'Редактировать'}
                 </button>
-                <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${brand.id})">
+                <button class="btn-delete" title="${window.translations?.delete || 'Удалить'}" onclick="showDeleteConfirmation(${brand.id})">
                     <svg viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
@@ -422,7 +422,7 @@ function loadBrands(page = 1, search = '') {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Ошибка загрузки данных');
+            throw new Error(window.translations?.error_loading_data || 'Ошибка загрузки данных');
         }
         return response.json();
     })
@@ -431,7 +431,7 @@ function loadBrands(page = 1, search = '') {
         renderPagination(data.meta);
     })
     .catch(error => {
-        window.showNotification('error', 'Ошибка загрузки данных');
+        window.showNotification('error', window.translations?.error_loading_data || 'Ошибка загрузки данных');
     });
 }
 
@@ -541,7 +541,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const searchValue = document.querySelector('#searchInput') ? document.querySelector('#searchInput').value.trim() : '';
                     loadBrands(1, searchValue);
                 } else {
-                    throw new Error('Ошибка добавления бренда');
+                    throw new Error(window.translations?.error_adding_brand || 'Ошибка добавления бренда');
                 }
             })
             .catch(error => {
@@ -549,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     showBrandErrors(error.errors);
                     window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
                 } else {
-                    window.showNotification('error', error.message || 'Ошибка добавления бренда');
+                    window.showNotification('error', error.message || window.translations?.error_adding_brand || 'Ошибка добавления бренда');
                 }
             })
             .finally(() => {
@@ -570,7 +570,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.innerHTML;
 
-            submitBtn.innerHTML = '<span class="loader"></span> Сохранение...';
+            submitBtn.innerHTML = '<span class="loader"></span> ' + (window.translations?.saving || 'Сохранение...');
             submitBtn.disabled = true;
 
             fetch(`/product-brands/${brandId}`, {
@@ -600,7 +600,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     showBrandErrors(error.errors, 'editServiceForm');
                     window.showNotification('error', 'Пожалуйста, исправьте ошибки в форме');
                 } else {
-                    window.showNotification('error', 'Ошибка обновления бренда');
+                    window.showNotification('error', window.translations?.error_updating_brand || 'Ошибка обновления бренда');
                 }
             })
             .finally(() => {

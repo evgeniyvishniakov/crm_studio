@@ -463,7 +463,7 @@ function saveInventory() {
 
     const saveBtn = document.querySelector('#analysisModal .btn-submit');
     const originalText = saveBtn.innerHTML;
-    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Сохранение...';
+    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + (window.translations?.saving || 'Сохранение...');
     saveBtn.disabled = true;
     
     fetch('/inventories', {
@@ -1038,7 +1038,7 @@ function addInventoryToDOM(inventory) {
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
                         </svg>
-                        PDF
+                        ${window.messages.pdf || 'PDF'}
                     </button>
                 </div>
             </td>
@@ -1114,19 +1114,19 @@ function updateInventoryInDOM(inventory) {
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                     </svg>
-                    Ред.
+                    ${window.messages.edit_short || 'Ред'}
                 </button>
                 <button class="btn-delete" onclick="confirmDeleteInventory(event, ${inventory.id})">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                     </svg>
-                    Удалить
+                    ${window.messages.delete || 'Удалить'}
                 </button>
                 <button class="btn-pdf" onclick="downloadInventoryPdf(event, ${inventory.id})">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
                     </svg>
-                    PDF
+                    ${window.messages.pdf || 'PDF'}
                 </button>
             </div>
         </td>
@@ -1181,7 +1181,7 @@ function updateInventoryInDOM(inventory) {
             </table>
             <div class="view-all-items">
                 <button class="btn-view-all" onclick="viewAllInventoryItems(${inventory.id})">
-                    Просмотреть весь список
+                    ${window.messages.view_all_list || 'Просмотреть весь список'}
                 </button>
             </div>
         </td>
@@ -1304,7 +1304,7 @@ function createInventoryCard(id, date, responsible, discrepancies, notes) {
                 <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L13 3.586A2 2 0 0011.586 3H6zm2 2h3v3a1 1 0 001 1h3v9a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm5 3.414V8h-2V6h.586L13 5.414zM8 10a1 1 0 100 2h4a1 1 0 100-2H8zm0 4a1 1 0 100 2h4a1 1 0 100-2H8z"/>
                 </svg>
-                PDF
+                ${window.messages.pdf || 'PDF'}
             </button>
         </div>
     `;

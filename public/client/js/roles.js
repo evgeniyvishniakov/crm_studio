@@ -135,17 +135,17 @@ function updateRoleCard(role) {
             </div>
             ${role.name !== 'admin' ? `
             <div class="role-actions">
-                <button class="btn-edit" title="Редактировать" onclick="openEditRoleModalFromCard(${role.id})">
+                <button class="btn-edit" title="${window.translations?.edit || 'Редактировать'}" onclick="openEditRoleModalFromCard(${role.id})">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
-                    Редактировать
+                    ${window.translations?.edit || 'Редактировать'}
                 </button>
-                <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${role.id})">
+                <button class="btn-delete" title="${window.translations?.delete || 'Удалить'}" onclick="showDeleteConfirmation(${role.id})">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
-                    Удалить
+                    ${window.translations?.delete || 'Удалить'}
                 </button>
             </div>
             ` : ''}
@@ -155,7 +155,7 @@ function updateRoleCard(role) {
 
 function openRoleModal() {
     toggleModal('roleModal', true);
-    document.getElementById('roleModalTitle').textContent = 'Добавить роль';
+    document.getElementById('roleModalTitle').textContent = window.translations?.add_role || 'Добавить роль';
     document.getElementById('roleForm').reset();
     editingRoleId = null;
 }
@@ -166,7 +166,7 @@ function closeRoleModal() {
 
 function openEditRoleModal(role) {
     editingRoleId = role.id;
-    document.getElementById('roleModalTitle').textContent = 'Редактировать роль';
+    document.getElementById('roleModalTitle').textContent = window.translations?.edit_role || 'Редактировать роль';
     document.getElementById('roleSelect').value = role.name;
 
     
@@ -354,12 +354,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <td>${permissionsText}</td>
                                 <td class="actions-cell">
                                     ${role.name !== 'admin' ? `
-                                    <button class="btn-edit" data-id="${role.id}" title="Редактировать">
+                                    <button class="btn-edit" data-id="${role.id}" title="${window.translations?.edit || 'Редактировать'}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                         </svg>
                                     </button>
-                                    <button class="btn-delete" data-id="${role.id}" title="Удалить">
+                                    <button class="btn-delete" data-id="${role.id}" title="${window.translations?.delete || 'Удалить'}">
                                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                         </svg>
@@ -384,12 +384,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             <td>${permissionsText}</td>
                             <td class="actions-cell">
                                 ${role.name !== 'admin' ? `
-                                <button class="btn-edit" data-id="${role.id}" title="Редактировать">
+                                <button class="btn-edit" data-id="${role.id}" title="${window.translations?.edit || 'Редактировать'}">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
                                 </button>
-                                <button class="btn-delete" data-id="${role.id}" title="Удалить">
+                                <button class="btn-delete" data-id="${role.id}" title="${window.translations?.delete || 'Удалить'}">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                     </svg>
@@ -433,17 +433,17 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             ${role.name !== 'admin' ? `
                             <div class="role-actions">
-                                <button class="btn-edit" title="Редактировать" onclick="openEditRoleModalFromCard(${role.id})">
+                                <button class="btn-edit" title="${window.translations?.edit || 'Редактировать'}" onclick="openEditRoleModalFromCard(${role.id})">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                     </svg>
-                                    Редактировать
+                                    ${window.translations?.edit || 'Редактировать'}
                                 </button>
-                                <button class="btn-delete" title="Удалить" onclick="showDeleteConfirmation(${role.id})">
+                                <button class="btn-delete" title="${window.translations?.delete || 'Удалить'}" onclick="showDeleteConfirmation(${role.id})">
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                     </svg>
-                                    Удалить
+                                    ${window.translations?.delete || 'Удалить'}
                                 </button>
                             </div>
                             ` : ''}

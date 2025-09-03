@@ -77,7 +77,9 @@ function createMobileCards(services = null) {
                 const name = cells[0].textContent;
                 const price = cells[1].textContent;
                 const duration = cells[2].textContent;
-                const status = cells[3].textContent;
+                const statusCell = cells[3];
+                const statusValue = statusCell.getAttribute('data-status') === 'true';
+                const status = statusValue ? (window.translations?.active || 'Active') : (window.translations?.inactive || 'Inactive');
                 
                 const card = document.createElement('div');
                 card.className = 'service-card';
@@ -93,7 +95,7 @@ function createMobileCards(services = null) {
                                 <svg viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                 </svg>
-                                Цена:
+                                ${window.translations?.price || 'Price'}:
                             </span>
                             <span class="service-info-value">${price}</span>
                         </div>
@@ -102,17 +104,17 @@ function createMobileCards(services = null) {
                                 <svg viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
                                 </svg>
-                                Длительность:
+                                ${window.translations?.duration || 'Duration'}:
                             </span>
                             <span class="service-info-value">${duration}</span>
                         </div>
                         <div class="service-info-item">
                             <span class="service-info-label">
-                                <i class="fas fa-circle ${status.includes('Активная') ? 'active' : 'inactive'}"></i>
-                                Статус:
+                                <i class="fas fa-circle ${statusValue ? 'active' : 'inactive'}"></i>
+                                ${window.translations?.status || 'Status'}:
                             </span>
                             <span class="service-info-value">
-                                <span class="status-badge ${status.includes('Активная') ? 'active' : 'inactive'}">${status}</span>
+                                <span class="status-badge ${statusValue ? 'active' : 'inactive'}">${status}</span>
                             </span>
                         </div>
                     </div>
@@ -121,13 +123,13 @@ function createMobileCards(services = null) {
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                             </svg>
-                            Ред.
+                            ${window.translations?.edit_short || 'Ред'}
                         </button>
                         <button class="btn-delete" onclick="showDeleteConfirmation(${serviceId})">
                             <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
-                            Удалить
+                            ${window.translations?.delete || 'Удалить'}
                         </button>
                     </div>
                 `;
@@ -170,7 +172,7 @@ function createMobileCards(services = null) {
                                 <svg viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                 </svg>
-                                Цена:
+                                ${window.translations?.price || 'Price'}:
                             </span>
                             <span class="service-info-value">${price}</span>
                         </div>
@@ -179,7 +181,7 @@ function createMobileCards(services = null) {
                                 <svg viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
                                 </svg>
-                                Длительность:
+                                ${window.translations?.duration || 'Duration'}:
                             </span>
                             <span class="service-info-value">${durationText}</span>
                         </div>
@@ -385,7 +387,7 @@ function renderServices(services) {
             <td>${service.name}</td>
         <td class="currency-amount" data-amount="${service.price || ''}">${price}</td>
         <td>${durationText}</td>
-        <td class="status-cell">
+        <td class="status-cell" data-status="${service.status}">
             <span class="status-badge ${statusClass}">${statusText}</span>
         </td>
             <td class="actions-cell">
@@ -643,10 +645,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             row.cells[2].textContent = durationText;
                             
                             // Обновляем статус
-                            const statusText = data.service.status ? 'Активная' : 'Неактивная';
+                            const statusText = data.service.status ? (window.translations?.active || 'Active') : (window.translations?.inactive || 'Inactive');
                             const statusClass = data.service.status ? 'active' : 'inactive';
                             const statusCell = row.cells[3];
                             if (statusCell) {
+                                statusCell.setAttribute('data-status', data.service.status);
                                 statusCell.innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
                             }
                         }

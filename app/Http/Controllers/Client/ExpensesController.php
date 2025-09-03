@@ -39,14 +39,16 @@ class ExpensesController extends Controller
             ]);
             
             $expenses = $query->paginate(11);
-            $categories = config('expenses.categories', [
-                'Аренда и коммуналка',
-                'Зарплата', 
-                'Материалы',
-                'Реклама',
-                'Налоги',
-                'Прочее'
-            ]);
+            $categories = collect(config('expenses.categories', [
+                'rent_and_utilities',
+                'salary', 
+                'materials',
+                'advertising',
+                'taxes',
+                'other'
+            ]))->map(function($category) {
+                return __('messages.' . $category);
+            })->toArray();
             // Отладочная информация
             \Log::info('AJAX expenses response:', [
                 'project_id' => $currentProjectId,
@@ -68,14 +70,16 @@ class ExpensesController extends Controller
         }
 
         $expenses = $query->paginate(11);
-        $categories = config('expenses.categories', [
-            'Аренда и коммуналка',
-            'Зарплата', 
-            'Материалы',
-            'Реклама',
-            'Налоги',
-            'Прочее'
-        ]);
+        $categories = collect(config('expenses.categories', [
+            'rent_and_utilities',
+            'salary', 
+            'materials',
+            'advertising',
+            'taxes',
+            'other'
+        ]))->map(function($category) {
+            return __('messages.' . $category);
+        })->toArray();
         
         return view('client.expenses.index', compact('expenses', 'categories'));
     }

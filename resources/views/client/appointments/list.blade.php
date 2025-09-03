@@ -1696,7 +1696,7 @@
             </div>
         </div>
         <div class="details-row">
-            <div><span class="details-label">{{ __('messages.date') }}:</span> ${new Date(appointment.date).toLocaleDateString((function(){const l='{{ app()->getLocale() }}'; if(l==='ua') return 'uk-UA'; if(l==='en') return 'en-US'; if(l==='ru') return 'ru-RU'; return l; })())}</div>
+            <div><span class="details-label">{{ __('messages.date') }}:</span> ${new Date(appointment.date).toLocaleDateString('ru-RU')}</div>
             <div><span class="details-label">{{ __('messages.time') }}:</span> ${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</div>
         </div>
         <div class="details-row">
@@ -3373,7 +3373,7 @@
 
                         newRow.innerHTML = `
                             <td>
-                                ${new Date(appointment.date).toLocaleDateString((function(){const l='{{ app()->getLocale() }}'; if(l==='ua') return 'uk-UA'; if(l==='en') return 'en-US'; if(l==='ru') return 'ru-RU'; return l; })())}
+                                ${new Date(appointment.date).toLocaleDateString('ru-RU')}
                                 <br>
                                 <small class="text-muted">${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</small>
                             </td>
@@ -3469,7 +3469,7 @@
                     if (row) {
                         row.innerHTML = `
                             <td>
-                                ${new Date(data.appointment.date).toLocaleDateString((function(){const l='{{ app()->getLocale() }}'; if(l==='ua') return 'uk-UA'; if(l==='en') return 'en-US'; if(l==='ru') return 'ru-RU'; return l; })())}
+                                ${new Date(data.appointment.date).toLocaleDateString('ru-RU')}
                                 <br>
                                 <small class="text-muted">${escapeHtml(data.appointment.time.split(':').slice(0, 2).join(':'))}</small>
                             </td>
@@ -3860,7 +3860,7 @@
             if (!dateString) return '';
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return dateString;
-            return date.toLocaleDateString((function(){const l='{{ app()->getLocale() }}'; if(l==='ua') return 'uk-UA'; if(l==='en') return 'en-US'; if(l==='ru') return 'ru-RU'; return l; })());
+            return date.toLocaleDateString('ru-RU');
         }
 
 
