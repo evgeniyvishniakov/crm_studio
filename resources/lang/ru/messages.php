@@ -1926,6 +1926,9 @@ return [
     'saturday_short' => 'Сб',
     'sunday_short' => 'Вс',
     
+    // Виджет записи
+    'book_now' => 'Записаться',
+    
     // Статусы записей для веб-записи
     'status_pending_web' => 'Ожидается',
     'status_completed_web' => 'Завершено',

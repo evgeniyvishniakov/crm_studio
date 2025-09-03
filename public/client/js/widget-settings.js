@@ -167,7 +167,7 @@ function copyWidgetCode() {
 function previewWidget() {
 
     
-    const buttonText = document.getElementById('widget_button_text').value || 'Записаться';
+    const buttonText = document.getElementById('widget_button_text').value || (window.translations?.book_now || 'Записаться');
     const buttonColor = document.getElementById('widget_button_color').value || '#007bff';
     const position = document.getElementById('widget_position').value || 'bottom-right';
     const size = document.getElementById('widget_size').value || 'medium';

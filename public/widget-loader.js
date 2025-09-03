@@ -9,7 +9,7 @@
     // Конфигурация виджета (будет загружаться с сервера)
     var widgetConfig = {
         projectSlug: null,
-        buttonText: 'Записаться',
+        buttonText: 'Book Now',
         buttonColor: '#007bff',
         textColor: '#ffffff',
         position: 'bottom-right',

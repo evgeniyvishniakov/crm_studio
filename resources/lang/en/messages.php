@@ -1948,6 +1948,7 @@ return [
     'button_text' => 'Button Text',
     'button_text_placeholder' => 'e.g., Book Now, Schedule, Order',
     'button_text_hint' => 'Text that will be displayed on the widget button',
+    'book_now' => 'Book Now',
     'button_color' => 'Button Color',
     'button_color_hint' => 'Choose the color of the widget button',
     'button_position' => 'Button Position',
@@ -2045,6 +2046,11 @@ return [
     'position_and_style' => 'Position and Style',
     
     // Widget instructions
+    'inline_widget_instructions' => 'Instructions for using the inline widget',
+    'inline_widget_step1' => '1. Use copyWidgetButton() to copy the HTML code of the button',
+    'inline_widget_step2' => '2. Paste the copied code in the desired place on your page',
+    'inline_widget_step3' => '3. The button will be displayed in the selected position (left/center/right)',
+    'inline_widget_step4' => '4. When clicking the button, the booking form will open',
     
     // Messages for deleted records
     'deleted_user' => 'Deleted User',
