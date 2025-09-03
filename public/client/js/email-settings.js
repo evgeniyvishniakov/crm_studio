@@ -36,12 +36,12 @@ function initializeEmailSettings() {
                     });
                     window.showNotification('error', errorMessage);
                 } else {
-                    window.showNotification('error', data.message || 'Ошибка при сохранении настроек');
+                    window.showNotification('error', data.message || window.translations?.error_saving_settings || 'Ошибка при сохранении настроек');
                 }
             }
         })
         .catch(error => {
-            window.showNotification('error', 'Ошибка при сохранении настроек: ' + error.message);
+            window.showNotification('error', (window.translations?.error_saving_settings || 'Ошибка при сохранении настроек') + ': ' + error.message);
         })
         .finally(() => {
             // Восстанавливаем кнопку
@@ -61,7 +61,7 @@ function testEmailConnection() {
     const encryption = document.getElementById('email_encryption').value;
     
     if (!host || !port || !username || !password) {
-        window.showNotification('error', 'Пожалуйста, заполните все обязательные поля для тестирования');
+        window.showNotification('error', window.translations?.please_fill_required_fields_for_testing || 'Пожалуйста, заполните все обязательные поля для тестирования');
         return;
     }
     

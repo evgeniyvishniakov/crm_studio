@@ -378,7 +378,7 @@ function editPurchase(event, id) {
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            window.showNotification('success', 'Закупка успешно обновлена');
+                            window.showNotification('success', window.translations?.purchase_successfully_updated || 'Закупка успешно обновлена');
                             closeEditPurchaseModal();
                             // Обновляем данные на странице
                             updatePurchaseRowInDOM(data.purchase);
@@ -571,7 +571,7 @@ function addPurchaseToDOM(purchase) {
             <td>${item.product ? item.product.name : 'Товар не найден'}</td>
             <td class="currency-amount" data-amount="${purchasePrice}">${formatCurrency(purchasePrice)}</td>
             <td class="currency-amount" data-amount="${retailPrice}">${formatCurrency(retailPrice)}</td>
-            <td>${quantity} шт</td>
+            <td>${quantity} ${window.translations?.pieces || 'pcs'}</td>
             <td class="currency-amount" data-amount="${total}">${formatCurrency(total)}</td>
         </tr>`;
     }).join('');
@@ -658,7 +658,7 @@ function updatePurchaseRowInDOM(purchase) {
             <td>${item.product ? item.product.name : 'Товар не найден'}</td>
             <td class="currency-amount" data-amount="${purchasePrice}">${formatCurrency(purchasePrice)}</td>
             <td class="currency-amount" data-amount="${retailPrice}">${formatCurrency(retailPrice)}</td>
-            <td>${quantity} шт</td>
+            <td>${quantity} ${window.translations?.pieces || 'pcs'}</td>
             <td class="currency-amount" data-amount="${total}">${formatCurrency(total)}</td>
         </tr>`;
     }).join('');
@@ -895,7 +895,7 @@ function renderPurchases(purchases) {
                     <td>${item.product ? item.product.name : 'Товар не найден'}</td>
                     <td class="currency-amount" data-amount="${item.purchase_price}">${formatCurrency(item.purchase_price)}</td>
                     <td class="currency-amount" data-amount="${item.retail_price}">${formatCurrency(item.retail_price)}</td>
-                    <td>${item.quantity} ${window.translations?.pieces || 'шт'}</td>
+                    <td>${item.quantity} ${window.translations?.pieces || 'pcs'}</td>
                     <td class="currency-amount" data-amount="${item.total}">${formatCurrency(item.total)}</td>
                 </tr>
             `).join('');

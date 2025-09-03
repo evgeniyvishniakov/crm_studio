@@ -21,8 +21,8 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                // Если это админка — редирект на /panel
-                if ($request->is('panel/*') || $request->is('panel')) {
+                // Если это админка (guard: panel) — редирект на /panel
+                if ($guard === 'panel' || $request->is('panel/*') || $request->is('panel')) {
                     return redirect('/panel');
                 }
                 // Если это клиентская часть — редирект на dashboard

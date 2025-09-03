@@ -798,7 +798,7 @@ function submitEditSaleForm(event) {
     .then(data => {
         if (data.success) {
             closeEditSaleModal();
-            window.showNotification('success', 'Продажа успешно обновлена');
+            window.showNotification('success', window.translations?.sale_successfully_updated || 'Продажа успешно обновлена');
             loadSales(currentPage);
         } else if (data.errors) {
             showErrors(data.errors, 'editSaleForm');
@@ -924,9 +924,9 @@ function renderSales(sales) {
                             ${photoHtml}
                         </div>
                     </td>
-                    <td>${escapeHtml(sale.employee ? sale.employee.name : (window.translations?.employee_not_specified || 'Сотрудник не указан'))}</td>
+                    <td>${escapeHtml(sale.employee ? sale.employee.name : (window.messages?.employee_not_specified || 'Employee not specified'))}</td>
                     <td class="retail-price currency-amount" data-amount="${saleItem.retail_price || 0}">${formatPrice(saleItem.retail_price || 0)}</td>
-                    <td class="quantity">${saleItem.quantity || 0} шт.</td>
+                    <td class="quantity">${saleItem.quantity || 0} ${window.messages?.pieces || 'pcs'}</td>
                     <td class="total-sum currency-amount" data-amount="${saleItem.total || 0}">${formatPrice(saleItem.total || 0)}</td>
                     <td class="actions-cell">
                         <button class="btn-edit" onclick="openEditSaleModal(${sale.id})">
@@ -990,7 +990,7 @@ function renderSales(sales) {
                                 </svg>
                                 Количество
                             </div>
-                            <div class="sale-info-value">${saleItem.quantity || 0} шт.</div>
+                            <div class="sale-info-value">${saleItem.quantity || 0} ${window.messages?.pieces || 'pcs'}</div>
                         </div>
                         <div class="sale-info-item">
                             <div class="sale-info-label">
@@ -999,7 +999,7 @@ function renderSales(sales) {
                                 </svg>
                                 Сотрудник
                             </div>
-                            <div class="sale-info-value">${escapeHtml(sale.employee ? sale.employee.name : (window.translations?.employee_not_specified || 'Сотрудник не указан'))}</div>
+                            <div class="sale-info-value">${escapeHtml(sale.employee ? sale.employee.name : (window.messages?.employee_not_specified || 'Employee not specified'))}</div>
                         </div>
                         <div class="sale-info-item">
                             <div class="sale-info-label">

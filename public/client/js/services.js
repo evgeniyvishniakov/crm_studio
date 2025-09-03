@@ -17,8 +17,8 @@ function formatDuration(duration) {
     const hours = Math.floor(duration / 60);
     const minutes = duration % 60;
     let result = '';
-    if (hours > 0) result += hours + ' ' + (window.translations?.hours_many || 'годин') + ' ';
-    if (minutes > 0) result += minutes + ' ' + (window.translations?.minute || 'хв');
+    if (hours > 0) result += hours + ' ' + (window.translations?.service_duration_hours_short || 'h') + ' ';
+    if (minutes > 0) result += minutes + ' ' + (window.translations?.service_duration_minutes_short || 'm');
     return result.trim();
 }
 
@@ -186,10 +186,10 @@ function createMobileCards(services = null) {
                         <div class="service-info-item">
                             <span class="service-info-label">
                                 <i class="fas fa-circle ${service.status ? 'active' : 'inactive'}"></i>
-                                Статус:
+                                ${window.translations?.status || 'Status'}:
                             </span>
                             <span class="service-info-value">
-                                <span class="status-badge ${service.status ? 'active' : 'inactive'}">${service.status ? 'Активная' : 'Неактивная'}</span>
+                                <span class="status-badge ${service.status ? 'active' : 'inactive'}">${service.status ? (window.translations?.active || 'Active') : (window.translations?.inactive || 'Inactive')}</span>
                             </span>
                         </div>
                     </div>
@@ -198,13 +198,13 @@ function createMobileCards(services = null) {
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                         </svg>
-                        Ред.
+                        ${window.translations?.edit || 'Edit'}
                     </button>
                     <button class="btn-delete" onclick="showDeleteConfirmation(${service.id})">
                         <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
-                        Удалить
+                        ${window.translations?.delete || 'Delete'}
                         </button>
                 </div>
             `;
@@ -378,7 +378,7 @@ function renderServices(services) {
         const durationText = duration > 0 ? formatDuration(duration) : '—';
         
                 // Форматируем статус
-        const statusText = service.status ? 'Активная' : 'Неактивная';
+        const statusText = service.status ? (window.translations?.active || 'Active') : (window.translations?.inactive || 'Inactive');
         const statusClass = service.status ? 'active' : 'inactive';
         
         row.innerHTML = `
@@ -393,13 +393,13 @@ function renderServices(services) {
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
-                    Ред.
+                    ${window.translations?.edit || 'Edit'}
                 </button>
                 <button class="btn-delete" onclick="showDeleteConfirmation(${service.id})">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
-                    Удалить
+                    ${window.translations?.delete || 'Delete'}
                 </button>
             </td>
         `;
@@ -611,7 +611,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitForm('editServiceForm', `/services/${serviceId}`, 'POST', 
                 function(data) {
                     // Успешное редактирование
-                    window.showNotification('success', 'Услуга успешно обновлена');
+                    window.showNotification('success', window.translations?.service_successfully_updated || 'Услуга успешно обновлена');
                     closeEditServiceModal();
                     
                     // Обновляем данные в таблице без перезагрузки

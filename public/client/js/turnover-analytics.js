@@ -134,7 +134,7 @@ function updateTurnoverAnalytics(params = '') {
                     labels: data.dynamic.labels,
                     datasets: [
                         {
-                            label: 'Продажи',
+                            label: window.messages?.sales || 'Sales',
                             data: data.dynamic.sales,
                             borderColor: 'rgb(59, 130, 246)',
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -142,7 +142,7 @@ function updateTurnoverAnalytics(params = '') {
                             tension: 0.4
                         },
                         {
-                            label: 'Закупки',
+                            label: window.messages?.purchases || 'Purchases',
                             data: data.dynamic.purchases,
                             borderColor: 'rgb(16, 185, 129)',
                             backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -172,7 +172,7 @@ function updateTurnoverAnalytics(params = '') {
                     labels: data.dynamic.labels,
                     datasets: [
                         {
-                            label: 'Валовая прибыль',
+                            label: window.messages?.gross_profit || 'Gross Profit',
                             data: data.dynamic.gross_profit,
                             borderColor: 'rgb(245, 158, 11)',
                             backgroundColor: 'rgba(245, 158, 11, 0.1)',
@@ -243,7 +243,7 @@ function updateTurnoverAnalytics(params = '') {
                                     const sum = data.category.sums[i];
                                     return [
                                         `${label}`,
-                                        `Количество: ${count} шт`,
+                                        `Количество: ${count} ${window.messages?.pieces || 'pcs'}`,
                                         `Сумма: ${formatCurrency(sum)}`
                                     ];
                                 }
@@ -276,7 +276,7 @@ function updateTurnoverAnalytics(params = '') {
                                     const sum = data.brand.sums[i];
                                     return [
                                         `${label}`,
-                                        `Количество: ${count} шт`,
+                                        `Количество: ${count} ${window.messages?.pieces || 'pcs'}`,
                                         `Сумма: ${formatCurrency(sum)}`
                                     ];
                                 }
@@ -419,7 +419,7 @@ function updateTopsAnalytics(params = '') {
                     data: {
                         labels: data.topSales.labels,
                         datasets: [{
-                            label: 'Продажи, шт',
+                            label: `${window.messages?.sales || 'Sales'}, ${window.messages?.pieces || 'pcs'}`,
                             data: data.topSales.data,
                             backgroundColor: grad,
                             borderColor: 'rgba(59,130,246,0.3)',
@@ -492,7 +492,7 @@ function updateTopsAnalytics(params = '') {
                     data: {
                         labels: data.topPurchases.labels,
                         datasets: [{
-                            label: 'Закупки, шт',
+                            label: `${window.messages?.purchases || 'Purchases'}, ${window.messages?.pieces || 'pcs'}`,
                             data: data.topPurchases.data,
                             backgroundColor: grad,
                             borderColor: 'rgba(16,185,129,0.3)',
@@ -566,7 +566,7 @@ function updateTopsAnalytics(params = '') {
                     data: {
                         labels: data.topClients.labels,
                         datasets: [{
-                            label: 'Закупки',
+                            label: window.messages?.purchases || 'Purchases',
                             data: data.topClients.data,
                             backgroundColor: grad,
                             borderColor: 'rgba(245,158,11,0.3)',
@@ -711,7 +711,7 @@ function updateSuppliersAnalytics(params = '') {
                     data: {
                         labels: data.topSuppliers.map(s => s.label),
                         datasets: [{
-                            label: 'Закупки',
+                            label: window.messages?.purchases || 'Purchases',
                             data: data.topSuppliers.map(s => s.sum),
                             backgroundColor: grad,
                             borderColor: 'rgba(139,92,246,0.3)',
@@ -798,7 +798,7 @@ function updateSuppliersAnalytics(params = '') {
                     data: {
                         labels: data.stockByCategory.map(c => c.label),
                         datasets: [{
-                            label: 'Остатки, шт',
+                            label: `Остатки, ${window.messages?.pieces || 'pcs'}`,
                             data: data.stockByCategory.map(c => c.qty),
                             backgroundColor: grad,
                             borderColor: 'rgba(59,130,246,0.3)',
@@ -816,7 +816,7 @@ function updateSuppliersAnalytics(params = '') {
                                         const cat = data.stockByCategory[i];
                                         return [
                                             `Категория: ${cat.label}`,
-                                            `Остатки: ${cat.qty} шт`,
+                                            `Остатки: ${cat.qty} ${window.messages?.pieces || 'pcs'}`,
                                             `Опт: ${formatCurrency(cat.wholesale)}`,
                                             `Розница: ${formatCurrency(cat.retail)}`
                                         ];
@@ -921,7 +921,7 @@ function updateExpensesAnalytics(params = '') {
                 data: {
                     labels: data.labels,
                     datasets: [{
-                        label: 'Общие расходы',
+                        label: window.messages?.total_expenses || 'Total Expenses',
                         data: data.data,
                         borderColor: '#ef4444',
                         backgroundColor: 'rgba(239,68,68,0.1)',
@@ -979,7 +979,7 @@ function updateExpensesAnalytics(params = '') {
                 data: {
                     labels: data.labels,
                     datasets: [{
-                        label: 'Средний расход',
+                        label: window.messages?.average_expense || 'Average Expense',
                         data: data.data,
                         backgroundColor: '#f59e42'
                     }]
@@ -1004,7 +1004,7 @@ function updateExpensesAnalytics(params = '') {
                 data: {
                     labels: data.labels,
                     datasets: [{
-                        label: 'Расходы',
+                        label: window.messages?.expenses || 'Expenses',
                         data: data.data,
                         backgroundColor: '#7c3aed'
                     }]
@@ -1051,7 +1051,7 @@ function updateEmployeesAnalytics(params = '') {
                     data: {
                         labels: data.topEmployees.map(e => e.label),
                         datasets: [{
-                            label: 'Продажи',
+                            label: window.messages?.sales || 'Sales',
                             data: data.topEmployees.map(e => e.sum),
                             backgroundColor: grad,
                             borderColor: 'rgba(59,130,246,0.3)',
@@ -1150,7 +1150,7 @@ function updateEmployeesAnalytics(params = '') {
                     data: {
                         labels: data.employeesAverage.labels,
                         datasets: [{
-                            label: 'Средняя сумма продажи',
+                            label: window.messages?.average_sale_amount || 'Average Sale Amount',
                             data: data.employeesAverage.data,
                             backgroundColor: '#f59e42'
                         }]

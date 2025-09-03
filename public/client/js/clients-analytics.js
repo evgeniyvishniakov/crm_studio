@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     return label;
                                 },
                                 label: function(context) {
-                                    return `Новые клиенты: ${context.parsed.y}`;
+                                    return `${window.translations?.new_clients || 'Новые клиенты'}: ${context.parsed.y}`;
                                 }
                             }
                         }
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     return label;
                                 },
                                 label: function(context) {
-                                    return `Записи: ${context.parsed.y}`;
+                                    return `${window.translations?.appointments || 'Записи'}: ${context.parsed.y}`;
                                 }
                             }
                         }
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     return label.replace(/\s*\(\d+\)$/, '');
                                 },
                                 label: function(context) {
-                                    return `Количество записей: ${context.parsed.x}`;
+                                    return `${window.translations?.number_of_appointments || 'Количество записей'}: ${context.parsed.x}`;
                                 }
                             }
                         }
@@ -187,9 +187,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 label: function(context) {
                                     // В tooltip показываем выручку с форматированием валюты
                                     if (window.CurrencyManager) {
-                                        return `Выручка: ${window.CurrencyManager.formatAmount(context.parsed.x)}`;
+                                        return `${window.translations?.revenue || 'Выручка'}: ${window.CurrencyManager.formatAmount(context.parsed.x)}`;
                                     }
-                                    return `Выручка: ${context.parsed.x}`;
+                                    return `${window.translations?.revenue || 'Выручка'}: ${context.parsed.x}`;
                                 }
                             }
                         }
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return `Количество процедур: ${context.parsed.x}`;
+                                    return `${window.translations?.number_of_procedures || 'Количество процедур'}: ${context.parsed.x}`;
                                 }
                             }
                         }
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return `Количество процедур: ${context.parsed.y}`;
+                                    return `${window.translations?.number_of_procedures || 'Количество процедур'}: ${context.parsed.y}`;
                                 }
                             }
                         }
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 const totalNew = data.clientDynamics.data.reduce((a, b) => a + b, 0);
                 updateChart(charts.clientDynamicsChart, data.clientDynamics.labels, [{
-                    label: `Новые клиенты (${totalNew})`,
+                    label: `${window.translations?.new_clients || 'Новые клиенты'} (${totalNew})`,
                     data: data.clientDynamics.data,
                     borderColor: 'rgb(59, 130, 246)',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateChart(charts.topClientsByVisitsChart, [], []);
                     setTimeout(() => {
                         updateChart(charts.topClientsByVisitsChart, labelsWithCounts, [{
-                            label: 'Рейтинг визитов',
+                            label: window.translations?.visit_rating || 'Рейтинг визитов',
                             data: values,
                             backgroundColor: colors.slice(),
                             borderColor: colors.slice(),
@@ -447,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 delete loadChart.options.scales.y.suggestedMax;
             }
             updateChart(loadChart, data.labels, [{
-                label: 'Записи',
+                label: window.translations?.appointments || 'Записи',
                 data: data.data,
                 backgroundColor: 'rgba(59, 130, 246, 0.7)',
                 borderColor: 'rgba(59, 130, 246, 1)',
@@ -526,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function() {
             gradient.addColorStop(1, 'rgba(139, 92, 246, 0.4)');
 
             updateChart(servicesChart, labelsWithCounts, [{
-                label: 'Количество записей',
+                label: window.translations?.number_of_appointments || 'Количество записей',
                 data: data.data,
                 backgroundColor: gradient,
                 borderColor: 'rgba(139, 92, 246, 0.3)',
@@ -795,7 +795,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
             const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(234, 88, 12, 0.7)');
             updateChart(charts.topClientsByRevenueChart, labelsWithCounts, [{
-                label: 'Выручка',
+                label: window.translations?.revenue || 'Выручка',
                 data: data.data,
                 backgroundColor: colors,
                 borderColor: colors,
@@ -820,7 +820,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
             updateChart(charts.avgCheckChart, data.labels, [{
-                label: 'Средний чек',
+                label: window.translations?.average_check || 'Средний чек',
                 data: data.data
             }]);
         } catch (e) {
@@ -865,10 +865,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(url);
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
-            // Формируем labels с числами в скобках
-            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i]})`);
-            updateChart(charts.topServicesByRevenueChart, labelsWithCounts, [{
-                label: 'Выручка',
+            // Для горизонтального графика labels должны быть без чисел в скобках
+            updateChart(charts.topServicesByRevenueChart, data.labels, [{
+                label: window.translations?.revenue || 'Выручка',
                 data: data.data
             }]);
         } catch (e) {
@@ -895,7 +894,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
             const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(59, 130, 246, 0.7)');
             updateChart(charts.topEmployeesProceduresBar, labelsWithCounts, [{
-                label: 'Количество процедур',
+                label: window.translations?.number_of_procedures || 'Количество процедур',
                 data: data.data,
                 backgroundColor: colors,
                 borderColor: colors,
@@ -950,7 +949,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
             const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(139, 92, 246, 0.7)');
             updateChart(charts.topEmployeesRevenueBar, labelsWithCounts, [{
-                label: 'Выручка',
+                label: window.translations?.revenue || 'Выручка',
                 data: data.data,
                 backgroundColor: colors,
                 borderColor: colors,
@@ -975,7 +974,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
             updateChart(charts.employeesAverageCheckBar, data.labels, [{
-                label: 'Средний чек',
+                label: window.translations?.average_check || 'Средний чек',
                 data: data.data,
                 backgroundColor: 'rgba(16, 185, 129, 0.7)',
                 borderColor: 'rgba(16, 185, 129, 1)',

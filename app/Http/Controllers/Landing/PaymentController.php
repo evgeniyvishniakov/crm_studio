@@ -95,7 +95,6 @@ class PaymentController extends Controller
         $liqpayData = $this->generateLiqPayData($payment, $plan, $period);
         
         \Log::info('Payment created successfully', [
-            'subscription_id' => $subscription->id,
             'payment_id' => $payment->id,
             'plan_name' => $plan->name,
             'period' => $period,

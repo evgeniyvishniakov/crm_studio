@@ -83,31 +83,8 @@ class SetLanguage
             }
         }
         
-        // Затем ВСЕГДА проверяем язык из сессии (даже если параметр lang не указан)
-        if (session()->has('language')) {
-            $langCode = session('language');
-            Log::info('Found language in session', ['session_lang' => $langCode]);
-            
-            $language = Language::where('code', $langCode)->where('is_active', true)->first();
-            if ($language) {
-                App::setLocale($language->code);
-                
-                Log::info('Language set from session', [
-                    'lang_code' => $language->code,
-                    'app_locale' => App::getLocale(),
-                    'session_id' => session()->getId()
-                ]);
-                
-                return $next($request);
-            } else {
-                Log::warning('Session language not found or not active', ['session_lang' => $langCode]);
-                // Удаляем неактивный язык из сессии
-                session()->forget('language');
-            }
-        }
-        
-        // Получаем язык из проекта пользователя (только если язык не установлен в сессии)
-        if (!session()->has('language') && Auth::check()) {
+        // Если пользователь авторизован, используем язык проекта
+        if (Auth::check()) {
             $user = Auth::user();
             $project = Project::where('id', $user->project_id ?? null)->first();
             
@@ -118,20 +95,65 @@ class SetLanguage
                     // Устанавливаем локаль приложения и сохраняем в сессию
                     App::setLocale($language->code);
                     session(['language' => $language->code]);
-                } else {
-                    // По умолчанию украинский
-                    App::setLocale('ua');
-                    session(['language' => 'ua']);
+                    
+                    Log::info('Language set from project', [
+                        'lang_code' => $language->code,
+                        'app_locale' => App::getLocale(),
+                        'project_id' => $project->id,
+                        'session_id' => session()->getId()
+                    ]);
+                    
+                    return $next($request);
                 }
-            } else {
-                // По умолчанию украинский
-                App::setLocale('ua');
-                session(['language' => 'ua']);
             }
-        } elseif (!session()->has('language')) {
+            
+            // Если у проекта нет языка или язык неактивен, используем язык по умолчанию
+            $defaultLanguage = Language::getDefault();
+            $defaultCode = $defaultLanguage ? $defaultLanguage->code : 'ru';
+            App::setLocale($defaultCode);
+            session(['language' => $defaultCode]);
+            
+            Log::info('Language set to default for authenticated user', [
+                'lang_code' => $defaultCode,
+                'app_locale' => App::getLocale(),
+                'project_id' => $project ? $project->id : null,
+                'session_id' => session()->getId()
+            ]);
+        } else {
+            // Для неавторизованных пользователей проверяем язык из сессии
+            if (session()->has('language')) {
+                $langCode = session('language');
+                Log::info('Found language in session for guest', ['session_lang' => $langCode]);
+                
+                $language = Language::where('code', $langCode)->where('is_active', true)->first();
+                if ($language) {
+                    App::setLocale($language->code);
+                    
+                    Log::info('Language set from session for guest', [
+                        'lang_code' => $language->code,
+                        'app_locale' => App::getLocale(),
+                        'session_id' => session()->getId()
+                    ]);
+                    
+                    return $next($request);
+                } else {
+                    Log::warning('Session language not found or not active for guest', ['session_lang' => $langCode]);
+                    // Удаляем неактивный язык из сессии
+                    session()->forget('language');
+                }
+            }
+            
             // Для неавторизованных пользователей без языка в сессии
-            App::setLocale('ua');
-            session(['language' => 'ua']);
+            $defaultLanguage = Language::getDefault();
+            $defaultCode = $defaultLanguage ? $defaultLanguage->code : 'ru';
+            App::setLocale($defaultCode);
+            session(['language' => $defaultCode]);
+            
+            Log::info('Language set to default for guest', [
+                'lang_code' => $defaultCode,
+                'app_locale' => App::getLocale(),
+                'session_id' => session()->getId()
+            ]);
         }
 
         Log::info('Language set to default', [

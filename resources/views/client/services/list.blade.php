@@ -172,7 +172,10 @@
             cancel: '{{ __("messages.cancel") }}',
             save: '{{ __("messages.save") }}',
             confirm_delete: '{{ __("messages.confirm_delete") }}',
-            confirm_delete_service: '{{ __("messages.confirm_delete_service") }}'
+            confirm_delete_service: '{{ __("messages.confirm_delete_service") }}',
+            status: '{{ __("messages.status") }}',
+            active: '{{ __("messages.active") }}',
+            inactive: '{{ __("messages.inactive") }}'
         };
         
         

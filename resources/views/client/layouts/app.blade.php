@@ -22,6 +22,7 @@
             duration_prefix: '{{ __("messages.duration_prefix") }}',
             base_duration: '{{ __("messages.base_duration") }}',
             edit: '{{ __("messages.edit") }}',
+            edit_short: '{{ __("messages.edit_short") }}',
             delete: '{{ __("messages.delete") }}',
             description: '{{ __("messages.description") }}',
             active: '{{ __("messages.active") }}',
@@ -53,8 +54,86 @@
             interval: '{{ __("messages.interval") }}',
             interval_minutes: '{{ __("messages.interval_minutes") }}',
             working_hours: '{{ __("messages.working_hours") }}',
-            notes: '{{ __("messages.notes") }}'
+            notes: '{{ __("messages.notes") }}',
+            add_master_service: '{{ __("messages.add_master_service") }}',
+            service_successfully_updated: '{{ __("messages.service_successfully_updated") }}',
+            service_successfully_created: '{{ __("messages.service_successfully_created") }}',
+            service_successfully_deleted: '{{ __("messages.service_successfully_deleted") }}',
+            category_successfully_updated: '{{ __("messages.category_successfully_updated") }}',
+            brand_successfully_updated: '{{ __("messages.brand_successfully_updated") }}',
+            supplier_successfully_updated: '{{ __("messages.supplier_successfully_updated") }}',
+            product_successfully_updated: '{{ __("messages.product_successfully_updated") }}',
+            sale_successfully_updated: '{{ __("messages.sale_successfully_updated") }}',
+            purchase_successfully_updated: '{{ __("messages.purchase_successfully_updated") }}',
+            user_successfully_updated: '{{ __("messages.user_successfully_updated") }}',
+            role_successfully_updated: '{{ __("messages.role_successfully_updated") }}',
+            schedule_saved: '{{ __("messages.schedule_saved") }}',
+            // Дополнительные переводы для уведомлений
+            link_copied: '{{ __("messages.link_copied") }}',
+            error_loading_data: '{{ __("messages.error_loading_data") }}',
+            error_saving: '{{ __("messages.error_saving") }}',
+            error_deleting: '{{ __("messages.error_deleting") }}',
+            error_loading: '{{ __("messages.error_loading") }}',
+            please_fix_errors: '{{ __("messages.please_fix_errors") }}',
+            successfully_added: '{{ __("messages.successfully_added") }}',
+            successfully_deleted: '{{ __("messages.successfully_deleted") }}',
+            successfully_restored: '{{ __("messages.successfully_restored") }}',
+            permanently_deleted: '{{ __("messages.permanently_deleted") }}',
+            all_permanently_deleted: '{{ __("messages.all_permanently_deleted") }}',
+            avatar_uploaded: '{{ __("messages.avatar_uploaded") }}',
+            please_select_image: '{{ __("messages.please_select_image") }}',
+            file_size_limit: '{{ __("messages.file_size_limit") }}',
+            import_cancelled: '{{ __("messages.import_cancelled") }}',
+            specify_work_time: '{{ __("messages.specify_work_time") }}',
+            end_time_later: '{{ __("messages.end_time_later") }}',
+            interval_range: '{{ __("messages.interval_range") }}',
+            user_successfully_deleted: '{{ __("messages.user_successfully_deleted") }}',
+            user_successfully_added: '{{ __("messages.user_successfully_added") }}',
+            user_successfully_created: '{{ __("messages.user_successfully_created") }}',
+            please_fill_required_fields: '{{ __("messages.please_fill_required_fields") }}',
+            please_fill_required_fields_for_testing: '{{ __("messages.please_fill_required_fields_for_testing") }}',
+            error_saving_settings: '{{ __("messages.error_saving_settings") }}',
+            validation_errors: '{{ __("messages.validation_errors") }}',
+            please_fill_this_field: '{{ __("messages.please_fill_this_field") }}',
+            widget_code_generated: '{{ __("messages.widget_code_generated") }}',
+            error_generating_code: '{{ __("messages.error_generating_code") }}',
+            read: '{{ __("messages.read") }}',
+            unread: '{{ __("messages.unread") }}',
+            open: '{{ __("messages.open") }}',
+            booking: '{{ __("messages.booking") }}',
+            message: '{{ __("messages.message") }}',
+            new_clients: '{{ __("messages.new_clients") }}',
+            appointments: '{{ __("messages.appointments") }}',
+            revenue: '{{ __("messages.revenue") }}',
+            number_of_appointments: '{{ __("messages.number_of_appointments") }}',
+            visit_rating: '{{ __("messages.visit_rating") }}',
+            average_check: '{{ __("messages.average_check") }}',
+            number_of_procedures: '{{ __("messages.number_of_procedures") }}'
         };
+        
+        // Универсальная функция для переопределения HTML5 сообщений валидации
+        function setupCustomValidationMessages() {
+            const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
+            
+            requiredFields.forEach(field => {
+                field.addEventListener('invalid', function(e) {
+                    e.preventDefault();
+                    
+                    const message = window.translations?.please_fill_this_field || 'Пожалуйста, заполните это поле';
+                    field.setCustomValidity(message);
+                    field.reportValidity();
+                });
+                
+                field.addEventListener('input', function() {
+                    field.setCustomValidity('');
+                });
+            });
+        }
+        
+        // Инициализируем при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            setupCustomValidationMessages();
+        });
     </script>
 
     <!-- Favicon -->

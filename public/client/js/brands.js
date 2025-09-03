@@ -253,7 +253,7 @@ function renderBrands(brands) {
             <td>${websiteHtml}</td>
             <td>
                 <span class="status-badge ${brand.status ? 'active' : 'inactive'}">
-                    ${brand.status ? 'Активен' : 'Неактивен'}
+                    ${brand.status ? (window.translations?.brand_active || 'Активен') : (window.translations?.brand_inactive || 'Неактивен')}
                 </span>
             </td>
             <td class="actions-cell">
@@ -591,7 +591,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     updateBrandRow(data.brand);
-                    window.showNotification('success', 'Бренд успешно обновлен');
+                    window.showNotification('success', window.translations?.brand_successfully_updated || 'Бренд успешно обновлен');
                     closeEditModal();
                 }
             })

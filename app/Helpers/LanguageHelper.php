@@ -14,7 +14,9 @@ class LanguageHelper
     public static function addLanguageToUrl($url, $language = null)
     {
         if (!$language) {
-            $language = session('language', 'ua');
+            $defaultLanguage = Language::getDefault();
+            $defaultCode = $defaultLanguage ? $defaultLanguage->code : 'ru';
+            $language = session('language', $defaultCode);
         }
         
         // Если URL уже содержит параметр lang, заменяем его
@@ -33,7 +35,9 @@ class LanguageHelper
      */
     public static function getCurrentLanguage()
     {
-        return session('language', 'ua');
+        $defaultLanguage = Language::getDefault();
+        $defaultCode = $defaultLanguage ? $defaultLanguage->code : 'ru';
+        return session('language', $defaultCode);
     }
 
     /**

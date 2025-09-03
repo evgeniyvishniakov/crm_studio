@@ -427,10 +427,10 @@ function updateAnalysisTable(data) {
         row.innerHTML = `
             <td>${photoHtml}</td>
             <td>${item.product_name}</td>
-            <td class="small-col">${item.warehouse_qty} ${window.messages.units || 'шт'}</td>
-            <td class="small-col">${item.actual_qty} ${window.messages.units || 'шт'}</td>
+            <td class="small-col">${item.warehouse_qty} ${window.messages.units || 'pcs'}</td>
+            <td class="small-col">${item.actual_qty} ${window.messages.units || 'pcs'}</td>
             <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
-                ${item.difference > 0 ? '+' : ''}${item.difference} ${window.messages.units || 'шт'}
+                ${item.difference > 0 ? '+' : ''}${item.difference} ${window.messages.units || 'pcs'}
             </td>
             <td>${status}</td>
         `;
@@ -523,8 +523,8 @@ function editInventory(event, id) {
                 // Создаем форму редактирования
                 const formHtml = `
                     <form id="editInventoryForm" data-project-id="${inventory.project_id}">
-                        @csrf
-                        @method('PUT')
+                        <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''}">
+                        <input type="hidden" name="_method" value="PUT">
                         <div class="form-row">
                             <div class="form-group">
                                 <label>${window.messages.date || 'Дата'}</label>
@@ -820,10 +820,10 @@ function viewAllInventoryItems(id) {
                                     `<div class="no-photo">${window.messages.no_photo || 'Нет фото'}</div>`}
                             </td>
                             <td class="large-col">${item.product.name}</td>
-                            <td class="small-col">${item.warehouse_qty} ${window.messages.units || 'шт'}</td>
-                            <td class="small-col">${item.actual_qty} ${window.messages.units || 'шт'}</td>
+                            <td class="small-col">${item.warehouse_qty} ${window.messages.units || 'pcs'}</td>
+                            <td class="small-col">${item.actual_qty} ${window.messages.units || 'pcs'}</td>
                             <td class="${item.difference > 0 ? 'text-success' : (item.difference < 0 ? 'text-danger' : '')}">
-                                ${item.difference > 0 ? '+' : ''}${item.difference} ${window.messages.units || 'шт'}
+                                ${item.difference > 0 ? '+' : ''}${item.difference} ${window.messages.units || 'pcs'}
                             </td>
                             <td>${status}</td>
                         </tr>
@@ -1000,10 +1000,10 @@ function addInventoryToDOM(inventory) {
                     }
                 </td>
                 <td>${item.product.name}</td>
-                <td class="small-col">${item.warehouse_qty} ${window.messages.units || 'шт'}</td>
-                <td class="small-col">${item.actual_qty} ${window.messages.units || 'шт'}</td>
+                <td class="small-col">${item.warehouse_qty} ${window.messages.units || 'pcs'}</td>
+                <td class="small-col">${item.actual_qty} ${window.messages.units || 'pcs'}</td>
                 <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
-                    ${item.difference > 0 ? '+' : ''}${item.difference} ${window.messages.units || 'шт'}
+                    ${item.difference > 0 ? '+' : ''}${item.difference} ${window.messages.units || 'pcs'}
                 </td>
                 <td>${status}</td>
             </tr>
@@ -1151,10 +1151,10 @@ function updateInventoryInDOM(inventory) {
                     }
                 </td>
                 <td>${item.product.name}</td>
-                <td class="small-col">${item.warehouse_qty} ${window.messages.units || 'шт'}</td>
-                <td class="small-col">${item.actual_qty} ${window.messages.units || 'шт'}</td>
+                <td class="small-col">${item.warehouse_qty} ${window.messages.units || 'pcs'}</td>
+                <td class="small-col">${item.actual_qty} ${window.messages.units || 'pcs'}</td>
                 <td class="${item.difference > 0 ? 'text-success' : 'text-danger'}">
-                    ${item.difference > 0 ? '+' : ''}${item.difference} ${window.messages.units || 'шт'}
+                    ${item.difference > 0 ? '+' : ''}${item.difference} ${window.messages.units || 'pcs'}
                 </td>
                 <td>${status}</td>
             </tr>

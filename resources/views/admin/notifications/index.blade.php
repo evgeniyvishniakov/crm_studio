@@ -57,9 +57,9 @@
                         <td>{{ $notification->created_at->format('d.m.Y H:i') }}</td>
                         <td>
                             @if($notification->is_read)
-                                <span class="badge bg-success">Прочитано</span>
+                                <span class="badge bg-success">{{ __('messages.read') }}</span>
                             @else
-                                <span class="badge bg-warning text-dark">Непрочитано</span>
+                                <span class="badge bg-warning text-dark">{{ __('messages.unread') }}</span>
                             @endif
                         </td>
                         <td>

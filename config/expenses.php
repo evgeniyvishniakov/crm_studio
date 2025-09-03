@@ -2,11 +2,11 @@
 
 return [
     'categories' => [
-        'Аренда и коммуналка',
-        'Зарплата', 
-        'Материалы',
-        'Реклама',
-        'Налоги',
-        'Прочее'
+        'rent_and_utilities',
+        'salary', 
+        'materials',
+        'advertising',
+        'taxes',
+        'other'
     ]
 ]; 

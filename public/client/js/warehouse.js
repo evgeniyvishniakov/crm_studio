@@ -228,7 +228,7 @@ function submitAddForm(event) {
     
     // Проверяем, что все поля заполнены
     if (!formData.get('product_id') || !formData.get('purchase_price') || !formData.get('retail_price') || !formData.get('quantity')) {
-        window.showNotification('error', 'Пожалуйста, заполните все обязательные поля');
+        window.showNotification('error', window.translations?.please_fill_required_fields || 'Пожалуйста, заполните все обязательные поля');
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
         return;
@@ -300,14 +300,14 @@ function submitEditForm(event) {
                 
                 purchasePriceElement.textContent = formatPrice(data.warehouse.purchase_price);
                 retailPriceElement.textContent = formatPrice(data.warehouse.retail_price);
-                row.querySelector('.quantity').textContent = data.warehouse.quantity + ' шт.';
+                row.querySelector('.quantity').textContent = data.warehouse.quantity + ' ' + (window.messages?.pieces || 'pcs');
             }
 
             const card = document.getElementById(`warehouse-card-${id}`);
             if (card) {
                 const quantityCardElement = card.querySelector('.warehouse-info-item:nth-child(1) .warehouse-info-value');
                 if (quantityCardElement) {
-                    quantityCardElement.textContent = data.warehouse.quantity + ' шт.';
+                    quantityCardElement.textContent = data.warehouse.quantity + ' ' + (window.messages?.pieces || 'pcs');
                 }
 
                 const purchasePriceCardElement = card.querySelector('.warehouse-info-item:nth-child(2) .warehouse-info-value');
@@ -406,7 +406,7 @@ function renderWarehouseItems(items) {
                 <td class="product-name">${escapeHtml(item.product ? item.product.name : 'Товар не найден')}</td>
                 <td class="purchase-price currency-amount" data-amount="${item.purchase_price}">${formatPrice(item.purchase_price)}</td>
                 <td class="retail-price currency-amount" data-amount="${item.retail_price}">${formatPrice(item.retail_price)}</td>
-                <td class="quantity">${item.quantity} шт.</td>
+                <td class="quantity">${item.quantity} ${window.messages?.pieces || 'pcs'}</td>
                                  <td class="actions-cell" style="vertical-align: middle;">
                      <button class="btn-edit" onclick="openEditModal(${item.id})">
                          <svg viewBox="0 0 24 24" fill="currentColor">
@@ -445,7 +445,7 @@ function renderWarehouseItems(items) {
                             </svg>
                             Количество
                         </div>
-                        <div class="warehouse-info-value">${item.quantity} шт.</div>
+                        <div class="warehouse-info-value">${item.quantity} ${window.messages?.pieces || 'pcs'}</div>
                     </div>
                     <div class="warehouse-info-item">
                         <div class="warehouse-info-label">

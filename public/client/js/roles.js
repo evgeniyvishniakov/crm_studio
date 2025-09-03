@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             `;
                         }
                         
-                        window.showNotification('success', 'Роль успешно обновлена');
+                        window.showNotification('success', window.translations?.role_successfully_updated || 'Роль успешно обновлена');
                     } else {
                         // Добавляем новую роль
                         const tbody = document.getElementById('rolesTableBody');

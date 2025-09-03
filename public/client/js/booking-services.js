@@ -26,7 +26,7 @@ function addUserService() {
     document.getElementById('modal-is-active').checked = true;
     
     // Обновляем заголовок модального окна
-    document.getElementById('userServiceModalTitle').textContent = translations.add_master_service;
+    document.getElementById('userServiceModalTitle').textContent = window.translations?.add_master_service || 'Добавить услугу мастеру';
     
     // Открываем модальное окно
     const modal = document.getElementById('userServiceModal');
@@ -65,18 +65,18 @@ function editUserService(userServiceId) {
             document.getElementById('modal-description').value = userService.description || '';
             
             // Обновляем заголовок модального окна
-            document.getElementById('userServiceModalTitle').textContent = translations.edit_service_to_master;
+            document.getElementById('userServiceModalTitle').textContent = window.translations?.edit_service_to_master || 'Редактировать услугу мастеру';
             
             // Открываем модальное окно
             const modal = document.getElementById('userServiceModal');
             modal.style.display = 'block';
         } else {
-            window.showNotification('error', data.message || translations.error_loading_service_data);
+            window.showNotification('error', data.message || window.translations?.error_loading_service_data || 'Ошибка загрузки данных услуги');
         }
     })
     .catch(error => {
         // Ошибка при загрузке данных
-        window.showNotification('error', error.message || translations.error_loading_data);
+        window.showNotification('error', error.message || window.translations?.error_loading_data || 'Ошибка загрузки данных');
     });
 }
 
@@ -158,7 +158,7 @@ function confirmDeleteUserService() {
             }
             
             // Показываем уведомление об успехе
-            window.showNotification('success', translations.service_deleted_successfully || 'Услуга успешно удалена');
+            window.showNotification('success', window.translations?.service_successfully_deleted || 'Услуга успешно удалена');
             
             // Обновляем статистику
             updateStatistics();
@@ -188,7 +188,7 @@ function confirmDeleteUserService() {
     })
     .catch(error => {
         // Ошибка при удалении
-        window.showNotification('error', error.message || translations.error_deleting || 'Произошла ошибка при удалении');
+        window.showNotification('error', error.message || window.translations?.error_deleting || 'Произошла ошибка при удалении');
         
         // Убираем класс анимации при ошибке
         if (window.currentDeleteRow) {
@@ -255,7 +255,16 @@ function saveUserService() {
     })
     .then(data => {
         if (data.success) {
-            window.showNotification('success', data.message);
+            // Используем перевод, если сообщение с сервера не переведено
+            let message = data.message;
+            if (message && message.includes('успешно')) {
+                if (message.includes('обновлен')) {
+                    message = window.translations?.service_successfully_updated || message;
+                } else if (message.includes('добавлен')) {
+                    message = window.translations?.service_successfully_created || message;
+                }
+            }
+            window.showNotification('success', message);
             closeUserServiceModal();
             
 
@@ -281,12 +290,12 @@ function saveUserService() {
             document.getElementById('user-service-form').reset();
             document.getElementById('modal-is-active').checked = true;
         } else {
-            window.showNotification('error', data.message || translations.error_saving);
+            window.showNotification('error', data.message || window.translations?.error_saving || 'Ошибка при сохранении');
         }
     })
     .catch(error => {
         // Ошибка при сохранении
-        window.showNotification('error', error.message || translations.error_saving);
+        window.showNotification('error', error.message || window.translations?.error_saving || 'Ошибка при сохранении');
     });
 }
 
@@ -336,16 +345,16 @@ function updateUserServiceInTable(userService) {
             <td>${formatDuration(duration, !userService.is_custom_duration)}</td>
             <td>
                 <span class="status-badge ${userService.is_active_for_booking ? 'active' : 'inactive'}">
-                    ${userService.is_active_for_booking ? 'Активна' : 'Неактивна'}
+                    ${userService.is_active_for_booking ? (window.translations?.active || 'Активна') : (window.translations?.inactive || 'Неактивна')}
                 </span>
             </td>
             <td class="actions-cell">
-                <button type="button" class="btn-edit" onclick="editUserService(${userService.id})" title="Редактировать">
+                <button type="button" class="btn-edit" onclick="editUserService(${userService.id})" title="${window.translations?.edit || 'Редактировать'}">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                     </svg>
                 </button>
-                <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="Удалить">
+                <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="${window.translations?.delete || 'Удалить'}">
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                     </svg>
@@ -472,16 +481,16 @@ function addUserServiceToTable(userService) {
         <td>${formatDuration(duration, !userService.is_custom_duration)}</td>
         <td>
             <span class="status-badge ${userService.is_active_for_booking ? 'active' : 'inactive'}">
-                ${userService.is_active_for_booking ? 'Активна' : 'Неактивна'}
+                ${userService.is_active_for_booking ? (window.translations?.active || 'Активна') : (window.translations?.inactive || 'Неактивна')}
             </span>
         </td>
         <td class="actions-cell">
-            <button type="button" class="btn-edit" onclick="editUserService(${userService.id})" title="Редактировать">
+            <button type="button" class="btn-edit" onclick="editUserService(${userService.id})" title="${window.translations?.edit || 'Редактировать'}">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                 </svg>
             </button>
-            <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="Удалить">
+            <button type="button" class="btn-delete" onclick="deleteUserService(${userService.id})" title="${window.translations?.delete || 'Удалить'}">
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                 </svg>

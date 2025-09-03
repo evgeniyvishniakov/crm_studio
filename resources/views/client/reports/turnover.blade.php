@@ -262,6 +262,24 @@ $currencySymbol = CurrencyHelper::getSymbol($currency);
 
 
 @push('scripts')
+<script>
+    // Переводы для JavaScript
+    window.messages = {
+        gross_profit: '{{ __("messages.gross_profit") }}',
+        pieces: '{{ __("messages.pieces") }}',
+        sales: '{{ __("messages.sales") }}',
+        purchases: '{{ __("messages.purchases") }}',
+        expenses: '{{ __("messages.expenses") }}',
+        total_expenses: '{{ __("messages.total_expenses") }}',
+        average_expense: '{{ __("messages.average_expense") }}',
+        average_sale_amount: '{{ __("messages.average_sale_amount") }}',
+        employees: '{{ __("messages.employees") }}',
+        products: '{{ __("messages.products") }}',
+        services: '{{ __("messages.services") }}',
+        fixed: '{{ __("messages.fixed") }}',
+        variable: '{{ __("messages.variable") }}'
+    };
+</script>
 <script src="{{ asset('client/js/turnover-analytics.js') }}"></script>
 @endpush
 @endsection                    

@@ -286,7 +286,7 @@ function renderSuppliers(suppliers) {
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
-                    Ред.
+                    ${window.translations?.edit_short || 'Ред.'}
                 </button>
                 <button class="btn-delete" onclick="showDeleteConfirmation(${supplier.id})">
                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     updateSupplierRow(data.supplier);
-                    window.showNotification('success', 'Поставщик успешно обновлен');
+                    window.showNotification('success', window.translations?.supplier_successfully_updated || 'Поставщик успешно обновлен');
                     closeEditModal();
                 }
             })

@@ -426,7 +426,7 @@ document.getElementById('editProductForm').addEventListener('submit', function(e
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            window.showNotification('success', 'Товар успешно обновлен');
+            window.showNotification('success', window.translations?.product_successfully_updated || 'Товар успешно обновлен');
             closeEditModal();
             // Обновляем строку в таблице
             const row = document.getElementById(`product-${productId}`);

@@ -13,7 +13,7 @@ function initializeTelegramSettings() {
         const chatId = document.getElementById('telegram_chat_id').value.trim();
         
         if (!botToken || !chatId) {
-            window.showNotification('error', 'Пожалуйста, заполните все обязательные поля');
+            window.showNotification('error', window.translations?.please_fill_required_fields || 'Пожалуйста, заполните все обязательные поля');
             return;
         }
 
@@ -42,7 +42,7 @@ function initializeTelegramSettings() {
             if (data.success) {
                 window.showNotification('success', data.message || 'Настройки Telegram успешно сохранены');
             } else {
-                window.showNotification('error', data.message || 'Ошибка при сохранении настроек');
+                window.showNotification('error', data.message || window.translations?.error_saving_settings || 'Ошибка при сохранении настроек');
             }
         })
         .catch(error => {
@@ -61,9 +61,9 @@ function initializeTelegramSettings() {
                         }
                     }
                 });
-                window.showNotification('error', 'Ошибки валидации');
+                window.showNotification('error', window.translations?.validation_errors || 'Ошибки валидации');
             } else {
-                window.showNotification('error', error.message || 'Ошибка при сохранении настроек');
+                window.showNotification('error', error.message || window.translations?.error_saving_settings || 'Ошибка при сохранении настроек');
             }
         })
         .finally(() => {
@@ -80,7 +80,7 @@ function testConnection() {
     const chatId = document.getElementById('telegram_chat_id').value.trim();
     
     if (!botToken || !chatId) {
-        window.showNotification('error', 'Пожалуйста, заполните все обязательные поля для тестирования');
+        window.showNotification('error', window.translations?.please_fill_required_fields_for_testing || 'Пожалуйста, заполните все обязательные поля для тестирования');
         return;
     }
 

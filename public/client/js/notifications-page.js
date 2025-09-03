@@ -85,22 +85,22 @@ function updateTable(notifications) {
         }
         
         const statusBadge = notification.is_read 
-            ? '<span class="badge status-success">Прочитано</span>'
-            : '<span class="badge status-warning text-dark">Не прочитано</span>';
+            ? '<span class="badge status-success">' + (window.translations?.read || 'Прочитано') + '</span>'
+            : '<span class="badge status-warning text-dark">' + (window.translations?.unread || 'Не прочитано') + '</span>';
             
         const actionButton = (!notification.is_read && notification.url) 
             ? `<form method="POST" action="/notifications/${notification.id}/read" style="display:inline;">
                  <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}">
-                 <button type="submit" class="btn-add-client btn-sm">Открыт</button>
+                 <button type="submit" class="btn-add-client btn-sm">${window.translations?.open || 'Открыт'}</button>
                </form>`
             : '';
         
         // Определяем правильное отображение типа уведомления
         let typeDisplay = notification.type.charAt(0).toUpperCase() + notification.type.slice(1);
         if (notification.type === 'web_booking') {
-            typeDisplay = 'Запись';
+            typeDisplay = window.translations?.booking || 'Запись';
         } else if (notification.type === 'ticket') {
-            typeDisplay = 'Сообщение';
+            typeDisplay = window.translations?.message || 'Сообщение';
         }
         
         row.innerHTML = `

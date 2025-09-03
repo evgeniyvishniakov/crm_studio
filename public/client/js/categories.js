@@ -229,7 +229,7 @@ function renderCategories(categories) {
             <td>${category.description ?? '—'}</td>
             <td>
                 <span class="status-badge ${category.status ? 'active' : 'inactive'}">
-                    ${category.status ? 'Активна' : 'Неактивна'}
+                    ${category.status ? (window.translations?.category_active || 'Активна') : (window.translations?.category_inactive || 'Неактивна')}
                 </span>
             </td>
             <td class="actions-cell">
@@ -553,7 +553,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     // Успешное редактирование
-                    window.showNotification('success', 'Категория успешно обновлена');
+                    window.showNotification('success', window.translations?.category_successfully_updated || 'Категория успешно обновлена');
                     closeEditModal();
                     
                     // Обновляем данные в таблице без перезагрузки

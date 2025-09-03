@@ -85,7 +85,7 @@ function copyBookingUrl() {
     urlInput.select();
     document.execCommand('copy');
     
-    window.showNotification('success', 'Ссылка скопирована в буфер обмена');
+    window.showNotification('success', window.translations?.link_copied || 'Ссылка скопирована в буфер обмена');
 }
 
 // Функция для очистки ошибок
@@ -541,20 +541,20 @@ function saveDaySchedule() {
     // Валидация
     if (isWorking && (!startTime || !endTime)) {
         // Не указано время работы
-        window.showNotification('error', 'Укажите время начала и окончания работы');
+        window.showNotification('error', window.translations?.specify_work_time || 'Укажите время начала и окончания работы');
         return;
     }
     
     if (isWorking && startTime >= endTime) {
         // Неправильное время работы
-        window.showNotification('error', 'Время окончания должно быть позже времени начала');
+        window.showNotification('error', window.translations?.end_time_later || 'Время окончания должно быть позже времени начала');
         return;
     }
     
     // Валидация интервала
     if (!bookingInterval || bookingInterval < 15 || bookingInterval > 120) {
         // Неправильный интервал
-        window.showNotification('error', 'Интервал должен быть от 15 до 120 минут');
+        window.showNotification('error', window.translations?.interval_range || 'Интервал должен быть от 15 до 120 минут');
         return;
     }
     
@@ -589,7 +589,7 @@ function saveDaySchedule() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            window.showNotification('success', 'Расписание успешно сохранено');
+            window.showNotification('success', window.translations?.schedule_saved || 'Расписание успешно сохранено');
         } else {
             // Ошибка сохранения
             window.showNotification('error', 'Ошибка: ' + data.message);

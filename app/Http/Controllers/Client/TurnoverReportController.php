@@ -524,7 +524,9 @@ class TurnoverReportController extends Controller
         if ($endDate) $query->whereDate('date', '<=', $endDate);
         $expenses = $query->get();
         $categories = config('expenses.categories', []);
-        $labels = $categories;
+        $labels = array_map(function($category) {
+            return __('messages.' . $category);
+        }, $categories);
         $data = [];
         foreach ($categories as $cat) {
             $data[] = $expenses->where('category', $cat)->sum('amount');
@@ -574,7 +576,9 @@ class TurnoverReportController extends Controller
         $expenses = $query->get();
         $categories = config('expenses.categories', []);
         $monthCount = $expenses->groupBy(function($item) { return \Carbon\Carbon::parse($item->date)->format('Y-m'); })->count();
-        $labels = $categories;
+        $labels = array_map(function($category) {
+            return __('messages.' . $category);
+        }, $categories);
         $data = [];
         foreach ($categories as $cat) {
             $sum = $expenses->where('category', $cat)->sum('amount');

@@ -145,13 +145,13 @@ function generateWidgetCode() {
                 fixedInstructions.style.display = 'block';
             }
             
-            window.showNotification('success', 'Код виджета сгенерирован');
+            window.showNotification('success', window.translations?.widget_code_generated || 'Код виджета сгенерирован');
         } else {
             window.showNotification('error', data.message);
         }
     })
     .catch(error => {
-        window.showNotification('error', 'Ошибка при генерации кода');
+        window.showNotification('error', window.translations?.error_generating_code || 'Ошибка при генерации кода');
     });
 }
 

@@ -328,6 +328,7 @@
             client: '{{ __("messages.client") }}',
             date: '{{ __("messages.date") }}',
             employee_master: '{{ __("messages.employee_master") }}',
+            employee_not_specified: '{{ __("messages.employee_not_specified") }}',
             notes: '{{ __("messages.notes") }}',
             products: '{{ __("messages.products") }}',
             select_client: '{{ __("messages.select_client") }}',

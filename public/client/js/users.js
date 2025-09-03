@@ -98,7 +98,7 @@ function deleteUser(userId) {
             setTimeout(() => {
                 if (userCard) userCard.remove();
                 if (userRow) userRow.remove();
-                window.showNotification('success', 'Пользователь успешно удален');
+                window.showNotification('success', window.translations?.user_successfully_deleted || 'Пользователь успешно удален');
             }, 300);
         } else {
             if (userCard) userCard.classList.remove('row-deleting');
@@ -434,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     addUserForm.reset();
                     closeUserModal();
-                    window.showNotification('success', 'Пользователь успешно добавлен');
+                    window.showNotification('success', window.translations?.user_successfully_added || 'Пользователь успешно добавлен');
                 } else {
                     window.showNotification('error', data.message || 'Ошибка при добавлении пользователя');
                 }
@@ -667,7 +667,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const passwordField = document.getElementById('editUserPassword');
                 const passwordChanged = passwordField && passwordField.value.trim() !== '';
                 
-                let message = 'Пользователь успешно обновлен';
+                let message = window.translations?.user_successfully_updated || 'Пользователь успешно обновлен';
                 if (passwordChanged) {
                     message += ' (пароль изменен)';
                 }
@@ -872,7 +872,7 @@ document.getElementById('adminAvatarForm').addEventListener('submit', function(e
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            window.showNotification('success', 'Аватарка успешно загружена');
+            window.showNotification('success', window.translations?.avatar_uploaded || 'Аватарка успешно загружена');
             closeAdminAvatarModal();
             // Обновляем аватарку в таблице
             // Извлекаем путь из URL

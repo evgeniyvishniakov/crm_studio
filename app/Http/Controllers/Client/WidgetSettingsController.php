@@ -104,12 +104,12 @@ class WidgetSettingsController extends Controller
         if ($isInline) {
             // Для inline позиций создаем простой код для вставки
             return "
-<!-- Виджет записи для сайта (встраиваемый) -->
-<!-- Просто вставьте этот код в нужное место на вашей странице -->
+" . __('messages.widget_booking_inline_comment') . "
+" . __('messages.widget_booking_inline_instruction') . "
 <script src=\"http://127.0.0.1:8000/widget-loader.js\" data-project=\"{$project->slug}\"></script>
 <span id=\"booking-widget-inline\"></span>
 
-<!-- Или используйте этот HTML код для кнопки: -->
+" . __('messages.widget_booking_button_comment') . "
 <button onclick=\"openBookingModal()\" style='
     background-color: {$widgetSettings->widget_button_color};
     color: {$widgetSettings->widget_text_color};
@@ -128,13 +128,13 @@ class WidgetSettingsController extends Controller
         } else {
             // Для фиксированных позиций создаем простой код
             return "
-<!-- Виджет записи для сайта -->
-<!-- Просто вставьте этот код в &lt;head&gt; или перед закрывающим &lt;/body&gt; на вашей странице -->
+" . __('messages.widget_booking_code_comment') . "
+" . __('messages.widget_booking_code_instruction') . "
 <script src=\"http://127.0.0.1:8000/widget-loader.js\" data-project=\"{$project->slug}\"></script>
 
-<!-- Или инициализируйте виджет вручную: -->
+" . __('messages.widget_booking_manual_comment') . "
 <script>
-    // Инициализация виджета
+    " . __('messages.widget_booking_manual_instruction') . "
     window.initBookingWidget('{$project->slug}');
 </script>";
         }
