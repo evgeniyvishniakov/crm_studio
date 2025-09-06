@@ -143,4 +143,106 @@ class BlogArticle extends Model
         $this->update(['reading_time' => $readingTime]);
         return $readingTime;
     }
+
+    /**
+     * Получить локализованный заголовок
+     */
+    public function getLocalizedTitleAttribute()
+    {
+        $currentLanguage = \App\Helpers\LanguageHelper::getCurrentLanguage();
+        
+        // Если переводы не загружены, загружаем их
+        if (!$this->relationLoaded('translations')) {
+            $this->load('translations');
+        }
+        
+        $translation = $this->translation($currentLanguage);
+        
+        return $translation ? $translation->title : $this->title;
+    }
+
+    /**
+     * Получить локализованное описание
+     */
+    public function getLocalizedExcerptAttribute()
+    {
+        $currentLanguage = \App\Helpers\LanguageHelper::getCurrentLanguage();
+        
+        // Если переводы не загружены, загружаем их
+        if (!$this->relationLoaded('translations')) {
+            $this->load('translations');
+        }
+        
+        $translation = $this->translation($currentLanguage);
+        
+        return $translation ? $translation->excerpt : $this->excerpt;
+    }
+
+    /**
+     * Получить локализованный контент
+     */
+    public function getLocalizedContentAttribute()
+    {
+        $currentLanguage = \App\Helpers\LanguageHelper::getCurrentLanguage();
+        
+        // Если переводы не загружены, загружаем их
+        if (!$this->relationLoaded('translations')) {
+            $this->load('translations');
+        }
+        
+        $translation = $this->translation($currentLanguage);
+        
+        return $translation ? $translation->content : $this->content;
+    }
+
+    /**
+     * Получить локализованный meta_title
+     */
+    public function getLocalizedMetaTitleAttribute()
+    {
+        $currentLanguage = \App\Helpers\LanguageHelper::getCurrentLanguage();
+        
+        // Если переводы не загружены, загружаем их
+        if (!$this->relationLoaded('translations')) {
+            $this->load('translations');
+        }
+        
+        $translation = $this->translation($currentLanguage);
+        
+        return $translation ? $translation->meta_title : $this->meta_title;
+    }
+
+    /**
+     * Получить локализованный meta_description
+     */
+    public function getLocalizedMetaDescriptionAttribute()
+    {
+        $currentLanguage = \App\Helpers\LanguageHelper::getCurrentLanguage();
+        
+        // Если переводы не загружены, загружаем их
+        if (!$this->relationLoaded('translations')) {
+            $this->load('translations');
+        }
+        
+        $translation = $this->translation($currentLanguage);
+        
+        return $translation ? $translation->meta_description : $this->meta_description;
+    }
+
+    /**
+     * Получить локализованный meta_keywords
+     */
+    public function getLocalizedMetaKeywordsAttribute()
+    {
+        $currentLanguage = \App\Helpers\LanguageHelper::getCurrentLanguage();
+        
+        // Если переводы не загружены, загружаем их
+        if (!$this->relationLoaded('translations')) {
+            $this->load('translations');
+        }
+        
+        $translation = $this->translation($currentLanguage);
+        
+        return $translation ? $translation->meta_keywords : $this->meta_keywords;
+    }
 }

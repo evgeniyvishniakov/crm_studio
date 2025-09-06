@@ -1,2 +1,33 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Sitemap
+Sitemap: /sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /storage/
+Disallow: /vendor/
+Disallow: /node_modules/
+Disallow: /.env
+Disallow: /config/
+Disallow: /database/
+Disallow: /app/
+Disallow: /resources/
+Disallow: /routes/
+Disallow: /tests/
+Disallow: /bootstrap/
+Disallow: /artisan
+Disallow: /composer.json
+Disallow: /composer.lock
+Disallow: /package.json
+Disallow: /vite.config.js
+Disallow: /phpunit.xml
+Disallow: /README.md
+Disallow: /*.md
+Disallow: /*.log
+Disallow: /*.sql
+Disallow: /*.gz
+Disallow: /*.zip
+Disallow: /*.tar
+Disallow: /*.rar

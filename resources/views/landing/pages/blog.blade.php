@@ -1,11 +1,59 @@
 @extends('landing.layouts.app')
 
-@section('title', __('landing.knowledge_page_title') . ' - Trimora')
-@section('description', __('landing.knowledge_page_description'))
+@section('title', __('landing.blog_page_title') . ' - Trimora')
+@section('description', __('landing.blog_page_description'))
+@section('canonical', \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.blog'))
+@section('og:title', __('landing.blog_page_title') . ' - Trimora')
+@section('og:description', __('landing.blog_page_description'))
+@section('og:type', 'website')
+@section('og:url', \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.blog'))
+@section('og:image', asset('images/og-blog.jpg'))
+@section('og:locale', app()->getLocale())
+@section('twitter:title', __('landing.blog_page_title') . ' - Trimora')
+@section('twitter:description', __('landing.blog_page_description'))
+@section('twitter:image', asset('images/og-blog.jpg'))
+
+@push('head')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "{{ __('landing.blog_page_title') }}",
+  "description": "{{ __('landing.blog_page_description') }}",
+        "url": "{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.blog', []) }}",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Trimora",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ asset('images/logo.png') }}"
+    }
+  },
+  "blogPost": [
+    @foreach($articles as $index => $article)
+    {
+      "@type": "BlogPosting",
+      "headline": "{{ $article->localized_title }}",
+      "description": "{{ strip_tags($article->localized_excerpt) }}",
+        "url": "{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.blog.show', ['slug' => $article->slug]) }}",
+      "datePublished": "{{ $article->published_at ? $article->published_at->toISOString() : $article->created_at->toISOString() }}",
+      "dateModified": "{{ $article->updated_at->toISOString() }}",
+      "author": {
+        "@type": "Person",
+        "name": "{{ $article->author ?? __('landing.blog_author_unknown') }}"
+      },
+      "image": "{{ $article->featured_image ? Storage::url($article->featured_image) : asset('images/og-default.jpg') }}",
+      "articleSection": "{{ $article->category ? $article->category->localized_name : __('landing.blog') }}"
+    }{{ $index < $articles->count() - 1 ? ',' : '' }}
+    @endforeach
+  ]
+}
+</script>
+@endpush
 
 @section('styles')
 <style>
-    /* Красивые стили для списка статей с теми же шрифтами что и в лендинге */
+    /* Красивые стили для списка статей блога с теми же шрифтами что и в лендинге */
     .article-item .card {
         transition: all 0.3s ease;
         border: none;
@@ -91,6 +139,14 @@
         font-size: 23px!important;
         font-weight: bold!important;
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    .article-item .card .card-body h5.card-title a {
+        transition: color 0.3s ease;
+    }
+    
+    .article-item .card .card-body h5.card-title a:hover {
+        color: #667eea !important;
     }
     
     .category-filter {
@@ -217,8 +273,28 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 mx-auto text-center">
-                <h1 class="display-4 fw-bold mb-4">{{ __('landing.knowledge_page_title') }}</h1>
-                <p class="lead">{{ __('landing.knowledge_page_description') }}</p>
+                <h1 class="display-4 fw-bold mb-4">{{ __('landing.blog_page_title') }}</h1>
+                <p class="lead">{{ __('landing.blog_page_description') }}</p>
+                
+                @if($currentFilter)
+                    <div class="alert alert-info d-inline-flex align-items-center mt-4" role="alert">
+                        <i class="fas fa-filter me-2"></i>
+                        <span>{{ __('landing.blog_filtered_by') }}: 
+                            <strong>
+                                @if($currentFilter instanceof \App\Models\Admin\BlogCategory)
+                                    {{ $currentFilter->name }}
+                                @else
+                                    #{{ $currentFilter->name }}
+                                @endif
+                            </strong>
+                        </span>
+                        <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.blog') }}" 
+                           class="btn btn-sm btn-outline-primary ms-3">
+                            <i class="fas fa-times me-1"></i>
+                            {{ __('landing.blog_clear_filter') }}
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -230,7 +306,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-6">
                 <div class="input-group">
-                    <input type="text" class="form-control" id="searchInput" placeholder="{{ __('landing.knowledge_search_placeholder') }}" aria-label="{{ __('landing.knowledge_search_placeholder') }}">
+                    <input type="text" class="form-control" id="searchInput" placeholder="{{ __('landing.blog_search_placeholder') }}" aria-label="{{ __('landing.blog_search_placeholder') }}">
                     <button class="btn btn-primary" type="button" id="searchBtn">
                         <i class="fas fa-search"></i>
                     </button>
@@ -245,20 +321,15 @@
     <div class="container">
         <div class="row g-3 justify-content-center">
             <div class="col-auto">
-                <button class="btn btn-outline-primary category-filter active" data-category="all">Все</button>
+                <button class="btn btn-outline-primary category-filter active" data-category="all">{{ __('landing.blog_all_categories') }}</button>
             </div>
-                        <div class="col-auto">
-                <button class="btn btn-outline-primary category-filter" data-category="getting-started">Начало работы</button>
-            </div>
-            <div class="col-auto">
-                <button class="btn btn-outline-primary category-filter" data-category="features">Функции</button>
-            </div>
-            <div class="col-auto">
-                <button class="btn btn-outline-primary category-filter" data-category="tips">Советы</button>
-            </div>
-            <div class="col-auto">
-                <button class="btn btn-outline-primary category-filter" data-category="troubleshooting">Решение проблем</button>
-            </div>
+            @foreach($categories as $category)
+                <div class="col-auto">
+                    <button class="btn btn-outline-primary category-filter" data-category="{{ $category->id }}" style="background-color: {{ $category->color }}20; border-color: {{ $category->color }};">
+                        {{ $category->localized_name }}
+                    </button>
+                </div>
+            @endforeach
         </div>
     </div>
 </section>
@@ -266,75 +337,66 @@
 <!-- Articles -->
 <section class="py-5">
     <div class="container">
-
-        
         <div class="row g-4" id="articlesContainer">
             @forelse($articles as $article)
-                <div class="col-lg-4 col-md-6 article-item" data-category="{{ $article->category }}">
+                <div class="col-lg-4 col-md-6 article-item" data-category="{{ $article->blog_category_id }}" data-title="{{ strtolower($article->localized_title) }}" data-content="{{ strtolower(strip_tags($article->localized_excerpt)) }}">
                     <div class="card h-100">
                         @if($article->featured_image)
-                            <img src="{{ asset('storage/' . $article->featured_image) }}" 
+                            <img src="{{ Storage::url($article->featured_image) }}" 
                                  class="card-img-top" 
-                                 alt="{{ $article->title }}"
+                                 alt="{{ $article->localized_title }}"
                                  style="height: 200px; object-fit: cover;">
                         @endif
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <span class="badge bg-primary me-2">{{ $categories[$article->category] ?? $article->category }}</span>
+                                @if($article->category)
+                                    <span class="badge me-2" style="background-color: {{ $article->category->color }}">{{ $article->category->localized_name }}</span>
+                                @endif
+                                @if($article->is_featured)
+                                    <span class="badge bg-warning text-dark">{{ __('landing.blog_featured') }}</span>
+                                @endif
                             </div>
                             <h5 class="card-title" style="font-size: 23px!important; font-weight: bold!important; font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;">
-                                {{ $article->title }}
+                                <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.blog.show', ['slug' => $article->slug]) }}" 
+                                   class="text-decoration-none text-dark">
+                                    {{ $article->localized_title }}
+                                </a>
                             </h5>
                             <p class="card-text">
-                                {!! Str::limit(strip_tags($article->description), 120) !!}
+                                {!! Str::limit(strip_tags($article->localized_excerpt), 120) !!}
                             </p>
-                            
-                            @if($article->steps->count() > 0)
-                                <div class="mb-3">
-                                    <small class="text-muted">
-                                        <i class="fas fa-list-ol me-1"></i>
-                                        {{ $article->steps->count() }} {{ trans_choice(__('landing.knowledge_steps_count'), $article->steps->count()) }}
-                                    </small>
-                                </div>
-                            @endif
-                            
-                            @if($article->tips->count() > 0)
-                                <div class="mb-3">
-                                    <small class="text-muted">
-                                        <i class="fas fa-lightbulb me-1"></i>
-                                        {{ $article->tips->count() }} {{ trans_choice(__('landing.knowledge_tips_count'), $article->tips->count()) }}
-                                    </small>
-                                </div>
-                            @endif
                             
                             <div class="d-flex align-items-center mb-3">
                                 <i class="fas fa-user text-muted me-2"></i>
-                                <small class="text-muted">{{ $article->author }}</small>
+                                <small class="text-muted">{{ $article->author ?? __('landing.blog_author_unknown') }}</small>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-calendar text-muted me-2"></i>
+                                <small class="text-muted">{{ $article->published_at ? $article->published_at->format('d.m.Y') : $article->created_at->format('d.m.Y') }}</small>
                             </div>
                             
-                            <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.knowledge.show', ['slug' => $article->slug]) }}" class="btn btn-primary">{{ __('landing.knowledge_read_article') }}</a>
+                            <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.blog.show', ['slug' => $article->slug]) }}" class="btn btn-primary">{{ __('landing.blog_read_article') }}</a>
                         </div>
                     </div>
                 </div>
             @empty
                 <div class="col-12 text-center py-5">
-                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">{{ __('landing.knowledge_no_articles') }}</h4>
-                    <p class="text-muted">{{ __('landing.knowledge_no_articles_text') }}</p>
+                    <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">{{ __('landing.blog_no_articles') }}</h4>
+                    <p class="text-muted">{{ __('landing.blog_no_articles_text') }}</p>
                 </div>
             @endforelse
         </div>
         
-                <!-- Empty State -->
+        <!-- Empty State -->
         <div class="empty-state text-center py-5" style="display: none;">
-                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">{{ __('landing.knowledge_search_no_results') }}</h4>
-                    <p class="text-muted">{{ __('landing.knowledge_search_no_results_text') }}</p>
-                    <button class="btn btn-outline-primary" onclick="clearFilters()">
-                        <i class="fas fa-times me-2"></i>
-                        {{ __('landing.knowledge_clear_filters') }}
-                    </button>
-                </div>
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">{{ __('landing.blog_search_no_results') }}</h4>
+            <p class="text-muted">{{ __('landing.blog_search_no_results_text') }}</p>
+            <button class="btn btn-outline-primary" onclick="clearFilters()">
+                <i class="fas fa-times me-2"></i>
+                {{ __('landing.blog_clear_filters') }}
+            </button>
+        </div>
     </div>
 </section>
 
@@ -343,11 +405,11 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8 text-center">
-                <h3 class="fw-bold mb-3">{{ __('landing.knowledge_contact_support_title') }}</h3>
-                <p class="text-muted mb-4">{{ __('landing.knowledge_contact_support_text') }}</p>
+                <h3 class="fw-bold mb-3">{{ __('landing.blog_contact_support_title') }}</h3>
+                <p class="text-muted mb-4">{{ __('landing.blog_contact_support_text') }}</p>
                 <div class="d-flex justify-content-center gap-3">
-                    <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.contact') }}" class="btn btn-primary">{{ __('landing.knowledge_contact_support') }}</a>
-                    <a href="#" class="btn btn-outline-primary">{{ __('landing.knowledge_ask_chat') }}</a>
+                    <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.contact') }}" class="btn btn-primary">{{ __('landing.blog_contact_support') }}</a>
+                    <a href="#" class="btn btn-outline-primary">{{ __('landing.blog_ask_chat') }}</a>
                 </div>
             </div>
         </div>
@@ -370,10 +432,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         articles.forEach(article => {
             const title = article.querySelector('.card-title').textContent.toLowerCase();
-            const description = article.querySelector('.card-text').textContent.toLowerCase();
+            const content = article.dataset.content;
             const category = article.dataset.category;
             
-            const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+            const matchesSearch = title.includes(searchTerm) || content.includes(searchTerm);
             const matchesCategory = activeCategory === 'all' || category === activeCategory;
             
             if (matchesSearch && matchesCategory) {

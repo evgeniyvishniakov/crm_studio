@@ -131,12 +131,12 @@ class LanguageController extends Controller
                 'flag' => $language->flag_url,
             ],
             'landing_urls' => [
-                'index' => route('beautyflow.index') . '?lang=' . $language->code,
-                'contact' => route('beautyflow.contact') . '?lang=' . $language->code,
-                'pricing' => route('beautyflow.pricing') . '?lang=' . $language->code,
-                'privacy' => route('beautyflow.privacy') . '?lang=' . $language->code,
-                'terms' => route('beautyflow.terms') . '?lang=' . $language->code,
-                'knowledge' => route('beautyflow.knowledge') . '?lang=' . $language->code,
+                'index' => \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.index', [], $language->code),
+                'contact' => \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.contact', [], $language->code),
+                'pricing' => \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.pricing', [], $language->code),
+                'privacy' => \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.privacy', [], $language->code),
+                'terms' => \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.terms', [], $language->code),
+                'knowledge' => \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.knowledge', [], $language->code),
             ]
         ]);
     }

@@ -42,9 +42,12 @@
     }
 
     .current-image {
-        max-width: 200px;
-        height: auto;
+        max-width: 150px !important;
+        width: 150px !important;
+        height: auto !important;
         border-radius: 4px;
+        border: 1px solid #dee2e6;
+        object-fit: cover;
     }
 </style>
 @endsection
@@ -198,7 +201,7 @@
                                 <div class="mb-3">
                                     <label for="author" class="form-label">Автор</label>
                                     <input type="text" class="form-control @error('author') is-invalid @enderror" 
-                                           id="author" name="author" value="{{ old('author', $article->author) }}"
+                                           id="author" name="author" value="{{ old('author', $article->author ?: 'Trimora') }}"
                                            placeholder="Имя автора">
                                     @error('author')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -282,8 +285,13 @@
                                 @if($article->featured_image)
                                     <div class="mb-3">
                                         <label class="form-label">Текущее изображение</label>
-                                        <div>
-                                            <img src="{{ Storage::url($article->featured_image) }}" alt="{{ $article->title }}" class="current-image">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="{{ Storage::url($article->featured_image) }}" alt="{{ $article->title }}" class="current-image" style="max-width: 150px; width: 150px; height: auto; object-fit: cover;">
+                                            <div>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeImage()">
+                                                    <i class="fas fa-trash me-1"></i>Удалить изображение
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
@@ -298,6 +306,9 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                
+                                <!-- Скрытое поле для удаления изображения -->
+                                <input type="hidden" id="remove_image" name="remove_image" value="0">
                                 <div id="image-preview" class="mt-2" style="display: none;">
                                     <img id="preview-img" src="" alt="Превью" class="img-thumbnail" style="max-width: 100%; height: auto;">
                                 </div>
@@ -468,5 +479,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Функция удаления изображения
+function removeImage() {
+    if (confirm('Вы уверены, что хотите удалить изображение статьи?')) {
+        // Устанавливаем флаг удаления
+        document.getElementById('remove_image').value = '1';
+        
+        // Скрываем текущее изображение
+        const currentImageContainer = document.querySelector('.current-image').parentElement.parentElement;
+        currentImageContainer.style.display = 'none';
+        
+        // Очищаем поле загрузки файла
+        document.getElementById('featured_image').value = '';
+        
+        // Скрываем превью
+        document.getElementById('image-preview').style.display = 'none';
+        
+        // Показываем уведомление
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-info alert-dismissible fade show';
+        notification.innerHTML = `
+            <i class="fas fa-info-circle me-2"></i>
+            Изображение будет удалено при сохранении статьи
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        // Вставляем уведомление перед формой
+        const form = document.querySelector('form');
+        form.insertBefore(notification, form.firstChild);
+        
+        // Автоматически скрываем уведомление через 5 секунд
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+}
 </script>
 @endpush

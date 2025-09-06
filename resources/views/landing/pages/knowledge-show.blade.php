@@ -16,7 +16,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-3">
                         <li class="breadcrumb-item">
-                            <a href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.knowledge')) }}" class="text-decoration-none">
+                            <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.knowledge') }}" class="text-decoration-none">
                                 <i class="fas fa-arrow-left me-2"></i>{{ __('landing.knowledge_base') }}
                             </a>
                         </li>
@@ -155,7 +155,7 @@
                             
                             @forelse($relatedArticles as $relatedArticle)
                                 <div class="related-article-card mb-3">
-                                    <a href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.knowledge.show', $relatedArticle->slug)) }}" 
+                                    <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.knowledge.show', ['slug' => $relatedArticle->slug]) }}" 
                                        class="related-article-link">
                                         <div class="related-article-icon">
                                             <i class="fas fa-file-alt text-primary"></i>
@@ -193,7 +193,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="d-flex justify-content-between align-items-center">
-                    <a href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.knowledge')) }}" class="btn btn-outline-primary">
+                    <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.knowledge') }}" class="btn btn-outline-primary">
                         <i class="fas fa-arrow-left me-2"></i>
                         {{ __('landing.knowledge_back_to_knowledge') }}
                     </a>

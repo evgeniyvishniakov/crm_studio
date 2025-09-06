@@ -111,7 +111,7 @@
             </div>
         @else
             <!-- Для незарегистрированных пользователей -->
-            <a href="{{ route('beautyflow.index') }}" class="back-button">
+            <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.index') }}" class="back-button">
                 Перейти на головну
             </a>
         @endif

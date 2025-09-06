@@ -65,4 +65,38 @@ class BlogCategory extends Model
             $this->attributes['slug'] = \Str::slug($value);
         }
     }
+
+    /**
+     * Получить локализованное название
+     */
+    public function getLocalizedNameAttribute()
+    {
+        $currentLanguage = \App\Helpers\LanguageHelper::getCurrentLanguage();
+        
+        // Если переводы не загружены, загружаем их
+        if (!$this->relationLoaded('translations')) {
+            $this->load('translations');
+        }
+        
+        $translation = $this->translation($currentLanguage);
+        
+        return $translation ? $translation->name : $this->name;
+    }
+
+    /**
+     * Получить локализованное описание
+     */
+    public function getLocalizedDescriptionAttribute()
+    {
+        $currentLanguage = \App\Helpers\LanguageHelper::getCurrentLanguage();
+        
+        // Если переводы не загружены, загружаем их
+        if (!$this->relationLoaded('translations')) {
+            $this->load('translations');
+        }
+        
+        $translation = $this->translation($currentLanguage);
+        
+        return $translation ? $translation->description : $this->description;
+    }
 }

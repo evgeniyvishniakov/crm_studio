@@ -34,8 +34,18 @@ class SetLanguage
         ]);
 
         // Сначала проверяем параметр lang из URL (для лендинга)
+        // Также проверяем, если URL содержит языковой префикс (например, /beautyflow/en/blog)
+        $langFromUrl = null;
         if ($request->has('lang')) {
-            $langCode = $request->get('lang');
+            $langFromUrl = $request->get('lang');
+        } elseif (preg_match('/\/beautyflow\/([a-z]{2})\//', $request->path(), $matches)) {
+            $langFromUrl = $matches[1];
+        } elseif (preg_match('/\/beautyflow\/([a-z]{2})$/', $request->path(), $matches)) {
+            $langFromUrl = $matches[1];
+        }
+        
+        if ($langFromUrl) {
+            $langCode = $langFromUrl;
             Log::info('Found lang parameter', ['lang_code' => $langCode]);
             
             $language = Language::where('code', $langCode)->where('is_active', true)->first();
@@ -120,6 +130,23 @@ class SetLanguage
                 'session_id' => session()->getId()
             ]);
         } else {
+            // Для неавторизованных пользователей проверяем, является ли это fallback маршрутом лендинга
+            if (str_contains($request->url(), '/beautyflow') && !preg_match('/\/beautyflow\/([a-z]{2})\//', $request->path())) {
+                // Это fallback маршрут лендинга (например, /beautyflow/blog), устанавливаем украинский язык по умолчанию
+                $defaultCode = 'ua';
+                App::setLocale($defaultCode);
+                session(['language' => $defaultCode]);
+                
+                Log::info('Language set to Ukrainian for fallback landing route', [
+                    'lang_code' => $defaultCode,
+                    'app_locale' => App::getLocale(),
+                    'url' => $request->url(),
+                    'session_id' => session()->getId()
+                ]);
+                
+                return $next($request);
+            }
+            
             // Для неавторизованных пользователей проверяем язык из сессии
             if (session()->has('language')) {
                 $langCode = session('language');

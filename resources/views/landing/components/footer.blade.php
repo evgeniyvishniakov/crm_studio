@@ -15,9 +15,10 @@
                                 <ul class="list-unstyled">
                     <li><a href="#features-grid" class="text-muted text-decoration-none">{{ __('landing.features') }}</a></li>
                     <li><a href="#niches-section" class="text-muted text-decoration-none">{{ __('landing.niches') }}</a></li>
-                    <li><a href="{{ route('beautyflow.pricing') }}" class="text-muted text-decoration-none">{{ __('landing.pricing') }}</a></li>
-                    <li><a href="{{ route('beautyflow.knowledge') }}" class="text-muted text-decoration-none">{{ __('landing.knowledge_base') }}</a></li>
-                    <li><a href="{{ route('beautyflow.contact') }}" class="text-muted text-decoration-none">{{ __('landing.contacts') }}</a></li>
+                    <li><a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.pricing') }}" class="text-muted text-decoration-none">{{ __('landing.pricing') }}</a></li>
+                    <li><a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.knowledge') }}" class="text-muted text-decoration-none">{{ __('landing.knowledge_base') }}</a></li>
+                    <li><a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.blog') }}" class="text-muted text-decoration-none">{{ __('landing.blog') }}</a></li>
+                    <li><a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.contact') }}" class="text-muted text-decoration-none">{{ __('landing.contacts') }}</a></li>
                 </ul>
             </div>
             <div class="col-lg-3 col-md-6 mb-4">
@@ -32,7 +33,7 @@
             <div class="col-lg-3 col-md-6 mb-4">
                 <h5>{{ __('landing.contacts') }}</h5>
                 <ul class="list-unstyled">
-                    <li><a href="{{ route('beautyflow.contact') }}" class="text-muted text-decoration-none">{{ __('landing.contact_us') }}</a></li>
+                    <li><a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.contact') }}" class="text-muted text-decoration-none">{{ __('landing.contact_us') }}</a></li>
                     <li><i class="fas fa-phone me-2"></i>{{ __('landing.phone') }}</li>
                     <li><i class="fas fa-envelope me-2"></i>{{ __('landing.email') }}</li>
                     <li><i class="fas fa-map-marker-alt me-2"></i>{{ __('landing.address') }}</li>
@@ -46,8 +47,8 @@
                 <p class="text-muted mb-0">&copy; 2024 Trimora. {{ __('landing.all_rights_reserved') }}.</p>
             </div>
             <div class="col-md-6 text-end">
-                <a href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.privacy')) }}" class="text-muted text-decoration-none me-3">{{ __('landing.privacy_policy') }}</a>
-                <a href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.terms')) }}" class="text-muted text-decoration-none">{{ __('landing.terms_of_use') }}</a>
+                <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.privacy') }}" class="text-muted text-decoration-none me-3">{{ __('landing.privacy_policy') }}</a>
+                <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.terms') }}" class="text-muted text-decoration-none">{{ __('landing.terms_of_use') }}</a>
             </div>
         </div>
     </div>

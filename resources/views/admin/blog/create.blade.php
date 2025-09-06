@@ -17,6 +17,8 @@
         border: 1px solid #dee2e6; 
         border-radius: 4px; 
         padding: 4px; 
+        max-width: 150px;
+        height: auto;
     }
 
     .tag-item {
@@ -183,7 +185,7 @@
                                 <div class="mb-3">
                                     <label for="author" class="form-label">Автор</label>
                                     <input type="text" class="form-control @error('author') is-invalid @enderror" 
-                                           id="author" name="author" value="{{ old('author') }}"
+                                           id="author" name="author" value="{{ old('author', 'Trimora') }}"
                                            placeholder="Имя автора">
                                     @error('author')
                                         <div class="invalid-feedback">{{ $message }}</div>

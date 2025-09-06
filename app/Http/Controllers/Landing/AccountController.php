@@ -249,7 +249,7 @@ class AccountController extends Controller
     public function logout()
     {
         Auth::guard('client')->logout();
-        return redirect()->route('beautyflow.index');
+        return redirect()->route('beautyflow.index.fallback');
     }
 
     /**

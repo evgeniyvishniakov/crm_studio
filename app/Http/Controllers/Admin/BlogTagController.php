@@ -86,21 +86,7 @@ class BlogTagController extends Controller
             'is_active' => $request->boolean('is_active'),
         ]);
 
-        // Обновление переводов на всех языках
-        $languages = Language::getActive();
-        foreach ($languages as $language) {
-            $translation = $tag->translations()->where('locale', $language->code)->first();
-            if ($translation) {
-                $translation->update([
-                    'name' => $request->name,
-                ]);
-            } else {
-                $tag->translations()->create([
-                    'locale' => $language->code,
-                    'name' => $request->name,
-                ]);
-            }
-        }
+        // Переводы обновляются только через модальное окно переводов
 
         return redirect()->route('admin.blog-tags.index')
             ->with('success', 'Тег успешно обновлен!');

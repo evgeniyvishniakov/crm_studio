@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    
+    <!-- Главная страница -->
+    <url>
+        <loc>{{ url('/') }}</loc>
+        <lastmod>{{ now()->toISOString() }}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="{{ url('/?lang=ru') }}"/>
+        <xhtml:link rel="alternate" hreflang="en" href="{{ url('/?lang=en') }}"/>
+        <xhtml:link rel="alternate" hreflang="ua" href="{{ url('/?lang=ua') }}"/>
+    </url>
+    
+    <!-- Страница блога -->
+    <url>
+        <loc>{{ route('beautyflow.blog') }}</loc>
+        <lastmod>{{ now()->toISOString() }}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.blog'), 'ru') }}"/>
+        <xhtml:link rel="alternate" hreflang="en" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.blog'), 'en') }}"/>
+        <xhtml:link rel="alternate" hreflang="ua" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.blog'), 'ua') }}"/>
+    </url>
+    
+    <!-- Статьи блога -->
+    @foreach(\App\Models\Admin\BlogArticle::published()->get() as $article)
+    <url>
+        <loc>{{ route('beautyflow.blog.show', $article->slug) }}</loc>
+        <lastmod>{{ $article->updated_at->toISOString() }}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+        <xhtml:link rel="alternate" hreflang="ru" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.blog.show', $article->slug), 'ru') }}"/>
+        <xhtml:link rel="alternate" hreflang="en" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.blog.show', $article->slug), 'en') }}"/>
+        <xhtml:link rel="alternate" hreflang="ua" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.blog.show', $article->slug), 'ua') }}"/>
+    </url>
+    @endforeach
+    
+</urlset>

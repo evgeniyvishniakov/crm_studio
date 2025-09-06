@@ -4,7 +4,7 @@
 
 <header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('beautyflow.index') }}">
+        <a class="navbar-brand" href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.index') }}">
             <span class="fw-bold logo-text">Trimora</span>
         </a>
         
@@ -21,13 +21,16 @@
                     <a class="nav-link" href="#niches-section" role="menuitem">{{ __('landing.niches') }}</a>
                 </li>
                 <li class="nav-item" role="none">
-                    <a class="nav-link {{ request()->routeIs('beautyflow.pricing') ? 'active' : '' }}" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.pricing')) }}" role="menuitem">{{ __('landing.pricing') }}</a>
+                    <a class="nav-link {{ request()->routeIs('beautyflow.pricing') ? 'active' : '' }}" href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.pricing') }}" role="menuitem">{{ __('landing.pricing') }}</a>
                 </li>
                 <li class="nav-item" role="none">
-                    <a class="nav-link {{ request()->routeIs('beautyflow.knowledge') ? 'active' : '' }}" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.knowledge')) }}" role="menuitem">{{ __('landing.knowledge_base') }}</a>
+                    <a class="nav-link {{ request()->routeIs('beautyflow.knowledge') ? 'active' : '' }}" href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.knowledge') }}" role="menuitem">{{ __('landing.knowledge_base') }}</a>
                 </li>
                 <li class="nav-item" role="none">
-                    <a class="nav-link {{ request()->routeIs('beautyflow.contact') ? 'active' : '' }}" href="{{ \App\Helpers\LanguageHelper::addLanguageToUrl(route('beautyflow.contact')) }}" role="menuitem">{{ __('landing.contacts') }}</a>
+                    <a class="nav-link {{ request()->routeIs('beautyflow.blog*') ? 'active' : '' }}" href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.blog') }}" role="menuitem">{{ __('landing.blog') }}</a>
+                </li>
+                <li class="nav-item" role="none">
+                    <a class="nav-link {{ request()->routeIs('beautyflow.contact') ? 'active' : '' }}" href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.contact') }}" role="menuitem">{{ __('landing.contacts') }}</a>
                 </li>
             </ul>
             <ul class="navbar-nav">
@@ -133,10 +136,132 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const langCode = this.getAttribute('data-lang');
             
-            // Сразу перезагружаем страницу с новым языком
-            const currentUrl = new URL(window.location.href);
-            currentUrl.searchParams.set('lang', langCode);
-            window.location.href = currentUrl.toString();
+            // Получаем текущий путь
+            const currentPath = window.location.pathname;
+            
+            // Определяем новый путь на основе текущего пути и выбранного языка
+            let newPath = '';
+            
+            if (currentPath === '/beautyflow' || currentPath === '/beautyflow/') {
+                // Главная страница
+                newPath = langCode === 'ua' ? '/beautyflow' : `/beautyflow/${langCode}`;
+            } else if (currentPath.match(/^\/beautyflow\/[a-z]{2}$/)) {
+                // Главная страница с языковым префиксом
+                newPath = langCode === 'ua' ? '/beautyflow' : `/beautyflow/${langCode}`;
+            } else if (currentPath.match(/^\/beautyflow\/[a-z]{2}\/blog$/)) {
+                // Блог с языковым префиксом
+                newPath = langCode === 'ua' ? '/beautyflow/blog' : `/beautyflow/${langCode}/blog`;
+            } else if (currentPath.match(/^\/beautyflow\/blog$/)) {
+                // Блог без префикса
+                newPath = langCode === 'ua' ? '/beautyflow/blog' : `/beautyflow/${langCode}/blog`;
+            } else if (currentPath.match(/^\/beautyflow\/[a-z]{2}\/blog\/(.+)$/)) {
+                // Статья блога с языковым префиксом
+                const slug = currentPath.match(/^\/beautyflow\/[a-z]{2}\/blog\/(.+)$/)[1];
+                newPath = langCode === 'ua' ? `/beautyflow/blog/${slug}` : `/beautyflow/${langCode}/blog/${slug}`;
+            } else if (currentPath.match(/^\/beautyflow\/blog\/(.+)$/)) {
+                // Статья блога без префикса
+                const slug = currentPath.match(/^\/beautyflow\/blog\/(.+)$/)[1];
+                newPath = langCode === 'ua' ? `/beautyflow/blog/${slug}` : `/beautyflow/${langCode}/blog/${slug}`;
+            } else if (currentPath.match(/^\/beautyflow\/[a-z]{2}\/contact$/)) {
+                // Контакты с языковым префиксом
+                newPath = langCode === 'ua' ? '/beautyflow/contact' : `/beautyflow/${langCode}/contact`;
+            } else if (currentPath.match(/^\/beautyflow\/contact$/)) {
+                // Контакты без префикса
+                newPath = langCode === 'ua' ? '/beautyflow/contact' : `/beautyflow/${langCode}/contact`;
+            } else if (currentPath.match(/^\/beautyflow\/[a-z]{2}\/pricing$/)) {
+                // Цены с языковым префиксом
+                newPath = langCode === 'ua' ? '/beautyflow/pricing' : `/beautyflow/${langCode}/pricing`;
+            } else if (currentPath.match(/^\/beautyflow\/pricing$/)) {
+                // Цены без префикса
+                newPath = langCode === 'ua' ? '/beautyflow/pricing' : `/beautyflow/${langCode}/pricing`;
+            } else if (currentPath.match(/^\/beautyflow\/[a-z]{2}\/knowledge$/)) {
+                // База знаний с языковым префиксом
+                newPath = langCode === 'ua' ? '/beautyflow/knowledge' : `/beautyflow/${langCode}/knowledge`;
+            } else if (currentPath.match(/^\/beautyflow\/knowledge$/)) {
+                // База знаний без префикса
+                newPath = langCode === 'ua' ? '/beautyflow/knowledge' : `/beautyflow/${langCode}/knowledge`;
+            } else if (currentPath.match(/^\/beautyflow\/[a-z]{2}\/knowledge\/(.+)$/)) {
+                // Статья базы знаний с языковым префиксом
+                const slug = currentPath.match(/^\/beautyflow\/[a-z]{2}\/knowledge\/(.+)$/)[1];
+                newPath = langCode === 'ua' ? `/beautyflow/knowledge/${slug}` : `/beautyflow/${langCode}/knowledge/${slug}`;
+            } else if (currentPath.match(/^\/beautyflow\/knowledge\/(.+)$/)) {
+                // Статья базы знаний без префикса
+                const slug = currentPath.match(/^\/beautyflow\/knowledge\/(.+)$/)[1];
+                newPath = langCode === 'ua' ? `/beautyflow/knowledge/${slug}` : `/beautyflow/${langCode}/knowledge/${slug}`;
+            } else if (currentPath.match(/^\/beautyflow\/[a-z]{2}\/privacy$/)) {
+                // Политика конфиденциальности с языковым префиксом
+                newPath = langCode === 'ua' ? '/beautyflow/privacy' : `/beautyflow/${langCode}/privacy`;
+            } else if (currentPath.match(/^\/beautyflow\/privacy$/)) {
+                // Политика конфиденциальности без префикса
+                newPath = langCode === 'ua' ? '/beautyflow/privacy' : `/beautyflow/${langCode}/privacy`;
+            } else if (currentPath.match(/^\/beautyflow\/[a-z]{2}\/terms$/)) {
+                // Условия использования с языковым префиксом
+                newPath = langCode === 'ua' ? '/beautyflow/terms' : `/beautyflow/${langCode}/terms`;
+            } else if (currentPath.match(/^\/beautyflow\/terms$/)) {
+                // Условия использования без префикса
+                newPath = langCode === 'ua' ? '/beautyflow/terms' : `/beautyflow/${langCode}/terms`;
+            } else {
+                // Fallback - для маршрутов без языковых версий используем параметр lang
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('lang', langCode);
+                
+                // Устанавливаем язык в сессии перед переходом
+                fetch('/beautyflow/set-language', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        language: langCode
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Переходим на новый URL
+                        window.location.href = currentUrl.toString();
+                    } else {
+                        console.error('Failed to set language:', data.error);
+                        // Переходим на новый URL в любом случае
+                        window.location.href = currentUrl.toString();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error setting language:', error);
+                    // Переходим на новый URL в любом случае
+                    window.location.href = currentUrl.toString();
+                });
+                return;
+            }
+            
+            // Устанавливаем язык в сессии перед переходом
+            fetch('/beautyflow/set-language', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    language: langCode
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Переходим на новый URL
+                    window.location.href = newPath;
+                } else {
+                    console.error('Failed to set language:', data.error);
+                    // Переходим на новый URL в любом случае
+                    window.location.href = newPath;
+                }
+            })
+            .catch(error => {
+                console.error('Error setting language:', error);
+                // Переходим на новый URL в любом случае
+                window.location.href = newPath;
+            });
         });
     });
     

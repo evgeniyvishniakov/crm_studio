@@ -18,6 +18,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// API для генерации языковых URL
+Route::post('/language-url', [\App\Http\Controllers\Api\LanguageUrlController::class, 'generateUrl']);
+
 // API для виджета записи
 Route::prefix('widget')->name('widget.')->group(function () {
     Route::get('/config/{slug}', [\App\Http\Controllers\Api\WidgetController::class, 'getConfig'])->name('config');

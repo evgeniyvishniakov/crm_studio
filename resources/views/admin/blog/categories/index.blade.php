@@ -279,8 +279,7 @@ document.getElementById('saveTranslationBtn').addEventListener('click', function
             const modal = bootstrap.Modal.getInstance(document.getElementById('translationModal'));
             modal.hide();
             
-            // Показываем уведомление об успехе
-            alert('Перевод сохранен успешно!');
+            // Перевод сохранен
         } else {
             alert('Ошибка сохранения перевода: ' + (data.message || 'Неизвестная ошибка'));
         }

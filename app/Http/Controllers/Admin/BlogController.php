@@ -12,6 +12,7 @@ use App\Models\Admin\BlogTagTranslation;
 use App\Models\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -80,7 +81,7 @@ class BlogController extends Controller
             'excerpt' => $request->excerpt,
             'content' => $request->content,
             'blog_category_id' => $request->blog_category_id,
-            'author' => $request->author,
+            'author' => $request->author ?: 'Trimora',
             'featured_image' => $featuredImage,
             'meta_title' => $request->meta_title,
             'meta_description' => $request->meta_description,
@@ -157,6 +158,7 @@ class BlogController extends Controller
             'blog_category_id' => 'nullable|exists:blog_categories,id',
             'author' => 'nullable|string|max:255',
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'remove_image' => 'nullable|boolean',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string',
@@ -168,13 +170,25 @@ class BlogController extends Controller
         ]);
 
         // Обработка изображения
-        if ($request->hasFile('featured_image')) {
+        $featuredImage = $article->featured_image;
+        
+        if ($request->boolean('remove_image')) {
+            // Удаляем изображение
+            if ($article->featured_image && Storage::exists('public/' . $article->featured_image)) {
+                Storage::delete('public/' . $article->featured_image);
+            }
+            $featuredImage = null;
+        } elseif ($request->hasFile('featured_image')) {
+            // Загружаем новое изображение
             $file = $request->file('featured_image');
             $filename = time() . '_' . Str::slug($request->title) . '.' . $file->getClientOriginalExtension();
             $file->storeAs('public/blog', $filename);
             $featuredImage = 'blog/' . $filename;
-        } else {
-            $featuredImage = $article->featured_image;
+            
+            // Удаляем старое изображение если оно было
+            if ($article->featured_image && Storage::exists('public/' . $article->featured_image)) {
+                Storage::delete('public/' . $article->featured_image);
+            }
         }
 
         // Обновление статьи
@@ -184,7 +198,7 @@ class BlogController extends Controller
             'excerpt' => $request->excerpt,
             'content' => $request->content,
             'blog_category_id' => $request->blog_category_id,
-            'author' => $request->author,
+            'author' => $request->author ?: 'Trimora',
             'featured_image' => $featuredImage,
             'meta_title' => $request->meta_title,
             'meta_description' => $request->meta_description,
@@ -201,31 +215,7 @@ class BlogController extends Controller
             $article->tags()->detach();
         }
 
-        // Обновление переводов на всех языках
-        $languages = Language::getActive();
-        foreach ($languages as $language) {
-            $translation = $article->translations()->where('locale', $language->code)->first();
-            if ($translation) {
-                $translation->update([
-                    'title' => $request->title,
-                    'excerpt' => $request->excerpt,
-                    'content' => $request->content,
-                    'meta_title' => $request->meta_title,
-                    'meta_description' => $request->meta_description,
-                    'meta_keywords' => $request->meta_keywords,
-                ]);
-            } else {
-                $article->translations()->create([
-                    'locale' => $language->code,
-                    'title' => $request->title,
-                    'excerpt' => $request->excerpt,
-                    'content' => $request->content,
-                    'meta_title' => $request->meta_title,
-                    'meta_description' => $request->meta_description,
-                    'meta_keywords' => $request->meta_keywords,
-                ]);
-            }
-        }
+        // Переводы обновляются только через модальное окно переводов
 
         return redirect()->route('admin.blog.index')
             ->with('success', 'Статья блога успешно обновлена!');

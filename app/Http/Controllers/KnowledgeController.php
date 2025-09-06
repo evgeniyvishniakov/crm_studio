@@ -11,8 +11,16 @@ class KnowledgeController extends Controller
     /**
      * Показать страницу базы знаний с опубликованными статьями
      */
-    public function index()
+    public function index($lang = null)
     {
+        // Устанавливаем язык если передан параметр
+        if ($lang) {
+            LanguageHelper::setLanguage($lang);
+        } else {
+            // Для fallback маршрута устанавливаем украинский язык по умолчанию
+            LanguageHelper::setLanguage('ua');
+        }
+        
         $currentLanguage = LanguageHelper::getCurrentLanguage();
         
 
@@ -37,8 +45,16 @@ class KnowledgeController extends Controller
     /**
      * Показать отдельную статью
      */
-    public function show($slug)
+    public function show($slug, $lang = null)
     {
+        // Устанавливаем язык если передан параметр
+        if ($lang) {
+            LanguageHelper::setLanguage($lang);
+        } else {
+            // Для fallback маршрута устанавливаем украинский язык по умолчанию
+            LanguageHelper::setLanguage('ua');
+        }
+        
         $currentLanguage = LanguageHelper::getCurrentLanguage();
         
 

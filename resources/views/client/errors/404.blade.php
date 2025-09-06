@@ -217,7 +217,7 @@
                     </div>
                 @else
                     <!-- Для незарегистрированных пользователей -->
-                    <a href="{{ route('beautyflow.index') }}" class="btn btn-primary btn-lg">
+                    <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.index') }}" class="btn btn-primary btn-lg">
                         <i class="fas fa-home me-2"></i>
                         Перейти на головну
                     </a>

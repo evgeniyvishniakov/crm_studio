@@ -67,6 +67,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin.only' => \App\Http\Middleware\AdminOnly::class,
+        'validate.language' => \App\Http\Middleware\ValidateLanguage::class,
         'landing.auth' => \App\Http\Middleware\LandingAuth::class,
         'rate.limit' => \App\Http\Middleware\RateLimitMiddleware::class,
         'set.language' => \App\Http\Middleware\SetLanguage::class,

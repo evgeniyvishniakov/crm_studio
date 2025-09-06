@@ -62,4 +62,21 @@ class BlogTag extends Model
             $this->attributes['slug'] = \Str::slug($value);
         }
     }
+
+    /**
+     * Получить локализованное название
+     */
+    public function getLocalizedNameAttribute()
+    {
+        $currentLanguage = \App\Helpers\LanguageHelper::getCurrentLanguage();
+        
+        // Если переводы не загружены, загружаем их
+        if (!$this->relationLoaded('translations')) {
+            $this->load('translations');
+        }
+        
+        $translation = $this->translation($currentLanguage);
+        
+        return $translation ? $translation->name : $this->name;
+    }
 }

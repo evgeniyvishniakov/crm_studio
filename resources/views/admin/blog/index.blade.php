@@ -548,8 +548,6 @@ function saveTranslation() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showNotification(data.message, 'success');
-            
             // Закрываем модальное окно
             const modal = bootstrap.Modal.getInstance(document.getElementById('translationModal'));
             if (modal) {

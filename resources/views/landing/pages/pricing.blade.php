@@ -427,7 +427,7 @@
         <!-- Contact Button -->
         <div class="row mt-5">
             <div class="col-12 text-center">
-                <a href="{{ route('beautyflow.contact') }}" class="btn btn-primary btn-lg">
+                <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.contact') }}" class="btn btn-primary btn-lg">
                     <i class="fas fa-envelope me-2"></i>
                     {{ __('landing.contact_us') }}
                 </a>

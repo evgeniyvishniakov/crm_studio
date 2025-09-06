@@ -55,13 +55,13 @@
 
                     <div class="text-center">
                         <p class="text-muted mb-0">Нет проекта?</p>
-                        <a href="{{ route('beautyflow.index') }}#register" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.index') }}#register" class="btn btn-outline-primary btn-sm">
                             Зарегистрировать проект
                         </a>
                     </div>
 
                     <div class="text-center mt-3">
-                        <a href="{{ route('beautyflow.index') }}" class="text-muted text-decoration-none">
+                        <a href="{{ \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.index') }}" class="text-muted text-decoration-none">
                             <i class="fas fa-arrow-left me-1"></i>Вернуться на главную
                         </a>
                     </div>

@@ -95,23 +95,7 @@ class BlogCategoryController extends Controller
             'sort_order' => $request->sort_order ?: 0,
         ]);
 
-        // Обновление переводов на всех языках
-        $languages = Language::getActive();
-        foreach ($languages as $language) {
-            $translation = $category->translations()->where('locale', $language->code)->first();
-            if ($translation) {
-                $translation->update([
-                    'name' => $request->name,
-                    'description' => $request->description,
-                ]);
-            } else {
-                $category->translations()->create([
-                    'locale' => $language->code,
-                    'name' => $request->name,
-                    'description' => $request->description,
-                ]);
-            }
-        }
+        // Переводы обновляются только через модальное окно переводов
 
         return redirect()->route('admin.blog-categories.index')
             ->with('success', 'Категория успешно обновлена!');

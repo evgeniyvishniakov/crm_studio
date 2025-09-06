@@ -13,35 +13,62 @@ use App\Http\Controllers\Landing\RegisterController;
 |
 */
 
-Route::get('/', function () {
-    return view('landing.pages.index');
-})->name('beautyflow.index');
+// Sitemap (без языкового префикса)
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 
-Route::get('/contact', function () {
-    return view('landing.pages.contact');
-})->name('beautyflow.contact');
+// Все маршруты лендинга с языковыми префиксами
+Route::prefix('{lang}')->where(['lang' => '[a-z]{2}'])->middleware('validate.language')->group(function () {
+    // Главная страница
+    Route::get('/', [\App\Http\Controllers\Landing\PageController::class, 'index'])->name('beautyflow.index');
+    
+    // Контакты
+    Route::get('/contact', [\App\Http\Controllers\Landing\PageController::class, 'contact'])->name('beautyflow.contact');
+    
+    // Цены
+    Route::get('/pricing', [\App\Http\Controllers\Landing\PricingController::class, 'index'])->name('beautyflow.pricing');
+    
+    // Политика конфиденциальности
+    Route::get('/privacy', [\App\Http\Controllers\Landing\PageController::class, 'privacy'])->name('beautyflow.privacy');
+    
+    // Условия использования
+    Route::get('/terms', [\App\Http\Controllers\Landing\PageController::class, 'terms'])->name('beautyflow.terms');
+    
+    // База знаний
+    Route::get('/knowledge', [\App\Http\Controllers\KnowledgeController::class, 'index'])->name('beautyflow.knowledge');
+    Route::get('/knowledge/{slug}', [\App\Http\Controllers\KnowledgeController::class, 'show'])->name('beautyflow.knowledge.show');
+    
+    // Блог
+    Route::get('/blog', [\App\Http\Controllers\Landing\BlogController::class, 'index'])->name('beautyflow.blog');
+    Route::get('/blog/{slug}', [\App\Http\Controllers\Landing\BlogController::class, 'show'])->name('beautyflow.blog.show');
+});
 
-Route::get('/pricing', [\App\Http\Controllers\Landing\PricingController::class, 'index'])->name('beautyflow.pricing');
-
-
-
-
-Route::get('/privacy', function () {
-    return view('landing.pages.privacy');
-
-})->name('beautyflow.privacy');
-
-Route::get('/terms', function () {
-    return view('landing.pages.terms');
-})->name('beautyflow.terms');
-
-
-
-Route::get('/knowledge', [\App\Http\Controllers\KnowledgeController::class, 'index'])->name('beautyflow.knowledge');
-
-Route::get('/knowledge/{slug}', [\App\Http\Controllers\KnowledgeController::class, 'show'])->name('beautyflow.knowledge.show');
+// Fallback маршруты для дефолтного языка (без языкового префикса)
+Route::get('/', [\App\Http\Controllers\Landing\PageController::class, 'index'])->name('beautyflow.index.fallback');
+Route::get('/contact', [\App\Http\Controllers\Landing\PageController::class, 'contact'])->name('beautyflow.contact.fallback');
+Route::get('/pricing', [\App\Http\Controllers\Landing\PricingController::class, 'index'])->name('beautyflow.pricing.fallback');
+Route::get('/privacy', [\App\Http\Controllers\Landing\PageController::class, 'privacy'])->name('beautyflow.privacy.fallback');
+Route::get('/terms', [\App\Http\Controllers\Landing\PageController::class, 'terms'])->name('beautyflow.terms.fallback');
+Route::get('/knowledge', [\App\Http\Controllers\KnowledgeController::class, 'index'])->name('beautyflow.knowledge.fallback');
+Route::get('/knowledge/{slug}', [\App\Http\Controllers\KnowledgeController::class, 'show'])->name('beautyflow.knowledge.show.fallback');
+Route::get('/blog', [\App\Http\Controllers\Landing\BlogController::class, 'index'])->name('beautyflow.blog.fallback');
+Route::get('/blog/{slug}', [\App\Http\Controllers\Landing\BlogController::class, 'showFallback'])->name('beautyflow.blog.show.fallback');
 
 Route::post('/register', [RegisterController::class, 'store'])->name('beautyflow.register');
+
+// Установка языка в сессии
+Route::post('/set-language', function(\Illuminate\Http\Request $request) {
+    $request->validate([
+        'language' => 'required|string|in:ru,en,ua'
+    ]);
+    
+    $language = $request->input('language');
+    \App\Helpers\LanguageHelper::setLanguage($language);
+    
+    return response()->json([
+        'success' => true,
+        'language' => $language
+    ]);
+})->name('beautyflow.set-language');
 
 // Личный кабинет
 Route::get('/account/login', [\App\Http\Controllers\Landing\AccountController::class, 'showLogin'])->name('landing.account.login');

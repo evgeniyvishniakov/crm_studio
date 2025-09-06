@@ -6,10 +6,31 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <!-- Hreflang Tags -->
-    <link rel="alternate" hreflang="ru" href="{{ url('?lang=ru') }}">
-    <link rel="alternate" hreflang="en" href="{{ url('?lang=en') }}">
-    <link rel="alternate" hreflang="ua" href="{{ url('?lang=ua') }}">
-    <link rel="alternate" hreflang="x-default" href="{{ url('?lang=ua') }}">
+    @php
+        $currentRoute = request()->route();
+        $routeName = $currentRoute ? $currentRoute->getName() : null;
+        $routeParameters = $currentRoute ? $currentRoute->parameters() : [];
+        
+        // Убираем lang из параметров для генерации hreflang
+        if (isset($routeParameters['lang'])) {
+            unset($routeParameters['lang']);
+        }
+        
+        if ($routeName && !str_contains($routeName, '.fallback') && str_starts_with($routeName, 'beautyflow.')) {
+            $languageUrls = \App\Helpers\LanguageHelper::getAllLanguageUrls($routeName, $routeParameters);
+        } else {
+            $currentUrl = request()->url();
+            $languageUrls = [
+                'ru' => \App\Helpers\LanguageHelper::addLanguageToUrl($currentUrl, 'ru'),
+                'en' => \App\Helpers\LanguageHelper::addLanguageToUrl($currentUrl, 'en'),
+                'ua' => \App\Helpers\LanguageHelper::addLanguageToUrl($currentUrl, 'ua')
+            ];
+        }
+    @endphp
+    @foreach($languageUrls as $lang => $url)
+        <link rel="alternate" hreflang="{{ $lang }}" href="{{ $url }}">
+    @endforeach
+    <link rel="alternate" hreflang="x-default" href="{{ $languageUrls['ua'] ?? $languageUrls['ru'] ?? $languageUrls['en'] }}">
     
     <title>@yield('title', \App\Helpers\SystemHelper::getSiteName() . ' - Система управления')</title>
     <meta name="description" content="@yield('description', \App\Helpers\SystemHelper::getSiteDescription())">
@@ -56,6 +77,7 @@
     </style>
     
     @stack('styles')
+    @stack('head')
 </head>
 <body>
     <!-- Header -->
@@ -79,5 +101,6 @@
     
     <!-- Modals -->
     @include('landing.components.login-modal')
+    @include('landing.components.register-modal')
 </body>
 </html> 

@@ -15,7 +15,7 @@ class LanguageHelper
     {
         if (!$language) {
             $defaultLanguage = Language::getDefault();
-            $defaultCode = $defaultLanguage ? $defaultLanguage->code : 'ru';
+            $defaultCode = $defaultLanguage ? $defaultLanguage->code : 'ua';
             $language = session('language', $defaultCode);
         }
         
@@ -29,6 +29,59 @@ class LanguageHelper
         
         return $url;
     }
+
+    /**
+     * Создает SEO-дружественный URL с языковым префиксом
+     */
+    public static function createSeoUrl($route, $parameters = [], $language = null)
+    {
+        if (!$language) {
+            $defaultLanguage = Language::getDefault();
+            $defaultCode = $defaultLanguage ? $defaultLanguage->code : 'ua';
+            $language = session('language', $defaultCode);
+        }
+        
+        // Для дефолтного языка используем fallback маршруты
+        $defaultLanguage = Language::getDefault();
+        $defaultCode = $defaultLanguage ? $defaultLanguage->code : 'ua';
+        
+        if ($language === $defaultCode) {
+            // Для дефолтного языка используем fallback маршруты
+            $fallbackRoute = $route . '.fallback';
+            return route($fallbackRoute, $parameters);
+        }
+        
+        // Для остальных языков используем основной маршрут с языковым префиксом
+        // Маршруты содержат {lang} в пути, поэтому добавляем lang в параметры
+        $parameters['lang'] = $language;
+        return route($route, $parameters);
+    }
+
+    /**
+     * Получает все языковые версии URL для hreflang
+     */
+    public static function getAllLanguageUrls($route, $parameters = [])
+    {
+        $urls = [];
+        $languages = Language::getActive();
+        $defaultLanguage = Language::getDefault();
+        $defaultCode = $defaultLanguage ? $defaultLanguage->code : 'ua';
+        
+        foreach ($languages as $language) {
+            if ($language->code === $defaultCode) {
+                // Для дефолтного языка используем fallback маршруты
+                $fallbackRoute = $route . '.fallback';
+                $urls[$language->code] = route($fallbackRoute, $parameters);
+            } else {
+                // Для остальных языков используем основной маршрут
+                // Маршруты содержат {lang} в пути, поэтому добавляем lang в параметры
+                $langParameters = array_merge($parameters, ['lang' => $language->code]);
+                $urls[$language->code] = route($route, $langParameters);
+            }
+        }
+        
+        return $urls;
+    }
     
     /**
      * Получает текущий язык из сессии или по умолчанию
@@ -36,7 +89,7 @@ class LanguageHelper
     public static function getCurrentLanguage()
     {
         $defaultLanguage = Language::getDefault();
-        $defaultCode = $defaultLanguage ? $defaultLanguage->code : 'ru';
+        $defaultCode = $defaultLanguage ? $defaultLanguage->code : 'ua';
         return session('language', $defaultCode);
     }
 

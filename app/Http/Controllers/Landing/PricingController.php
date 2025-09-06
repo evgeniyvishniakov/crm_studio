@@ -9,8 +9,15 @@ use App\Models\Currency;
 
 class PricingController extends Controller
 {
-    public function index()
+    public function index($lang = null)
     {
+        // Устанавливаем язык если передан параметр
+        if ($lang) {
+            \App\Helpers\LanguageHelper::setLanguage($lang);
+        } else {
+            // Для fallback маршрута устанавливаем украинский язык по умолчанию
+            \App\Helpers\LanguageHelper::setLanguage('ua');
+        }
         // Получаем все активные тарифы, отсортированные по порядку
         $plans = Plan::where('is_active', true)
                     ->orderBy('sort_order')

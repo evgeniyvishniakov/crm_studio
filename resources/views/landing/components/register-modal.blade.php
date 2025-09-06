@@ -78,7 +78,7 @@
           <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" id="privacy" required>
             <label class="form-check-label" for="privacy">
-              {!! __('landing.privacy_agreement', ['privacy_policy' => '<a href="' . route('beautyflow.privacy') . '" target="_blank">' . __('landing.privacy_policy') . '</a>']) !!}
+              {!! __('landing.privacy_agreement', ['privacy_policy' => '<a href="' . \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.privacy') . '" target="_blank">' . __('landing.privacy_policy') . '</a>']) !!}
             </label>
           </div>
           <div class="form-text fw-semibold mb-3" style="color:#2563eb;"><i class="fas fa-info-circle me-1"></i>{{ __('landing.registration_help') }}</div>

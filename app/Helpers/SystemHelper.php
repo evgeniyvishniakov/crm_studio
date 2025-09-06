@@ -69,6 +69,33 @@ class SystemHelper
     {
         return !empty(self::getFavicon());
     }
+
+    /**
+     * Удалить h1 теги и дублирующие заголовки из контента
+     */
+    public static function removeH1FromContent($content, $articleTitle = null)
+    {
+        // Удаляем только h1 теги
+        $content = preg_replace('/<h1[^>]*>.*?<\/h1>/is', '', $content);
+        
+        // Удаляем только strong теги с data-start атрибутами (TinyMCE выделения) в начале контента
+        // Проверяем только первые 300 символов, чтобы не удалить важный контент
+        $firstPart = substr($content, 0, 300);
+        if (preg_match('/<strong[^>]*data-start[^>]*>.*?<\/strong>/is', $firstPart)) {
+            $content = preg_replace('/<strong[^>]*data-start[^>]*>.*?<\/strong>/is', '', $content, 1); // Удаляем только первое вхождение
+        }
+        
+        // Удаляем пустые параграфы, которые могли остаться
+        $content = preg_replace('/<p[^>]*>\s*<\/p>/is', '', $content);
+        
+        // Удаляем пустые div'ы, которые могли остаться
+        $content = preg_replace('/<div[^>]*>\s*<\/div>/is', '', $content);
+        
+        // Удаляем множественные переносы строк
+        $content = preg_replace('/\n\s*\n\s*\n/', "\n\n", $content);
+        
+        return trim($content);
+    }
 }
 
 
