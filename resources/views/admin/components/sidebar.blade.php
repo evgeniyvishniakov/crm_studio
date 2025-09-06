@@ -24,6 +24,14 @@
                 </a>
             </li>
             
+            <!-- Управление проектами -->
+            <li class="nav-item mb-2">
+                <a href="{{ route('admin.projects.index') }}" class="nav-link text-white {{ request()->routeIs('admin.projects.*') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-building me-2"></i>
+                    Проекты
+                </a>
+            </li>
+            
             <!-- Управление пользователями -->
             <li class="nav-item mb-2">
                 <a href="{{ route('admin.users.index') }}" class="nav-link text-white {{ request()->routeIs('admin.users.index') ? 'active bg-primary' : '' }}">
@@ -31,66 +39,73 @@
                     Пользователи
                 </a>
             </li>
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.roles.index') }}" class="nav-link text-white {{ request()->routeIs('admin.roles.index') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-user-shield me-2"></i>
-                    Роли и права
-                </a>
-            </li>
             
-            <!-- Управление проектами -->
+            <!-- Настройки -->
             <li class="nav-item mb-2">
-                <a href="{{ route('admin.projects.index') }}" class="nav-link text-white {{ request()->routeIs('admin.projects.index') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-building me-2"></i>
-                    Проекты
-                </a>
-            </li>
-            
-            <!-- Биллинг и подписки -->
-            {{-- Подписки перемещены вниз --}}
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.plans.index') }}" class="nav-link text-white {{ request()->routeIs('admin.plans.*') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-tag me-2"></i>
-                    Тарифы
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.payment-settings.index') }}" class="nav-link text-white {{ request()->routeIs('admin.payment-settings.*') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-cog me-2"></i>
-                    Настройки платежей
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.currencies.index') }}" class="nav-link text-white {{ request()->routeIs('admin.currencies.*') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-dollar-sign me-2"></i>
-                    Валюты
-                </a>
-            </li>
-            
-            <!-- Системные настройки -->
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.settings.index') }}" class="nav-link text-white {{ request()->routeIs('admin.settings.index') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-cog me-2"></i>
-                    Настройки
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.languages.index') }}" class="nav-link text-white {{ request()->routeIs('admin.languages.*') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-globe me-2"></i>
-                    Языки
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.email-templates.index') }}" class="nav-link text-white {{ request()->routeIs('admin.email-templates.index') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-envelope me-2"></i>
-                    Email шаблоны
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="{{ route('admin.security.index') }}" class="nav-link text-white {{ request()->routeIs('admin.security.index') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-lock me-2"></i>
-                    Безопасность
-                </a>
+                <div class="nav-link text-white d-flex align-items-center justify-content-between" 
+                     data-bs-toggle="collapse" 
+                     data-bs-target="#settingsSubmenu" 
+                     aria-expanded="{{ request()->routeIs('admin.roles.*') || request()->routeIs('admin.plans.*') || request()->routeIs('admin.payment-settings.*') || request()->routeIs('admin.currencies.*') || request()->routeIs('admin.settings.*') || request()->routeIs('admin.languages.*') || request()->routeIs('admin.email-templates.*') || request()->routeIs('admin.security.*') ? 'true' : 'false' }}" 
+                     aria-controls="settingsSubmenu"
+                     style="cursor: pointer;">
+                    <div>
+                        <i class="fas fa-cog me-2"></i>
+                        Настройки
+                    </div>
+                    <i class="fas fa-chevron-down" id="settingsChevron"></i>
+                </div>
+                <div class="collapse {{ request()->routeIs('admin.roles.*') || request()->routeIs('admin.plans.*') || request()->routeIs('admin.payment-settings.*') || request()->routeIs('admin.currencies.*') || request()->routeIs('admin.settings.*') || request()->routeIs('admin.languages.*') || request()->routeIs('admin.email-templates.*') || request()->routeIs('admin.security.*') ? 'show' : '' }}" id="settingsSubmenu">
+                    <ul class="nav flex-column ms-3 mt-2">
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.roles.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.roles.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-user-shield me-2"></i>
+                                Роли и права
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.plans.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.plans.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-tag me-2"></i>
+                                Тарифы
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.payment-settings.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.payment-settings.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-credit-card me-2"></i>
+                                Настройки платежей
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.currencies.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.currencies.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-dollar-sign me-2"></i>
+                                Валюты
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.settings.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.settings.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-cog me-2"></i>
+                                Основные настройки
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.languages.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.languages.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-globe me-2"></i>
+                                Языки
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.email-templates.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.email-templates.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-envelope me-2"></i>
+                                Email шаблоны
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.security.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.security.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-lock me-2"></i>
+                                Безопасность
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
             
             <!-- Мониторинг и поддержка -->
@@ -124,12 +139,6 @@
                 <a href="{{ route('admin.knowledge.index') }}" class="nav-link text-white {{ request()->routeIs('admin.knowledge.*') ? 'active bg-primary' : '' }}">
                     <i class="fas fa-book me-2"></i>
                     База знаний (Админ)
-                </a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="{{ route('knowledge.index') }}" class="nav-link text-white" target="_blank">
-                    <i class="fas fa-external-link-alt me-2"></i>
-                    База знаний (Публичная)
                 </a>
             </li>
             
@@ -188,13 +197,6 @@
                 </a>
             </li>
             
-            <!-- Внешние ссылки -->
-            <li class="nav-item mb-2">
-                <a href="{{ route('home') }}" class="nav-link text-muted" target="_blank">
-                    <i class="fas fa-home me-2"></i>
-                    Главная страница
-                </a>
-            </li>
         </ul>
         <hr class="border-secondary my-4">
         <ul class="nav flex-column">
@@ -234,12 +236,12 @@
 }
 
 
-/* Стили для выпадающего меню блога */
-#blogChevron {
+/* Стили для выпадающих меню */
+#blogChevron, #settingsChevron {
     transition: transform 0.3s ease;
 }
 
-#blogChevron.rotated {
+#blogChevron.rotated, #settingsChevron.rotated {
     transform: rotate(180deg);
 }
 
@@ -271,14 +273,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (blogToggle && blogChevron) {
         blogToggle.addEventListener('click', function() {
-            // Переключаем класс для анимации стрелки
             blogChevron.classList.toggle('rotated');
         });
         
-        // Устанавливаем начальное состояние стрелки
         const blogSubmenu = document.getElementById('blogSubmenu');
         if (blogSubmenu && blogSubmenu.classList.contains('show')) {
             blogChevron.classList.add('rotated');
+        }
+    }
+    
+    // Анимация стрелки для выпадающего меню настроек
+    const settingsToggle = document.querySelector('[data-bs-target="#settingsSubmenu"]');
+    const settingsChevron = document.getElementById('settingsChevron');
+    
+    if (settingsToggle && settingsChevron) {
+        settingsToggle.addEventListener('click', function() {
+            settingsChevron.classList.toggle('rotated');
+        });
+        
+        const settingsSubmenu = document.getElementById('settingsSubmenu');
+        if (settingsSubmenu && settingsSubmenu.classList.contains('show')) {
+            settingsChevron.classList.add('rotated');
         }
     }
 });
