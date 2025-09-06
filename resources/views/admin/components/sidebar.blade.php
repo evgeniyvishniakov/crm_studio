@@ -135,10 +135,40 @@
             
             <!-- Блог -->
             <li class="nav-item mb-2">
-                <a href="{{ route('admin.blog.index') }}" class="nav-link text-white {{ request()->routeIs('admin.blog.*') ? 'active bg-primary' : '' }}">
-                    <i class="fas fa-blog me-2"></i>
-                    Блог
-                </a>
+                <div class="nav-link text-white d-flex align-items-center justify-content-between" 
+                     data-bs-toggle="collapse" 
+                     data-bs-target="#blogSubmenu" 
+                     aria-expanded="{{ request()->routeIs('admin.blog.*') || request()->routeIs('admin.blog-categories.*') || request()->routeIs('admin.blog-tags.*') ? 'true' : 'false' }}" 
+                     aria-controls="blogSubmenu"
+                     style="cursor: pointer;">
+                    <div>
+                        <i class="fas fa-blog me-2"></i>
+                        Блог
+                    </div>
+                    <i class="fas fa-chevron-down" id="blogChevron"></i>
+                </div>
+                <div class="collapse {{ request()->routeIs('admin.blog.*') || request()->routeIs('admin.blog-categories.*') || request()->routeIs('admin.blog-tags.*') ? 'show' : '' }}" id="blogSubmenu">
+                    <ul class="nav flex-column ms-3 mt-2">
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.blog.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.blog.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-newspaper me-2"></i>
+                                Статьи
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.blog-categories.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.blog-categories.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-tags me-2"></i>
+                                Категории
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.blog-tags.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.blog-tags.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-hashtag me-2"></i>
+                                Теги
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
             
             <!-- Подписки и уведомления -->
@@ -203,15 +233,54 @@
     margin-bottom: 0.5rem;
 }
 
-/* Добавляем небольшие отступы между группами */
-.nav-item:nth-child(3),
-.nav-item:nth-child(6),
-.nav-item:nth-child(10),
-.nav-item:nth-child(15),
-.nav-item:nth-child(18),
-.nav-item:nth-child(21) {
-    margin-top: 1rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+/* Стили для выпадающего меню блога */
+#blogChevron {
+    transition: transform 0.3s ease;
 }
-</style> 
+
+#blogChevron.rotated {
+    transform: rotate(180deg);
+}
+
+/* Стили для подпунктов */
+.nav-item .nav-link.text-white-50 {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.nav-item .nav-link.text-white-50:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white !important;
+}
+
+.nav-item .nav-link.text-white-50.active {
+    background-color: #0d6efd !important;
+    color: white !important;
+}
+
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Анимация стрелки для выпадающего меню блога
+    const blogToggle = document.querySelector('[data-bs-target="#blogSubmenu"]');
+    const blogChevron = document.getElementById('blogChevron');
+    
+    if (blogToggle && blogChevron) {
+        blogToggle.addEventListener('click', function() {
+            // Переключаем класс для анимации стрелки
+            blogChevron.classList.toggle('rotated');
+        });
+        
+        // Устанавливаем начальное состояние стрелки
+        const blogSubmenu = document.getElementById('blogSubmenu');
+        if (blogSubmenu && blogSubmenu.classList.contains('show')) {
+            blogChevron.classList.add('rotated');
+        }
+    }
+});
+</script>
+
