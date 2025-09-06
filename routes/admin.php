@@ -24,9 +24,7 @@ Route::post('/logout', [\App\Http\Controllers\Auth\AdminLoginController::class, 
 
 // Все маршруты админки защищены авторизацией через guard 'panel'
 Route::middleware(['auth:panel'])->name('admin.')->group(function () {
-    Route::get('/', function () {
-        return view('admin.dashboard.index');
-    })->name('dashboard');
+    Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     
     // Маршруты сброса пароля для админских пользователей
     Route::get('/password/reset', [AdminForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
