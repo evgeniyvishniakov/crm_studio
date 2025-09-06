@@ -133,6 +133,14 @@
                 </a>
             </li>
             
+            <!-- Блог -->
+            <li class="nav-item mb-2">
+                <a href="{{ route('admin.blog.index') }}" class="nav-link text-white {{ request()->routeIs('admin.blog.*') ? 'active bg-primary' : '' }}">
+                    <i class="fas fa-blog me-2"></i>
+                    Блог
+                </a>
+            </li>
+            
             <!-- Подписки и уведомления -->
             <li class="nav-item mb-2">
                 <a href="{{ route('admin.subscriptions.index') }}" class="nav-link text-white {{ request()->routeIs('admin.subscriptions.*') ? 'active bg-primary' : '' }}">

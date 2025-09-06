@@ -146,4 +146,22 @@ Route::middleware(['auth:panel'])->name('admin.')->group(function () {
         ->name('knowledge.toggle-publish');
     Route::get('/knowledge/{article}/translations/{language}', [\App\Http\Controllers\Admin\KnowledgeController::class, 'getTranslation'])->name('knowledge.get-translation');
     Route::post('/knowledge/{article}/save-translation', [\App\Http\Controllers\Admin\KnowledgeController::class, 'saveTranslation'])->name('knowledge.save-translation');
+
+    // Блог
+    Route::resource('blog', \App\Http\Controllers\Admin\BlogController::class);
+    Route::post('/blog/{article}/toggle-publish', [\App\Http\Controllers\Admin\BlogController::class, 'togglePublish'])
+        ->name('blog.toggle-publish');
+    Route::get('/blog/{article}/translations/{language}', [\App\Http\Controllers\Admin\BlogController::class, 'getTranslation'])->name('blog.get-translation');
+    Route::post('/blog/{article}/save-translation', [\App\Http\Controllers\Admin\BlogController::class, 'saveTranslation'])->name('blog.save-translation');
+    Route::get('/blog/{article}/data', [\App\Http\Controllers\Admin\BlogController::class, 'getArticleData'])->name('blog.get-data');
+
+    // Категории блога
+    Route::resource('blog-categories', \App\Http\Controllers\Admin\BlogCategoryController::class);
+    Route::get('/blog-categories/{category}/translations/{language}', [\App\Http\Controllers\Admin\BlogCategoryController::class, 'getTranslation'])->name('blog.categories.get-translation');
+    Route::post('/blog-categories/{category}/save-translation', [\App\Http\Controllers\Admin\BlogCategoryController::class, 'saveTranslation'])->name('blog.categories.save-translation');
+
+    // Теги блога
+    Route::resource('blog-tags', \App\Http\Controllers\Admin\BlogTagController::class);
+    Route::get('/blog-tags/{tag}/translations/{language}', [\App\Http\Controllers\Admin\BlogTagController::class, 'getTranslation'])->name('blog.tags.get-translation');
+    Route::post('/blog-tags/{tag}/save-translation', [\App\Http\Controllers\Admin\BlogTagController::class, 'saveTranslation'])->name('blog.tags.save-translation');
 }); 
