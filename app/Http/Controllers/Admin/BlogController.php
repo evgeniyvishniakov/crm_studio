@@ -205,7 +205,7 @@ class BlogController extends Controller
             'meta_keywords' => $request->meta_keywords,
             'is_published' => $request->boolean('is_published'),
             'is_featured' => $request->boolean('is_featured'),
-            'published_at' => $request->published_at ?: ($request->boolean('is_published') ? now() : null),
+            'published_at' => $request->published_at ?: ($request->boolean('is_published') && !$article->published_at ? now() : $article->published_at),
         ]);
 
         // Обновление тегов

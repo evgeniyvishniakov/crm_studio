@@ -148,7 +148,13 @@ Route::middleware(['auth:panel'])->name('admin.')->group(function () {
     Route::post('/knowledge/{article}/save-translation', [\App\Http\Controllers\Admin\KnowledgeController::class, 'saveTranslation'])->name('knowledge.save-translation');
 
     // Блог
-    Route::resource('blog', \App\Http\Controllers\Admin\BlogController::class);
+    Route::get('/blog', [\App\Http\Controllers\Admin\BlogController::class, 'index'])->name('blog.index');
+    Route::get('/blog/create', [\App\Http\Controllers\Admin\BlogController::class, 'create'])->name('blog.create');
+    Route::post('/blog', [\App\Http\Controllers\Admin\BlogController::class, 'store'])->name('blog.store');
+    Route::get('/blog/{article}', [\App\Http\Controllers\Admin\BlogController::class, 'show'])->name('blog.show');
+    Route::get('/blog/{article}/edit', [\App\Http\Controllers\Admin\BlogController::class, 'edit'])->name('blog.edit');
+    Route::put('/blog/{article}', [\App\Http\Controllers\Admin\BlogController::class, 'update'])->name('blog.update');
+    Route::delete('/blog/{article}', [\App\Http\Controllers\Admin\BlogController::class, 'destroy'])->name('blog.destroy');
     Route::post('/blog/{article}/toggle-publish', [\App\Http\Controllers\Admin\BlogController::class, 'togglePublish'])
         ->name('blog.toggle-publish');
     Route::get('/blog/{article}/translations/{language}', [\App\Http\Controllers\Admin\BlogController::class, 'getTranslation'])->name('blog.get-translation');

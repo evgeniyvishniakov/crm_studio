@@ -85,7 +85,7 @@
                                     <th>Переводы</th>
                                     <th>Статус</th>
                                     <th>Просмотры</th>
-                                    <th>Дата создания</th>
+                                    <th>Дата публикации</th>
                                     <th>Действия</th>
                                 </tr>
                             </thead>
@@ -155,7 +155,11 @@
                                             <span class="badge bg-info">{{ $article->views_count }}</span>
                                         </td>
                                         <td>
-                                            {{ $article->created_at->format('d.m.Y H:i') }}
+                                            @if($article->published_at)
+                                                {{ $article->published_at->format('d.m.Y H:i') }}
+                                            @else
+                                                <span class="text-muted">Не опубликовано</span>
+                                            @endif
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">

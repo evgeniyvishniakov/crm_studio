@@ -213,7 +213,7 @@
                                 </button>
 
                                 @if($article->is_published)
-                                    <a href="{{ $article->url }}" class="btn btn-info" target="_blank">
+                                    <a href="{{ route('beautyflow.blog.show.fallback', $article->slug) }}" class="btn btn-info" target="_blank">
                                         <i class="fas fa-external-link-alt me-2"></i>Просмотреть на сайте
                                     </a>
                                 @endif

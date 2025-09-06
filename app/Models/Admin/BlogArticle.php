@@ -125,7 +125,7 @@ class BlogArticle extends Model
      */
     public function getUrlAttribute()
     {
-        return route('blog.show', $this->slug);
+        return route('beautyflow.blog.show.fallback', $this->slug);
     }
 
     /**
