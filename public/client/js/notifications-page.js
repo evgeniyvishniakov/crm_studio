@@ -101,6 +101,16 @@ function updateTable(notifications) {
             typeDisplay = window.translations?.booking || 'Запись';
         } else if (notification.type === 'ticket') {
             typeDisplay = window.translations?.message || 'Сообщение';
+        } else if (notification.type === 'trial_expires_2_days' || 
+                   notification.type === 'trial_expires_3_days' || 
+                   notification.type === 'trial_expires_1_day' || 
+                   notification.type === 'trial_expired') {
+            typeDisplay = window.translations?.trial_period || 'Пробний період';
+        } else if (notification.type === 'subscription_expires_7_days' || 
+                   notification.type === 'subscription_expires_3_days' || 
+                   notification.type === 'subscription_expires_1_day' || 
+                   notification.type === 'subscription_expired') {
+            typeDisplay = window.translations?.subscription || 'Підписка';
         }
         
         row.innerHTML = `
@@ -155,6 +165,16 @@ function updateMobileCards(notifications) {
             typeDisplay = 'Запись';
         } else if (notification.type === 'ticket') {
             typeDisplay = 'Сообщение';
+        } else if (notification.type === 'trial_expires_2_days' || 
+                   notification.type === 'trial_expires_3_days' || 
+                   notification.type === 'trial_expires_1_day' || 
+                   notification.type === 'trial_expired') {
+            typeDisplay = 'Пробний період';
+        } else if (notification.type === 'subscription_expires_7_days' || 
+                   notification.type === 'subscription_expires_3_days' || 
+                   notification.type === 'subscription_expires_1_day' || 
+                   notification.type === 'subscription_expired') {
+            typeDisplay = 'Підписка';
         }
 
         const statusBadge = notification.is_read 

@@ -3534,5 +3534,17 @@ html body.open .navbar-nav {
     overflow-x: hidden !important;
 }
 
+/* Увеличиваем ширину dropdown-menu для уведомлений */
+.for-notification .dropdown-menu {
+    min-width: 300px !important;
+    width: 300px !important;
+}
+
+.notification-show + .dropdown-menu,
+.message-show + .dropdown-menu {
+    min-width: 300px !important;
+    width: 300px !important;
+}
+
 
 

@@ -317,7 +317,16 @@ class SubscriptionsController extends Controller
             $this->createNotification($user, 'trial_expires_3_days', [
                 'title' => __('messages.trial_expires_3_days_title'),
                 'body' => __('messages.trial_expires_3_days_body', ['days' => $trialDaysLeft]),
-                'url' => route('beautyflow.pricing')
+                'url' => route('client.subscriptions.index')
+            ]);
+        }
+        
+        // Уведомление за 2 дня до окончания пробного периода
+        if ($trialDaysLeft === 2) {
+            $this->createNotification($user, 'trial_expires_2_days', [
+                'title' => __('messages.trial_expires_2_days_title'),
+                'body' => __('messages.trial_expires_2_days_body', ['days' => $trialDaysLeft]),
+                'url' => route('client.subscriptions.index')
             ]);
         }
         
@@ -326,7 +335,7 @@ class SubscriptionsController extends Controller
             $this->createNotification($user, 'trial_expires_1_day', [
                 'title' => __('messages.trial_expires_1_day_title'),
                 'body' => __('messages.trial_expires_1_day_body'),
-                'url' => route('beautyflow.pricing')
+                'url' => route('client.subscriptions.index')
             ]);
         }
         
@@ -335,7 +344,7 @@ class SubscriptionsController extends Controller
             $this->createNotification($user, 'trial_expired', [
                 'title' => __('messages.trial_expired_title'),
                 'body' => __('messages.trial_expired_body'),
-                'url' => route('beautyflow.pricing')
+                'url' => route('client.subscriptions.index')
             ]);
         }
     }

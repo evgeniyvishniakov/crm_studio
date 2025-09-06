@@ -414,6 +414,8 @@ return [
     'subscription_expired' => 'Subscription expired',
     'start_date' => 'Start Date',
     'trial_period_until' => 'Trial period until',
+    'trial_period' => 'Trial Period',
+    'subscription' => 'Subscription',
     'trial_days_left' => 'Trial days left',
     'payment_status' => 'Payment Status',
     'paid' => 'Paid',
@@ -449,6 +451,8 @@ return [
     // Trial period notifications
     'trial_expires_3_days_title' => 'Trial period expires in 3 days',
     'trial_expires_3_days_body' => 'Your trial period expires in :days days. Choose a paid plan to continue working.',
+    'trial_expires_2_days_title' => 'Trial period expires in 2 days',
+    'trial_expires_2_days_body' => 'Your trial period expires in :days days. Choose a paid plan to continue working.',
     'trial_expires_1_day_title' => 'Trial period expires tomorrow',
     'trial_expires_1_day_body' => 'Your trial period expires tomorrow! Choose a paid plan to keep access to all features.',
     'trial_expired_title' => 'Trial period expired',

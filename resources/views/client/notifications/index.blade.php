@@ -65,6 +65,22 @@
                                         {{ __('messages.web_booking') }}
                                     @elseif($notification->type === 'ticket')
                                         {{ __('messages.ticket') }}
+                                    @elseif($notification->type === 'trial_expires_2_days')
+                                        {{ __('messages.trial_period') }}
+                                    @elseif($notification->type === 'trial_expires_3_days')
+                                        {{ __('messages.trial_period') }}
+                                    @elseif($notification->type === 'trial_expires_1_day')
+                                        {{ __('messages.trial_period') }}
+                                    @elseif($notification->type === 'trial_expired')
+                                        {{ __('messages.trial_period') }}
+                                    @elseif($notification->type === 'subscription_expires_7_days')
+                                        {{ __('messages.subscription') }}
+                                    @elseif($notification->type === 'subscription_expires_3_days')
+                                        {{ __('messages.subscription') }}
+                                    @elseif($notification->type === 'subscription_expires_1_day')
+                                        {{ __('messages.subscription') }}
+                                    @elseif($notification->type === 'subscription_expired')
+                                        {{ __('messages.subscription') }}
                                     @else
                                         {{ ucfirst($notification->type) }}
                                     @endif
@@ -116,6 +132,22 @@
                                     {{ __('messages.web_booking') }}
                                 @elseif($notification->type === 'ticket')
                                     {{ __('messages.ticket') }}
+                                @elseif($notification->type === 'trial_expires_2_days')
+                                    {{ __('messages.trial_period') }}
+                                @elseif($notification->type === 'trial_expires_3_days')
+                                    {{ __('messages.trial_period') }}
+                                @elseif($notification->type === 'trial_expires_1_day')
+                                    {{ __('messages.trial_period') }}
+                                @elseif($notification->type === 'trial_expired')
+                                    {{ __('messages.trial_period') }}
+                                @elseif($notification->type === 'subscription_expires_7_days')
+                                    {{ __('messages.subscription') }}
+                                @elseif($notification->type === 'subscription_expires_3_days')
+                                    {{ __('messages.subscription') }}
+                                @elseif($notification->type === 'subscription_expires_1_day')
+                                    {{ __('messages.subscription') }}
+                                @elseif($notification->type === 'subscription_expired')
+                                    {{ __('messages.subscription') }}
                                 @else
                                     {{ ucfirst($notification->type) }}
                                 @endif
