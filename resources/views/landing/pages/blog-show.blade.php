@@ -215,10 +215,6 @@
                     </a>
                     
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-secondary" onclick="window.print()">
-                            <i class="fas fa-print me-2"></i>
-                            {{ __('landing.blog_print') }}
-                        </button>
                         <button class="btn btn-outline-secondary" onclick="shareArticle()">
                             <i class="fas fa-share-alt me-2"></i>
                             {{ __('landing.blog_share') }}
@@ -286,16 +282,12 @@ function shareArticle() {
         box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     
-    .article-meta .d-flex {
+    .article-meta .d-flex { а вор
         gap: 5px;
     }
     
     @media (max-width: 768px) {
-        .article-meta .d-flex {
-            flex-direction: column;
-            align-items: flex-start !important;
-            gap: 0.75rem;
-        }
+        
     }
     
     .breadcrumb-item a {

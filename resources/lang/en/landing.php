@@ -14,7 +14,7 @@ return [
     'try_free_7_days' => 'Try free for 7 days',
     'enter_system' => 'Enter system',
     'view_functions' => 'View functions',
-    'view_niches' => 'View niches',
+    'view_niches' => 'View directions',
     
     // Features
     'online_booking_24_7' => 'Online booking 24/7',
@@ -234,7 +234,7 @@ return [
     'try_7_days_test_description' => '7 days of free testing of all Trimora capabilities',
     
     // Niches Section
-    'niches_title' => '🎯 What niches is Trimora suitable for?',
+    'niches_title' => '🎯 Directions',
     'niches_description' => 'Universal CRM for service business of any scale',
     'beauty_care_description' => 'Beauty salons, hairdressers, manicure salons, SPA centers, massage salons',
     'medical_services_description' => 'Dental clinics, aesthetic medicine clinics, physiotherapy centers',
@@ -299,7 +299,7 @@ return [
     'toggle_navigation' => 'Toggle navigation',
     'main_navigation' => 'Main navigation',
     'features' => 'Features',
-    'niches' => 'Industries',
+    'niches' => 'Directions',
     'pricing' => 'Pricing',
     'knowledge_base' => 'Knowledge Base',
     'contacts' => 'Contacts',

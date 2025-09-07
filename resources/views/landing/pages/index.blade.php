@@ -810,87 +810,273 @@
 
 
 
-<!-- Testimonials -->
-<section class="py-5">
-    <div class="container">
-        <div class="row text-center mb-5">
-            <div class="col-lg-8 mx-auto">
-                <h2 class="display-5 fw-bold mb-4 section-title">{{ __('landing.testimonials_title') }}</h2>
-                <p class="lead text-muted">{{ __('landing.testimonials_description') }}</p>
+<!-- Testimonials Slider -->
+<section class="py-5 bg-light">
+    <div class="container-fluid px-0">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-lg-8 mx-auto">
+                    <h2 class="display-5 fw-bold mb-4 section-title">{{ __('landing.testimonials_title') }}</h2>
+                    <p class="lead text-muted">{{ __('landing.testimonials_description') }}</p>
+                </div>
             </div>
         </div>
         
-        <div class="row g-4">
-            <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm card-3d">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="avatar me-3 bg-gradient-primary d-flex align-items-center justify-content-center">
-                                <i class="fas fa-user text-white"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-1">{{ __('landing.anna_petrova') }}</h5>
-                                <small class="text-muted">{{ __('landing.salon_beauty') }}</small>
+        <div class="testimonials-slider-container">
+            <div class="testimonials-slider">
+                <!-- Slide 1 -->
+                <div class="testimonial-slide active">
+                    <div class="container">
+                        <div class="row g-4">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-0 shadow-sm card-3d">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar me-3 bg-gradient-primary d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">{{ __('landing.anna_petrova') }}</h5>
+                                            <small class="text-muted">{{ __('landing.salon_beauty') }}</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                    <p class="card-text">"{{ __('landing.web_booking_testimonial_1') }}"</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-0 shadow-sm card-3d">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar me-3 bg-gradient-info d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">{{ __('landing.mikhail_sidorov') }}</h5>
+                                            <small class="text-muted">{{ __('landing.elegant_studio') }}</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                    <p class="card-text">"{{ __('landing.roles_system_testimonial_1') }}"</p>
+                                </div>
+                            </div>
                         </div>
-                        <p class="card-text">"{{ __('landing.web_booking_testimonial_1') }}"</p>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-0 shadow-sm card-3d">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar me-3 bg-gradient-success d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">{{ __('landing.elena_kozlova') }}</h5>
+                                            <small class="text-muted">{{ __('landing.gracia_salon') }}</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                    <p class="card-text">"{{ __('landing.analytics_testimonial_1') }}"</p>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 2 -->
+                <div class="testimonial-slide">
+                    <div class="container">
+                        <div class="row g-4">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-0 shadow-sm card-3d">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar me-3 bg-gradient-warning d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">Олександр Коваленко</h5>
+                                            <small class="text-muted">Салон "Елегант"</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                    <p class="card-text">"Trimora змінила нашу роботу! Тепер клієнти можуть записуватися онлайн 24/7, а ми отримуємо детальну аналітику. Доходи зросли на 40% за 3 місяці."</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-0 shadow-sm card-3d">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar me-3 bg-gradient-danger d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">Марія Петренко</h5>
+                                            <small class="text-muted">Медичний центр "Здоров'я"</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                    <p class="card-text">"Система ролей та безпека даних - це те, що нам потрібно було! Кожен лікар бачить тільки своїх пацієнтів, а адміністратор має повний контроль."</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-0 shadow-sm card-3d">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar me-3 bg-gradient-secondary d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">Дмитро Іваненко</h5>
+                                            <small class="text-muted">Автосервіс "Швидкий"</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                    <p class="card-text">"Відстеження запчастин та фінансові звіти - це просто чудово! Тепер ми точно знаємо, що приносить прибуток, а що ні."</p>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 3 -->
+                <div class="testimonial-slide">
+                    <div class="container">
+                        <div class="row g-4">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-0 shadow-sm card-3d">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar me-3 bg-gradient-dark d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">Тетяна Мороз</h5>
+                                            <small class="text-muted">Студія тату "Арт-Стиль"</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                    <p class="card-text">"Клієнти можуть записуватися на консультацію в будь-який час. Telegram-повідомлення допомагають не пропустити жодного клієнта!"</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-0 shadow-sm card-3d">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar me-3 bg-gradient-primary d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">Віктор Семенко</h5>
+                                            <small class="text-muted">Фітнес-клуб "Енергія"</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                    <p class="card-text">"Програма лояльності та система знижок працює ідеально! Клієнти повертаються частіше, а ми маємо стабільний дохід."</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 col-md-6">
+                            <div class="card h-100 border-0 shadow-sm card-3d">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="avatar me-3 bg-gradient-info d-flex align-items-center justify-content-center">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-1">Оксана Левченко</h5>
+                                            <small class="text-muted">Салон краси "Шарм"</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                    <p class="card-text">"Відстеження продуктів та інвентар - це спасіння! Ніколи більше не закінчуються матеріали в непідходящий момент."</p>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm card-3d">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="avatar me-3 bg-gradient-info d-flex align-items-center justify-content-center">
-                                <i class="fas fa-user text-white"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-1">{{ __('landing.mikhail_sidorov') }}</h5>
-                                <small class="text-muted">{{ __('landing.elegant_studio') }}</small>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                        </div>
-                        <p class="card-text">"{{ __('landing.roles_system_testimonial_1') }}"</p>
-                    </div>
-                </div>
+            <!-- Slider Controls -->
+            <div class="testimonials-controls">
+                <button class="testimonial-prev" id="testimonialPrev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="testimonial-next" id="testimonialNext">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
             
-            <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm card-3d">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="avatar me-3 bg-gradient-success d-flex align-items-center justify-content-center">
-                                <i class="fas fa-user text-white"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-1">{{ __('landing.elena_kozlova') }}</h5>
-                                <small class="text-muted">{{ __('landing.gracia_salon') }}</small>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                        </div>
-                        <p class="card-text">"{{ __('landing.analytics_testimonial_1') }}"</p>
-                    </div>
-                </div>
+            <!-- Slider Dots -->
+            <div class="testimonials-dots">
+                <div class="testimonial-dot active" data-slide="0"></div>
+                <div class="testimonial-dot" data-slide="1"></div>
+                <div class="testimonial-dot" data-slide="2"></div>
             </div>
         </div>
     </div>

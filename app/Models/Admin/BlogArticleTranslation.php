@@ -36,3 +36,4 @@ class BlogArticleTranslation extends Model
         return $this->belongsTo(\App\Models\Language::class, 'locale', 'code');
     }
 }
+

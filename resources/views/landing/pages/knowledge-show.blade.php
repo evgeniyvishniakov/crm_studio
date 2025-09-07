@@ -199,10 +199,6 @@
                     </a>
                     
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-secondary" onclick="window.print()">
-                            <i class="fas fa-print me-2"></i>
-                            {{ __('landing.knowledge_print') }}
-                        </button>
                         <button class="btn btn-outline-secondary" onclick="shareArticle()">
                             <i class="fas fa-share-alt me-2"></i>
                             {{ __('landing.knowledge_share') }}
