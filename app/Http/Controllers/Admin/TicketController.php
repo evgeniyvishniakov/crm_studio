@@ -11,6 +11,7 @@ use App\Models\Clients\SupportTicketMessage;
 use App\Models\Admin\User;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\SendAdminTelegramNotification;
 
 class TicketController extends Controller
 {

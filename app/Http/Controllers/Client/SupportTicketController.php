@@ -10,6 +10,7 @@ use App\Models\Clients\SupportTicket;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\SendAdminTelegramNotification;
 
 class SupportTicketController extends Controller
 {
@@ -44,6 +45,15 @@ class SupportTicketController extends Controller
             'message' => $request->message,
             'is_admin' => false,
         ]);
+        // Отправка уведомления в Telegram о новом сообщении в поддержку
+        SendAdminTelegramNotification::dispatch('new_message', [
+            'project_name' => $user->project->project_name,
+            'user_name' => $user->name,
+            'user_email' => $user->email,
+            'message' => $request->message,
+            'created_at' => $ticket->created_at->format('d.m.Y H:i:s'),
+        ]);
+
         // Логируем создание тикета
         Log::info('Support ticket created', [
             'user_id' => $user->id,

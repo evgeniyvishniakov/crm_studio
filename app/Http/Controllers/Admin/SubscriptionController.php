@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Admin\Project;
 use App\Models\Subscription;
 use Carbon\Carbon;
+use App\Jobs\SendAdminTelegramNotification;
 
 class SubscriptionController extends Controller
 {
@@ -85,6 +86,17 @@ class SubscriptionController extends Controller
                 'status' => 'active',
                 'expires_at' => now()->addDays(30), // Устанавливаем дату окончания активной подписки
                 'trial_ends_at' => now() // Завершаем пробный период
+            ]);
+            
+            // Отправка уведомления о новой подписке
+            SendAdminTelegramNotification::dispatch('new_subscription', [
+                'project_name' => $subscription->project->project_name,
+                'plan_name' => 'Активная подписка (конвертирована из пробной)',
+                'amount' => $subscription->amount,
+                'currency' => $subscription->currency,
+                'period' => '30 дней',
+                'expires_at' => $subscription->expires_at->format('d.m.Y H:i:s'),
+                'user_name' => $subscription->adminUser->name,
             ]);
             
             $message = 'Пробная подписка успешно конвертирована в активную на 30 дней';

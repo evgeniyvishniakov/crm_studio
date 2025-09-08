@@ -45,7 +45,7 @@
                 <div class="nav-link text-white d-flex align-items-center justify-content-between" 
                      data-bs-toggle="collapse" 
                      data-bs-target="#settingsSubmenu" 
-                     aria-expanded="{{ request()->routeIs('admin.roles.*') || request()->routeIs('admin.plans.*') || request()->routeIs('admin.payment-settings.*') || request()->routeIs('admin.currencies.*') || request()->routeIs('admin.settings.*') || request()->routeIs('admin.languages.*') || request()->routeIs('admin.email-templates.*') || request()->routeIs('admin.security.*') ? 'true' : 'false' }}" 
+                     aria-expanded="{{ request()->routeIs('admin.roles.*') || request()->routeIs('admin.plans.*') || request()->routeIs('admin.payment-settings.*') || request()->routeIs('admin.currencies.*') || request()->routeIs('admin.settings.*') || request()->routeIs('admin.languages.*') || request()->routeIs('admin.email-templates.*') || request()->routeIs('admin.security.*') || request()->routeIs('admin.telegram-settings.*') ? 'true' : 'false' }}" 
                      aria-controls="settingsSubmenu"
                      style="cursor: pointer;">
                     <div>
@@ -54,7 +54,7 @@
                     </div>
                     <i class="fas fa-chevron-down" id="settingsChevron"></i>
                 </div>
-                <div class="collapse {{ request()->routeIs('admin.roles.*') || request()->routeIs('admin.plans.*') || request()->routeIs('admin.payment-settings.*') || request()->routeIs('admin.currencies.*') || request()->routeIs('admin.settings.*') || request()->routeIs('admin.languages.*') || request()->routeIs('admin.email-templates.*') || request()->routeIs('admin.security.*') ? 'show' : '' }}" id="settingsSubmenu">
+                <div class="collapse {{ request()->routeIs('admin.roles.*') || request()->routeIs('admin.plans.*') || request()->routeIs('admin.payment-settings.*') || request()->routeIs('admin.currencies.*') || request()->routeIs('admin.settings.*') || request()->routeIs('admin.languages.*') || request()->routeIs('admin.email-templates.*') || request()->routeIs('admin.security.*') || request()->routeIs('admin.telegram-settings.*') ? 'show' : '' }}" id="settingsSubmenu">
                     <ul class="nav flex-column ms-3 mt-2">
                         <li class="nav-item mb-1">
                             <a href="{{ route('admin.roles.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.roles.*') ? 'active bg-primary' : '' }}">
@@ -102,6 +102,12 @@
                             <a href="{{ route('admin.security.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.security.*') ? 'active bg-primary' : '' }}">
                                 <i class="fas fa-lock me-2"></i>
                                 Безопасность
+                            </a>
+                        </li>
+                        <li class="nav-item mb-1">
+                            <a href="{{ route('admin.telegram-settings.index') }}" class="nav-link text-white-50 {{ request()->routeIs('admin.telegram-settings.*') ? 'active bg-primary' : '' }}">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                Telegram уведомления
                             </a>
                         </li>
                     </ul>

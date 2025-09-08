@@ -168,4 +168,10 @@ Route::middleware(['auth:panel'])->name('admin.')->group(function () {
     Route::resource('blog-tags', \App\Http\Controllers\Admin\BlogTagController::class);
     Route::get('/blog-tags/{tag}/translations/{language}', [\App\Http\Controllers\Admin\BlogTagController::class, 'getTranslation'])->name('blog.tags.get-translation');
     Route::post('/blog-tags/{tag}/save-translation', [\App\Http\Controllers\Admin\BlogTagController::class, 'saveTranslation'])->name('blog.tags.save-translation');
+
+    // Настройки Telegram админ панели
+    Route::get('/telegram-settings', [\App\Http\Controllers\Admin\AdminTelegramSettingsController::class, 'index'])->name('telegram-settings.index');
+    Route::post('/telegram-settings', [\App\Http\Controllers\Admin\AdminTelegramSettingsController::class, 'update'])->name('telegram-settings.update');
+    Route::post('/telegram-settings/test', [\App\Http\Controllers\Admin\AdminTelegramSettingsController::class, 'testConnection'])->name('telegram-settings.test');
+    Route::get('/telegram-settings/instructions', [\App\Http\Controllers\Admin\AdminTelegramSettingsController::class, 'getInstructions'])->name('telegram-settings.instructions');
 }); 

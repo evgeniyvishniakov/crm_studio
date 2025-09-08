@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Log;
 use App\Models\Language;
+use App\Jobs\SendAdminTelegramNotification;
 
 class ProjectController extends Controller
 {
@@ -124,6 +125,17 @@ class ProjectController extends Controller
 
         // Генерируем токен для создания пароля
         $token = Password::broker('admin_users')->createToken($adminUser);
+
+        // Отправка уведомления в Telegram о новом проекте
+        SendAdminTelegramNotification::dispatch('new_project', [
+            'project_name' => $project->project_name,
+            'owner_name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? 'Не указан',
+            'registered_at' => $project->registered_at->format('d.m.Y H:i:s'),
+            'website' => $validated['website'] ?? null,
+            'address' => $validated['address'] ?? null,
+        ]);
 
         // Отправка письма с ссылкой на создание пароля
         Log::info('Attempting to send registration email to: ' . $validated['email']);
