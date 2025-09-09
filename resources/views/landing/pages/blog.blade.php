@@ -53,6 +53,20 @@
 
 @push('styles')
 <style>
+    /* Подсветка активной категории */
+    .category-filter.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border-color: transparent !important;
+        color: white !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+        transform: translateY(-2px) !important;
+    }
+    
+    .category-filter.active:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5) !important;
+    }
+    
     /* Современная пагинация */
     .pagination-modern {
         display: flex;
