@@ -100,6 +100,150 @@
         color: white !important;
     }
     
+    /* Современная пагинация */
+    .pagination-modern {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin: 40px 0;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    .pagination-modern .page-item {
+        list-style: none;
+    }
+    
+    .pagination-modern .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        color: #6c757d;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .pagination-modern .page-link:hover {
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    
+    .pagination-modern .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .pagination-modern .page-item.disabled .page-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    
+    .pagination-modern .page-link:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .pagination-modern .page-link:hover:before {
+        left: 100%;
+    }
+    
+    .pagination-modern .page-link i {
+        font-size: 12px;
+    }
+    
+    .pagination-modern .page-item:first-child .page-link,
+    .pagination-modern .page-item:last-child .page-link {
+        width: auto;
+        padding: 0 16px;
+        min-width: 44px;
+    }
+    
+    .pagination-modern .page-item.ellipsis .page-link {
+        border: none;
+        background: transparent;
+        cursor: default;
+        pointer-events: none;
+    }
+    
+    .pagination-modern .page-item.ellipsis .page-link:hover {
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .pagination-modern .page-item.ellipsis .page-link:before {
+        display: none;
+    }
+    
+    /* Анимация появления */
+    .pagination-modern {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Адаптивность для пагинации */
+    @media (max-width: 768px) {
+        .pagination-modern {
+            gap: 4px;
+            margin: 30px 0;
+        }
+        
+        .pagination-modern .page-link {
+            width: 40px;
+            height: 40px;
+            font-size: 13px;
+        }
+        
+        .pagination-modern .page-item:first-child .page-link,
+        .pagination-modern .page-item:last-child .page-link {
+            padding: 0 12px;
+            min-width: 40px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .pagination-modern .page-link {
+            width: 36px;
+            height: 36px;
+            font-size: 12px;
+        }
+        
+        .pagination-modern .page-item:first-child .page-link,
+        .pagination-modern .page-item:last-child .page-link {
+            padding: 0 10px;
+            min-width: 36px;
+        }
+    }
+    
     
     .hero-section {
         color: #2c3e50;
@@ -259,16 +403,25 @@
             @endforelse
         </div>
         
-                <!-- Empty State -->
+        <!-- Empty State -->
         <div class="empty-state text-center py-5" style="display: none;">
-                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">{{ __('landing.knowledge_search_no_results') }}</h4>
-                    <p class="text-muted">{{ __('landing.knowledge_search_no_results_text') }}</p>
-                    <button class="btn btn-outline-primary" onclick="clearFilters()">
-                        <i class="fas fa-times me-2"></i>
-                        {{ __('landing.knowledge_clear_filters') }}
-                    </button>
-                </div>
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">{{ __('landing.knowledge_search_no_results') }}</h4>
+            <p class="text-muted">{{ __('landing.knowledge_search_no_results_text') }}</p>
+            <button class="btn btn-outline-primary" onclick="clearFilters()">
+                <i class="fas fa-times me-2"></i>
+                {{ __('landing.knowledge_clear_filters') }}
+            </button>
+        </div>
+        
+        <!-- Modern Pagination -->
+        @if($needsPagination)
+        <nav aria-label="Pagination">
+            <ul class="pagination-modern" id="paginationContainer">
+                <!-- Пагинация будет генерироваться JavaScript -->
+            </ul>
+        </nav>
+        @endif
     </div>
 </section>
 
@@ -297,12 +450,96 @@ document.addEventListener('DOMContentLoaded', function() {
     const categoryFilters = document.querySelectorAll('.category-filter');
     const articles = document.querySelectorAll('.article-item');
     const emptyState = document.querySelector('.empty-state');
+    const paginationContainer = document.getElementById('paginationContainer');
+    
+    // Переменные для пагинации
+    let currentPage = 1;
+    const articlesPerPage = 9;
+    let filteredArticles = Array.from(articles);
 
+    // Функция для создания пагинации
+    function createPagination(totalPages) {
+        if (!paginationContainer || totalPages <= 1) {
+            if (paginationContainer) paginationContainer.style.display = 'none';
+            return;
+        }
+        
+        paginationContainer.innerHTML = '';
+        paginationContainer.style.display = 'flex';
+        
+        // Кнопка "Предыдущая"
+        const prevBtn = document.createElement('li');
+        prevBtn.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevBtn.innerHTML = `<span class="page-link"><i class="fas fa-chevron-left"></i></span>`;
+        if (currentPage > 1) {
+            prevBtn.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage - 1})"><i class="fas fa-chevron-left"></i></a>`;
+        }
+        paginationContainer.appendChild(prevBtn);
+        
+        // Номера страниц
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('li');
+            pageBtn.className = `page-item ${i === currentPage ? 'active' : ''}`;
+            if (i === currentPage) {
+                pageBtn.innerHTML = `<span class="page-link">${i}</span>`;
+            } else {
+                pageBtn.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>`;
+            }
+            paginationContainer.appendChild(pageBtn);
+        }
+        
+        // Кнопка "Следующая"
+        const nextBtn = document.createElement('li');
+        nextBtn.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+        nextBtn.innerHTML = `<span class="page-link"><i class="fas fa-chevron-right"></i></span>`;
+        if (currentPage < totalPages) {
+            nextBtn.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage + 1})"><i class="fas fa-chevron-right"></i></a>`;
+        }
+        paginationContainer.appendChild(nextBtn);
+    }
+    
+    // Функция для перехода на страницу
+    window.goToPage = function(page) {
+        currentPage = page;
+        displayArticles();
+    }
+    
+    // Функция для отображения статей
+    function displayArticles() {
+        const startIndex = (currentPage - 1) * articlesPerPage;
+        const endIndex = startIndex + articlesPerPage;
+        const articlesToShow = filteredArticles.slice(startIndex, endIndex);
+        
+        // Скрываем все статьи
+        articles.forEach(article => {
+            article.style.display = 'none';
+        });
+        
+        // Показываем нужные статьи
+        articlesToShow.forEach(article => {
+            article.style.display = 'block';
+            article.style.animation = 'fadeIn 0.5s ease-in';
+        });
+        
+        // Создаем пагинацию
+        const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
+        createPagination(totalPages);
+        
+        // Показываем/скрываем empty state
+        if (emptyState) {
+            if (filteredArticles.length === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+    }
+    
     function performSearch() {
         const searchTerm = searchInput.value.toLowerCase().trim();
         const activeCategory = document.querySelector('.category-filter.active').dataset.category;
         
-        articles.forEach(article => {
+        filteredArticles = Array.from(articles).filter(article => {
             const title = article.querySelector('.card-title').textContent.toLowerCase();
             const description = article.querySelector('.card-text').textContent.toLowerCase();
             const category = article.dataset.category;
@@ -310,23 +547,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
             const matchesCategory = activeCategory === 'all' || category === activeCategory;
             
-            if (matchesSearch && matchesCategory) {
-                article.style.display = 'block';
-                article.style.animation = 'fadeIn 0.5s ease-in';
-            } else {
-                article.style.display = 'none';
-            }
+            return matchesSearch && matchesCategory;
         });
         
-        if (emptyState) {
-            if (Array.from(articles).filter(article => 
-                article.style.display !== 'none'
-            ).length === 0) {
-                emptyState.style.display = 'block';
-            } else {
-                emptyState.style.display = 'none';
-            }
-        }
+        currentPage = 1;
+        displayArticles();
     }
 
     searchBtn.addEventListener('click', performSearch);
@@ -346,24 +571,15 @@ document.addEventListener('DOMContentLoaded', function() {
     categoryFilters.forEach(filter => {
         filter.addEventListener('click', function() {
             categoryFilters.forEach(f => f.classList.remove('active'));
-            
             this.classList.add('active');
-            
-            const category = this.dataset.category;
-            
-            articles.forEach(article => {
-                if (category === 'all' || article.dataset.category === category) {
-                    article.style.display = 'block';
-                    article.style.animation = 'slideIn 0.5s ease-out';
-                } else {
-                    article.style.display = 'none';
-                }
-            });
             
             searchInput.value = '';
             performSearch();
         });
     });
+    
+    // Инициализация при загрузке страницы
+    displayArticles();
     
     const style = document.createElement('style');
     style.textContent = `
@@ -399,18 +615,10 @@ function clearFilters() {
         searchInput.value = '';
     }
     
-    // Show all articles
-    const articles = document.querySelectorAll('.article-item');
-    articles.forEach(article => {
-        article.style.display = 'block';
-        article.style.animation = 'fadeIn 0.5s ease-in';
-    });
-    
-    // Hide empty state
-    const emptyState = document.querySelector('.empty-state');
-    if (emptyState) {
-        emptyState.style.display = 'none';
-    }
+    // Reset to show all articles
+    filteredArticles = Array.from(document.querySelectorAll('.article-item'));
+    currentPage = 1;
+    displayArticles();
 }
 </script>
 @endpush

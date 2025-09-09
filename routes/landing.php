@@ -93,4 +93,4 @@ Route::middleware('landing.auth')->group(function () {
     Route::get('/payment/success', [\App\Http\Controllers\Landing\PaymentController::class, 'paymentSuccess'])->name('landing.payment.success');
     Route::get('/payment/failure', [\App\Http\Controllers\Landing\PaymentController::class, 'paymentFailure'])->name('landing.payment.failure');
     Route::post('/payment/webhook', [\App\Http\Controllers\Landing\PaymentController::class, 'webhook'])->name('landing.payment.webhook');
-}); 
+});

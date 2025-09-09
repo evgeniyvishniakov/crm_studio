@@ -31,8 +31,3 @@ Route::prefix('book')->name('public.booking.')->group(function () {
     Route::post('/{slug}/store', [\App\Http\Controllers\PublicBookingController::class, 'store'])->name('store');
 });
 
-// Публичные маршруты базы знаний
-Route::prefix('knowledge')->name('knowledge.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\KnowledgeController::class, 'index'])->name('index');
-    Route::get('/{slug}', [\App\Http\Controllers\KnowledgeController::class, 'show'])->name('show');
-});

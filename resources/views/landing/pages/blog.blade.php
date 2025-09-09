@@ -210,6 +210,11 @@
             min-width: 36px;
         }
     }
+    
+    /* Плавная анимация для статей */
+    .article-item {
+        transition: opacity 0.3s ease-in-out;
+    }
 </style>
 @endpush
 
@@ -291,7 +296,7 @@
                             <img src="{{ Storage::url($article->localized_featured_image) }}" 
                                  class="card-img-top" 
                                  alt="{{ $article->localized_title }}"
-                                 style="height: 280px; object-fit: cover;">
+                                 style="height: 335px; object-fit: cover;">
                         @endif
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
@@ -440,15 +445,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const endIndex = startIndex + articlesPerPage;
         const articlesToShow = filteredArticles.slice(startIndex, endIndex);
         
-        // Скрываем все статьи
+        // Скрываем все статьи, которые не должны быть показаны
         articles.forEach(article => {
-            article.style.display = 'none';
-        });
-        
-        // Показываем нужные статьи
-        articlesToShow.forEach(article => {
-            article.style.display = 'block';
-            article.style.animation = 'fadeIn 0.5s ease-in';
+            if (articlesToShow.includes(article)) {
+                article.style.display = 'block';
+                if (!article.classList.contains('fade-in')) {
+                    article.style.animation = 'fadeIn 0.5s ease-in';
+                    article.classList.add('fade-in');
+                }
+            } else {
+                article.style.display = 'none';
+            }
         });
         
         // Создаем пагинацию
@@ -464,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     function performSearch() {
         const searchTerm = searchInput.value.toLowerCase().trim();
         const activeCategory = document.querySelector('.category-filter.active').dataset.category;
@@ -508,8 +515,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Инициализация при загрузке страницы
-    displayArticles();
+    // Инициализация при загрузке страницы с небольшой задержкой
+    setTimeout(() => {
+        displayArticles();
+    }, 100);
     
     const style = document.createElement('style');
     style.textContent = `
