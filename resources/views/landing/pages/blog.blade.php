@@ -53,226 +53,6 @@
 
 @push('styles')
 <style>
-    /* Красивые стили для списка статей блога с теми же шрифтами что и в лендинге */
-    .article-item .card {
-        transition: all 0.3s ease;
-        border: none;
-        border-radius: 16px;
-        overflow: hidden;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .article-item .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    }
-    
-    .article-item .card-img-top {
-        transition: transform 0.3s ease;
-    }
-    
-    .article-item .card:hover .card-img-top {
-        transform: scale(1.05);
-    }
-    
-    .article-item .card-body {
-        padding: 25px;
-    }
-    
-    .article-item .card-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #2c3e50;
-        line-height: 1.4;
-        margin-bottom: 15px;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .article-item .card-text {
-        font-size: 15px;
-        line-height: 1.6;
-        color: #6c757d;
-        margin-bottom: 20px;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .article-item .badge {
-        font-size: 12px;
-        font-weight: 500;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .article-item small {
-        font-size: 13px;
-        color: #6c757d;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .article-item .btn {
-        border-radius: 8px;
-        font-weight: 500;
-        padding: 8px 20px;
-        transition: all 0.3s ease;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    
-    h5.card-title {
-        font-size: 23px!important;
-        font-weight: bold!important;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .card h5.card-title {
-        font-size: 23px!important;
-        font-weight: bold!important;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .article-item .card .card-body h5.card-title {
-        font-size: 23px!important;
-        font-weight: bold!important;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .article-item .card .card-body h5.card-title a {
-        transition: color 0.3s ease;
-    }
-    
-    .article-item .card .card-body h5.card-title a:hover {
-        color: #667eea !important;
-    }
-    
-    /* Отключаем text-transform для заголовков статей */
-    .article-item .card-title,
-    .article-item .card-title a,
-    .article-item h5.card-title,
-    .article-item h5.card-title a {
-        text-transform: none !important;
-    }
-    
-    .category-filter {
-        border-radius: 25px;
-        padding: 10px 20px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        border: 2px solid #e9ecef;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .category-filter:hover {
-        border-color: #667eea;
-        color: #667eea;
-        transform: translateY(-2px);
-    }
-    
-    .category-filter.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-color: transparent;
-        color: white;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    }
-    
-    .search-section {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 16px;
-        padding: 30px;
-        margin-bottom: 30px;
-    }
-    
-    .search-section .input-group {
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    
-    .search-section .form-control {
-        border: none;
-        padding: 15px 20px;
-        font-size: 16px;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .search-section .form-control:focus {
-        box-shadow: none;
-    }
-    
-    .search-section .btn {
-        padding: 15px 25px;
-        border: none;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        font-weight: 500;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .hero-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-        opacity: 0.3;
-    }
-    
-    .hero-section .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .hero-section h1 {
-        font-size: 3.5rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .hero-section .lead {
-        font-size: 20px;
-        opacity: 0.9;
-        line-height: 1.6;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    /* Адаптивность */
-    @media (max-width: 768px) {
-        .hero-section h1 {
-            font-size: 2.5rem;
-        }
-        
-        .hero-section .lead {
-            font-size: 18px;
-        }
-        
-        .search-section {
-            padding: 20px;
-        }
-        
-        .article-item .card-body {
-            padding: 20px;
-        }
-        
-        .category-filter {
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-    }
-    
     /* Современная пагинация */
     .pagination-modern {
         display: flex;
@@ -551,51 +331,10 @@
         </div>
         
         <!-- Modern Pagination -->
-        @if($articles->hasPages())
+        @if($needsPagination)
         <nav aria-label="Pagination">
-            <ul class="pagination-modern">
-                {{-- Previous Page Link --}}
-                @if ($articles->onFirstPage())
-                    <li class="page-item disabled">
-                        <span class="page-link">
-                            <i class="fas fa-chevron-left"></i>
-                        </span>
-                    </li>
-                @else
-                    <li class="page-item">
-                        <a class="page-link" href="{{ $articles->previousPageUrl() }}" rel="prev">
-                            <i class="fas fa-chevron-left"></i>
-                        </a>
-                    </li>
-                @endif
-
-                {{-- Pagination Elements --}}
-                @foreach ($articles->getUrlRange(1, $articles->lastPage()) as $page => $url)
-                    @if ($page == $articles->currentPage())
-                        <li class="page-item active">
-                            <span class="page-link">{{ $page }}</span>
-                        </li>
-                    @else
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                        </li>
-                    @endif
-                @endforeach
-
-                {{-- Next Page Link --}}
-                @if ($articles->hasMorePages())
-                    <li class="page-item">
-                        <a class="page-link" href="{{ $articles->nextPageUrl() }}" rel="next">
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
-                    </li>
-                @else
-                    <li class="page-item disabled">
-                        <span class="page-link">
-                            <i class="fas fa-chevron-right"></i>
-                        </span>
-                    </li>
-                @endif
+            <ul class="pagination-modern" id="paginationContainer">
+                <!-- Пагинация будет генерироваться JavaScript -->
             </ul>
         </nav>
         @endif
@@ -627,12 +366,96 @@ document.addEventListener('DOMContentLoaded', function() {
     const categoryFilters = document.querySelectorAll('.category-filter');
     const articles = document.querySelectorAll('.article-item');
     const emptyState = document.querySelector('.empty-state');
+    const paginationContainer = document.getElementById('paginationContainer');
+    
+    // Переменные для пагинации
+    let currentPage = 1;
+    const articlesPerPage = 9;
+    let filteredArticles = Array.from(articles);
 
+    // Функция для создания пагинации
+    function createPagination(totalPages) {
+        if (!paginationContainer || totalPages <= 1) {
+            if (paginationContainer) paginationContainer.style.display = 'none';
+            return;
+        }
+        
+        paginationContainer.innerHTML = '';
+        paginationContainer.style.display = 'flex';
+        
+        // Кнопка "Предыдущая"
+        const prevBtn = document.createElement('li');
+        prevBtn.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevBtn.innerHTML = `<span class="page-link"><i class="fas fa-chevron-left"></i></span>`;
+        if (currentPage > 1) {
+            prevBtn.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage - 1})"><i class="fas fa-chevron-left"></i></a>`;
+        }
+        paginationContainer.appendChild(prevBtn);
+        
+        // Номера страниц
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('li');
+            pageBtn.className = `page-item ${i === currentPage ? 'active' : ''}`;
+            if (i === currentPage) {
+                pageBtn.innerHTML = `<span class="page-link">${i}</span>`;
+            } else {
+                pageBtn.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>`;
+            }
+            paginationContainer.appendChild(pageBtn);
+        }
+        
+        // Кнопка "Следующая"
+        const nextBtn = document.createElement('li');
+        nextBtn.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+        nextBtn.innerHTML = `<span class="page-link"><i class="fas fa-chevron-right"></i></span>`;
+        if (currentPage < totalPages) {
+            nextBtn.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${currentPage + 1})"><i class="fas fa-chevron-right"></i></a>`;
+        }
+        paginationContainer.appendChild(nextBtn);
+    }
+    
+    // Функция для перехода на страницу
+    window.goToPage = function(page) {
+        currentPage = page;
+        displayArticles();
+    }
+    
+    // Функция для отображения статей
+    function displayArticles() {
+        const startIndex = (currentPage - 1) * articlesPerPage;
+        const endIndex = startIndex + articlesPerPage;
+        const articlesToShow = filteredArticles.slice(startIndex, endIndex);
+        
+        // Скрываем все статьи
+        articles.forEach(article => {
+            article.style.display = 'none';
+        });
+        
+        // Показываем нужные статьи
+        articlesToShow.forEach(article => {
+            article.style.display = 'block';
+            article.style.animation = 'fadeIn 0.5s ease-in';
+        });
+        
+        // Создаем пагинацию
+        const totalPages = Math.ceil(filteredArticles.length / articlesPerPage);
+        createPagination(totalPages);
+        
+        // Показываем/скрываем empty state
+        if (emptyState) {
+            if (filteredArticles.length === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+    }
+    
     function performSearch() {
         const searchTerm = searchInput.value.toLowerCase().trim();
         const activeCategory = document.querySelector('.category-filter.active').dataset.category;
         
-        articles.forEach(article => {
+        filteredArticles = Array.from(articles).filter(article => {
             const title = article.querySelector('.card-title').textContent.toLowerCase();
             const content = article.dataset.content;
             const category = article.dataset.category;
@@ -640,23 +463,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const matchesSearch = title.includes(searchTerm) || content.includes(searchTerm);
             const matchesCategory = activeCategory === 'all' || category === activeCategory;
             
-            if (matchesSearch && matchesCategory) {
-                article.style.display = 'block';
-                article.style.animation = 'fadeIn 0.5s ease-in';
-            } else {
-                article.style.display = 'none';
-            }
+            return matchesSearch && matchesCategory;
         });
         
-        if (emptyState) {
-            if (Array.from(articles).filter(article => 
-                article.style.display !== 'none'
-            ).length === 0) {
-                emptyState.style.display = 'block';
-            } else {
-                emptyState.style.display = 'none';
-            }
-        }
+        currentPage = 1;
+        displayArticles();
     }
 
     searchBtn.addEventListener('click', performSearch);
@@ -676,24 +487,15 @@ document.addEventListener('DOMContentLoaded', function() {
     categoryFilters.forEach(filter => {
         filter.addEventListener('click', function() {
             categoryFilters.forEach(f => f.classList.remove('active'));
-            
             this.classList.add('active');
-            
-            const category = this.dataset.category;
-            
-            articles.forEach(article => {
-                if (category === 'all' || article.dataset.category === category) {
-                    article.style.display = 'block';
-                    article.style.animation = 'slideIn 0.5s ease-out';
-                } else {
-                    article.style.display = 'none';
-                }
-            });
             
             searchInput.value = '';
             performSearch();
         });
     });
+    
+    // Инициализация при загрузке страницы
+    displayArticles();
     
     const style = document.createElement('style');
     style.textContent = `
@@ -729,18 +531,10 @@ function clearFilters() {
         searchInput.value = '';
     }
     
-    // Show all articles
-    const articles = document.querySelectorAll('.article-item');
-    articles.forEach(article => {
-        article.style.display = 'block';
-        article.style.animation = 'fadeIn 0.5s ease-in';
-    });
-    
-    // Hide empty state
-    const emptyState = document.querySelector('.empty-state');
-    if (emptyState) {
-        emptyState.style.display = 'none';
-    }
+    // Reset to show all articles
+    filteredArticles = Array.from(document.querySelectorAll('.article-item'));
+    currentPage = 1;
+    displayArticles();
 }
 </script>
 @endpush

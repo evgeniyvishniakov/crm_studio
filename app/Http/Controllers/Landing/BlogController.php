@@ -42,7 +42,11 @@ class BlogController extends Controller
             });
         }
         
-        $articles = $query->paginate(9);
+        // Всегда загружаем все статьи для фильтрации на клиенте
+        $articles = $query->get();
+        
+        // Определяем нужна ли пагинация для отображения
+        $needsPagination = $articles->count() > 9;
         
         $categories = BlogCategory::active()
             ->with('translations')
@@ -56,7 +60,7 @@ class BlogController extends Controller
             $currentFilter = \App\Models\Admin\BlogTag::where('slug', $request->get('tag'))->first();
         }
         
-        return view('landing.pages.blog', compact('articles', 'categories', 'currentFilter'));
+        return view('landing.pages.blog', compact('articles', 'categories', 'currentFilter', 'needsPagination'));
     }
 
     /**
