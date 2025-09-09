@@ -42,7 +42,7 @@ class BlogController extends Controller
             });
         }
         
-        $articles = $query->get();
+        $articles = $query->paginate(9);
         
         $categories = BlogCategory::active()
             ->with('translations')

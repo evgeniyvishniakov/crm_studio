@@ -51,7 +51,7 @@
 </script>
 @endpush
 
-@section('styles')
+@push('styles')
 <style>
     /* Красивые стили для списка статей блога с теми же шрифтами что и в лендинге */
     .article-item .card {
@@ -272,8 +272,152 @@
             font-size: 14px;
         }
     }
+    
+    /* Современная пагинация */
+    .pagination-modern {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin: 40px 0;
+        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    
+    .pagination-modern .page-item {
+        list-style: none;
+    }
+    
+    .pagination-modern .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        color: #6c757d;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .pagination-modern .page-link:hover {
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    
+    .pagination-modern .page-item.active .page-link {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .pagination-modern .page-item.disabled .page-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    
+    .pagination-modern .page-link:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .pagination-modern .page-link:hover:before {
+        left: 100%;
+    }
+    
+    .pagination-modern .page-link i {
+        font-size: 12px;
+    }
+    
+    .pagination-modern .page-item:first-child .page-link,
+    .pagination-modern .page-item:last-child .page-link {
+        width: auto;
+        padding: 0 16px;
+        min-width: 44px;
+    }
+    
+    .pagination-modern .page-item.ellipsis .page-link {
+        border: none;
+        background: transparent;
+        cursor: default;
+        pointer-events: none;
+    }
+    
+    .pagination-modern .page-item.ellipsis .page-link:hover {
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .pagination-modern .page-item.ellipsis .page-link:before {
+        display: none;
+    }
+    
+    /* Анимация появления */
+    .pagination-modern {
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Адаптивность для пагинации */
+    @media (max-width: 768px) {
+        .pagination-modern {
+            gap: 4px;
+            margin: 30px 0;
+        }
+        
+        .pagination-modern .page-link {
+            width: 40px;
+            height: 40px;
+            font-size: 13px;
+        }
+        
+        .pagination-modern .page-item:first-child .page-link,
+        .pagination-modern .page-item:last-child .page-link {
+            padding: 0 12px;
+            min-width: 40px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .pagination-modern .page-link {
+            width: 36px;
+            height: 36px;
+            font-size: 12px;
+        }
+        
+        .pagination-modern .page-item:first-child .page-link,
+        .pagination-modern .page-item:last-child .page-link {
+            padding: 0 10px;
+            min-width: 36px;
+        }
+    }
 </style>
-@endsection
+@endpush
 
 @section('content')
 <!-- Hero -->
@@ -405,6 +549,56 @@
                 {{ __('landing.blog_clear_filters') }}
             </button>
         </div>
+        
+        <!-- Modern Pagination -->
+        @if($articles->hasPages())
+        <nav aria-label="Pagination">
+            <ul class="pagination-modern">
+                {{-- Previous Page Link --}}
+                @if ($articles->onFirstPage())
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            <i class="fas fa-chevron-left"></i>
+                        </span>
+                    </li>
+                @else
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $articles->previousPageUrl() }}" rel="prev">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                @endif
+
+                {{-- Pagination Elements --}}
+                @foreach ($articles->getUrlRange(1, $articles->lastPage()) as $page => $url)
+                    @if ($page == $articles->currentPage())
+                        <li class="page-item active">
+                            <span class="page-link">{{ $page }}</span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                        </li>
+                    @endif
+                @endforeach
+
+                {{-- Next Page Link --}}
+                @if ($articles->hasMorePages())
+                    <li class="page-item">
+                        <a class="page-link" href="{{ $articles->nextPageUrl() }}" rel="next">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                @else
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                    </li>
+                @endif
+            </ul>
+        </nav>
+        @endif
     </div>
 </section>
 
