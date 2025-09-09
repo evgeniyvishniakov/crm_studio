@@ -191,11 +191,11 @@ Route::middleware('auth:client')->group(function () {
         Route::get('/', [AppointmentsController::class, 'index'])->name('index');
         Route::get('/create', [AppointmentsController::class, 'create'])->name('create');
         Route::post('/', [AppointmentsController::class, 'store'])->name('store');
+        Route::get('/{id}/view', [AppointmentsController::class, 'view'])->name('view');
         Route::get('/{appointment}', [AppointmentsController::class, 'show'])->name('show');
         Route::get('/{appointment}/edit', [AppointmentsController::class, 'edit'])->name('edit');
         Route::put('/{appointment}', [AppointmentsController::class, 'update'])->name('update');
         Route::delete('/{appointment}', [AppointmentsController::class, 'destroy'])->name('destroy');
-        Route::get('/{id}/view', [AppointmentsController::class, 'view'])->name('view');
         Route::post('/{appointment}/update-sales', [AppointmentsController::class, 'updateSales'])->name('update-sales');
         Route::post('/{appointment}/save-products', [AppointmentsController::class, 'saveProducts'])->name('save-products');
         Route::post('/{appointment}/add-product', [AppointmentsController::class, 'addProduct'])->name('add-product');

@@ -246,12 +246,32 @@ class AppointmentsController extends Controller
                             $totalAmount += $itemTotal;
                         }
                         $sale->update(['total_amount' => $totalAmount]);
+                        
+                        // Обновляем сумму записи, включив стоимость товаров
+                        $appointment->update(['price' => $appointment->price + $totalAmount]);
                     }
+                }
+
+                // Обновляем дату, время и статус во всех дочерних записях
+                $childAppointments = Appointment::where('parent_appointment_id', $appointment->id)->get();
+                foreach ($childAppointments as $child) {
+                    $child->update([
+                        'date' => $validated['date'],
+                        'time' => $validated['time'],
+                        'client_id' => $validated['client_id'], // Также обновляем клиента
+                        'user_id' => $validated['user_id'] ?? $child->user_id, // Обновляем мастера если указан
+                        'status' => $validated['status'] ?? $appointment->status, // Синхронизируем статус
+                    ]);
                 }
 
                 DB::commit();
 
                 $appointment = $appointment->fresh(['client', 'service', 'sales.items.product.warehouse', 'user']);
+                
+                // Форматируем дату для правильного отображения
+                $appointment->date_formatted = $appointment->date->format('d.m.Y');
+                $appointment->date_html = $appointment->date->format('Y-m-d');
+                
                 $products = Product::with('warehouse')
                     ->whereHas('warehouse', function($query) {
                         $query->where('quantity', '>', 0);
@@ -314,6 +334,24 @@ class AppointmentsController extends Controller
             }
 
             DB::transaction(function () use ($appointment) {
+                // Если это основная запись, удаляем все дочерние записи
+                if (!$appointment->parent_appointment_id) {
+                    $childAppointments = Appointment::where('parent_appointment_id', $appointment->id)->get();
+                    foreach ($childAppointments as $child) {
+                        // Возвращаем товары на склад для дочерних записей
+                        foreach ($child->sales as $sale) {
+                            foreach ($sale->items as $item) {
+                                if ($item->product && $item->product->warehouse) {
+                                    $item->product->warehouse->increment('quantity', $item->quantity);
+                                }
+                            }
+                            $sale->items()->delete();
+                        }
+                        $child->sales()->delete();
+                        $child->delete();
+                    }
+                }
+
                 // Возвращаем товары на склад перед удалением
                 foreach ($appointment->sales as $sale) {
                     foreach ($sale->items as $item) {
@@ -363,6 +401,10 @@ class AppointmentsController extends Controller
             // Добавляем вычисление часов и минут для формы
             $appointmentData->duration_hours = floor($duration / 60);
             $appointmentData->duration_minutes = $duration % 60;
+            
+            // Форматируем дату для правильного отображения в JavaScript
+            $appointmentData->date_formatted = $appointmentData->date->format('d.m.Y');
+            $appointmentData->date_html = $appointmentData->date->format('Y-m-d'); // Для HTML поля даты
 
             return response()->json([
                 'success' => true,
@@ -385,7 +427,9 @@ class AppointmentsController extends Controller
         $currentProjectId = auth()->user()->project_id;
         $currentUser = auth()->user();
         try {
-            $query = Appointment::with(['client', 'service', 'sales.items.product', 'user'])
+            \Log::info('Appointment view - Starting', ['id' => $id, 'project_id' => $currentProjectId]);
+            
+            $query = Appointment::with(['client', 'service', 'sales.items.product', 'user', 'parentAppointment', 'childAppointments.service'])
                 ->where('project_id', $currentProjectId);
             
             // Если пользователь не админ, показываем только его записи
@@ -394,6 +438,23 @@ class AppointmentsController extends Controller
             }
             
             $appointment = $query->findOrFail($id);
+            \Log::info('Appointment found', ['appointment_id' => $appointment->id]);
+            
+            // Получаем все связанные записи (временно упрощаем для отладки)
+            $relatedAppointments = collect([$appointment]);
+            if ($appointment->parent_appointment_id) {
+                // Если это дочерняя запись, загружаем родительскую и все дочерние
+                $parent = Appointment::with(['service'])->find($appointment->parent_appointment_id);
+                if ($parent) {
+                    $children = Appointment::with(['service'])->where('parent_appointment_id', $parent->id)->get();
+                    $relatedAppointments = $children->prepend($parent);
+                }
+            } else {
+                // Если это основная запись, загружаем дочерние
+                $children = Appointment::with(['service'])->where('parent_appointment_id', $appointment->id)->get();
+                $relatedAppointments = $children->prepend($appointment);
+            }
+            \Log::info('Related appointments loaded', ['count' => $relatedAppointments->count()]);
 
             // Получаем только продажи, связанные с этой конкретной записью
             $saleItems = [];
@@ -411,9 +472,21 @@ class AppointmentsController extends Controller
                 }
             }
 
+            // Форматируем дату для правильного отображения в JavaScript
+            $appointment->date_formatted = $appointment->date->format('d.m.Y');
+            $appointment->date_html = $appointment->date->format('Y-m-d'); // Для HTML поля даты
+            
+            // Форматируем даты для всех связанных записей
+            $relatedAppointments = $relatedAppointments->map(function($apt) {
+                $apt->date_formatted = $apt->date->format('d.m.Y');
+                $apt->date_html = $apt->date->format('Y-m-d'); // Для HTML поля даты
+                return $apt;
+            });
+            
             return response()->json([
                 'success' => true,
                 'appointment' => $appointment,
+                'relatedAppointments' => $relatedAppointments,
                 'sales' => $saleItems,
                 'products' => Product::with('warehouse')
                     ->whereHas('warehouse', function($query) {
@@ -432,6 +505,11 @@ class AppointmentsController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            \Log::error('Appointment view error', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Ошибка при загрузке данных: ' . $e->getMessage()
@@ -644,14 +722,40 @@ class AppointmentsController extends Controller
                 'price' => 'required|numeric|min:0',
             ]);
 
+            // Определяем родительскую запись
+            $parentAppointmentId = $appointment->isMainAppointment() 
+                ? $appointment->id 
+                : $appointment->parent_appointment_id;
+
+            \Log::info('Creating new appointment', [
+                'parent_date' => $appointment->date,
+                'parent_date_formatted' => $appointment->date->format('Y-m-d'),
+                'parent_time' => $appointment->time,
+                'parent_id' => $appointment->id
+            ]);
+
+            // Создаем новую дату, копируя только дату без времени
+            $appointmentDate = $appointment->date->startOfDay();
+            
             $newAppointment = Appointment::create([
                 'client_id' => $appointment->client_id,
                 'service_id' => $validated['service_id'],
-                'date' => $appointment->date,
+                'date' => $appointmentDate,
                 'time' => $appointment->time,
                 'price' => $validated['price'],
                 'notes' => 'Добавлено через просмотр записи',
-                'project_id' => $currentProjectId
+                'project_id' => $currentProjectId,
+                'user_id' => $appointment->user_id,
+                'parent_appointment_id' => $parentAppointmentId
+            ]);
+
+            \Log::info('New appointment created', [
+                'parent_date' => $appointment->date,
+                'parent_date_formatted' => $appointment->date->format('Y-m-d'),
+                'new_date' => $newAppointment->date,
+                'new_date_formatted' => $newAppointment->date->format('Y-m-d'),
+                'new_time' => $newAppointment->time,
+                'new_id' => $newAppointment->id
             ]);
 
             return response()->json([
@@ -693,8 +797,10 @@ class AppointmentsController extends Controller
         $currentProjectId = auth()->user()->project_id;
         $currentUser = auth()->user();
         try {
-            $query = Appointment::with(['client', 'service'])
-                ->where('project_id', $currentProjectId);
+            $query = Appointment::with(['client', 'service', 'childAppointments.service'])
+                ->where('project_id', $currentProjectId)
+                ->whereNull('parent_appointment_id') // Показываем только основные записи
+                ->where('parent_appointment_id', null); // Дополнительная проверка
             
             // Если пользователь не админ, показываем только его записи
             if ($currentUser->role !== 'admin') {
@@ -718,23 +824,46 @@ class AppointmentsController extends Controller
                     $duration = $appointment->duration ?? $appointment->service->duration ?? 60;
                     $endDateTime = $startDateTime->copy()->addMinutes($duration);
 
+                    // Собираем все услуги (основная + дочерние)
+                    $allServices = collect([$appointment->service->name]);
+                    $totalPrice = $appointment->price;
+                    
+                    if ($appointment->childAppointments && $appointment->childAppointments->count() > 0) {
+                        foreach ($appointment->childAppointments as $child) {
+                            $allServices->push($child->service->name);
+                            $totalPrice += $child->price;
+                        }
+                    }
+                    
+                    $servicesText = $allServices->join(' + ');
+                    
+                    // Определяем классы - добавляем has-children только если есть дочерние записи
+                    $classNames = ['status-' . $appointment->status];
+                    if ($appointment->childAppointments && $appointment->childAppointments->count() > 0) {
+                        $classNames[] = 'has-children';
+                    }
+                    
                     $event = [
                         'id' => $appointment->id,
-                        'title' => $appointment->service->name,
+                        'title' => $servicesText,
                         'start' => $startDateTime->format('Y-m-d\TH:i:s'),
                         'end' => $endDateTime->format('Y-m-d\TH:i:s'),
-                        'date' => $date,
-                        'classNames' => ['status-' . $appointment->status],
+                        'date' => Carbon::parse($date)->format('d.m.Y'),
+                        'date_formatted' => Carbon::parse($date)->format('d.m.Y'),
+                        'classNames' => $classNames,
                         'extendedProps' => [
                             'client' => $appointment->client->name,
                             'service' => $appointment->service->name,
-                            'price' => $appointment->price,
+                            'services' => $allServices->toArray(),
+                            'price' => $totalPrice,
                             'notes' => $appointment->notes,
                             'status' => $appointment->status,
                             'time' => $appointment->time,
                             'duration' => $duration,
-                            'title_week' => $appointment->service->name,
-                            'title_day' => $startDateTime->format('H:i') . ' - ' . $endDateTime->format('H:i') . ' ' . $appointment->service->name . ' ' . $appointment->client->name,
+                            'title_week' => $servicesText,
+                            'title_day' => $startDateTime->format('H:i') . ' - ' . $endDateTime->format('H:i') . ' ' . $servicesText . ' ' . $appointment->client->name,
+                            'hasChildren' => $appointment->childAppointments->count() > 0,
+                            'childrenCount' => $appointment->childAppointments->count()
                         ]
                     ];
 
@@ -1468,8 +1597,10 @@ class AppointmentsController extends Controller
             $currentUser = auth()->user();
             $perPage = (int)($request->get('per_page', 11));
             $search = $request->get('search');
-            $query = Appointment::with(['client', 'service', 'user'])
-                ->where('project_id', $currentProjectId);
+            $query = Appointment::with(['client', 'service', 'user', 'childAppointments.service', 'sales'])
+                ->where('project_id', $currentProjectId)
+                ->whereNull('parent_appointment_id') // Показываем только основные записи
+                ->where('parent_appointment_id', null); // Дополнительная проверка
             
             // Если пользователь не админ, показываем только его записи
             if ($currentUser->role !== 'admin') {
@@ -1488,22 +1619,44 @@ class AppointmentsController extends Controller
             $query->orderBy('date', 'desc')->orderBy('time', 'desc');
             $appointments = $query->paginate($perPage);
             $data = $appointments->map(function($a) {
+                // Собираем все услуги (основная + дочерние)
+                $allServices = collect([$a->service->name]);
+                $totalPrice = $a->price;
+                
+                if ($a->childAppointments && $a->childAppointments->count() > 0) {
+                    foreach ($a->childAppointments as $child) {
+                        $allServices->push($child->service->name);
+                        $totalPrice += $child->price;
+                    }
+                }
+                
+                // Добавляем стоимость товаров
+                $salesTotal = $a->sales->sum('total_amount');
+                $totalPrice += $salesTotal;
+                
+                $servicesText = $allServices->join(' + ');
+                
                 return [
                     'id' => $a->id,
-                    'date' => $a->date,
+                    'parent_appointment_id' => $a->parent_appointment_id,
+                    'date' => $a->date->format('d.m.Y'),
+                    'date_formatted' => $a->date->format('d.m.Y'),
                     'time' => $a->time,
                     'client' => $a->client ? [
                         'id' => $a->client->id,
                         'name' => $a->client->name,
                         'instagram' => $a->client->instagram
                     ] : null,
-                    'service' => $a->service ? [
+                    'service' => [
                         'id' => $a->service->id,
-                        'name' => $a->service->name
-                    ] : null,
+                        'name' => $servicesText, // Объединенные услуги
+                        'original_name' => $a->service->name // Оригинальное название основной услуги
+                    ],
                     'user' => $a->user ? ['name' => $a->user->name] : null,
                     'status' => $a->status,
-                    'price' => $a->price,
+                    'price' => $totalPrice, // Общая цена всех услуг
+                    'has_children' => $a->childAppointments->count() > 0,
+                    'children_count' => $a->childAppointments->count()
                 ];
             });
             return response()->json([

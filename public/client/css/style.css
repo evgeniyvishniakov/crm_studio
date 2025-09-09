@@ -3408,41 +3408,7 @@ footer.site-footer {
     overflow-y: auto !important;
 }
 
-/* Цветные кружки FullCalendar по статусу (только для client/appointments/list) */
-.fc-daygrid-event-dot {
-    width: 8px !important;
-    height: 8px !important;
-    min-width: 8px !important;
-    min-height: 8px !important;
-    max-width: 8px !important;
-    max-height: 8px !important;
-    border-radius: 50% !important;
-    display: inline-block;
-    vertical-align: middle;
-    margin: 0 2px 0 0;
-    background: #fff !important;
-    border-width: 2px !important;
-    border-style: solid !important;
-    box-sizing: border-box !important;
-    pointer-events: none;
-}
-.fc-daygrid-event.status-done .fc-daygrid-event-dot,
-.fc-daygrid-event.status-completed .fc-daygrid-event-dot {
-    border-color: #10b981 !important;
-    background: #10b981 !important;
-}
-.fc-daygrid-event.status-pending .fc-daygrid-event-dot {
-    border-color: #f59e0b !important;
-    background: #f59e0b !important;
-}
-.fc-daygrid-event.status-cancelled .fc-daygrid-event-dot {
-    border-color: #ef4444 !important;
-    background: #ef4444 !important;
-}
-.fc-daygrid-event.status-rescheduled .fc-daygrid-event-dot {
-    border-color: #3b82f6 !important;
-    background: #3b82f6 !important;
-}
+/* Старые кружочки удалены - используем новые ::before кружочки */
 
 /* Убираем заливку и цвет текста у событий FullCalendar */
 /*.fc-event, .fc-daygrid-event {
@@ -3546,5 +3512,94 @@ html body.open .navbar-nav {
     width: 300px !important;
 }
 
+/* ===== СТИЛИ ДЛЯ СВЯЗАННЫХ ПРОЦЕДУР ===== */
 
+.procedures-list {
+    margin-bottom: 15px;
+}
 
+.procedure-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+}
+
+.procedure-item.main-procedure {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.procedure-item.additional-procedure {
+    background-color: #f3e5f5;
+    border-color: #9c27b0;
+}
+
+.procedure-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+}
+
+.main-label {
+    background-color: #2196f3;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.additional-label {
+    background-color: #9c27b0;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Стили для календаря - записи с дочерними процедурами */
+.fc-event.has-children {
+    border-left: 4px solid #ff9800 !important;
+    background: linear-gradient(90deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 152, 0, 0.05) 100%) !important;
+}
+
+.fc-event.has-children .fc-event-title {
+    font-weight: bold;
+    color: #333 !important;
+}
+
+.fc-event.has-children .fc-event-time {
+    color: #333 !important;
+    font-weight: 600;
+}
+
+/* Новые кружочки удалены - используем старые */
+
+/* Убираем красный цвет с текста */
+.fc-event .fc-event-title,
+.fc-event .fc-event-time {
+    color: #333 !important;
+}
+
+/* Ограничиваем ширину записей в календаре */
+.fc-event {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.fc-event .fc-event-title {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    display: block !important;
+}

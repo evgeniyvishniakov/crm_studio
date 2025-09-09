@@ -2355,4 +2355,10 @@ return [
     'end_of_work' => 'End of Work',
     'booking_interval' => 'Booking Interval (minutes)',
     'new_booking_notification' => 'New Booking',
+    
+    // Procedures
+    'main' => 'Main',
+    'additional' => 'Additional',
+    'add_procedure' => 'Add Procedure',
+    'select_service' => 'Select Service',
 ]; 

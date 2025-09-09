@@ -2519,4 +2519,10 @@ return [
     'end_of_work' => 'Конец работы',
     'booking_interval' => 'Интервал записи (минуты)',
     'new_booking_notification' => 'Новая запись',
+    
+    // Процедуры
+    'main' => 'Основная',
+    'additional' => 'Дополнительная',
+    'add_procedure' => 'Добавить процедуру',
+    'select_service' => 'Выберите услугу',
 ]; 

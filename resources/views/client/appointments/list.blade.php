@@ -53,6 +53,130 @@
     border-color: #3b82f6 !important;
     background: #3b82f6 !important;
 }
+
+/* Переопределяем цвет текста для записей с дочерними процедурами */
+#calendar .fc-h-event.has-children .fc-event-main {
+    color: #333333 !important;
+}
+
+#calendar .fc-h-event.has-children .fc-event-title {
+    color: #333333 !important;
+}
+
+#calendar .fc-h-event.has-children .fc-event-time {
+    color: #333333 !important;
+}
+
+/* Скрываем дочерние записи сразу при загрузке */
+.appointment-row[data-parent-appointment-id] {
+    display: none !important;
+}
+
+.appointment-card[data-parent-appointment-id] {
+    display: none !important;
+}
+
+/* Скрываем дочерние записи сразу при загрузке */
+tr[data-parent-appointment-id] {
+    display: none !important;
+}
+
+.appointment-card[data-parent-appointment-id] {
+    display: none !important;
+}
+
+/* Стили для процедур */
+.procedure-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: #f9f9f9;
+}
+
+.main-procedure {
+    background: #e3f2fd !important;
+    border-color: #2196f3 !important;
+}
+
+.additional-procedure {
+    background: #fff3e0 !important;
+    border-color: #ff9800 !important;
+}
+
+.procedure-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+}
+
+.procedure-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 10px;
+}
+
+.main-label {
+    background: #2196f3;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.additional-label {
+    background: #ff9800;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Кнопки удаления процедур - такие же как у товаров */
+.btn-delete-procedure {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 8px 12px;
+    margin: 0 2px;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.btn-delete-procedure:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #b91c1c, #dc2626);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-delete-procedure .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* Убираем перекрытие статусных кружочков - оранжевый кружочек добавляется через JavaScript */
+
+/* Для записей с дочерними процедурами - добавляем дополнительный оранжевый кружочек */
+#calendar .fc-daygrid-event.has-children .extra-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #ff9800;
+    margin-right: 3px;
+    vertical-align: middle;
+}
+
+/* Убрали ограничения ширины - они блокировали переключение календаря */
         /* События FullCalendar в режиме День — всё в одну строку */
 #calendar .fc-timegrid-event .fc-event-main {
     display: flex;
@@ -103,9 +227,9 @@
             min-width: 100px;
         }
     
-        .status-pending {
-            background: linear-gradient(135deg, #eba70e 60%, #f3c138 100%);
-            color: #fff;
+        .status-badge.status-pending {
+            background: linear-gradient(135deg, #eba70e 60%, #f3c138 100%) !important;
+            color: #fff !important;
         }
         #calendar .fc-timegrid-event .event-dot {
     display: inline-block;
@@ -122,19 +246,19 @@
 #calendar .fc-timegrid-event .event-dot.status-cancelled { background: #ef4444; }
 #calendar .fc-timegrid-event .event-dot.status-rescheduled { background: #3b82f6; }
     
-        .status-completed {
-            background: linear-gradient(135deg, #4CAF50 60%, #56bb93 100%);
-            color: #fff;
+        .status-badge.status-completed {
+            background: linear-gradient(135deg, #4CAF50 60%, #56bb93 100%) !important;
+            color: #fff !important;
         }
     
-        .status-cancelled {
-            background: linear-gradient(135deg, #F44336 60%, #eb7171 100%);
-            color: #fff;
+        .status-badge.status-cancelled {
+            background: linear-gradient(135deg, #F44336 60%, #eb7171 100%) !important;
+            color: #fff !important;
         }
     
-        .status-rescheduled {
-            background: linear-gradient(135deg, #ae1ee9 60%, #bc79c9 100%);
-            color: #fff;
+        .status-badge.status-rescheduled {
+            background: linear-gradient(135deg, #ae1ee9 60%, #bc79c9 100%) !important;
+            color: #fff !important;
         }
     
         .products-table {
@@ -710,6 +834,7 @@
             font-weight: 600;
             color: #4CAF50;
             font-size: 1.1rem;
+            margin-right: 10px;
         }
         .sales-card .empty-state {
             display: flex;
@@ -895,6 +1020,7 @@
                 </thead>
                 <tbody>
                 @foreach($appointments as $appointment)
+                    @if(!$appointment->parent_appointment_id)
                 <tr data-appointment-id="{{ $appointment->id }}">
                     <td>
                         {{ \Carbon\Carbon::parse($appointment->date)->setTimezone(config('app.timezone'))->format('d.m.Y') }}
@@ -950,6 +1076,7 @@
                         </div>
                     </td>
                 </tr>
+                    @endif
                 @endforeach
                 </tbody>
             </table>
@@ -1009,6 +1136,19 @@
     const tooltip = document.getElementById('appointmentTooltip');
 
     document.addEventListener('DOMContentLoaded', function() {
+        // Сразу скрываем дочерние записи при загрузке страницы
+        setTimeout(() => {
+            const childRows = document.querySelectorAll('tr[data-parent-appointment-id]');
+            childRows.forEach(row => {
+                row.style.display = 'none';
+            });
+            
+            const childCards = document.querySelectorAll('.appointment-card[data-parent-appointment-id]');
+            childCards.forEach(card => {
+                card.style.display = 'none';
+            });
+        }, 100);
+        
         // Проверяем URL на наличие параметра для создания записи с дашборда
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('action') === 'create' && urlParams.has('date')) {
@@ -1079,15 +1219,33 @@
                             html: `<span class=\"event-chip status-${status}\">\n<span class=\"event-dot status-${status}\"></span>\n<span class=\"event-time\">${time}</span>\n<span class=\"event-title\">${name}</span>\n</span>`
                         };
                     }
+                    if (viewType === 'dayGridMonth' && info.event.extendedProps?.hasChildren) {
+                        // Для месячного вида добавляем кружочек только для записей с дочерними
+                        const status = info.event.extendedProps?.status || 'completed';
+                        return {
+                            html: `<span class=\"fc-daygrid-event-dot\"></span> ${info.event.title}`
+                        };
+                    }
                     return true;
                 },
                 eventDidMount: function(info) {
+                    // Добавляем класс статуса для стилизации кружочка
+                    const status = info.event.extendedProps?.status;
+                    const hasChildren = info.event.extendedProps?.hasChildren;
+                    
+                    
+                    if (status && hasChildren) {
+                        info.el.classList.add(`status-${status}`);
+                        info.el.classList.add('has-children');
+                    }
+                    
                     if (info.view.type === 'timeGridWeek' || info.view.type === 'timeGridDay') {
                         // Убираем только тень и границу, оставляем заливку
                         info.el.style.boxShadow = 'none';
                         info.el.style.border = 'none';
                         
-                        // Делаем текст белым более эффективно с максимальной специфичностью
+                        // Делаем текст белым только для событий БЕЗ дочерних (обычные записи)
+                        if (!info.event.extendedProps?.hasChildren) {
                         info.el.style.setProperty('color', '#ffffff', 'important');
                         
                         // Применяем белый цвет ко всем дочерним элементам с максимальной специфичностью
@@ -1095,8 +1253,13 @@
                         allElements.forEach(el => {
                             el.style.setProperty('color', '#ffffff', 'important');
                         });
+                        } else {
+                            // Для записей с дочерними делаем текст черным
+                            info.el.style.setProperty('color', '#333333', 'important');
+                        }
                         
                         // Дополнительно для заголовка и времени с максимальной специфичностью
+                        if (!info.event.extendedProps?.hasChildren) {
                         const eventTitle = info.el.querySelector('.fc-event-title');
                         if (eventTitle) {
                             eventTitle.style.setProperty('color', '#ffffff', 'important');
@@ -1107,14 +1270,34 @@
                         if (eventTime) {
                             eventTime.style.setProperty('color', '#ffffff', 'important');
                             eventTime.style.setProperty('text-shadow', '0 1px 2px rgba(0,0,0,0.5)', 'important');
+                            }
+                        } else {
+                            // Для записей с дочерними делаем текст черным
+                            const eventTitle = info.el.querySelector('.fc-event-title');
+                            if (eventTitle) {
+                                eventTitle.style.setProperty('color', '#333333', 'important');
+                            }
+                            
+                            const eventTime = info.el.querySelector('.fc-event-time');
+                            if (eventTime) {
+                                eventTime.style.setProperty('color', '#333333', 'important');
+                            }
                         }
                         
                         // Применяем ко всем элементам событий
+                        if (!info.event.extendedProps?.hasChildren) {
                         const eventElements = info.el.querySelectorAll('.fc-event-main, .fc-event-title, .fc-event-time');
                         eventElements.forEach(el => {
                             el.style.setProperty('color', '#ffffff', 'important');
                             el.style.setProperty('text-shadow', '0 1px 2px rgba(0,0,0,0.5)', 'important');
                         });
+                        } else {
+                            // Для записей с дочерними делаем все элементы черными
+                            const eventElements = info.el.querySelectorAll('.fc-event-main, .fc-event-title, .fc-event-time');
+                            eventElements.forEach(el => {
+                                el.style.setProperty('color', '#333333', 'important');
+                            });
+                        }
                     }
                 },
                 events: function(info, successCallback, failureCallback) {
@@ -1553,6 +1736,9 @@
     <script>
         // Глобальные переменные
         let currentDeleteId = null;
+        let currentDeleteProcedureId = null;
+        let currentDeleteProcedureType = null;
+        let isDeletingProcedure = false;
         let allClients = @json($clients->toArray());
         let allServices = @json($services);
         let currentAppointmentId = null;
@@ -1594,6 +1780,7 @@
                 toggleModal('confirmationModal');
                 document.querySelector('#confirmationModal p').textContent = 'Вы уверены, что хотите удалить этот товар?';
             }
+            
         });
 
 
@@ -1617,6 +1804,9 @@
             toggleModal('confirmationModal', false);
             currentDeleteId = null;
             isDeletingAppointment = false;
+            currentDeleteProcedureId = null;
+            currentDeleteProcedureType = null;
+            isDeletingProcedure = false;
         }
 
 
@@ -1635,6 +1825,7 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
                 });
+
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -1659,14 +1850,19 @@
         }
 
         function renderViewAppointmentModal(data, modalBody) {
-            const { appointment, sales = [], products = [] } = data;
+            const { appointment, sales = [], products = [], relatedAppointments = [] } = data;
             temporaryProducts = [...sales];
-            const servicePrice = parseFloat(appointment.price) || 0;
+            
+            // Вычисляем общую сумму всех связанных процедур
+            const totalServicesAmount = relatedAppointments.reduce((sum, apt) => {
+                return sum + (parseFloat(apt.price) || 0);
+            }, 0);
+            
             const productsTotal = temporaryProducts.reduce((sum, sale) => {
                 const price = parseFloat(sale.price || 0);
                 return sum + (parseInt(sale.quantity) * price);
             }, 0);
-            const totalAmount = servicePrice + productsTotal;
+            const totalAmount = totalServicesAmount + productsTotal;
             const statusNames = {
                 'pending': '{{ __('messages.status_pending') }}',
                 'completed': '{{ __('messages.status_completed') }}',
@@ -1677,7 +1873,7 @@
             modalBody.innerHTML = `
     <input type="hidden" id="appointmentId" value="${appointment.id}">
     <input type="hidden" id="clientId" value="${appointment.client_id}">
-    <input type="hidden" name="date" value="${appointment.date}">
+    <input type="hidden" name="date" value="${appointment.date_html}">
     <input type="hidden" name="time" value="${appointment.time}">
     <div class="appointment-details-modal">
         <div class="details-header">
@@ -1696,7 +1892,7 @@
             </div>
         </div>
         <div class="details-row">
-            <div><span class="details-label">{{ __('messages.date') }}:</span> ${new Date(appointment.date).toLocaleDateString('ru-RU')}</div>
+            <div><span class="details-label">{{ __('messages.date') }}:</span> ${appointment.date_formatted}</div>
             <div><span class="details-label">{{ __('messages.time') }}:</span> ${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</div>
         </div>
         <div class="details-row">
@@ -1705,9 +1901,69 @@
         <input type="hidden" name="user_id" value="${appointment.user_id || ''}">
         <div class="card procedure-card">
             <div class="card-title">{{ __('messages.service') }}</div>
+            <div class="procedures-list">
+                ${relatedAppointments.map((apt, index) => `
+                    <div class="procedure-item ${apt.id === appointment.id ? 'main-procedure' : 'additional-procedure'}">
             <div class="procedure-info">
-                <span class="service-name">${escapeHtml(appointment.service.name)}</span>
-                <span class="procedure-price currency-amount" data-amount="${servicePrice}">${formatPrice(servicePrice)}</span>
+                            <span class="service-name">${escapeHtml(apt.service.name)}</span>
+                            <span class="procedure-price currency-amount" data-amount="${apt.price}">${formatPrice(apt.price)}</span>
+                        </div>
+                        <div class="procedure-actions">
+                            ${apt.id === appointment.id ? 
+                                `<span class="main-label">{{ __('messages.main') }}</span>
+                                <button class="btn-delete btn-delete-procedure" 
+                                        data-procedure-id="${apt.id}" 
+                                        data-procedure-type="main"
+                                        title="Удалить основную процедуру и все дочерние">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>` :
+                                `<span class="additional-label">{{ __('messages.additional') }}</span>
+                                <button class="btn-delete btn-delete-procedure" 
+                                        data-procedure-id="${apt.id}" 
+                                        data-procedure-type="child"
+                                        title="Удалить только эту дочернюю процедуру">
+                                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>`
+                            }
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="btn-add-appointment btn-add-product" id="showAddServiceFormBtn" style="margin-top: 10px;">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                {{ __('messages.add_procedure') }}
+            </button>
+            <div id="addServiceForm" style="display: none; margin-top: 15px;">
+                <div class="form-row-appointment">
+                    <div class="form-group" style="flex: 2;">
+                        <label>{{ __('messages.service') }} *</label>
+                        <select id="serviceSelect" class="form-control" required>
+                            <option value="">{{ __('messages.select_service') }}</option>
+                            ${allServices.map(service => `
+                                <option value="${service.id}" data-price="${service.price || 0}">${escapeHtml(service.name)} - ${formatPrice(service.price || 0)}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>{{ __('messages.price') }} *</label>
+                        <input type="number" step="0.01" id="servicePrice" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-actions" style="margin-top: 15px;">
+                    <button type="button" class="btn-cancel" id="cancelAddService">{{ __('messages.cancel') }}</button>
+                    <button type="button" class="btn-submit" id="submitAddService">
+                        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        {{ __('messages.add') }}
+                    </button>
+                </div>
             </div>
         </div>
         <div class="card sales-card">
@@ -1769,7 +2025,7 @@
         <div class="details-footer">
             <span>{{ __('messages.total') }}: <b class="currency-amount" data-amount="${totalAmount}">${formatPrice(totalAmount)}</b></span>
             <button type="button" class="btn-cancel" onclick="closeViewAppointmentModal()">{{ __('messages.close') }}</button>
-            <button type="button" class="btn-submit" id="saveAppointmentChanges">Сохранить</button>
+            <button type="button" class="btn-submit" id="saveAppointmentChanges">{{ __('messages.save') }}</button>
         </div>
     </div>`;
     setupProductHandlers();
@@ -1860,17 +2116,85 @@
                 </div>`;
         }
 
+        // Флаг для предотвращения повторных вызовов
+        let isAddingProcedure = false;
 
-        async function addNewProcedureToAppointment() {
-            const appointmentId = document.getElementById('appointmentId').value;
-            const selectedServiceId = prompt("Введите ID новой услуги:");
-            const newPrice = prompt("Введите цену для новой услуги:");
+        // Функция для удаления процедуры
+        async function deleteProcedure(appointmentId, type) {
+            try {
+                const response = await fetch(`/appointments/${appointmentId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    }
+                });
 
-            if (!selectedServiceId || !newPrice) {
-                alert("{{ __('messages.service_and_price_required') }}");
+                if (response.ok) {
+                    if (type === 'main') {
+                        window.showNotification('success', 'Основная процедура и все дочерние удалены');
+                        // Закрываем модальное окно
+                        const modal = document.getElementById('viewAppointmentModal');
+                        if (modal) {
+                            modal.style.display = 'none';
+                        }
+                    } else {
+                        window.showNotification('success', 'Дочерняя процедура удалена');
+                        // Перезагружаем данные модального окна
+                        const modal = document.getElementById('viewAppointmentModal');
+                        const mainAppointmentId = modal.querySelector('#appointmentId')?.value;
+                        if (mainAppointmentId) {
+                            await reloadAppointmentData(mainAppointmentId);
+                        }
+                    }
+                    // Перезагружаем список записей
+                    loadAppointments(1);
+                } else {
+                    const error = await response.json();
+                    window.showNotification('error', error.message || 'Ошибка при удалении');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                window.showNotification('error', 'Ошибка при удалении');
+            }
+        }
+
+
+        async function addProcedureToAppointment() {
+            // Проверяем, не выполняется ли уже добавление
+            if (isAddingProcedure) {
                 return;
             }
 
+            isAddingProcedure = true;
+
+            const modal = document.getElementById('viewAppointmentModal');
+            const appointmentId = modal.querySelector('#appointmentId')?.value;
+            const serviceSelect = modal.querySelector('#serviceSelect');
+            const priceInput = modal.querySelector('#servicePrice');
+
+            if (!appointmentId || !serviceSelect || !priceInput) {
+                window.showNotification('error', 'Не удалось найти необходимые элементы формы');
+                isAddingProcedure = false;
+                return;
+            }
+
+            const selectedServiceId = serviceSelect.value;
+            const price = parseFloat(priceInput.value);
+
+            if (!selectedServiceId) {
+                window.showNotification('error', 'Выберите услугу');
+                isAddingProcedure = false;
+                return;
+            }
+
+            if (!price || price <= 0) {
+                window.showNotification('error', 'Введите корректную цену');
+                isAddingProcedure = false;
+                return;
+            }
+
+            try {
             const response = await fetch(`/appointments/${appointmentId}/add-procedure`, {
                 method: 'POST',
                 headers: {
@@ -1879,21 +2203,101 @@
                 },
                 body: JSON.stringify({
                     service_id: selectedServiceId,
-                    price: newPrice,
+                        price: price,
                 }),
             });
 
             const result = await response.json();
 
             if (result.success) {
-                alert("{{ __('messages.service_added_as_new_appointment') }}");
+                    window.showNotification('success', 'Процедура успешно добавлена');
+                    
+                    // Скрываем форму
+                    document.getElementById('addServiceForm').style.display = 'none';
+                    document.getElementById('showAddServiceFormBtn').style.display = 'inline-block';
+                    
+                    // Очищаем форму
+                    serviceSelect.value = '';
+                    priceInput.value = '';
+                    
+                    // Перезагружаем данные в модальном окне с небольшой задержкой
+                    setTimeout(async () => {
+                        await reloadAppointmentData();
+                    }, 1000);
+                    
+                    // Обновляем календарь
+                    if (typeof calendar !== 'undefined' && calendar) {
+                        calendar.refetchEvents();
+                    }
             } else {
-                alert("{{ __('messages.error') }}: " + result.message);
+                    window.showNotification('error', result.message || 'Ошибка при добавлении процедуры');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                window.showNotification('error', 'Ошибка при добавлении процедуры');
+            } finally {
+                // Сбрасываем флаг в любом случае
+                isAddingProcedure = false;
             }
         }
 
+        // Функция для перезагрузки данных в модальном окне
+        async function reloadAppointmentData() {
+            if (!currentAppointmentId) return;
+            
+            const modalBody = document.getElementById('viewAppointmentModalBody');
+            if (!modalBody) return;
+            
+            // Показываем индикатор загрузки
+            modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2">Обновление данных...</div></div>';
+            
+            try {
+                
+                // Создаем AbortController для таймаута
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд таймаут
+                
+                const response = await fetch(`/appointments/${currentAppointmentId}/view`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
+                const data = await response.json();
+
+                if (data.success) {
+                    renderViewAppointmentModal(data, modalBody);
+                } else {
+                    throw new Error(data.message || 'Ошибка загрузки данных');
+                }
+            } catch (error) {
+                console.error('Error reloading appointment data:', error);
+                
+                if (error.name === 'AbortError') {
+                    modalBody.innerHTML = `
+                        <div class="alert alert-warning">
+                            Таймаут при обновлении данных. Попробуйте закрыть и открыть запись снова.
+                        </div>
+                        <button class="btn-cancel" onclick="closeViewAppointmentModal()">Закрыть</button>
+                    `;
+                } else {
+                    modalBody.innerHTML = `
+                        <div class="alert alert-danger">
+                            Ошибка при обновлении данных: ${escapeHtml(error.message)}
+                        </div>
+                        <button class="btn-cancel" onclick="closeViewAppointmentModal()">Закрыть</button>
+                    `;
+                }
+            }
+        }
 
         function setupProductHandlers() {
             // Используем делегирование событий для динамически создаваемых элементов
@@ -1950,19 +2354,38 @@
                     document.querySelector('#confirmationModal p').textContent = 'Вы уверены, что хотите удалить этот товар?';
                 }
                 if (e.target && e.target.id === 'showAddServiceFormBtn') {
+                    e.preventDefault();
+                    e.stopPropagation();
                     document.getElementById('addServiceForm').style.display = 'block';
                     e.target.style.display = 'none';
                 }
 
                 // Отмена
                 if (e.target && e.target.id === 'cancelAddService') {
+                    e.preventDefault();
+                    e.stopPropagation();
                     document.getElementById('addServiceForm').style.display = 'none';
                     document.getElementById('showAddServiceFormBtn').style.display = 'inline-block';
                 }
 
                 // Сохранить
                 if (e.target && e.target.id === 'submitAddService') {
+                    e.preventDefault();
+                    e.stopPropagation();
                     addProcedureToAppointment();
+                }
+            });
+
+            // Обработчик изменения выбора услуги
+            document.addEventListener('change', function(e) {
+                if (e.target && e.target.id === 'serviceSelect') {
+                    const priceInput = document.getElementById('servicePrice');
+                    const selectedOption = e.target.options[e.target.selectedIndex];
+                    const price = selectedOption.getAttribute('data-price');
+                    
+                    if (priceInput && price) {
+                        priceInput.value = price;
+                    }
                 }
             });
 
@@ -1975,12 +2398,7 @@
 
 
 
-            // Сохранение изменений
-            document.addEventListener('click', function(e) {
-                if (e.target && e.target.id === 'saveAppointmentChanges') {
-                    saveAppointmentChanges();
-                }
-            });
+            // Обработчик удален - используется основной обработчик ниже
         }
 
 
@@ -2017,7 +2435,7 @@
         }
 
         // Функции для работы с товарами
-        function addProductToAppointment() {
+        async function addProductToAppointment() {
             const modal = document.getElementById('viewAppointmentModal');
             if (!modal) {
                 window.showNotification('error', '{{ __('messages.modal_not_found') }}');
@@ -2090,6 +2508,9 @@
             if (submitBtn) {
                 submitBtn.disabled = true;
             }
+
+            // Сохраняем изменения сразу
+            await saveAppointmentChanges();
 
             if (existingProductIndex !== -1) {
                 window.showNotification('success', `{{ __('messages.product_quantity_updated') }} "${product.name}"`);
@@ -2185,9 +2606,9 @@
                 return '';
             }
             return appointments.map(appointment => `
-                <tr data-appointment-id="${appointment.id}">
+                <tr data-appointment-id="${appointment.id}" ${appointment.parent_appointment_id ? `data-parent-appointment-id="${appointment.parent_appointment_id}"` : ''}>
                     <td>
-                        ${formatDate(appointment.date)}
+                        ${appointment.date_formatted}
                         <br>
                         <small class="text-muted">${appointment.time ? appointment.time.slice(0,5) : ''}</small>
                     </td>
@@ -2424,13 +2845,6 @@
                     await deleteProductFromAppointment(saleId);
                 });
             });
-            document.getElementById('saveAppointmentChanges')?.addEventListener('click', async function() {
-                // Здесь можно добавить логику для сохранения всех изменений
-                window.showNotification('success', '{{ __('messages.changes_saved') }}');
-                closeViewAppointmentModal();
-                // При необходимости обновите данные на странице
-            });
-
         }
 
 
@@ -2593,7 +3007,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>{{ __('messages.date') }} *</label>
-                            <input type="date" name="date" value="${formatDateForInput(appointment.date)}" required class="form-control"
+                            <input type="date" name="date" value="${appointment.date_html}" required class="form-control"
                                    data-locale="{{ app()->getLocale() }}">
                         </div>
                         <div class="form-group">
@@ -2715,6 +3129,7 @@
             event.preventDefault();
             currentDeleteId = id;
             isDeletingAppointment = true; // Добавляем флаг
+            isDeletingProcedure = false; // Сбрасываем флаг процедуры
             toggleModal('confirmationModal');
         }
 
@@ -2731,6 +3146,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
+                    
                     // Обновляем календарь если он существует
                     if (typeof calendar !== 'undefined' && calendar) {
                         calendar.refetchEvents();
@@ -2753,6 +3169,9 @@
                     if (currentAppointmentId === id) {
                         toggleModal('viewAppointmentModal', false);
                     }
+
+                    // Перезагружаем список записей
+                    loadAppointments();
 
                     window.showNotification('success', '{{ __('messages.appointment_successfully_deleted') }}');
                 } else {
@@ -2872,8 +3291,11 @@
             // Единый обработчик для кнопки подтверждения удаления
             document.getElementById('confirmDeleteBtn')?.addEventListener('click', async (e) => {
                 e.stopPropagation(); // Предотвращаем всплытие события
+                
                 if (isDeletingAppointment) {
                     await deleteAppointment(currentDeleteId);
+                } else if (isDeletingProcedure) {
+                    await deleteProcedure(currentDeleteProcedureId, currentDeleteProcedureType);
                 } else {
                     await deleteProductFromAppointment();
                 }
@@ -2949,6 +3371,33 @@
 
             // Делегирование событий
             document.addEventListener('click', function(e) {
+                // Проверяем клики по кнопкам удаления процедур
+                if (e.target.closest('.btn-delete-procedure')) {
+                    const btn = e.target.closest('.btn-delete-procedure');
+                    currentDeleteProcedureId = parseInt(btn.dataset.procedureId);
+                    currentDeleteProcedureType = btn.dataset.procedureType;
+                    isDeletingAppointment = false;
+                    isDeletingProcedure = true;
+
+                    toggleModal('confirmationModal');
+                    if (currentDeleteProcedureType === 'main') {
+                        document.querySelector('#confirmationModal p').textContent = 'Вы уверены, что хотите удалить основную процедуру и все дочерние? Это действие нельзя отменить.';
+                    } else {
+                        document.querySelector('#confirmationModal p').textContent = 'Вы уверены, что хотите удалить эту дочернюю процедуру?';
+                    }
+                    return;
+                }
+                
+                // Проверяем клики по кнопкам удаления записей
+                if (e.target.closest('.btn-delete') && !e.target.closest('.btn-delete-procedure')) {
+                    const btn = e.target.closest('.btn-delete');
+                    
+                    e.preventDefault();
+                    const appointmentId = btn.getAttribute('data-appointment-id');
+                    confirmDeleteAppointment(e, appointmentId);
+                    return;
+                }
+                
                 const target = e.target.closest('button');
                 if (!target) return;
 
@@ -2962,7 +3411,14 @@
                 }
                 if (target.classList.contains('btn-delete')) {
                     e.preventDefault();
-                    confirmDeleteAppointment(e, target.dataset.appointmentId);
+                    const appointmentId = target.getAttribute('data-appointment-id');
+                    confirmDeleteAppointment(e, appointmentId);
+                } else if (target.closest('.btn-delete')) {
+                    // Если клик был по SVG внутри кнопки
+                    e.preventDefault();
+                    const btn = target.closest('.btn-delete');
+                    const appointmentId = btn.getAttribute('data-appointment-id');
+                    confirmDeleteAppointment(e, appointmentId);
                 }
                 if (e.target == document.getElementById('appointmentModal')) {
                     toggleModal('appointmentModal', false);
@@ -3069,10 +3525,21 @@
 
                 if (data.success) {
                     window.showNotification('success', '{{ __('messages.changes_successfully_saved') }}');
+                    
+                    // Обновляем данные в модальном окне просмотра
+                    if (currentAppointmentId) {
+                        setTimeout(() => {
+                            reloadAppointmentData();
+                        }, 500);
+                    }
+                    
                     toggleModal('viewAppointmentModal', false);
                     if (typeof calendar !== 'undefined' && calendar) {
                         calendar.refetchEvents();
                     }
+                    
+                    // Обновляем список записей
+                    loadAppointments();
                 } else {
                     throw new Error(data.message || 'Ошибка сохранения');
                 }
@@ -3373,7 +3840,7 @@
 
                         newRow.innerHTML = `
                             <td>
-                                ${new Date(appointment.date).toLocaleDateString('ru-RU')}
+                                ${appointment.date_formatted}
                                 <br>
                                 <small class="text-muted">${escapeHtml(appointment.time.split(':').slice(0, 2).join(':'))}</small>
                             </td>
@@ -3469,7 +3936,7 @@
                     if (row) {
                         row.innerHTML = `
                             <td>
-                                ${new Date(data.appointment.date).toLocaleDateString('ru-RU')}
+                                ${data.appointment.date_formatted || data.appointment.date}
                                 <br>
                                 <small class="text-muted">${escapeHtml(data.appointment.time.split(':').slice(0, 2).join(':'))}</small>
                             </td>
@@ -3622,7 +4089,7 @@
             if (!appointment) {
                 return '';
             }
-            const date = new Date(appointment.date);
+            const date = appointment.date_formatted;
             const time = appointment.time ? appointment.time.split(':').slice(0, 2).join(':') : '';
             const statusNames = {
                 'pending': '{{ __('messages.status_pending') }}',
@@ -3644,10 +4111,10 @@
             }
             
             return `
-                <div class="appointment-card" data-appointment-id="${appointment.id}">
+                <div class="appointment-card" data-appointment-id="${appointment.id}" ${appointment.parent_appointment_id ? `data-parent-appointment-id="${appointment.parent_appointment_id}"` : ''}>
                     <div class="appointment-main-info">
                         <div class="appointment-date-time">
-                            <div class="appointment-date">${date.toLocaleDateString('ru-RU')}</div>
+                            <div class="appointment-date">${date}</div>
                             <div class="appointment-time">${time}</div>
                         </div>
                         <div class="appointment-status">
@@ -3829,8 +4296,11 @@
 
                     
                     // Проверяем, что response.data существует и является массивом
-                    const appointments = Array.isArray(response.data) ? response.data : [];
+                    const allAppointments = Array.isArray(response.data) ? response.data : [];
                     const meta = response.meta || {};
+                    
+                    // Фильтруем только основные записи (без parent_appointment_id)
+                    const appointments = allAppointments.filter(appointment => !appointment.parent_appointment_id);
                     
                     renderAppointmentsTable(appointments); // обновляет строки таблицы
                     renderAppointmentsPagination(meta); // обновляет пагинацию!
@@ -4189,6 +4659,7 @@
         
         // Запускаем повторные попытки
         setTimeout(tryHighlightWithRetry, 2000);
+
     </script>
 </div>
 @endsection

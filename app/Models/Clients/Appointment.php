@@ -24,7 +24,8 @@ class Appointment extends Model
         'notes',
         'status',
         'project_id',
-        'user_id'
+        'user_id',
+        'parent_appointment_id'
     ];
 
     protected $casts = [
@@ -50,6 +51,67 @@ class Appointment extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Родительская запись (основная процедура)
+     */
+    public function parentAppointment()
+    {
+        return $this->belongsTo(Appointment::class, 'parent_appointment_id');
+    }
+
+    /**
+     * Дочерние записи (дополнительные процедуры)
+     */
+    public function childAppointments()
+    {
+        return $this->hasMany(Appointment::class, 'parent_appointment_id');
+    }
+
+    /**
+     * Проверяет, является ли запись основной (не дочерней)
+     */
+    public function isMainAppointment()
+    {
+        return is_null($this->parent_appointment_id);
+    }
+
+    /**
+     * Получает основную запись (если текущая дочерняя)
+     */
+    public function getMainAppointment()
+    {
+        if ($this->isMainAppointment()) {
+            return $this;
+        }
+        
+        // Загружаем родительскую запись, если она не загружена
+        if (!$this->relationLoaded('parentAppointment')) {
+            $this->load('parentAppointment');
+        }
+        
+        return $this->parentAppointment;
+    }
+
+    /**
+     * Получает все связанные записи (основная + дочерние)
+     */
+    public function getRelatedAppointments()
+    {
+        if ($this->isMainAppointment()) {
+            // Если это основная запись, возвращаем её + дочерние
+            $children = $this->childAppointments;
+            return $children->prepend($this);
+        } else {
+            // Если это дочерняя запись, возвращаем родительскую + все дочерние
+            $parent = $this->parentAppointment;
+            if ($parent) {
+                $children = $parent->childAppointments;
+                return $children->prepend($parent);
+            }
+            return collect([$this]);
+        }
     }
 
     public function totalAmount()
