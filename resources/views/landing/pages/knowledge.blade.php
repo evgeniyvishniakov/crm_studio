@@ -3,7 +3,7 @@
 @section('title', __('landing.knowledge_page_title') . ' - Trimora')
 @section('description', __('landing.knowledge_page_description'))
 
-@section('styles')
+@push('styles')
 <style>
     /* Красивые стили для списка статей с теми же шрифтами что и в лендинге */
     .article-item .card {
@@ -93,94 +93,28 @@
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
-    .category-filter {
-        border-radius: 25px;
-        padding: 10px 20px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        border: 2px solid #e9ecef;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .category-filter:hover {
-        border-color: #667eea;
-        color: #667eea;
-        transform: translateY(-2px);
-    }
-    
+    /* Только изменение цвета активной кнопки */
     .category-filter.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-color: transparent;
-        color: white;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        border-color: transparent !important;
+        color: white !important;
     }
     
-    .search-section {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 16px;
-        padding: 30px;
-        margin-bottom: 30px;
-    }
-    
-    .search-section .input-group {
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    
-    .search-section .form-control {
-        border: none;
-        padding: 15px 20px;
-        font-size: 16px;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    
-    .search-section .form-control:focus {
-        box-shadow: none;
-    }
-    
-    .search-section .btn {
-        padding: 15px 25px;
-        border: none;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        font-weight: 500;
-        font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
     
     .hero-section {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .hero-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-        opacity: 0.3;
-    }
-    
-    .hero-section .container {
-        position: relative;
-        z-index: 1;
+        color: #2c3e50;
     }
     
     .hero-section h1 {
         font-size: 3.5rem;
         font-weight: 700;
         margin-bottom: 20px;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     
     .hero-section .lead {
         font-size: 20px;
-        opacity: 0.9;
+        color: #6c757d;
         line-height: 1.6;
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
@@ -209,7 +143,7 @@
         }
     }
 </style>
-@endsection
+@endpush
 
 @section('content')
 <!-- Hero -->
