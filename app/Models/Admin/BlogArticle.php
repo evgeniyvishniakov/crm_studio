@@ -51,6 +51,12 @@ class BlogArticle extends Model
      */
     public function translation($languageCode)
     {
+        // Если переводы уже загружены, используем их
+        if ($this->relationLoaded('translations')) {
+            return $this->translations->where('locale', $languageCode)->first();
+        }
+        
+        // Иначе делаем запрос к базе данных
         return $this->translations()->where('locale', $languageCode)->first();
     }
 
@@ -82,7 +88,10 @@ class BlogArticle extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
-                    ->where('published_at', '<=', now());
+                    ->where(function($q) {
+                        $q->where('published_at', '<=', now())
+                          ->orWhereNull('published_at');
+                    });
     }
 
     /**
@@ -244,5 +253,28 @@ class BlogArticle extends Model
         $translation = $this->translation($currentLanguage);
         
         return $translation ? $translation->meta_keywords : $this->meta_keywords;
+    }
+
+    /**
+     * Получить локализованное изображение
+     */
+    public function getLocalizedFeaturedImageAttribute()
+    {
+        $currentLanguage = \App\Helpers\LanguageHelper::getCurrentLanguage();
+        
+        // Если переводы не загружены, загружаем их
+        if (!$this->relationLoaded('translations')) {
+            $this->load('translations');
+        }
+        
+        $translation = $this->translation($currentLanguage);
+        
+        // Если есть локализованное изображение, используем его
+        if ($translation && $translation->featured_image) {
+            return $translation->featured_image;
+        }
+        
+        // Иначе используем основное изображение
+        return $this->featured_image;
     }
 }

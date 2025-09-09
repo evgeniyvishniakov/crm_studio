@@ -42,7 +42,7 @@
         "@type": "Person",
         "name": "{{ $article->author ?? __('landing.blog_author_unknown') }}"
       },
-      "image": "{{ $article->featured_image ? Storage::url($article->featured_image) : asset('images/og-default.jpg') }}",
+      "image": "{{ $article->localized_featured_image ? Storage::url($article->localized_featured_image) : asset('images/og-default.jpg') }}",
       "articleSection": "{{ $article->category ? $article->category->localized_name : __('landing.blog') }}"
     }{{ $index < $articles->count() - 1 ? ',' : '' }}
     @endforeach
@@ -147,6 +147,14 @@
     
     .article-item .card .card-body h5.card-title a:hover {
         color: #667eea !important;
+    }
+    
+    /* Отключаем text-transform для заголовков статей */
+    .article-item .card-title,
+    .article-item .card-title a,
+    .article-item h5.card-title,
+    .article-item h5.card-title a {
+        text-transform: none !important;
     }
     
     .category-filter {
@@ -341,11 +349,11 @@
             @forelse($articles as $article)
                 <div class="col-lg-4 col-md-6 article-item" data-category="{{ $article->blog_category_id }}" data-title="{{ strtolower($article->localized_title) }}" data-content="{{ strtolower(strip_tags($article->localized_excerpt)) }}">
                     <div class="card h-100">
-                        @if($article->featured_image)
-                            <img src="{{ Storage::url($article->featured_image) }}" 
+                        @if($article->localized_featured_image)
+                            <img src="{{ Storage::url($article->localized_featured_image) }}" 
                                  class="card-img-top" 
                                  alt="{{ $article->localized_title }}"
-                                 style="height: 200px; object-fit: cover;">
+                                 style="height: 280px; object-fit: cover;">
                         @endif
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">

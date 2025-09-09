@@ -126,7 +126,8 @@
                                             <div class="d-flex flex-wrap gap-1">
                                                 @foreach(['ru', 'en', 'ua'] as $langCode)
                                                     @php
-                                                        $translation = $article->translation($langCode);
+                                                        // Используем уже загруженные переводы вместо нового запроса
+                                                        $translation = $article->translations->where('locale', $langCode)->first();
                                                         $hasTranslation = $translation && !empty(trim($translation->title));
                                                         $statusClass = $hasTranslation ? 'bg-success' : 'bg-secondary';
                                                         $statusText = $hasTranslation ? '✓' : '✗';
@@ -229,6 +230,37 @@
                     <div class="mb-3">
                         <label for="translation_content" class="form-label">Содержание статьи</label>
                         <textarea class="form-control" id="translation_content" name="translation_content" rows="10"></textarea>
+                    </div>
+                    
+                    <!-- Поле для изображения перевода -->
+                    <div class="mb-3">
+                        <label for="translation_featured_image" class="form-label">Изображение статьи (для этого языка)</label>
+                        
+                        <!-- Текущее изображение -->
+                        <div id="current-translation-image" class="mb-2" style="display: none;">
+                            <label class="form-label text-muted">Текущее изображение:</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <img id="translation-image-preview" src="" alt="Текущее изображение" class="img-thumbnail" style="max-width: 150px; height: auto;">
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeTranslationImage()">
+                                        <i class="fas fa-trash me-1"></i>Удалить изображение
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Поле загрузки -->
+                        <input type="file" class="form-control" id="translation_featured_image" name="translation_featured_image" accept="image/*">
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Загрузите изображение с текстом на нужном языке. Если не загружено, будет использоваться основное изображение статьи.
+                        </div>
+                        
+                        <!-- Превью нового изображения -->
+                        <div id="translation-image-preview-new" class="mt-2" style="display: none;">
+                            <label class="form-label text-muted">Предварительный просмотр:</label>
+                            <img id="translation-preview-img" src="" alt="Предварительный просмотр" class="img-thumbnail" style="max-width: 200px; height: auto;">
+                        </div>
                     </div>
                     
                     <div class="mb-3">
@@ -408,6 +440,12 @@ function editTranslation(articleId, languageCode, languageName) {
     // Открываем модальное окно
     const modal = new bootstrap.Modal(document.getElementById('translationModal'));
     modal.show();
+    
+    // Добавляем обработчик закрытия модального окна для сброса переменных
+    document.getElementById('translationModal').addEventListener('hidden.bs.modal', function () {
+        currentArticleId = null;
+        currentLanguage = null;
+    }, { once: true });
 }
 
 // Загружаем данные для перевода
@@ -419,6 +457,11 @@ function loadTranslationData(languageCode, languageName) {
     document.getElementById('translation_meta_title').value = '';
     document.getElementById('translation_meta_description').value = '';
     document.getElementById('translation_meta_keywords').value = '';
+    document.getElementById('translation_featured_image').value = '';
+    
+    // Скрываем превью изображений
+    document.getElementById('current-translation-image').style.display = 'none';
+    document.getElementById('translation-image-preview-new').style.display = 'none';
     
     // Показываем индикатор загрузки
     const statusElement = document.getElementById('translationStatus');
@@ -441,9 +484,6 @@ function loadTranslationData(languageCode, languageName) {
                 if (data.translation.excerpt) {
                     document.getElementById('translation_excerpt').value = data.translation.excerpt;
                 }
-                if (data.translation.content) {
-                    document.getElementById('translation_content').value = data.translation.content;
-                }
                 if (data.translation.meta_title) {
                     document.getElementById('translation_meta_title').value = data.translation.meta_title;
                 }
@@ -452,6 +492,16 @@ function loadTranslationData(languageCode, languageName) {
                 }
                 if (data.translation.meta_keywords) {
                     document.getElementById('translation_meta_keywords').value = data.translation.meta_keywords;
+                }
+                
+                // Показываем текущее изображение перевода
+                if (data.translation.featured_image) {
+                    const currentImageDiv = document.getElementById('current-translation-image');
+                    const currentImage = document.getElementById('translation-image-preview');
+                    currentImage.src = `/storage/${data.translation.featured_image}`;
+                    currentImageDiv.style.display = 'block';
+                } else {
+                    document.getElementById('current-translation-image').style.display = 'none';
                 }
                 
                 // Обновляем статус
@@ -469,9 +519,9 @@ function loadTranslationData(languageCode, languageName) {
                     }
                 }
                 
-                // Инициализируем TinyMCE для поля контента
+                // Инициализируем TinyMCE для поля контента и загружаем контент
                 setTimeout(() => {
-                    initTinyMCEForTranslation();
+                    initTinyMCEForTranslation(data.translation.content);
                 }, 100);
             } else {
                 showNotification('Ошибка при загрузке данных', 'error');
@@ -488,7 +538,7 @@ function loadTranslationData(languageCode, languageName) {
 }
 
 // Инициализация TinyMCE для перевода
-function initTinyMCEForTranslation() {
+function initTinyMCEForTranslation(content = '') {
     if (typeof tinymce !== 'undefined') {
         // Уничтожаем существующий редактор
         if (tinymce.get('translation_content')) {
@@ -505,6 +555,12 @@ function initTinyMCEForTranslation() {
             setup: function (editor) {
                 editor.on('change', function () {
                     editor.save();
+                });
+                // Загружаем контент после инициализации
+                editor.on('init', function () {
+                    if (content) {
+                        editor.setContent(content);
+                    }
                 });
             }
         });
@@ -529,29 +585,43 @@ function saveTranslation() {
     }
     
     // Подготавливаем данные для отправки
-    const formData = {
-        language_code: currentLanguage,
-        title: title,
-        excerpt: excerpt,
-        content: content,
-        meta_title: metaTitle,
-        meta_description: metaDescription,
-        meta_keywords: metaKeywords,
-        _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-    };
+    const formData = new FormData();
+    formData.append('language_code', currentLanguage);
+    formData.append('title', title);
+    formData.append('excerpt', excerpt);
+    formData.append('content', content);
+    formData.append('meta_title', metaTitle);
+    formData.append('meta_description', metaDescription);
+    formData.append('meta_keywords', metaKeywords);
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    
+    // Добавляем изображение если выбрано
+    const imageFile = document.getElementById('translation_featured_image').files[0];
+    if (imageFile) {
+        formData.append('featured_image', imageFile);
+    }
+    
+    // Проверяем, нужно ли удалить изображение
+    const removeImage = document.getElementById('remove_translation_image');
+    if (removeImage && removeImage.checked) {
+        formData.append('remove_featured_image', '1');
+    }
     
     // Отправляем данные на сервер
     fetch(`/panel/blog/${currentArticleId}/save-translation`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
-        body: JSON.stringify(formData)
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Сбрасываем глобальные переменные
+            currentArticleId = null;
+            currentLanguage = null;
+            
             // Закрываем модальное окно
             const modal = bootstrap.Modal.getInstance(document.getElementById('translationModal'));
             if (modal) {
@@ -588,7 +658,8 @@ function copyOriginalContent() {
                 if (tinymce.get('translation_content')) {
                     tinymce.get('translation_content').setContent(data.article.content || '');
                 } else {
-                    document.getElementById('translation_content').value = data.article.content || '';
+                    // Если TinyMCE еще не инициализирован, инициализируем его с контентом
+                    initTinyMCEForTranslation(data.article.content || '');
                 }
                 
                 showNotification('Оригинальный контент скопирован в поля для перевода', 'success');
@@ -601,5 +672,55 @@ function copyOriginalContent() {
             showNotification('Ошибка при загрузке оригинального контента', 'error');
         });
 }
+
+// Функция для удаления изображения перевода
+function removeTranslationImage() {
+    if (confirm('Вы уверены, что хотите удалить изображение для этого языка?')) {
+        // Создаем скрытый чекбокс для удаления
+        let removeCheckbox = document.getElementById('remove_translation_image');
+        if (!removeCheckbox) {
+            removeCheckbox = document.createElement('input');
+            removeCheckbox.type = 'checkbox';
+            removeCheckbox.id = 'remove_translation_image';
+            removeCheckbox.style.display = 'none';
+            document.getElementById('translationForm').appendChild(removeCheckbox);
+        }
+        removeCheckbox.checked = true;
+        
+        // Скрываем текущее изображение
+        document.getElementById('current-translation-image').style.display = 'none';
+        
+        showNotification('Изображение будет удалено при сохранении перевода', 'info');
+    }
+}
+
+// Превью нового изображения
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('translation_featured_image');
+    const previewDiv = document.getElementById('translation-image-preview-new');
+    const previewImg = document.getElementById('translation-preview-img');
+    
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewDiv.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+                
+                // Сбрасываем флаг удаления если загружаем новое изображение
+                const removeCheckbox = document.getElementById('remove_translation_image');
+                if (removeCheckbox) {
+                    removeCheckbox.checked = false;
+                }
+            } else {
+                previewDiv.style.display = 'none';
+            }
+        });
+    }
+});
 </script>
 @endpush

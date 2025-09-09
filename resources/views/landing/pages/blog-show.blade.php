@@ -14,11 +14,11 @@
 @section('og:description', $article->localized_meta_description ?: $article->localized_excerpt)
 @section('og:type', 'article')
 @section('og:url', \App\Helpers\LanguageHelper::createSeoUrl('beautyflow.blog.show', ['slug' => $article->slug]))
-@section('og:image', $article->featured_image ? Storage::url($article->featured_image) : asset('images/og-default.jpg'))
+@section('og:image', $article->localized_featured_image ? Storage::url($article->localized_featured_image) : asset('images/og-default.jpg'))
 @section('og:locale', app()->getLocale())
 @section('twitter:title', $article->localized_meta_title ?: $article->localized_title)
 @section('twitter:description', $article->localized_meta_description ?: $article->localized_excerpt)
-@section('twitter:image', $article->featured_image ? Storage::url($article->featured_image) : asset('images/og-default.jpg'))
+@section('twitter:image', $article->localized_featured_image ? Storage::url($article->localized_featured_image) : asset('images/og-default.jpg'))
 
 @push('head')
 <script type="application/ld+json">
@@ -27,7 +27,7 @@
   "@type": "Article",
   "headline": "{{ $article->localized_title }}",
   "description": "{{ strip_tags($article->localized_excerpt) }}",
-  "image": "{{ $article->featured_image ? Storage::url($article->featured_image) : asset('images/og-default.jpg') }}",
+  "image": "{{ $article->localized_featured_image ? Storage::url($article->localized_featured_image) : asset('images/og-default.jpg') }}",
   "author": {
     "@type": "Person",
     "name": "{{ $article->author ?? __('landing.blog_author_unknown') }}"
@@ -59,7 +59,7 @@
 <section class="bg-light py-5">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 mx-auto">
+            <div class="col-lg-10 mx-auto">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-3">
                         <li class="breadcrumb-item">
@@ -117,11 +117,11 @@
 <section class="py-5">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-9">
                 <!-- Featured Image -->
-                @if($article->featured_image)
+                @if($article->localized_featured_image)
                     <div class="mb-5">
-                        <img src="{{ Storage::url($article->featured_image) }}" 
+                        <img src="{{ Storage::url($article->localized_featured_image) }}" 
                              alt="{{ $article->localized_title }}" 
                              class="img-fluid rounded shadow">
                     </div>
@@ -163,9 +163,9 @@
                         @foreach($similarArticles as $similarArticle)
                         <div class="col-lg-3 col-md-6 mb-4">
                             <div class="card h-100 border-0 shadow-sm">
-                                @if($similarArticle->featured_image)
+                                @if($similarArticle->localized_featured_image)
                                 <div class="card-img-top-container" style="height: 200px; overflow: hidden;">
-                                    <img src="{{ Storage::url($similarArticle->featured_image) }}" 
+                                    <img src="{{ Storage::url($similarArticle->localized_featured_image) }}" 
                                          alt="{{ $similarArticle->localized_title }}" 
                                          class="card-img-top" 
                                          style="width: 100%; height: 100%; object-fit: cover;">
@@ -306,6 +306,7 @@ function shareArticle() {
         font-weight: 700;
         color: #2c3e50;
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        text-transform: none !important;
     }
     
     .lead {
@@ -336,6 +337,7 @@ function shareArticle() {
         margin: 30px 0 20px;
         font-size: 28px;
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        text-transform: none !important;
     }
     
     .article-content h3 {
@@ -344,6 +346,7 @@ function shareArticle() {
         margin: 25px 0 15px;
         font-size: 22px;
         font-family: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        text-transform: none !important;
     }
     
     .article-content p {

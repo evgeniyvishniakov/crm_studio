@@ -21,7 +21,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $articles = BlogArticle::with(['translations.language', 'category', 'tags'])
+        $articles = BlogArticle::with(['translations', 'category', 'tags'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
         
@@ -54,7 +54,7 @@ class BlogController extends Controller
             'content' => 'required|string',
             'blog_category_id' => 'nullable|exists:blog_categories,id',
             'author' => 'nullable|string|max:255',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string',
@@ -107,7 +107,7 @@ class BlogController extends Controller
      */
     public function show(string $id)
     {
-        $article = BlogArticle::with(['translations.language', 'category', 'tags'])->findOrFail($id);
+        $article = BlogArticle::with(['translations', 'category', 'tags'])->findOrFail($id);
         return view('admin.blog.show', compact('article'));
     }
 
@@ -136,7 +136,7 @@ class BlogController extends Controller
      */
     public function edit(string $id)
     {
-        $article = BlogArticle::with(['translations.language', 'category', 'tags'])->findOrFail($id);
+        $article = BlogArticle::with(['translations', 'category', 'tags'])->findOrFail($id);
         $categories = BlogCategory::with('translations')->get();
         $tags = BlogTag::with('translations')->get();
         $languages = Language::getActive();
@@ -157,7 +157,7 @@ class BlogController extends Controller
             'content' => 'required|string',
             'blog_category_id' => 'nullable|exists:blog_categories,id',
             'author' => 'nullable|string|max:255',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'remove_image' => 'nullable|boolean',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
@@ -266,8 +266,10 @@ class BlogController extends Controller
      */
     public function getTranslation(string $id, string $language)
     {
-        $article = BlogArticle::findOrFail($id);
-        $translation = $article->translation($language);
+        $article = BlogArticle::with('translations')->findOrFail($id);
+        
+        // Ищем перевод напрямую в загруженных переводах
+        $translation = $article->translations->where('locale', $language)->first();
         
         // Если перевода нет, возвращаем оригинальный контент для удобного копирования
         if (!$translation) {
@@ -277,6 +279,7 @@ class BlogController extends Controller
                     'title' => $article->title,
                     'excerpt' => $article->excerpt,
                     'content' => $article->content,
+                    'featured_image' => $article->featured_image,
                     'meta_title' => $article->meta_title,
                     'meta_description' => $article->meta_description,
                     'meta_keywords' => $article->meta_keywords,
@@ -291,6 +294,7 @@ class BlogController extends Controller
                 'title' => $translation->title,
                 'excerpt' => $translation->excerpt,
                 'content' => $translation->content,
+                'featured_image' => $translation->featured_image,
                 'meta_title' => $translation->meta_title,
                 'meta_description' => $translation->meta_description,
                 'meta_keywords' => $translation->meta_keywords,
@@ -311,6 +315,8 @@ class BlogController extends Controller
             'title' => 'required|string|max:255',
             'excerpt' => 'nullable|string',
             'content' => 'required|string',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'remove_featured_image' => 'nullable|boolean',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string',
@@ -318,11 +324,34 @@ class BlogController extends Controller
 
         $translation = $article->translations()->where('locale', $request->language_code)->first();
         
+        // Обработка изображения для перевода
+        $featuredImage = $translation ? $translation->featured_image : null;
+        
+        if ($request->boolean('remove_featured_image')) {
+            // Удаляем изображение перевода
+            if ($featuredImage && Storage::exists('public/' . $featuredImage)) {
+                Storage::delete('public/' . $featuredImage);
+            }
+            $featuredImage = null;
+        } elseif ($request->hasFile('featured_image')) {
+            // Загружаем новое изображение для перевода
+            $file = $request->file('featured_image');
+            $filename = time() . '_' . Str::slug($request->title) . '_' . $request->language_code . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('public/blog/translations', $filename);
+            $featuredImage = 'blog/translations/' . $filename;
+            
+            // Удаляем старое изображение перевода если оно было
+            if ($translation && $translation->featured_image && Storage::exists('public/' . $translation->featured_image)) {
+                Storage::delete('public/' . $translation->featured_image);
+            }
+        }
+        
         if ($translation) {
             $translation->update([
                 'title' => $request->title,
                 'excerpt' => $request->excerpt,
                 'content' => $request->content,
+                'featured_image' => $featuredImage,
                 'meta_title' => $request->meta_title,
                 'meta_description' => $request->meta_description,
                 'meta_keywords' => $request->meta_keywords,
@@ -333,6 +362,7 @@ class BlogController extends Controller
                 'title' => $request->title,
                 'excerpt' => $request->excerpt,
                 'content' => $request->content,
+                'featured_image' => $featuredImage,
                 'meta_title' => $request->meta_title,
                 'meta_description' => $request->meta_description,
                 'meta_keywords' => $request->meta_keywords,

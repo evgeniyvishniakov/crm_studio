@@ -15,6 +15,7 @@ class BlogArticleTranslation extends Model
         'title',
         'excerpt',
         'content',
+        'featured_image',
         'meta_title',
         'meta_description',
         'meta_keywords'
