@@ -218,7 +218,7 @@ function autoSaveLanguageCurrency(fieldName, value) {
             let message = '';
             
             if (fieldName === 'language_id' && data.language) {
-                message = 'Язык изменен на: ' + data.language.name + '. Перезагрузите страницу для применения.';
+                message = 'Язык изменен на: ' + data.language.name + '. Страница будет перезагружена...';
                 
                 // Обновляем localStorage с новым языком
                 localStorage.setItem('selectedLanguage', data.language.code);
@@ -228,6 +228,11 @@ function autoSaveLanguageCurrency(fieldName, value) {
                     window.LanguageManager.currentLanguage = data.language.code;
                     window.LanguageManager.updateLanguageSelectors();
                 }
+                
+                // Автоматически перезагружаем страницу через 1 секунду
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
                 
             } else if (fieldName === 'booking_language_id' && data.booking_language) {
                 message = 'Язык веб-записи изменен на: ' + data.booking_language.name + '. Перезагрузите страницу для применения.';
