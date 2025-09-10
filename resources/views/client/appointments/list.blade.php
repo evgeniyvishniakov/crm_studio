@@ -3938,6 +3938,7 @@ tr[data-parent-appointment-id] {
                     window.showNotification('success', '{{ __('messages.appointment_updated_successfully') }}');
                     closeEditAppointmentModal();
 
+
                     // Обновляем календарь
                     if (typeof calendar !== 'undefined' && calendar) {
                         calendar.refetchEvents();
@@ -3957,10 +3958,14 @@ tr[data-parent-appointment-id] {
                                 ${data.appointment.client.instagram ? `
                                     (<a href="https://instagram.com/${escapeHtml(data.appointment.client.instagram)}" class="instagram-link" target="_blank" rel="noopener noreferrer">@${escapeHtml(data.appointment.client.instagram)}</a>)` : ''}
                             </td>
-                            <td>${escapeHtml(data.appointment.service.name)}</td>
+                            <td>
+                                ${escapeHtml(data.appointment.service.name)}
+                                ${data.appointment.childAppointments && Array.isArray(data.appointment.childAppointments) && data.appointment.childAppointments.length > 0 ? 
+                                    ' + ' + data.appointment.childAppointments.map(child => escapeHtml(child.service.name)).join(' + ') : ''}
+                            </td>
                             <td>${data.appointment.user ? escapeHtml(data.appointment.user.name) : '{{ __('messages.not_assigned') }}'}</td>
                             <td><span class="status-badge status-${data.appointment.status}">${getStatusName(data.appointment.status)}</span></td>
-                            <td class="currency-amount" data-amount="${data.appointment.price}">${formatPrice(data.appointment.price)}</td>
+                            <td class="currency-amount" data-amount="${data.appointment.total_amount || data.appointment.price}">${formatPrice(data.appointment.total_amount || data.appointment.price)}</td>
                             <td>
                                 <div class="appointment-actions actions-cell">
                                     <button class="btn-view" data-appointment-id="${data.appointment.id}" title="{{ __('messages.view') }}">

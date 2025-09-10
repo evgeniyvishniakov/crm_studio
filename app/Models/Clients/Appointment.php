@@ -34,6 +34,13 @@ class Appointment extends Model
         // other casts...
     ];
 
+    protected $appends = ['total_amount', 'childAppointments'];
+
+    public function getChildAppointmentsAttribute()
+    {
+        return $this->childAppointments()->with('service')->get();
+    }
+
     public function client()
     {
         return $this->belongsTo(Client::class);
@@ -120,7 +127,6 @@ class Appointment extends Model
         $productsSum = $this->sales->sum('total_amount') ?? 0;
         return $servicesSum + $productsSum;
     }
-    protected $appends = ['total_amount'];
 
     public function getTotalAmountAttribute()
     {

@@ -279,11 +279,27 @@ class AppointmentsController extends Controller
 
                 DB::commit();
 
-                $appointment = $appointment->fresh(['client', 'service', 'sales.items.product.warehouse', 'user']);
+                // Загружаем запись заново с всеми связями
+                $appointment = Appointment::with([
+                    'client', 
+                    'service', 
+                    'sales.items.product.warehouse', 
+                    'user',
+                    'childAppointments.service',
+                    'childAppointments.sales.items.product'
+                ])->find($appointment->id);
+                
+                // Принудительно загружаем дочерние записи
+                $appointment->load('childAppointments.service');
+                
                 
                 // Форматируем дату для правильного отображения
                 $appointment->date_formatted = $appointment->date->format('d.m.Y');
                 $appointment->date_html = $appointment->date->format('Y-m-d');
+                
+                // Рассчитываем общую стоимость
+                $appointment->total_amount = $appointment->getTotalAmountAttribute();
+                
                 
                 $products = Product::with('warehouse')
                     ->whereHas('warehouse', function($query) {
@@ -299,6 +315,7 @@ class AppointmentsController extends Controller
                             'quantity' => $product->warehouse->quantity
                         ];
                     });
+
 
                 return response()->json([
                     'success' => true,
