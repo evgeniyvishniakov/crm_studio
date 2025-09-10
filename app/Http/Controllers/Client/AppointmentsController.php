@@ -25,7 +25,14 @@ class AppointmentsController extends Controller
         $viewType = $request->get('view', 'list'); // list или calendar
 
         // Базовый запрос для записей
-        $appointmentsQuery = Appointment::with(['client', 'service', 'user'])
+        $appointmentsQuery = Appointment::with([
+                'client', 
+                'service', 
+                'user',
+                'sales.items.product', // Загружаем продажи с товарами
+                'childAppointments.service', // Загружаем дочерние записи
+                'parentAppointment.service' // Загружаем родительскую запись
+            ])
             ->where('project_id', $currentProjectId);
 
         // Если пользователь не админ, показываем только его записи
@@ -37,6 +44,12 @@ class AppointmentsController extends Controller
             ->orderBy('date', 'desc')
             ->orderBy('time', 'desc')
             ->paginate(11);
+
+        // Добавляем total_amount для каждой записи
+        $appointments->getCollection()->transform(function ($appointment) {
+            $appointment->total_amount = $appointment->getTotalAmountAttribute();
+            return $appointment;
+        });
 
         $clients = Client::where('project_id', $currentProjectId)->get()->map(function ($client) {
             return [
@@ -1654,7 +1667,7 @@ class AppointmentsController extends Controller
                     ],
                     'user' => $a->user ? ['name' => $a->user->name] : null,
                     'status' => $a->status,
-                    'price' => $totalPrice, // Общая цена всех услуг
+                    'price' => $totalPrice, // Общая цена всех услуг и товаров
                     'has_children' => $a->childAppointments->count() > 0,
                     'children_count' => $a->childAppointments->count()
                 ];

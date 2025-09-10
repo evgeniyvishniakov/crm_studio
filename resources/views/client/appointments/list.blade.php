@@ -1039,7 +1039,19 @@ tr[data-parent-appointment-id] {
                         </a>
                         @endif
                     </td>
-                    <td>{{ $appointment->service->name }}</td>
+                    <td>
+                        @php
+                            // Собираем все услуги (основная + дочерние)
+                            $allServices = collect([$appointment->service->name]);
+                            if ($appointment->childAppointments && $appointment->childAppointments->count() > 0) {
+                                foreach ($appointment->childAppointments as $child) {
+                                    $allServices->push($child->service->name);
+                                }
+                            }
+                            $servicesText = $allServices->join(' + ');
+                        @endphp
+                        {{ $servicesText }}
+                    </td>
                     <td>{{ $appointment->user->name ?? __('messages.not_assigned') }}</td>
                     <td>
                         <span class="status-badge status-{{ $appointment->status }}">
@@ -1054,7 +1066,7 @@ tr[data-parent-appointment-id] {
                             {{ $statusNames[$appointment->status] ?? __('messages.status_pending') }}
                         </span>
                     </td>
-                    <td class="currency-amount" data-amount="{{ $appointment->price }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($appointment->price) }}</td>
+                    <td class="currency-amount" data-amount="{{ $appointment->total_amount }}">{{ \App\Helpers\CurrencyHelper::formatWithoutThousands($appointment->total_amount) }}</td>
                     <td>
                         <div class="appointment-actions actions-cell">
                             <button class="btn-view" data-appointment-id="{{ $appointment->id }}" title="{{ __('messages.view') }}">

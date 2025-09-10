@@ -124,10 +124,18 @@ class Appointment extends Model
 
     public function getTotalAmountAttribute()
     {
-        $total = $this->price;
+        $total = $this->price ?? 0;
+        
+        // Добавляем стоимость товаров из продаж
         foreach ($this->sales as $sale) {
-            $total += $sale->quantity * $sale->retail_price;
+            $total += $sale->total_amount ?? 0;
         }
+        
+        // Добавляем стоимость дочерних записей (дополнительных услуг)
+        foreach ($this->childAppointments as $child) {
+            $total += $child->price ?? 0;
+        }
+        
         return $total;
     }
 }
