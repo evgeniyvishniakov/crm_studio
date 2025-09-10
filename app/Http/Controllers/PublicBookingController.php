@@ -626,8 +626,12 @@ class PublicBookingController extends Controller
         $serviceDurationMinutes = (int) $serviceDuration;
 
         // Получаем все существующие записи на эту дату для этого мастера
+        // Исключаем отмененные записи - они не должны блокировать время
+        // Включаем дочерние записи для правильного расчета времени
         $existingAppointments = Appointment::where('user_id', $userId)
             ->where('date', $date)
+            ->where('status', '!=', 'cancelled')
+            ->with('childAppointments.service')
             ->get();
             
         \Log::info('Generating time slots', [
@@ -649,7 +653,21 @@ class PublicBookingController extends Controller
                 
                 foreach ($existingAppointments as $appointment) {
                     $appointmentStart = Carbon::parse($appointment->time);
-                    $appointmentEnd = $appointmentStart->copy()->addMinutes($appointment->duration ?? 60);
+                    
+                    // Рассчитываем общую длительность: основная запись + все дочерние
+                    $totalAppointmentDuration = $appointment->duration ?? 60;
+                    
+                    // Добавляем длительность дочерних записей
+                    if ($appointment->childAppointments) {
+                        foreach ($appointment->childAppointments as $childAppointment) {
+                            if ($childAppointment->service) {
+                                $childDuration = $childAppointment->service->duration ?: 60;
+                                $totalAppointmentDuration += $childDuration;
+                            }
+                        }
+                    }
+                    
+                    $appointmentEnd = $appointmentStart->copy()->addMinutes($totalAppointmentDuration);
                     
                     // Проверяем пересечение интервалов
                     // Новый слот: [currentTime, slotEnd]
