@@ -1360,7 +1360,7 @@ tr[data-parent-appointment-id] {
                     tooltipContent.innerHTML = `
                         <p><strong>{{ __('messages.time') }}:</strong> ${startTime}</p>
                         <p><strong>{{ __('messages.client') }}:</strong> ${event.extendedProps.client}</p>
-                        <p><strong>{{ __('messages.service') }}:</strong> ${event.extendedProps.service}</p>
+                        <p><strong>{{ __('messages.service') }}:</strong> ${event.title}</p>
                         <p><strong>{{ __('messages.price') }}:</strong> <span class="currency-amount" data-amount="${event.extendedProps.price}">${formatPrice(event.extendedProps.price)}</span></p>
                         <p><strong>{{ __('messages.status') }}:</strong> ${getStatusName(event.extendedProps.status)}</p>
                     `;
