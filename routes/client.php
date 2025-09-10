@@ -33,7 +33,6 @@ use App\Http\Controllers\Client\SecurityController;
 |
 */
 
-Route::get('clients/check', [App\Http\Controllers\Client\ClientController::class, 'checkUnique']);
 Route::get('/password/reset', [AdminForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('/password/email', [AdminForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/password/reset/{token}', [AdminResetPasswordController::class, 'showResetForm'])->name('password.reset');
@@ -76,7 +75,6 @@ Route::middleware('auth:client')->group(function () {
         Route::post('/', [ClientController::class, 'store'])->name('store');
         Route::get('/create', [ClientController::class, 'create'])->name('create');
         Route::get('/{id}', [ClientController::class, 'show'])->name('show');
-        Route::get('/check', [ClientController::class, 'checkUnique']);
         Route::delete('/{client}', [ClientController::class, 'destroy'])->name('destroy');
         Route::get('/{client}/edit', [ClientController::class, 'edit'])->name('edit');
         Route::put('/{client}', [ClientController::class, 'update'])->name('update');

@@ -18,19 +18,28 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// API для генерации языковых URL
-Route::post('/language-url', [\App\Http\Controllers\Api\LanguageUrlController::class, 'generateUrl']);
+// API для генерации языковых URL (защищен CSRF)
+Route::post('/language-url', [\App\Http\Controllers\Api\LanguageUrlController::class, 'generateUrl'])
+    ->middleware('throttle:10,1'); // 10 запросов в минуту
 
-// API для виджета записи
+// API для виджета записи (публичный, но с ограничением)
 Route::prefix('widget')->name('widget.')->group(function () {
-    Route::get('/config/{slug}', [\App\Http\Controllers\Api\WidgetController::class, 'getConfig'])->name('config');
+    Route::get('/config/{slug}', [\App\Http\Controllers\Api\WidgetController::class, 'getConfig'])
+        ->name('config')
+        ->middleware('throttle:30,1'); // 30 запросов в минуту
 });
 
-// API для смены языка на лендинге
+// API для смены языка на лендинге (публичный, но с ограничением)
 Route::prefix('languages')->name('languages.')->group(function () {
-    Route::post('/set/{code}', [\App\Http\Controllers\Api\LanguageController::class, 'setLanguage'])->name('set');
-    Route::get('/', [\App\Http\Controllers\Api\LanguageController::class, 'index'])->name('index');
-    Route::get('/current', [\App\Http\Controllers\Api\LanguageController::class, 'current'])->name('current');
+    Route::post('/set/{code}', [\App\Http\Controllers\Api\LanguageController::class, 'setLanguage'])
+        ->name('set')
+        ->middleware('throttle:5,1'); // 5 запросов в минуту
+    Route::get('/', [\App\Http\Controllers\Api\LanguageController::class, 'index'])
+        ->name('index')
+        ->middleware('throttle:20,1'); // 20 запросов в минуту
+    Route::get('/current', [\App\Http\Controllers\Api\LanguageController::class, 'current'])
+        ->name('current')
+        ->middleware('throttle:20,1'); // 20 запросов в минуту
 });
 
 

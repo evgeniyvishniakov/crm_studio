@@ -22,12 +22,26 @@ Route::get('/login', [ClientAuthController::class, 'showLoginForm'])->middleware
 Route::post('/login', [ClientAuthController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/logout', [ClientAuthController::class, 'logout'])->name('logout');
 
-// Публичные маршруты бронирования
+// Публичные маршруты бронирования (с защитой от спама)
 Route::prefix('book')->name('public.booking.')->group(function () {
-    Route::get('/{slug}', [\App\Http\Controllers\PublicBookingController::class, 'show'])->name('show');
-    Route::post('/{slug}/slots', [\App\Http\Controllers\PublicBookingController::class, 'getAvailableSlots'])->name('slots');
-    Route::post('/{slug}/schedule', [\App\Http\Controllers\PublicBookingController::class, 'getMasterSchedule'])->name('schedule');
-    Route::post('/{slug}/unavailable-dates', [\App\Http\Controllers\PublicBookingController::class, 'getUnavailableDates'])->name('unavailable-dates');
-    Route::post('/{slug}/store', [\App\Http\Controllers\PublicBookingController::class, 'store'])->name('store');
+    Route::get('/{slug}', [\App\Http\Controllers\PublicBookingController::class, 'show'])
+        ->name('show')
+        ->middleware('throttle:60,1'); // 60 запросов в минуту
+    
+    Route::post('/{slug}/slots', [\App\Http\Controllers\PublicBookingController::class, 'getAvailableSlots'])
+        ->name('slots')
+        ->middleware('throttle:30,1'); // 30 запросов в минуту
+    
+    Route::post('/{slug}/schedule', [\App\Http\Controllers\PublicBookingController::class, 'getMasterSchedule'])
+        ->name('schedule')
+        ->middleware('throttle:30,1'); // 30 запросов в минуту
+    
+    Route::post('/{slug}/unavailable-dates', [\App\Http\Controllers\PublicBookingController::class, 'getUnavailableDates'])
+        ->name('unavailable-dates')
+        ->middleware('throttle:30,1'); // 30 запросов в минуту
+    
+    Route::post('/{slug}/store', [\App\Http\Controllers\PublicBookingController::class, 'store'])
+        ->name('store')
+        ->middleware('throttle:5,1'); // 5 записей в минуту (защита от спама)
 });
 
