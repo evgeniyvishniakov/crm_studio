@@ -824,6 +824,12 @@ class AppointmentsController extends Controller
 
     public function calendarEvents(Request $request)
     {
+        \Log::info('Calendar events method called', [
+            'start' => $request->start,
+            'end' => $request->end,
+            'user_id' => auth()->user()->id
+        ]);
+        
         $currentProjectId = auth()->user()->project_id;
         $currentUser = auth()->user();
         try {
@@ -839,18 +845,57 @@ class AppointmentsController extends Controller
             
             $appointments = $query
                 ->when($request->start, function($query) use ($request) {
-                    return $query->whereDate('date', '>=', Carbon::parse($request->start));
+                    // Очищаем дату от лишних символов
+                    $startDate = $request->start;
+                    $startDate = preg_replace('/[T ]\d{2}:\d{2}:\d{2}.*$/', '', $startDate);
+                    return $query->whereDate('date', '>=', Carbon::parse($startDate));
                 })
                 ->when($request->end, function($query) use ($request) {
-                    return $query->whereDate('date', '<=', Carbon::parse($request->end));
+                    // Очищаем дату от лишних символов
+                    $endDate = $request->end;
+                    $endDate = preg_replace('/[T ]\d{2}:\d{2}:\d{2}.*$/', '', $endDate);
+                    return $query->whereDate('date', '<=', Carbon::parse($endDate));
                 })
                 ->get();
+
+            // Отладка
+            \Log::info('Calendar events debug:', [
+                'appointments_count' => $appointments->count(),
+                'start_filter' => $request->start,
+                'end_filter' => $request->end,
+                'appointments' => $appointments->map(function($app) {
+                    return [
+                        'id' => $app->id,
+                        'service' => $app->service->name,
+                        'date' => $app->date,
+                        'childAppointments_count' => $app->childAppointments ? $app->childAppointments->count() : 0
+                    ];
+                })->toArray()
+            ]);
 
             $events = $appointments->map(function($appointment) {
                 try {
                     // Правильное форматирование даты и времени
                     $date = Carbon::parse($appointment->date)->format('Y-m-d');
-                    $startDateTime = Carbon::parse($date . ' ' . $appointment->time);
+                    
+                    // Очищаем время от лишних символов
+                    $time = $appointment->time;
+                    if ($time) {
+                        // Убираем дату из времени, если она есть
+                        $time = preg_replace('/^\d{4}-\d{2}-\d{2}T/', '', $time);
+                        // Убираем timezone offset
+                        $time = preg_replace('/[+-]\d{2}:\d{2}$/', '', $time);
+                        // Убираем пробелы
+                        $time = trim($time);
+                        // Если время пустое или невалидное, используем по умолчанию
+                        if (empty($time) || !preg_match('/^\d{2}:\d{2}:\d{2}$/', $time)) {
+                            $time = '00:00:00';
+                        }
+                    } else {
+                        $time = '00:00:00';
+                    }
+                    
+                    $startDateTime = Carbon::parse($date . ' ' . $time);
                     $duration = $appointment->duration ?? $appointment->service->duration ?? 60;
                     $endDateTime = $startDateTime->copy()->addMinutes($duration);
 
@@ -890,7 +935,7 @@ class AppointmentsController extends Controller
                             'status' => $appointment->status,
                             'time' => $appointment->time,
                             'duration' => $duration,
-                            'title_week' => $servicesText,
+                            'title_week' => $startDateTime->format('H:i') . ' ' . $servicesText,
                             'title_day' => $startDateTime->format('H:i') . ' - ' . $endDateTime->format('H:i') . ' ' . $servicesText . ' ' . $appointment->client->name,
                             'hasChildren' => $appointment->childAppointments->count() > 0,
                             'childrenCount' => $appointment->childAppointments->count()

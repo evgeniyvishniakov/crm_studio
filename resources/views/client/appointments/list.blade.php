@@ -1216,11 +1216,13 @@ tr[data-parent-appointment-id] {
                     const viewType = info.view.type;
                     if (viewType === 'timeGridDay' && info.event.extendedProps.title_day) {
                         return {
-                            html: `<span style=\"color:#fff; font-weight:600; font-size:1.08em;\">${info.event.extendedProps.title_day}</span>`
+                            html: `<span style=\"color:#333; font-weight:600; font-size:1.08em;\">${info.event.extendedProps.title_day}</span>`
                         };
                     }
-                    if (viewType === 'timeGridWeek' && info.event.extendedProps.title_week) {
-                        const parts = info.event.extendedProps.title_week.split(' ');
+                    if (viewType === 'timeGridWeek') {
+                        // Используем title_week если есть, иначе используем обычный title
+                        const titleText = info.event.extendedProps.title_week || info.event.title;
+                        const parts = titleText.split(' ');
                         const time = parts.shift();
                         const name = parts.join(' ');
                         let status = 'completed';
@@ -1313,14 +1315,30 @@ tr[data-parent-appointment-id] {
                     }
                 },
                 events: function(info, successCallback, failureCallback) {
-                    fetch('/appointments/calendar-events')
+                    fetch('/appointments/calendar-events?start=' + info.startStr + '&end=' + info.endStr)
                         .then(response => response.json())
                         .then(events => {
-                            successCallback(events);
+                            console.log('Events loaded for view:', info.view ? info.view.type : 'unknown', events);
+                            if (events.error) {
+                                console.error('Ошибка загрузки событий:', events.error);
+                                successCallback([]);
+                            } else {
+                                // Детальная отладка каждого события
+                                events.forEach((event, index) => {
+                                    console.log(`Event ${index}:`, {
+                                        id: event.id,
+                                        title: event.title,
+                                        start: event.start,
+                                        end: event.end,
+                                        allDay: event.allDay
+                                    });
+                                });
+                                successCallback(events);
+                            }
                         })
                         .catch(error => {
                             console.error('Ошибка загрузки событий:', error);
-                            failureCallback(error);
+                            successCallback([]);
                         });
                 },
                 eventTimeFormat: {
@@ -1329,7 +1347,7 @@ tr[data-parent-appointment-id] {
                     hour12: false
                 },
                 slotMinTime: '08:00:00',
-                slotMaxTime: '21:00:00',
+                slotMaxTime: '23:00:00',
                 allDaySlot: false,
                 slotDuration: '00:30:00',
                 slotLabelFormat: {

@@ -3427,6 +3427,20 @@ footer.site-footer {
     background: transparent !important;
     color: #665d5d;
 }
+
+/* Специальный стиль для отмененных записей в недельном и дневном виде */
+#calendar .fc-timegrid-event.status-cancelled {
+    color: #dc3545 !important; /* красный цвет для отмененных записей */
+}
+
+#calendar .fc-timegrid-event.status-cancelled .event-chip {
+    color: #dc3545 !important;
+}
+
+/* Специальный стиль для отмененных записей в дневном виде */
+#calendar .fc-timegrid-event.status-cancelled .fc-event-main {
+    color: #dc3545 !important;
+}
 /* Применяем шрифт Inter ко всем элементам FullCalendar */
 .fc, .fc *:not(.fc-event-main):not(.fc-event-title):not(.fc-event-time) {
     font-family: 'Inter', Arial, sans-serif !important;
