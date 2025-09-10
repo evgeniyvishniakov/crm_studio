@@ -1073,6 +1073,64 @@
                 events: '/appointments/calendar-events',
 
                 eventDidMount: function(info) {
+                    // Добавляем кастомный tooltip для событий
+                    const event = info.event;
+                    const eventEl = info.el;
+                    
+                    // Создаем tooltip элемент
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'dashboard-event-tooltip';
+                    tooltip.style.cssText = `
+                        position: absolute;
+                        background: rgba(0,0,0,0.9);
+                        color: white;
+                        padding: 8px 12px;
+                        border-radius: 6px;
+                        font-size: 12px;
+                        z-index: 1000;
+                        pointer-events: none;
+                        opacity: 0;
+                        transition: opacity 0.2s;
+                        white-space: nowrap;
+                        max-width: 200px;
+                    `;
+                    
+                    // Формируем содержимое tooltip
+                    const startTime = event.start ? new Date(event.start).toLocaleTimeString('{{ app()->getLocale() }}', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : '';
+                    
+                    tooltip.innerHTML = `
+                        <div><strong>Время:</strong> ${startTime}</div>
+                        <div><strong>Клиент:</strong> ${event.extendedProps?.client || ''}</div>
+                        <div><strong>Услуга:</strong> ${event.title}</div>
+                        <div><strong>Цена:</strong> ${event.extendedProps?.price || ''} грн</div>
+                        <div><strong>Статус:</strong> ${event.extendedProps?.status || ''}</div>
+                    `;
+                    
+                    document.body.appendChild(tooltip);
+                    
+                    // Обработчики для показа/скрытия tooltip
+                    eventEl.addEventListener('mouseenter', function(e) {
+                        tooltip.style.opacity = '1';
+                        const rect = eventEl.getBoundingClientRect();
+                        tooltip.style.left = (rect.left + rect.width / 2) + 'px';
+                        tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
+                    });
+                    
+                    eventEl.addEventListener('mouseleave', function() {
+                        tooltip.style.opacity = '0';
+                    });
+                    
+                    eventEl.addEventListener('mouseleave', function() {
+                        setTimeout(() => {
+                            if (tooltip.style.opacity === '0') {
+                                document.body.removeChild(tooltip);
+                            }
+                        }, 200);
+                    });
+                    
                     // Получаем дату текущего события
                     const currentEventDate = info.event.start ? info.event.start.toISOString().slice(0,10) : null;
                     
@@ -1208,7 +1266,7 @@
                 }
                 return `<div class="calendar-modal-event-item">
                     <span class='fc-dot' style='background:${getStatusColor(status)}'></span>
-                    <span><b>${time}</b> ${ev.extendedProps.client || ''} <span class="calendar-modal-service-name">(${ev.extendedProps.service || ''})</span></span>
+                    <span><b>${time}</b> ${ev.extendedProps.client || ''} <span class="calendar-modal-service-name">(${ev.title || ''})</span></span>
                     <span class="status-badge status-${statusClass} calendar-modal-status-badge">${statusName}</span>
                 </div>`
             }).join('');

@@ -3441,6 +3441,11 @@ footer.site-footer {
 #calendar .fc-timegrid-event.status-cancelled .fc-event-main {
     color: #dc3545 !important;
 }
+
+/* Скрываем fc-event-title только на дешборде */
+#dashboardCalendar .fc-event-title {
+    display: none !important;
+}
 /* Применяем шрифт Inter ко всем элементам FullCalendar */
 .fc, .fc *:not(.fc-event-main):not(.fc-event-title):not(.fc-event-time) {
     font-family: 'Inter', Arial, sans-serif !important;

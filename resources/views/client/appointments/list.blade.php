@@ -1318,21 +1318,10 @@ tr[data-parent-appointment-id] {
                     fetch('/appointments/calendar-events?start=' + info.startStr + '&end=' + info.endStr)
                         .then(response => response.json())
                         .then(events => {
-                            console.log('Events loaded for view:', info.view ? info.view.type : 'unknown', events);
                             if (events.error) {
                                 console.error('Ошибка загрузки событий:', events.error);
                                 successCallback([]);
                             } else {
-                                // Детальная отладка каждого события
-                                events.forEach((event, index) => {
-                                    console.log(`Event ${index}:`, {
-                                        id: event.id,
-                                        title: event.title,
-                                        start: event.start,
-                                        end: event.end,
-                                        allDay: event.allDay
-                                    });
-                                });
                                 successCallback(events);
                             }
                         })

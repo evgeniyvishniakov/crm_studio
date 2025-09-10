@@ -824,11 +824,6 @@ class AppointmentsController extends Controller
 
     public function calendarEvents(Request $request)
     {
-        \Log::info('Calendar events method called', [
-            'start' => $request->start,
-            'end' => $request->end,
-            'user_id' => auth()->user()->id
-        ]);
         
         $currentProjectId = auth()->user()->project_id;
         $currentUser = auth()->user();
@@ -858,20 +853,6 @@ class AppointmentsController extends Controller
                 })
                 ->get();
 
-            // Отладка
-            \Log::info('Calendar events debug:', [
-                'appointments_count' => $appointments->count(),
-                'start_filter' => $request->start,
-                'end_filter' => $request->end,
-                'appointments' => $appointments->map(function($app) {
-                    return [
-                        'id' => $app->id,
-                        'service' => $app->service->name,
-                        'date' => $app->date,
-                        'childAppointments_count' => $app->childAppointments ? $app->childAppointments->count() : 0
-                    ];
-                })->toArray()
-            ]);
 
             $events = $appointments->map(function($appointment) {
                 try {
