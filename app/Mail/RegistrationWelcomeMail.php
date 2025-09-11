@@ -15,16 +15,18 @@ class RegistrationWelcomeMail extends Mailable
     public $salon;
     public $phone;
     public $token;
+    public $language;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($email, $salon, $phone = null, $token = null)
+    public function __construct($email, $salon, $phone = null, $token = null, $language = 'ru')
     {
         $this->email = $email;
         $this->salon = $salon;
         $this->phone = $phone;
         $this->token = $token;
+        $this->language = $language;
     }
 
     /**
@@ -32,7 +34,10 @@ class RegistrationWelcomeMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Добро пожаловать в CRM BeautyFlow!')
+        // Устанавливаем язык для переводов
+        app()->setLocale($this->language);
+        
+        return $this->subject(__('emails.registration.welcome.title'))
             ->markdown('emails.registration.welcome')
             ->with([
                 'email' => $this->email,

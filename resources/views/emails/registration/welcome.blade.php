@@ -1,29 +1,29 @@
 @component('mail::message')
-# Добро пожаловать в CRM BeautyFlow!
+# {{ __('emails.registration.welcome.title') }}
 
-Спасибо за регистрацию.
+{{ __('emails.registration.welcome.thanks') }}
 
-**Ваши данные:**
-- Email: {{ $email }}
-- @if($phone)Телефон: {{ $phone }}<br>@endif
-- Название салона или Имя: {{ $salon }}
+**{{ __('emails.registration.welcome.your_data') }}**
+- {{ __('emails.registration.welcome.email') }} {{ $email }}
+- @if($phone){{ __('emails.registration.welcome.phone') }} {{ $phone }}<br>@endif
+- {{ __('emails.registration.welcome.salon_name') }} {{ $salon }}
 
 ---
 
 @isset($token)
 @component('mail::button', ['url' => $resetUrl])
-Создать пароль
+{{ __('emails.registration.welcome.create_password') }}
 @endcomponent
 @endisset
 
-В ближайшее время с вами свяжется наш менеджер или вы получите дальнейшие инструкции для активации аккаунта.
+{{ __('emails.registration.welcome.manager_contact') }}
 
-Если вы не регистрировались на нашем сайте — просто проигнорируйте это письмо.
+{{ __('emails.registration.welcome.ignore_if_not_registered') }}
 
 @component('mail::button', ['url' => config('app.url')])
-Перейти на сайт
+{{ __('emails.registration.welcome.go_to_site') }}
 @endcomponent
 
-С уважением,<br>
-Команда BeautyFlow
+{{ __('emails.registration.welcome.regards') }}<br>
+{{ __('emails.registration.welcome.team') }}
 @endcomponent

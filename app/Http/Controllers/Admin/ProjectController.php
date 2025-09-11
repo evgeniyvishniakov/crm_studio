@@ -144,7 +144,8 @@ class ProjectController extends Controller
                 $validated['email'],
                 $validated['project_name'],
                 $validated['phone'] ?? null,
-                $token
+                $token,
+                app()->getLocale() // Передаем текущий язык
             ));
             Log::info('Registration email sent successfully to: ' . $validated['email']);
         } catch (\Exception $e) {

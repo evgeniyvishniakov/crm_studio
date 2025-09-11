@@ -136,7 +136,8 @@ class RegisterController extends Controller
                 $validated['email'],
                 $validated['salon'],
                 $validated['phone'] ?? null,
-                $token
+                $token,
+                app()->getLocale() // Передаем текущий язык
             ));
             \Log::info('Registration email sent successfully to: ' . $validated['email']);
         } catch (\Exception $e) {
