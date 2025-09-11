@@ -80,7 +80,7 @@ class AdminResetPasswordController extends Controller
         // Проверяем наличие записи и валидность токена через Hash::check
         if (!$tokenRecord || !\Hash::check($request->token, $tokenRecord->token)) {
             return redirect()->route('password.request')
-                ->withErrors(['email' => 'Ссылка для сброса пароля недействительна или истекла.']);
+                ->withErrors(['email' => __('emails.password_reset.invalid_link')]);
         }
 
         // Проверяем, не истек ли токен (60 минут)
@@ -92,7 +92,7 @@ class AdminResetPasswordController extends Controller
                 ->delete();
 
             return redirect()->route('password.request')
-                ->withErrors(['email' => 'Ссылка для сброса пароля истекла.']);
+                ->withErrors(['email' => __('emails.password_reset.expired_link')]);
         }
 
         // Here we will attempt to reset the user's password. If it is successful we
@@ -158,7 +158,7 @@ class AdminResetPasswordController extends Controller
         // Проверяем наличие записи и валидность токена через Hash::check
         if (!$tokenRecord || !\Hash::check($token, $tokenRecord->token)) {
             return redirect()->route('password.request')
-                ->withErrors(['email' => 'Ссылка для сброса пароля недействительна или истекла.']);
+                ->withErrors(['email' => __('emails.password_reset.invalid_link')]);
         }
 
         // Проверяем, не истек ли токен (60 минут)
@@ -170,9 +170,13 @@ class AdminResetPasswordController extends Controller
                 ->delete();
 
             return redirect()->route('password.request')
-                ->withErrors(['email' => 'Ссылка для сброса пароля истекла.']);
+                ->withErrors(['email' => __('emails.password_reset.expired_link')]);
         }
 
+        // Определяем язык из URL или используем русский по умолчанию
+        $language = $request->get('lang', 'ru');
+        app()->setLocale($language);
+        
         return view('auth.passwords.reset')->with(
             ['token' => $token, 'email' => $request->email]
         );

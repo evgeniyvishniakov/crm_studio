@@ -44,8 +44,8 @@ class RegistrationWelcomeMail extends Mailable
                 'salon' => $this->salon,
                 'phone' => $this->phone,
                 'token' => $this->token,
-                // Используем маршрут для клиентской части
-                'resetUrl' => route('password.reset', ['token' => $this->token, 'email' => $this->email]),
+                // Используем маршрут для клиентской части с языком
+                'resetUrl' => route('password.reset', ['token' => $this->token, 'email' => $this->email, 'lang' => $this->language]),
             ]);
     }
 }

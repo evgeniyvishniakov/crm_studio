@@ -16,5 +16,13 @@ return [
             'regards' => 'Best regards,',
             'team' => 'Trimora Team'
         ]
+    ],
+    'password_reset' => [
+        'title' => 'Create New Password',
+        'new_password' => 'New Password',
+        'confirm_password' => 'Confirm Password',
+        'create_button' => 'Create Password',
+        'invalid_link' => 'Password reset link is invalid or expired.',
+        'expired_link' => 'Password reset link has expired.'
     ]
 ];
