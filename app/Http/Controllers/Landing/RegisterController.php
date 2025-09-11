@@ -19,6 +19,9 @@ class RegisterController extends Controller
     {
         \Log::info('=== REGISTRATION START ===');
         \Log::info('Request data: ' . json_encode($request->all()));
+        \Log::info('Request method: ' . $request->method());
+        \Log::info('Request URL: ' . $request->url());
+        \Log::info('Request headers: ' . json_encode($request->headers->all()));
         
         try {
             $validated = $request->validate([
@@ -62,8 +65,23 @@ class RegisterController extends Controller
             }
         }
 
+        // Проверяем, не существует ли уже проект с таким email
+        $existingProject = Project::where('email', $validated['email'])->first();
+        if ($existingProject) {
+            \Log::warning('Project already exists with email: ' . $validated['email']);
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['email' => ['Проект с таким email уже зарегистрирован']]
+                ], 422);
+            }
+            return back()->withErrors(['email' => 'Проект с таким email уже зарегистрирован'])->withInput();
+        }
+
         // Создание проекта и пользователя-админа в транзакции
         DB::transaction(function () use ($validated) {
+            \Log::info('Creating project for email: ' . $validated['email']);
+            
             // Определяем язык для проекта
             $languageCode = $validated['language'] ?? 'ru';
             $language = \App\Models\Language::where('code', $languageCode)->first();
@@ -78,6 +96,8 @@ class RegisterController extends Controller
                 'language_id' => $language ? $language->id : null,
                 'booking_language_id' => $language ? $language->id : null,
             ]);
+            
+            \Log::info('Project created with ID: ' . $project->id);
 
             // Создать пользователя-админа
             $admin = User::create([
