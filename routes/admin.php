@@ -54,9 +54,8 @@ Route::middleware(['auth:panel'])->name('admin.')->group(function () {
     Route::post('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
     
     // Email шаблоны
-    Route::get('/email-templates', function () {
-        return view('admin.email-templates.index');
-    })->name('email-templates.index');
+    Route::resource('email-templates', \App\Http\Controllers\Admin\EmailTemplateController::class);
+    Route::post('/email-templates/test', [\App\Http\Controllers\Admin\EmailTemplateTestController::class, 'test'])->name('email-templates.test');
     
     // Безопасность
     Route::get('/security', function () {

@@ -206,12 +206,6 @@
         </ul>
         <hr class="border-secondary my-4">
         <ul class="nav flex-column">
-            <li class="nav-item mb-2">
-                <a href="{{ route('dashboard') }}" class="nav-link text-muted">
-                    <i class="fas fa-arrow-left me-2"></i>
-                    Вернуться в CRM
-                </a>
-            </li>
             <li class="nav-item">
                 <form method="POST" action="{{ route('admin.logout') }}" class="d-inline">
                     @csrf
