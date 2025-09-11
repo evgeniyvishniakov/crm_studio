@@ -14,8 +14,10 @@ Auth::routes(['reset' => false, 'register' => false, 'verify' => false]);
 | Здесь можно добавить публичные маршруты, если потребуется
 |
 */
+Route::get('/', function () {
+    return redirect()->to('https://trimora.app');
+})->name('home');
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Маршруты логина для клиентской части
 Route::get('/login', [ClientAuthController::class, 'showLoginForm'])->middleware('guest')->name('login');
