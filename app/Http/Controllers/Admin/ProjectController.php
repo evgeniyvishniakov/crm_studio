@@ -12,6 +12,7 @@ use App\Mail\RegistrationWelcomeMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Models\Language;
 use App\Jobs\SendAdminTelegramNotification;
 
@@ -248,40 +249,32 @@ class ProjectController extends Controller
     public function destroy(string $id)
     {
         try {
-            $project = Project::findOrFail($id);
+            $project = DB::table('projects')->where('id', $id)->first();
+            
+            if (!$project) {
+                return response()->json(['success' => false, 'message' => 'Проект не найден'], 404);
+            }
             
             // Удаляем логотип проекта, если он есть
             if ($project->logo) {
                 Storage::disk('public')->delete($project->logo);
             }
             
-            // Удаляем связанные данные в правильном порядке
-            // 1. Удаляем подписки
-            $project->subscriptions()->delete();
+            // Удаляем проект - каскадное удаление автоматически удалит все связанные данные
+            $deleted = DB::table('projects')->where('id', $id)->delete();
             
-            // 2. Удаляем администраторов проекта
-            $project->adminUsers()->delete();
-            
-            // 3. Удаляем клиентов проекта
-            $project->clients()->delete();
-            
-            // 4. Удаляем записи проекта
-            $project->appointments()->delete();
-            
-            // 5. Удаляем настройки проекта
-            $project->bookingSettings()->delete();
-            $project->widgetSettings()->delete();
-            $project->emailSettings()->delete();
-            $project->telegramSettings()->delete();
-            
-            // 6. Удаляем сам проект
-            $project->delete();
-            
-            return response()->json(['success' => true, 'message' => 'Проект успешно удален']);
+            if ($deleted) {
+                // Очищаем кеш
+                \Cache::flush();
+                
+                return response()->json(['success' => true, 'message' => 'Проект успешно удален']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Проект не был удален'], 500);
+            }
             
         } catch (\Exception $e) {
             Log::error('Ошибка при удалении проекта: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Ошибка при удалении проекта'], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 }

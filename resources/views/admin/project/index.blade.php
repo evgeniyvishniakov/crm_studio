@@ -404,6 +404,7 @@ document.querySelectorAll('.btn-delete-project').forEach(function(btn) {
 
 document.getElementById('confirmDeleteProjectBtn').addEventListener('click', function() {
     if (!projectIdToDelete) return;
+    
     fetch('/panel/projects/' + projectIdToDelete, {
         method: 'DELETE',
         headers: {
