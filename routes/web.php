@@ -18,6 +18,11 @@ Route::get('/', function () {
     return redirect()->to('https://trimora.app');
 })->name('home');
 
+// Маршрут dashboard - перенаправляет на клиентскую панель
+Route::get('/dashboard', function () {
+    return redirect('/panel');
+})->middleware('auth:client')->name('dashboard');
+
 
 // Маршруты логина для клиентской части
 Route::get('/login', [ClientAuthController::class, 'showLoginForm'])->middleware('guest')->name('login');
