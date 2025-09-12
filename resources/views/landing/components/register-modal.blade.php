@@ -111,9 +111,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const regSpinner = document.getElementById('regSpinner');
     
     if (registerForm) {
+        let isSubmitting = false; // Защита от двойной отправки
+        
         registerForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
+            // Проверяем, не отправляется ли уже форма
+            if (isSubmitting) {
+                console.log('Форма уже отправляется, игнорируем повторную отправку');
+                return;
+            }
+            
+            isSubmitting = true;
             registerBtn.disabled = true;
             regSpinner.classList.remove('d-none');
             registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Регистрация...';
@@ -144,6 +153,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 showErrors({general: ['Произошла ошибка при регистрации. Попробуйте еще раз.']});
             })
             .finally(() => {
+                // Сбрасываем флаг отправки
+                isSubmitting = false;
+                
                 // Восстанавливаем кнопку
                 registerBtn.disabled = false;
                 regSpinner.classList.add('d-none');

@@ -126,19 +126,15 @@ class RegisterController extends Controller
                 'notes' => 'Автоматически создана при регистрации проекта'
             ]);
 
-            // Рассылка уведомлений всем админам, кроме нового
-            $adminUsers = User::where('role', 'admin')
-                ->where('id', '!=', $admin->id)
-                ->get();
-            foreach ($adminUsers as $adminUser) {
-                \App\Models\Notification::create([
-                    'user_id' => $adminUser->id,
-                    'type' => 'project',
-                    'title' => 'Зарегистрирован новый проект',
-                    'body' => 'Зарегистрирован новый проект: ' . $validated['salon'],
-                    'url' => route('admin.projects.index'),
-                ]);
-            }
+            // Создаем общее уведомление для всех админов
+            \App\Models\Notification::create([
+                'user_id' => null, // Общее уведомление для всех админов
+                'project_id' => $project->id, // Привязываем к проекту
+                'type' => 'project',
+                'title' => 'Зарегистрирован новый проект',
+                'body' => 'Зарегистрирован новый проект: ' . $validated['salon'],
+                'url' => route('admin.projects.index'),
+            ]);
 
             // Генерируем токен для создания пароля
             $token = Password::broker('admin_users')->createToken($admin);
