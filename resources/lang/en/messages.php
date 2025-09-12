@@ -359,9 +359,9 @@ return [
     'telegram_instructions_step2' => '2. Get the bot token from BotFather',
     'telegram_instructions_step3' => '3. Add the bot to the desired chat or channel',
     'telegram_instructions_step4' => '4. To get the chat ID:',
-    'telegram_instructions_step5' => '   - For personal chat: send a message to the bot and visit https://api.telegram.org/bot<TOKEN>/getUpdates',
-    'telegram_instructions_step6' => '   - For group: add the bot to the group and make it an administrator',
-    'telegram_instructions_step7' => '   - For channel: add the bot to the channel as an administrator',
+    'telegram_instructions_step5' => '   - For a private chat: Find @IDBot in Telegram add the bot to the chat and it will send you the chat ID',
+    'telegram_instructions_step6' => '   - For a group: the same as for a chat',
+    'telegram_instructions_step7' => '   - For a channel: the same as for a chat',
     'telegram_instructions_step8' => '5. Insert the token and chat ID in the settings',
     'telegram_instructions_step9' => '6. Enable notifications and test the connection',
     

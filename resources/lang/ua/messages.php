@@ -355,10 +355,10 @@ return [
     'telegram_instructions_step2' => '2. Отримайте токен бота від BotFather',
     'telegram_instructions_step3' => '3. Додайте бота в потрібний чат або канал',
     'telegram_instructions_step4' => '4. Для отримання ID чату:',
-    'telegram_instructions_step5' => '   - Для особистого чату: відправте боту повідомлення і перейдіть за посиланням https://api.telegram.org/bot<TOKEN>/getUpdates',
-    'telegram_instructions_step6' => '   - Для групи: додайте бота в групу і зробіть його адміністратором',
-    'telegram_instructions_step7' => '   - Для каналу: додайте бота в канал як адміністратора',
-    'telegram_instructions_step8' => '5. Вставте токен і ID чату в налаштування',
+    'telegram_instructions_step5' => '   - Для особистого чату: Знайдіть @IDBot в Telegram додайте бота в чат і він вам відправить ID чату',
+    'telegram_instructions_step6' => '   - Для групи: теж саме що і для чату',
+    'telegram_instructions_step7' => '   - Для каналу: теж саме що і для чату',
+    'telegram_instructions_step8' => '5. Вставте токен та ID чату в налаштування',
     'telegram_instructions_step9' => '6. Увімкніть сповіщення і протестуйте підключення',
     
     // Меню
