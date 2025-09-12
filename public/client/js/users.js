@@ -37,7 +37,6 @@ function openEditUserModalFromCard(userId) {
     })
     .then(res => res.json())
     .then(data => {
-        console.log('Server response:', data); // Отладочная информация
         openEditUserModal(data.user);
     })
     .catch(() => window.showNotification('error', 'Ошибка при загрузке данных пользователя'));
@@ -453,8 +452,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Открытие/закрытие модального окна редактирования
 function openEditUserModal(user) {
-    console.log('User data received:', user); // Отладочная информация
-    
     document.getElementById('editUserId').value = user.id || '';
     document.getElementById('editUserName').value = user.name || '';
     document.getElementById('editUserUsername').value = user.username || '';
@@ -545,7 +542,6 @@ document.addEventListener('click', function(e) {
             })
             .then(res => res.json())
             .then(data => {
-                console.log('Server response:', data); // Отладочная информация
                 openEditUserModal(data.user);
             })
             .catch(() => window.showNotification('error', 'Ошибка при загрузке данных пользователя'));

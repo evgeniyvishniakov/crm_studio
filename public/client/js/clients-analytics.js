@@ -274,7 +274,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Функция для обновления данных на всех графиках ---
     async function updateClientAnalytics(period = 'week', params = null) {
-        console.log('updateClientAnalytics called with period:', period, 'params:', params);
         let url = '/reports/client-analytics';
         if (params) {
             url += '?' + params + '&_t=' + Date.now();
@@ -682,7 +681,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const filterButtons = document.querySelectorAll('.filter-section .filter-button');
-    console.log('Found filter buttons:', filterButtons.length);
     const periodMapping = {
         'За тиждень': 'week',
         'За неделю': 'week',
@@ -754,7 +752,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeCharts();
     // Сразу выбираем период месяц
     const filterButtonsArr = Array.from(document.querySelectorAll('.filter-section .filter-button'));
-    console.log('Initialization: Found filter buttons:', filterButtonsArr.length);
     const monthBtn = filterButtonsArr.find(btn => 
         btn.textContent.trim() === 'За месяц' || 
         btn.textContent.trim() === 'За місяць'
@@ -766,29 +763,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const initialPeriod = 'month';
     // Определяем активную вкладку
     const initialTabId = document.querySelector('.tab-button.active').getAttribute('data-tab');
-    console.log('Initial tab ID:', initialTabId);
     if (initialTabId === 'clients-analytics') {
-        console.log('Initializing clients-analytics with period:', initialPeriod);
         updateClientAnalytics(initialPeriod);
     } else if (initialTabId === 'appointments-analytics') {
-        console.log('Initializing appointments-analytics with period:', initialPeriod);
         updateAppointmentsAnalytics(initialPeriod);
         updateAppointmentStatusAnalytics(initialPeriod);
         updateServicePopularityAnalytics(initialPeriod);
     } else if (initialTabId === 'employees-analytics') {
-        console.log('Initializing employees-analytics with period:', initialPeriod);
         updateEmployeesProceduresAnalytics(initialPeriod);
         updateEmployeesProceduresDynamicsAnalytics(initialPeriod);
         updateEmployeesRevenueAnalytics(initialPeriod);
         updateEmployeesAverageCheckAnalytics(initialPeriod);
     } else if (initialTabId === 'complex-analytics') {
-        console.log('Initializing complex-analytics with period:', initialPeriod);
         updateTopClientsByRevenueAnalytics(initialPeriod);
         updateAvgCheckDynamicsAnalytics(initialPeriod);
         updateLtvByClientTypeAnalytics(initialPeriod);
         updateTopServicesByRevenueAnalytics(initialPeriod);
-    } else {
-        console.log('Unknown initial tab ID:', initialTabId);
     }
     
     // Принудительное обновление всех графиков после смены периода
