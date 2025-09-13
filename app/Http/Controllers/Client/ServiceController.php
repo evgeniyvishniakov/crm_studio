@@ -134,6 +134,10 @@ class ServiceController extends Controller
 
     public function edit(Service $service)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($service->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к услуге'], 403);
+        }
         return response()->json($service);
     }
 

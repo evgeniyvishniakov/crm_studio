@@ -218,7 +218,8 @@ class ProductImportExportController extends Controller
 
         // Ищем категорию
         $suggestedCategory = null;
-        $categories = ProductCategory::all();
+        $currentProjectId = auth()->user()->project_id;
+        $categories = ProductCategory::where('project_id', $currentProjectId)->get();
         foreach ($categories as $category) {
             $categoryNameLower = mb_strtolower($category->name);
             if (strpos($productNameLower, $categoryNameLower) !== false) {
@@ -229,7 +230,7 @@ class ProductImportExportController extends Controller
 
         // Ищем бренд
         $suggestedBrand = null;
-        $brands = ProductBrand::all();
+        $brands = ProductBrand::where('project_id', $currentProjectId)->get();
         foreach ($brands as $brand) {
             $brandNameLower = mb_strtolower($brand->name);
             if (strpos($productNameLower, $brandNameLower) !== false) {

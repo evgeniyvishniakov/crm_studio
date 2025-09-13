@@ -144,6 +144,10 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($client->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к клиенту'], 403);
+        }
         return response()->json($client);
     }
 

@@ -37,8 +37,8 @@ class ProductController extends Controller
         }
 
         // При первой загрузке страницы не загружаем товары - они будут загружены через AJAX
-        $categories = ProductCategory::orderBy('name')->get();
-        $brands = ProductBrand::orderBy('name')->get();
+        $categories = ProductCategory::where('project_id', $currentProjectId)->orderBy('name')->get();
+        $brands = ProductBrand::where('project_id', $currentProjectId)->orderBy('name')->get();
         return view('client.products.list', compact('categories', 'brands'));
     }
 
@@ -56,6 +56,11 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($product->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к товару'], 403);
+        }
+        
         try {
             return response()->json([
                 'success' => true,

@@ -38,7 +38,27 @@ class ProductCategoryController extends Controller
 
     public function store(Request $request)
     {
-        $currentProjectId = auth()->user()->project_id;
+        $user = auth()->user();
+        $currentProjectId = $user->project_id;
+        
+        // Отладка
+        \Log::info('ProductCategoryController@store', [
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'project_id' => $currentProjectId,
+            'user_role' => $user->role
+        ]);
+        
+        if (!$currentProjectId) {
+            \Log::error('User project_id is null in store', [
+                'user_id' => $user->id,
+                'user_email' => $user->email
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка: у пользователя не установлен project_id'
+            ], 500);
+        }
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:product_categories,name,NULL,id,project_id,' . $currentProjectId,
             'description' => 'nullable|string',
@@ -78,6 +98,10 @@ class ProductCategoryController extends Controller
 
     public function edit(ProductCategory $productCategory)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($productCategory->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к категории'], 403);
+        }
         return response()->json($productCategory);
     }
 
@@ -121,6 +145,10 @@ class ProductCategoryController extends Controller
 
     public function destroy(ProductCategory $productCategory)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($productCategory->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к категории'], 403);
+        }
         try {
             $productCategory->delete();
             return response()->json([

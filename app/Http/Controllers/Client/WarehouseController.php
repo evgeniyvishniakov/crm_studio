@@ -48,7 +48,8 @@ class WarehouseController extends Controller
 
     public function getProducts()
     {
-        $products = Product::select('id', 'name', 'photo', 'purchase_price', 'retail_price')->get();
+        $currentProjectId = auth()->user()->project_id;
+        $products = Product::where('project_id', $currentProjectId)->select('id', 'name', 'photo', 'purchase_price', 'retail_price')->get();
         return response()->json($products);
     }
 
@@ -84,6 +85,11 @@ class WarehouseController extends Controller
 
     public function update(Request $request, Warehouse $warehouse)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($warehouse->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к складу'], 403);
+        }
+        
         $validated = $request->validate([
             'purchase_price' => 'required|numeric|min:0',
             'retail_price' => 'required|numeric|min:0',
@@ -107,6 +113,10 @@ class WarehouseController extends Controller
 
     public function destroy(Warehouse $warehouse)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($warehouse->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к складу'], 403);
+        }
         $warehouse->delete();
         return response()->json(['success' => true]);
     }
@@ -114,6 +124,11 @@ class WarehouseController extends Controller
     // Fixed: Changed parameter from $id to Warehouse $warehouse for model binding
     public function edit(Warehouse $warehouse)
     {
+        $currentProjectId = auth()->user()->project_id;
+        if ($warehouse->project_id !== $currentProjectId) {
+            return response()->json(['success' => false, 'message' => 'Нет доступа к складу'], 403);
+        }
+        
         try {
             // Load the product relationship
             $warehouse->load('product');
