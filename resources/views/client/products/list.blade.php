@@ -112,9 +112,8 @@
             </table>
             
             <!-- Пагинация будет добавлена через JavaScript -->
-            <div id="productsPagination"></div>
         </div>
-
+        <div id="productsPagination"></div>
         <!-- Мобильные карточки товаров -->
         <div class="products-cards" id="productsCards" style="display: none;">
             <!-- Карточки будут добавлены через JavaScript -->
