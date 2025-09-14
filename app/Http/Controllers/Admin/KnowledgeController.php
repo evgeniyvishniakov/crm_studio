@@ -323,7 +323,7 @@ class KnowledgeController extends Controller
         // Если редактируем перевод, НЕ обновляем переводы здесь
 
         // Обновляем шаги
-        if ($request->has('steps') && is_array($request->steps) && !$isEditingTranslation) {
+        if ($request->has('steps') && is_array($request->steps)) {
             // Получаем существующие шаги для сохранения изображений и переводов
             $existingSteps = $article->steps()->with('translations')->get()->keyBy('sort_order');
             
@@ -394,7 +394,7 @@ class KnowledgeController extends Controller
         }
 
         // Обновляем полезные советы
-        if ($request->has('tips') && is_array($request->tips) && !$isEditingTranslation) {
+        if ($request->has('tips') && is_array($request->tips)) {
             // Получаем существующие советы для сохранения переводов
             $existingTips = $article->tips()->with('translations')->get()->keyBy('sort_order');
             

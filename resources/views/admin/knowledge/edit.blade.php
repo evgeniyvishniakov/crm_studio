@@ -352,8 +352,7 @@
                                                         <textarea class="form-control step-content step-content-editor" 
                                                                   name="steps[{{ $index }}][content]" 
                                                                   rows="5" 
-                                                                  placeholder="Опишите шаг подробно..." 
-                                                                  required>{{ $step->content }}</textarea>
+                                                                  placeholder="Опишите шаг подробно...">{{ $step->content }}</textarea>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -536,11 +535,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Инициализация TinyMCE для поля
 function initTinyMCE(element) {
-    if (element instanceof HTMLElement) {
-        if (!element.id) {
-            element.id = 'tinymce-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        }
+    if (!element || !(element instanceof HTMLElement)) {
+        console.error('Invalid element for TinyMCE initialization');
+        return;
     }
+    
+    if (!element.id) {
+        element.id = 'tinymce-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // Проверяем, не инициализирован ли уже редактор
+    if (tinymce.get(element.id)) {
+        console.log('TinyMCE already initialized for:', element.id);
+        return;
+    }
+    
+    console.log('Initializing TinyMCE for:', element.id);
     
     tinymce.init({
         selector: '#' + element.id,
@@ -1448,15 +1458,25 @@ function openTranslationModal(languageCode, languageName) {
                     <textarea class="form-control step-content step-content-editor" 
                               name="steps[${stepCounter}][content]" 
                               rows="5" 
-                              placeholder="Опишите шаг подробно..." 
-                              required></textarea>
+                              placeholder="Опишите шаг подробно..."></textarea>
                 </div>
             `;
             container.appendChild(stepDiv);
             
-            // Инициализируем TinyMCE для нового поля
+            // Инициализируем TinyMCE для нового поля с задержкой
             const newEditor = stepDiv.querySelector('.step-content-editor');
-            initTinyMCE(newEditor);
+            if (newEditor) {
+                // Даем время DOM обновиться
+                setTimeout(() => {
+                    try {
+                        initTinyMCE(newEditor);
+                    } catch (error) {
+                        console.error('Error initializing TinyMCE for new step:', error);
+                    }
+                }, 200);
+            } else {
+                console.error('Could not find step-content-editor in new step');
+            }
             
             stepCounter++;
         }
@@ -1501,6 +1521,8 @@ function openTranslationModal(languageCode, languageName) {
 
         // Валидация формы перед отправкой
         document.getElementById('knowledge-form').addEventListener('submit', function(e) {
+            console.log('Форма отправляется...');
+            
             const title = document.getElementById('title').value.trim();
             const description = document.getElementById('description').value.trim();
             
@@ -1510,26 +1532,43 @@ function openTranslationModal(languageCode, languageName) {
                 return false;
             }
             
-            // Проверяем шаги
+            // Проверяем шаги только если они есть
             const stepTitles = document.querySelectorAll('.step-title');
             const stepContents = document.querySelectorAll('.step-content');
             
+            console.log('Найдено шагов:', stepTitles.length);
+            
+            // Проверяем только заполненные шаги (не пустые)
             for (let i = 0; i < stepTitles.length; i++) {
-                const title = stepTitles[i].value.trim();
+                const stepTitle = stepTitles[i].value.trim();
                 let content = '';
                 
-                if (tinymce.get(stepContents[i].id)) {
-                    content = tinymce.get(stepContents[i].id).getContent().trim();
+                // Получаем ID поля для проверки TinyMCE
+                const contentField = stepContents[i];
+                const fieldId = contentField.id;
+                
+                if (fieldId && tinymce.get(fieldId)) {
+                    content = tinymce.get(fieldId).getContent().trim();
                 } else {
-                    content = stepContents[i].value.trim();
+                    content = contentField.value.trim();
                 }
                 
-                if (!title || !content) {
+                console.log(`Шаг ${i + 1}:`, { 
+                    title: stepTitle, 
+                    content: content.substring(0, 50) + '...',
+                    fieldId: fieldId,
+                    hasTinyMCE: fieldId && tinymce.get(fieldId) ? true : false
+                });
+                
+                // Если шаг частично заполнен, требуем заполнить полностью
+                if ((stepTitle && !content) || (!stepTitle && content)) {
                     e.preventDefault();
-                    alert('Пожалуйста, заполните все обязательные поля для шагов');
+                    alert('Пожалуйста, заполните все поля для шага ' + (i + 1) + ' полностью');
                     return false;
                 }
             }
+            
+            console.log('Валидация прошла успешно, отправляем форму...');
         });
     </script>
 @endpush
