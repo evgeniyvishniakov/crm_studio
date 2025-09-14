@@ -1663,7 +1663,7 @@ tr[data-parent-appointment-id] {
                             <select name="user_id" class="form-control" required>
                                 <option value="">{{ __('messages.select_employee') }}</option>
                                 @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name ?? __('messages.deleted_user') }}</option>
+                                <option value="{{ $user->id }}">{{ $user->name ?? __('messages.deleted_user') }} ({{ __('messages.role_' . $user->role) }})</option>
                                 @endforeach
                             </select>
                         </div>
@@ -1788,6 +1788,16 @@ tr[data-parent-appointment-id] {
                 'rescheduled': '{{ __('messages.status_rescheduled') }}'
             };
             return statusNames[status] || '{{ __('messages.status_pending') }}';
+        }
+
+        function getRoleName(role) {
+            const roleNames = {
+                'admin': '{{ __('messages.role_admin') }}',
+                'manager': '{{ __('messages.role_manager') }}',
+                'master': '{{ __('messages.role_master') }}',
+                'employee': '{{ __('messages.role_employee') }}'
+            };
+            return roleNames[role] || role;
         }
 
         document.addEventListener('click', function(e) {
@@ -3073,7 +3083,7 @@ tr[data-parent-appointment-id] {
                                 <option value="">{{ __('messages.select_employee') }}</option>
                                 ${allUsers.map(user => `
                                     <option value="${user.id}" ${appointment.user_id == user.id ? 'selected' : ''}>
-                                        ${escapeHtml(user.name)}
+                                        ${escapeHtml(user.name)} (${getRoleName(user.role)})
                                     </option>
                                 `).join('')}
                             </select>
