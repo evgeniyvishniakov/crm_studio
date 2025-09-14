@@ -585,21 +585,22 @@ class KnowledgeController extends Controller
      */
     public function saveTranslation(Request $request, string $id)
     {
-        \Log::info('saveTranslation called', [
-            'article_id' => $id,
-            'request_data' => $request->all()
-        ]);
-        
-        $request->validate([
-            'language_code' => 'required|string|max:5',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'step_translations' => 'nullable|array',
-            'step_translations.*.title' => 'required|string|max:255',
-            'step_translations.*.content' => 'required|string',
-            'tip_translations' => 'nullable|array',
-            'tip_translations.*.content' => 'required|string'
-        ]);
+        try {
+            \Log::info('saveTranslation called', [
+                'article_id' => $id,
+                'request_data' => $request->all()
+            ]);
+            
+            $request->validate([
+                'language_code' => 'required|string|max:5',
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'step_translations' => 'nullable|array',
+                'step_translations.*.title' => 'required|string|max:255',
+                'step_translations.*.content' => 'required|string',
+                'tip_translations' => 'nullable|array',
+                'tip_translations.*.content' => 'required|string'
+            ]);
 
         $article = KnowledgeArticle::findOrFail($id);
         $languageCode = $request->language_code;
@@ -661,9 +662,34 @@ class KnowledgeController extends Controller
             }
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Перевод успешно сохранен!'
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Перевод успешно сохранен!'
+            ]);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error in saveTranslation', [
+                'article_id' => $id,
+                'errors' => $e->errors()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации',
+                'errors' => $e->errors()
+            ], 422);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error in saveTranslation', [
+                'article_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при сохранении перевода: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

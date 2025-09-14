@@ -1381,6 +1381,11 @@ function openTranslationModal(languageCode, languageName) {
             
 
             
+            // Логируем данные перед отправкой
+            console.log('Sending translation data:', formData);
+            console.log('CSRF Token:', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+            console.log('Article ID:', articleId);
+            
             // Отправляем данные на сервер
             fetch(`/panel/knowledge/${articleId}/save-translation`, {
                 method: 'POST',
@@ -1390,8 +1395,24 @@ function openTranslationModal(languageCode, languageName) {
                 },
                 body: JSON.stringify(formData)
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                // Проверяем, что ответ содержит JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.error('Response is not JSON. Content-Type:', contentType);
+                    return response.text().then(text => {
+                        console.error('Response text:', text);
+                        throw new Error('Сервер вернул не JSON ответ. Проверьте логи сервера.');
+                    });
+                }
+                
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
                 if (data.success) {
                     // Показываем уведомление об успехе
                     showNotification(data.message, 'success');
@@ -1410,7 +1431,7 @@ function openTranslationModal(languageCode, languageName) {
             })
             .catch(error => {
                 console.error('Ошибка:', error);
-                showNotification('Ошибка при сохранении перевода. Попробуйте еще раз.', 'danger');
+                showNotification('Ошибка при сохранении перевода: ' + error.message, 'danger');
             });
         }
         
