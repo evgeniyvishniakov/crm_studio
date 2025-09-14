@@ -69,6 +69,9 @@ Route::middleware('auth:client')->group(function () {
         Route::post('/update', [SettingsController::class, 'updateLanguageCurrency']);
     });
     
+    // Маршрут для проверки уникальности клиентов (должен быть до общих маршрутов)
+    Route::get('/clients/check', [ClientController::class, 'checkUnique'])->name('clients.check');
+    
     // Управление клиентами
     Route::prefix('clients')->name('clients.')->group(function () {
         Route::get('/', [ClientController::class, 'index'])->name('list');

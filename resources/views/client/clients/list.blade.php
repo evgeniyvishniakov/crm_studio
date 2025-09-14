@@ -896,6 +896,8 @@
             if (instagramInput.value && !/^[a-zA-Z0-9_.-]+$/.test(instagramInput.value)) {
                 window.showNotification('error', '{{ __('messages.instagram_validation_error') }}');
                 instagramInput.focus();
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
                 e.preventDefault();
                 return false;
             }
@@ -1015,6 +1017,18 @@
         // Инициализация аватаров клиентов
         document.querySelectorAll('.client-avatar').forEach(avatar => {
             initializeAvatar(avatar);
+        });
+
+        // Очистка ошибок при вводе в поля
+        document.querySelectorAll('#addClientForm input').forEach(input => {
+            input.addEventListener('input', function() {
+                const inputGroup = this.closest('.form-group');
+                inputGroup.classList.remove('has-error');
+                const existingError = inputGroup.querySelector('.error-message');
+                if (existingError) {
+                    existingError.remove();
+                }
+            });
         });
 
         // Проверка существующих данных при вводе (on blur)
