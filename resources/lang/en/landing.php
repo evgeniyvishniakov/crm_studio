@@ -497,7 +497,7 @@ return [
     
     // Knowledge base categories
     'knowledge_category_getting_started' => 'Getting Started',
-    'knowledge_category_features' => 'Features',
+    'knowledge_category_features' => 'Client Work',
     'knowledge_category_tips' => 'Tips',
     'knowledge_category_troubleshooting' => 'Troubleshooting',
     
@@ -509,7 +509,7 @@ return [
     'knowledge_search_button' => 'Search',
     'knowledge_category_all' => 'All',
     'knowledge_category_getting_started' => 'Getting Started',
-    'knowledge_category_features' => 'Features',
+    'knowledge_category_features' => 'Client Work',
     'knowledge_category_tips' => 'Tips',
     'knowledge_category_troubleshooting' => 'Troubleshooting',
     'knowledge_no_articles' => 'No articles found',

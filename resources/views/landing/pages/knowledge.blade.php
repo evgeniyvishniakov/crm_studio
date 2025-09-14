@@ -329,7 +329,7 @@
                 <button class="btn btn-outline-primary category-filter" data-category="getting-started">Начало работы</button>
             </div>
             <div class="col-auto">
-                <button class="btn btn-outline-primary category-filter" data-category="features">Функции</button>
+                <button class="btn btn-outline-primary category-filter" data-category="features">Работа с клиентами</button>
             </div>
             <div class="col-auto">
                 <button class="btn btn-outline-primary category-filter" data-category="tips">Советы</button>

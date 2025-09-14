@@ -22,7 +22,7 @@ class KnowledgeController extends Controller
     {
         return [
             'getting-started' => 'Начало работы',
-            'features' => 'Возможности',
+            'features' => 'Работа с клиентами',
             'integrations' => 'Интеграции',
             'troubleshooting' => 'Решение проблем',
             'tips' => 'Полезные советы'

@@ -175,6 +175,9 @@ function deleteProduct(rowOrId, id) {
                 if (card) card.remove();
                 window.showNotification('success', data.message || window.translations?.product_successfully_deleted || 'Товар успешно удален');
                 checkDeletedProducts(); // Проверяем наличие удаленных товаров после удаления
+                
+                // Перезагружаем страницу для обновления пагинации
+                loadPage(currentPage, searchQuery);
             }, 300);
         }
     })

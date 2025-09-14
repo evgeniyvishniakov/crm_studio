@@ -496,7 +496,7 @@ return [
     
     // Категорії бази знань
     'knowledge_category_getting_started' => 'Початок роботи',
-    'knowledge_category_features' => 'Функції',
+    'knowledge_category_features' => 'Робота з клієнтами',
     'knowledge_category_tips' => 'Поради',
     'knowledge_category_troubleshooting' => 'Вирішення проблем',
     
@@ -508,7 +508,7 @@ return [
     'knowledge_search_button' => 'Пошук',
     'knowledge_category_all' => 'Всі',
     'knowledge_category_getting_started' => 'Початок роботи',
-    'knowledge_category_features' => 'Функції',
+    'knowledge_category_features' => 'Робота з клієнтами',
     'knowledge_category_tips' => 'Поради',
     'knowledge_category_troubleshooting' => 'Вирішення проблем',
     'knowledge_no_articles' => 'Статті не знайдено',

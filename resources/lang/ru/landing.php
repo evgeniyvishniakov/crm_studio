@@ -497,7 +497,7 @@ return [
     
     // Категории базы знаний
     'knowledge_category_getting_started' => 'Начало работы',
-    'knowledge_category_features' => 'Функции',
+    'knowledge_category_features' => 'Работа с клиентами',
     'knowledge_category_tips' => 'Советы',
     'knowledge_category_troubleshooting' => 'Решение проблем',
     
@@ -509,7 +509,7 @@ return [
     'knowledge_search_button' => 'Поиск',
     'knowledge_category_all' => 'Все',
     'knowledge_category_getting_started' => 'Начало работы',
-    'knowledge_category_features' => 'Функции',
+    'knowledge_category_features' => 'Работа с клиентами',
     'knowledge_category_tips' => 'Советы',
     'knowledge_category_troubleshooting' => 'Решение проблем',
     'knowledge_no_articles' => 'Статьи не найдены',
