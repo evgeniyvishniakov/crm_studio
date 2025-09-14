@@ -113,11 +113,29 @@ class ClientReportController extends Controller
     private function getClientDynamics(string $periodName, array $periodRange, $currentProjectId): array
     {
         if ($periodRange[0]->gt($periodRange[1])) {
-            return ['labels' => [], 'data' => []];
+            return ['labels' => [], 'data' => [], 'newClients' => [], 'regularClients' => []];
         }
         $dateGroupRaw = '';
         $labels = [];
         $data = [];
+        $newClients = [];
+        $regularClients = [];
+        
+        // Получаем ID типов клиентов
+        $newClientTypeId = \App\Models\Clients\ClientType::where('name', 'Новый клиент')
+            ->where(function($query) use ($currentProjectId) {
+                $query->where('is_global', true)
+                      ->orWhere('project_id', $currentProjectId);
+            })
+            ->value('id');
+            
+        $regularClientTypeId = \App\Models\Clients\ClientType::where('name', 'Постоянный клиент')
+            ->where(function($query) use ($currentProjectId) {
+                $query->where('is_global', true)
+                      ->orWhere('project_id', $currentProjectId);
+            })
+            ->value('id');
+        
         switch ($periodName) {
             case 'half_year':
                 $dateGroupRaw = 'YEARWEEK(created_at, 1)';
@@ -130,17 +148,36 @@ class ClientReportController extends Controller
                     $week = $weekStart->format('oW');
                     $allWeeks->push($week);
                 }
-                $rawData = \App\Models\Clients\Client::query()
+                
+                // Новые клиенты
+                $newClientsData = \App\Models\Clients\Client::query()
                     ->where('project_id', $currentProjectId)
+                    ->where('client_type_id', $newClientTypeId)
                     ->whereBetween('created_at', [$start, $end])
                     ->selectRaw($dateGroupRaw.' as date_group, COUNT(*) as count')
                     ->groupBy('date_group')
                     ->orderBy('date_group')
                     ->get()
                     ->keyBy('date_group');
+                    
+                // Постоянные клиенты
+                $regularClientsData = \App\Models\Clients\Client::query()
+                    ->where('project_id', $currentProjectId)
+                    ->where('client_type_id', $regularClientTypeId)
+                    ->whereBetween('created_at', [$start, $end])
+                    ->selectRaw($dateGroupRaw.' as date_group, COUNT(*) as count')
+                    ->groupBy('date_group')
+                    ->orderBy('date_group')
+                    ->get()
+                    ->keyBy('date_group');
+                
                 foreach ($allWeeks as $week) {
                     $labels[] = \Carbon\Carbon::now()->setISODate(substr($week, 0, 4), substr($week, 4))->startOfWeek()->format('d.m') . ' - ' . \Carbon\Carbon::now()->setISODate(substr($week, 0, 4), substr($week, 4))->endOfWeek()->format('d.m');
-                    $data[] = $rawData->get($week)->count ?? 0;
+                    $newCount = $newClientsData->get($week)->count ?? 0;
+                    $regularCount = $regularClientsData->get($week)->count ?? 0;
+                    $data[] = $newCount + $regularCount;
+                    $newClients[] = $newCount;
+                    $regularClients[] = $regularCount;
                 }
                 break;
             case 'year':
@@ -153,17 +190,36 @@ class ClientReportController extends Controller
                 foreach ($periodIterator as $monthStart) {
                     $allMonths->push($monthStart->format('Y-m'));
                 }
-                $rawData = \App\Models\Clients\Client::query()
+                
+                // Новые клиенты
+                $newClientsData = \App\Models\Clients\Client::query()
                     ->where('project_id', $currentProjectId)
+                    ->where('client_type_id', $newClientTypeId)
                     ->whereBetween('created_at', [$start, $end])
                     ->selectRaw($dateGroupRaw.' as date_group, COUNT(*) as count')
                     ->groupBy('date_group')
                     ->orderBy('date_group')
                     ->get()
                     ->keyBy('date_group');
+                    
+                // Постоянные клиенты
+                $regularClientsData = \App\Models\Clients\Client::query()
+                    ->where('project_id', $currentProjectId)
+                    ->where('client_type_id', $regularClientTypeId)
+                    ->whereBetween('created_at', [$start, $end])
+                    ->selectRaw($dateGroupRaw.' as date_group, COUNT(*) as count')
+                    ->groupBy('date_group')
+                    ->orderBy('date_group')
+                    ->get()
+                    ->keyBy('date_group');
+                
                 foreach ($allMonths as $month) {
                     $labels[] = \Carbon\Carbon::parse($month.'-01')->translatedFormat('M Y');
-                    $data[] = $rawData->get($month)->count ?? 0;
+                    $newCount = $newClientsData->get($month)->count ?? 0;
+                    $regularCount = $regularClientsData->get($month)->count ?? 0;
+                    $data[] = $newCount + $regularCount;
+                    $newClients[] = $newCount;
+                    $regularClients[] = $regularCount;
                 }
                 break;
             default:
@@ -173,23 +229,44 @@ class ClientReportController extends Controller
                 foreach ($periodIterator as $date) {
                     $allDates->push($date->format('Y-m-d'));
                 }
-                $rawData = \App\Models\Clients\Client::query()
+                
+                // Новые клиенты
+                $newClientsData = \App\Models\Clients\Client::query()
                     ->where('project_id', $currentProjectId)
+                    ->where('client_type_id', $newClientTypeId)
                     ->whereBetween('created_at', $periodRange)
                     ->selectRaw($dateGroupRaw.' as date_group, COUNT(*) as count')
                     ->groupBy('date_group')
                     ->orderBy('date_group')
                     ->get()
                     ->keyBy('date_group');
+                    
+                // Постоянные клиенты
+                $regularClientsData = \App\Models\Clients\Client::query()
+                    ->where('project_id', $currentProjectId)
+                    ->where('client_type_id', $regularClientTypeId)
+                    ->whereBetween('created_at', $periodRange)
+                    ->selectRaw($dateGroupRaw.' as date_group, COUNT(*) as count')
+                    ->groupBy('date_group')
+                    ->orderBy('date_group')
+                    ->get()
+                    ->keyBy('date_group');
+                
                 foreach ($allDates as $date) {
                     $labels[] = $date;
-                    $data[] = $rawData->get($date)->count ?? 0;
+                    $newCount = $newClientsData->get($date)->count ?? 0;
+                    $regularCount = $regularClientsData->get($date)->count ?? 0;
+                    $data[] = $newCount + $regularCount;
+                    $newClients[] = $newCount;
+                    $regularClients[] = $regularCount;
                 }
                 break;
         }
         return [
             'labels' => $labels,
-            'data' => $data
+            'data' => $data,
+            'newClients' => $newClients,
+            'regularClients' => $regularClients
         ];
     }
 

@@ -172,12 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }, 
                         y: { 
                             grid: { display: false },
-                            ticks: {
-                                callback: function(value) {
-                                    // Для оси Y (названия услуг) не используем форматирование валюты
-                                    return value.toString();
-                                }
-                            }
+                            type: 'category' // Указываем что это категориальная ось
                         } 
                     }, 
                     plugins: { 
@@ -253,7 +248,35 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 } 
             },
-            topEmployeesRevenueBar: { type: 'bar', options: { indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } } },
+            topEmployeesRevenueBar: { 
+                type: 'bar', 
+                options: { 
+                    indexAxis: 'y', 
+                    scales: { 
+                        x: { 
+                            beginAtZero: true, 
+                            grid: { display: true, color: '#e5e7eb' },
+                            ticks: {
+                                precision: 0,
+                                callback: function(value) {
+                                    return value.toString();
+                                }
+                            }
+                        }, 
+                        y: { grid: { display: false } } 
+                    }, 
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${window.translations?.revenue || 'Выручка'}: ${context.parsed.x}`;
+                                }
+                            }
+                        }
+                    } 
+                } 
+            },
             employeesAverageCheckBar: { type: 'bar', options: { scales: { y: { beginAtZero: true, grid: { display: true, color: '#e5e7eb' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } } }
         };
 
@@ -323,21 +346,80 @@ document.addEventListener('DOMContentLoaded', function() {
                     xTicks.autoSkip = true;
                 }
 
-                if (data.clientDynamics.data && data.clientDynamics.data.length > 0) {
-                    const maxValue = Math.max(...data.clientDynamics.data);
+                const totalNew = data.clientDynamics.newClients ? data.clientDynamics.newClients.reduce((a, b) => a + b, 0) : 0;
+                const totalRegular = data.clientDynamics.regularClients ? data.clientDynamics.regularClients.reduce((a, b) => a + b, 0) : 0;
+                
+                // Вычисляем максимальное значение для масштабирования
+                const allValues = [];
+                if (data.clientDynamics.newClients) allValues.push(...data.clientDynamics.newClients);
+                if (data.clientDynamics.regularClients) allValues.push(...data.clientDynamics.regularClients);
+                
+                if (allValues.length > 0) {
+                    const maxValue = Math.max(...allValues);
                     charts.clientDynamicsChart.options.scales.y.suggestedMax = maxValue + 1;
                 } else {
                     delete charts.clientDynamicsChart.options.scales.y.suggestedMax;
                 }
-                const totalNew = data.clientDynamics.data.reduce((a, b) => a + b, 0);
-                updateChart(charts.clientDynamicsChart, data.clientDynamics.labels, [{
-                    label: `${window.translations?.new_clients || 'Новые клиенты'} (${totalNew})`,
-                    data: data.clientDynamics.data,
-                    borderColor: 'rgb(59, 130, 246)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]);
+                
+                const datasets = [];
+                
+                // Линия новых клиентов
+                if (data.clientDynamics.newClients) {
+                    datasets.push({
+                        id: 'newClients',
+                        label: 'Новые клиенты',
+                        data: data.clientDynamics.newClients,
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: false,
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgb(59, 130, 246)',
+                        pointBorderColor: 'rgb(59, 130, 246)',
+                        pointHoverBackgroundColor: 'rgb(59, 130, 246)',
+                        pointHoverBorderColor: 'rgb(59, 130, 246)'
+                    });
+                }
+                
+                // Линия постоянных клиентов
+                if (data.clientDynamics.regularClients) {
+                    datasets.push({
+                        id: 'regularClients',
+                        label: 'Постоянные клиенты',
+                        data: data.clientDynamics.regularClients,
+                        borderColor: 'rgb(16, 185, 129)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: false,
+                        tension: 0.4,
+                        pointBackgroundColor: 'rgb(16, 185, 129)',
+                        pointBorderColor: 'rgb(16, 185, 129)',
+                        pointHoverBackgroundColor: 'rgb(16, 185, 129)',
+                        pointHoverBorderColor: 'rgb(16, 185, 129)'
+                    });
+                }
+                
+                // Настраиваем подсказки для отображения только одного типа клиента
+                charts.clientDynamicsChart.options.plugins.tooltip = {
+                    mode: 'nearest',
+                    intersect: true,
+                    callbacks: {
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y;
+                        }
+                    }
+                };
+                
+                // Принудительно очищаем и обновляем график
+                charts.clientDynamicsChart.data.labels = [];
+                charts.clientDynamicsChart.data.datasets = [];
+                charts.clientDynamicsChart.update('none');
+                
+                // Устанавливаем новые данные
+                charts.clientDynamicsChart.data.labels = data.clientDynamics.labels;
+                charts.clientDynamicsChart.data.datasets = datasets;
+                charts.clientDynamicsChart.update();
             }
             // 2. Распределение по типам клиентов
             if (charts.clientTypesChart && data.clientTypesDistribution) {
@@ -505,9 +587,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             const data = await response.json();
             
-            // Формируем labels с числами в скобках
-            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i]})`);
-
+            // Для горизонтального графика используем только названия услуг
             // Устанавливаем максимальное значение для шкалы X
             if (data.data && data.data.length > 0) {
                 const maxValue = Math.max(...data.data);
@@ -525,7 +605,7 @@ document.addEventListener('DOMContentLoaded', function() {
             gradient.addColorStop(0.5, 'rgba(139, 92, 246, 0.6)');
             gradient.addColorStop(1, 'rgba(139, 92, 246, 0.4)');
 
-            updateChart(servicesChart, labelsWithCounts, [{
+            updateChart(servicesChart, data.labels, [{
                 label: window.translations?.number_of_appointments || 'Количество записей',
                 data: data.data,
                 backgroundColor: gradient,
@@ -555,6 +635,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Устанавливаем новые данные
         chart.data.labels = labels;
         chart.data.datasets = datasets;
+        
+        // Для горизонтальных графиков с данными в формате {x, y} нужно обновить labels из данных
+        // Исключаем график выручки сотрудников, так как он использует простые массивы
+        if (chart.config && chart.config.options && chart.config.options.indexAxis === 'y' && 
+            datasets.length > 0 && datasets[0].data && datasets[0].data.length > 0 && 
+            typeof datasets[0].data[0] === 'object' && datasets[0].data[0].y &&
+            chart.canvas && chart.canvas.id !== 'topEmployeesRevenueBar') {
+            // Извлекаем уникальные значения y для labels (имена сотрудников)
+            const yValues = [...new Set(datasets[0].data.map(item => item.y))];
+            chart.data.labels = yValues;
+        }
         
         // Градиент для bar и line графиков
         if (chart && chart.config && chart.config.type) {
@@ -822,20 +913,84 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(url);
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
-            // labels с числом в скобках
-            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i]})`);
+            
+            if (data.labels.length === 0) {
+                // Если нет данных, очищаем график
+                charts.topClientsByRevenueChart.data.labels = [];
+                charts.topClientsByRevenueChart.data.datasets = [];
+                charts.topClientsByRevenueChart.update();
+                return;
+            }
+            
+            // Уничтожаем старый график
+            charts.topClientsByRevenueChart.destroy();
+            
+            // Создаем новый график с правильной конфигурацией
+            const canvas = document.getElementById('topClientsByRevenueChart');
+            const ctx = canvas.getContext('2d');
+            
             // Цвета: максимальный — зелёный, остальные — оранжевый (как у топ-5 по визитам)
             const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
             const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(234, 88, 12, 0.7)');
-            updateChart(charts.topClientsByRevenueChart, labelsWithCounts, [{
-                label: window.translations?.revenue || 'Выручка',
-                data: data.data,
-                backgroundColor: colors,
-                borderColor: colors,
-                borderWidth: 1
-            }]);
+            
+            // Создаем градиент для горизонтального графика
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, 'rgba(59,130,246,0.2)');
+            gradient.addColorStop(0.5, 'rgba(59,130,246,0.5)');
+            gradient.addColorStop(1, 'rgba(59,130,246,0.9)');
+            
+            charts.topClientsByRevenueChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels, // Имена клиентов
+                    datasets: [{
+                        label: window.translations?.revenue || 'Выручка',
+                        data: data.data, // Выручка
+                        backgroundColor: gradient,
+                        borderColor: 'rgba(59,130,246,0.3)',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Горизонтальный график
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { display: true, color: '#e5e7eb' },
+                            ticks: {
+                                precision: 0,
+                                callback: function(value) {
+                                    return value.toString();
+                                }
+                            }
+                        },
+                        y: { 
+                            grid: { display: false },
+                            ticks: {
+                                callback: function(value, index, ticks) {
+                                    // Возвращаем имя клиента из labels
+                                    return data.labels[index] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${window.translations?.revenue || 'Выручка'}: ${context.parsed.x}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
         } catch (e) {
-            // console.error('Ошибка загрузки топ-5 по выручке', e);
+            console.error('Ошибка загрузки топ-5 по выручке', e);
         }
     }
 
@@ -898,10 +1053,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(url);
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
-            // Для горизонтального графика labels должны быть без чисел в скобках
-            updateChart(charts.topServicesByRevenueChart, data.labels, [{
+            
+            // Для горизонтального графика нужно передать данные в специальном формате
+            const chartData = data.labels.map((label, index) => ({
+                x: data.data[index], // выручка на оси X
+                y: label // название услуги на оси Y
+            }));
+            
+            updateChart(charts.topServicesByRevenueChart, [], [{
                 label: window.translations?.revenue || 'Выручка',
-                data: data.data
+                data: chartData
             }]);
         } catch (e) {
             // console.error('Ошибка загрузки топ-услуг по выручке', e);
@@ -923,10 +1084,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(url);
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
-            const labelsWithCounts = data.labels.map((label, i) => `${label} (${data.data[i]})`);
+            // Для горизонтального графика используем только имена сотрудников
             const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
             const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(59, 130, 246, 0.7)');
-            updateChart(charts.topEmployeesProceduresBar, labelsWithCounts, [{
+            updateChart(charts.topEmployeesProceduresBar, data.labels, [{
                 label: window.translations?.number_of_procedures || 'Количество процедур',
                 data: data.data,
                 backgroundColor: colors,
@@ -978,18 +1139,83 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch(url);
             if (!response.ok) throw new Error('Ошибка сети');
             const data = await response.json();
-            const labelsWithCounts = data.labels.map((label, i) => `${label} (${formatCurrency(data.data[i])})`);
+            
+            if (data.labels.length === 0) {
+                // Если нет данных, очищаем график
+                charts.topEmployeesRevenueBar.data.labels = [];
+                charts.topEmployeesRevenueBar.data.datasets = [];
+                charts.topEmployeesRevenueBar.update();
+                return;
+            }
+            
+            // Уничтожаем старый график
+            charts.topEmployeesRevenueBar.destroy();
+            
+            // Создаем новый график с правильной конфигурацией
+            const canvas = document.getElementById('topEmployeesRevenueBar');
+            const ctx = canvas.getContext('2d');
+            
             const maxValue = data.data.length > 0 ? Math.max(...data.data) : 0;
-            const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(139, 92, 246, 0.7)');
-            updateChart(charts.topEmployeesRevenueBar, labelsWithCounts, [{
-                label: window.translations?.revenue || 'Выручка',
-                data: data.data,
-                backgroundColor: colors,
-                borderColor: colors,
-                borderWidth: 1
-            }]);
+            const colors = data.data.map(v => v === maxValue ? '#10b981' : 'rgba(59, 130, 246, 0.7)');
+            
+            // Создаем градиент для горизонтального графика
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, 'rgba(59,130,246,0.2)');
+            gradient.addColorStop(0.5, 'rgba(59,130,246,0.5)');
+            gradient.addColorStop(1, 'rgba(59,130,246,0.9)');
+            
+            charts.topEmployeesRevenueBar = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels, // Имена сотрудников
+                    datasets: [{
+                        label: window.translations?.revenue || 'Выручка',
+                        data: data.data, // Выручка
+                        backgroundColor: gradient,
+                        borderColor: 'rgba(59,130,246,0.3)',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Горизонтальный график
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { display: true, color: '#e5e7eb' },
+                            ticks: {
+                                precision: 0,
+                                callback: function(value) {
+                                    return value.toString();
+                                }
+                            }
+                        },
+                        y: { 
+                            grid: { display: false },
+                            ticks: {
+                                callback: function(value, index, ticks) {
+                                    // Возвращаем имя сотрудника из labels
+                                    return data.labels[index] || '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${window.translations?.revenue || 'Выручка'}: ${context.parsed.x}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
         } catch (e) {
-            // console.error('Ошибка загрузки топ-5 по выручке', e);
+            console.error('Ошибка загрузки топ-5 по выручке', e);
         }
     }
 

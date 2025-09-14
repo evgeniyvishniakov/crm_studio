@@ -230,7 +230,7 @@
 
 
 @push('scripts')
-<script src="{{ asset('client/js/clients-analytics.js') }}"></script>
+<script src="{{ asset('client/js/clients-analytics.js') }}?v={{ time() }}"></script>
 @endpush
 
 
