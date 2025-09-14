@@ -159,8 +159,8 @@ tr[data-parent-appointment-id] {
 }
 
 .btn-delete-procedure .icon {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 13px;
+    height: 13px;
 }
 
 /* Убираем перекрытие статусных кружочков - оранжевый кружочек добавляется через JavaScript */

@@ -34,7 +34,7 @@ class Appointment extends Model
         // other casts...
     ];
 
-    protected $appends = ['total_amount', 'childAppointments'];
+    protected $appends = ['total_amount', 'childAppointments', 'time_formatted'];
 
     public function getChildAppointmentsAttribute()
     {
@@ -143,5 +143,32 @@ class Appointment extends Model
         }
         
         return $total;
+    }
+
+    /**
+     * Получить время в формате H:i (15:00 вместо 15:00:00)
+     */
+    public function getTimeFormattedAttribute()
+    {
+        if (!$this->time) {
+            return '';
+        }
+        
+        // Если время уже в формате H:i, возвращаем как есть
+        if (preg_match('/^\d{2}:\d{2}$/', $this->time)) {
+            return $this->time;
+        }
+        
+        // Если время в формате H:i:s, обрезаем секунды
+        if (preg_match('/^(\d{2}:\d{2}):\d{2}$/', $this->time, $matches)) {
+            return $matches[1];
+        }
+        
+        // Пытаемся распарсить время и вернуть в формате H:i
+        try {
+            return \Carbon\Carbon::parse($this->time)->format('H:i');
+        } catch (\Exception $e) {
+            return $this->time;
+        }
     }
 }

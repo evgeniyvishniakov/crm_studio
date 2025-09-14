@@ -151,9 +151,19 @@ class AppointmentsController extends Controller
                 // Не прерываем выполнение, если Telegram уведомление не отправилось
             }
 
+            // Загружаем запись с связями
+            $appointment = $appointment->load(['client', 'service', 'user']);
+            
+            // Форматируем дату для правильного отображения в JavaScript
+            $appointment->date_formatted = $appointment->date->format('d.m.Y');
+            $appointment->date_html = $appointment->date->format('Y-m-d'); // Для HTML поля даты
+            
+            // Форматируем время для отображения в формате HH:MM
+            $appointment->time = $appointment->time_formatted;
+
             return response()->json([
                 'success' => true,
-                'appointment' => $appointment->load(['client', 'service', 'user'])
+                'appointment' => $appointment
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -435,6 +445,9 @@ class AppointmentsController extends Controller
             // Форматируем дату для правильного отображения в JavaScript
             $appointmentData->date_formatted = $appointmentData->date->format('d.m.Y');
             $appointmentData->date_html = $appointmentData->date->format('Y-m-d'); // Для HTML поля даты
+            
+            // Форматируем время для отображения в формате HH:MM
+            $appointmentData->time = $appointmentData->time_formatted;
 
             return response()->json([
                 'success' => true,
@@ -1697,7 +1710,7 @@ class AppointmentsController extends Controller
                     'parent_appointment_id' => $a->parent_appointment_id,
                     'date' => $a->date->format('d.m.Y'),
                     'date_formatted' => $a->date->format('d.m.Y'),
-                    'time' => $a->time,
+                    'time' => $a->time_formatted,
                     'client' => $a->client ? [
                         'id' => $a->client->id,
                         'name' => $a->client->name,
