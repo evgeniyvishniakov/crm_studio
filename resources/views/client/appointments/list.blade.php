@@ -1962,12 +1962,14 @@ tr[data-parent-appointment-id] {
                     </div>
                 `).join('')}
             </div>
-            <button class="btn-add-appointment btn-add-product" id="showAddServiceFormBtn" style="margin-top: 10px;">
-                <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                </svg>
-                {{ __('messages.add_procedure') }}
-            </button>
+            <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
+                <button class="btn-add-appointment btn-add-product" id="showAddServiceFormBtn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    {{ __('messages.add_procedure') }}
+                </button>
+            </div>
             <div id="addServiceForm" style="display: none; margin-top: 15px;">
                 <div class="form-row-appointment">
                     <div class="form-group" style="flex: 2;">
@@ -2006,7 +2008,7 @@ tr[data-parent-appointment-id] {
                     <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
-                    {{ __('messages.add') }}
+                    {{ __('messages.add_product') }}
                 </button>
                 <div id="addProductForm" style="display: none; margin-top: 20px;">
                     <div class="form-row-appointment">
@@ -2566,7 +2568,7 @@ tr[data-parent-appointment-id] {
                 <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                 </svg>
-                {{ __('messages.add') }}
+                {{ __('messages.add_product') }}
             </button>
             <div id="addProductForm" style="display: none; margin-top: 20px;">
                 <div class="form-row-appointment">
@@ -3680,7 +3682,7 @@ tr[data-parent-appointment-id] {
                         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                         </svg>
-                        {{ __('messages.add') }}
+                        {{ __('messages.add_product') }}
                     </button>
                     <div id="addProductForm" style="display: none; margin-top: 20px;">
                         <div class="form-row-appointment">
