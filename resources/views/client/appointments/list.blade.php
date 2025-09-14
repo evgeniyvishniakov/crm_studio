@@ -1490,18 +1490,30 @@ tr[data-parent-appointment-id] {
                     const day = String(date.getDate()).padStart(2, '0');
                     const dateString = `${year}-${month}-${day}`;
 
-                    // Устанавливаем выбранную дату в поле формы
-                    const dateInput = form.querySelector('input[name="date"]');
-                    dateInput.value = dateString;
+                    // Устанавливаем выбранную дату в поле формы ПОСЛЕ сброса формы
+                    setTimeout(() => {
+                        const dateInput = form.querySelector('input[name="date"]');
+                        if (dateInput) {
+                            dateInput.value = dateString;
+                        }
+                    }, 10);
 
                     // Если в строке есть время (для timeGrid видов), устанавливаем его
-                    if (dateStr.includes('T')) {
-                        const hours = String(date.getHours()).padStart(2, '0');
-                        const minutes = String(date.getMinutes()).padStart(2, '0');
-                        form.querySelector('input[name="time"]').value = `${hours}:${minutes}`;
-                    } else {
-                        form.querySelector('input[name="time"]').value = ''; // Очищаем время для month view
-                    }
+                    setTimeout(() => {
+                        if (dateStr.includes('T')) {
+                            const hours = String(date.getHours()).padStart(2, '0');
+                            const minutes = String(date.getMinutes()).padStart(2, '0');
+                            const timeInput = form.querySelector('input[name="time"]');
+                            if (timeInput) {
+                                timeInput.value = `${hours}:${minutes}`;
+                            }
+                        } else {
+                            const timeInput = form.querySelector('input[name="time"]');
+                            if (timeInput) {
+                                timeInput.value = ''; // Очищаем время для month view
+                            }
+                        }
+                    }, 10);
 
                     // Автоматически выбираем админа текущего проекта
                     const userSelect = form.querySelector('select[name="user_id"]');
